@@ -62,9 +62,9 @@ public class MoonLander extends ModelClass {
 		@Override
 		public void entry() {
 			ControlCycleSignal signal = getTrigger(ControlCycleSignal.class);
-			FMUEnvironment world = assoc(LanderWorld.world.class).selectAny();
+//			FMUEnvironment world = assoc(LanderWorld.world.class).selectAny();
 			// better because of rounding in generated code
-			Action.send(new ControlSignal(signal.v*signal.h*signal.h/500000 - (-signal.v*signal.h/1000) - signal.v/2), world);
+//			Action.send(new ControlSignal(signal.v*signal.h*signal.h/500000 - (-signal.v*signal.h/1000) - signal.v/2), world);
 		}
 	}
 	

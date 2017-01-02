@@ -4,7 +4,9 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
 
 import org.eclipse.core.runtime.FileLocator;
@@ -16,21 +18,23 @@ import hu.elte.txtuml.export.cpp.Uml2ToCppExporter;
 
 public class FMUResourceHandler {
 
-	public void copyResources(IPath projectLocation) throws IOException, URISyntaxException {
-
-		for (String copiedFileName : Arrays.asList("fmi2Functions.h", "fmi2FunctionTypes.h", "fmi2TypesPlatform.h",
-				"FMUEnvironment.hpp")) {
-			copyResource(copiedFileName, projectLocation);
+	public void copyResources(Path path) throws IOException, URISyntaxException {
+		Files.move(path.resolve("CMakeLists.txt"), path.resolve("CMakeLists_base.txt"),
+				StandardCopyOption.REPLACE_EXISTING);
+		for (String copiedFileName : Arrays.asList("CMakeLists.txt", "fmu/fmi2Functions.h", "fmu/fmi2FunctionTypes.h",
+				"fmu/fmi2TypesPlatform.h")) {
+			copyResource(copiedFileName, path);
 		}
 
 	}
 
-	private void copyResource(String fileName, IPath projectLocation) throws IOException, URISyntaxException {
+	private void copyResource(String fileName, Path basePath) throws IOException, URISyntaxException {
 		Bundle bundle = Platform.getBundle(Uml2ToCppExporter.PROJECT_NAME);
 		URL fileURL = bundle.getEntry("fmuResources" + IPath.SEPARATOR + fileName);
-		
-		Files.copy(Paths.get(FileLocator.toFileURL(fileURL).toURI()),
-				Paths.get(projectLocation.toOSString(), Uml2ToCppExporter.GENERATED_CPP_FOLDER_NAME, fileName));
+
+		Files.createDirectories(basePath.resolve(Paths.get(fileName)).getParent());
+		Files.copy(Paths.get(FileLocator.toFileURL(fileURL).toURI()), basePath.resolve(fileName),
+				StandardCopyOption.REPLACE_EXISTING);
 	}
 
 }

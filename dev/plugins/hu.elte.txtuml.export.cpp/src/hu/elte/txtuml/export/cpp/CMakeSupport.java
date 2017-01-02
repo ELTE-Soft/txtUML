@@ -163,26 +163,35 @@ class CMakeSupport {
 
 		fileContent.append("endif()\n");
 
+		fileContent.append("include_directories(.)\n");
 		for (String includeDirectory : includeDirectories) {
 			fileContent.append("include_directories(" + includeDirectory + ")\n");
 		}
 
 		// targets
 		for (int i = 0; i < staticLibraryTargetNames.size(); i++) {
-			fileContent.append("add_library(" + staticLibraryTargetNames.get(i) + " STATIC");
+			fileContent.append("set(LIB_CONTENT_" + staticLibraryTargetNames.get(i));
 			for (String fileName : staticLibraryTargetSourceNames.get(i)) {
-				fileContent.append(" " + fileName);
+				fileContent.append(" \"" + fileName + "\"");
 			}
 			fileContent.append(")\n");
+
+			fileContent.append("add_library(").append(staticLibraryTargetNames.get(i)).append(" STATIC ")
+					.append("${LIB_CONTENT_").append(staticLibraryTargetNames.get(i));
+			fileContent.append("})\n");
 		}
 
 		for (int i = 0; i < executableTargetNames.size(); i++) {
 			String targetName = executableTargetNames.get(i);
-			fileContent.append("add_executable(" + targetName);
+			
+			fileContent.append("set(EXEC_CONTENT_" + executableTargetNames.get(i));
 			for (String fileName : executableTargetSourceNames.get(i)) {
-				fileContent.append(" " + fileName);
+				fileContent.append(" \"" + fileName + "\"");
 			}
 			fileContent.append(")\n");
+			
+			fileContent.append("add_executable(" + targetName).append(" ${EXEC_CONTENT_" + executableTargetNames.get(i));
+			fileContent.append("})\n");
 
 			if (staticLibraryTargetNames.size() > 0) {
 				fileContent.append("target_link_libraries(" + targetName);

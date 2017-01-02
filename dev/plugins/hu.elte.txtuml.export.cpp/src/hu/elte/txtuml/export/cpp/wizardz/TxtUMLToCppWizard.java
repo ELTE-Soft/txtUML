@@ -1,8 +1,12 @@
 package hu.elte.txtuml.export.cpp.wizardz;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 import org.eclipse.core.resources.IProject;
 import org.eclipse.jface.wizard.Wizard;
 
+import hu.elte.txtuml.export.cpp.Uml2ToCppExporter;
 import hu.elte.txtuml.export.fmu.EnvironmentExporter;
 import hu.elte.txtuml.export.fmu.FMUConfig;
 import hu.elte.txtuml.export.fmu.FMUExportGovernor;
@@ -59,9 +63,11 @@ public class TxtUMLToCppWizard extends Wizard {
 				EnvironmentExporter environmentExporter = new EnvironmentExporter();
 				FMUResourceHandler resourceHandler = new FMUResourceHandler();
 				IProject proj = ProjectUtils.getProject(txtUMLProject);
-				descriptionExporter.export(proj.getLocation(), fmuConfig);
-				environmentExporter.export(proj.getLocation(), fmuConfig);
-				resourceHandler.copyResources(proj.getLocation());
+				Path genPath = Paths.get(proj.getLocation().toOSString(), Uml2ToCppExporter.GENERATED_CPP_FOLDER_NAME, txtUMLModel);
+				descriptionExporter.export(Paths.get(proj.getLocation().toOSString(), Uml2ToCppExporter.GENERATED_CPP_FOLDER_NAME), fmuConfig);
+				environmentExporter.export(genPath, fmuConfig);
+				environmentExporter.exportHeader(genPath, fmuConfig);
+				resourceHandler.copyResources(genPath);
 			}
 			
 		} catch (Exception e) {

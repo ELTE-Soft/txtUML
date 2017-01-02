@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -24,7 +25,7 @@ import hu.elte.txtuml.export.cpp.Uml2ToCppExporter;
 
 public class ModelDescriptionExporter {
 
-	public void export(IPath projectLoc, FMUConfig fmuConfig) throws IOException, URISyntaxException {
+	public void export(Path projectLoc, FMUConfig fmuConfig) throws IOException, URISyntaxException {
 		Bundle bundle = Platform.getBundle(Uml2ToCppExporter.PROJECT_NAME);
 		URL fileURL = bundle.getEntry("fmuResources" + IPath.SEPARATOR + "modelDescriptionTemplate.xml");
 		String template = new String(Files.readAllBytes(Paths.get(FileLocator.toFileURL(fileURL).toURI())));
@@ -52,9 +53,7 @@ public class ModelDescriptionExporter {
 			}
 		}
 		matcher.appendTail(sb);
-		Files.write(
-				Paths.get(projectLoc.toOSString(), Uml2ToCppExporter.GENERATED_CPP_FOLDER_NAME, "modelDescription.xml"),
-				sb.toString().getBytes());
+		Files.write(projectLoc.resolve("modelDescription.xml"), sb.toString().getBytes());
 	}
 
 	private String generateVariables(List<VariableDefinition> inputVariables, List<VariableDefinition> outputVariables,
