@@ -22,7 +22,7 @@ struct fmu_variables {
 class fmu_environment : public FMUEnvironment {
 public:
   const fmi2CallbackFunctions* callbacks;
-  fmu_variables *vars;   
+  fmu_variables *vars = new fmu_variables;
 
   bool process_event(EventBaseCRef event) {
     if (event.t == $controlevent_EE) {
@@ -38,6 +38,12 @@ public:
   void setInitialState() {
     // nothing to do
   }
+  
+  fmu_environment() {
+    Runtime::createRuntime()->setupObject(this);
+  }
+  ~fmu_environment() {}
+
 };
 
 size_t member_offsets[] = { $variableoffsets };
@@ -72,6 +78,7 @@ fmi2Component fmi2Instantiate( fmi2String /*instanceName*/,
 
   fmu->fmu_env = new fmu_environment;
   fmu->fmu_env->callbacks = functions;
+  fmu->fmu_env->startSM();
   fmu->fmu_class = new $fmuclass(fmu->fmu_env);
   fmu->fmu_class->startSM();
   // TODO: check instance name, GUID
@@ -115,6 +122,9 @@ fmi2Status fmi2GetReal ( fmi2Component c,
                          fmi2Real value[] ) {
   FMU* fmu = static_cast<FMU*>(c);
   for (size_t i = 0; i < nvr; ++i) {
+    if (vr[i] >= sizeof(member_offsets)/sizeof(size_t)) {
+      return fmi2Error;
+    }
     value[i] = *reinterpret_cast<fmi2Real*>(reinterpret_cast<char*>(fmu->fmu_env->vars) + member_offsets[vr[i]]);
   }
   return fmi2OK;

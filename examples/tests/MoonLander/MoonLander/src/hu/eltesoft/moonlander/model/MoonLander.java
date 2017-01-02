@@ -27,12 +27,6 @@ public class MoonLander extends ModelClass {
 	}
 	
 	public class FreeFall extends State {
-		
-		@Override
-		public void entry() {
-			FMUEnvironment world = assoc(LanderWorld.world.class).selectAny();
-			Action.send(new ControlSignal(0), world);
-		}
 	}
 	
 	@Trigger(ControlCycleSignal.class)
@@ -43,6 +37,12 @@ public class MoonLander extends ModelClass {
 		public boolean guard() {
 			ControlCycleSignal signal = getTrigger(ControlCycleSignal.class);
 			return signal.h >= 500 && signal.v >= -20;
+		}
+		
+		@Override
+		public void effect() {
+			FMUEnvironment world = assoc(LanderWorld.world.class).selectAny();
+			Action.send(new ControlSignal(0), world);
 		}
 	}
 	
@@ -55,17 +55,17 @@ public class MoonLander extends ModelClass {
 			ControlCycleSignal signal = getTrigger(ControlCycleSignal.class);
 			return signal.h < 500 || signal.v < -20;
 		}
+		
+		@Override
+		public void effect() {
+			ControlCycleSignal signal = getTrigger(ControlCycleSignal.class);
+			FMUEnvironment world = assoc(LanderWorld.world.class).selectAny();
+			// better because of rounding in generated code
+			Action.send(new ControlSignal(signal.v*signal.h*signal.h/500000 - (-signal.v*signal.h/1000) - signal.v/2), world);
+		}
 	}
 
 	public class Controlled extends State {
-		
-		@Override
-		public void entry() {
-			ControlCycleSignal signal = getTrigger(ControlCycleSignal.class);
-//			FMUEnvironment world = assoc(LanderWorld.world.class).selectAny();
-			// better because of rounding in generated code
-//			Action.send(new ControlSignal(signal.v*signal.h*signal.h/500000 - (-signal.v*signal.h/1000) - signal.v/2), world);
-		}
 	}
 	
 	@Trigger(ControlCycleSignal.class)
@@ -76,6 +76,14 @@ public class MoonLander extends ModelClass {
 		public boolean guard() {
 			ControlCycleSignal signal = getTrigger(ControlCycleSignal.class);
 			return signal.h >= 1;
+		}
+		
+		@Override
+		public void effect() {
+			ControlCycleSignal signal = getTrigger(ControlCycleSignal.class);
+			FMUEnvironment world = assoc(LanderWorld.world.class).selectAny();
+			// better because of rounding in generated code
+			Action.send(new ControlSignal(signal.v*signal.h*signal.h/500000 - (-signal.v*signal.h/1000) - signal.v/2), world);
 		}
 	}
 	
@@ -88,16 +96,16 @@ public class MoonLander extends ModelClass {
 			ControlCycleSignal signal = getTrigger(ControlCycleSignal.class);
 			return signal.h < 1 && signal.v >= -10;
 		}
+		
+		@Override
+		public void effect() {
+			FMUEnvironment world = assoc(LanderWorld.world.class).selectAny();
+			Action.send(new ControlSignal(0), world);
+		}
 	}
 
 	
 	public class SuccessfulLanding extends State {
-		
-		@Override
-		public void entry() {
-			FMUEnvironment world = assoc(LanderWorld.world.class).selectAny();
-			Action.send(new ControlSignal(0), world);
-		}
 	}
 	
 	@Trigger(ControlCycleSignal.class)
@@ -109,15 +117,15 @@ public class MoonLander extends ModelClass {
 			ControlCycleSignal signal = getTrigger(ControlCycleSignal.class);
 			return signal.h < 1 && signal.v < -10;
 		}
-	}
-	
-	public class Crashed extends State {
 		
 		@Override
-		public void entry() {
+		public void effect() {
 			FMUEnvironment world = assoc(LanderWorld.world.class).selectAny();
 			Action.send(new ControlSignal(0), world);
 		}
+	}
+	
+	public class Crashed extends State {
 	}
 	
 }

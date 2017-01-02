@@ -185,13 +185,20 @@ class CMakeSupport {
 			String targetName = executableTargetNames.get(i);
 			
 			fileContent.append("set(EXEC_CONTENT_" + executableTargetNames.get(i));
+			
+			boolean hasMainCpp = false;
+			
 			for (String fileName : executableTargetSourceNames.get(i)) {
-				fileContent.append(" \"" + fileName + "\"");
+				if (!fileName.equals("main.cpp")) {
+					fileContent.append(" \"" + fileName + "\"");
+				} else {
+					hasMainCpp = true;
+				}
 			}
 			fileContent.append(")\n");
 			
 			fileContent.append("add_executable(" + targetName).append(" ${EXEC_CONTENT_" + executableTargetNames.get(i));
-			fileContent.append("})\n");
+			fileContent.append("}").append(hasMainCpp ? " main.cpp" : "").append(")\n");
 
 			if (staticLibraryTargetNames.size() > 0) {
 				fileContent.append("target_link_libraries(" + targetName);
