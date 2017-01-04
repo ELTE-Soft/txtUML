@@ -17,13 +17,14 @@ import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.MemberValuePair;
 import org.eclipse.jdt.core.dom.NormalAnnotation;
+import org.eclipse.jdt.core.dom.StringLiteral;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.jdt.core.dom.TypeLiteral;
 
 import hu.elte.txtuml.api.deployment.fmi.FMU;
 import hu.elte.txtuml.api.deployment.fmi.FMUInput;
 import hu.elte.txtuml.api.deployment.fmi.FMUOutput;
-import hu.elte.txtuml.api.deployment.fmi.InitialRealOutputValue;
+import hu.elte.txtuml.api.deployment.fmi.InitialRealValue;
 import hu.elte.txtuml.utils.eclipse.NotFoundException;
 import hu.elte.txtuml.utils.eclipse.ProjectUtils;
 import hu.elte.txtuml.utils.jdt.SharedUtils;
@@ -42,7 +43,6 @@ public class FMUExportGovernor {
 		CompilationUnit compUnit = SharedUtils.parseJavaSource(path.toFile(), javaProject);
 		config.inputSignalConfig = Optional.empty();
 		config.outputSignalConfig = Optional.empty();
-		String outputSignalName = null;
 		Map<String, Object> outputSignalVals = new HashMap<>();
 		
 		for (Object object : compUnit.types()) {
@@ -59,18 +59,14 @@ public class FMUExportGovernor {
 						config.inputSignalConfig = Optional.of(inputSignalName);
 						config.inputVariables = loadClassMembers(javaProject, inputSignalName);
 					} else if (bind.getQualifiedName().equals(FMUOutput.class.getCanonicalName())) {
-						outputSignalName = getAnnotValue(annotMod, "outputSignal");
-						config.outputVariables = loadClassMembers(javaProject, outputSignalName);
-					} else if (bind.getQualifiedName().equals(InitialRealOutputValue.class.getCanonicalName())) {
+						config.outputSignalConfig = Optional.of(getAnnotValue(annotMod, "outputSignal"));
+						config.outputVariables = loadClassMembers(javaProject, config.outputSignalConfig.get());
+					} else if (bind.getQualifiedName().equals(InitialRealValue.class.getCanonicalName())) {
 						outputSignalVals.put(getAnnotValue(annotMod, "variableName"), getAnnotValue(annotMod, "value"));
 					}
 				}
 			}
-			if (outputSignalName != null) {
-				config.outputSignalConfig = Optional.of(new FMUOutputConfig(outputSignalName, outputSignalVals));
-			} else {
-				config.outputSignalConfig = Optional.empty();
-			}
+			config.initialValues = outputSignalVals;
 		}
 
 		return config;
@@ -82,6 +78,10 @@ public class FMUExportGovernor {
 			if (pair.getName().getIdentifier().equals(valueName)) {
 				if (pair.getValue() instanceof TypeLiteral) {
 					return ((TypeLiteral) pair.getValue()).getType().resolveBinding().getQualifiedName();
+				} else if (pair.getValue() instanceof StringLiteral) {
+					return ((StringLiteral) pair.getValue()).getLiteralValue();
+				} else {
+					return pair.getValue().toString();
 				}
 			}
 		}

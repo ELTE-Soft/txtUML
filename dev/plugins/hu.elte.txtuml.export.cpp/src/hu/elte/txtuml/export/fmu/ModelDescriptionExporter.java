@@ -8,10 +8,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.SimpleTimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -47,7 +45,7 @@ public class ModelDescriptionExporter {
 				matcher.appendReplacement(sb, nameParts[nameParts.length - 1]);
 			} else if (matcher.group().equals("$variables")) {
 				matcher.appendReplacement(sb, generateVariables(fmuConfig.inputVariables, fmuConfig.outputVariables,
-						fmuConfig.outputSignalConfig));
+						fmuConfig.initialValues));
 			} else if (matcher.group().equals("$outputs")) {
 				matcher.appendReplacement(sb, generateOutputs(fmuConfig.inputVariables, fmuConfig.outputVariables));
 			}
@@ -57,21 +55,20 @@ public class ModelDescriptionExporter {
 	}
 
 	private String generateVariables(List<VariableDefinition> inputVariables, List<VariableDefinition> outputVariables,
-			Optional<FMUOutputConfig> outputSignalConfig) {
+			Map<String, Object> initialValues) {
 
 		StringBuilder sb = new StringBuilder();
 		for (VariableDefinition variableDefinition : inputVariables) {
-			sb.append(generateVariable(variableDefinition, new HashMap<>(), false));
+			sb.append(generateVariable(variableDefinition, initialValues, false));
 		}
 		for (VariableDefinition variableDefinition : outputVariables) {
-			Map<String, Object> inits = outputSignalConfig.map(c -> c.initialValues).orElse(new HashMap<>());
-			sb.append(generateVariable(variableDefinition, inits, true));
+			sb.append(generateVariable(variableDefinition, initialValues, true));
 		}
 		return sb.toString();
 
 	}
 
-	private int variableIndex = 0;
+	private int variableIndex = 1;
 
 	private String generateVariable(VariableDefinition variableDefinition, Map<String, Object> initVal,
 			boolean output) {
@@ -80,20 +77,23 @@ public class ModelDescriptionExporter {
 		sb.append(variableDefinition.name);
 		sb.append("\"  valueReference=\"");
 		sb.append(variableIndex++);
-		sb.append("\" variability=\"discrete\" causality=\"");
-		sb.append(output ? "output" : "input");
-		sb.append("\" initial=\"exact\">");
-		if (initVal.containsKey(variableDefinition.name)) {
-			sb.append("<");
-			sb.append(variableDefinition.type + " ");
-			sb.append("start=\"" + initVal.get(variableDefinition.name) + "\" />");
+		sb.append("\" variability=\"discrete\" causality=");
+		sb.append(output ? "\"output\"" : "\"input\"");
+		if (output) {
+			sb.append(" initial=\"approx\"");
 		}
+		sb.append("><");
+		sb.append(variableDefinition.type.getName() + " ");
+		if (initVal.containsKey(variableDefinition.name)) {
+			sb.append("start=\"" + initVal.get(variableDefinition.name) + "\"");
+		}
+		sb.append(" />");
 		sb.append("</ScalarVariable>\n");
 		return sb.toString();
 	}
 
 	private String generateOutputs(List<VariableDefinition> inputVariables, List<VariableDefinition> outputVariables) {
-		int outputVarInd = inputVariables.size();
+		int outputVarInd = inputVariables.size() + 1;
 		StringBuilder sb = new StringBuilder();
 		for (VariableDefinition variableDefinition : outputVariables) {
 			sb.append(generateOutput(outputVarInd++, variableDefinition, inputVariables.size()));
@@ -107,17 +107,10 @@ public class ModelDescriptionExporter {
 		sb.append(index);
 		sb.append("\"  dependencies=\"");
 		if (numInputs > 0) {
-			sb.append(0);
+			sb.append(1);
 		}
 		for (int i = 1; i < numInputs; i++) {
-			sb.append(" " + i);
-		}
-		sb.append("\" dependenciesKind=\"");
-		if (numInputs > 0) {
-			sb.append("dependent");
-		}
-		for (int i = 1; i < numInputs; i++) {
-			sb.append(" dependent");
+			sb.append(" " + (i + 1));
 		}
 		sb.append("\" />\n");
 		return sb.toString();

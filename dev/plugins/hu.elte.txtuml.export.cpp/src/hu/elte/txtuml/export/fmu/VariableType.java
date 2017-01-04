@@ -1,8 +1,19 @@
 package hu.elte.txtuml.export.fmu;
 
 public enum VariableType {
+	
+	BOOLEAN("Boolean"), INTEGER("Integer"), STRING("String"), REAL("Real");
+	
+	private String name;
 
-	BOOLEAN, INTEGER, STRING, REAL;
+	private VariableType(String name) {
+		this.name = name;
+		
+	};
+	
+	public String getName() {
+		return name;
+	}
 
 	public static VariableType fromJavaType(String typeSignature) {
 		switch (typeSignature) {

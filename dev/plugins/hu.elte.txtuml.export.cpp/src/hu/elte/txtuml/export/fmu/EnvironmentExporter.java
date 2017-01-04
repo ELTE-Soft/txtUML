@@ -35,7 +35,7 @@ public class EnvironmentExporter {
 			if (matcher.group().equals("$fmuclass")) {
 				matcher.appendReplacement(sb, unqualify(fmuConfig.umlClassName));
 			} else if (matcher.group().equals("$controlevent")) {
-				matcher.appendReplacement(sb, unqualify(fmuConfig.outputSignalConfig.get().outputSignalName));
+				matcher.appendReplacement(sb, unqualify(fmuConfig.outputSignalConfig.get()));
 			} else if (matcher.group().equals("$cyclesignal")) {
 				matcher.appendReplacement(sb, unqualify(fmuConfig.inputSignalConfig.get()));
 			} else if (matcher.group().equals("$valueattributes")) {
