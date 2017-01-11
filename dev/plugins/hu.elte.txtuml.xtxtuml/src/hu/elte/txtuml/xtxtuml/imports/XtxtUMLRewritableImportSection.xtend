@@ -1,4 +1,4 @@
-package hu.elte.txtuml.xtxtuml.imports
+package hu.elte.txtuml.xtxtuml.imports;
 
 import com.google.inject.Inject
 import org.eclipse.xtext.conversion.IValueConverter

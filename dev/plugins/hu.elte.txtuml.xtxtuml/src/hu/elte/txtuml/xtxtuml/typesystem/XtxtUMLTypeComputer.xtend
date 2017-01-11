@@ -1,18 +1,18 @@
-package hu.elte.txtuml.xtxtuml.typesystem
+package hu.elte.txtuml.xtxtuml.typesystem;
 
 import com.google.inject.Inject
 import hu.elte.txtuml.api.model.Collection
 import hu.elte.txtuml.api.model.ModelClass
 import hu.elte.txtuml.api.model.ModelClass.Port
 import hu.elte.txtuml.api.model.Signal
-import hu.elte.txtuml.xtxtuml.xtxtUML.RAlfDeleteObjectExpression
-import hu.elte.txtuml.xtxtuml.xtxtUML.RAlfSendSignalExpression
-import hu.elte.txtuml.xtxtuml.xtxtUML.RAlfSignalAccessExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAssociationEnd
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUClass
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUClassPropertyAccessExpression
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUDeleteObjectExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUEntryOrExitActivity
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUPort
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUSendSignalExpression
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUSignalAccessExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUState
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUStateType
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUTransition
@@ -42,8 +42,9 @@ class XtxtUMLTypeComputer extends XbaseWithAnnotationsTypeComputer {
 	@Inject extension IQualifiedNameProvider;
 
 	def dispatch void computeTypes(TUClassPropertyAccessExpression accessExpr, ITypeComputationState state) {
-		// expectations for childs are enabled by default,
-		// see val foo = if (bar) foobar else baz
+		// Subexpressions have to be typed in a child computation state.
+		// Expectations for children are enabled by default,
+		// see val foo = if (bar) foobar else baz.
 		val childState = state.withoutRootExpectation;
 
 		// left child
@@ -71,6 +72,11 @@ class XtxtUMLTypeComputer extends XbaseWithAnnotationsTypeComputer {
 		}
 	}
 
+	/**
+	 * Tries to acquire the associated JVM element of the given source element, considering
+	 * the resource set of the given {@link ITypeComputationState}. An instance of
+	 * <code>fallbackType</code> is returned if no such element has been found.
+	 */
 	def private nullSafeJvmElementTypeRef(ITypeComputationState state, EObject sourceElement, Class<?> fallbackType) {
 		val inferredType = sourceElement.getPrimaryJvmElement as JvmType;
 		return if (inferredType != null) {
@@ -104,7 +110,7 @@ class XtxtUMLTypeComputer extends XbaseWithAnnotationsTypeComputer {
 		return null;
 	}
 
-	def dispatch computeTypes(RAlfSignalAccessExpression sigExpr, ITypeComputationState state) {
+	def dispatch computeTypes(TUSignalAccessExpression sigExpr, ITypeComputationState state) {
 		var container = sigExpr.eContainer;
 		while (container != null && !(container instanceof TUEntryOrExitActivity) &&
 			!(container instanceof TUTransition)) {
@@ -133,9 +139,13 @@ class XtxtUMLTypeComputer extends XbaseWithAnnotationsTypeComputer {
 		state.acceptActualType(type);
 	}
 
+	/**
+	 * Computes the common signal supertype accessible
+	 * from the effect of the given transition.
+	 */
 	def private LightweightTypeReference getCommonSignalSuperType(
 		TUTransition trans,
-		ITypeComputationState cState,
+		ITypeComputationState computationState,
 		HashSet<TUState> visitedStates
 	) {
 		var trigger = (trans.members.findFirst [
@@ -143,7 +153,7 @@ class XtxtUMLTypeComputer extends XbaseWithAnnotationsTypeComputer {
 		] as TUTransitionTrigger)?.trigger;
 
 		if (trigger != null) {
-			return cState.nullSafeJvmElementTypeRef(trigger, Signal);
+			return computationState.nullSafeJvmElementTypeRef(trigger, Signal);
 		}
 
 		var from = (trans.members.findFirst [
@@ -151,20 +161,24 @@ class XtxtUMLTypeComputer extends XbaseWithAnnotationsTypeComputer {
 		] as TUTransitionVertex)?.vertex;
 
 		if (from != null && from.type == TUStateType.CHOICE) {
-			return getCommonSignalSuperType(from, cState, true, visitedStates);
+			return getCommonSignalSuperType(from, computationState, true, visitedStates);
 		}
 
-		return getTypeForName(Signal, cState);
+		return getTypeForName(Signal, computationState);
 	}
 
+	/**
+	 * Computes the common signal supertype accessible from the entry or exit activity of the given state.
+	 * @param toState indicates whether the entry activity should be considered instead of the exit one
+	 */
 	def private LightweightTypeReference getCommonSignalSuperType(
 		TUState state,
-		ITypeComputationState cState,
+		ITypeComputationState computationState,
 		boolean toState,
 		HashSet<TUState> visitedStates
 	) {
 		if (!visitedStates.add(state)) {
-			return getTypeForName(Signal, cState);
+			return getTypeForName(Signal, computationState);
 		}
 
 		val siblingsAndSelf = switch (c : state.eContainer) {
@@ -180,7 +194,7 @@ class XtxtUMLTypeComputer extends XbaseWithAnnotationsTypeComputer {
 				signalCandidates.add(
 					getCommonSignalSuperType(
 						siblingOrSelf as TUTransition,
-						cState,
+						computationState,
 						visitedStates
 					)
 				);
@@ -188,23 +202,30 @@ class XtxtUMLTypeComputer extends XbaseWithAnnotationsTypeComputer {
 		}
 
 		return if (!signalCandidates.empty) {
-			getCommonSuperType(signalCandidates, cState)
+			getCommonSuperType(signalCandidates, computationState)
 		} else {
-			getTypeForName(Signal, cState)
+			getTypeForName(Signal, computationState)
 		}
 	}
 
-	def dispatch computeTypes(RAlfDeleteObjectExpression deleteExpr, ITypeComputationState state) {
-		state.computeTypes(deleteExpr.object);
+	def dispatch computeTypes(TUDeleteObjectExpression deleteExpr, ITypeComputationState state) {
 		state.acceptActualType(state.getPrimitiveVoid);
+		state.withoutRootExpectation.computeTypes(deleteExpr.object);
 	}
 
-	def dispatch computeTypes(RAlfSendSignalExpression sendExpr, ITypeComputationState state) {
-		state.computeTypes(sendExpr.signal);
-		state.computeTypes(sendExpr.target);
+	def dispatch computeTypes(TUSendSignalExpression sendExpr, ITypeComputationState state) {
 		state.acceptActualType(state.getPrimitiveVoid);
+		val childState = state.withoutRootExpectation;
+
+		childState.computeTypes(sendExpr.signal);
+		childState.computeTypes(sendExpr.target);
 	}
 
+	/**
+	 * Overrides the default implementation such that it doesn't delegate child
+	 * expression types to their enclosing block expression. Instead, the type
+	 * of the given block will be accepted as <code>void</code>.
+	 */
 	override dispatch computeTypes(XBlockExpression block, ITypeComputationState state) {
 		val children = block.expressions;
 		if (!children.isEmpty) {

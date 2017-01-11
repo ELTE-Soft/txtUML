@@ -15,6 +15,9 @@ class XtxtUMLProposalProvider extends AbstractXtxtUMLProposalProvider {
 
 	static val allowedPrimitives = #["boolean", "double", "int"]
 
+	/**
+	 * Adds only primitive type proposals.
+	 */
 	override completeJvmParameterizedTypeReference_Type(EObject model, Assignment assignment,
 		ContentAssistContext context, ICompletionProposalAcceptor acceptor) {
 		allowedPrimitives.forEach [
@@ -32,6 +35,10 @@ class XtxtUMLProposalProvider extends AbstractXtxtUMLProposalProvider {
 		// do nothing, the reference proposal creator will handle the case
 	}
 
+	/**
+	 * Changes the style of the content assist type proposals
+	 * to match the corresponding defaults of Eclipse.
+	 */
 	override protected StyledString getStyledDisplayString(EObject element, String qualifiedName,
 		String shortName) {
 		val plainDisplayStringSegments = getDisplayString(element, qualifiedName, shortName).replace("$", ".").

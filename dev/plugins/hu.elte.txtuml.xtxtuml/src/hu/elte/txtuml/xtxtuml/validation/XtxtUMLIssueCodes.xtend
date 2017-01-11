@@ -36,6 +36,7 @@ class XtxtUMLIssueCodes {
 	public static val INVALID_SIGNAL_ACCESS = ISSUE_CODE_PREFIX + "invalid_signal_access";
 	public static val NOT_REQUIRED_SIGNAL = ISSUE_CODE_PREFIX + "not_required_signal";
 	public static val QUERIED_PORT_IS_NOT_OWNED = ISSUE_CODE_PREFIX + "queried_port_is_not_owned";
+	public static val MISSING_CLASS_PROPERTY = ISSUE_CODE_PREFIX + "missing_class_property";
 	public static val NOT_ACCESSIBLE_PORT = ISSUE_CODE_PREFIX + "not_accessible_port";
 	public static val NOT_ACCESSIBLE_ASSOCIATION_END = ISSUE_CODE_PREFIX + "not_accessible_association_end";
 	public static val NOT_NAVIGABLE_ASSOCIATION_END = ISSUE_CODE_PREFIX + "not_navigable_association_end";

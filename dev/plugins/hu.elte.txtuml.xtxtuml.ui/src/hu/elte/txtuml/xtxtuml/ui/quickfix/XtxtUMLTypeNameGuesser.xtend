@@ -1,4 +1,4 @@
-package hu.elte.txtuml.xtxtuml.ui.quickfix
+package hu.elte.txtuml.xtxtuml.ui.quickfix;
 
 import org.eclipse.emf.ecore.EObject
 import org.eclipse.xtext.util.Tuples
