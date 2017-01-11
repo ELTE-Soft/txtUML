@@ -40,6 +40,10 @@ public class ModelClassVisitor extends VisitorBase {
 
 	@Override
 	public boolean visit(FieldDeclaration elem) {
+		if (ElementTypeTeller.isExternal(elem)) {
+			return false;
+		}
+
 		if (!Utils.isAllowedAttributeType(elem.getType(), false)) {
 			collector.report(new InvalidTypeWithClassNotAllowed(collector.getSourceInfo(), elem.getType()));
 		} else {
@@ -50,6 +54,10 @@ public class ModelClassVisitor extends VisitorBase {
 
 	@Override
 	public boolean visit(MethodDeclaration elem) {
+		if (ElementTypeTeller.isExternal(elem)) {
+			return false;
+		}
+
 		if (!elem.isConstructor()) {
 			if (elem.getReturnType2() != null && !Utils.isAllowedParameterType(elem.getReturnType2(), true)) {
 				collector.report(new InvalidTypeWithClassAllowed(collector.getSourceInfo(), elem.getReturnType2()));
@@ -63,6 +71,11 @@ public class ModelClassVisitor extends VisitorBase {
 				collector.report(new InvalidTypeWithClassAllowed(collector.getSourceInfo(), param.getType()));
 			}
 		}
+
+		if (ElementTypeTeller.hasExternalBody(elem)) {
+			return false;
+		}
+
 		// TODO: check body
 		return false;
 	}

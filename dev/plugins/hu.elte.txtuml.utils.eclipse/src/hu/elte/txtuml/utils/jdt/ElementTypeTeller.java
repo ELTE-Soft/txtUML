@@ -9,6 +9,7 @@ import org.eclipse.jdt.core.IPackageDeclaration;
 import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.IPackageFragmentRoot;
 import org.eclipse.jdt.core.JavaModelException;
+import org.eclipse.jdt.core.dom.BodyDeclaration;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.EnumDeclaration;
 import org.eclipse.jdt.core.dom.Expression;
@@ -32,6 +33,8 @@ import hu.elte.txtuml.api.model.ConnectorBase;
 import hu.elte.txtuml.api.model.ConnectorBase.ConnectorEnd;
 import hu.elte.txtuml.api.model.DataType;
 import hu.elte.txtuml.api.model.Delegation;
+import hu.elte.txtuml.api.model.External;
+import hu.elte.txtuml.api.model.ExternalBody;
 import hu.elte.txtuml.api.model.Interface;
 import hu.elte.txtuml.api.model.Model;
 import hu.elte.txtuml.api.model.ModelClass;
@@ -47,8 +50,6 @@ import hu.elte.txtuml.api.model.StateMachine.State;
 import hu.elte.txtuml.api.model.StateMachine.Transition;
 import hu.elte.txtuml.api.model.StateMachine.Vertex;
 import hu.elte.txtuml.api.model.assocends.ContainmentKind;
-import hu.elte.txtuml.api.model.external.ExternalClass;
-import hu.elte.txtuml.api.model.external.ExternalType;
 
 /**
  * This class provides utilities for telling the types of txtUML model elements.
@@ -251,7 +252,6 @@ public final class ElementTypeTeller {
 				.anyMatch(d -> isContainer((TypeDeclaration) d));
 	}
 
-
 	public static boolean isContained(ITypeBinding value) {
 		ITypeBinding parent = (ITypeBinding) value.getDeclaringClass();
 		return Stream.of(parent.getDeclaredTypes()).filter(d -> d != value)
@@ -319,20 +319,12 @@ public final class ElementTypeTeller {
 		return false;
 	}
 
-	public static boolean isExternalClass(TypeDeclaration typeDeclaration) {
-		return SharedUtils.typeIsAssignableFrom(typeDeclaration, ExternalClass.class);
-	}
-
 	public static boolean isModelEnum(EnumDeclaration enumDeclaration) {
 		return SharedUtils.typeIsAssignableFrom(enumDeclaration, ModelEnum.class);
 	}
 
 	public static boolean isModelEnum(ITypeBinding binding) {
 		return binding.isEnum() && SharedUtils.typeIsAssignableFrom(binding, ModelEnum.class);
-	}
-
-	public static boolean isExternalInterface(ITypeBinding type) {
-		return type.isInterface() && hasSuperInterface(type, ExternalType.class.getCanonicalName());
 	}
 
 	public static boolean isEffect(MethodDeclaration method) {
@@ -350,6 +342,18 @@ public final class ElementTypeTeller {
 			}
 		}
 		return false;
+	}
+
+	public static boolean isExternal(ITypeBinding typeBinding) {
+		return SharedUtils.obtainAnnotation(typeBinding, External.class) != null;
+	}
+	
+	public static boolean isExternal(BodyDeclaration declaration) {
+		return SharedUtils.obtainAnnotation(declaration, External.class) != null;
+	}
+
+	public static boolean hasExternalBody(MethodDeclaration declaration) {
+		return SharedUtils.obtainAnnotation(declaration, ExternalBody.class) != null;
 	}
 
 	public static boolean hasSuperInterface(ITypeBinding type, String superInterfaceName) {
