@@ -13,6 +13,11 @@ import org.eclipse.xtext.xbase.typesystem.references.ITypeReferenceOwner
 
 class XtxtUMLReentrantTypeResolver extends LogicalContainerAwareReentrantTypeResolver {
 
+	/**
+	 * Overrides the default implementation to change references to <code>this</code>
+	 * and <code>super</code> such that they refer to the enclosing XtxtUML <i>class</i>
+	 * instance and its super, respectively.
+	 */
 	override protected IFeatureScopeSession addThisAndSuper(IFeatureScopeSession session, ITypeReferenceOwner owner,
 		JvmDeclaredType thisType, /* @Nullable */ JvmTypeReference superType, boolean addNestedTypes) {
 		var childSession = session;
@@ -62,6 +67,9 @@ class XtxtUMLReentrantTypeResolver extends LogicalContainerAwareReentrantTypeRes
 		return childSession;
 	}
 
+	/**
+	 * Provides an {@link XtxtUMLRootResolvedTypes}.
+	 */
 	override protected createResolvedTypes(CancelIndicator monitor) {
 		return new XtxtUMLRootResolvedTypes(this, monitor);
 	}
