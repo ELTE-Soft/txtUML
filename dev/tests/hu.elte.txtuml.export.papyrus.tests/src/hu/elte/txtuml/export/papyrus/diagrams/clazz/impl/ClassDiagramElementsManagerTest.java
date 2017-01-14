@@ -1,5 +1,6 @@
 package hu.elte.txtuml.export.papyrus.diagrams.clazz.impl;
 
+import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyListOf;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
@@ -57,7 +58,7 @@ public class ClassDiagramElementsManagerTest {
 
 		// then
 		try {
-			verify(arranger).arrange(monitor);
+			verify(arranger).arrange(any(IProgressMonitor.class));
 		} catch (ArrangeException e) {
 			// unreachable
 		}

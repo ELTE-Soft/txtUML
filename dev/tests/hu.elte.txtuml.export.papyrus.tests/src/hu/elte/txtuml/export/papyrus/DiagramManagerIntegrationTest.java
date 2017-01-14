@@ -14,9 +14,7 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
-import org.eclipse.gmf.runtime.diagram.ui.editparts.DiagramEditPart;
 import org.eclipse.gmf.runtime.notation.Diagram;
-import org.eclipse.gmf.runtime.notation.View;
 import org.eclipse.papyrus.infra.core.editor.IMultiDiagramEditor;
 import org.eclipse.papyrus.infra.core.resource.ModelSet;
 import org.eclipse.papyrus.infra.core.services.ServiceException;
@@ -41,9 +39,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import hu.elte.txtuml.export.papyrus.DiagramManager;
-import hu.elte.txtuml.export.papyrus.PapyrusModelCreator;
-import hu.elte.txtuml.export.papyrus.UMLModelManager;
 import hu.elte.txtuml.utils.eclipse.ProjectUtils;
 
 /**

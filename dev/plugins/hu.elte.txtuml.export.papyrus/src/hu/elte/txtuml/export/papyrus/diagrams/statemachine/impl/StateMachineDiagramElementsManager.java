@@ -56,14 +56,13 @@ public class StateMachineDiagramElementsManager extends AbstractDiagramElementsM
 	public void addElementsToDiagram() {
 		Collection<Region> regions = this.elementsProvider.getMainRegions();
 		addSubelementsRecursively(regions);
-		addPaddingToStateMachine();
+		addPaddingToStateMachine(regions);
 	}
 
-	private void addPaddingToStateMachine() {
+	private void addPaddingToStateMachine(Collection<Region> mainRegions) {
 		StateMachine sm = this.elementsProvider.getMainElement();
 		this.notationManager.changeBoundsOfElement(sm, this.arranger.getBoundsForElement(sm), this.monitor);
-		Collection<Region> regions = this.elementsProvider.getMainRegions();
-		regions.forEach(region -> {
+		mainRegions.forEach(region -> {
 			this.elementsProvider.getElementsOfRegion(region).forEach(element -> {
 
 				Rectangle boundsForElement = this.notationManager.getBoundsOfElement(element, this.monitor);

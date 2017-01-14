@@ -16,7 +16,7 @@ public class LayoutTransformerTest {
 
 	@Test
 	public void testAllObjectAreInPartI() {
-		LayoutTransformer layoutTransformer = new LayoutTransformer(1,1);
+		LayoutTransformer layoutTransformer = new LayoutTransformer();
 		
 		Map<String, Rectangle> objects = new HashMap<String, Rectangle>();
 		Map<String, List<Point>> connections = new HashMap<String, List<Point>>();
@@ -40,7 +40,7 @@ public class LayoutTransformerTest {
 
 	@Test
 	public void testAllObjectAreInPartII() {
-		LayoutTransformer layoutTransformer = new LayoutTransformer(1,1);
+		LayoutTransformer layoutTransformer = new LayoutTransformer();
 		
 		Map<String, Rectangle> objects = new HashMap<String, Rectangle>();
 		Map<String, List<Point>> connections = new HashMap<String, List<Point>>();
@@ -64,7 +64,7 @@ public class LayoutTransformerTest {
 
 	@Test
 	public void testAllObjectAreInPartIII() {
-		LayoutTransformer layoutTransformer = new LayoutTransformer(1,1);
+		LayoutTransformer layoutTransformer = new LayoutTransformer();
 		
 		Map<String, Rectangle> objects = new HashMap<String, Rectangle>();
 		Map<String, List<Point>> connections = new HashMap<String, List<Point>>();
@@ -88,7 +88,7 @@ public class LayoutTransformerTest {
 	
 	@Test
 	public void testAllObjectAreInPartIV() {
-		LayoutTransformer layoutTransformer = new LayoutTransformer(1,1);
+		LayoutTransformer layoutTransformer = new LayoutTransformer();
 		
 		Map<String, Rectangle> objects = new HashMap<String, Rectangle>();
 		Map<String, List<Point>> connections = new HashMap<String, List<Point>>();
@@ -113,7 +113,7 @@ public class LayoutTransformerTest {
 
 	@Test
 	public void testObjectsInAllParts() {
-		LayoutTransformer layoutTransformer = new LayoutTransformer(1,1);
+		LayoutTransformer layoutTransformer = new LayoutTransformer();
 		
 		Map<String, Rectangle> objects = new HashMap<String, Rectangle>();
 		Map<String, List<Point>> connections = new HashMap<String, List<Point>>();
@@ -161,39 +161,8 @@ public class LayoutTransformerTest {
 	}
 	
 	@Test
-	public void testScale(){
-		LayoutTransformer layoutTransformer = new LayoutTransformer(50,50);
-
-		Map<String, Rectangle> objects = new HashMap<String, Rectangle>();
-		Map<String, List<Point>> connections = new HashMap<String, List<Point>>();
-		
-		objects.put("A", new Rectangle(1,3,2,2));
-		objects.put("B", new Rectangle(-3,-1,2,2));
-		connections.put("A_B", Arrays.asList(new Point(1,2), new Point(-2,2), new Point(-2, -1)));
-		
-		layoutTransformer.doTranformations(objects, connections);
-		
-		Assert.assertEquals(200, objects.get("A").x());
-		Assert.assertEquals(0, objects.get("A").y());
-		Assert.assertEquals(2, objects.get("A").width());
-		Assert.assertEquals(2, objects.get("A").height());
-		
-		Assert.assertEquals(0, objects.get("B").x());
-		Assert.assertEquals(200, objects.get("B").y());
-		Assert.assertEquals(2, objects.get("B").width());
-		Assert.assertEquals(2, objects.get("B").height());
-		
-		Assert.assertEquals(200,  connections.get("A_B").get(0).x());
-		Assert.assertEquals(50, connections.get("A_B").get(0).y());
-		Assert.assertEquals(50, connections.get("A_B").get(1).x());
-		Assert.assertEquals(50, connections.get("A_B").get(1).y());
-		Assert.assertEquals(50,  connections.get("A_B").get(2).x());
-		Assert.assertEquals(200, connections.get("A_B").get(2).y());
-	}
-	
-	@Test
 	public void testLinksAreOnEdges(){
-		LayoutTransformer layoutTransformer = new LayoutTransformer(1,1);
+		LayoutTransformer layoutTransformer = new LayoutTransformer();
 
 		Map<String, Rectangle> objects = new HashMap<String, Rectangle>();
 		Map<String, List<Point>> connections = new HashMap<String, List<Point>>();

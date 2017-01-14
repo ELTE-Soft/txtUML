@@ -13,7 +13,7 @@ public class StateMachineDiagramElementsArranger extends AbstractDiagramElements
 			StateMachineDiagramElementsMapper mapper) {
 		this.report = report;
 		this.elementsMapper = mapper;
-		this.pixelDimensionProvider = new StateMachineDiagramPixelDimensionProvider(mapper);
+		this.pixelDimensionProvider = new StateMachineDiagramPixelDimensionProvider();
 	}
 
 	@Override

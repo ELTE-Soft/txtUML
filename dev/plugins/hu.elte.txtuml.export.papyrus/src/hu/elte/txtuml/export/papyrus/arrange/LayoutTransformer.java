@@ -13,20 +13,7 @@ import org.eclipse.draw2d.geometry.Rectangle;
  * The transformer class which transforms the object coordinates to fit the GMF diagram
  */
 public class LayoutTransformer {
-	
-	private int scaleX;
-	private int scaleY;
 
-	
-	/**
-	 * Constructor for {@link LayoutTransformer}
-	 * @param scaleValue - The scaling number. All coordinates will be multiplied by this value
-	 */
-	public LayoutTransformer(int scaleValueHorizontal, int scaleValueVertical ) {
-		this.scaleX = scaleValueHorizontal;
-		this.scaleY = scaleValueVertical;
-	}
-	
 	/**
 	 * Transforms the positions of objects and connections with the given settings (scaling, gap, axisflipping)
 	 * @param objects - Map of objects and the representing Rectangular shapes which position
@@ -36,28 +23,8 @@ public class LayoutTransformer {
 	public void doTranformations(Map<?, Rectangle> objects, Map<?, List<Point>> connections) {
 		flipYAxis(objects, connections);
 		translateOrigo(objects, connections);
-		//scaleUpObjects(objects, connections);
 	}
-	
-	
-	/**
-	 * Scales the objects according to the scales and gaps
-	 * @param objects - The object that are to be scaled 
-	 * @param connections - The connections that are to be scaled
-	 */
-	private void scaleUpObjects(Map<?, Rectangle> objects, Map<?, List<Point>> connections) {
-		for(Rectangle rect : objects.values()){
-			rect.setX(rect.x()*(this.scaleX));
-			rect.setY(rect.y()*(this.scaleY));
-		}
-		
-		for(List<Point> pointlist: connections.values()){
-			for(Point p : pointlist){
-				p.setX(p.x()*this.scaleX);
-				p.setY(p.y()*this.scaleY);
-			}
-		}
-	}
+
 	
 	/**
 	 * Translates the objects to fit the origoConstraint

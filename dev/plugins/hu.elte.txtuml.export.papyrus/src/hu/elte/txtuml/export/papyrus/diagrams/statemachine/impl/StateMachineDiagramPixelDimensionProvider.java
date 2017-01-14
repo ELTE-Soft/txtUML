@@ -1,10 +1,5 @@
 package hu.elte.txtuml.export.papyrus.diagrams.statemachine.impl;
 
-import org.eclipse.uml2.uml.Element;
-import org.eclipse.uml2.uml.Pseudostate;
-import org.eclipse.uml2.uml.State;
-
-import hu.elte.txtuml.export.papyrus.layout.IDiagramElementsMapper;
 import hu.elte.txtuml.layout.visualizer.interfaces.IPixelDimensionProvider;
 import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
 import hu.elte.txtuml.layout.visualizer.model.SpecialBox;
@@ -16,19 +11,8 @@ public class StateMachineDiagramPixelDimensionProvider implements IPixelDimensio
 	public static final int STATE_HEADER_HEIGHT = 25;
 	public static final int DEFAULT_ELEMENT_BORDER = 20;
 
-	private static final int MIN_STATE_WIDTH = 40;
-	private static final int MAX_STATE_WIDTH = 800;
-	private static final int MIN_STATE_HEIGHT = 40;
-	private static final int MAX_STATE_HEIGHT = 800;
-
 	private static final int PSEUDOSTATE_WIDTH = 20;
 	private static final int PSEUDOSTATE_HEIGHT = 20;
-
-	private IDiagramElementsMapper elementsMapper;
-
-	public StateMachineDiagramPixelDimensionProvider(StateMachineDiagramElementsMapper mapper) {
-		this.elementsMapper = mapper;
-	}
 
 	@Override
 	public Dimension getPixelDimensionsFor(RectangleObject box) {
@@ -56,24 +40,6 @@ public class StateMachineDiagramPixelDimensionProvider implements IPixelDimensio
 		}
 
 		//return normalizeSizes(box, width, height, border); // normalizing the size can introduce corrupted pixel/grid ratios
-		return new Dimension(width, height, border, header);
-	}
-
-	private Dimension normalizeSizes(RectangleObject box, int width, int height, 
-			int border, int header) {
-
-		Element elem = this.elementsMapper.findNode(box.getName());
-		if (elem != null && elem instanceof State) {
-			width = width < MIN_STATE_WIDTH ? MIN_STATE_WIDTH : width;
-			width = width > MAX_STATE_WIDTH ? MAX_STATE_WIDTH : width;
-
-			height = height < MIN_STATE_HEIGHT ? MIN_STATE_HEIGHT : height;
-			height = height > MAX_STATE_HEIGHT ? MAX_STATE_HEIGHT : height;
-		} else if (elem != null && elem instanceof Pseudostate) {
-			width = PSEUDOSTATE_WIDTH;
-			height = PSEUDOSTATE_HEIGHT;
-		}
-		
 		return new Dimension(width, height, border, header);
 	}
 }

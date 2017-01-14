@@ -51,8 +51,7 @@ public abstract class AbstractDiagramElementsArranger implements IDiagramElement
 		Set<LineAssociation> allLinks = flattenAllLinks(arrangedLinks, arrangedObjects);
 		this.connectionRoutes = createConnectionMapping(allLinks);
 	
-		LayoutTransformer transformer = new LayoutTransformer(vm.getPixelGridRatioHorizontal(),
-				vm.getPixelGridRatioVertical());
+		LayoutTransformer transformer = new LayoutTransformer();
 	
 		transformer.doTranformations(this.elementbounds, this.connectionRoutes);
 	

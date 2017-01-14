@@ -110,6 +110,7 @@ public class LayoutVisualizerManager {
 
 				int previous_percent = 0;
 
+				@SuppressWarnings("deprecation")
 				@Override
 				public void update(Observable o, Object arg) {
 					if (progressMonitor.isCanceled()) {

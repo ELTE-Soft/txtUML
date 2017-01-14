@@ -64,6 +64,7 @@ public class StateMachineDiagramElementsManagerTest {
 		verify(provider).getMainRegions();
 		verify(provider).getInitialStatesForRegion(mainRegion);
 		verify(provider).getStatesForRegion(mainRegion);
+		verify(provider).getMainElement();
 	}
 
 	@Test
