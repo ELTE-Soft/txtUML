@@ -63,10 +63,17 @@ class XtxtUMLReferenceProposalCreator extends XbaseReferenceProposalCreator {
 	@Inject XtxtUMLReferenceProposalScopeProvider scopeProvider;
 	@Inject CommonTypeComputationServices services;
 
+	/**
+	 * Provides a scope provider with a customized JDT based superscope.
+	 * @see hu.elte.txtuml.xtxtuml.common.XtxtUMLReferenceProposalTypeScope
+	 */
 	override getScopeProvider() {
 		return scopeProvider;
 	}
 
+	/**
+	 * Replaces the dollar mark with a dot in content assist proposals.
+	 */
 	override protected getWrappedFactory(EObject model, EReference reference,
 		Function<IEObjectDescription, ICompletionProposal> proposalFactory) {
 		[
@@ -79,6 +86,9 @@ class XtxtUMLReferenceProposalCreator extends XbaseReferenceProposalCreator {
 		]
 	}
 
+	/**
+	 * Extends the default implementation with proposals for XtxtUML cross references.
+	 */
 	override queryScope(IScope scope, EObject model, EReference ref, Predicate<IEObjectDescription> filter) {
 		switch (ref) {
 			case XtxtUMLPackage::eINSTANCE.TUConnectorEnd_Role:
