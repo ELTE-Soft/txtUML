@@ -88,9 +88,9 @@ public class RectangleObject {
 	public Set<Point> getPoints() {
 		Set<Point> result = new HashSet<Point>();
 
-		for (int i = 0; i < _width; ++i) {
+		for (int i = 0; i < this.getWidth(); ++i) {
 			Point temp = Point.Add(_position, Point.Multiply(Direction.east, i));
-			for (int j = 0; j < _height; ++j) {
+			for (int j = 0; j < this.getHeight(); ++j) {
 				result.add(Point.Add(temp, Point.Multiply(Direction.south, j)));
 			}
 		}
@@ -110,12 +110,12 @@ public class RectangleObject {
 		Point tl = getTopLeft();
 		Point br = getBottomRight();
 
-		for (int i = 0; i < _width; ++i) {
+		for (int i = 0; i < this.getWidth(); ++i) {
 			result.add(Point.Add(tl, Point.Multiply(Direction.east, i)));
 			result.add(Point.Add(br, Point.Multiply(Direction.west, i)));
 		}
 
-		for (int i = 0; i < _height; ++i) {
+		for (int i = 0; i < this.getHeight(); ++i) {
 			result.add(Point.Add(tl, Point.Multiply(Direction.south, i)));
 			result.add(Point.Add(br, Point.Multiply(Direction.north, i)));
 		}
@@ -131,16 +131,16 @@ public class RectangleObject {
 	public Set<Point> getCenterPoints() {
 		Set<Point> result = new HashSet<Point>();
 
-		int horizontalHalf = _width / 2;
-		int verticalHalf = _height / 2;
+		int horizontalHalf = getWidth() / 2;
+		int verticalHalf = getWidth() / 2;
 
 		result.add(Point.Add(getBottomRight(), Point.Multiply(Direction.west, horizontalHalf)));
 		result.add(Point.Add(getBottomRight(), Point.Multiply(Direction.north, verticalHalf)));
 
-		if (_width % 2 == 0)
+		if (getWidth() % 2 == 0)
 			horizontalHalf = horizontalHalf - 1;
 		result.add(Point.Add(getTopLeft(), Point.Multiply(Direction.east, horizontalHalf)));
-		if (_height % 2 == 0)
+		if (getWidth() % 2 == 0)
 			verticalHalf = verticalHalf - 1;
 		result.add(Point.Add(getTopLeft(), Point.Multiply(Direction.south, verticalHalf)));
 
@@ -162,7 +162,7 @@ public class RectangleObject {
 	 * @return Point of the bottom right corner.
 	 */
 	public Point getBottomRight() {
-		return new Point(_position.getX() + (_width - 1), _position.getY() - (_height - 1));
+		return new Point(_position.getX() + (getWidth() - 1), _position.getY() - (getHeight() - 1));
 	}
 
 	/***

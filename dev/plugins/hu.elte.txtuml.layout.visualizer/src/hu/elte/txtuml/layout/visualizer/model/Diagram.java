@@ -35,6 +35,16 @@ public class Diagram {
 	private int pxBottomBorder;
 	
 	private int pxHeader;
+	
+	private int _previousHash;
+	
+	private double _pixelGridRatioHorizontal;
+	
+	private double _pixelGridRatioVertical;
+	
+	private Integer _Width;
+	
+	private Integer _Height;
 	// end Variables
 
 	// Ctors
@@ -107,7 +117,10 @@ public class Diagram {
 	 * @return the Horizontal pixel-grid ratio.
 	 */
 	public Double getPixelGridHorizontal() {
-		return getPixelGridRatio(box -> box.getWidth(), box -> box.getPixelWidth());
+		if(hashCode() != _previousHash){
+			updateTemps();
+		}
+		return _pixelGridRatioHorizontal;
 	}
 
 	/**
@@ -116,7 +129,10 @@ public class Diagram {
 	 * @return the Vertical pixel-grid ratio.
 	 */
 	public Double getPixelGridVertical() {
-		return getPixelGridRatio(box -> box.getHeight(), box -> box.getPixelHeight());
+		if(hashCode() != _previousHash){
+			updateTemps();
+		}
+		return _pixelGridRatioVertical;
 	}
 
 	/**
@@ -160,7 +176,10 @@ public class Diagram {
 	 * @throws InternalException 
 	 */
 	public Integer getWidth() {
-		return Math.abs((getDimensions().get_right() - getDimensions().get_left()) + 1);
+		if(hashCode() != _previousHash){
+			updateTemps();
+		}
+		return _Width;
 	}
 
 	/**
@@ -171,7 +190,10 @@ public class Diagram {
 	 * @throws InternalException 
 	 */
 	public Integer getHeight() {
-		return Math.abs((getDimensions().get_top() - getDimensions().get_bottom()) + 1);
+		if(hashCode() != _previousHash){
+			updateTemps();
+		}
+		return _Height;
 	}
 
 	/**
@@ -281,6 +303,24 @@ public class Diagram {
 
 	// Privates
 
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((Assocs == null) ? 0 : Assocs.hashCode());
+		result = prime * result + ((Objects == null) ? 0 : Objects.hashCode());
+		result = prime * result + ((Type == null) ? 0 : Type.hashCode());
+		result = prime * result + pxBottomBorder;
+		result = prime * result + pxHeader;
+		result = prime * result + pxLeftBorder;
+		result = prime * result + pxRightBorder;
+		result = prime * result + pxTopBorder;
+		return result;
+	}
+
 	private double getPixelGridRatio(Function<RectangleObject, Integer> gridSelector,
 			Function<RectangleObject, Integer> pixelSelector) {
 		Integer gridSum = 0;
@@ -334,5 +374,13 @@ public class Diagram {
 		return new Boundary(top, bottom, left, right);
 	}
 	
+
+	private void updateTemps() {
+		_pixelGridRatioHorizontal = getPixelGridRatio(box -> box.getWidth(), box -> box.getPixelWidth());
+		_pixelGridRatioVertical = getPixelGridRatio(box -> box.getHeight(), box -> box.getPixelHeight());
+		_Width = Math.abs((getDimensions().get_right() - getDimensions().get_left()) + 1);
+		_Height = Math.abs((getDimensions().get_top() - getDimensions().get_bottom()) + 1);
+		_previousHash = hashCode();
+	}
 	// end Privates
 }
