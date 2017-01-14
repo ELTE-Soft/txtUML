@@ -73,38 +73,42 @@ public class TxtUMLVisuzalizeWizard extends Wizard {
 		PreferencesManager.setValue(PreferencesManager.TXTUML_VISUALIZE_TXTUML_MODEL, txtUMLModelName);
 		PreferencesManager.setValue(PreferencesManager.TXTUML_VISUALIZE_TXTUML_LAYOUT, txtUMLLayout.keySet());
 
-		try {
-			this.checkEmptyLayoutDescriptions();
-			Job job = new Job("Diagram Visualization") {
-				
-				@Override
-				protected IStatus run(IProgressMonitor monitor) {							
-					try {
-						monitor.beginTask("Visualization", 100);
-
-						TxtUMLExporter exporter = new TxtUMLExporter(txtUMLProjectName, generatedFolderName,
-								txtUMLModelName, txtUMLLayout);
-
-						clean(exporter);
-						exportModel(exporter, monitor);
-						TxtUMLLayoutDescriptor layoutDescriptor = generateLayoutDescription(exporter, monitor);
-						layoutDescriptor.mappingFolder = generatedFolderName;
-						layoutDescriptor.projectName = txtUMLProjectName;
-
-						visualize(exporter, layoutDescriptor, monitor);
-						return Status.OK_STATUS;
-					} catch (InterruptedException e) {
-						// ignore
-						return Status.CANCEL_STATUS;
-					}
-				}
-			};
-			job.setUser(true);
-			job.schedule();
-			return true;
-		} catch (InterruptedException e) {
+		if(!this.checkEmptyVisualizationRequested()){
 			return false;
 		}
+		
+		Job job = new Job("Diagram Visualization") {
+			
+			@Override
+			protected IStatus run(IProgressMonitor monitor) {							
+				try {
+					monitor.beginTask("Visualization", 100);
+
+					TxtUMLExporter exporter = new TxtUMLExporter(txtUMLProjectName, generatedFolderName,
+							txtUMLModelName, txtUMLLayout);
+
+					clean(exporter);
+					exportModel(exporter, monitor);
+					TxtUMLLayoutDescriptor layoutDescriptor = generateLayoutDescription(exporter, monitor);
+					layoutDescriptor.mappingFolder = generatedFolderName;
+					layoutDescriptor.projectName = txtUMLProjectName;
+					
+					if(monitor.isCanceled()) return Status.CANCEL_STATUS;
+					
+					visualize(exporter, layoutDescriptor, monitor);
+					if(monitor.isCanceled()){
+						return Status.CANCEL_STATUS;
+					}else{
+						return Status.OK_STATUS;
+					}
+				} catch (Exception e) {
+					return Status.CANCEL_STATUS;
+				}
+			}
+		};
+		job.setUser(true);
+		job.schedule();
+		return true;
 	}
 
 	/**
@@ -126,9 +130,8 @@ public class TxtUMLVisuzalizeWizard extends Wizard {
 	 * Exports the txtUML model to EMF UML model and handles the possible errors
 	 * @param exporter
 	 * @param monitor
-	 * @throws InterruptedException
 	 */
-	private void exportModel(TxtUMLExporter exporter, IProgressMonitor monitor) throws InterruptedException {
+	private void exportModel(TxtUMLExporter exporter, IProgressMonitor monitor) {
 		monitor.subTask("Exporting txtUML Model to UML2 model...");
 			LayoutUtils.getDisplay().syncExec(() ->{
 				try {
@@ -149,7 +152,7 @@ public class TxtUMLVisuzalizeWizard extends Wizard {
 	 * @return
 	 * @throws InterruptedException
 	 */
-	private TxtUMLLayoutDescriptor generateLayoutDescription(TxtUMLExporter exporter, IProgressMonitor monitor) throws InterruptedException {
+	private TxtUMLLayoutDescriptor generateLayoutDescription(TxtUMLExporter exporter, IProgressMonitor monitor) throws Exception {
 
 		monitor.subTask("Generating txtUML layout description...");
 		TxtUMLLayoutDescriptor layoutDescriptor = null;
@@ -166,23 +169,14 @@ public class TxtUMLVisuzalizeWizard extends Wizard {
 			monitor.worked(5);
 			return layoutDescriptor;
 		} catch (Exception e) {
-			if (e instanceof InterruptedException) {
-				throw (InterruptedException) e;
-			} else {
-				Dialogs.errorMsgb("txtUML layout export Error",
-						"Error occured during the diagram layout interpretation.", e);
-				monitor.done();
-				throw new InterruptedException();
-			}
+			Dialogs.errorMsgb("txtUML layout export Error",
+					"Error occured during the diagram layout interpretation.", e);
+			monitor.done();
+			throw e;
 		}
 
 	}
 
-	/**
-	 * Displays a list of warnings
-	 * @param warnings
-	 * @throws InterruptedException
-	 */
 	private void displayWarnings(List<String> warnings) throws InterruptedException {
 		if (warnings.size() != 0) {
 			StringBuilder warningMessages = new StringBuilder(
@@ -213,7 +207,7 @@ public class TxtUMLVisuzalizeWizard extends Wizard {
 		}
 	}
 	
-	private void checkEmptyLayoutDescriptions() throws InterruptedException {
+	private boolean checkEmptyVisualizationRequested() {
 		if(selectTxtUmlPage.getTxtUmlLayout().isEmpty()){
 			boolean answer = Dialogs.WarningConfirm("No Layout descriptions",
 					"No diagrams will be generated using the current setup,"
@@ -221,8 +215,8 @@ public class TxtUMLVisuzalizeWizard extends Wizard {
 							+ "Use the 'Add txtUML diagram descriptions' button to avoid this message."
 							+ System.lineSeparator() + System.lineSeparator()
 							+ "Do you want to continue without diagram descriptions?");
-			if (!answer)
-				throw new InterruptedException();
+			return answer;
 		}
+		return true;
 	}
 }

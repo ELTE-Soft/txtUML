@@ -1,5 +1,6 @@
 package hu.elte.txtuml.export.papyrus.utils;
 
+import java.io.IOException;
 import java.net.URLClassLoader;
 
 import org.eclipse.swt.widgets.Display;
@@ -28,7 +29,7 @@ public class LayoutUtils {
 	 *             any exception that can be thrown during the exportation
 	 */
 	public static DiagramExportationReport exportTxtUMLLayout(String sourceProject, String txtUMLLayout, String layoutProject)
-			throws Exception {
+			throws IOException, ClassNotFoundException {
 		try (URLClassLoader loader = ClassLoaderProvider.getClassLoaderForProject(layoutProject, layoutParent)) {
 			Class<?> txtUMLLayoutClass = loader.loadClass(txtUMLLayout);
 			@SuppressWarnings("unchecked")

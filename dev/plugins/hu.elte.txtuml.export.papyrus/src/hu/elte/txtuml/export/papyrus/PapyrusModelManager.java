@@ -109,6 +109,7 @@ public class PapyrusModelManager {
 		SubMonitor subMonitor = SubMonitor.convert(monitor, 100);
 		subMonitor.setTaskName("Generating Diagrams");
 		createDiagrams(subMonitor.newChild(20));
+		if(monitor.isCanceled()) return;
 		addElementsToDiagrams(subMonitor.newChild(80));
 
 		try {
@@ -134,6 +135,7 @@ public class PapyrusModelManager {
 
 		int i = 1;
 		for (Diagram diagram : diags) {
+			if(monitor.isCanceled()) return;
 			loopProgress.setTaskName("Filling diagrams " + i + "/" + diagNum);
 			addElementsToDiagram(diagram, loopProgress.newChild(1));
 			i++;

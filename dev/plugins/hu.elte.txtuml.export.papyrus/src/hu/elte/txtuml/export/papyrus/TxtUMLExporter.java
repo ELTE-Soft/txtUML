@@ -71,22 +71,18 @@ public class TxtUMLExporter {
 		List<DiagramExportationReport> reports = new ArrayList<>();
 
 		for (Map.Entry<String, String> layout : txtUMLLayout.entrySet()) {
-			try {
-				DiagramExportationReport report = LayoutUtils.exportTxtUMLLayout(projectName, layout.getKey(), layout.getValue());
-				if (!report.isSuccessful()) {
-					StringBuilder errorMessages = new StringBuilder(
-							"Errors occured during layout exportation:" + System.lineSeparator());
-					for (Object error : report.getErrors()) {
-						errorMessages.append("- " + error + System.lineSeparator());
-					}
-					errorMessages.append("The exportation was't successfull.");
-					throw new LayoutExportException(errorMessages.toString());
+			DiagramExportationReport report = LayoutUtils.exportTxtUMLLayout(projectName, layout.getKey(), layout.getValue());
+			if (!report.isSuccessful()) {
+				StringBuilder errorMessages = new StringBuilder(
+						"Errors occured during layout exportation:" + System.lineSeparator());
+				for (Object error : report.getErrors()) {
+					errorMessages.append("- " + error + System.lineSeparator());
 				}
-
-				reports.add(report);
-			} catch (Exception e) {
-				throw e;
+				errorMessages.append("The exportation was't successfull.");
+				throw new LayoutExportException(errorMessages.toString());
 			}
+
+			reports.add(report);
 		}
 		return new TxtUMLLayoutDescriptor(txtUMLModelName, reports);
 	}

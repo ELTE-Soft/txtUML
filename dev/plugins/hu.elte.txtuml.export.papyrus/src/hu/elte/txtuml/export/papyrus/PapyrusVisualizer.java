@@ -82,6 +82,7 @@ public class PapyrusVisualizer implements IRunnableWithProgress {
 		try {
 
 			createPapyrusModel(papyrusModelCreator, submonitor.newChild(70));
+			if(monitor.isCanceled()) return;
 			openPapyrusModel(papyrusModelCreator, submonitor.newChild(10));
 		} catch (Exception e) {
 			// TODO: Handle exception precisely
