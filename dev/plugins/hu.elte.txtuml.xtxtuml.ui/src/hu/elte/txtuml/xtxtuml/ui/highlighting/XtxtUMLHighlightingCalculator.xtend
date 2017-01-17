@@ -19,6 +19,7 @@ import static hu.elte.txtuml.xtxtuml.ui.highlighting.XtxtUMLHighlightingConfigur
 import static hu.elte.txtuml.xtxtuml.xtxtUML.XtxtUMLPackage.Literals.*
 import static org.eclipse.xtext.common.types.TypesPackage.Literals.*
 import static org.eclipse.xtext.xbase.XbasePackage.Literals.*
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUEnumerationLiteral
 
 class XtxtUMLHighlightingCalculator extends XbaseHighlightingCalculator {
 
@@ -43,6 +44,9 @@ class XtxtUMLHighlightingCalculator extends XbaseHighlightingCalculator {
 			TUMultiplicity: {
 				val textRegion = NodeModelUtils.findActualNodeFor(object).textRegion;
 				acceptor.addPosition(textRegion.offset, textRegion.length, MULTIPLICITY);
+			}
+			TUEnumerationLiteral: {
+				highlightFeature(acceptor, object, TU_ENUMERATION_LITERAL__NAME, ENUMERATION_LITERAL)
 			}
 			default:
 				super.highlightElement(object, acceptor, cancelIndicator)

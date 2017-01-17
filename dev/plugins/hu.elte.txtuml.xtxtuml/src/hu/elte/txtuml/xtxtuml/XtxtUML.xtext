@@ -51,7 +51,7 @@ TUClass :
 
 TUEnumeration :
 	'enum' name=ValidID ('{'
-		(literals+=TUEnumerationLiteral (','? literals+=TUEnumerationLiteral)*)? 
+		(','? literals+=TUEnumerationLiteral)* 
 	'}' ';'? | ';')
 ;
 

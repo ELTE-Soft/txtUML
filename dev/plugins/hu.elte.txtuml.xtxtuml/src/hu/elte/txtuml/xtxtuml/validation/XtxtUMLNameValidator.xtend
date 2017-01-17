@@ -21,6 +21,7 @@ import org.eclipse.xtext.xbase.XbasePackage
 
 import static hu.elte.txtuml.xtxtuml.validation.XtxtUMLIssueCodes.*
 import static hu.elte.txtuml.xtxtuml.xtxtUML.XtxtUMLPackage.Literals.*
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUEnumerationLiteral
 
 class XtxtUMLNameValidator extends AbstractXtxtUMLValidator {
 
@@ -38,6 +39,11 @@ class XtxtUMLNameValidator extends AbstractXtxtUMLValidator {
 	@Check
 	def checkModelElementNameIsNotReserved(TUModelElement modelElement) {
 		checkReservedError(modelElement, modelElement.name, TU_MODEL_ELEMENT__NAME, "model element");
+	}
+
+	@Check
+	def checkEnumerationLiteralNameIsNotReserved(TUEnumerationLiteral enumLiteral) {
+		checkReservedError(enumLiteral, enumLiteral.name, TU_ENUMERATION_LITERAL__NAME, "enumeration literal");
 	}
 
 	@Check
