@@ -292,6 +292,12 @@ class XtxtUMLUniquenessValidator extends XtxtUMLNameValidator {
 		parameters.map[parameterType?.type?.fullyQualifiedName]
 	}
 
+
+	/**
+	 * Returns the class qualified name of the given class member. That is,
+	 * the returned string will be the fully qualified name of the given
+	 * member, starting from the simple name of its enclosing class.
+	 */
 	def protected classQualifiedName(TUClassMember classMember) {
 		val fqnOfClass = EcoreUtil2.getContainerOfType(classMember, TUClass)?.fullyQualifiedName;
 		if (fqnOfClass != null) {

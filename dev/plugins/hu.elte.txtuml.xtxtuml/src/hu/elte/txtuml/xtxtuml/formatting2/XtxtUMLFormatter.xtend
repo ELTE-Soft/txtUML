@@ -1,7 +1,5 @@
 package hu.elte.txtuml.xtxtuml.formatting2;
 
-import hu.elte.txtuml.xtxtuml.xtxtUML.RAlfDeleteObjectExpression
-import hu.elte.txtuml.xtxtuml.xtxtUML.RAlfSendSignalExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAssociation
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAssociationEnd
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAttribute
@@ -12,6 +10,7 @@ import hu.elte.txtuml.xtxtuml.xtxtUML.TUComposition
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUConnector
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUConnectorEnd
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUConstructor
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUDeleteObjectExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUEntryOrExitActivity
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUExecution
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUFile
@@ -22,6 +21,7 @@ import hu.elte.txtuml.xtxtuml.xtxtUML.TUOperation
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUPort
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUPortMember
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUReception
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUSendSignalExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUSignal
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUSignalAttribute
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUState
@@ -44,6 +44,9 @@ import org.eclipse.xtext.xbase.formatting2.XbaseFormatter
 
 import static hu.elte.txtuml.xtxtuml.xtxtUML.XtxtUMLPackage.Literals.*
 
+/**
+ * Defines formatting rules for XtxtUML elements.
+ */
 class XtxtUMLFormatter extends XbaseFormatter {
 
 	def dispatch void format(TUModelDeclaration it, extension IFormattableDocument document) {
@@ -201,7 +204,7 @@ class XtxtUMLFormatter extends XbaseFormatter {
 		regionFor.keyword('..').surround[noSpace];
 	}
 
-	def dispatch void format(RAlfSendSignalExpression it, extension IFormattableDocument document) {
+	def dispatch void format(TUSendSignalExpression it, extension IFormattableDocument document) {
 		signal.surround[oneSpace];
 		target.prepend[oneSpace];
 
@@ -209,7 +212,7 @@ class XtxtUMLFormatter extends XbaseFormatter {
 		format(target, document);
 	}
 
-	def dispatch void format(RAlfDeleteObjectExpression it, extension IFormattableDocument document) {
+	def dispatch void format(TUDeleteObjectExpression it, extension IFormattableDocument document) {
 		object.prepend[oneSpace];
 		format(object, document);
 	}
@@ -245,12 +248,24 @@ class XtxtUMLFormatter extends XbaseFormatter {
 	}
 
 	def dispatch void format(TUClassPropertyAccessExpression it, extension IFormattableDocument document) {
-		regionFor.keyword('->').surround[noSpace];
+		regionFor.feature(TU_CLASS_PROPERTY_ACCESS_EXPRESSION__ARROW).surround[noSpace];
 		regionFor.feature(TU_CLASS_PROPERTY_ACCESS_EXPRESSION__RIGHT).surround[noSpace];
 
 		format(left, document);
 	}
 
+	/**
+	 * Can be used to format a block element according to the following format:
+	 * <pre>
+	 *     «typeKeyword» «name» {
+	 *         «members»
+	 *     }
+	 * </pre> if <code>members</code> is not empty and
+	 * <pre>
+	 *     «typeKeyword» «name» {}
+	 * </pre> otherwise. The parameter <code>isSpacious</code> indicates whether
+	 * empty lines should be placed around each member.
+	 */
 	def private formatBlockElement(EObject it, extension IFormattableDocument document, ISemanticRegion typeKeyword,
 		EList<? extends EObject> members, boolean isSpacious) {
 		typeKeyword.append[oneSpace];
@@ -274,11 +289,25 @@ class XtxtUMLFormatter extends XbaseFormatter {
 		}
 	}
 
+	/**
+	 * Can be used to format a simple element according to the following format:
+	 * <pre>
+	 *     «typeKeyword» «reference»;
+	 * </pre>
+	 */
 	def private formatSimpleMember(EObject it, extension IFormattableDocument document,
 		EStructuralFeature mainFeature) {
 		regionFor.feature(mainFeature).prepend[oneSpace].append[noSpace];
 	}
 
+	/**
+	 * Can be used to format an unnamed block element according to the following format:
+	 * <pre>
+	 *     «typeKeyword» {
+	 *         «members»
+	 *     }
+	 * </pre>
+	 */
 	def private formatUnnamedBlockElement(EObject it, extension IFormattableDocument document, XBlockExpression body) {
 		body.regionFor.keyword('{').prepend[oneSpace];
 		format(body, document);

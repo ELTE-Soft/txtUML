@@ -6,11 +6,11 @@ import hu.elte.txtuml.api.model.ModelClass.Port
 import hu.elte.txtuml.api.model.ModelEnum
 import hu.elte.txtuml.api.model.Signal
 import hu.elte.txtuml.api.model.external.ExternalType
-import hu.elte.txtuml.xtxtuml.xtxtUML.RAlfDeleteObjectExpression
-import hu.elte.txtuml.xtxtuml.xtxtUML.RAlfSendSignalExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAttributeOrOperationDeclarationPrefix
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUClassPropertyAccessExpression
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUDeleteObjectExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUOperation
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUSendSignalExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUSignalAttribute
 import org.eclipse.emf.ecore.EObject
 import org.eclipse.emf.ecore.EStructuralFeature
@@ -60,20 +60,20 @@ class XtxtUMLTypeValidator extends XtxtUMLUniquenessValidator {
 	}
 
 	@Check
-	def checkSendSignalExpressionTypes(RAlfSendSignalExpression sendExpr) {
+	def checkSendSignalExpressionTypes(TUSendSignalExpression sendExpr) {
 		if (!sendExpr.signal.isConformantWith(Signal, false)) {
-			typeMismatch("Signal", sendExpr, RALF_SEND_SIGNAL_EXPRESSION__SIGNAL);
+			typeMismatch("Signal", sendExpr, TU_SEND_SIGNAL_EXPRESSION__SIGNAL);
 		}
 
 		if (!sendExpr.target.isConformantWith(ModelClass, false) && !sendExpr.target.isConformantWith(Port, false)) {
-			typeMismatch("Class or Port", sendExpr, RALF_SEND_SIGNAL_EXPRESSION__TARGET);
+			typeMismatch("Class or Port", sendExpr, TU_SEND_SIGNAL_EXPRESSION__TARGET);
 		}
 	}
 
 	@Check
-	def checkDeleteObjectExpressionTypes(RAlfDeleteObjectExpression deleteExpr) {
+	def checkDeleteObjectExpressionTypes(TUDeleteObjectExpression deleteExpr) {
 		if (!deleteExpr.object.isConformantWith(ModelClass, false)) {
-			typeMismatch("Class", deleteExpr, RALF_DELETE_OBJECT_EXPRESSION__OBJECT)
+			typeMismatch("Class", deleteExpr, TU_DELETE_OBJECT_EXPRESSION__OBJECT)
 		}
 	}
 

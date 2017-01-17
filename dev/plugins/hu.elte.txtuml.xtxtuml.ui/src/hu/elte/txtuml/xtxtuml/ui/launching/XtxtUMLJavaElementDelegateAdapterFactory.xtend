@@ -12,6 +12,9 @@ class XtxtUMLJavaElementDelegateAdapterFactory extends JavaElementDelegateAdapte
 
 	@Inject Provider<XtxtUMLJavaElementDelegateMainLaunch> mainDelegateProvider;
 
+	/**
+	 * Provides only main launchers.
+	 */
 	override getAdapter(Object adaptableObject, Class adapterType /* warning is unavoidable */ ) {
 		if (adaptableObject instanceof JavaElementDelegate) {
 			return adaptableObject.getAdapter(adapterType);
