@@ -31,6 +31,8 @@ import org.eclipse.emf.edit.ui.provider.AdapterFactoryLabelProvider
 import org.eclipse.jface.viewers.StyledString
 import org.eclipse.xtext.common.types.JvmGenericType
 import org.eclipse.xtext.xbase.ui.labeling.XbaseLabelProvider
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUEnumeration
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUEnumerationLiteral
 
 /**
  * Provides labels for EObjects.
@@ -72,6 +74,14 @@ class XtxtUMLLabelProvider extends XbaseLabelProvider {
 
 	def image(TUClass it) {
 		"uml2/Class.gif"
+	}
+
+	def image(TUEnumeration it) {
+		"uml2/Enumeration.gif"
+	}
+
+	def image(TUEnumerationLiteral it) {
+		"uml2/EnumerationLiteral.gif"
 	}
 
 	def image(TUSignal it) {

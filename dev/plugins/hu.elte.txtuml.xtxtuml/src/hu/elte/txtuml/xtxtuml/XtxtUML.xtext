@@ -26,7 +26,7 @@ TUModelElement
 	: TUExecution
 	| TUSignal
 	| TUClass
-	| TUEnum
+	| TUEnumeration
 	| TUAssociation
 	| TUInterface
 	| TUConnector
@@ -49,10 +49,15 @@ TUClass :
 	'}' ';'? | ';')
 ;
 
-TUEnum :
+TUEnumeration :
 	'enum' name=ValidID ('{'
-		(literals+=ValidID (','? literals+=ValidID)*)? 
-	'}' ';'? | ';' )
+		(literals+=TUEnumerationLiteral (','? literals+=TUEnumerationLiteral)*)? 
+	'}' ';'? | ';')
+;
+
+
+TUEnumerationLiteral :
+	name=ValidID
 ;
 
 TUAssociation returns TUAssociation:

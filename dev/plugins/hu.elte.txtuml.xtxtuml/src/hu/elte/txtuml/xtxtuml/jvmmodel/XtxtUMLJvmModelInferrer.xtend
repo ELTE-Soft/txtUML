@@ -30,7 +30,6 @@ import hu.elte.txtuml.xtxtuml.xtxtUML.TUConnector
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUConnectorEnd
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUConstructor
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUEntryOrExitActivity
-import hu.elte.txtuml.xtxtuml.xtxtUML.TUEnum
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUExecution
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUInterface
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUModelDeclaration
@@ -60,6 +59,8 @@ import org.eclipse.xtext.naming.IQualifiedNameProvider
 import org.eclipse.xtext.xbase.jvmmodel.AbstractModelInferrer
 import org.eclipse.xtext.xbase.jvmmodel.IJvmDeclaredTypeAcceptor
 import org.eclipse.xtext.xbase.jvmmodel.IJvmModelAssociations
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUEnumeration
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUEnumerationLiteral
 
 /**
  * Infers a JVM model equivalent from an XtxtUML resource. If not stated otherwise,
@@ -168,12 +169,12 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 		}
 	}
 
-	def dispatch void infer(TUEnum enumeration, IJvmDeclaredTypeAcceptor acceptor, boolean isPreIndexingPhase) {
+	def dispatch void infer(TUEnumeration enumeration, IJvmDeclaredTypeAcceptor acceptor, boolean isPreIndexingPhase) {
 		acceptor.accept(enumeration.toEnumerationType(enumeration.fullyQualifiedName.toString)) [
 			documentation = enumeration.documentation
 			superTypes += ModelEnum.typeRef
 			enumeration.literals.forEach [ literal |
-				it.members += enumeration.toEnumerationLiteral(literal)
+				members += literal.toJvmMember
 			]
 		]
 	}
@@ -310,6 +311,12 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 		attr.toField(attr.name, attr.prefix.type) [
 			documentation = attr.documentation
 			visibility = attr.prefix.visibility.toJvmVisibility
+		]
+	}
+
+	def dispatch private toJvmMember(TUEnumerationLiteral literal) {
+		literal.toEnumerationLiteral(literal.getName) [
+			documentation = literal.documentation
 		]
 	}
 
