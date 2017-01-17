@@ -64,7 +64,7 @@ class CallOperationExporter {
 
 	public String createCallOperationActionCode(CallOperationAction node) {
 		StringBuilder source = new StringBuilder("");
-		tempVariableExporter.exportAllOutputPinToMap(node.getOutputs());
+		tempVariableExporter.exportAllOutputPinsToMap(node.getOutputs());
 		OutputPin returnPin = searchReturnPin(node.getResults(), node.getOperation().outputParameters());
 		if (returnPin != null)
 			returnOutputsToCallActions.put(node, returnPin);
@@ -95,8 +95,8 @@ class CallOperationExporter {
 
 			EList<OutputPin> outParamaterPins = node.getResults();
 			outParamaterPins.remove(returnPin);
-			source.append(declareAllOutTempParameter(outParamaterPins));
-			List<String> parameterVariables = new ArrayList<String>(getParamNames(node.getArguments()));
+			source.append(declareAllOutTempParameters(outParamaterPins));
+			List<String> parameterVariables = new ArrayList<String>(getParametersNames(node.getArguments()));
 			addOutParametrsToList(parameterVariables, outParamaterPins);
 
 			val = ActivityTemplates.stdLibCall(node.getOperation().getName(), parameterVariables);
@@ -118,7 +118,7 @@ class CallOperationExporter {
 
 			val = ActivityTemplates.operationCall(activityExportResolver.getTargetFromInputPin(node.getTarget(), false),
 					ActivityTemplates.accesOperatoForType(activityExportResolver.getTypeFromInputPin(node.getTarget())),
-					node.getOperation().getName(), getParamNames(node.getArguments()));
+					node.getOperation().getName(), getParametersNames(node.getArguments()));
 
 		}
 
@@ -138,7 +138,7 @@ class CallOperationExporter {
 		return ActivityTemplates.constructorCall(activityExportResolver.getTargetFromInputPin(target, false),
 				target.getType().getName(), target.getType().eClass().equals(UMLPackage.Literals.SIGNAL)
 						? ActivityTemplates.CreateObjectType.Signal : ActivityTemplates.CreateObjectType.Class,
-				getParamNames(arguments));
+				getParametersNames(arguments));
 	}
 
 	private void addOutParametrsToList(List<String> parameterVariables, EList<OutputPin> outParamaterPins) {
@@ -147,7 +147,7 @@ class CallOperationExporter {
 		}
 	}
 
-	private String declareAllOutTempParameter(EList<OutputPin> outParamaterPins) {
+	private String declareAllOutTempParameters(EList<OutputPin> outParamaterPins) {
 		StringBuilder declerations = new StringBuilder("");
 		for (OutputPin outPin : outParamaterPins) {
 			declerations.append(VariableTemplates.variableDecl(outPin.getType().getName(),
@@ -167,7 +167,7 @@ class CallOperationExporter {
 		return null;
 	}
 
-	private List<String> getParamNames(List<InputPin> arguments_) {
+	private List<String> getParametersNames(List<InputPin> arguments_) {
 		List<String> params = new ArrayList<String>();
 		for (InputPin param : arguments_) {
 			params.add(activityExportResolver.getTargetFromInputPin(param));

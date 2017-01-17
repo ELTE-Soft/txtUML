@@ -15,6 +15,10 @@ import hu.elte.txtuml.export.cpp.templates.structual.VariableTemplates;
 import hu.elte.txtuml.utils.Pair;
 
 public class EventTemplates {
+	
+	public static final String EventHeader = GenerationNames.EventHeaderName + "." + GenerationNames.HeaderExtension;
+	public static final String InitSignal = GenerationNames.InitialEventName;
+	public static final String ProcessEventFunctionName = "processEventVirtual";
 
 	public static String eventBase(Options options) {
 		StringBuilder eventBase = new StringBuilder("");
@@ -79,7 +83,6 @@ public class EventTemplates {
 		return GenerationNames.formatIncomingParamName(GenerationNames.EventParamName);
 	}
 
-	public static final String EventHeader = GenerationNames.EventHeaderName + "." + GenerationNames.HeaderExtension;
-	public static final String InitSignal = GenerationNames.InitialEventName;
+
 
 }

@@ -29,9 +29,9 @@ public:
       static_cast<RuntimeType*>(this)->setupObjectSpecificRuntime(sm_);
   }
   
-  void enqueObject(IStateMachine* sm)
+  void enqueueObject(IStateMachine* sm)
   {
-      static_cast<RuntimeType*>(this)->enqueObject(sm);
+      static_cast<RuntimeType*>(this)->enqueueObject(sm);
   }
   
   void configure(ThreadConfiguration* configuration)
@@ -72,7 +72,7 @@ public:
   void start();
   void setupObjectSpecificRuntime(IStateMachine*);
   void setConfiguration(ThreadConfiguration*);
-  void enqueObject(IStateMachine*);
+  void enqueueObject(IStateMachine*);
   void stopUponCompletion();
   void removeObject(IStateMachine*);
   bool isConfigurated();
@@ -93,7 +93,7 @@ public:
 	void removeObject(IStateMachine*);
 	void stopUponCompletion();
 	void setConfiguration(ThreadConfiguration*);
-	void enqueObject(IStateMachine*);
+	void enqueueObject(IStateMachine*);
 	bool isConfigurated();
 	void setupObjectSpecificRuntime(IStateMachine*);
    ~ConfiguratedThreadedRT();

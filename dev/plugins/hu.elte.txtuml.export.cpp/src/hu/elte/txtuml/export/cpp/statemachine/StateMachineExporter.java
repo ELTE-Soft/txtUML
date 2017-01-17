@@ -45,7 +45,7 @@ public class StateMachineExporter extends StateMachineExporterBase {
 
 
 
-	public String createStateMachineRelatedHeadedDeclerationCodes() {
+	public String createStateMachineRelatedHeadedDeclarationCodes() {
 		StringBuilder source = new StringBuilder("");
 
 		source.append(guardExporter.declareGuardFunctions(stateMachineRegion));
@@ -62,12 +62,12 @@ public class StateMachineExporter extends StateMachineExporterBase {
 		if (submachineMap.isEmpty()) {
 			source.append(StateMachineTemplates.simpleStateMachineInitializationDefinition(ownerClassName, getInitialStateName(), true,
 					poolId));
-			source.append(StateMachineTemplates.simpleStateMachineFixFunctionDefnitions(ownerClassName, getInitialStateName(),
+			source.append(StateMachineTemplates.simpleStateMachineFixFunctionDefinitions(ownerClassName, getInitialStateName(),
 					false));
 
 		} else {
 			source.append(StateMachineTemplates.hierachialStateMachineInitialization(ownerClassName, getInitialStateName(),
-					true, poolId, getEventSubmachineNameMap()));
+					true, poolId, getEventSubMachineNameMap()));
 			source.append(StateMachineTemplates.hiearchialStateMachineFixFunctionDefinitions(ownerClassName,
 					getInitialStateName(), false));
 

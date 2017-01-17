@@ -49,8 +49,8 @@ public class TransitionExporter {
 			Behavior b = item.getEffect();
 			Pair<String, Boolean> setState = createSetState(item);
 			if (b != null && b.eClass().equals(UMLPackage.Literals.ACTIVITY)) {
-				body = activityExporter.createfunctionBody((Activity) b);
-				signalAcces = activityExporter.isContainsSignalAcces();
+				body = activityExporter.createFunctionBody((Activity) b);
+				signalAcces = activityExporter.isContainsSignalAccess();
 
 			}
 			signalAcces = signalAcces || setState.getSecond();

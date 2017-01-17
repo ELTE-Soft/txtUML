@@ -60,7 +60,7 @@ public class GuardExporter extends ActivityExporter {
 			Constraint constraint = item.getGuard();
 			if (constraint != null) {
 				exportConstraintToMap(constraint);
-				source.append(StateMachineTemplates.guardDecleration(getGuard(constraint)));
+				source.append(StateMachineTemplates.guardDeclaration(getGuard(constraint)));
 			}
 		}
 		source.append("\n");
@@ -72,7 +72,7 @@ public class GuardExporter extends ActivityExporter {
 		for (Entry<Constraint, String> guardEntry : getGuards().entrySet()) {
 			String body = getGuardFromValueSpecification(guardEntry.getKey().getSpecification());
 			source.append(StateMachineTemplates.guardDefinition(guardEntry.getValue(), body, className,
-					isContainsSignalAcces()));
+					isContainsSignalAccess()));
 		}
 
 		return source.toString();
@@ -85,7 +85,7 @@ public class GuardExporter extends ActivityExporter {
 				OpaqueExpression expression = (OpaqueExpression) guard;
 				if (expression.getBehavior() != null
 						&& expression.getBehavior().eClass().equals(UMLPackage.Literals.ACTIVITY))
-					source = createfunctionBody((Activity) expression.getBehavior()).toString();
+					source = createFunctionBody((Activity) expression.getBehavior()).toString();
 			} else {
 				source = "UNKNOWN_GUARD_TYPE";
 			}

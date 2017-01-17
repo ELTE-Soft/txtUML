@@ -26,14 +26,14 @@ class OutVariableExporter {
 
 	}
 
-	public void exportAllOutputPinToMap(EList<OutputPin> outputs) {
+	public void exportAllOutputPinsToMap(EList<OutputPin> outputs) {
 		for (OutputPin outPin : outputs) {
 			exportOutputPinToMap(outPin);
 		}
 
 	}
 
-	public Boolean outIsExported(OutputPin out) {
+	public Boolean isOutExported(OutputPin out) {
 		return outTempVariables.containsKey(out);
 	}
 

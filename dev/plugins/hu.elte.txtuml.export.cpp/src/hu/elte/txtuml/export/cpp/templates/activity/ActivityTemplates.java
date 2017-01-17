@@ -116,7 +116,7 @@ public class ActivityTemplates {
 					+ ")";
 		}
 
-		return OperatorTemplates.getStandardLibaryFunctionName(functionName) + "(" + operationCallParamList(parameters)
+		return OperatorTemplates.getStandardLibraryFunctionName(functionName) + "(" + operationCallParamList(parameters)
 				+ ")";
 	}
 

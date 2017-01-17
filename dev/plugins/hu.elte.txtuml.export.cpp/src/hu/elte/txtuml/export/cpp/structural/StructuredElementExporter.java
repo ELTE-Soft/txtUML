@@ -58,23 +58,23 @@ public abstract class StructuredElementExporter<StructuredElement extends Operat
 		return createAttributes(VisibilityKind.PRIVATE_LITERAL);
 	}
 	
-	protected String createPublicOperationDecelerations() {
-		return createOperationDecelerations(VisibilityKind.PUBLIC_LITERAL);
+	protected String createPublicOperationDeclarations() {
+		return createOperationDeclarations(VisibilityKind.PUBLIC_LITERAL);
 	}
 	
-	protected String createProtectedOperationsDeclerations() {
-		return createOperationDecelerations(VisibilityKind.PROTECTED_LITERAL);
+	protected String createProtectedOperationsDeclarations() {
+		return createOperationDeclarations(VisibilityKind.PROTECTED_LITERAL);
 	}
 	
-	protected String createPrivateOperationsDeclerations() {
-		return createOperationDecelerations(VisibilityKind.PRIVATE_LITERAL);
+	protected String createPrivateOperationsDeclarations() {
+		return createOperationDeclarations(VisibilityKind.PRIVATE_LITERAL);
 	}
 	
 	protected String createOperationDefinitions() {
 		StringBuilder source = new StringBuilder("");
 		for (Operation operation : structuredElement.getOwnedOperations()) {
-			String funcBody = activityExporter.createfunctionBody(Shared.getOperationActivity(operation));
-			dependencyExporter.addDependecies(activityExporter.getAsdditionClassDependencies());
+			String funcBody = activityExporter.createFunctionBody(Shared.getOperationActivity(operation));
+			dependencyExporter.addDependencies(activityExporter.getAdditionalClassDependencies());
 			
 			if (!Shared.isConstructor(operation)) {
 
@@ -108,10 +108,10 @@ public abstract class StructuredElementExporter<StructuredElement extends Operat
 		return source.toString();
 	}
 
-	private String createOperationDecelerations(VisibilityKind modifyer) {
+	private String createOperationDeclarations(VisibilityKind modifier) {
 		StringBuilder source = new StringBuilder("");
 		for (Operation operation : structuredElement.getOwnedOperations()) {
-			if (operation.getVisibility().equals(modifyer)) {
+			if (operation.getVisibility().equals(modifier)) {
 				String returnType = getReturnType(operation.getReturnResult());
 				if(!Shared.isConstructor(operation)) {
 					source.append(FunctionTemplates.functionDecl(returnType, operation.getName(), getOperationParamTypes(operation)));
@@ -119,7 +119,7 @@ public abstract class StructuredElementExporter<StructuredElement extends Operat
 				if(returnType != null) {
 					dependencyExporter.addDependecy(returnType);
 				}
-				dependencyExporter.addDependecies(getOperationParamTypes(operation));
+				dependencyExporter.addDependencies(getOperationParamTypes(operation));
 			}
 		}
 		

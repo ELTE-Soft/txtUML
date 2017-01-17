@@ -97,7 +97,7 @@ public class OperatorTemplates {
 		return name;
 	}
 
-	public static String getStandardLibaryFunctionName(String function) {
+	public static String getStandardLibraryFunctionName(String function) {
 		switch (function) {
 		case ToString:
 			return GenerationNames.ConversionNamspace + "::" + "to_string";

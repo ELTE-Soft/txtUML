@@ -2,6 +2,9 @@ package hu.elte.txtuml.export.cpp.templates;
 
 import java.io.File;
 
+import hu.elte.txtuml.export.cpp.templates.statemachine.EventTemplates;
+import hu.elte.txtuml.export.cpp.templates.statemachine.StateMachineTemplates;
+
 public class RuntimeTemplates {
 	public static final String RTPath = "runtime" + File.separator;
 	public static final String RuntimeHeaderName = RTPath + "runtime";
@@ -11,8 +14,8 @@ public class RuntimeTemplates {
 	public static final String SMIHeaderName = "istatemachine";
 	public static final String SMRefName = "dest";
 	public static final String SMParam = STMIName + "& " + GenerationNames.formatIncomingParamName(SMRefName);
-	public static final String HeaderFuncs = "virtual void processEventVirtual();\nvirtual void processInitTranstion();\n";
-	public static final String RuntimeIterfaceName = "RuntimeI";
+	public static final String HeaderFuncs = "virtual void " + EventTemplates.ProcessEventFunctionName + "();\nvirtual void " + StateMachineTemplates.ProcessInitTransitionFunctionName + "();\n";
+	public static final String RuntimeInterfaceName = "RuntimeI";
 	public static final String RuntimeSetter = "setRuntime";
 	public static final String UsingRuntime = "Runtime";
 	public static final String RuntimeParameterName = "rt";
@@ -29,15 +32,15 @@ public class RuntimeTemplates {
 	}
 
 	public static String processEventVirtual(String className) {
-		return GenerationNames.NoReturn + " " + className + "::processEventVirtual()\n{\n" + EventIName
+		return GenerationNames.NoReturn + " " + className + "::" + EventTemplates.ProcessEventFunctionName + "()\n{\n" + EventIName
 				+ "* base=getNextMessage().get();\n" + GenerationNames.EventBaseName + "* "
-				+ GenerationNames.RealEventName + "=static_cast<" + GenerationNames.EventBaseName + "*>(base);\n"
+				+ GenerationNames.RealEventName + " = static_cast<" + GenerationNames.EventBaseName + "*>(base);\n"
 				+ GenerationNames.ProcessEventFName + "(*" + GenerationNames.RealEventName
 				+ ");\ndeleteNextMessage();\n}\n";
 	}
 
 	public static String processInitTransition(String className) {
-		return GenerationNames.NoReturn + " " + className + "::processInitTranstion()\n{\n"
+		return GenerationNames.NoReturn + " " + className + "::" + StateMachineTemplates.ProcessInitTransitionFunctionName + "()\n{\n"
 				+ GenerationNames.InitialEventName + "_EC init;\n"
 				+ GenerationNames.ProcessEventFName + "(init);\n}\n";
 

@@ -51,7 +51,7 @@ void SingleThreadRT::start()
 
 void SingleThreadRT::setConfiguration(ThreadConfiguration*){}
 
-void SingleThreadRT::enqueObject(IStateMachine *sm)
+void SingleThreadRT::enqueueObject(IStateMachine *sm)
 {
     _messageQueue->push_back(sm);
 }
@@ -137,7 +137,7 @@ void ConfiguratedThreadedRT::setConfiguration(ThreadConfiguration* conf)
 	numberOfObjects.resize((unsigned int)numberOfConfigurations);
 }
 
-void ConfiguratedThreadedRT::enqueObject(IStateMachine*) {}
+void ConfiguratedThreadedRT::enqueueObject(IStateMachine*) {}
 
 ConfiguratedThreadedRT::~ConfiguratedThreadedRT()
 {

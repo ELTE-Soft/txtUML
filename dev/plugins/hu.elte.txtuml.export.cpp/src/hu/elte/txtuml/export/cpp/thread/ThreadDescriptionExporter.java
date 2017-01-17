@@ -136,22 +136,22 @@ public class ThreadDescriptionExporter {
 
 	}
 
-	private void checkConfigurationOptions(double gradient, int contstant, int max) {
+	private void checkConfigurationOptions(double gradient, int constant, int max) {
 		if (gradient < 0 || gradient > 1) {
-			warningList.add("The gradient of linear function should be beetween 0 and 1: " + "conversion to zero.");
+			warningList.add("The gradient of linear function should be between 0 and 1: " + "conversion to 0.");
 		}
 
-		if (contstant < 1) {
-			warningList.add("The constant of linear function should be higher than 0: " + "conversion to one.");
+		if (constant < 1) {
+			warningList.add("The constant of linear function should be higher than 0: " + "conversion to 1.");
 		}
 
 		if (max < 1) {
-			warningList.add("The maximum of threads should be higher than 0: " + "conversion to one.");
+			warningList.add("The maximum number of threads should be higher than 0: " + "conversion to 1.");
 		}
 
-		if (max < contstant) {
+		if (max < constant) {
 			warningList.add(
-					"The maximum of threads should more or equal than constant: " + "conversion to value of constant.");
+					"The maximum number of threads should more or equal to constant: " + "conversion to the value of constant.");
 		}
 	}
 }

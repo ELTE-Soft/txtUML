@@ -108,7 +108,7 @@ public class LinkTemplates {
 		return associationName + "_" + role;
 	}
 
-	public static String manyMultiplicityDependecy() {
+	public static String manyMultiplicityDependency() {
 		return PrivateFunctionalTemplates.outerInclude(GenerationNames.Collection);
 	}
 

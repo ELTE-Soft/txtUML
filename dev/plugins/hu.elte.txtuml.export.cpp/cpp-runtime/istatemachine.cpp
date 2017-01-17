@@ -12,7 +12,7 @@
 void IStateMachine::init()
 {
 	_initialized = true;
-	processInitTranstion();
+	processInitTransition();
 }
 
 void IStateMachine::send(EventPtr e_)
@@ -27,7 +27,7 @@ void IStateMachine::send(EventPtr e_)
   	}
 	else
 	{
-	    	RuntimeI<SingleThreadRT>::createRuntime()->enqueObject(this);
+	    	RuntimeI<SingleThreadRT>::createRuntime()->enqueueObject(this);
 	}
   }
   
@@ -40,7 +40,7 @@ void IStateMachine::handlePool()
   if(!_inPool)
   {
     _inPool=true;
-    _pool->enqueObject(this);
+    _pool->enqueueObject(this);
   }
 }
 

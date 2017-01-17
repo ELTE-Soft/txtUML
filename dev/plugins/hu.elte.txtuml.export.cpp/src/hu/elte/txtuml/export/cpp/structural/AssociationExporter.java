@@ -20,10 +20,10 @@ class AssociationExporter {
 	
 	AssociationExporter(EList<Property> properites) {
 		associationMembers = new ArrayList<Property>();
-		exportAssocations(properites);
+		exportAssociations(properites);
 	}
 
-	void exportAssocations(EList<Property> properites) {
+	void exportAssociations(EList<Property> properites) {
 		for (Property prop : properites) {
 			if (prop.getAssociation() != null) {
 				associationMembers.add(prop);
@@ -34,7 +34,7 @@ class AssociationExporter {
 	
 	boolean ownAssociation() {return ownAssociations;}
 
-	String createAssociationMemeberDeclerationsCode() {
+	String createAssociationMemberDeclarationsCode() {
 		StringBuilder source = new StringBuilder("");
 		for (Property prop : associationMembers) {
 			int upper = prop.getUpper();
@@ -48,7 +48,7 @@ class AssociationExporter {
 		return source.toString();
 	}
 
-	String createLinkFunctionDeclerations(String className) {
+	String createLinkFunctionDeclarations(String className) {
 		StringBuilder assocDeclerations = new StringBuilder("");
 		for (Property member : associationMembers) {
 			if (member.isNavigable()) {

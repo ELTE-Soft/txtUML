@@ -68,7 +68,7 @@ class TxtUMLToCppGovernor {
 		Set<org.eclipse.uml2.uml.Class> allClass = new HashSet<org.eclipse.uml2.uml.Class>();
 		shared.getTypedElements(allClass, UMLPackage.Literals.CLASS);
 
-		ThreadDescriptionExporter exporter = new ThreadDescriptionExporter(shared.getAllModelClassName());
+		ThreadDescriptionExporter exporter = new ThreadDescriptionExporter(shared.getAllModelClassNames());
 		exporter.exportDescription((Class<? extends Configuration>) txtUMLThreadDescription);
 
 		if (!exporter.warningListIsEmpty()) {
@@ -112,13 +112,13 @@ class TxtUMLToCppGovernor {
 
 }
 
+@SuppressWarnings("serial")
 class NotCofigurationClassException extends Exception {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 8949106365297613887L;
-
+	public NotCofigurationClassException() {
+		super();
+	}
+	
 	public NotCofigurationClassException(String message) {
 		super(message);
 	}

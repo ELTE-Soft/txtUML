@@ -82,7 +82,7 @@ public class SubStateMachineExporter extends StateMachineExporterBase {
 		} else {
 			source = HeaderTemplates
 					.hierarchicalSubStateMachineClassHeader(dependency.toString(), ownerClassName, parentClassName,
-							getSubmachineNameList(), publicParts.toString(), protectedParts, privateParts.toString())
+							getSubMachineNameList(), publicParts.toString(), protectedParts, privateParts.toString())
 					.toString();
 		}
 		return source;
@@ -96,7 +96,7 @@ public class SubStateMachineExporter extends StateMachineExporterBase {
 					stateMachineMap, getInitialStateName()));
 		} else {
 			source.append(ConstructorTemplates.hierarchicalSubStateMachineClassConstructor(ownerClassName, parentClassName,
-					stateMachineMap, getEventSubmachineNameMap(), getInitialStateName()));
+					stateMachineMap, getEventSubMachineNameMap(), getInitialStateName()));
 		}
 		StringBuilder subSmSpec = new StringBuilder(entryExitFunctionExporter.createEntryFunctionsDef());
 		subSmSpec.append(entryExitFunctionExporter.createExitFunctionsDef());

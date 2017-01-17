@@ -76,7 +76,7 @@ public class ActivityExporter {
 
 	}
 
-	public String createfunctionBody(Activity activity) {
+	public String createFunctionBody(Activity activity) {
 		init();
 		ActivityNode startNode = null;
 		StringBuilder source = new StringBuilder("");
@@ -101,7 +101,7 @@ public class ActivityExporter {
 		return reducedSource;
 	}
 
-	public boolean isContainsSignalAcces() {
+	public boolean isContainsSignalAccess() {
 		return callOperationExporter.isUsedSignalParameter();
 	}
 
@@ -109,7 +109,7 @@ public class ActivityExporter {
 		return callOperationExporter.isInvokedTimerOperation();
 	}
 	
-	public List<String> getAsdditionClassDependencies() {
+	public List<String> getAdditionalClassDependencies() {
 		return createdClassDependecies;
 	}
 
@@ -211,7 +211,7 @@ public class ActivityExporter {
 		} else if (node.eClass().equals(UMLPackage.Literals.LOOP_NODE)) {
 			source.append(controlNodeExporter.createLoopNodeCode((LoopNode) node));
 		} else if (node.eClass().equals(UMLPackage.Literals.EXPANSION_REGION)) {
-			source.append(controlNodeExporter.createExpansionRegaionCode((ExpansionRegion) node));
+			source.append(controlNodeExporter.createExpansionRegionCode((ExpansionRegion) node));
 		} else if (node.eClass().equals(UMLPackage.Literals.CONDITIONAL_NODE)) {
 			source.append(controlNodeExporter.createConditionalCode(((ConditionalNode) node)));
 		} else if (node.eClass().equals(UMLPackage.Literals.VALUE_SPECIFICATION_ACTION)) {

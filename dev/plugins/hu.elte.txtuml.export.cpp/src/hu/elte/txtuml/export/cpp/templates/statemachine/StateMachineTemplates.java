@@ -24,6 +24,7 @@ public class StateMachineTemplates {
 	public static final String AllTransitionTableInitialProcName = "initTransitionTables";
 	public static final String TransitionTableInitialSourceName = "init_maps";
 	public static final String MachineNamespace = "StateMachine";
+	public static final String ProcessInitTransitionFunctionName = "processInitTransition";
 
 	public static String transitionActionDecl(String transitionActionName) {
 		List<String> params = new LinkedList<String>();
@@ -46,7 +47,7 @@ public class StateMachineTemplates {
 				PrivateFunctionalTemplates.debugLogMessage(className, transitionActionName) + body);
 	}
 
-	public static String guardDecleration(String guardFunctionName) {
+	public static String guardDeclaration(String guardFunctionName) {
 		StringBuilder source = new StringBuilder(
 				"bool " + guardFunctionName + "(" + GenerationNames.EventBaseRefName + ");\n");
 		return source.toString();
@@ -243,7 +244,7 @@ public class StateMachineTemplates {
 		return source.toString();
 	}
 
-	public static String simpleStateMachineFixFunctionDefnitions(String className, String initialState, Boolean subM) {
+	public static String simpleStateMachineFixFunctionDefinitions(String className, String initialState, Boolean subM) {
 		StringBuilder source = new StringBuilder("");
 
 		source.append(GenerationNames.simpleProcessEventDef(className));

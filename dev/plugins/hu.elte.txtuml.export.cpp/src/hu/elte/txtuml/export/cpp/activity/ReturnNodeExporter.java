@@ -23,7 +23,7 @@ public class ReturnNodeExporter {
 		containsReturnNode = false;
 	}
 
-	public void searchRetunNode(List<ActivityEdge> edges) {
+	public void searchReturnNode(List<ActivityEdge> edges) {
 		if (!containsReturnNode) {
 
 			for (ActivityEdge aEdge : edges) {

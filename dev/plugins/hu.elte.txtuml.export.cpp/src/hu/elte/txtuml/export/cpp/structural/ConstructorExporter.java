@@ -27,7 +27,7 @@ class ConstructorExporter {
 	String exportConstructorsDefinitions(String className, boolean ownStateMachine) {
 		StringBuilder source = new StringBuilder();
 		for (Operation operation : constructors) {
-			String body = activityExporter.createfunctionBody(Shared.getOperationActivity(operation));
+			String body = activityExporter.createFunctionBody(Shared.getOperationActivity(operation));
 			source.append(ConstructorTemplates.constructorDef(className, Shared.getOperationParamNames(operation),
 					Shared.getOperationParams(operation)));
 			source.append(ConstructorTemplates.initDef(className, body, Shared.getOperationParams(operation),
@@ -37,7 +37,7 @@ class ConstructorExporter {
 		return source.toString();
 	}
 
-	String exportConstructorDeclareations(String className) {
+	String exportConstructorDeclarations(String className) {
 		StringBuilder source = new StringBuilder();
 		if (ownConstructor) {
 			for (Operation operation : constructors) {

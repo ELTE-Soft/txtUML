@@ -4,7 +4,7 @@ import java.util.List;
 
 public class GenerationTemplates {
 
-	public static final String StandardIOinclude = GenerationNames.StandardIOinclude;
+	public static final String StandardIOinclude = GenerationNames.StandardIOInclude;
 	public static final String StandardFunctionsHeader = GenerationNames.StandardLibaryFunctionsHeaderName;
 	public static final String DeploymentHeader = GenerationNames.DeploymentHeaderName;
 	public static final String TimerInterfaceHeader = GenerationNames.TimerInterFaceName.toLowerCase();

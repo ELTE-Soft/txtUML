@@ -134,7 +134,7 @@ public class Uml2ToCppExporter {
 										StateMachineTemplates.TransitionTableInitialSourceName)));
 
 		DependencyExporter dependencyExporter = new DependencyExporter();
-		dependencyExporter.addDependecies(stateMachineOwners);
+		dependencyExporter.addDependencies(stateMachineOwners);
 		StringBuilder initalFunctionBody = new StringBuilder("");
 		for (String stateMachineOwner : stateMachineOwners) {
 			initalFunctionBody.append(ActivityTemplates.blockStatement(GenerationTemplates
@@ -143,7 +143,7 @@ public class Uml2ToCppExporter {
 
 		Shared.writeOutSource(outputDirectory,
 				GenerationTemplates.sourceName(StateMachineTemplates.TransitionTableInitialSourceName),
-				Shared.format(dependencyExporter.createDependencyCppIncudesCode(
+				Shared.format(dependencyExporter.createDependencyCppIncludeCode(
 						StateMachineTemplates.TransitionTableInitialSourceName)
 						+ GenerationTemplates.putNamespace(
 								FunctionTemplates.simpleFunctionDef(GenerationNames.NoReturn,
@@ -264,7 +264,7 @@ public class Uml2ToCppExporter {
 		}
 		
 		
-		forwardDecl.append(dependencyEporter.createDependecyHeaderIncludeCode());
+		forwardDecl.append(dependencyEporter.createDependencyHeaderIncludeCode());
 		forwardDecl.append(RuntimeTemplates.eventHeaderInclude());
 		forwardDecl.append("enum Events {" + events + "};\n");
 		forwardDecl.append(source);

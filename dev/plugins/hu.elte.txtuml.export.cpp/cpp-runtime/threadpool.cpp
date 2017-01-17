@@ -91,11 +91,11 @@ void StateMachineThreadPool::modifiedThreads (int n)
 		std::unique_lock<std::mutex> mlock(modifie_mutex);
 		
 		workers.setExpectedThreads (n);
-		if (workers.isTooManyWorkes())
+		if (workers.isTooManyWorkers())
 		{
 			workers.gettingThreadsReadyToStop(cond);
 		}
-		while (workers.isTooFewWorkes ())
+		while (workers.isTooFewWorkers ())
 		{
 			workers.addThread (new std::thread(&StateMachineThreadPool::task,this));
 		}
@@ -115,7 +115,7 @@ void StateMachineThreadPool::reduceWorkers()
 	(*worker_threads)--;
 }
 
-void StateMachineThreadPool::enqueObject(IStateMachine* sm)
+void StateMachineThreadPool::enqueueObject(IStateMachine* sm)
 {
         stateMachines.push_back(sm);
 }

@@ -75,7 +75,7 @@ class ActivityNodeResolver {
 
 		} else if (node.eClass().equals(UMLPackage.Literals.OUTPUT_PIN)) {
 			OutputPin outPin = (OutputPin) node;
-			source = tempVariableExporter.outIsExported(outPin) ? 
+			source = tempVariableExporter.isOutExported(outPin) ? 
 					tempVariableExporter.getRealVariableName(outPin):
 					 getTargetFromActivityNode((ActivityNode) node.getOwner());
 

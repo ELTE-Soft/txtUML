@@ -32,7 +32,7 @@ class StructuredControlNodeExporter {
 
 	String createSequenceNodeCode(SequenceNode seqNode) {
 		StringBuilder source = new StringBuilder("");
-		returnNodeExporter.searchRetunNode(seqNode.getContainedEdges());
+		returnNodeExporter.searchReturnNode(seqNode.getContainedEdges());
 		source.append(createStructuredActivityNodeVariables(seqNode.getVariables()));
 		for (ActivityNode aNode : seqNode.getNodes()) {
 			source.append(activityExporter.createActivityNodeCode(aNode));
@@ -41,7 +41,7 @@ class StructuredControlNodeExporter {
 		return source.toString();
 	}
 
-	String createExpansionRegaionCode(ExpansionRegion node) {
+	String createExpansionRegionCode(ExpansionRegion node) {
 		String source = "UNKNOWN_EXPANSION_REAGION";
 
 		if (node.getMode().equals(ExpansionKind.ITERATIVE_LITERAL)) {

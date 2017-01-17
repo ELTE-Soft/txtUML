@@ -46,19 +46,19 @@ public class PrivateFunctionalTemplates {
 				+ "," + GenerationNames.FunctionPtrTypeName + "> " + GenerationNames.GuardActionName + ";\n";
 	}
 
-	private static String tranSitionTableType(String className) {
+	private static String transitionTableType(String className) {
 		return "std::unordered_multimap<" + GenerationNames.EventStateTypeName + "," + className + "::"
 				+ GenerationNames.GuardActionName + ">";
 	}
 
 	public static String transitionTableDecl(String className) {
-		return GenerationNames.StaticModifier + " " + tranSitionTableType(className) + " "
+		return GenerationNames.StaticModifier + " " + transitionTableType(className) + " "
 				+ GenerationNames.TransitionTableName + ";\n";
 
 	}
 
 	public static String transitionTableDef(String className) {
-		return tranSitionTableType(className) + " " + className + "::" + GenerationNames.TransitionTableName + ";\n";
+		return transitionTableType(className) + " " + className + "::" + GenerationNames.TransitionTableName + ";\n";
 	}
 
 	public static String pointerBaseType(String typeName) {

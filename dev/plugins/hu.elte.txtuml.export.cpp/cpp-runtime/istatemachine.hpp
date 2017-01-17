@@ -14,7 +14,7 @@ class IStateMachine
 {
 public:
   virtual void processEventVirtual () = 0;
-  virtual void processInitTranstion () = 0;
+  virtual void processInitTransition () = 0;
 
   void startSM() { _started = true; handlePool(); }
   void runSM();

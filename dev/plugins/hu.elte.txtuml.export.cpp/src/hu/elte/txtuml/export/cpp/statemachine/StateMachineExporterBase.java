@@ -87,7 +87,7 @@ public class StateMachineExporterBase {
 		this.ownerClassName = name;
 	}
 	
-	public List<String> getSubmachineNameList() {
+	public List<String> getSubMachineNameList() {
 		List<String> ret = new LinkedList<String>();
 		if (submachineMap != null) {
 			for (Map.Entry<String, Pair<String, Region>> entry : submachineMap.entrySet()) {
@@ -164,7 +164,7 @@ public class StateMachineExporterBase {
 		return stateActionMap;
 	}
 
-	protected Map<String, String> getEventSubmachineNameMap() {
+	protected Map<String, String> getEventSubMachineNameMap() {
 		Map<String, String> eventSubMachineMap = new HashMap<String, String>();
 		for (Map.Entry<String, Pair<String, Region>> entry : submachineMap.entrySet()) {
 			eventSubMachineMap.put(entry.getKey(), entry.getValue().getFirst());

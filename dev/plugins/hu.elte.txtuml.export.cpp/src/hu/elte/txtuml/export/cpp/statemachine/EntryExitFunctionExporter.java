@@ -105,7 +105,7 @@ public class EntryExitFunctionExporter {
 
 			if (behavior != null) {
 				if (behavior.eClass().equals(UMLPackage.Literals.ACTIVITY)) {
-					source = activityExporter.createfunctionBody((Activity) behavior).toString();
+					source = activityExporter.createFunctionBody((Activity) behavior).toString();
 					name = item.getName() + "_" + unknownName;
 					map.put(name, new Pair<String, String>(item.getName(), source.toString()));
 				}

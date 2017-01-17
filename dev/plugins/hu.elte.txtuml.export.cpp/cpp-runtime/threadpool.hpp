@@ -18,7 +18,7 @@ class StateMachineThreadPool {
 public:
 	StateMachineThreadPool();
 	void task();
-	void enqueObject(IStateMachine*);
+	void enqueueObject(IStateMachine*);
 	void stopPool();
 	void stopUponCompletion(std::atomic_int*);
 	void startPool(int);

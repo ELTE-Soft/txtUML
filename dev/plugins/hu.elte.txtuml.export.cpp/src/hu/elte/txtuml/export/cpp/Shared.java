@@ -68,7 +68,7 @@ public class Shared {
 		return classes;
 	}
 	
-	public Set<String> getAllModelClassName() {
+	public Set<String> getAllModelClassNames() {
 
 		Set<String> classNames = new HashSet<String>();
 		for (Class cls : getAllModelCLass()) {
@@ -107,7 +107,7 @@ public class Shared {
 		String body = "";
 		for (Operation operation : factoryClass.getOperations()) {
 			if (isConstructor(operation)) {
-				body = activityExporter.createfunctionBody(Shared.getOperationActivity(operation)).toString();
+				body = activityExporter.createFunctionBody(Shared.getOperationActivity(operation)).toString();
 
 			}
 		}

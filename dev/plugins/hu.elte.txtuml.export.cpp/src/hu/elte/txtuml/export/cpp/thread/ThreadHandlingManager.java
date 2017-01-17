@@ -61,7 +61,7 @@ public class ThreadHandlingManager {
 		List<String> templateParams = new ArrayList<String>();
 		templateParams.add(ConfiguratedThreadedRuntimeName);
 		source.append(GenerationTemplates.usingTemplateType(RuntimeTemplates.UsingRuntime,
-				RuntimeTemplates.RuntimeIterfaceName, templateParams));
+				RuntimeTemplates.RuntimeInterfaceName, templateParams));
 		source.append("\n\n");
 
 		source.append(GenerationTemplates.putNamespace(
