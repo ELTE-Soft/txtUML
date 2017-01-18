@@ -165,6 +165,63 @@ class XtxtUMLStructureParserTest {
 			]
 		)
 	}
+	
+	@Test
+	def parseEmptyEnum() {
+		'''
+			package test.model;
+			enum TestEnum;
+		'''
+		.parse.
+		file(
+			"test.model",
+			null, #[
+				[enumeration(
+					"TestEnum", #[
+					]
+				)]
+			]
+		)
+	}
+
+	@Test
+	def parseEnumWithLiterals() {
+		val singleEnumWithABLiterals = #[
+				[enumeration(
+					"TestEnum", #[
+						[enumerationLiteral("A")],
+						[enumerationLiteral("B")]
+					]
+				)]
+			]
+		
+		'''
+			package test.model;
+			enum TestEnum {
+				A
+				B
+			}
+		'''
+		.parse.file("test.model", null, singleEnumWithABLiterals)
+
+		'''
+			package test.model;
+			enum TestEnum {
+				A,
+				B
+			}
+		'''
+		.parse.file("test.model", null, singleEnumWithABLiterals)
+
+		'''
+			package test.model;
+			enum TestEnum {
+				A,
+				B,
+			}
+		'''
+		.parse.file("test.model", null, singleEnumWithABLiterals)
+	}
 
 	@Test
 	def parseStatemachine() {
