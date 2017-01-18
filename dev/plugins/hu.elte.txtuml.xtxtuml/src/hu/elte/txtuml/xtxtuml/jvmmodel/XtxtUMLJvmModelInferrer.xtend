@@ -131,6 +131,10 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 				members += attr.toJvmMember
 			}
 
+			if (signal.attributes.isEmpty && signal.superSignal == null) {
+				return;
+			}
+
 			members += signal.toConstructor [
 				val Deque<TUSignal> supers = new LinkedList
 				for (var t = signal.superSignal; t != null; t = t.superSignal) {
