@@ -46,6 +46,8 @@ import hu.elte.txtuml.xtxtuml.xtxtUML.TUTransitionPort
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUTransitionTrigger
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUTransitionVertex
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUVisibility
+import java.util.Deque
+import java.util.LinkedList
 import java.util.Map
 import org.eclipse.emf.ecore.EObject
 import org.eclipse.xtext.common.types.JvmDeclaredType
@@ -119,25 +121,49 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 	def dispatch void infer(TUSignal signal, IJvmDeclaredTypeAcceptor acceptor, boolean isPreIndexingPhase) {
 		acceptor.accept(signal.toClass(signal.fullyQualifiedName)) [
 			documentation = signal.documentation
-			superTypes += Signal.typeRef
+			if (signal.superSignal != null) {
+				superTypes += signal.superSignal.inferredTypeRef
+			} else {
+				superTypes += Signal.typeRef
+			}
 
 			for (attr : signal.attributes) {
 				members += attr.toJvmMember
 			}
 
-			if (!signal.attributes.isEmpty) {
-				members += signal.toConstructor [
-					for (attr : signal.attributes) {
-						parameters += attr.toParameter(attr.name, attr.type)
+			members += signal.toConstructor [
+				val Deque<TUSignal> supers = new LinkedList
+				for (var t = signal.superSignal; t != null; t = t.superSignal) {
+					supers.add(t)
+				}
+
+				val Deque<TUSignalAttribute> superAttributes = new LinkedList
+				while (!supers.empty) {
+					superAttributes.addAll(supers.last.attributes)
+					supers.removeLast
+				}
+
+				val (TUSignalAttribute)=>void addAsParam =
+					[ attr | parameters += attr.toParameter(attr.name, attr.type) ]
+
+				superAttributes.forEach(addAsParam)
+				signal.attributes.forEach(addAsParam) 
+
+				val lastSuperAttribute = if (superAttributes.empty) {
+						null
+					} else {
+						superAttributes.removeLast
 					}
 
-					body = '''
-						«FOR attr : signal.attributes»
-							this.«attr.name» = «attr.name»;
-						«ENDFOR»
-					'''
-				]
-			}
+				body = '''
+					«IF lastSuperAttribute != null»					
+						super(«FOR attr : superAttributes»«attr.name», «ENDFOR»«lastSuperAttribute.name»);
+					«ENDIF»
+					«FOR attr : signal.attributes»
+						this.«attr.name» = «attr.name»;
+					«ENDFOR»
+				'''
+			]
 		]
 	}
 

@@ -18,11 +18,14 @@ import hu.elte.txtuml.xtxtuml.xtxtUML.TUSignalAccessExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUState
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUStateType
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUTransition
+import java.util.ArrayList
 import java.util.HashSet
+import java.util.List
 import org.eclipse.emf.ecore.EObject
 import org.eclipse.xtext.EcoreUtil2
 import org.eclipse.xtext.common.types.JvmOperation
 import org.eclipse.xtext.naming.IQualifiedNameProvider
+import org.eclipse.xtext.naming.QualifiedName
 import org.eclipse.xtext.validation.Check
 import org.eclipse.xtext.xbase.XAbstractFeatureCall
 import org.eclipse.xtext.xbase.XBlockExpression
@@ -106,8 +109,15 @@ class XtxtUMLExpressionValidator extends XtxtUMLTypeValidator {
 		val portSourceElement = sendExpr.target.actualType.type.primarySourceElement as TUPort;
 		val requiredReceptionsOfPort = portSourceElement.members.findFirst[required]?.interface?.receptions;
 
+		val List<QualifiedName> supers = new ArrayList
+		var sig = sentSignalSourceElement
+		while (sig != null) {
+			supers.add(sig.fullyQualifiedName)
+			sig = sig.superSignal
+		}
+
 		if (requiredReceptionsOfPort?.findFirst [
-			signal?.fullyQualifiedName == sentSignalSourceElement?.fullyQualifiedName
+			supers.contains(signal?.fullyQualifiedName)
 		] == null) {
 			error("Signal type " + sentSignalSourceElement.name + " is not required by port " + portSourceElement.name,
 				sendExpr, TU_SEND_SIGNAL_EXPRESSION__SIGNAL, NOT_REQUIRED_SIGNAL);
