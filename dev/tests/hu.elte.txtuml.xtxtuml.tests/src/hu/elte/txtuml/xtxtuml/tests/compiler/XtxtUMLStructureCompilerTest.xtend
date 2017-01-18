@@ -73,6 +73,77 @@ class XtxtUMLStructureCompilerTest {
 			  }
 			}
 		''');
+		}
+		
+		@Test
+	def compileSignalInheritance() {
+		'''
+			package test.model;
+			signal S1 {
+				public int i;
+				public boolean b;
+			}
+			signal S2 extends S1 {
+				public String s;
+			}
+			signal S3 extends S2 {
+				public double d;
+			}
+		'''.assertCompilesTo('''
+			MULTIPLE FILES WERE GENERATED
+
+			File 1 : /myProject/./src-gen/test/model/S1.java
+
+			package test.model;
+
+			import hu.elte.txtuml.api.model.Signal;
+
+			@SuppressWarnings("all")
+			public class S1 extends Signal {
+			  public int i;
+			  
+			  public boolean b;
+			  
+			  public S1(final int i, final boolean b) {
+			    this.i = i;
+			    this.b = b;
+			  }
+			}
+
+			File 2 : /myProject/./src-gen/test/model/S2.java
+
+			package test.model;
+			
+			import test.model.S1;
+
+			@SuppressWarnings("all")
+			public class S2 extends S1 {
+			  public String s;
+			  
+			  public S2(final int i, final boolean b, final String s) {
+			    super(i, b);
+			    this.s = s;
+			  }
+			}
+
+			File 3 : /myProject/./src-gen/test/model/S3.java
+
+			package test.model;
+			
+			import test.model.S2;
+
+			@SuppressWarnings("all")
+			public class S3 extends S2 {
+			  public double d;
+			  
+			  public S3(final int i, final boolean b, final String s, final double d) {
+			    super(i, b, s);
+			    this.d = d;
+			  }
+			}
+
+		''');
+		
 	}
 
 	@Test
