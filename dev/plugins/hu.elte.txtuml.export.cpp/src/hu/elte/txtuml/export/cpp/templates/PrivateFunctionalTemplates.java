@@ -2,6 +2,7 @@ package hu.elte.txtuml.export.cpp.templates;
 
 import java.util.List;
 
+import hu.elte.txtuml.export.cpp.templates.statemachine.EventTemplates;
 import hu.elte.txtuml.utils.Pair;
 
 public class PrivateFunctionalTemplates {
@@ -40,8 +41,8 @@ public class PrivateFunctionalTemplates {
 
 	public static String typedefs(String className) {
 		return "typedef std::function<" + GenerationNames.NoReturn + "(" + className + "&,"
-				+ GenerationNames.EventBaseRefName + ")> " + GenerationNames.FunctionPtrTypeName + ";\n"
-				+ "typedef std::function<bool(" + className + "&," + GenerationNames.EventBaseRefName + ")> "
+				+ EventTemplates.EventBaseRefName + ")> " + GenerationNames.FunctionPtrTypeName + ";\n"
+				+ "typedef std::function<bool(" + className + "&," + EventTemplates.EventBaseRefName + ")> "
 				+ GenerationNames.GuardFuncTypeName + ";\n" + "typedef std::pair<" + GenerationNames.GuardFuncTypeName
 				+ "," + GenerationNames.FunctionPtrTypeName + "> " + GenerationNames.GuardActionName + ";\n";
 	}
@@ -99,7 +100,7 @@ public class PrivateFunctionalTemplates {
 
 	public static String cppType(String typeName) {
 		String cppType = typeName;
-		if (typeName != GenerationNames.EventBaseRefName && typeName != GenerationNames.NoReturn) {
+		if (typeName != EventTemplates.EventBaseRefName && typeName != GenerationNames.NoReturn) {
 			if (typeName != null) {
 				switch (typeName) {
 				case "Integer":

@@ -12,6 +12,7 @@ import org.eclipse.uml2.uml.UMLPackage;
 import org.eclipse.uml2.uml.Vertex;
 
 import hu.elte.txtuml.export.cpp.activity.ActivityExporter;
+import hu.elte.txtuml.export.cpp.templates.GenerationNames;
 import hu.elte.txtuml.export.cpp.templates.activity.ActivityTemplates;
 import hu.elte.txtuml.export.cpp.templates.statemachine.EventTemplates;
 import hu.elte.txtuml.export.cpp.templates.statemachine.StateMachineTemplates;
@@ -45,25 +46,21 @@ public class TransitionExporter {
 		StringBuilder source = new StringBuilder("");
 		for (Transition item : transitions) {
 			String body = "";
-			boolean signalAcces = false;
 			Behavior b = item.getEffect();
-			Pair<String, Boolean> setState = createSetState(item);
+			String setState = createSetState(item);
 			if (b != null && b.eClass().equals(UMLPackage.Literals.ACTIVITY)) {
 				body = activityExporter.createFunctionBody((Activity) b);
-				signalAcces = activityExporter.isContainsSignalAccess();
 
 			}
-			signalAcces = signalAcces || setState.getSecond();
 			source.append(StateMachineTemplates.transitionActionDef(className, item.getName(),
-					body + setState.getFirst() + "\n", signalAcces));
+					body + setState + "\n" + GenerationNames.EntryInvoke, true));
 		}
 		source.append("\n");
 		return source.toString();
 	}
 
-	private Pair<String, Boolean> createSetState(Transition transition) {
+	private String createSetState(Transition transition) {
 		String source = "";
-		boolean containsChoice = false;
 		Vertex targetState = transition.getTarget();
 
 		// choice handling
@@ -71,7 +68,6 @@ public class TransitionExporter {
 				&& ((Pseudostate) targetState).getKind().equals(PseudostateKind.CHOICE_LITERAL)) {
 			List<Pair<String, String>> branches = new LinkedList<Pair<String, String>>();
 			Pair<String, String> elseBranch = null;
-			containsChoice = true;
 			for (Transition trans : targetState.getOutgoings()) {
 
 				String guard = guardExporter.getGuard(trans.getGuard()) + "(" + EventTemplates.eventParamName() + ")";
@@ -94,6 +90,6 @@ public class TransitionExporter {
 		} else {
 			source = StateMachineTemplates.setState("UNKNOWN_TRANSITION_TARGET");
 		}
-		return new Pair<String, Boolean>(source, containsChoice);
+		return source;
 	}
 }

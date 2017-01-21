@@ -16,9 +16,9 @@ import hu.elte.txtuml.utils.Pair;
 import hu.elte.txtuml.export.cpp.Shared;
 import hu.elte.txtuml.export.cpp.statemachine.StateMachineExporter;
 import hu.elte.txtuml.export.cpp.statemachine.SubStateMachineExporter;
-import hu.elte.txtuml.export.cpp.templates.GenerationNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationTemplates;
 import hu.elte.txtuml.export.cpp.templates.RuntimeTemplates;
+import hu.elte.txtuml.export.cpp.templates.statemachine.EventTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.ConstructorTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.HeaderTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.LinkTemplates;
@@ -190,7 +190,7 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 				source.append(GenerationTemplates.cppInclude(GenerationTemplates.DeploymentHeader));
 				source.append(GenerationTemplates.debugOnlyCodeBlock(GenerationTemplates.StandardIOinclude));
 			}
-			source.append(GenerationTemplates.cppInclude(GenerationNames.EventHeaderName));
+			source.append(GenerationTemplates.cppInclude(EventTemplates.EventHeaderName));
 			if (associationExporter.ownAssociation()) {
 				source.append(GenerationTemplates.cppInclude(LinkTemplates.AssociationsStructuresHreaderName));
 

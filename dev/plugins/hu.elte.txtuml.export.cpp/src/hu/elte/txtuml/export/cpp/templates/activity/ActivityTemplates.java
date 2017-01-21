@@ -6,6 +6,7 @@ import java.util.List;
 
 import hu.elte.txtuml.export.cpp.templates.GenerationNames;
 import hu.elte.txtuml.export.cpp.templates.PrivateFunctionalTemplates;
+import hu.elte.txtuml.export.cpp.templates.statemachine.EventTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.LinkTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.LinkTemplates.LinkFunctionType;
 import hu.elte.txtuml.utils.Pair;
@@ -79,7 +80,7 @@ public class ActivityTemplates {
 
 	public static String transitionActionCall(String operationName) {
 		List<String> params = new LinkedList<String>();
-		params.add(GenerationNames.EventFParamName);
+		params.add(EventTemplates.EventFParamName);
 		return operationCall(operationName, params);
 	}
 
@@ -245,7 +246,7 @@ public class ActivityTemplates {
 		source.append(GenerationNames.MemoryAllocator + " " + PrivateFunctionalTemplates.signalType(signalType));
 		source.append("(" + GenerationNames.StaticCast + "<const " + PrivateFunctionalTemplates.signalType(signalType)
 				+ "&>");
-		source.append("(" + GenerationNames.EventFParamName + ")));\n");
+		source.append("(" + EventTemplates.EventFParamName + ")));\n");
 		return source.toString();
 	}
 
@@ -307,7 +308,7 @@ public class ActivityTemplates {
 	public static String getRealEvent(String eventName) {
 		return "const " + eventName + GenerationNames.EventClassTypeId + "& " + GenerationNames.RealEventName
 				+ "=static_cast<const " + eventName + GenerationNames.EventClassTypeId + "&>("
-				+ GenerationNames.EventFParamName + ");\n";
+				+ EventTemplates.EventFParamName + ");\n";
 	}
 
 }

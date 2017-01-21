@@ -156,10 +156,10 @@ public class StateMachineExporterBase {
 		return source.toString();
 	}
 	
-	protected Map<String, String> createStateActionMap(Map<String, Pair<String, String>> map) {
+	protected Map<String, String> createStateActionMap(List<EntryExitFunctionDescription> functionList) {
 		Map<String, String> stateActionMap = new HashMap<String, String>();
-		for (Map.Entry<String, Pair<String, String>> entry : map.entrySet()) {
-			stateActionMap.put(entry.getValue().getFirst(), entry.getKey());
+		for (EntryExitFunctionDescription entry : functionList) {
+			stateActionMap.put(entry.getStateName(), entry.getFunctionName());
 		}
 		return stateActionMap;
 	}

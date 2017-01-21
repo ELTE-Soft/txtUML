@@ -33,8 +33,8 @@ public class RuntimeTemplates {
 
 	public static String processEventVirtual(String className) {
 		return GenerationNames.NoReturn + " " + className + "::" + EventTemplates.ProcessEventFunctionName + "()\n{\n" + EventIName
-				+ "* base=getNextMessage().get();\n" + GenerationNames.EventBaseName + "* "
-				+ GenerationNames.RealEventName + " = static_cast<" + GenerationNames.EventBaseName + "*>(base);\n"
+				+ "* base=getNextMessage().get();\n" + EventTemplates.EventBaseName + "* "
+				+ GenerationNames.RealEventName + " = static_cast<" + EventTemplates.EventBaseName + "*>(base);\n"
 				+ GenerationNames.ProcessEventFName + "(*" + GenerationNames.RealEventName
 				+ ");\ndeleteNextMessage();\n}\n";
 	}

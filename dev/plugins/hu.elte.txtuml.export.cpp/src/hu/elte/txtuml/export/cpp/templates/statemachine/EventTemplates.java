@@ -16,24 +16,30 @@ import hu.elte.txtuml.utils.Pair;
 
 public class EventTemplates {
 	
-	public static final String EventHeader = GenerationNames.EventHeaderName + "." + GenerationNames.HeaderExtension;
+	public static final String EventHeader = EventTemplates.EventHeaderName + "." + GenerationNames.HeaderExtension;
 	public static final String InitSignal = GenerationNames.InitialEventName;
 	public static final String ProcessEventFunctionName = "processEventVirtual";
+	public static final String EventFParamName = GenerationNames.formatIncomingParamName(EventTemplates.EventParamName);
+	public static final String EventParamName = "e";
+	public static final String EventHeaderName = "event";
+	public static final String EventBaseName = "EventBase";
+	public static final String EventBaseRefName = EventBaseName + "CRef";
+	public static final String EventsEnumName = "Events";
 
 	public static String eventBase(Options options) {
 		StringBuilder eventBase = new StringBuilder("");
 
 		eventBase.append(RuntimeTemplates.eventHeaderInclude()).append("\n");
 
-		eventBase.append(GenerationNames.ClassType + " " + GenerationNames.EventBaseName);
+		eventBase.append(GenerationNames.ClassType + " " + EventTemplates.EventBaseName);
 		if (options.isAddRuntime()) {
 			eventBase.append(":" + RuntimeTemplates.EventIName);
 		}
-		eventBase.append("\n{\n" + GenerationNames.EventBaseName + "(");
+		eventBase.append("\n{\n" + EventTemplates.EventBaseName + "(");
 		eventBase.append("int t_):");
 
-		eventBase.append("t(t_){}\nint t;\n};\ntypedef const " + GenerationNames.EventBaseName + "& "
-				+ GenerationNames.EventBaseRefName + ";\n\n");
+		eventBase.append("t(t_){}\nint t;\n};\ntypedef const " + EventTemplates.EventBaseName + "& "
+				+ EventTemplates.EventBaseRefName + ";\n\n");
 		return eventBase.toString();
 	}
 
@@ -41,12 +47,12 @@ public class EventTemplates {
 			List<Property> properites) {
 		StringBuilder source = new StringBuilder(
 				GenerationNames.ClassType + " " + GenerationNames.eventClassName(className) + ":public "
-						+ GenerationNames.EventBaseName + "\n{\n" + GenerationNames.eventClassName(className) + "(");
+						+ EventTemplates.EventBaseName + "\n{\n" + GenerationNames.eventClassName(className) + "(");
 		String paramList = PrivateFunctionalTemplates.paramList(params);
 		if (paramList != "") {
 			source.append(paramList);
 		}
-		source.append("):" + GenerationNames.EventBaseName + "(");
+		source.append("):" + EventTemplates.EventBaseName + "(");
 		source.append(GenerationNames.eventEnumName(className) + ")");
 		StringBuilder body = new StringBuilder("\n{\n" + constructorBody + "}\n");
 
@@ -62,7 +68,7 @@ public class EventTemplates {
 	// supported..
 	public static String eventEnum(Set<SignalEvent> events) {
 		StringBuilder eventList = new StringBuilder("enum ");
-		eventList.append(GenerationNames.EventsEnumName);
+		eventList.append(EventTemplates.EventsEnumName);
 		eventList.append("{");
 		eventList.append(GenerationNames.eventEnumName(EventTemplates.InitSignal) + ",");
 
@@ -76,11 +82,11 @@ public class EventTemplates {
 	}
 
 	public static String eventHeaderGuard(String source) {
-		return HeaderTemplates.headerGuard(source, GenerationNames.EventHeaderName);
+		return HeaderTemplates.headerGuard(source, EventTemplates.EventHeaderName);
 	}
 
 	public static String eventParamName() {
-		return GenerationNames.formatIncomingParamName(GenerationNames.EventParamName);
+		return GenerationNames.formatIncomingParamName(EventTemplates.EventParamName);
 	}
 
 
