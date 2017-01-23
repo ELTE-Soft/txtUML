@@ -19,7 +19,6 @@ import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
-import org.eclipse.jdt.ui.JavaElementLabelProvider;
 import org.eclipse.jface.viewers.CheckboxTreeViewer;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IContentProvider;
@@ -327,10 +326,8 @@ public class VisualizeTxtUMLPage extends WizardPage {
 
 		tree.getTree().addListener(SWT.Selection, event -> selectionHandler(event));
 		tree.setContentProvider(cp);
-		tree.setLabelProvider(new JavaElementLabelProvider(
-				JavaElementLabelProvider.SHOW_POST_QUALIFIED | JavaElementLabelProvider.SHOW_SMALL_ICONS));
+		tree.setLabelProvider(WizardUtils.getPostQualifiedLabelProvider());
 		tree.setInput(ResourcesPlugin.getWorkspace().getRoot());
-
 		return tree;
 	}
 
