@@ -1,4 +1,4 @@
-package hu.elte.txtuml.xtxtuml.ui.quickfix
+package hu.elte.txtuml.xtxtuml.ui.quickfix;
 
 import com.google.inject.Inject
 import hu.elte.txtuml.xtxtuml.common.XtxtUMLUtils
