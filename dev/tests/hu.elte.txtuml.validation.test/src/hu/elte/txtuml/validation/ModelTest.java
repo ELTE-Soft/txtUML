@@ -29,8 +29,8 @@ import hu.elte.txtuml.validation.problems.general.InvalidChildrenElement;
 import hu.elte.txtuml.validation.problems.general.InvalidModifier;
 import hu.elte.txtuml.validation.problems.general.InvalidTypeInModel;
 import hu.elte.txtuml.validation.problems.modelclass.InvalidModelClassElement;
-import hu.elte.txtuml.validation.problems.modelclass.InvalidTypeWithClassAllowed;
-import hu.elte.txtuml.validation.problems.modelclass.InvalidTypeWithClassNotAllowed;
+import hu.elte.txtuml.validation.problems.modelclass.InvalidParameterType;
+import hu.elte.txtuml.validation.problems.modelclass.InvalidAttributeType;
 import hu.elte.txtuml.validation.problems.signal.InvalidSignalContent;
 import hu.elte.txtuml.validation.problems.state.StateMethodParameters;
 import hu.elte.txtuml.validation.problems.state.UnknownClassInState;
@@ -82,7 +82,7 @@ public class ModelTest {
 
 		compilationUnit.accept(new ModelVisitor(mockCollector));
 
-		verify(mockCollector, times(2)).report(isA(InvalidTypeWithClassAllowed.class));
+		verify(mockCollector, times(2)).report(isA(InvalidParameterType.class));
 
 		checkNoOtherErrorRaised();
 	}
@@ -93,7 +93,7 @@ public class ModelTest {
 
 		compilationUnit.accept(new ModelVisitor(mockCollector));
 
-		verify(mockCollector).report(isA(InvalidTypeWithClassNotAllowed.class));
+		verify(mockCollector).report(isA(InvalidAttributeType.class));
 
 		checkNoOtherErrorRaised();
 	}
@@ -115,7 +115,7 @@ public class ModelTest {
 
 		compilationUnit.accept(new ModelVisitor(mockCollector));
 
-		verify(mockCollector, times(2)).report(isA(InvalidTypeWithClassNotAllowed.class));
+		verify(mockCollector, times(2)).report(isA(InvalidAttributeType.class));
 
 		checkNoOtherErrorRaised();
 	}
@@ -126,7 +126,7 @@ public class ModelTest {
 
 		compilationUnit.accept(new ModelVisitor(mockCollector));
 
-		verify(mockCollector, times(2)).report(isA(InvalidTypeWithClassNotAllowed.class));
+		verify(mockCollector, times(2)).report(isA(InvalidAttributeType.class));
 
 		checkNoOtherErrorRaised();
 	}

@@ -7,17 +7,17 @@ import hu.elte.txtuml.validation.SourceInfo;
 import hu.elte.txtuml.validation.problems.ValidationErrorBase;
 import hu.elte.txtuml.validation.problems.ValidationErrorCatalog;
 
-public class InvalidTypeWithClassNotAllowed extends ValidationErrorBase {
+public class InvalidParameterType extends ValidationErrorBase {
 
-	public static final String message = Messages.InvalidTypeWithClassNotAllowed_message;
+	public static final String message = Messages.InvalidParameterType_message;
 
-	public InvalidTypeWithClassNotAllowed(SourceInfo sourceInfo, ASTNode node) {
+	public InvalidParameterType(SourceInfo sourceInfo, ASTNode node) {
 		super(sourceInfo, node);
 	}
 
 	@Override
 	public int getID() {
-		return ValidationErrorCatalog.INVALID_TYPE_WITH_CLASS_NOT_ALLOWED.ordinal();
+		return ValidationErrorCatalog.INVALID_PARAMETER_TYPE.ordinal();
 	}
 
 	@Override

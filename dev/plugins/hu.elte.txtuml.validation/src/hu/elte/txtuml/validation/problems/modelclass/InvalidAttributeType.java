@@ -7,17 +7,17 @@ import hu.elte.txtuml.validation.SourceInfo;
 import hu.elte.txtuml.validation.problems.ValidationErrorBase;
 import hu.elte.txtuml.validation.problems.ValidationErrorCatalog;
 
-public class InvalidTypeWithClassAllowed extends ValidationErrorBase {
+public class InvalidAttributeType extends ValidationErrorBase {
 
-	public static final String message = Messages.InvalidTypeWithClassAllowed_message;
+	public static final String message = Messages.InvalidAttributeType_message;
 
-	public InvalidTypeWithClassAllowed(SourceInfo sourceInfo, ASTNode node) {
+	public InvalidAttributeType(SourceInfo sourceInfo, ASTNode node) {
 		super(sourceInfo, node);
 	}
 
 	@Override
 	public int getID() {
-		return ValidationErrorCatalog.INVALID_TYPE_WITH_CLASS_ALLOWED.ordinal();
+		return ValidationErrorCatalog.INVALID_ATTRIBUTE_TYPE.ordinal();
 	}
 
 	@Override

@@ -48,7 +48,8 @@ public class Utils {
 	}
 
 	public static boolean isAllowedParameterType(Type type, boolean isVoidAllowed) {
-		if (isAllowedAttributeType(type, isVoidAllowed) || ElementTypeTeller.isModelClass(type.resolveBinding())) {
+		if (isAllowedAttributeType(type, isVoidAllowed) || ElementTypeTeller.isModelClass(type.resolveBinding())
+				|| ElementTypeTeller.isSignal(type.resolveBinding())) {
 			return true;
 		}
 

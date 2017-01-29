@@ -12,8 +12,8 @@ public class Messages extends NLS {
 	public static String InvalidSignalContent_message;
 	public static String InvalidTemplate_message;
 	public static String InvalidTypeInModel_message;
-	public static String InvalidTypeWithClassAllowed_message;
-	public static String InvalidTypeWithClassNotAllowed_message;
+	public static String InvalidParameterType_message;
+	public static String InvalidAttributeType_message;
 	public static String MissingTransitionSource_message;
 	public static String MissingTransitionTarget_message;
 	public static String MissingTransitionTrigger_message;
