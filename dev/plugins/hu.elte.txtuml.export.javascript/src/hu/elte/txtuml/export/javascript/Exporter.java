@@ -97,10 +97,9 @@ public class Exporter {
 	 * @throws MalformedURLException
 	 */
 	private void display() throws PartInitException, MalformedURLException {
-		// a common browserID is used so the browser won't be reopened at every
-		// visualization
-		final IWebBrowser browser = PlatformUI.getWorkbench().getBrowserSupport()
-				.createBrowser("hu.elte.txtuml.export.javascript");
+		// set to use external browser due to internal browser bug
+		// https://bugs.eclipse.org/bugs/show_bug.cgi?id=501978
+		final IWebBrowser browser = PlatformUI.getWorkbench().getBrowserSupport().getExternalBrowser();
 		browser.openURL(Paths.get(target, "visualize.html").toUri().toURL());
 	}
 
