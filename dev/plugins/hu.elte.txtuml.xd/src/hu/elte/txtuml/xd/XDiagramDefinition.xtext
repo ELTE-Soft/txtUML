@@ -26,7 +26,7 @@ DiagramSignature :
 
 BinaryIdentifierInstruction:
 	val = TypeExpression 
-	op = ("left-of" | "right-of" | "top-of" | "bottom-of") 
+	op = ("left-of" | "right-of" | "above" | "below") 
 	of = TypeExpression
 ;
 
@@ -36,9 +36,9 @@ BinaryListInstruction:
 	of = TypeExpressionList
 ;
 
-UnaryIdentifierInstruction:
+PhantomInstruction:
 	op = ("phantom")
-	val = TypeExpression
+	name=ID
 ;
 
 UnaryListInstruction:
@@ -76,7 +76,7 @@ Instruction:
 	(
 		BinaryIdentifierInstruction |
 		BinaryListInstruction |
-		UnaryIdentifierInstruction |
+		PhantomInstruction |
 		UnaryListInstruction |
 		GroupInstruction |
 		UnaryNumberInstruction |

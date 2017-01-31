@@ -8,12 +8,39 @@ import hu.elte.txtuml.xd.xDiagramDefinition.Model
 import org.eclipse.xtext.xbase.jvmmodel.AbstractModelInferrer
 import org.eclipse.xtext.xbase.jvmmodel.IJvmDeclaredTypeAcceptor
 import org.eclipse.xtext.xbase.jvmmodel.JvmTypesBuilder
-//import org.eclipse.xtext.naming.IQualifiedNameProvider
+import org.eclipse.xtext.naming.IQualifiedNameProvider
 import hu.elte.txtuml.xd.xDiagramDefinition.Instruction
 import hu.elte.txtuml.xd.xDiagramDefinition.GroupInstruction
 import hu.elte.txtuml.xd.xDiagramDefinition.DiagramSignature
 import org.eclipse.emf.ecore.EObject
 import org.eclipse.xtext.common.types.JvmType
+import org.eclipse.xtext.common.types.JvmGenericType
+//import org.eclipse.xtext.common.types.JvmVisibility
+import org.eclipse.xtext.xbase.jvmmodel.JvmTypeReferenceBuilder
+import hu.elte.txtuml.api.layout.Diagram.NodeGroup
+import hu.elte.txtuml.api.layout.ClassDiagram
+import hu.elte.txtuml.api.layout.Diagram.Layout
+import org.eclipse.xtext.xbase.jvmmodel.JvmTypeReferenceBuilder.Factory
+import hu.elte.txtuml.xd.xDiagramDefinition.BinaryIdentifierInstruction
+import hu.elte.txtuml.api.layout.Left
+import org.eclipse.xtext.xbase.jvmmodel.JvmAnnotationReferenceBuilder
+import org.eclipse.xtext.common.types.JvmAnnotationReference
+import hu.elte.txtuml.api.layout.Right
+import hu.elte.txtuml.api.layout.Above
+import hu.elte.txtuml.api.layout.Below
+import org.eclipse.xtext.common.types.TypesFactory
+import hu.elte.txtuml.xd.xDiagramDefinition.TypeExpression
+import hu.elte.txtuml.xd.xDiagramDefinition.PhantomInstruction
+import hu.elte.txtuml.api.layout.Diagram.Phantom
+import hu.elte.txtuml.xd.xDiagramDefinition.BinaryListInstruction
+import hu.elte.txtuml.api.layout.East
+import hu.elte.txtuml.api.layout.West
+import hu.elte.txtuml.api.layout.North
+import hu.elte.txtuml.api.layout.South
+import hu.elte.txtuml.xd.xDiagramDefinition.TypeExpressionList
+import hu.elte.txtuml.api.layout.Contains
+
+//import hu.elte.txtuml.api.layout.Diagram;
 
 /**
  * <p>Infers a JVM model from the source model.</p> 
@@ -27,7 +54,7 @@ class XDiagramDefinitionJvmModelInferrer extends AbstractModelInferrer {
 	 * convenience API to build and initialize JVM types and their members.
 	 */
 	@Inject extension JvmTypesBuilder
-//	@Inject extension IQualifiedNameProvider
+	@Inject extension IQualifiedNameProvider
 
 	/**
 	 * The dispatch method {@code infer} is called for each instance of the
@@ -68,6 +95,8 @@ class XDiagramDefinitionJvmModelInferrer extends AbstractModelInferrer {
 ////		]
 //	}
 
+	var currentDiagramClass = null as JvmGenericType;
+	var currentLayoutClass = null as JvmGenericType;
 
 	def dispatch void infer(Instruction element, IJvmDeclaredTypeAcceptor acceptor, boolean isPreIndexingPhase) {
 		println("infer called with instruction: " + element);		
@@ -76,19 +105,110 @@ class XDiagramDefinitionJvmModelInferrer extends AbstractModelInferrer {
 	def dispatch void infer(DiagramSignature element, IJvmDeclaredTypeAcceptor acceptor, boolean isPreIndexingPhase) {
 		println("infer called with diagram-signature: " + element);		
 
-		var result = element.toClass(element.findPackageName + element.name);
-		element.associate(result);
+		var result = currentDiagramClass = element.toClass(element.findPackageName + element.name)[
+			superTypes += ClassDiagram.typeRef();
+			documentation = element.documentation;
+		];
+//		element.associate(result);
 		acceptor.accept(result);
+		
+		var layout = currentLayoutClass = element.toClass("$Layout")[
+			superTypes += Layout.typeRef();
+			declaringType = currentDiagramClass;
+		];
+		
 	}
 	
 	def dispatch void infer(GroupInstruction element, IJvmDeclaredTypeAcceptor acceptor, boolean isPreIndexingPhase) {
 		println("infer called with groupinstruction: " + element);
 		
-		var groupFQN = element.findPackageName + element.findDiagramName + "." + element.name;
+//		var groupClassName = element.findPackageName + element.findDiagramName + "." + element.name;
 		
-		var result = element.toClass(groupFQN);
-		element.associate(result);
-		acceptor.accept(result);
+//		result.extendedClass = new JvmTypeReferenceBuilder().typeRef("hu.elte.txtuml.api.layout.Diagram.NodeGroup");
+
+		var groupType = element.toClass(element.name) [
+			documentation = element.documentation;
+			declaringType = currentDiagramClass;
+			superTypes += NodeGroup.typeRef(); //TODO: not super.NodeGroup, but diagramClass.NodeGroup //new JvmTypeReferenceBuilder().typeRef("hu.elte.txtuml.api.layout.Diagram.NodeGroup");
+			annotations += createAnnotationTEList(Contains, "value" -> element.^val);
+		]
+		acceptor.accept(groupType);
+	}
+	
+	def dispatch void infer(PhantomInstruction element, IJvmDeclaredTypeAcceptor acceptor, boolean isPreIndexingPhase){
+		println("infer called with unary-id-instruction: " + element);
+		
+		acceptor.accept(element.toClass(element.name) [
+			documentation = element.documentation;
+			declaringType = currentDiagramClass;
+			superTypes += Phantom.typeRef();
+		]);
+	}
+	
+	def dispatch void infer(BinaryIdentifierInstruction element, IJvmDeclaredTypeAcceptor acceptor, boolean isPreIndexingPhase) {
+		println("infer called with bin-id-instruction: " + element);
+
+        var annType = null as Class<?>; 
+		annType = switch(element.op){
+			case "left-of": Left
+			case "right-of": Right
+			case "above": Above
+			case "below": Below			
+		};
+
+		var newAnnotation = annType.createAnnotationTE(
+			"val" -> element.^val,
+			"from" -> element.of
+		);		
+				
+		this.currentLayoutClass.annotations += newAnnotation;
+	}
+	
+	def dispatch void infer(BinaryListInstruction element, IJvmDeclaredTypeAcceptor acceptor, boolean isPreIndexingPhase) {
+		println("infer called with bin-list-instruction: " + element);
+
+        var annType = null as Class<?>; 
+		annType = switch(element.op){
+			case "east-of": East
+			case "west-of": West
+			case "north-of": North
+			case "south-of": South			
+		};
+		
+		var newAnnotation = annType.createAnnotationTEList(
+			"val" -> element.^val,
+			"from" -> element.of
+		);
+		
+		element.of.expressions.map[x | x.name.typeRef()]
+						
+		this.currentLayoutClass.annotations += newAnnotation;
+	}
+	
+	def private createAnnotationTE(Class<?> annotationType, Pair<String, TypeExpression>... params) {
+		annotationRef(annotationType) => [ annotationRef |
+			for (param : params) {
+				annotationRef.explicitValues += TypesFactory::eINSTANCE.createJvmTypeAnnotationValue => [
+					values += param.value.name.typeRef();
+					if (params.size != 1 || param.key != "value") {
+						operation = annotationRef.annotation.declaredOperations.findFirst[it.simpleName == param.key]
+					}
+				]
+			}
+		]
+	}
+	
+	def private createAnnotationTEList(Class<?> annotationType, Pair<String, TypeExpressionList>... params) {
+		annotationRef(annotationType) => [ annotationRef |
+			for (param : params) {
+				annotationRef.explicitValues += TypesFactory::eINSTANCE.createJvmTypeAnnotationValue => [
+					values += param.value.expressions.map[x | x.name.typeRef()];
+					if (params.size != 1 || param.key != "value") {
+						operation = annotationRef.annotation.declaredOperations.findFirst[it.simpleName == param.key]
+					}
+				]
+			}
+		]
 	}
 	
 	var model = null as Model;
