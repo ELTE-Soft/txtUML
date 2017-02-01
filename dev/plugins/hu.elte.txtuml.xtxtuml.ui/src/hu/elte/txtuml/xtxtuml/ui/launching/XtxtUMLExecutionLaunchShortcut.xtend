@@ -10,6 +10,10 @@ import org.eclipse.xtext.xbase.ui.launching.LaunchShortcutUtil
 
 class XtxtUMLExecutionLaunchShortcut extends JavaApplicationLaunchShortcut {
 
+	/**
+	 * Overrides the default implementation to use XtxtUML delegates.
+	 * @see XtxtUMLJavaElementDelegateMainLaunch
+	 */
 	override launch(ISelection selection, String mode) {
 		if (selection instanceof IStructuredSelection) {
 			val newSelection = LaunchShortcutUtil.replaceWithJavaElementDelegates(selection,
@@ -18,6 +22,10 @@ class XtxtUMLExecutionLaunchShortcut extends JavaApplicationLaunchShortcut {
 		}
 	}
 
+	/**
+	 * Overrides the default implementation to use XtxtUML delegates.
+	 * @see XtxtUMLJavaElementDelegateMainLaunch
+	 */
 	override launch(IEditorPart editor, String mode) {
 		val javaElementDelegate = (editor as JavaElementDelegate).getAdapter(XtxtUMLJavaElementDelegateMainLaunch);
 		if (javaElementDelegate != null) {
