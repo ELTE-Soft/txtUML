@@ -13,6 +13,10 @@ import org.eclipse.jdt.core.IPackageDeclaration;
 import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
+import org.eclipse.jdt.ui.JavaElementLabelProvider;
+import org.eclipse.jface.viewers.DelegatingStyledCellLabelProvider;
+import org.eclipse.jface.viewers.IBaseLabelProvider;
+import org.eclipse.jface.viewers.StyledString;
 
 import hu.elte.txtuml.api.model.Model;
 
@@ -92,6 +96,24 @@ public class WizardUtils {
 		} catch (JavaModelException ex) {
 			return false;
 		}
+	}
+
+	public static IBaseLabelProvider getPostQualifiedLabelProvider() {
+		return new DelegatingStyledCellLabelProvider(new JavaElementLabelProvider(
+				JavaElementLabelProvider.SHOW_POST_QUALIFIED | JavaElementLabelProvider.SHOW_SMALL_ICONS)) {
+			@Override
+			protected StyledString getStyledText(Object element) {
+				String nameWithQualifier = getStyledStringProvider().getStyledText(element).getString() + " ";
+				int separatorIndex = nameWithQualifier.indexOf('-');
+
+				if (separatorIndex == -1)
+					return new StyledString(nameWithQualifier);
+
+				StyledString name = new StyledString(nameWithQualifier.substring(0, separatorIndex));
+				String qualifier = nameWithQualifier.substring(separatorIndex);
+				return name.append(new StyledString(qualifier, StyledString.QUALIFIER_STYLER));
+			};
+		};
 	}
 
 	private static boolean isImportedNameResolvedTo(ICompilationUnit compilationUnit, String elementName,

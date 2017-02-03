@@ -33,6 +33,7 @@ public class TxtUMLToCppWizard extends Wizard {
 			TxtUMLToCppPage.PROJECT_NAME = txtUMLProject;
 			TxtUMLToCppPage.MODEL_NAME = txtUMLModel;
 			TxtUMLToCppPage.DESCRIPTION_NAME = threadManagmentDescription;
+			TxtUMLToCppPage.DESCRIPTION_PROJECT_NAME = descriptionProjectName;
 
 			boolean addRuntimeOption = createCppCodePage.getAddRuntimeOptionSelection();
 			boolean overWriteMainFileOption = createCppCodePage.getOverWriteMainFileSelection();
