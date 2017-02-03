@@ -7,7 +7,7 @@ SingleThreadRT* SingleThreadRT::instance = nullptr;
 
 SingleThreadRT::SingleThreadRT():_messageQueue(new PoolQueueType){}
 
-void SingleThreadRT::setupObjectSpecificRuntime(StateMachineI* sm){
+void SingleThreadRT::setupObjectSpecificRuntime(IStateMachine* sm){
 	sm->setMessageCounter(new std::atomic_int(0));
 }
 
@@ -30,7 +30,7 @@ void SingleThreadRT::start()
 
     while(!_messageQueue->empty())
     {
-            StateMachineI* sm;
+            IStateMachine* sm;
             _messageQueue->pop_front(sm);
             if (sm->isStarted())
             {
@@ -51,14 +51,14 @@ void SingleThreadRT::start()
 
 void SingleThreadRT::setConfiguration(ThreadConfiguration*){}
 
-void SingleThreadRT::enqueObject(StateMachineI *sm)
+void SingleThreadRT::enqueueObject(IStateMachine *sm)
 {
     _messageQueue->push_back(sm);
 }
 
 void SingleThreadRT::stopUponCompletion() {}
 
-void SingleThreadRT::removeObject(StateMachineI*) {}
+void SingleThreadRT::removeObject(IStateMachine*) {}
 
 
 
@@ -104,7 +104,7 @@ void ConfiguratedThreadedRT::stopUponCompletion()
 	}
 }
 
-void ConfiguratedThreadedRT::setupObjectSpecificRuntime(StateMachineI* sm)
+void ConfiguratedThreadedRT::setupObjectSpecificRuntime(IStateMachine* sm)
 {
 	
 	sm->setMessageCounter(&messages);
@@ -121,7 +121,7 @@ bool ConfiguratedThreadedRT::isConfigurated()
     return poolManager->isConfigurated();
 }
 
-void ConfiguratedThreadedRT::removeObject(StateMachineI* sm)
+void ConfiguratedThreadedRT::removeObject(IStateMachine* sm)
 {
 	int objectId = sm->getPoolId();
 	numberOfObjects[(size_t)objectId]--;
@@ -137,7 +137,7 @@ void ConfiguratedThreadedRT::setConfiguration(ThreadConfiguration* conf)
 	numberOfObjects.resize((unsigned int)numberOfConfigurations);
 }
 
-void ConfiguratedThreadedRT::enqueObject(StateMachineI*) {}
+void ConfiguratedThreadedRT::enqueueObject(IStateMachine*) {}
 
 ConfiguratedThreadedRT::~ConfiguratedThreadedRT()
 {

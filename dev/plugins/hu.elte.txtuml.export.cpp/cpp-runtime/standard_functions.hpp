@@ -5,7 +5,7 @@
 #include <sstream>
 #include <list>
 #include <math.h>
-#include "statemachineI.hpp"
+#include "istatemachine.hpp"
 
 int delayedInc(int,int&);
 int delayedDec(int,int&);
@@ -40,7 +40,7 @@ std::string concat(T1 s1, T2 s2)
 
 namespace conversion 
 {
-std::string to_string(StateMachineI*);
+std::string to_string(IStateMachine*);
 std::string to_string(int);
 std::string to_string(double);
 std::string to_string(bool);
