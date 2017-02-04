@@ -40,9 +40,9 @@ public abstract class StructuredElementExporter<StructuredElement extends Operat
 		this.structuredElement = structuredElement;
 	}
 	
-	public void init() {
-		dependencyExporter = new DependencyExporter();
-		activityExporter = new ActivityExporter();
+	public void init(Shared shared) {
+		dependencyExporter = new DependencyExporter(shared.getAllModelClassNames());
+		activityExporter = new ActivityExporter(shared);
 	}
 	
 
@@ -96,9 +96,7 @@ public abstract class StructuredElementExporter<StructuredElement extends Operat
 					type = attribute.getType().getName();
 				}
 
-				if (!Shared.isBasicType(type)) {
-					dependencyExporter.addDependecy(type);
-				}
+				dependencyExporter.addDependecy(type);
 				if (isSimpleAttribute(attribute)) {
 					
 					source.append(VariableTemplates.propertyDecl(type, attribute.getName(),attribute.getDefault()));

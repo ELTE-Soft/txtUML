@@ -19,10 +19,9 @@ public class StateMachineExporter extends StateMachineExporterBase {
 	private boolean ownStateMachine;
 	private int poolId;
 	
-	private Shared shared;
 
-	public StateMachineExporter() {
-		shared = new Shared();
+	public StateMachineExporter(Shared shared) {
+		super(shared);
 	}
 
 	public void setStateMachineThreadPoolId(int id) {
@@ -31,7 +30,6 @@ public class StateMachineExporter extends StateMachineExporterBase {
 
 	public <E extends Element> void createStateMachineRegion(E element) {
 		List<StateMachine> smList = new ArrayList<StateMachine>();
-		shared.setModelElements(element.allOwnedElements());
 		shared.getTypedElements(smList, UMLPackage.Literals.STATE_MACHINE);
 		if (!smList.isEmpty()) {
 			stateMachineRegion = smList.get(0).getRegions().get(0);

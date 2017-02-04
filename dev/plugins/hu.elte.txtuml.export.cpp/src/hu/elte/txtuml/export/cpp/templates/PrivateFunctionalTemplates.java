@@ -2,6 +2,11 @@ package hu.elte.txtuml.export.cpp.templates;
 
 import java.util.List;
 
+import hu.elte.txtuml.export.cpp.templates.GenerationNames.BasicTypeNames;
+import hu.elte.txtuml.export.cpp.templates.GenerationNames.FileNames;
+import hu.elte.txtuml.export.cpp.templates.GenerationNames.ModifierNames;
+import hu.elte.txtuml.export.cpp.templates.GenerationNames.PointerAndMemoryNames;
+import hu.elte.txtuml.export.cpp.templates.GenerationNames.TimerNames;
 import hu.elte.txtuml.export.cpp.templates.statemachine.EventTemplates;
 import hu.elte.txtuml.utils.Pair;
 
@@ -21,26 +26,11 @@ public class PrivateFunctionalTemplates {
 	}
 
 	public static String include(String className) {
-		if (className.contains("std::")) {
-			return outerInclude(className);
-		} else {
-			return localInclude(className);
-		}
-	}
-
-	public static String localInclude(String className) {
-		return "#include \"" + className + "." + GenerationNames.HeaderExtension + "\"\n";
-	}
-
-	public static String outerInclude(String className) {
-		if (stdType(className)) {
-			className = className.substring(5);
-		}
-		return "#include <" + className + ">\n";
+		return "#include \"" + className + "." + FileNames.HeaderExtension + "\"\n";
 	}
 
 	public static String typedefs(String className) {
-		return "typedef std::function<" + GenerationNames.NoReturn + "(" + className + "&,"
+		return "typedef std::function<" + ModifierNames.NoReturn + "(" + className + "&,"
 				+ EventTemplates.EventBaseRefName + ")> " + GenerationNames.FunctionPtrTypeName + ";\n"
 				+ "typedef std::function<bool(" + className + "&," + EventTemplates.EventBaseRefName + ")> "
 				+ GenerationNames.GuardFuncTypeName + ";\n" + "typedef std::pair<" + GenerationNames.GuardFuncTypeName
@@ -53,7 +43,7 @@ public class PrivateFunctionalTemplates {
 	}
 
 	public static String transitionTableDecl(String className) {
-		return GenerationNames.StaticModifier + " " + transitionTableType(className) + " "
+		return ModifierNames.StaticModifier + " " + transitionTableType(className) + " "
 				+ GenerationNames.TransitionTableName + ";\n";
 
 	}
@@ -100,7 +90,7 @@ public class PrivateFunctionalTemplates {
 
 	public static String cppType(String typeName) {
 		String cppType = typeName;
-		if (typeName != EventTemplates.EventBaseRefName && typeName != GenerationNames.NoReturn) {
+		if (typeName != EventTemplates.EventBaseRefName && typeName != ModifierNames.NoReturn) {
 			if (typeName != null) {
 				switch (typeName) {
 				case "Integer":
@@ -113,13 +103,13 @@ public class PrivateFunctionalTemplates {
 					cppType = "bool";
 					break;
 				case "String":
-					cppType = GenerationNames.cppString;
+					cppType = BasicTypeNames.StringTypeName;
 					break;
-				case GenerationNames.TimerClassName:
+				case TimerNames.TimerClassName:
 					cppType = GenerationNames.sharedPtrType(typeName);
 					break;
-				case GenerationNames.EventPtr:
-					cppType = GenerationNames.EventPtr;
+				case PointerAndMemoryNames.EventPtr:
+					cppType = PointerAndMemoryNames.EventPtr;
 					break;
 				default:
 					cppType = GenerationNames.pointerType(typeName);
@@ -130,13 +120,6 @@ public class PrivateFunctionalTemplates {
 			}
 		}
 		return cppType;
-	}
-
-	public static boolean stdType(String cppType) {
-		if (cppType.contains("std::")) {
-			return true;
-		}
-		return false;
 	}
 
 	public static String debugLogMessage(String className, String functionName) {

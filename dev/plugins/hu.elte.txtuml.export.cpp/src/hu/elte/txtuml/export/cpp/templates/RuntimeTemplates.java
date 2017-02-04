@@ -2,6 +2,8 @@ package hu.elte.txtuml.export.cpp.templates;
 
 import java.io.File;
 
+import hu.elte.txtuml.export.cpp.templates.GenerationNames.ModifierNames;
+import hu.elte.txtuml.export.cpp.templates.GenerationNames.PointerAndMemoryNames;
 import hu.elte.txtuml.export.cpp.templates.statemachine.EventTemplates;
 import hu.elte.txtuml.export.cpp.templates.statemachine.StateMachineTemplates;
 
@@ -27,12 +29,12 @@ public class RuntimeTemplates {
 
 
 	public static String initStateMachineForRuntime() {
-		return GetRuntimeInstance + GenerationNames.PointerAccess + ObjectSetterForRuntime + "(" + GenerationNames.Self
+		return GetRuntimeInstance + PointerAndMemoryNames.PointerAccess + ObjectSetterForRuntime + "(" + PointerAndMemoryNames.Self
 				+ ");\n";
 	}
 
 	public static String processEventVirtual(String className) {
-		return GenerationNames.NoReturn + " " + className + "::" + EventTemplates.ProcessEventFunctionName + "()\n{\n" + EventIName
+		return ModifierNames.NoReturn + " " + className + "::" + EventTemplates.ProcessEventFunctionName + "()\n{\n" + EventIName
 				+ "* base=getNextMessage().get();\n" + EventTemplates.EventBaseName + "* "
 				+ GenerationNames.RealEventName + " = static_cast<" + EventTemplates.EventBaseName + "*>(base);\n"
 				+ GenerationNames.ProcessEventFName + "(*" + GenerationNames.RealEventName
@@ -40,7 +42,7 @@ public class RuntimeTemplates {
 	}
 
 	public static String processInitTransition(String className) {
-		return GenerationNames.NoReturn + " " + className + "::" + StateMachineTemplates.ProcessInitTransitionFunctionName + "()\n{\n"
+		return ModifierNames.NoReturn + " " + className + "::" + StateMachineTemplates.ProcessInitTransitionFunctionName + "()\n{\n"
 				+ GenerationNames.InitialEventName + "_EC init;\n"
 				+ GenerationNames.ProcessEventFName + "(init);\n}\n";
 

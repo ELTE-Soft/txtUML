@@ -4,6 +4,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import hu.elte.txtuml.export.cpp.templates.GenerationNames;
+import hu.elte.txtuml.export.cpp.templates.GenerationNames.FileNames;
 import hu.elte.txtuml.export.cpp.templates.PrivateFunctionalTemplates;
 import hu.elte.txtuml.export.cpp.templates.RuntimeTemplates;
 import hu.elte.txtuml.export.cpp.templates.statemachine.StateMachineTemplates;
@@ -11,10 +12,10 @@ import hu.elte.txtuml.export.cpp.templates.statemachine.StateMachineTemplates;
 public class HeaderTemplates {
 
 	public static String headerGuard(String source, String className) {
-		return "#ifndef __" + className.toUpperCase() + "_" + GenerationNames.HeaderExtension.toUpperCase() + "__\n"
-				+ "#define __" + className.toUpperCase() + "_" + GenerationNames.HeaderExtension.toUpperCase()
+		return "#ifndef __" + className.toUpperCase() + "_" + FileNames.HeaderExtension.toUpperCase() + "__\n"
+				+ "#define __" + className.toUpperCase() + "_" + FileNames.HeaderExtension.toUpperCase()
 				+ "__\n\n" + source + "\n\n#endif //__" + className.toUpperCase() + "_"
-				+ GenerationNames.HeaderExtension.toUpperCase() + "_";
+				+ FileNames.HeaderExtension.toUpperCase() + "_";
 	}
 
 	public static String hierarchicalStateMachineClassHeader(String dependency, String className,

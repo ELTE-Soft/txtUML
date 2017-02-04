@@ -5,6 +5,9 @@ import java.util.LinkedList;
 import java.util.List;
 
 import hu.elte.txtuml.export.cpp.templates.GenerationNames;
+import hu.elte.txtuml.export.cpp.templates.GenerationNames.ActionNames;
+import hu.elte.txtuml.export.cpp.templates.GenerationNames.CollectionNames;
+import hu.elte.txtuml.export.cpp.templates.GenerationNames.PointerAndMemoryNames;
 import hu.elte.txtuml.export.cpp.templates.PrivateFunctionalTemplates;
 import hu.elte.txtuml.export.cpp.templates.statemachine.EventTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.LinkTemplates;
@@ -16,14 +19,14 @@ public class ActivityTemplates {
 	public static final String ReplaceSimpleTypeOp = "=";
 	public static final String AddCompositTypeOp = ".push_back";
 	public static final String ReplaceCompositTypeOp = ReplaceSimpleTypeOp;
-	public static final String AccessOperatorForSets = GenerationNames.SimpleAccess;
-	public static final String SignalSmartPointerType = GenerationNames.EventPtr;
+	public static final String AccessOperatorForSets = PointerAndMemoryNames.SimpleAccess;
+	public static final String SignalSmartPointerType = PointerAndMemoryNames.EventPtr;
 	public static final String ProcessorDirectivesSign = "#";
 	public static final String CreateStereoType = "Create";
 	public static final String GetSignalFunctionName = "getSignal";
 	public static final String TempVar = "temp";
-	public static final String NullPtrLiteral = GenerationNames.NullPtr;
-	public static final String SelfLiteral = GenerationNames.Self;
+	public static final String NullPtrLiteral = PointerAndMemoryNames.NullPtr;
+	public static final String SelfLiteral = PointerAndMemoryNames.Self;
 
 	public enum OperationSide {
 		Left, Right
@@ -64,18 +67,18 @@ public class ActivityTemplates {
 	}
 
 	public static String sendSignal(String signalName) {
-		return "send(EventPtr(" + GenerationNames.MemoryAllocator + " " + signalName + ")";
+		return "send(EventPtr(" + PointerAndMemoryNames.MemoryAllocator + " " + signalName + ")";
 	}
 
 	public static String linkObjects(String firstObjectName, String secondObjectName, String associationName,
 			String endPoint1, String endPoint2, LinkFunctionType linkType) {
-		return GenerationNames.ActionFunctionsNamespace + "::" + LinkTemplates.getLinkFunctionName(linkType) + "<"
+		return ActionNames.ActionFunctionsNamespace + "::" + LinkTemplates.getLinkFunctionName(linkType) + "<"
 				+ associationName + ",typename " + associationName + "::" + endPoint1 + ",typename " + associationName
 				+ "::" + endPoint2 + ">" + "(" + firstObjectName + "," + secondObjectName + ");\n";
 	}
 
 	public static String signalSend(String target, String signalName) {
-		return target + GenerationNames.PointerAccess + GenerationNames.SendSignal + "(" + signalName + ");\n";
+		return target + PointerAndMemoryNames.PointerAccess + ActionNames.SendSignal + "(" + signalName + ");\n";
 	}
 
 	public static String transitionActionCall(String operationName) {
@@ -122,7 +125,7 @@ public class ActivityTemplates {
 	}
 
 	public static String operationCallOnPointerVariable(String ownerName, String operationName, List<String> params) {
-		return operationCall(ownerName, GenerationNames.PointerAccess, operationName, params);
+		return operationCall(ownerName, PointerAndMemoryNames.PointerAccess, operationName, params);
 	}
 
 	public static String blockStatement(String statement) {
@@ -142,11 +145,11 @@ public class ActivityTemplates {
 	}
 
 	public static String startObject(String objectVariable) {
-		return objectVariable + GenerationNames.PointerAccess + GenerationNames.StartSmMethodName + "();\n";
+		return ActionNames.ActionStart + "(" + objectVariable + ") +;\n";
 	}
 
 	public static String deleteObject(String objectVariable) {
-		return GenerationNames.DeleteObject + " " + objectVariable + ";\n";
+		return PointerAndMemoryNames.DeleteObject + " " + objectVariable + ";\n";
 	}
 
 	public static String simpleCondControlStruct(String control, String cond, String body) {
@@ -194,7 +197,7 @@ public class ActivityTemplates {
 			return GenerationNames.signalType(typeName) + " " + objName + ";\n";
 		} else {
 			return GenerationNames.pointerType(typeName) + " " + objName + " " + ReplaceSimpleTypeOp + " "
-					+ GenerationNames.NullPtr + ";\n";
+					+ PointerAndMemoryNames.NullPtr + ";\n";
 		}
 
 	}
@@ -203,14 +206,14 @@ public class ActivityTemplates {
 			List<String> parameters) {
 		if (objectType.equals(CreateObjectType.Signal)) {
 			return ownerName + ReplaceSimpleTypeOp + GenerationNames.signalType(typeName) + "("
-					+ GenerationNames.MemoryAllocator + " " + PrivateFunctionalTemplates.signalType(typeName) + "("
+					+ PointerAndMemoryNames.MemoryAllocator + " " + PrivateFunctionalTemplates.signalType(typeName) + "("
 					+ operationCallParamList(parameters) + "))";
 		} else {
-			if (ownerName != GenerationNames.Self) {
-				return ownerName + ReplaceSimpleTypeOp + GenerationNames.MemoryAllocator + " " + typeName + "("
+			if (ownerName != PointerAndMemoryNames.Self) {
+				return ownerName + ReplaceSimpleTypeOp + PointerAndMemoryNames.MemoryAllocator + " " + typeName + "("
 						+ operationCallParamList(parameters) + ")";
 			} else {
-				return ownerName + GenerationNames.PointerAccess + GenerationNames.initFunctionName(typeName) + "("
+				return ownerName + PointerAndMemoryNames.PointerAccess + GenerationNames.initFunctionName(typeName) + "("
 						+ operationCallParamList(parameters) + ")";
 			}
 
@@ -223,18 +226,18 @@ public class ActivityTemplates {
 	}
 
 	public static String selectAnyTemplate(String otherEnd) {
-		return otherEnd + GenerationNames.SimpleAccess + GenerationNames.SelectAnyFunctionName + "()";
+		return otherEnd + PointerAndMemoryNames.SimpleAccess + CollectionNames.SelectAnyFunctionName + "()";
 
 	}
 
 	public static String selectAllTemplate(String target, String otherEnd, String associationName) {
-		return target + GenerationNames.PointerAccess
-				+ LinkTemplates.formatAssociationRoleName(otherEnd, associationName) + GenerationNames.SimpleAccess
-				+ GenerationNames.SelectAllFunctionName + "()";
+		return target + PointerAndMemoryNames.PointerAccess
+				+ LinkTemplates.formatAssociationRoleName(otherEnd, associationName) + PointerAndMemoryNames.SimpleAccess
+				+ CollectionNames.SelectAllFunctionName + "()";
 	}
 
 	public static String collectionTemplate(String collectedType) {
-		return GenerationNames.Collection + "<" + PrivateFunctionalTemplates.cppType(collectedType) + ">";
+		return CollectionNames.Collection + "<" + PrivateFunctionalTemplates.cppType(collectedType) + ">";
 
 	}
 
@@ -243,7 +246,7 @@ public class ActivityTemplates {
 		source.append(GenerationNames.signalType(signalType) + " ");
 		source.append(signalVariableName + " = ");
 		source.append(GenerationNames.signalType(signalType) + "(");
-		source.append(GenerationNames.MemoryAllocator + " " + PrivateFunctionalTemplates.signalType(signalType));
+		source.append(PointerAndMemoryNames.MemoryAllocator + " " + PrivateFunctionalTemplates.signalType(signalType));
 		source.append("(" + GenerationNames.StaticCast + "<const " + PrivateFunctionalTemplates.signalType(signalType)
 				+ "&>");
 		source.append("(" + EventTemplates.EventFParamName + ")));\n");
@@ -272,7 +275,7 @@ public class ActivityTemplates {
 
 	// Everything is pointer
 	public static String accesOperatoForType(String typeName) {
-		return GenerationNames.PointerAccess;
+		return PointerAndMemoryNames.PointerAccess;
 	}
 
 	public static String addVariableTemplate(String type, String left, String right) {

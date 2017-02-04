@@ -2,6 +2,7 @@ package hu.elte.txtuml.export.cpp.thread;
 
 import hu.elte.txtuml.export.cpp.Shared;
 import hu.elte.txtuml.export.cpp.templates.GenerationTemplates;
+import hu.elte.txtuml.export.cpp.templates.PrivateFunctionalTemplates;
 import hu.elte.txtuml.export.cpp.templates.RuntimeTemplates;
 import hu.elte.txtuml.export.cpp.templates.activity.ActivityTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.FunctionTemplates;
@@ -54,8 +55,8 @@ public class ThreadHandlingManager {
 	public void createConfigurationSource(String dest) throws FileNotFoundException, UnsupportedEncodingException {
 
 		StringBuilder source = new StringBuilder("");
-		source.append(GenerationTemplates.cppInclude(ThreadConfigurationClassName.toLowerCase()));
-		source.append(GenerationTemplates.cppInclude(RuntimeTemplates.RuntimeHeaderName));
+		source.append(PrivateFunctionalTemplates.include(ThreadConfigurationClassName.toLowerCase()));
+		source.append(PrivateFunctionalTemplates.include(RuntimeTemplates.RuntimeHeaderName));
 		source.append("\n\n");
 
 		List<String> templateParams = new ArrayList<String>();
@@ -78,7 +79,7 @@ public class ThreadHandlingManager {
 
 	private String createDeplyomentFunctionDefinition() {
 		StringBuilder source = new StringBuilder("");
-		source.append(GenerationTemplates.cppInclude(ConfigurationFile));
+		source.append(PrivateFunctionalTemplates.include(ConfigurationFile));
 		source.append(
 				GenerationTemplates.putNamespace(FunctionTemplates.simpleFunctionDef(RuntimeTemplates.UsingRuntime,
 						CreatorFunction,createConfiguration() + createThreadedRuntime(),

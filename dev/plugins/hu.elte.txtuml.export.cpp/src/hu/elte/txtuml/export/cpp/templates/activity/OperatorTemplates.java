@@ -1,12 +1,11 @@
 package hu.elte.txtuml.export.cpp.templates.activity;
 
 import hu.elte.txtuml.export.cpp.templates.GenerationNames;
+import hu.elte.txtuml.export.cpp.templates.GenerationNames.ActionNames;
+import hu.elte.txtuml.export.cpp.templates.GenerationNames.TimerNames;
 
 public class OperatorTemplates {
 
-	public static final String Remove = "remove";
-	public static final String First = "front";
-	public static final String Last = "back";
 
 	public static final String Add = "+";
 	public static final String Sub = "-";
@@ -27,7 +26,6 @@ public class OperatorTemplates {
 	public static final String And = "&&";
 	public static final String Or = "||";
 
-	public static final String Log = "log";
 	public static final String Select = "select";
 	public static final String Concat = "concat";
 	public static final String ToString = "toString";
@@ -35,7 +33,7 @@ public class OperatorTemplates {
 	public static final String Round = "round";
 	public static final String Sinus = "sin";
 	public static final String Cosinus = "cos";
-	public static final String TimerStart = GenerationNames.StartTimerFunctionName;
+	public static final String TimerStart = TimerNames.StartTimerFunctionName;
 
 	public static final String NotBinaryOperator = "not_binary_operator";
 
@@ -99,12 +97,12 @@ public class OperatorTemplates {
 
 	public static String getStandardLibraryFunctionName(String function) {
 		switch (function) {
-		case ToString:
-			return GenerationNames.ConversionNamspace + "::" + "to_string";
-		case Log:
-			return GenerationNames.ActionFunctionsNamespace + "::" + Log;
+		case "toString":
+			return GenerationNames.ConversionNamspace + "::" + "toString";
+		case "log":
+			return ActionNames.Log;
 		case TimerStart:
-			return GenerationNames.TimerInterFaceName + "::" + TimerStart;
+			return TimerNames.TimerInterFaceName + "::" + TimerStart;
 		case "inc":
 			return Increment;
 		case "dec":

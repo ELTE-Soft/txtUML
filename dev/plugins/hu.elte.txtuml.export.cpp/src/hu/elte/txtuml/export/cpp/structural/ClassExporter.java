@@ -16,7 +16,9 @@ import hu.elte.txtuml.utils.Pair;
 import hu.elte.txtuml.export.cpp.Shared;
 import hu.elte.txtuml.export.cpp.statemachine.StateMachineExporter;
 import hu.elte.txtuml.export.cpp.statemachine.SubStateMachineExporter;
+import hu.elte.txtuml.export.cpp.templates.GenerationNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationTemplates;
+import hu.elte.txtuml.export.cpp.templates.PrivateFunctionalTemplates;
 import hu.elte.txtuml.export.cpp.templates.RuntimeTemplates;
 import hu.elte.txtuml.export.cpp.templates.statemachine.EventTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.ConstructorTemplates;
@@ -38,8 +40,8 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 
 	private int poolId;
 
-	public ClassExporter() {
-		shared = new Shared();
+	public ClassExporter(Shared shared) {
+		this.shared = shared;
 	}
 	
 	
@@ -51,17 +53,16 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 	@Override
 	public void exportStructuredElement(Class structuredElement, String sourceDestination)
 			throws FileNotFoundException, UnsupportedEncodingException {
-		super.init();
+		super.init(shared);
 		super.setStructuredElement(structuredElement);
 
-		constructorExporter = new ConstructorExporter(structuredElement.getOwnedOperations());
+		constructorExporter = new ConstructorExporter(shared,structuredElement.getOwnedOperations());
 		associationExporter = new AssociationExporter();
-		stateMachineExporter = new StateMachineExporter();
+		stateMachineExporter = new StateMachineExporter(shared);
 		additionalSourcesNames = new ArrayList<String>();
 		subMachines = new LinkedList<String>();
 		portExporter = new PortExporter();
 
-		shared.setModelElements(structuredElement.allOwnedElements());
 
 		stateMachineExporter.setName(name);
 		stateMachineExporter.setStateMachineThreadPoolId(poolId);
@@ -86,7 +87,7 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 			stateMachineExporter.createMachine();
 
 			for (Map.Entry<String, Pair<String, Region>> entry : stateMachineExporter.getSubMachineMap().entrySet()) {
-				subStateMachineExporter = new SubStateMachineExporter();
+				subStateMachineExporter = new SubStateMachineExporter(shared);
 				subStateMachineExporter.setRegion(entry.getValue().getSecond());
 				subStateMachineExporter.setName(entry.getValue().getFirst());
 				subStateMachineExporter.setParentClass(name);
@@ -181,30 +182,30 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 		}
 
 		if (getBaseClass() != null) {
-			source.append(GenerationTemplates.cppInclude(getBaseClass()));
+			source.append(PrivateFunctionalTemplates.include(getBaseClass()));
 		}
 
 		if (!isHeader) {
 			source.append(dependencyExporter.createDependencyCppIncludeCode(name));
 			if (stateMachineExporter.ownStateMachine()) {
-				source.append(GenerationTemplates.cppInclude(GenerationTemplates.DeploymentHeader));
+				source.append(PrivateFunctionalTemplates.include(GenerationTemplates.DeploymentHeader));
 				source.append(GenerationTemplates.debugOnlyCodeBlock(GenerationTemplates.StandardIOinclude));
 			}
-			source.append(GenerationTemplates.cppInclude(EventTemplates.EventHeaderName));
+			source.append(PrivateFunctionalTemplates.include(EventTemplates.EventHeaderName));
 			if (associationExporter.ownAssociation()) {
-				source.append(GenerationTemplates.cppInclude(LinkTemplates.AssociationsStructuresHreaderName));
+				source.append(PrivateFunctionalTemplates.include(LinkTemplates.AssociationsStructuresHreaderName));
 
 			}
 			// TODO analyze what dependency is necessary..
-			source.append(GenerationTemplates
-					.cppInclude(RuntimeTemplates.RTPath + GenerationTemplates.StandardFunctionsHeader));
-			source.append(
-					GenerationTemplates.cppInclude(RuntimeTemplates.RTPath + GenerationTemplates.TimerInterfaceHeader));
-			source.append(GenerationTemplates.cppInclude(RuntimeTemplates.RTPath + GenerationTemplates.TimerHeader));
+			source.append(PrivateFunctionalTemplates.include(GenerationNames.FileNames.ActionPath));
+			source.append(PrivateFunctionalTemplates.include(RuntimeTemplates.RTPath + GenerationTemplates.StandardFunctionsHeader));
+			source.append(PrivateFunctionalTemplates.include(RuntimeTemplates.RTPath + GenerationTemplates.TimerInterfaceHeader));
+			source.append(PrivateFunctionalTemplates.include(RuntimeTemplates.RTPath + GenerationTemplates.TimerHeader));
 		} else {
+			source.append(PrivateFunctionalTemplates.include(GenerationNames.FileNames.TypesFilePath));
 			source.append(dependencyExporter.createDependencyHeaderIncludeCode());
 			if (associationExporter.ownAssociation()) {
-				source.append(GenerationTemplates.cppInclude(RuntimeTemplates.RTPath + LinkTemplates.AssocationHeader));
+				source.append(PrivateFunctionalTemplates.include(RuntimeTemplates.RTPath + LinkTemplates.AssocationHeader));
 			}
 
 		}

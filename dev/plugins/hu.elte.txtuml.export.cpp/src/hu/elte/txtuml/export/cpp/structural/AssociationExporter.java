@@ -6,7 +6,7 @@ import java.util.List;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.uml2.uml.Property;
 
-import hu.elte.txtuml.export.cpp.templates.GenerationTemplates;
+import hu.elte.txtuml.export.cpp.templates.PrivateFunctionalTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.LinkTemplates;
 
 class AssociationExporter {
@@ -61,7 +61,7 @@ class AssociationExporter {
 			}
 
 		}
-		return GenerationTemplates.cppInclude(LinkTemplates.AssociationsStructuresHreaderName)
+		return PrivateFunctionalTemplates.include(LinkTemplates.AssociationsStructuresHreaderName)
 				+ assocDeclerations.toString();
 	}
 	

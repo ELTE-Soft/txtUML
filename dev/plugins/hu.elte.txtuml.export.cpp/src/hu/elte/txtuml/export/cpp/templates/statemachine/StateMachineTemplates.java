@@ -9,6 +9,9 @@ import com.google.common.collect.Multimap;
 
 import hu.elte.txtuml.export.cpp.statemachine.TransitionConditions;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames;
+import hu.elte.txtuml.export.cpp.templates.GenerationNames.FileNames;
+import hu.elte.txtuml.export.cpp.templates.GenerationNames.ModifierNames;
+import hu.elte.txtuml.export.cpp.templates.GenerationNames.PointerAndMemoryNames;
 import hu.elte.txtuml.export.cpp.templates.PrivateFunctionalTemplates;
 import hu.elte.txtuml.export.cpp.templates.RuntimeTemplates;
 import hu.elte.txtuml.export.cpp.templates.activity.ActivityTemplates;
@@ -20,7 +23,7 @@ public class StateMachineTemplates {
 
 	public static final String InitStateMachineProcedureName = GenerationNames.InitStateMachine;
 	public static final String StateMachineBaseHeader = GenerationNames.StatemachineBaseHeaderName + "."
-			+ GenerationNames.HeaderExtension;
+			+ FileNames.HeaderExtension;
 	public static final String InitTransitionTable = "initTransitionTable";
 	public static final String AllTransitionTableInitialProcName = "initTransitionTables";
 	public static final String TransitionTableInitialSourceName = "init_maps";
@@ -93,7 +96,7 @@ public class StateMachineTemplates {
 
 	public static String setInitialState(String className, String initialState) {
 
-		return GenerationNames.NoReturn + " " + className + "::" + GenerationNames.SetInitialStateName + "(){"
+		return ModifierNames.NoReturn + " " + className + "::" + GenerationNames.SetInitialStateName + "(){"
 				+ GenerationNames.SetStateFuncName + "(" + GenerationNames.stateEnumName(initialState) + ");}\n";
 	}
 
@@ -106,7 +109,7 @@ public class StateMachineTemplates {
 			parameter = EventTemplates.EventBaseRefName + " " + EventTemplates.EventFParamName;
 		}
 		
-		String source = GenerationNames.NoReturn + " " + className + "::" + typeName + "(" + parameter + ")\n{\n";
+		String source = ModifierNames.NoReturn + " " + className + "::" + typeName + "(" + parameter + ")\n{\n";
 		if (states != null && !states.isEmpty()) {
 			List<String> eventParameter = new LinkedList<String>();
 			eventParameter.add(EventTemplates.EventFParamName);
@@ -161,7 +164,7 @@ public class StateMachineTemplates {
 
 	public static String stateMachineClassFixPublicParts(String className, Boolean ownStateMachine) {
 		StringBuilder source = new StringBuilder("");
-		source.append(GenerationNames.StaticModifier + " " + FunctionTemplates.functionDecl(InitTransitionTable));
+		source.append(ModifierNames.StaticModifier + " " + FunctionTemplates.functionDecl(InitTransitionTable));
 		source.append(GenerationNames.ProcessEventDecl + GenerationNames.SetInitialStateDecl + "\n");
 		if (ownStateMachine) {
 			source.append("//RuntimeFunctions\n" + RuntimeTemplates.HeaderFuncs + "\n");
@@ -199,8 +202,8 @@ public class StateMachineTemplates {
 		for (Map.Entry<String, String> entry : subMachines.entrySet()) {
 			source.append(
 					GenerationNames.CompositeStateMapName + ".emplace(" + GenerationNames.stateEnumName(entry.getKey())
-							+ "," + GenerationNames.CompositeStateMapSmType + "(" + GenerationNames.MemoryAllocator
-							+ " " + entry.getValue() + "(" + GenerationNames.Self + ")" + "));\n");
+							+ "," + GenerationNames.CompositeStateMapSmType + "(" + PointerAndMemoryNames.MemoryAllocator
+							+ " " + entry.getValue() + "(" + PointerAndMemoryNames.Self + ")" + "));\n");
 		}
 		return source.toString();
 	}
@@ -232,7 +235,7 @@ public class StateMachineTemplates {
 			Integer poolId,
 			Map<String, String> subMachines) {
 		StringBuilder body = new StringBuilder("");
-		body.append(GenerationNames.CurrentMachineName + " = " + GenerationNames.NullPtr + ";\n");
+		body.append(GenerationNames.CurrentMachineName + " = " + PointerAndMemoryNames.NullPtr + ";\n");
 		body.append(hierarchicalStateMachineClassConstructorSharedBody(className, className, subMachines,
 				intialState, rt));
 		return FunctionTemplates.functionDef(className, GenerationNames.InitStateMachine, body.toString());

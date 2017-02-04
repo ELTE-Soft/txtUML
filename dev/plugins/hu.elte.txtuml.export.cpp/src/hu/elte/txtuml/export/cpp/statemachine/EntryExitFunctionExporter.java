@@ -7,6 +7,7 @@ import org.eclipse.uml2.uml.Behavior;
 import org.eclipse.uml2.uml.State;
 import org.eclipse.uml2.uml.UMLPackage;
 
+import hu.elte.txtuml.export.cpp.Shared;
 import hu.elte.txtuml.export.cpp.activity.ActivityExporter;
 import hu.elte.txtuml.export.cpp.templates.statemachine.EventTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.FunctionTemplates;
@@ -61,8 +62,8 @@ public class EntryExitFunctionExporter {
 	private List<State> stateList;
 	private String className;
 
-	EntryExitFunctionExporter(String className, List<State> stateList) {
-		activityExporter = new ActivityExporter();
+	EntryExitFunctionExporter(Shared shared, String className, List<State> stateList) {
+		activityExporter = new ActivityExporter(shared);
 		this.className = className;
 		this.stateList = stateList;
 	}

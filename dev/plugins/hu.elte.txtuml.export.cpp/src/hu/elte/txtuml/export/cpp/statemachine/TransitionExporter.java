@@ -11,6 +11,7 @@ import org.eclipse.uml2.uml.Transition;
 import org.eclipse.uml2.uml.UMLPackage;
 import org.eclipse.uml2.uml.Vertex;
 
+import hu.elte.txtuml.export.cpp.Shared;
 import hu.elte.txtuml.export.cpp.activity.ActivityExporter;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames;
 import hu.elte.txtuml.export.cpp.templates.activity.ActivityTemplates;
@@ -25,8 +26,8 @@ public class TransitionExporter {
 	String className;
 	List<Transition> transitions;
 
-	TransitionExporter(String className, List<Transition> transitions, GuardExporter guardExporter) {
-		activityExporter = new ActivityExporter();
+	TransitionExporter(Shared shared, String className, List<Transition> transitions, GuardExporter guardExporter) {
+		activityExporter = new ActivityExporter(shared);
 
 		this.className = className;
 		this.transitions = transitions;

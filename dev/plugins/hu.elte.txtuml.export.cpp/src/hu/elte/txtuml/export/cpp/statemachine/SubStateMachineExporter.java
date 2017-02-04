@@ -8,6 +8,7 @@ import java.util.Map;
 import org.eclipse.uml2.uml.Region;
 import hu.elte.txtuml.export.cpp.Shared;
 import hu.elte.txtuml.export.cpp.templates.GenerationTemplates;
+import hu.elte.txtuml.export.cpp.templates.PrivateFunctionalTemplates;
 import hu.elte.txtuml.export.cpp.templates.statemachine.EventTemplates;
 import hu.elte.txtuml.export.cpp.templates.statemachine.StateMachineTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.ConstructorTemplates;
@@ -21,7 +22,8 @@ public class SubStateMachineExporter extends StateMachineExporterBase {
 
 	private SubStateMachineExporter subStateMachineExporter;
 
-	public SubStateMachineExporter() {
+	public SubStateMachineExporter(Shared shared) {
+		super(shared);
 	}
 
 	public void setRegion(Region region) {
@@ -39,7 +41,7 @@ public class SubStateMachineExporter extends StateMachineExporterBase {
 		submachineMap = getSubMachines();
 
 		for (Map.Entry<String, Pair<String, Region>> entry : submachineMap.entrySet()) {
-			subStateMachineExporter = new SubStateMachineExporter();
+			subStateMachineExporter = new SubStateMachineExporter(shared);
 			subStateMachineExporter.setRegion(entry.getValue().getSecond());
 			subStateMachineExporter.setName(entry.getValue().getFirst());
 			subStateMachineExporter.setParentClass(parentClassName);
@@ -51,17 +53,17 @@ public class SubStateMachineExporter extends StateMachineExporterBase {
 				HeaderTemplates.headerGuard(source, ownerClassName));
 
 		source = createSubSmClassCppSource().toString();
-		String dependencyIncludes = GenerationTemplates.cppInclude(ownerClassName) + GenerationTemplates.cppInclude(EventTemplates.EventHeaderName);
+		String dependencyIncludes = PrivateFunctionalTemplates.include(ownerClassName) + PrivateFunctionalTemplates.include(EventTemplates.EventHeaderName);
 		dependencyIncludes = GenerationTemplates.debugOnlyCodeBlock(GenerationTemplates.StandardIOinclude)
-				+ dependencyIncludes + GenerationTemplates.cppInclude(ownerClassName);
+				+ dependencyIncludes + PrivateFunctionalTemplates.include(ownerClassName);
 		Shared.writeOutSource(destination, GenerationTemplates.sourceName(ownerClassName),
 				Shared.format(dependencyIncludes + "\n" + source));
 	}
 
 	private String createSubSmClassHeaderSource() {
 		String source = "";
-		StringBuilder dependency = new StringBuilder(GenerationTemplates.cppInclude(parentClassName));
-		dependency.append(GenerationTemplates.cppInclude(GenerationTemplates.StandardFunctionsHeader));
+		StringBuilder dependency = new StringBuilder(PrivateFunctionalTemplates.include(parentClassName));
+		dependency.append(PrivateFunctionalTemplates.include(GenerationTemplates.StandardFunctionsHeader));
 
 		StringBuilder privateParts = new StringBuilder(entryExitFunctionExporter.createEntryFunctionsDecl());
 		privateParts.append(entryExitFunctionExporter.createExitFunctionsDecl());

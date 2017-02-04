@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
@@ -29,9 +30,11 @@ import org.osgi.framework.Bundle;
 import hu.elte.txtuml.export.cpp.thread.ThreadPoolConfiguration;
 import hu.elte.txtuml.export.cpp.structural.ClassExporter;
 import hu.elte.txtuml.export.cpp.structural.DataTypeExporter;
-import hu.elte.txtuml.export.cpp.templates.GenerationNames;
+import hu.elte.txtuml.export.cpp.templates.GenerationNames.FileNames;
+import hu.elte.txtuml.export.cpp.templates.GenerationNames.ModifierNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationTemplates;
 import hu.elte.txtuml.export.cpp.templates.Options;
+import hu.elte.txtuml.export.cpp.templates.PrivateFunctionalTemplates;
 import hu.elte.txtuml.export.cpp.templates.RuntimeTemplates;
 import hu.elte.txtuml.export.cpp.templates.activity.ActivityTemplates;
 import hu.elte.txtuml.export.cpp.templates.statemachine.EventTemplates;
@@ -72,7 +75,7 @@ public class Uml2ToCppExporter {
 
 	public Uml2ToCppExporter(Shared shared, Map<String, ThreadPoolConfiguration> threadDescription,
 			boolean addRuntimeOption, boolean overWriteMainFileOption) {
-		classExporter = new ClassExporter();
+		classExporter = new ClassExporter(shared);
 		dataTypeExporter = new DataTypeExporter();
 		threadManager = new ThreadHandlingManager(threadDescription);
 
@@ -133,7 +136,7 @@ public class Uml2ToCppExporter {
 												StateMachineTemplates.MachineNamespace),
 										StateMachineTemplates.TransitionTableInitialSourceName)));
 
-		DependencyExporter dependencyExporter = new DependencyExporter();
+		DependencyExporter dependencyExporter = new DependencyExporter(shared.getAllModelClassNames());
 		dependencyExporter.addDependencies(stateMachineOwners);
 		StringBuilder initalFunctionBody = new StringBuilder("");
 		for (String stateMachineOwner : stateMachineOwners) {
@@ -143,19 +146,20 @@ public class Uml2ToCppExporter {
 
 		Shared.writeOutSource(outputDirectory,
 				GenerationTemplates.sourceName(StateMachineTemplates.TransitionTableInitialSourceName),
-				Shared.format(dependencyExporter.createDependencyCppIncludeCode(
-						StateMachineTemplates.TransitionTableInitialSourceName)
+				Shared.format(dependencyExporter
+						.createDependencyCppIncludeCode(StateMachineTemplates.TransitionTableInitialSourceName)
 						+ GenerationTemplates.putNamespace(
-								FunctionTemplates.simpleFunctionDef(GenerationNames.NoReturn,
+								FunctionTemplates.simpleFunctionDef(ModifierNames.NoReturn,
 										StateMachineTemplates.AllTransitionTableInitialProcName,
-										initalFunctionBody.toString(),""),StateMachineTemplates.MachineNamespace)));
+										initalFunctionBody.toString(), ""),
+								StateMachineTemplates.MachineNamespace)));
 
 	}
 
 	private void createDataTypes(String outputDirectory) throws IOException {
 		for (DataType dataType : dataTypes) {
 			dataTypeExporter.setName(dataType.getName());
-			dataTypeExporter.init();
+			dataTypeExporter.init(shared);
 			dataTypeExporter.exportStructuredElement(dataType, outputDirectory);
 		}
 
@@ -176,10 +180,6 @@ public class Uml2ToCppExporter {
 
 			File sourceRuntimeDir = new File(cppFilesLocation);
 			File outputRuntimeDir = new File(destination + File.separator + RUNTIME_DIR_PREFIX);
-			if (!outputRuntimeDir.exists()) {
-				outputRuntimeDir.mkdirs();
-			}
-
 			copyFolder(sourceRuntimeDir, outputRuntimeDir);
 
 		}
@@ -204,10 +204,19 @@ public class Uml2ToCppExporter {
 
 		String files[] = sourceRuntimeDir.list();
 
+		if (!outputRuntimeDir.exists()) {
+			outputRuntimeDir.mkdirs();
+		}
+
 		for (String file : files) {
-			Files.copy(Paths.get(sourceRuntimeDir.getAbsolutePath() + File.separator + file),
-					Paths.get(outputRuntimeDir.getAbsolutePath() + File.separator + file),
-					StandardCopyOption.REPLACE_EXISTING);
+			Path source = Paths.get(sourceRuntimeDir.getAbsolutePath() + File.separator + file);
+			Path target = Paths.get(outputRuntimeDir.getAbsolutePath() + File.separator + file);
+			if (Files.isDirectory(source)) {
+				copyFolder(source.toFile(), target.toFile());
+			} else {
+				Files.copy(source, target, StandardCopyOption.REPLACE_EXISTING);
+			}
+
 		}
 
 	}
@@ -225,6 +234,7 @@ public class Uml2ToCppExporter {
 		librarySourceClasses.add("standard_functions");
 		librarySourceClasses.add("timer");
 		librarySourceClasses.add("itimer");
+		librarySourceClasses.add(FileNames.FileNameAction);
 		cmake.addStaticLibraryTarget(RUNTIME_LIB_NAME, librarySourceClasses, RUNTIME_DIR_PREFIX);
 		List<String> sourceNames = new ArrayList<String>();
 		sourceNames.add(DEFAULT_TARGET_EXECUTABLE);
@@ -258,12 +268,11 @@ public class Uml2ToCppExporter {
 		source.append(EventTemplates.eventClass(EventTemplates.InitSignal, new ArrayList<Pair<String, String>>(), "",
 				new ArrayList<Property>()));
 
-		DependencyExporter dependencyEporter = new DependencyExporter();
+		DependencyExporter dependencyEporter = new DependencyExporter(shared.getAllModelClassNames());
 		for (Pair<String, String> param : allParam) {
 			dependencyEporter.addDependecy(param.getSecond());
 		}
-		
-		
+
 		forwardDecl.append(dependencyEporter.createDependencyHeaderIncludeCode());
 		forwardDecl.append(RuntimeTemplates.eventHeaderInclude());
 		forwardDecl.append("enum Events {" + events + "};\n");
@@ -278,7 +287,7 @@ public class Uml2ToCppExporter {
 
 		Set<String> associatedClasses = new HashSet<String>();
 		StringBuilder includes = new StringBuilder(
-				GenerationTemplates.cppInclude(LinkTemplates.AssociationsStructuresHreaderName));
+				PrivateFunctionalTemplates.include(LinkTemplates.AssociationsStructuresHreaderName));
 		StringBuilder preDeclerations = new StringBuilder("");
 		StringBuilder structures = new StringBuilder("");
 		StringBuilder functions = new StringBuilder("");
@@ -309,13 +318,13 @@ public class Uml2ToCppExporter {
 		}
 
 		for (String className : associatedClasses) {
-			includes.append(GenerationTemplates.cppInclude(className));
+			includes.append(PrivateFunctionalTemplates.include(className));
 			preDeclerations.append(GenerationTemplates.forwardDeclaration(className));
 		}
 
 		Shared.writeOutSource(outputDirectory, (LinkTemplates.AssociationStructuresHeader),
 				Shared.format(HeaderTemplates.headerGuard(
-						GenerationTemplates.cppInclude(RuntimeTemplates.RTPath + LinkTemplates.AssocationHeader)
+						PrivateFunctionalTemplates.include(RuntimeTemplates.RTPath + LinkTemplates.AssocationHeader)
 								+ preDeclerations.toString() + structures.toString(),
 						LinkTemplates.AssociationsStructuresHreaderName)));
 		Shared.writeOutSource(outputDirectory, (LinkTemplates.AssociationStructuresSource),

@@ -2,7 +2,7 @@ package hu.elte.txtuml.export.cpp.templates.structual;
 
 import java.util.List;
 
-import hu.elte.txtuml.export.cpp.templates.GenerationNames;
+import hu.elte.txtuml.export.cpp.templates.GenerationNames.ModifierNames;
 import hu.elte.txtuml.export.cpp.templates.PrivateFunctionalTemplates;
 import hu.elte.txtuml.utils.Pair;
 
@@ -13,7 +13,7 @@ public class FunctionTemplates {
 	}
 
 	public static String functionDecl(String functionName, List<String> params) {
-		return FunctionTemplates.functionDecl(GenerationNames.NoReturn, functionName, params);
+		return FunctionTemplates.functionDecl(ModifierNames.NoReturn, functionName, params);
 	}
 
 	public static String simpleFunctionDecl(String returnType, String functionName) {
@@ -27,7 +27,7 @@ public class FunctionTemplates {
 	}
 
 	public static String functionDef(String className, String functionName, String body) {
-		return FunctionTemplates.functionDef(className, GenerationNames.NoReturn, functionName, body);
+		return FunctionTemplates.functionDef(className, ModifierNames.NoReturn, functionName, body);
 	}
 
 	public static String functionDef(String className, String returnTypeName, String functionName, String body) {
@@ -36,7 +36,7 @@ public class FunctionTemplates {
 
 	public static String functionDef(String className, String functionName, List<Pair<String, String>> params,
 			String body) {
-		return FunctionTemplates.functionDef(className, GenerationNames.NoReturn, functionName, params, body);
+		return FunctionTemplates.functionDef(className, ModifierNames.NoReturn, functionName, params, body);
 	}
 
 	// TODO modifiers (static, etc..) - not supported yet

@@ -15,11 +15,11 @@ class ConstructorExporter {
 	List<Operation> constructors;
 	ActivityExporter activityExporter;
 
-	ConstructorExporter(List<Operation> allOperation) {
+	ConstructorExporter(Shared shared, List<Operation> allOperation) {
 		constructors = new ArrayList<Operation>();
 		ownConstructor = false;
 
-		activityExporter = new ActivityExporter();
+		activityExporter = new ActivityExporter(shared);
 
 		importConstructors(allOperation);
 	}

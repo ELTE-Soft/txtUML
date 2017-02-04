@@ -2,20 +2,24 @@ package hu.elte.txtuml.export.cpp.templates;
 
 import java.util.List;
 
+import hu.elte.txtuml.export.cpp.templates.GenerationNames.FileNames;
+import hu.elte.txtuml.export.cpp.templates.GenerationNames.PointerAndMemoryNames;
+import hu.elte.txtuml.export.cpp.templates.GenerationNames.TimerNames;
+
 public class GenerationTemplates {
 
 	public static final String StandardIOinclude = GenerationNames.StandardIOInclude;
-	public static final String StandardFunctionsHeader = GenerationNames.StandardLibaryFunctionsHeaderName;
+	public static final String StandardFunctionsHeader = FileNames.StandardLibaryFunctionsHeaderName;
 	public static final String DeploymentHeader = GenerationNames.DeploymentHeaderName;
-	public static final String TimerInterfaceHeader = GenerationNames.TimerInterFaceName.toLowerCase();
-	public static final String TimerHeader = GenerationNames.TimerClassName.toLowerCase();
+	public static final String TimerInterfaceHeader = TimerNames.TimerInterFaceName.toLowerCase();
+	public static final String TimerHeader = TimerNames.TimerClassName.toLowerCase();
 
 	public static String headerName(String className) {
-		return className + "." + GenerationNames.HeaderExtension;
+		return className + "." + FileNames.HeaderExtension;
 	}
 
 	public static String sourceName(String className) {
-		return className + "." + GenerationNames.SourceExtension;
+		return className + "." + FileNames.SourceExtension;
 	}
 
 	public static String dataType(String datatTypeName, String attributes) {
@@ -23,26 +27,13 @@ public class GenerationTemplates {
 	}
 
 	public static String paramName(String paramName) {
+		
 		return GenerationNames.formatIncomingParamName(paramName);
 	}
 
 	public static String forwardDeclaration(String className) {
-		String source = "";
-		String cppType = PrivateFunctionalTemplates.cppType(className);
-		if (PrivateFunctionalTemplates.stdType(cppType)) {
-			source = PrivateFunctionalTemplates.include(cppType);
-		} else {
-			source = GenerationNames.ClassType + " " + className + ";\n";
-		}
-		return source;
-	}
-
-	public static String cppInclude(String className) {
-		String cppType = PrivateFunctionalTemplates.cppType(className);
-		if (PrivateFunctionalTemplates.stdType(cppType)) {
-			return PrivateFunctionalTemplates.include(cppType);
-		}
-		return PrivateFunctionalTemplates.include(className);
+		
+		return GenerationNames.ClassType + " " + className + ";\n";
 	}
 
 	public static String putNamespace(String source, String namespace) {
@@ -50,7 +41,7 @@ public class GenerationTemplates {
 	}
 
 	public static String formatSubSmFunctions(String source) {
-		return source.replaceAll(GenerationNames.Self, GenerationNames.ParentSmMemberName);
+		return source.replaceAll(PointerAndMemoryNames.Self, GenerationNames.ParentSmMemberName);
 	}
 
 	public static String createObject(String typeName, String objName) {
@@ -97,7 +88,7 @@ public class GenerationTemplates {
 			}
 			templateParameters = templateParameters + templateParams.get(templateParams.size() - 1) + ">";
 		}
-		return GenerationNames.MemoryAllocator + " " + typeName + templateParameters + parameters;
+		return PointerAndMemoryNames.MemoryAllocator + " " + typeName + templateParameters + parameters;
 
 	}
 

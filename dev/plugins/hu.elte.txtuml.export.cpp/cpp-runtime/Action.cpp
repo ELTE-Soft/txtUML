@@ -1,5 +1,6 @@
 #include "Action.hpp"
 
+#include <iostream>
 
 namespace Action 
 {

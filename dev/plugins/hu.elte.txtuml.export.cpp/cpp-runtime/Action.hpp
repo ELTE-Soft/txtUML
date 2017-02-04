@@ -2,9 +2,8 @@
 */
 #include "IStateMachine.hpp"
 #include "runtimetypes.hpp"
-#include "associations.hpp"
 
-#include ESRoot/Types.hpp
+#include "ESRoot/Types.hpp"
 
 namespace Action 
 {
@@ -40,7 +39,7 @@ It has no effect if the object are already linked via the specifed association.
 
 	
 template<typename Accocation, typename LeftEnd, typename RightEnd>
-void unlink(typename LeftEnd::EdgeType* e1, typename RightEnd::EdgeType* e2)
+void unlink(typename LeftEnd::EdgeType* e1, typename RightEnd::EdgeType* e2);
 /**<
 Unlinks two model object with each other via the specified association.
 It has no effect if the object are already linked via the specifed association.
@@ -53,15 +52,15 @@ It has no effect if the object are already linked via the specifed association.
 template<typename Accocation, typename LeftEnd, typename RightEnd>
 void link(typename LeftEnd::EdgeType* e1, typename RightEnd::EdgeType* e2)
 {
-	e1->template link<T,SecondRole>(e2);
-	e2->template link<T,FirstRole>(e1);
+	e1->template link<Accocation,RightEnd>(e2);
+	e2->template link<Accocation,LeftEnd>(e1);
 }
 
 template<typename Accocation, typename LeftEnd, typename RightEnd>
 void unlink(typename LeftEnd::EdgeType* e1, typename RightEnd::EdgeType* e2)
 {
-	e1->template link<T,SecondRole>(e2);
-	e2->template link<T,FirstRole>(e1);
+	e1->template link<Accocation,RightEnd>(e2);
+	e2->template link<Accocation,LeftEnd>(e1);
 }
 
 }

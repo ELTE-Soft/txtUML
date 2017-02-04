@@ -52,11 +52,12 @@ public class ActivityExporter {
 
 	private Shared shared;
 
-	public ActivityExporter() {
+	public ActivityExporter(Shared shared) {
+		this.shared = shared;
 	}
 
 	private void init() {
-		shared = new Shared();
+		
 		createdClassDependecies = new LinkedList<String>();
 
 		tempVariableExporter = new OutVariableExporter();
@@ -156,7 +157,6 @@ public class ActivityExporter {
 		List<ActivityEdge> edges = currentNode.getOutgoings();
 		// output edges from output pin
 		List<OutputPin> outputPins = new LinkedList<OutputPin>();
-		shared.setModelElements(currentNode.getOwnedElements());
 		shared.getTypedElements(outputPins, UMLPackage.Literals.OUTPUT_PIN);
 		for (OutputPin pin : outputPins) {
 			edges.addAll(pin.getOutgoings());

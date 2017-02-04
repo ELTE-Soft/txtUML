@@ -40,14 +40,7 @@ public class Shared {
 
 	private Collection<Element> modelElements;
 
-	public Shared() {
-	}
-
 	public Shared(Collection<Element> modelElements) {
-		setModelElements(modelElements);
-	}
-
-	public void setModelElements(Collection<Element> modelElements) {
 		this.modelElements = modelElements;
 	}
 
@@ -102,7 +95,7 @@ public class Shared {
 	}
 
 	public String signalCtrBody(Signal signal) {
-		ActivityExporter activityExporter = new ActivityExporter();
+		ActivityExporter activityExporter = new ActivityExporter(this);
 		Class factoryClass = getSignalFactoryClass(signal);
 		String body = "";
 		for (Operation operation : factoryClass.getOperations()) {
@@ -146,12 +139,6 @@ public class Shared {
 		}
 
 		return activity;
-	}
-
-	public static boolean isBasicType(String typeName) {
-
-		return typeName.equals("Integer") || typeName.equals("Real") || typeName.equals("Boolean");
-
 	}
 
 	public static boolean generatedClass(Class item) {

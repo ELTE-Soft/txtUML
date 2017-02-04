@@ -22,6 +22,7 @@ import org.eclipse.uml2.uml.Vertex;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 
+import hu.elte.txtuml.export.cpp.Shared;
 import hu.elte.txtuml.export.cpp.templates.PrivateFunctionalTemplates;
 import hu.elte.txtuml.export.cpp.templates.statemachine.EventTemplates;
 import hu.elte.txtuml.export.cpp.templates.statemachine.StateMachineTemplates;
@@ -42,6 +43,11 @@ public class StateMachineExporterBase {
 	protected GuardExporter guardExporter;
 	protected TransitionExporter transitionExporter;
 	protected EntryExitFunctionExporter entryExitFunctionExporter;
+	protected Shared shared;
+	
+	public StateMachineExporterBase(Shared shared) {
+		this.shared = shared;
+	}
 	
 	public void createMachine() {
 		init();
@@ -126,9 +132,9 @@ public class StateMachineExporterBase {
 		stateMachineMap = HashMultimap.create();
 		submachineMap = getSubMachines();
 		subSubMachines = new ArrayList<String>();
-		guardExporter = new GuardExporter();
-		transitionExporter = new TransitionExporter(ownerClassName, stateMachineRegion.getTransitions(), guardExporter);
-		entryExitFunctionExporter = new EntryExitFunctionExporter(ownerClassName, stateList);
+		guardExporter = new GuardExporter(shared);
+		transitionExporter = new TransitionExporter(shared,ownerClassName, stateMachineRegion.getTransitions(), guardExporter);
+		entryExitFunctionExporter = new EntryExitFunctionExporter(shared, ownerClassName, stateList);
 		entryExitFunctionExporter.createEntryFunctionTypeMap();
 		entryExitFunctionExporter.createExitFunctionTypeMap();
 
