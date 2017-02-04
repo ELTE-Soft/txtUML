@@ -7,14 +7,6 @@
 #include <math.h>
 #include "istatemachine.hpp"
 
-int delayedInc(int,int&);
-int delayedDec(int,int&);
-
-namespace action 
-{
-	void log(std::string);
-}
-
 
 template<typename E>
 E* select(std::list<E*> elements)
@@ -36,9 +28,7 @@ std::string concat(T1 s1, T2 s2)
     return stream.str();
 }
 
-
-
-namespace conversion 
+namespace Conv 
 {
 std::string to_string(IStateMachine*);
 std::string to_string(int);
