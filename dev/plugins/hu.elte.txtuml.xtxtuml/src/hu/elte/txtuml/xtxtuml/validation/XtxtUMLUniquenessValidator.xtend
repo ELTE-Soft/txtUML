@@ -10,6 +10,8 @@ import hu.elte.txtuml.xtxtuml.xtxtUML.TUConnector
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUConnectorEnd
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUConstructor
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUEntryOrExitActivity
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUEnumeration
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUEnumerationLiteral
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUFile
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUInterface
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUModelElement
@@ -38,8 +40,6 @@ import org.eclipse.xtext.validation.Check
 
 import static hu.elte.txtuml.xtxtuml.validation.XtxtUMLIssueCodes.*
 import static hu.elte.txtuml.xtxtuml.xtxtUML.XtxtUMLPackage.Literals.*
-import hu.elte.txtuml.xtxtuml.xtxtUML.TUEnumerationLiteral
-import hu.elte.txtuml.xtxtuml.xtxtUML.TUEnumeration
 
 class XtxtUMLUniquenessValidator extends XtxtUMLNameValidator {
 

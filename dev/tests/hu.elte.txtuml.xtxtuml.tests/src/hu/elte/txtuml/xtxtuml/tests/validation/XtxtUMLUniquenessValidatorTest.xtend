@@ -95,7 +95,7 @@ class XtxtUMLUniquenessValidatorTest {
 			enum Foo {
 				A, B, C
 			}
-		'''.parse.assertNoError(NOT_UNIQUE_RECEPTION);
+		'''.parse.assertNoError(NOT_UNIQUE_NAME);
 
 		val rawFile = '''
 			enum Foo {

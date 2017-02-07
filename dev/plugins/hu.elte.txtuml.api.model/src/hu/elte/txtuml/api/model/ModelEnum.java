@@ -41,7 +41,7 @@ package hu.elte.txtuml.api.model;
  * 
  * <pre>
  * <code>
- * enum MyEnum extends ModelEnum {
+ * enum MyEnum implements ModelEnum {
  *   A, B, C
  * }
  * </code>

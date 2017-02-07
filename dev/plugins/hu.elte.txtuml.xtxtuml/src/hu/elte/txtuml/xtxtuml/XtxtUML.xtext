@@ -55,7 +55,6 @@ TUEnumeration :
 	'}' ';'? | ';')
 ;
 
-
 TUEnumerationLiteral :
 	name=ValidID
 ;

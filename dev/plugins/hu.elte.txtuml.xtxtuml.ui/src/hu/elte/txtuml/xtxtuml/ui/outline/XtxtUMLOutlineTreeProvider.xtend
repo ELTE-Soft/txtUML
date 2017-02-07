@@ -4,7 +4,6 @@ import hu.elte.txtuml.xtxtuml.xtxtUML.TUAssociationEnd
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAttribute
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUConstructor
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUEntryOrExitActivity
-import hu.elte.txtuml.xtxtuml.xtxtUML.TUEnumeration
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUEnumerationLiteral
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUExecution
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUFile

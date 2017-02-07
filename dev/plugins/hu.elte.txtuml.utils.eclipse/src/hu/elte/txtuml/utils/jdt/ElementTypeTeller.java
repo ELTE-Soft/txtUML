@@ -327,6 +327,10 @@ public final class ElementTypeTeller {
 		return SharedUtils.typeIsAssignableFrom(enumDeclaration, ModelEnum.class);
 	}
 
+	public static boolean isModelEnum(ITypeBinding binding) {
+		return binding.isEnum() && SharedUtils.typeIsAssignableFrom(binding, ModelEnum.class);
+	}
+
 	public static boolean isExternalInterface(ITypeBinding type) {
 		return type.isInterface() && hasSuperInterface(type, ExternalType.class.getCanonicalName());
 	}
@@ -406,10 +410,6 @@ public final class ElementTypeTeller {
 
 	public static boolean isDelegation(ITypeBinding binding) {
 		return SharedUtils.typeIsAssignableFrom(binding, Delegation.class);
-	}
-
-	public static boolean isModelEnum(ITypeBinding binding) {
-		return binding.isEnum() && SharedUtils.typeIsAssignableFrom(binding, ModelEnum.class);
 	}
 
 }

@@ -20,7 +20,7 @@ class XtxtUMLHighlightingConfiguration extends XbaseHighlightingConfiguration {
 
 		super.configure(acceptor);
 	}
-	
+
 	def documentationComment() {
 		val textStyle = defaultTextStyle.copy;
 		textStyle.color = new RGB(63, 63, 191);

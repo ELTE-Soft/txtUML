@@ -4,6 +4,7 @@ import hu.elte.txtuml.xtxtuml.xtxtUML.TUAssociationEnd
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAttribute
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUConnectorEnd
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUConstructor
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUEnumerationLiteral
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUFile
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUModelElement
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUOperation
@@ -21,7 +22,6 @@ import org.eclipse.xtext.xbase.XbasePackage
 
 import static hu.elte.txtuml.xtxtuml.validation.XtxtUMLIssueCodes.*
 import static hu.elte.txtuml.xtxtuml.xtxtUML.XtxtUMLPackage.Literals.*
-import hu.elte.txtuml.xtxtuml.xtxtUML.TUEnumerationLiteral
 
 class XtxtUMLNameValidator extends AbstractXtxtUMLValidator {
 

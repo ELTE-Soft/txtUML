@@ -34,6 +34,7 @@ import org.eclipse.emf.ecore.EObject
 import org.eclipse.emf.ecore.EReference
 import org.eclipse.jface.text.contentassist.ICompletionProposal
 import org.eclipse.xtext.EcoreUtil2
+import org.eclipse.xtext.common.types.JvmDeclaredType
 import org.eclipse.xtext.common.types.JvmGenericType
 import org.eclipse.xtext.common.types.JvmTypeReference
 import org.eclipse.xtext.common.types.TypesPackage
@@ -52,8 +53,6 @@ import org.eclipse.xtext.xbase.typesystem.references.StandardTypeReferenceOwner
 import org.eclipse.xtext.xbase.typesystem.util.CommonTypeComputationServices
 import org.eclipse.xtext.xbase.ui.contentassist.MultiNameDescription
 import org.eclipse.xtext.xbase.ui.contentassist.XbaseReferenceProposalCreator
-import org.eclipse.xtext.common.types.JvmEnumerationType
-import org.eclipse.xtext.common.types.JvmDeclaredType
 
 class XtxtUMLReferenceProposalCreator extends XbaseReferenceProposalCreator {
 

@@ -10,6 +10,8 @@ import hu.elte.txtuml.xtxtuml.xtxtUML.TUConnector
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUConnectorEnd
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUConstructor
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUEntryOrExitActivity
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUEnumeration
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUEnumerationLiteral
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUExecution
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUFile
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUInterface
@@ -31,8 +33,6 @@ import org.eclipse.emf.edit.ui.provider.AdapterFactoryLabelProvider
 import org.eclipse.jface.viewers.StyledString
 import org.eclipse.xtext.common.types.JvmGenericType
 import org.eclipse.xtext.xbase.ui.labeling.XbaseLabelProvider
-import hu.elte.txtuml.xtxtuml.xtxtUML.TUEnumeration
-import hu.elte.txtuml.xtxtuml.xtxtUML.TUEnumerationLiteral
 
 /**
  * Provides labels for EObjects.

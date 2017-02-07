@@ -187,13 +187,13 @@ class XtxtUMLStructureParserTest {
 	@Test
 	def parseEnumWithLiterals() {
 		val singleEnumWithABLiterals = #[
-				[enumeration(
-					"TestEnum", #[
-						[enumerationLiteral("A")],
-						[enumerationLiteral("B")]
-					]
-				)]
-			]
+			[enumeration(
+				"TestEnum", #[
+					[enumerationLiteral("A")],
+					[enumerationLiteral("B")]
+				]
+			)]
+		]
 		
 		'''
 			package test.model;

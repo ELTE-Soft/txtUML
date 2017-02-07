@@ -13,7 +13,6 @@ import hu.elte.txtuml.xtxtuml.xtxtUML.TUConstructor
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUDeleteObjectExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUEntryOrExitActivity
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUEnumeration
-import hu.elte.txtuml.xtxtuml.xtxtUML.TUEnumerationLiteral
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUExecution
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUFile
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUInterface
@@ -90,11 +89,10 @@ class XtxtUMLFormatter extends XbaseFormatter {
 	def dispatch void format(TUEnumeration it, extension IFormattableDocument document) {
 		formatBlockElement(it, document, regionFor.keyword('enum'), literals,
 			false, [prepend[newLine] format(document)]);
-		regionFor.keywords(',').forEach[prepend[noSpace].append[oneSpace]]
-	}
-
-	def dispatch void format(TUEnumerationLiteral it, extension IFormattableDocument document) {
-		regionFor.feature(TU_ENUMERATION_LITERAL__NAME).prepend[oneSpace].append[noSpace];
+		regionFor.keywords(',').forEach[prepend[noSpace]]
+		if (!literals.empty) {
+			regionFor.keyword('}').prepend[newLine]
+		}
 	}
 
 	def dispatch void format(TUAssociation it, extension IFormattableDocument document) {
@@ -297,7 +295,9 @@ class XtxtUMLFormatter extends XbaseFormatter {
 	 * <pre>
 	 *     «typeKeyword» «name» {}
 	 * </pre> otherwise. The parameter <code>isSpacious</code> indicates whether
-	 * empty lines should be placed around each member.
+	 * empty lines should be placed around each member, while
+	 * <code>formatMember</code> is applied to all specified members to format
+	 * their interior.
 	 */
 	def private <T> formatBlockElement(EObject it, extension IFormattableDocument document, ISemanticRegion typeKeyword,
 		EList<T> members, boolean isSpacious, (T)=>void formatMember) {

@@ -3,6 +3,7 @@ package hu.elte.txtuml.xtxtuml.ui.highlighting;
 import com.google.inject.Inject
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAttribute
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUConstructor
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUEnumerationLiteral
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUMultiplicity
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUOperation
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUSignalAttribute
@@ -19,7 +20,6 @@ import static hu.elte.txtuml.xtxtuml.ui.highlighting.XtxtUMLHighlightingConfigur
 import static hu.elte.txtuml.xtxtuml.xtxtUML.XtxtUMLPackage.Literals.*
 import static org.eclipse.xtext.common.types.TypesPackage.Literals.*
 import static org.eclipse.xtext.xbase.XbasePackage.Literals.*
-import hu.elte.txtuml.xtxtuml.xtxtUML.TUEnumerationLiteral
 
 class XtxtUMLHighlightingCalculator extends XbaseHighlightingCalculator {
 

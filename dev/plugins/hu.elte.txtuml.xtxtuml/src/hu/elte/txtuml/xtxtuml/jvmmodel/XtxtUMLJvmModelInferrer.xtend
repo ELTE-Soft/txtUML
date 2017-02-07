@@ -30,6 +30,8 @@ import hu.elte.txtuml.xtxtuml.xtxtUML.TUConnector
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUConnectorEnd
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUConstructor
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUEntryOrExitActivity
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUEnumeration
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUEnumerationLiteral
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUExecution
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUInterface
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUModelDeclaration
@@ -59,8 +61,6 @@ import org.eclipse.xtext.naming.IQualifiedNameProvider
 import org.eclipse.xtext.xbase.jvmmodel.AbstractModelInferrer
 import org.eclipse.xtext.xbase.jvmmodel.IJvmDeclaredTypeAcceptor
 import org.eclipse.xtext.xbase.jvmmodel.IJvmModelAssociations
-import hu.elte.txtuml.xtxtuml.xtxtUML.TUEnumeration
-import hu.elte.txtuml.xtxtuml.xtxtUML.TUEnumerationLiteral
 
 /**
  * Infers a JVM model equivalent from an XtxtUML resource. If not stated otherwise,
@@ -315,7 +315,7 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 	}
 
 	def dispatch private toJvmMember(TUEnumerationLiteral literal) {
-		literal.toEnumerationLiteral(literal.getName) [
+		literal.toEnumerationLiteral(literal.name) [
 			documentation = literal.documentation
 		]
 	}
