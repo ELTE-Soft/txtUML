@@ -16,7 +16,7 @@ public:
   virtual void processEventVirtual () = 0;
   virtual void processInitTransition () = 0;
 
-  void startSM() { _started = true; handlePool(); }
+  void startSM() { _started = true; if (_pool != nullptr) handlePool(); }
   void runSM();
   void send (EventPtr e_);
   void init ();

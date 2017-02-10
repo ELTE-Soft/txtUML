@@ -8,6 +8,7 @@
 #include "threadpool.hpp"
 #include "runtimetypes.hpp"
 #include "threadconfiguration.hpp"
+#include "ESRoot\Types.hpp"
 
 class ThreadPoolManager
 {
@@ -20,11 +21,11 @@ class ThreadPoolManager
 		int calculateNOfThreads(int,int);
 		void enqueueObject(IStateMachine*);
 		int getNumberOfConfigurations();
-		void setConfiguration(ThreadConfiguration*);
+		void setConfiguration(ES::Ref<ThreadConfiguration>);
 		bool isConfigurated();
 	
 	private:
-		ThreadConfiguration* configuration;
+		ES::Ref<ThreadConfiguration> configuration;
 	
 };
 

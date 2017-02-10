@@ -3,23 +3,6 @@
 
 #include <list>
 
-namespace action 
-{
-	template<typename T, typename FirstRole, typename SecondRole>
-	void link(typename FirstRole::EdgeType* e1, typename SecondRole::EdgeType* e2)
-	{
-		e1->template link<T,SecondRole>(e2);
-		e2->template link<T,FirstRole>(e1);
-	}
-	
-	template<typename T, typename FirstRole, typename SecondRole>
-	void unlink(typename FirstRole::EdgeType* e1, typename SecondRole::EdgeType* e2)
-	{
-		e1->template link<T,SecondRole>(e2);
-		e2->template link<T,FirstRole>(e1);
-	}
-}
-
 template<typename End1Type, typename End2Type>
 struct Association
 {
@@ -27,15 +10,14 @@ struct Association
 	typedef End2Type E2;
 };
 
-template <typename T>
+template <typename EndType>
 class AssociationEnd
 {
-
 public:
 
-    AssociationEnd(int lower_, int upper_): limits(lower_,upper_) {}
+    AssociationEnd(int lower, int upper): limits(lower,upper) {}
 
-    void addAssoc(T* o)
+    void addAssoc(EndType* o)
     {
         if ((int)linkedObjects.size() < limits.second || limits.second == AssociationEnd::UNLIMITED())
         {
@@ -43,15 +25,15 @@ public:
         }
     }
 
-    void removeAssoc(T* o)
+    void removeAssoc(EndType* o)
     {
         linkedObjects.remove(o);
     }
 
-    T* getOne(bool cond(T*) = [](T*){return true;})
+    EndType* getOne(bool cond(EndType*) = [](EndType*){return true;})
     {
-        T* object = nullptr;
-        for(T* e : linkedObjects)
+        EndType* object = nullptr;
+        for(EndType* e : linkedObjects)
         {
             if(cond(e))
             {
@@ -61,10 +43,10 @@ public:
         return object;
     }
 
-    std::list<T*> getAll(bool cond(T*) = [](T*){return true;})
+    std::list<EndType*> getAll(bool cond(EndType*) = [](EndType*){return true;})
     {
-        std::list<T*> conditionedObjects;
-        for(T* e : linkedObjects)
+        std::list<EndType*> conditionedObjects;
+        for(EndType* e : linkedObjects)
         {
             if(cond(e))
             {
@@ -76,7 +58,7 @@ public:
 
 private:
 
-    std::list<T*> linkedObjects;
+    std::list<EndType*> linkedObjects;
     std::pair<int,int> limits; //lower, upper
 	
 	static int UNLIMITED() {return -1;}

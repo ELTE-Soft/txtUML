@@ -2,23 +2,27 @@
 #define EVENTI_HPP_INCLUDED
 
 #include "runtimetypes.hpp"
+#include "ESRoot\Types.hpp"
 
-class StateMachineI;
-
-struct IEvent
+class IEvent
 {
+public:
   IEvent () {}
   virtual ~IEvent () {}
-  
-  int t;
-  int p; 
+  virtual void setTargetSM (ES::StateMachineRef sm) = 0;
+  virtual ES::StateMachineRef getTargetSM () const = 0;
   
 };
 
-struct EventBase : public IEvent
+class EventBase : public IEvent
 {
+public:
   EventBase (int t_) : t (t_), p (NoPort_PE) {}
-	
+  virtual void setTargetSM (ES::StateMachineRef sm) override {targetSM = sm;}
+  virtual ES::StateMachineRef getTargetSM () const override {return targetSM;}
+  
+  
+  ES::StateMachineRef targetSM;
   int t;
   int p;
 };

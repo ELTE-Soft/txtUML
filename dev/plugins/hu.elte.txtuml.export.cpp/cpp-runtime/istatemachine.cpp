@@ -23,12 +23,8 @@ void IStateMachine::send(EventPtr e_)
   {
 	if(_pool != nullptr)
   	{
-    		handlePool();
+    	handlePool();
   	}
-	else
-	{
-	    	RuntimeI<SingleThreadRT>::createRuntime()->enqueueObject(this);
-	}
   }
   
 

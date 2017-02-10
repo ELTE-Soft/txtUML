@@ -1,4 +1,6 @@
 #include "threadpoolmanager.hpp"
+
+#include "ESRoot\Types.hpp"
 #include <stdlib.h>
 #include <algorithm> 
 
@@ -53,13 +55,7 @@ StateMachineThreadPool* ThreadPoolManager::getPool(int id)
 	return configuration->getThreadPool(id);
 }
 
-ThreadPoolManager::~ThreadPoolManager()
-{
-	if(isConfigurated())
-		delete configuration;
-}
-
-void ThreadPoolManager::setConfiguration(ThreadConfiguration* configuration)
+void ThreadPoolManager::setConfiguration(ES::Ref<ThreadConfiguration> configuration)
 {
 	this->configuration = configuration;
 }
@@ -67,5 +63,9 @@ void ThreadPoolManager::setConfiguration(ThreadConfiguration* configuration)
 bool ThreadPoolManager::isConfigurated()
 {
 	return configuration != nullptr;
+}
+
+ThreadPoolManager::~ThreadPoolManager()
+{
 }
 
