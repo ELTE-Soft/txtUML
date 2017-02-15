@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -18,9 +19,12 @@ import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
-import org.eclipse.jdt.ui.JavaElementLabelProvider;
 import org.eclipse.jface.viewers.CheckboxTreeViewer;
+import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IContentProvider;
+import org.eclipse.jface.viewers.IDoubleClickListener;
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
@@ -152,6 +156,36 @@ public class VisualizeTxtUMLPage extends WizardPage {
 		// diagram descriptions tree
 		ScrolledComposite treeComposite = new ScrolledComposite(container, SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER);
 		tree = getDiagramTreeViewer(treeComposite);
+		tree.addDoubleClickListener(new IDoubleClickListener() {
+			@Override
+			public void doubleClick(DoubleClickEvent event) {
+				ISelection selection = event.getSelection();
+				Iterator<?> selectedElements = ((IStructuredSelection) selection).iterator();
+				if (selectedElements.hasNext()) {
+					Object selectedElement = selectedElements.next();
+					if (selectedElement instanceof IJavaProject) {
+						List<Object> expandedElements = new ArrayList<>(Arrays.asList(tree.getExpandedElements()));
+						if (expandedElements.contains(selectedElement)) {
+							expandedElements.remove(selectedElement);
+						} else {
+							expandedElements.add(selectedElement);
+						}
+						tree.setExpandedElements(expandedElements.toArray());
+					} else if (selectedElement instanceof IType) {
+						List<Object> checkedElements = new ArrayList<>(Arrays.asList(tree.getCheckedElements()));
+						boolean isChecked = checkedElements.contains(selectedElement);
+						tree.setChecked(selectedElement, !isChecked);
+						IType selectedType = (IType) selectedElement;
+						if (!isChecked && !txtUMLLayout.contains(selectedType)) {
+							txtUMLLayout.add(selectedType);
+						} else {
+							txtUMLLayout.remove(selectedType);
+						}
+						selectElementsInDiagramTree(txtUMLLayout.toArray());
+					}
+				}
+			}
+		});
 
 		tree.expandAll();
 		selectElementsInDiagramTree(txtUMLLayout.toArray());
@@ -230,17 +264,8 @@ public class VisualizeTxtUMLPage extends WizardPage {
 		List<IType> checkedTypes = Arrays.asList(elements).stream().filter(e -> e instanceof IType).map(e -> (IType) e)
 				.collect(Collectors.toList());
 
-		if (checkedTypes.isEmpty()) {
-			return;
-		}
-
 		checkedTypes.forEach(type -> txtUMLLayout.add(type));
-
-		Stream.of(tree.getTree().getItems()).flatMap(project -> Stream.of(project.getItems()))
-				.filter(type -> type.getData() instanceof IType && checkedTypes.stream()
-						.anyMatch(checkedType -> checkedType.getFullyQualifiedName()
-								.equals(((IType) type.getData()).getFullyQualifiedName())))
-				.forEach(s -> updateParentCheck(s.getParentItem()));
+		Stream.of(tree.getTree().getItems()).forEach(pr -> updateParentCheck(pr));
 	}
 
 	private CheckboxTreeViewer getDiagramTreeViewer(ScrolledComposite treeComposite) {
@@ -301,10 +326,8 @@ public class VisualizeTxtUMLPage extends WizardPage {
 
 		tree.getTree().addListener(SWT.Selection, event -> selectionHandler(event));
 		tree.setContentProvider(cp);
-		tree.setLabelProvider(new JavaElementLabelProvider(
-				JavaElementLabelProvider.SHOW_POST_QUALIFIED | JavaElementLabelProvider.SHOW_SMALL_ICONS));
+		tree.setLabelProvider(WizardUtils.getPostQualifiedLabelProvider());
 		tree.setInput(ResourcesPlugin.getWorkspace().getRoot());
-
 		return tree;
 	}
 

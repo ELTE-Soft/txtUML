@@ -1,0 +1,4 @@
+/**
+ * XtxtUML XMachine1 example model.
+ */
+model-package machine1.x.model as "XMachine1";

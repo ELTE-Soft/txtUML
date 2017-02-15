@@ -6,17 +6,16 @@
 
 #include "threadsafequeue.hpp"
 
-struct EventI;
-class StateMachineI;
+struct IEvent;
+class IStateMachine;
 
 
-typedef std::shared_ptr<EventI> EventPtr;
+typedef std::shared_ptr<IEvent> EventPtr;
 typedef ThreadSafeQueue<EventPtr > MessageQueueType;
-typedef ThreadSafeQueue<StateMachineI*> PoolQueueType;
-typedef std::list<StateMachineI*> ObjectList;
-typedef int id_type;
+typedef ThreadSafeQueue<IStateMachine*> PoolQueueType;
 
-const int defaultThreadCount = 4;
-const int defaultWorkTime = 2000;
+const int NoPort_PE = 1;
+
+
 
 #endif // RUNTIMETYPES_HPP_INCLUDED

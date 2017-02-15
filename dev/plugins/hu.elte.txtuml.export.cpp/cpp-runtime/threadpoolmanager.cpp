@@ -25,14 +25,14 @@ int ThreadPoolManager::calculateNOfThreads(int id, int n)
 	
 }
 
-void ThreadPoolManager::enqueObject(StateMachineI* sm)
+void ThreadPoolManager::enqueueObject(IStateMachine* sm)
 {
 	if (!isConfigurated()) {
 		abort();
 	}
 	
 	int objectId = sm->getPoolId();
-	configuration->getThreadPool(objectId)->enqueObject(sm);
+	configuration->getThreadPool(objectId)->enqueueObject(sm);
 }
 
 int ThreadPoolManager::getNumberOfConfigurations()
