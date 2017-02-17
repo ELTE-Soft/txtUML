@@ -1,11 +1,14 @@
 package hu.elte.txtuml.utils.eclipse;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.jdt.core.IAnnotation;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaProject;
@@ -13,12 +16,18 @@ import org.eclipse.jdt.core.IPackageDeclaration;
 import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
+import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.IPackageBinding;
+import org.eclipse.jdt.core.dom.PackageDeclaration;
 import org.eclipse.jdt.ui.JavaElementLabelProvider;
 import org.eclipse.jface.viewers.DelegatingStyledCellLabelProvider;
 import org.eclipse.jface.viewers.IBaseLabelProvider;
 import org.eclipse.jface.viewers.StyledString;
 
 import hu.elte.txtuml.api.model.Model;
+import hu.elte.txtuml.utils.Pair;
+import hu.elte.txtuml.utils.jdt.ModelUtils;
+import hu.elte.txtuml.utils.jdt.SharedUtils;
 
 public class WizardUtils {
 
@@ -62,7 +71,7 @@ public class WizardUtils {
 		List<IPackageFragment> modelPackages = new ArrayList<>();
 		for (IPackageFragment pFragment : packageFragments) {
 			Optional<ICompilationUnit> foundPackageInfoCompilationUnit = Optional
-					.of(pFragment.getCompilationUnit("package-info.java"));
+					.of(pFragment.getCompilationUnit(PackageUtils.PACKAGE_INFO));
 
 			if (!foundPackageInfoCompilationUnit.isPresent() || !foundPackageInfoCompilationUnit.get().exists()) {
 				continue;
@@ -114,6 +123,51 @@ public class WizardUtils {
 				return name.append(new StyledString(qualifier, StyledString.QUALIFIER_STYLER));
 			};
 		};
+	}
+
+	public static String[][] resolveType(IType context, Object typeName) {
+		try {
+			return context.resolveType((String) typeName);
+		} catch (JavaModelException e) {
+			return new String[][] {};
+		}
+	}
+
+	public static Pair<String, String> getModelPackage(String packageName) {
+		try {
+			Optional<IJavaProject> project = Stream.of(ResourcesPlugin.getWorkspace().getRoot().getProjects())
+					.map(pr -> {
+						try {
+							return ProjectUtils.findJavaProject(pr.getName());
+						} catch (NotFoundException e) {
+							return null;
+						}
+					}).filter(Objects::nonNull).filter(pr -> {
+						IPackageFragment[] pf = null;
+						try {
+							pf = PackageUtils.findPackageFragments(pr, packageName);
+						} catch (JavaModelException e) {
+							return false;
+						}
+						return pf.length > 0;
+					}).findFirst();
+
+			Stream<ICompilationUnit> modelCU = PackageUtils.findAllPackageFragmentsAsStream(project.get())
+					.filter(p -> packageName.startsWith(p.getElementName() + ".")
+							|| packageName.equals(p.getElementName()))
+					.map(pf -> pf.getCompilationUnit(PackageUtils.PACKAGE_INFO)).filter(ICompilationUnit::exists);
+
+			Optional<String> topPackageName = Stream.of(SharedUtils.parseICompilationUnitStream(modelCU, project.get()))
+					.map(CompilationUnit::getPackage).filter(Objects::nonNull).map(PackageDeclaration::resolveBinding)
+					.filter(Objects::nonNull).filter(pb -> ModelUtils.findModelNameInTopPackage(pb).isPresent())
+					.map(IPackageBinding::getName).findFirst();
+
+			if (topPackageName.isPresent()) {
+				return Pair.of(topPackageName.get(), project.get().getElementName());
+			}
+		} catch (JavaModelException | IOException e) {
+		}
+		return Pair.of("", "");
 	}
 
 	private static boolean isImportedNameResolvedTo(ICompilationUnit compilationUnit, String elementName,
