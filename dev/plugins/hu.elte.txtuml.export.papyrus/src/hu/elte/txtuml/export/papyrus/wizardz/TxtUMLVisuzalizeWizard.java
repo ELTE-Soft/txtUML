@@ -1,14 +1,24 @@
 package hu.elte.txtuml.export.papyrus.wizardz;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.SubProgressMonitor;
+import org.eclipse.jdt.core.IAnnotation;
+import org.eclipse.jdt.core.IMemberValuePair;
+import org.eclipse.jdt.core.IType;
+import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.PlatformUI;
@@ -22,7 +32,9 @@ import hu.elte.txtuml.export.papyrus.preferences.PreferencesManager;
 import hu.elte.txtuml.export.uml2.ExportMode;
 import hu.elte.txtuml.export.uml2.TxtUMLToUML2;
 import hu.elte.txtuml.layout.export.DiagramExportationReport;
+import hu.elte.txtuml.utils.Pair;
 import hu.elte.txtuml.utils.eclipse.Dialogs;
+import hu.elte.txtuml.utils.eclipse.WizardUtils;
 
 /**
  * Wizard for visualization of txtUML models
@@ -66,102 +78,117 @@ public class TxtUMLVisuzalizeWizard extends Wizard {
 	 */
 	@Override
 	public boolean performFinish() {
-		String txtUMLModelName = selectTxtUmlPage.getTxtUmlModelClass();
-		Map<String, String> txtUMLLayout = selectTxtUmlPage.getTxtUmlLayout();
-		String txtUMLProjectName = selectTxtUmlPage.getTxtUmlProject();
-		String generatedFolderName = PreferencesManager
-				.getString(PreferencesManager.TXTUML_VISUALIZE_DESTINATION_FOLDER);
+		List<IType> txtUMLLayout = selectTxtUmlPage.getTxtUmlLayout();
+		Map<Pair<String, String>, List<IType>> layoutConfigs = new HashMap<>();
 
-		PreferencesManager.setValue(PreferencesManager.TXTUML_VISUALIZE_TXTUML_PROJECT, txtUMLProjectName);
-		PreferencesManager.setValue(PreferencesManager.TXTUML_VISUALIZE_TXTUML_MODEL, txtUMLModelName);
-		PreferencesManager.setValue(PreferencesManager.TXTUML_VISUALIZE_TXTUML_LAYOUT, txtUMLLayout.keySet());
+		for (IType layout : txtUMLLayout) {
+			Pair<String, String> model = getModelOfDescription(layout);
+			if (!layoutConfigs.containsKey(model)) {
+				layoutConfigs.put(model, new ArrayList<>(Arrays.asList(layout)));
+			} else {
+				layoutConfigs.get(model).add(layout);
+			}
+		}
 
-		try {
+		PreferencesManager.setValue(PreferencesManager.TXTUML_VISUALIZE_TXTUML_LAYOUT, layoutConfigs.values().stream()
+				.flatMap(c -> c.stream()).map(layout -> layout.getFullyQualifiedName()).collect(Collectors.toList()));
 
-			this.checkEmptyLayoutDecsriptions();
+		for (Pair<String, String> model : layoutConfigs.keySet()) {
+			String txtUMLModelName = model.getFirst();
+			String txtUMLProjectName = model.getSecond();
 
-			IProgressService progressService = PlatformUI.getWorkbench().getProgressService();
+			String generatedFolderName = PreferencesManager
+					.getString(PreferencesManager.TXTUML_VISUALIZE_DESTINATION_FOLDER);
 
-			progressService.runInUI(progressService, new IRunnableWithProgress() {
-				@Override
-				public void run(IProgressMonitor monitor) throws InterruptedException {
-					monitor.beginTask("Visualization", 100);
+			Map<String, String> layouts = new HashMap<String, String>();
+			layoutConfigs.get(model).forEach(
+					layout -> layouts.put(layout.getFullyQualifiedName(), layout.getJavaProject().getElementName()));
 
-					TxtUMLExporter exporter = new TxtUMLExporter(txtUMLProjectName, generatedFolderName,
-							txtUMLModelName, txtUMLLayout);
-					try {
-						exporter.cleanBeforeVisualization();
-					} catch (CoreException e) {
-						Dialogs.errorMsgb("txtUML export Error - cleaning resources",
-								"Error occured when cleaning resources.", e);
-						throw new InterruptedException();
-					}
-					monitor.subTask("Exporting txtUML Model to UML2 model...");
-					try {
-						TxtUMLToUML2.exportModel(txtUMLProjectName, txtUMLModelName,
-								txtUMLProjectName + "/" + generatedFolderName, ExportMode.ErrorHandlingNoActions, "gen");
-						monitor.worked(10);
-					} catch (Exception e) {
-						Dialogs.errorMsgb("txtUML export Error", "Error occured during the UML2 exportation.", e);
-						monitor.done();
-						throw new InterruptedException();
-					}
+			try {
+				this.checkEmptyLayoutDecsriptions();
+				IProgressService progressService = PlatformUI.getWorkbench().getProgressService();
+				progressService.runInUI(progressService, new IRunnableWithProgress() {
+					@Override
+					public void run(IProgressMonitor monitor) throws InterruptedException {
+						monitor.beginTask("Visualization", 100);
 
-					monitor.subTask("Generating txtUML layout description...");
-					TxtUMLLayoutDescriptor layoutDescriptor = null;
-					try {
-						layoutDescriptor = exporter.exportTxtUMLLayout();
-
-						List<String> warnings = new LinkedList<String>();
-						for (DiagramExportationReport report : layoutDescriptor.getReports()) {
-							warnings.addAll(report.getWarnings());
+						TxtUMLExporter exporter = new TxtUMLExporter(txtUMLProjectName, generatedFolderName,
+								txtUMLModelName, layouts);
+						try {
+							exporter.cleanBeforeVisualization();
+						} catch (CoreException e) {
+							Dialogs.errorMsgb("txtUML export Error - cleaning resources",
+									"Error occured when cleaning resources.", e);
+							throw new InterruptedException();
+						}
+						monitor.subTask("Exporting txtUML Model to UML2 model...");
+						try {
+							TxtUMLToUML2.exportModel(txtUMLProjectName, txtUMLModelName,
+									txtUMLProjectName + "/" + generatedFolderName, ExportMode.ErrorHandlingNoActions,
+									"gen");
+							monitor.worked(10);
+						} catch (Exception e) {
+							Dialogs.errorMsgb("txtUML export Error", "Error occured during the UML2 exportation.", e);
+							monitor.done();
+							throw new InterruptedException();
 						}
 
-						layoutDescriptor.mappingFolder = generatedFolderName;
-						layoutDescriptor.projectName = txtUMLProjectName;
+						monitor.subTask("Generating txtUML layout description...");
+						TxtUMLLayoutDescriptor layoutDescriptor = null;
+						try {
+							layoutDescriptor = exporter.exportTxtUMLLayout();
 
-						if (warnings.size() != 0) {
-							StringBuilder warningMessages = new StringBuilder(
-									"Warnings:" + System.lineSeparator() + System.lineSeparator() + "- ");
-							warningMessages.append(
-									String.join(System.lineSeparator() + System.lineSeparator() + "- ", warnings));
-							warningMessages.append(
-									System.lineSeparator() + System.lineSeparator() + "Do you want to continue?");
+							List<String> warnings = new LinkedList<String>();
+							for (DiagramExportationReport report : layoutDescriptor.getReports()) {
+								warnings.addAll(report.getWarnings());
+							}
 
-							if (!Dialogs.WarningConfirm("Warnings about layout description",
-									warningMessages.toString())) {
+							layoutDescriptor.mappingFolder = generatedFolderName;
+							layoutDescriptor.projectName = txtUMLProjectName;
+
+							if (warnings.size() != 0) {
+								StringBuilder warningMessages = new StringBuilder(
+										"Warnings:" + System.lineSeparator() + System.lineSeparator() + "- ");
+								warningMessages.append(
+										String.join(System.lineSeparator() + System.lineSeparator() + "- ", warnings));
+								warningMessages.append(
+										System.lineSeparator() + System.lineSeparator() + "Do you want to continue?");
+
+								if (!Dialogs.WarningConfirm("Warnings about layout description",
+										warningMessages.toString())) {
+									throw new InterruptedException();
+								}
+							}
+
+							monitor.worked(5);
+						} catch (Exception e) {
+							if (e instanceof InterruptedException) {
+								throw (InterruptedException) e;
+							} else {
+								Dialogs.errorMsgb("txtUML layout export Error",
+										"Error occured during the diagram layout interpretation.", e);
+								monitor.done();
 								throw new InterruptedException();
 							}
 						}
 
-						monitor.worked(5);
-					} catch (Exception e) {
-						if (e instanceof InterruptedException) {
-							throw (InterruptedException) e;
-						} else {
-							Dialogs.errorMsgb("txtUML layout export Error",
-									"Error occured during the diagram layout interpretation.", e);
+						try {
+							PapyrusVisualizer pv = exporter.createVisualizer(layoutDescriptor);
+							pv.registerPayprusModelManager(TxtUMLPapyrusModelManager.class);
+							pv.run(new SubProgressMonitor(monitor, 85));
+						} catch (Exception e) {
+							Dialogs.errorMsgb("txtUML visualization Error",
+									"Error occured during the visualization process.", e);
 							monitor.done();
 							throw new InterruptedException();
 						}
 					}
-
-					try {
-						PapyrusVisualizer pv = exporter.createVisualizer(layoutDescriptor);
-						pv.registerPayprusModelManager(TxtUMLPapyrusModelManager.class);
-						pv.run(new SubProgressMonitor(monitor, 85));
-					} catch (Exception e) {
-						Dialogs.errorMsgb("txtUML visualization Error",
-								"Error occured during the visualization process.", e);
-						monitor.done();
-						throw new InterruptedException();
-					}
-				}
-			}, ResourcesPlugin.getWorkspace().getRoot());
-			return true;
-		} catch (InvocationTargetException | InterruptedException e) {
-			return false;
+				}, ResourcesPlugin.getWorkspace().getRoot());
+			} catch (InvocationTargetException | InterruptedException e) {
+				return false;
+			}
 		}
+		return true;
 	}
 
 	private void checkEmptyLayoutDecsriptions() throws InterruptedException {
@@ -175,6 +202,37 @@ public class TxtUMLVisuzalizeWizard extends Wizard {
 			if (!answer)
 				throw new InterruptedException();
 		}
+	}
+
+	private Pair<String, String> getModelOfDescription(IType layout) {
+		try {
+			IType innerLayoutClass = Stream.of(layout.getTypes()).findFirst().get();
+			for (IAnnotation annot : innerLayoutClass.getAnnotations()) {
+				List<Object> annotValues = Stream.of(annot.getMemberValuePairs())
+						.filter(mvp -> mvp.getValueKind() == IMemberValuePair.K_CLASS)
+						.flatMap(mvp -> Stream.of(mvp.getValue())).collect(Collectors.toList());
+
+				for (Object val : annotValues) {
+					List<Object> annotations = new ArrayList<>();
+					if (val instanceof String) {
+						annotations.add(val);
+					} else {
+						annotations.addAll(Arrays.asList((Object[]) val));
+					}
+
+					for (Object v : annotations) {
+						String[][] resolvedType = WizardUtils.resolveType(innerLayoutClass, v);
+						Pair<String, String> model = WizardUtils.getModelPackage(resolvedType[0][0]);
+						if (!model.equals(Pair.of("", ""))) {
+							return model;
+						}
+					}
+				}
+			}
+		} catch (JavaModelException | NoSuchElementException e) {
+		}
+
+		return Pair.of("", "");
 	}
 
 }
