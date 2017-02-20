@@ -18,6 +18,7 @@ import hu.elte.txtuml.export.papyrus.preferences.PreferencesManager;
 import hu.elte.txtuml.export.papyrus.utils.LayoutUtils;
 import hu.elte.txtuml.layout.export.DiagramExportationReport;
 import hu.elte.txtuml.utils.eclipse.Dialogs;
+import hu.elte.txtuml.utils.eclipse.SaveUtils;
 
 /**
  * Wizard for visualization of txtUML models
@@ -72,6 +73,10 @@ public class TxtUMLVisuzalizeWizard extends Wizard {
 		PreferencesManager.setValue(PreferencesManager.TXTUML_VISUALIZE_TXTUML_PROJECT, txtUMLProjectName);
 		PreferencesManager.setValue(PreferencesManager.TXTUML_VISUALIZE_TXTUML_MODEL, txtUMLModelName);
 		PreferencesManager.setValue(PreferencesManager.TXTUML_VISUALIZE_TXTUML_LAYOUT, txtUMLLayout.keySet());
+    
+		boolean saveSucceeded = SaveUtils.saveAffectedFiles(getShell(), txtUMLProjectName, txtUMLModelName, txtUMLLayout.keySet());
+		if (!saveSucceeded)
+			return false;
 
 		if(!this.checkEmptyVisualizationRequested()){
 			return false;
