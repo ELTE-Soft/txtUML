@@ -185,42 +185,22 @@ class XtxtUMLStructureParserTest {
 	}
 
 	@Test
-	def parseEnumWithLiterals() {
-		val singleEnumWithABLiterals = #[
+	def parseEnumWithLiterals() {	
+		'''
+			package test.model;
+			enum TestEnum {
+				A,
+				B
+			}
+		'''
+		.parse.file("test.model", null, #[
 			[enumeration(
 				"TestEnum", #[
 					[enumerationLiteral("A")],
 					[enumerationLiteral("B")]
 				]
 			)]
-		]
-		
-		'''
-			package test.model;
-			enum TestEnum {
-				A
-				B
-			}
-		'''
-		.parse.file("test.model", null, singleEnumWithABLiterals)
-
-		'''
-			package test.model;
-			enum TestEnum {
-				A,
-				B
-			}
-		'''
-		.parse.file("test.model", null, singleEnumWithABLiterals)
-
-		'''
-			package test.model;
-			enum TestEnum {
-				A,
-				B,
-			}
-		'''
-		.parse.file("test.model", null, singleEnumWithABLiterals)
+		])
 	}
 
 	@Test
