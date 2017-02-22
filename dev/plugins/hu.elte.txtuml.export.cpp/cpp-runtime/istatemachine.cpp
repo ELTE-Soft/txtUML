@@ -2,11 +2,10 @@
 #include "threadpool.hpp"
 #include "runtime.hpp"
 
-#include <iostream>
+#include <assert.h>
 
-
- IStateMachine::IStateMachine(std::shared_ptr<MessageQueueType> messageQueue_)
-         :_messageQueue(messageQueue_), _pool(nullptr), _inPool(false), _started(false), _initialized(false){}
+ IStateMachine::IStateMachine(ES::SharedPtr<ES::MessageQueueType> messageQueue)
+         :_messageQueue(messageQueue), _pool(nullptr), _inPool(false), _started(false), _initialized(false){}
 
 
 void IStateMachine::init()
@@ -15,16 +14,22 @@ void IStateMachine::init()
 	processInitTransition();
 }
 
-void IStateMachine::send(EventPtr e_)
+inline ES::EventRef IStateMachine::getNextMessage() 
+{ 
+	ES::EventRef event;  
+	_messageQueue->dequeue(event); 
+	(*message_counter)--; 
+	return event; 
+}
+
+void IStateMachine::send(const ES::EventRef e)
 {
   (*message_counter)++;
-  _messageQueue->push_back(e_);
-  if (_started)
+  e->setTargetSM(this);
+  _messageQueue->enqueue(e);
+  if (_started && _pool != nullptr)
   {
-	if(_pool != nullptr)
-  	{
-    	handlePool();
-  	}
+	 handlePool();
   }
   
 
@@ -32,6 +37,7 @@ void IStateMachine::send(EventPtr e_)
 
 void IStateMachine::handlePool()
 {
+	assert(_pool != nullptr && "Handle pool should not be called when there is no associated thread pool");
   std::unique_lock<std::mutex> mlock(_mutex);
   if(!_inPool)
   {

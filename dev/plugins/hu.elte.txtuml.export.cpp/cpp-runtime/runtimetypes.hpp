@@ -4,15 +4,10 @@
 #include <list>
 #include <memory>
 
-#include "threadsafequeue.hpp"
-
 class IEvent;
-class IStateMachine;
-
 
 typedef std::shared_ptr<IEvent> EventPtr;
-typedef ThreadSafeQueue<EventPtr> MessageQueueType;
-typedef ThreadSafeQueue<IStateMachine*> PoolQueueType;
+
 
 const int NoPort_PE = 1;
 

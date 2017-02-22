@@ -18,7 +18,7 @@ class StateMachineThreadPool {
 public:
 	StateMachineThreadPool();
 	void task();
-	void enqueueObject(IStateMachine*);
+	void enqueueObject(ES::StateMachineRef);
 	void stopPool();
 	void stopUponCompletion(std::atomic_int*);
 	void startPool(int);
@@ -30,7 +30,7 @@ private:
 	
 	ThreadContainer workers;
 	// the task queue
-	PoolQueueType stateMachines; //must be blocking queue
+	ES::PoolQueueType stateMachines; //must be blocking queue
 	
 	void incrementWorkers();
 	void reduceWorkers();

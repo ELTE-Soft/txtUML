@@ -8,30 +8,36 @@
 struct LinearFunction
 {
 	public:
-		LinearFunction(int constant_,double gradient_): constant(constant_),gradient(gradient_) {}
-		int operator()(int n) {return (int)round(gradient*n) + constant;}
+		LinearFunction(int constant,double gradient) : 
+			_constant(constant),
+			_gradient(gradient) 
+		{
+		}
+
+		int operator()(int n)
+		{
+			return (int)round(_gradient * n) + _constant;
+		}
 	private:
-		int constant;
-		double gradient;
+		int _constant;
+		double _gradient;
 };
 
 struct Configuration
 {
 
-	StateMachineThreadPool* threadPool;
-	LinearFunction* function;
+	ES::SharedPtr<StateMachineThreadPool> threadPool;
+	ES::SharedPtr<LinearFunction> function;
 	int max;
 
-	Configuration(StateMachineThreadPool* threadPool,LinearFunction* function,int max)
+	Configuration(ES::SharedPtr<StateMachineThreadPool> threadPool,ES::SharedPtr<LinearFunction> function,int max)
 	{
 		this->threadPool = threadPool;
 		this->function = function;
 		this->max = max;
 	}
-	~Configuration()
+	virtual ~Configuration()
 	{
-		delete threadPool;
-		delete function;
 	}
 
 };
@@ -45,15 +51,15 @@ class ThreadConfiguration
 		ThreadConfiguration(int);
 		~ThreadConfiguration();
 
-		void insertConfiguration(int,Configuration*);
-		StateMachineThreadPool* getThreadPool(int);
-		LinearFunction* getFunction(int);
+		void insertConfiguration(int,ES::SharedPtr<Configuration>);
+		ES::SharedPtr<StateMachineThreadPool> getThreadPool(int);
+		ES::SharedPtr<LinearFunction> getFunction(int);
 		int getMax(int);
 		int getNumberOfConfigurations();
 
 	private:
 
-		std::vector<Configuration*> configurations;
+		std::vector<ES::SharedPtr<Configuration>> configurations;
 
 };
 

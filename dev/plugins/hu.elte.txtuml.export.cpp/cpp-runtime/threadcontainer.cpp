@@ -7,10 +7,7 @@ void ThreadContainer::addThread(std::thread* th)
 {
 	std::unique_lock<std::mutex> mlock(_mutex);
 
-	threads.insert
-		(std::pair<std::thread::id, EventProcessorThread>
-                        (th->get_id(), EventProcessorThread(th)));
-
+	threads.insert(std::pair<std::thread::id, EventProcessorThread>(th->get_id(), EventProcessorThread(th)));
 	active_threads++;
 }
 
@@ -39,7 +36,6 @@ void ThreadContainer::gettingThreadsReadyToStop(std::condition_variable& cond)
 			it++;
 		}
 	}
-
 
 }
 

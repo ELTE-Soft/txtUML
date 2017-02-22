@@ -27,7 +27,7 @@ int ThreadPoolManager::calculateNOfThreads(int id, int n)
 	
 }
 
-void ThreadPoolManager::enqueueObject(IStateMachine* sm)
+void ThreadPoolManager::enqueueObject(ES::StateMachineRef sm)
 {
 	if (!isConfigurated()) {
 		abort();
@@ -46,7 +46,7 @@ int ThreadPoolManager::getNumberOfConfigurations()
 	return ((int)configuration->getNumberOfConfigurations());
 }
 
-StateMachineThreadPool* ThreadPoolManager::getPool(int id)
+ES::SharedPtr<StateMachineThreadPool> ThreadPoolManager::getPool(int id)
 {
 	if (!isConfigurated()) {
 		abort();
@@ -55,7 +55,7 @@ StateMachineThreadPool* ThreadPoolManager::getPool(int id)
 	return configuration->getThreadPool(id);
 }
 
-void ThreadPoolManager::setConfiguration(ES::Ref<ThreadConfiguration> configuration)
+void ThreadPoolManager::setConfiguration(ES::SharedPtr<ThreadConfiguration> configuration)
 {
 	this->configuration = configuration;
 }

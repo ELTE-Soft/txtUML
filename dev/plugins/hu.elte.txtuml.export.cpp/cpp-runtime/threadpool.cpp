@@ -41,23 +41,21 @@ void StateMachineThreadPool::task()
 		
 
 		
-		IStateMachine* sm = nullptr;
-		while(!sm && !this->stop)
-		{
-			
-			
+		ES::StateMachineRef sm = nullptr;
+		while(sm == nullptr && !this->stop)
+		{			
 							
 			if (workers.isReadyToStop(std::this_thread::get_id()))
 			{
 				return;
 			}
 
-			stateMachines.pop_front(sm);
+			stateMachines.dequeue(sm);
 			incrementWorkers();
 		}
 		
 	
-		if (sm)
+		if (sm != nullptr)
 		{
 			
 			if (!sm->isInitialized()) sm->init();
@@ -69,7 +67,7 @@ void StateMachineThreadPool::task()
 			
 			if (!sm->emptyMessageQueue())
 			{
-				stateMachines.push_back(sm);
+				stateMachines.enqueue(sm);
 			}
 			else
 			{
@@ -115,9 +113,9 @@ void StateMachineThreadPool::reduceWorkers()
 	(*worker_threads)--;
 }
 
-void StateMachineThreadPool::enqueueObject(IStateMachine* sm)
+void StateMachineThreadPool::enqueueObject(ES::StateMachineRef sm)
 {
-        stateMachines.push_back(sm);
+        stateMachines.enqueue(sm);
 }
 
 StateMachineThreadPool::~StateMachineThreadPool()

@@ -1,4 +1,5 @@
 #include "runtime.hpp"
+#include "istatemachine.hpp"
 #include "runtimetypes.hpp"
 
 #include <assert.h>
@@ -6,11 +7,11 @@
 
 
 template<typename RuntimeType>
-ES::Ref<IRuntime<RuntimeType>> IRuntime<RuntimeType>::instance = nullptr;
+ES::SharedPtr<IRuntime<RuntimeType>> IRuntime<RuntimeType>::instance = nullptr;
 
 //********************************SingleThreadRT**********************************
 
-SingleThreadRT::SingleThreadRT():_messageQueue(new MessageQueueType()) {}
+SingleThreadRT::SingleThreadRT():_messageQueue(new ES::MessageQueueType()) {}
 
 void SingleThreadRT::setupObjectSpecificRuntime(ES::StateMachineRef sm)
 {
@@ -29,11 +30,11 @@ bool SingleThreadRT::isConfigurated()
 void SingleThreadRT::start()
 {
 
-    while(!_messageQueue->empty())
+    while(!_messageQueue->isEmpty())
     {
-		EventPtr e;
-		_messageQueue->pop_front(e);
-		ES::StateMachineRef sm = e->getTargetSM();
+		ES::EventRef e;
+		_messageQueue->dequeue(e);
+		const ES::StateMachineRef sm = e->getTargetSM();
 		if(sm->isStarted())
 		{
 			sm->processEventVirtual();
@@ -42,7 +43,7 @@ void SingleThreadRT::start()
 
 }
 
-void SingleThreadRT::setConfiguration(ES::Ref<ThreadConfiguration>){}
+void SingleThreadRT::setConfiguration(ES::SharedPtr<ThreadConfiguration>){}
 
 void SingleThreadRT::stopUponCompletion() {}
 
@@ -93,7 +94,7 @@ void ConfiguratedThreadedRT::setupObjectSpecificRuntime(ES::StateMachineRef sm)
 	
 	sm->setMessageCounter(&messages);
 	int objectId = sm->getPoolId();
-	StateMachineThreadPool* matchedPool = poolManager->getPool(objectId);
+	ES::SharedPtr<StateMachineThreadPool> matchedPool = poolManager->getPool(objectId);
 	sm->setPool(matchedPool);
 	numberOfObjects[(size_t) objectId]++;
 	poolManager->recalculateThreads(objectId,numberOfObjects[(size_t) objectId]);
@@ -104,7 +105,7 @@ bool ConfiguratedThreadedRT::isConfigurated()
     return poolManager->isConfigurated();
 }
 
-void ConfiguratedThreadedRT::setConfiguration(ES::Ref<ThreadConfiguration> conf)
+void ConfiguratedThreadedRT::setConfiguration(ES::SharedPtr<ThreadConfiguration> conf)
 {
     poolManager->setConfiguration(conf);
 	int numberOfConfigurations = poolManager->getNumberOfConfigurations();

@@ -6,17 +6,17 @@ ThreadConfiguration::ThreadConfiguration(int size)
 }
 
 
-void ThreadConfiguration::insertConfiguration(int id,Configuration* conf)
+void ThreadConfiguration::insertConfiguration(int id,ES::SharedPtr<Configuration> conf)
 {
         configurations[(size_t)id] = conf;
 }
 
-StateMachineThreadPool* ThreadConfiguration::getThreadPool(int id)
+ES::SharedPtr<StateMachineThreadPool> ThreadConfiguration::getThreadPool(int id)
 {
     return configurations[(size_t)id]->threadPool;
 }
 
-LinearFunction* ThreadConfiguration::getFunction(int id)
+ES::SharedPtr<LinearFunction> ThreadConfiguration::getFunction(int id)
 {
 
         return configurations[(size_t)id]->function;
@@ -36,8 +36,4 @@ int ThreadConfiguration::getNumberOfConfigurations()
 
 ThreadConfiguration::~ThreadConfiguration()
 {
-	for (std::vector<Configuration*>::iterator it = configurations.begin(); it != configurations.end(); it++)
-	{
-		delete (*it);
-	}
 }

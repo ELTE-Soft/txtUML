@@ -9,8 +9,8 @@ class IEvent
 public:
   IEvent () {}
   virtual ~IEvent () {}
-  virtual void setTargetSM (ES::StateMachineRef sm) = 0;
-  virtual ES::StateMachineRef getTargetSM () const = 0;
+  virtual void setTargetSM (const ES::StateMachineRef sm) = 0;
+  virtual const ES::StateMachineRef getTargetSM () const = 0;
   
 };
 
@@ -18,8 +18,8 @@ class EventBase : public IEvent
 {
 public:
   EventBase (int t_) : t (t_), p (NoPort_PE) {}
-  virtual void setTargetSM (ES::StateMachineRef sm) override {targetSM = sm;}
-  virtual ES::StateMachineRef getTargetSM () const override {return targetSM;}
+  virtual void setTargetSM (const ES::StateMachineRef sm) override {targetSM = sm;}
+  virtual const ES::StateMachineRef getTargetSM () const override {return targetSM;}
   
   
   ES::StateMachineRef targetSM;

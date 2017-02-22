@@ -16,16 +16,16 @@ class ThreadPoolManager
 	public:
 		ThreadPoolManager();
 		~ThreadPoolManager();
-		StateMachineThreadPool* getPool(int);
+		ES::SharedPtr<StateMachineThreadPool> getPool(int);
 		void recalculateThreads(int,int);
 		int calculateNOfThreads(int,int);
-		void enqueueObject(IStateMachine*);
+		void enqueueObject(ES::StateMachineRef);
 		int getNumberOfConfigurations();
-		void setConfiguration(ES::Ref<ThreadConfiguration>);
+		void setConfiguration(ES::SharedPtr<ThreadConfiguration>);
 		bool isConfigurated();
 	
 	private:
-		ES::Ref<ThreadConfiguration> configuration;
+		ES::SharedPtr<ThreadConfiguration> configuration;
 	
 };
 

@@ -6,7 +6,7 @@
 #include <atomic>
 #include <string>
 
-#include "runtimetypes.hpp"
+#include "ESRoot\Types.hpp"
 
 class StateMachineThreadPool;
 
@@ -17,17 +17,15 @@ public:
   virtual void processInitTransition () = 0;
 
   void startSM() { _started = true; if (_pool != nullptr) handlePool(); }
-  void runSM();
-  void send (EventPtr e_);
+  void send (const ES::EventRef e);
   void init ();
-  EventPtr getNextMessage () {return _messageQueue->front();}
-  void deleteNextMessage  () {_messageQueue->pop_front();(*message_counter)--; }
-  bool emptyMessageQueue  () {return _messageQueue->empty();}
-  void setPool (StateMachineThreadPool* pool_){_pool=pool_;}
-  void setMessageQueue (std::shared_ptr<MessageQueueType> messageQueue_) {_messageQueue=messageQueue_;}
+  ES::EventRef getNextMessage();
+  bool emptyMessageQueue  () {return _messageQueue->isEmpty();}
+  void setPool (ES::SharedPtr<StateMachineThreadPool> pool){_pool=pool;}
+  void setMessageQueue (ES::SharedPtr<ES::MessageQueueType> messageQueue) {_messageQueue=messageQueue;}
   void setPooled (bool);
   bool isInPool() {return _inPool;}
-  bool isStarted() {return _started;}
+  bool isStarted() const {return _started;}
   bool isInitialized() {return _initialized; }
   int getPoolId() {return poolId;}
   void setMessageCounter (std::atomic_int* counter) { message_counter = counter; }
@@ -35,13 +33,13 @@ public:
   virtual std::string toString() {return "";}
   virtual ~IStateMachine();
 protected:
-  IStateMachine  (std::shared_ptr<MessageQueueType> messageQueue_=std::shared_ptr<MessageQueueType>(new MessageQueueType()));
+  IStateMachine  (ES::SharedPtr<ES::MessageQueueType> messageQueue = ES::SharedPtr<ES::MessageQueueType>(new ES::MessageQueueType()));
   void setPoolId (int id) {poolId = id;}
 private:
   void handlePool ();
   
-  std::shared_ptr<MessageQueueType> _messageQueue;
-  StateMachineThreadPool* _pool;//safe because: controlled by the runtime, but we can not set it in the constructor
+  ES::SharedPtr<ES::MessageQueueType> _messageQueue;
+  ES::SharedPtr<StateMachineThreadPool> _pool;//safe because: controlled by the runtime, but we can not set it in the constructor
   std::mutex _mutex;
   std::condition_variable _cond;
   std::atomic_bool _inPool;

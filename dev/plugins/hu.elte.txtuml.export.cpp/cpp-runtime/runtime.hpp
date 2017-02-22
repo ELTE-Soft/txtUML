@@ -22,7 +22,7 @@ class IRuntime
 {
 public:
 
-  static ES::Ref<IRuntime<RuntimeType>> getRuntimeInstance()
+  static ES::SharedPtr<IRuntime<RuntimeType>> getRuntimeInstance()
   {
 	  if (instance == nullptr)
 	  {
@@ -41,7 +41,7 @@ public:
       static_cast<RuntimeType*>(this)->removeObject(sm);
   }
     
-  void configure(ES::Ref<ThreadConfiguration> configuration)
+  void configure(ES::SharedPtr<ThreadConfiguration> configuration)
   {
 	  if(!(static_cast<RuntimeType*>(this)->isConfigurated()))
 	  {
@@ -62,7 +62,7 @@ public:
   }
 
 protected:
-  static ES::Ref<IRuntime<RuntimeType>> instance;
+  static ES::SharedPtr<IRuntime<RuntimeType>> instance;
   IRuntime() {}
 };
 
@@ -75,12 +75,12 @@ public:
 	void start();
 	void setupObjectSpecificRuntime(ES::StateMachineRef);
 	void removeObject(ES::StateMachineRef);
-	void setConfiguration(ES::Ref<ThreadConfiguration>);
+	void setConfiguration(ES::SharedPtr<ThreadConfiguration>);
 	bool isConfigurated();
 	void stopUponCompletion();
 private:
   SingleThreadRT();
-  ES::Ref<MessageQueueType> _messageQueue;
+  ES::SharedPtr<ES::MessageQueueType> _messageQueue;
 
 };
 
@@ -92,13 +92,13 @@ public:
     void start();
 	void setupObjectSpecificRuntime(ES::StateMachineRef);
 	void removeObject(ES::StateMachineRef);
-	void setConfiguration(ES::Ref<ThreadConfiguration>);
+	void setConfiguration(ES::SharedPtr<ThreadConfiguration>);
 	bool isConfigurated();
 	void stopUponCompletion();  
 private:
     ConfiguratedThreadedRT();
 
-	ES::Ref<ThreadPoolManager> poolManager;
+	ES::SharedPtr<ThreadPoolManager> poolManager;
 	std::vector<int> numberOfObjects;
 	std::atomic_int worker;
 	std::atomic_int messages;
