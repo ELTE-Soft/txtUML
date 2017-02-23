@@ -82,11 +82,6 @@ public class Exporter {
 			jsfile.write("var input = ");
 			JSONExporter.writeObjectAsJSON(model, jsfile);
 			jsfile.write(";");
-
-		} catch (IOException e) {
-			throw e;
-		} catch (JAXBException e) {
-			throw e;
 		}
 	}
 
