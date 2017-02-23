@@ -50,6 +50,9 @@ public class TxtUMLToCppWizard extends Wizard {
 			TxtUMLToCppPage.MODEL_NAME = txtUMLModel;
 			TxtUMLToCppPage.DESCRIPTION_NAME = threadManagmentDescription;
 			TxtUMLToCppPage.DESCRIPTION_PROJECT_NAME = descriptionProjectName;
+			
+			TxtUMLToCppPage.FMU_NEEDED = generateFMU;
+			TxtUMLToCppPage.FMU_CONFIG_FILE = fmuDescription;
 
 			boolean saveSucceeded = SaveUtils.saveAffectedFiles(getShell(), txtUMLProject, txtUMLModel, threadManagmentDescription);
 			if (!saveSucceeded)

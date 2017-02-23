@@ -65,6 +65,8 @@ public class TxtUMLToCppPage extends WizardPage {
 	public static String MODEL_NAME = "";
 	public static String DESCRIPTION_NAME = "";
 	public static String DESCRIPTION_PROJECT_NAME = "";
+	public static boolean FMU_NEEDED = false;
+	public static String FMU_CONFIG_FILE = "";
 
 	protected TxtUMLToCppPage() {
 		super("Generate C++ Code Page");
@@ -180,6 +182,7 @@ public class TxtUMLToCppPage extends WizardPage {
 		needsFMU = new Button(composite, SWT.CHECK);
 		needsFMU.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
 		needsFMU.setText("Generate FMU");
+		needsFMU.setSelection(FMU_NEEDED);
 		needsFMU.addSelectionListener(new SelectionListener() {
 			
 			@Override
@@ -201,11 +204,12 @@ public class TxtUMLToCppPage extends WizardPage {
 		
 		fmuDescription = new Text(composite, SWT.BORDER | SWT.SINGLE);
 		fmuDescription.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-		fmuDescription.setEnabled(false);
+		fmuDescription.setEnabled(FMU_NEEDED);
+		fmuDescription.setText(FMU_CONFIG_FILE);
 		
 		fmuDescriptionBrowser = new Button(composite, SWT.NONE);
 		fmuDescriptionBrowser.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-		fmuDescriptionBrowser.setEnabled(false);
+		fmuDescriptionBrowser.setEnabled(FMU_NEEDED);
 		fmuDescriptionBrowser.setText("Browse...");
 		fmuDescriptionBrowser.addSelectionListener(new SelectionListener() {
 			@Override
