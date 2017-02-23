@@ -4,23 +4,25 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-
-import org.eclipse.emf.common.util.EList;
+import java.util.Set;
 
 import org.eclipse.uml2.uml.Activity;
-import org.eclipse.uml2.uml.Association;
 import org.eclipse.uml2.uml.Behavior;
 import org.eclipse.uml2.uml.Class;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.Operation;
 import org.eclipse.uml2.uml.Parameter;
-import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.Signal;
 import org.eclipse.uml2.uml.Stereotype;
 import org.eclipse.uml2.uml.UMLPackage;
+
+import hu.elte.txtuml.export.cpp.activity.ActivityExporter;
+import hu.elte.txtuml.export.cpp.templates.activity.ActivityTemplates;
 
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.Document;
@@ -32,71 +34,80 @@ import org.eclipse.text.edits.TextEdit;
 import org.eclipse.cdt.core.ToolFactory;
 import org.eclipse.cdt.core.formatter.CodeFormatter;
 
-
-
-import hu.elte.txtuml.export.cpp.templates.ActivityTemplates;
+import hu.elte.txtuml.utils.Pair;
 
 public class Shared {
-	public static List<Property> getProperties(Class class_) {
-		List<Property> properties = new LinkedList<Property>();
-		for (Association assoc : class_.getAssociations()) {
-			for (Property prop : assoc.getMemberEnds()) {
-				if (!prop.getType().equals(class_)) {
-					properties.add(prop);
-				}
-			}
-		}
-		properties.addAll(class_.getOwnedAttributes());
-		return properties;
+
+	private Collection<Element> modelElements;
+
+	public Shared() {
+	}
+
+	public Shared(Collection<Element> modelElements) {
+		setModelElements(modelElements);
+	}
+
+	public void setModelElements(Collection<Element> modelElements) {
+		this.modelElements = modelElements;
 	}
 
 	@SuppressWarnings("unchecked")
-	public static <ElementTypeT, EClassTypeT> void getTypedElements(Collection<ElementTypeT> dest_,
-			Collection<Element> source_, EClassTypeT eClass_) {
-		for (Element item : source_) {
-			if (item.eClass().equals(eClass_)) {
-				dest_.add((ElementTypeT) item);
+	public <ElementTypeT, EClassTypeT> void getTypedElements(Collection<ElementTypeT> dest, EClassTypeT eClass) {
+		for (Element item : modelElements) {
+			if (item.eClass().equals(eClass)) {
+				dest.add((ElementTypeT) item);
 			}
 		}
 	}
 
-	// TODO need a better solution
-	public static boolean isBasicType(String typeName_) {
+	public List<Class> getAllModelCLass() {
+		List<Class> classes = new ArrayList<Class>();
+		getTypedElements(classes, UMLPackage.Literals.CLASS);
+		classes.removeIf(c -> isSignalFactoryClass(c));
 
-		return typeName_.equals("Integer") || typeName_.equals("Real") || typeName_.equals("Boolean");
+		return classes;
+	}
+	
+	public Set<String> getAllModelClassNames() {
+
+		Set<String> classNames = new HashSet<String>();
+		for (Class cls : getAllModelCLass()) {
+			if (!isSignalFactoryClass(cls)) {
+				classNames.add(cls.getName());
+			}
+		}
+
+		return classNames;
 
 	}
 
-	public static boolean generatedClass(Class item) {
-		return item.getName().startsWith("#");
-	}
-
-	public static List<Parameter> getSignalConstructorParameters(Signal signal, EList<Element> elements) {
+	public List<Parameter> getSignalConstructorParameters(Signal signal) {
 		List<Parameter> signalParameters = new LinkedList<Parameter>();
 
-		Class factoryClass = getSignalFactoryClass(signal, elements);
+		Class factoryClass = getSignalFactoryClass(signal);
 		if (factoryClass != null) {
 			for (Operation op : factoryClass.getOperations()) {
 				if (isConstructor(op)) {
-
-					signalParameters.addAll(op.getOwnedParameters());
+					for (Parameter parameter : op.getOwnedParameters()) {
+						if (!parameter.getType().getName().equals(signal.getName())) {
+							signalParameters.add(parameter);
+						}
+					}
+					break;
 				}
 			}
 		}
-
-		// TODO need better solution
-		signalParameters.removeIf(s -> s.getType().getName().equals(signal.getName()));
 
 		return signalParameters;
 	}
 
-	public static String signalCtrBody(Signal signal, EList<Element> elements) {
+	public String signalCtrBody(Signal signal) {
 		ActivityExporter activityExporter = new ActivityExporter();
-		Class factoryClass = getSignalFactoryClass(signal, elements);
+		Class factoryClass = getSignalFactoryClass(signal);
 		String body = "";
 		for (Operation operation : factoryClass.getOperations()) {
 			if (isConstructor(operation)) {
-				body = activityExporter.createfunctionBody(Shared.getOperationActivity(operation)).toString();
+				body = activityExporter.createFunctionBody(Shared.getOperationActivity(operation)).toString();
 
 			}
 		}
@@ -105,22 +116,8 @@ public class Shared {
 
 	}
 
-	public static Activity getOperationActivity(Operation operation) {
-		Activity activity = null;
-		for (Behavior behavior : operation.getMethods()) {
-
-			if (behavior.eClass().equals(UMLPackage.Literals.ACTIVITY)) {
-				activity = (Activity) behavior;
-			} else {
-				// TODO exception, unknown for me, need the model
-			}
-		}
-
-		return activity;
-	}
-
-	public static Class getSignalFactoryClass(Signal signal, EList<Element> elements) {
-		for (Element element : elements) {
+	public Class getSignalFactoryClass(Signal signal) {
+		for (Element element : modelElements) {
 			if (element.eClass().equals(UMLPackage.Literals.CLASS)) {
 				Class cls = (Class) element;
 				for (Operation operation : cls.getOperations()) {
@@ -138,24 +135,99 @@ public class Shared {
 		return null;
 	}
 
+	public static Activity getOperationActivity(Operation operation) {
+		Activity activity = null;
+		for (Behavior behavior : operation.getMethods()) {
+
+			if (behavior.eClass().equals(UMLPackage.Literals.ACTIVITY)) {
+				activity = (Activity) behavior;
+				break;
+			}
+		}
+
+		return activity;
+	}
+
+	public static boolean isBasicType(String typeName) {
+
+		return typeName.equals("Integer") || typeName.equals("Real") || typeName.equals("Boolean");
+
+	}
+
+	public static boolean generatedClass(Class item) {
+		return item.getName().startsWith("#");
+	}
+
+	public boolean isSignalFactoryClass(Class cls) {
+		List<Signal> signals = new ArrayList<Signal>();
+		getTypedElements(signals, UMLPackage.Literals.SIGNAL);
+		for (Operation op : cls.getOperations()) {
+			if (isConstructor(op)) {
+				for (Parameter param : op.getOwnedParameters()) {
+					if (signals.contains(param.getType())) {
+						return true;
+					}
+				}
+			}
+		}
+
+		return false;
+	}
+
 	public static boolean isConstructor(Operation operation) {
 
 		for (Stereotype stereotype : operation.getAppliedStereotypes()) {
-
 			if (stereotype.getKeyword().equals(ActivityTemplates.CreateStereoType)) {
 				return true;
 
 			}
 		}
-
 		return false;
 
 	}
 
-	public static void writeOutSource(String path_, String fileName_, String source)
+	public static List<Pair<String, String>> getOperationParams(Operation operation) {
+		List<Pair<String, String>> operationParameters = new ArrayList<Pair<String, String>>();
+		for (Parameter param : operation.getOwnedParameters()) {
+			if (param != operation.getReturnResult()) {
+				if (param.getType() != null) {
+					operationParameters.add(new Pair<String, String>(param.getType().getName(), param.getName()));
+				} else {
+					operationParameters.add(new Pair<String, String>("UNKNOWN_TYPE", param.getName()));
+				}
+			}
+		}
+		return operationParameters;
+	}
+
+	public static List<String> getOperationParamTypes(Operation operation) {
+		List<String> operationParameterTypes = new ArrayList<String>();
+		for (Parameter param : operation.getOwnedParameters()) {
+			if (param != operation.getReturnResult()) {
+				if (param.getType() != null) {
+					operationParameterTypes.add(param.getType().getName());
+				}
+			}
+		}
+		return operationParameterTypes;
+	}
+
+	public static List<String> getOperationParamNames(Operation operation) {
+		List<String> operationParameterTypes = new ArrayList<String>();
+		for (Parameter param : operation.getOwnedParameters()) {
+			if (param != operation.getReturnResult()) {
+				if (param.getType() != null) {
+					operationParameterTypes.add(param.getName());
+				}
+			}
+		}
+		return operationParameterTypes;
+	}
+
+	public static void writeOutSource(String path, String fileName, String source)
 			throws FileNotFoundException, UnsupportedEncodingException {
 		try {
-			File file = new File(path_);
+			File file = new File(path);
 			if (!file.exists()) {
 				file.mkdirs();
 			}
@@ -164,16 +236,15 @@ public class Shared {
 			e.printStackTrace();
 		}
 
-
-		PrintWriter writer = new PrintWriter(path_ + File.separator + fileName_, "UTF-8");
+		PrintWriter writer = new PrintWriter(path + File.separator + fileName, "UTF-8");
 		writer.println(source);
 		writer.close();
 	}
 
 	public static String format(String source) {
-		
+
 		CodeFormatter formatter = ToolFactory.createDefaultCodeFormatter(null);
-		TextEdit edit = formatter.format(CodeFormatter.K_STATEMENTS, source, 0, source.length(), 0, null);		
+		TextEdit edit = formatter.format(CodeFormatter.K_STATEMENTS, source, 0, source.length(), 0, null);
 		IDocument document = new Document(source);
 		try {
 			edit.apply(document);
@@ -181,9 +252,9 @@ public class Shared {
 			e.printStackTrace();
 		} catch (BadLocationException e) {
 			e.printStackTrace();
-		}	
+		}
 		String formattedSource = document.get();
-		
+
 		return formattedSource;
 	}
 

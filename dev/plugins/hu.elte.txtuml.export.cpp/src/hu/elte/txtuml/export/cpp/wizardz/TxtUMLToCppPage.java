@@ -13,7 +13,7 @@ import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
-import org.eclipse.jdt.ui.JavaElementLabelProvider;
+import org.eclipse.jdt.internal.ui.wizards.TypedElementSelectionValidator;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
@@ -35,6 +35,7 @@ import hu.elte.txtuml.utils.eclipse.PackageUtils;
 import hu.elte.txtuml.utils.eclipse.ProjectUtils;
 import hu.elte.txtuml.utils.eclipse.WizardUtils;
 
+@SuppressWarnings("restriction")
 public class TxtUMLToCppPage extends WizardPage {
 
 	private static final String browseButtonText = "Browse...";
@@ -157,8 +158,11 @@ public class TxtUMLToCppPage extends WizardPage {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				ElementTreeSelectionDialog dialog = getConfigurationSelectionDialog(Configuration.class);
+				dialog.setAllowMultiple(false);
+				dialog.setValidator(new TypedElementSelectionValidator(new Class<?>[] { IType.class }, false));
 				dialog.setTitle("Configuration selection");
 				dialog.setInput(ResourcesPlugin.getWorkspace().getRoot());
+				dialog.setStatusLineAboveButtons(false);
 				dialog.open();
 				Object[] result = dialog.getResult();
 				if (result != null && result.length > 0 && result[0] instanceof IType) {
@@ -293,9 +297,7 @@ public class TxtUMLToCppPage extends WizardPage {
 	}
 
 	private ElementTreeSelectionDialog getConfigurationSelectionDialog(Class<?> searchedClass) {
-		return new ElementTreeSelectionDialog(composite.getShell(),
-				new JavaElementLabelProvider(
-						JavaElementLabelProvider.SHOW_POST_QUALIFIED | JavaElementLabelProvider.SHOW_SMALL_ICONS),
+		return new ElementTreeSelectionDialog(composite.getShell(), WizardUtils.getPostQualifiedLabelProvider(),
 				new WorkbenchContentProvider() {
 					@Override
 					public Object[] getChildren(Object element) {

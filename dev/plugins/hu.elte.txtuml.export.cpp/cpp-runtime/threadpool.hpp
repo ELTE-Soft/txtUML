@@ -11,14 +11,14 @@
 
 #include "threadcontainer.hpp"
 #include "runtimetypes.hpp"
-#include "statemachineI.hpp"
+#include "istatemachine.hpp"
 
 class StateMachineThreadPool {
 	
 public:
 	StateMachineThreadPool();
 	void task();
-	void enqueObject(StateMachineI*);
+	void enqueueObject(IStateMachine*);
 	void stopPool();
 	void stopUponCompletion(std::atomic_int*);
 	void startPool(int);
@@ -36,14 +36,10 @@ private:
 	void reduceWorkers();
 
 	// synchronization
-	std::atomic_bool stop;
-	
-	std::atomic_int* worker_threads;
-	
+	std::atomic_bool stop;	
+	std::atomic_int* worker_threads;	
 	std::condition_variable cond;
 	std::condition_variable* stop_request_cond;
-
-	std::mutex mu;
 	std::mutex modifie_mutex;
 	std::mutex stop_request_mu;
 };

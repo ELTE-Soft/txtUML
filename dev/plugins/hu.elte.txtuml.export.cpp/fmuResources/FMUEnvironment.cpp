@@ -73,7 +73,7 @@ fmi2Component fmi2Instantiate( fmi2String /*instanceName*/,
   FMU* fmu = new FMU;
 
   // start the runtime
-  fmu->uml_rt = deployment::createThreadedRuntime();
+  fmu->uml_rt = deployment::initRuntime();
   fmu->uml_rt->startRT();
 
   fmu->fmu_env = new fmu_environment;

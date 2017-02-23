@@ -13,6 +13,7 @@ import hu.elte.txtuml.export.fmu.FMUExportGovernor;
 import hu.elte.txtuml.export.fmu.FMUResourceHandler;
 import hu.elte.txtuml.export.fmu.ModelDescriptionExporter;
 import hu.elte.txtuml.utils.eclipse.ProjectUtils;
+import hu.elte.txtuml.utils.eclipse.SaveUtils;
 
 public class TxtUMLToCppWizard extends Wizard {
 
@@ -48,7 +49,11 @@ public class TxtUMLToCppWizard extends Wizard {
 			TxtUMLToCppPage.PROJECT_NAME = txtUMLProject;
 			TxtUMLToCppPage.MODEL_NAME = txtUMLModel;
 			TxtUMLToCppPage.DESCRIPTION_NAME = threadManagmentDescription;
+			TxtUMLToCppPage.DESCRIPTION_PROJECT_NAME = descriptionProjectName;
 
+			boolean saveSucceeded = SaveUtils.saveAffectedFiles(getShell(), txtUMLProject, txtUMLModel, threadManagmentDescription);
+			if (!saveSucceeded)
+				return false;
 			boolean addRuntimeOption = createCppCodePage.getAddRuntimeOptionSelection();
 			boolean overWriteMainFileOption = createCppCodePage.getOverWriteMainFileSelection();
 

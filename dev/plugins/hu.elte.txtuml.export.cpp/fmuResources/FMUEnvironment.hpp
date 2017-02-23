@@ -3,12 +3,12 @@
 
 #include "fmi2Functions.h"
 #include "statemachinebase.hpp"
-#include "statemachineI.hpp"
+#include "istatemachine.hpp"
 #include "associations.hpp"
 
 struct fmu_environment;
 
-class FMUEnvironment : public StateMachineBase, public StateMachineI {
+class FMUEnvironment : public StateMachineBase, public IStateMachine {
   public:
     bool process_event(EventBaseCRef) = 0;
     void setInitialState() = 0;
@@ -22,13 +22,13 @@ class FMUEnvironment : public StateMachineBase, public StateMachineI {
     }
 
     void processEventVirtual() {
-        EventI* base = getNextMessage().get();
+        IEvent* base = getNextMessage().get();
         EventBase* realEvent = static_cast<EventBase*>(base);
         process_event(*realEvent);
         deleteNextMessage();
     }
 
-    void processInitTranstion() {}
+    void processInitTransition() {}
 
     ~FMUEnvironment() {}
 };

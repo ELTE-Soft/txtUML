@@ -25,7 +25,7 @@ namespace action
 
 namespace conversion
 {
-	std::string to_string(StateMachineI* sm)
+	std::string to_string(IStateMachine* sm)
 	{
 		return sm->toString();
 	}

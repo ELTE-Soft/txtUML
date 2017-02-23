@@ -15,4 +15,6 @@ Require-Bundle: hu.elte.txtuml.api.model,
  org.eclipse.jface,
  org.eclipse.ui.ide,
  org.eclipse.jdt.launching,
+ org.eclipse.jdt.ui,
  hu.elte.txtuml.api.deployment
+Import-Package: org.eclipse.ui.preferences
