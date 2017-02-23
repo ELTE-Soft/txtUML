@@ -6,6 +6,7 @@ import java.util.List;
 import org.eclipse.persistence.oxm.annotations.XmlAccessMethods;
 import org.eclipse.uml2.uml.Trigger;
 
+import hu.elte.txtuml.export.javascript.utils.LinkUtils;
 import hu.elte.txtuml.layout.visualizer.model.LineAssociation;
 import hu.elte.txtuml.layout.visualizer.model.Point;
 
@@ -54,20 +55,7 @@ public class Transition {
 		if (triggers.size() > 0) {
 			trigger = triggers.get(0).getEvent().getLabel();
 		}
-
-		// this code assumes that at least one coordinate is provided (the
-		// actual minimum is more than two) also that the links are orthogonal
-		if (link.getTurns() == 0) {
-			// in case of links without turns we need one "turning point" to
-			// define the link's position
-			List<Point> points = link.getRoute();
-			int center = points.size() / 2;
-			route = points.subList(center, center + 1);
-		} else {
-			// in case of links with turns we need the turning points
-			List<Point> points = link.getMinimalRoute();
-			route = points.subList(1, points.size() - 1);
-		}
+		route = LinkUtils.getTurningPoints(link);
 
 		// also export the connection points of the routes to help position the
 		// non scaling pseudo nodes
