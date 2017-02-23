@@ -64,7 +64,7 @@ public class SMDiagram {
 		pseudoStates = new ArrayList<PseudoState>();
 		transitions = new ArrayList<Transition>();
 
-		// creating aand sorting states into states and pseudoStates
+		// creating and sorting states into states and pseudoStates
 		for (RectangleObject node : nodes) {
 
 			EObject estate = map.getByName(node.getName());
