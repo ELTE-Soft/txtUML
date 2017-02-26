@@ -62,7 +62,7 @@ public class VisualizeTxtUMLPage extends WizardPage {
 	public VisualizeTxtUMLPage() {
 		super("Visualize txtUML page");
 		setTitle("Visualize txtUML page");
-		setDescription("Provide the txtUML project, model package and diagrams to be visualized.");
+		setDescription("Select the diagrams to be visualized.");
 	}
 
 	/*
