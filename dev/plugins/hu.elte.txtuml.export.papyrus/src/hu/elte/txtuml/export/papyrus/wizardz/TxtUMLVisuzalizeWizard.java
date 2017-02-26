@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -15,8 +14,6 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.SubProgressMonitor;
-import org.eclipse.jdt.core.IAnnotation;
-import org.eclipse.jdt.core.IMemberValuePair;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jface.operation.IRunnableWithProgress;
@@ -80,9 +77,13 @@ public class TxtUMLVisuzalizeWizard extends Wizard {
 	public boolean performFinish() {
 		List<IType> txtUMLLayout = selectTxtUmlPage.getTxtUmlLayout();
 		Map<Pair<String, String>, List<IType>> layoutConfigs = new HashMap<>();
-
 		for (IType layout : txtUMLLayout) {
-			Pair<String, String> model = getModelOfDescription(layout);
+			IType innerLayoutClass = null;
+			try {
+				innerLayoutClass = Stream.of(layout.getTypes()).findFirst().get();
+			} catch (JavaModelException e) {
+			}
+			Pair<String, String> model = WizardUtils.getModelByAnnotations(innerLayoutClass).orElse(Pair.of("", ""));
 			if (!layoutConfigs.containsKey(model)) {
 				layoutConfigs.put(model, new ArrayList<>(Arrays.asList(layout)));
 			} else {
@@ -202,37 +203,6 @@ public class TxtUMLVisuzalizeWizard extends Wizard {
 			if (!answer)
 				throw new InterruptedException();
 		}
-	}
-
-	private Pair<String, String> getModelOfDescription(IType layout) {
-		try {
-			IType innerLayoutClass = Stream.of(layout.getTypes()).findFirst().get();
-			for (IAnnotation annot : innerLayoutClass.getAnnotations()) {
-				List<Object> annotValues = Stream.of(annot.getMemberValuePairs())
-						.filter(mvp -> mvp.getValueKind() == IMemberValuePair.K_CLASS)
-						.flatMap(mvp -> Stream.of(mvp.getValue())).collect(Collectors.toList());
-
-				for (Object val : annotValues) {
-					List<Object> annotations = new ArrayList<>();
-					if (val instanceof String) {
-						annotations.add(val);
-					} else {
-						annotations.addAll(Arrays.asList((Object[]) val));
-					}
-
-					for (Object v : annotations) {
-						String[][] resolvedType = WizardUtils.resolveType(innerLayoutClass, v);
-						Pair<String, String> model = WizardUtils.getModelPackage(resolvedType[0][0]);
-						if (!model.equals(Pair.of("", ""))) {
-							return model;
-						}
-					}
-				}
-			}
-		} catch (JavaModelException | NoSuchElementException e) {
-		}
-
-		return Pair.of("", "");
 	}
 
 }

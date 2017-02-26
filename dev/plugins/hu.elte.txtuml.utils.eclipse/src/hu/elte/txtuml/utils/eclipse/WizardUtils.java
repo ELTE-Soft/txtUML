@@ -122,7 +122,45 @@ public class WizardUtils {
 		};
 	}
 
-	public static String[][] resolveType(IType context, String typeName) {
+	/**
+	 * @return an empty optional if the given type is not annotated, otherwise
+	 *         the name of the model package and its java project respectively,
+	 *         which contains the types of the given annotation
+	 */
+	public static Optional<Pair<String, String>> getModelByAnnotations(IType annotatedType) {
+		try {
+			for (IAnnotation annot : annotatedType.getAnnotations()) {
+				List<Object> annotValues = Stream.of(annot.getMemberValuePairs())
+						.filter(mvp -> mvp.getValueKind() == IMemberValuePair.K_CLASS)
+						.flatMap(mvp -> Stream.of(mvp.getValue())).collect(Collectors.toList());
+
+				for (Object val : annotValues) {
+					List<Object> annotations = new ArrayList<>();
+					if (val instanceof String) {
+						annotations.add(val);
+					} else {
+						annotations.addAll(Arrays.asList((Object[]) val));
+					}
+
+					for (Object v : annotations) {
+						String[][] resolvedTypes = resolveType(annotatedType, (String) v);
+						List<String[]> resolvedTypeList = new ArrayList<>(Arrays.asList(resolvedTypes));
+						for (String[] type : resolvedTypeList) {
+							Optional<Pair<String, String>> model = ModelUtils.getModelOf(type[0]);
+							if (model.isPresent()) {
+								return model;
+							}
+						}
+					}
+				}
+			}
+		} catch (JavaModelException | NoSuchElementException e) {
+		}
+
+		return Optional.empty();
+	}
+
+	private static String[][] resolveType(IType context, String typeName) {
 		try {
 			return context.resolveType(typeName);
 		} catch (JavaModelException e) {
