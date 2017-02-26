@@ -1,15 +1,27 @@
 package hu.elte.txtuml.utils.jdt;
 
+import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.jdt.core.ICompilationUnit;
+import org.eclipse.jdt.core.IJavaProject;
+import org.eclipse.jdt.core.IPackageFragment;
+import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.IAnnotationBinding;
 import org.eclipse.jdt.core.dom.IPackageBinding;
+import org.eclipse.jdt.core.dom.PackageDeclaration;
 
 import hu.elte.txtuml.api.model.Model;
+import hu.elte.txtuml.utils.Pair;
+import hu.elte.txtuml.utils.eclipse.NotFoundException;
+import hu.elte.txtuml.utils.eclipse.PackageUtils;
+import hu.elte.txtuml.utils.eclipse.ProjectUtils;
 
 public class ModelUtils {
 
@@ -48,6 +60,50 @@ public class ModelUtils {
 		} catch (NullPointerException e) {
 			return Optional.empty();
 		}
+	}
+
+	/**
+	 * @return an empty optional if the given package name (of a type) is
+	 *         not in a txtUML model, otherwise the name of the model package
+	 *         and its java project respectively, which contains the given type
+	 */
+	public static Optional<Pair<String, String>> getModelOf(String packageName) {
+		try {
+			List<IJavaProject> projects = Stream.of(ResourcesPlugin.getWorkspace().getRoot().getProjects()).map(pr -> {
+				try {
+					return ProjectUtils.findJavaProject(pr.getName());
+				} catch (NotFoundException e) {
+					return null;
+				}
+			}).filter(Objects::nonNull).filter(pr -> {
+				IPackageFragment[] pf = null;
+				try {
+					pf = PackageUtils.findPackageFragments(pr, packageName);
+				} catch (JavaModelException e) {
+					return false;
+				}
+				return pf.length > 0;
+			}).collect(Collectors.toList());
+
+			for (IJavaProject project : projects) {
+				Stream<ICompilationUnit> modelCU = PackageUtils.findAllPackageFragmentsAsStream(project)
+						.filter(p -> packageName.startsWith(p.getElementName() + ".")
+								|| packageName.equals(p.getElementName()))
+						.map(pf -> pf.getCompilationUnit(PackageUtils.PACKAGE_INFO)).filter(ICompilationUnit::exists);
+
+				Optional<String> topPackageName = Stream.of(SharedUtils.parseICompilationUnitStream(modelCU, project))
+						.map(CompilationUnit::getPackage).filter(Objects::nonNull)
+						.map(PackageDeclaration::resolveBinding).filter(Objects::nonNull)
+						.filter(pb -> ModelUtils.findModelNameInTopPackage(pb).isPresent())
+						.map(IPackageBinding::getName).findFirst();
+
+				if (topPackageName.isPresent()) {
+					return Optional.of(Pair.of(topPackageName.get(), project.getElementName()));
+				}
+			}
+		} catch (JavaModelException | IOException e) {
+		}
+		return Optional.empty();
 	}
 
 	private static IPackageBinding getPackageBinding(CompilationUnit cu) {
