@@ -29,6 +29,8 @@ public class ResourceHandler {
 			"visualizer.js", // script to start the visualization and the input
 								// processing
 
+			"main.css", // visualizer main css style file
+
 			"visualizer/grid.js", // defining grid class (used for abstract to
 									// pixel grid conversions)
 

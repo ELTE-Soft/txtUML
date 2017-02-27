@@ -2,11 +2,14 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <link rel="stylesheet" type="text/css" href="lib/joint.css" />
+	<!-- 3rd party stylesheets -->
+	<link rel="stylesheet" type="text/css" href="lib/joint.css" />
+	<!-- stylesheets -->
+	<link rel="stylesheet" type="text/css" href="main.css" />
 	<!-- 3rd party libraries -->
-    <script src="lib/jquery.min.js"></script>
-    <script src="lib/lodash.min.js"></script>
-    <script src="lib/backbone-min.js"></script>
+	<script src="lib/jquery.min.js"></script>
+	<script src="lib/lodash.min.js"></script>
+	<script src="lib/backbone-min.js"></script>
 	<script src="lib/joint.js"></script>
 	
 	<!-- visualizer libraries -->
@@ -23,18 +26,27 @@
 </head>
 <body>
 	<!-- selector link holder -->
-	<table>
+	<table id="selector-container">
+			<thead>
+					<tr>
+						<th colspan="2">Visualized diagrams</th>
+					</tr>
+					<tr>
+						<th>Class</th>
+						<th>State machine</th>
+					</tr>
+			</thead>
 		<tbody id="selector"></tbody>
 	</table>
 	
 	<!-- diagram holder -->
-    <div id="paper"></div>
+	<div id="paper"></div>
 	
 	<!-- input -->
-    <script src="input.js"></script>
+	<script src="input.js"></script>
 	
 	<!-- visualizing script -->
-    <script src="visualizer.js"></script>
+	<script src="visualizer.js"></script>
 	
 	
 	<div>
