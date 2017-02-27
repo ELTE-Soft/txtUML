@@ -13,11 +13,49 @@ import java.nio.file.StandardCopyOption;
  *
  */
 public class ResourceHandler {
-	private static final String[] FILES = { "visualize.html", "visualizer.js", "lib/backbone-min.js", "lib/joint.css",
-			"lib/joint.js", "lib/jquery.min.js", "lib/lodash.min.js", "visualizer/grid.js", "visualizer/linkholders.js",
-			"visualizer/nodeholders.js", "visualizer/fonts.js", "visualizer/selector.js", "visualizer/shapes.js",
-			"visualizer/utils.js", "visualizer/utils.js", "visualizer/attributeassociationview.js",
-			"visualizer/visualizers.js" };
+	private static final String RESOURCE_FOLDER = "res";
+	private static final String[] FILES = {
+			// third party
+			"lib/lodash.min.js", // Lodash library (required for jointJS)
+			"lib/jquery.min.js", // jQuery library (required for jointJS)
+			"lib/backbone-min.js", // backbone library (required for jointJS)
+			"lib/joint.js", // jointJS library (used for visualization)
+			"lib/joint.css", // jointJS default css file
+
+			// visualizer files
+			"visualize.html", // visualizer main layout file (to be loaded in
+								// browser)
+
+			"visualizer.js", // script to start the visualization and the input
+								// processing
+
+			"visualizer/grid.js", // defining grid class (used for abstract to
+									// pixel grid conversions)
+
+			"visualizer/linkholders.js", // containing wrappers for links
+			"visualizer/nodeholders.js", // containing wrappers for nodes
+			"visualizer/fonts.js", // containing helper methods for calculating
+									// text bounding boxes as well as font size
+									// informations
+
+			"visualizer/selector.js", // responsible for navigation between
+										// multiple diagrams
+
+			"visualizer/shapes.js", // extended jointJS shapes to use for
+									// visualization
+
+			"visualizer/utils.js", // various utility methods, maps
+
+			"visualizer/attributeassociationview.js", // a specialized jointJS
+														// linkview for
+														// displaying
+														// associations with
+														// names and
+														// multiplicities
+
+			"visualizer/visualizers.js" // holds visualizers for class and
+										// statemachine diagrams
+	};
 
 	/**
 	 * Copies every file specified in the FILES list (containing the files which
