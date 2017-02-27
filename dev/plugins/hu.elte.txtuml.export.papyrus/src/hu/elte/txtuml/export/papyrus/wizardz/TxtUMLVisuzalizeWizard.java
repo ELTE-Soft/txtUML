@@ -32,6 +32,7 @@ import hu.elte.txtuml.layout.export.DiagramExportationReport;
 import hu.elte.txtuml.utils.Pair;
 import hu.elte.txtuml.utils.eclipse.Dialogs;
 import hu.elte.txtuml.utils.eclipse.WizardUtils;
+import hu.elte.txtuml.utils.eclipse.SaveUtils;
 
 /**
  * Wizard for visualization of txtUML models
@@ -93,6 +94,10 @@ public class TxtUMLVisuzalizeWizard extends Wizard {
 
 		PreferencesManager.setValue(PreferencesManager.TXTUML_VISUALIZE_TXTUML_LAYOUT, layoutConfigs.values().stream()
 				.flatMap(c -> c.stream()).map(layout -> layout.getFullyQualifiedName()).collect(Collectors.toList()));
+		
+		boolean saveSucceeded = SaveUtils.saveAffectedFiles(getShell(), txtUMLProjectName, txtUMLModelName, txtUMLLayout.keySet());
+		if (!saveSucceeded)
+			return false;
 
 		for (Pair<String, String> model : layoutConfigs.keySet()) {
 			String txtUMLModelName = model.getFirst();

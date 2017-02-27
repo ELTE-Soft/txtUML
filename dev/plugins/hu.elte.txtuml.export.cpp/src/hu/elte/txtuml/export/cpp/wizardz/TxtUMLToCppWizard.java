@@ -5,6 +5,7 @@ import org.eclipse.jface.wizard.Wizard;
 
 import hu.elte.txtuml.utils.Pair;
 import hu.elte.txtuml.utils.eclipse.WizardUtils;
+import hu.elte.txtuml.utils.eclipse.SaveUtils;
 
 public class TxtUMLToCppWizard extends Wizard {
 
@@ -33,6 +34,10 @@ public class TxtUMLToCppWizard extends Wizard {
 			String descriptionProjectName = threadManagementDescription.getJavaProject().getElementName();
 
 			TxtUMLToCppPage.setThreadManagerDescription(threadManagementDescription);
+
+			boolean saveSucceeded = SaveUtils.saveAffectedFiles(getShell(), txtUMLProject, txtUMLModel, threadManagmentDescription);
+			if (!saveSucceeded)
+				return false;
 
 			boolean addRuntimeOption = createCppCodePage.getAddRuntimeOptionSelection();
 			boolean overWriteMainFileOption = createCppCodePage.getOverWriteMainFileSelection();
