@@ -6,17 +6,16 @@ package hu.elte.txtuml.export.javascript.json.model.cd;
  *
  */
 public enum CDNodeType {
-	CLASS("class"),
-	ABSTRACT_CLASS("abstract");
-	
+	CLASS("class"), ABSTRACT_CLASS("abstract");
+
 	private final String literal;
-	
-	CDNodeType(String literal){
+
+	CDNodeType(String literal) {
 		this.literal = literal;
 	}
-	
+
 	@Override
-	public String toString(){
+	public String toString() {
 		return literal;
 	}
 }

@@ -31,7 +31,7 @@ public class ClassNode {
 	private String id;
 	@XmlAccessMethods(getMethodName = "getName")
 	private String name;
-	@XmlAccessMethods(getMethodName = "getType") 
+	@XmlAccessMethods(getMethodName = "getType")
 	@XmlJavaTypeAdapter(EnumAdapter.class)
 	private CDNodeType type;
 	@XmlAccessMethods(getMethodName = "getAttributes")

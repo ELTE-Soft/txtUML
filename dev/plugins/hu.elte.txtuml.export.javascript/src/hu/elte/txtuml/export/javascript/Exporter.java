@@ -42,12 +42,12 @@ public class Exporter {
 	private ExportationModel model;
 
 	private static final String GENERATED_FILE = "input.js";
-	
+
 	private static final String GENERATED_FILE_HEAD = "var input = ";
 	private static final String GENERATED_FILE_TAIL = ";";
-	
+
 	private static final String FILE_TO_OPEN_IN_BROWSER = "visualize.html";
-	
+
 	private static final String VISUALIZER_FOLDER = "js";
 
 	/**

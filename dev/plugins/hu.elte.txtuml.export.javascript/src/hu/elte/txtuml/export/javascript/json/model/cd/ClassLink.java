@@ -27,7 +27,6 @@ public class ClassLink {
 	protected ClassLink() {
 	}
 
-
 	/**
 	 * Creates a ClassLink based on the layout information provided
 	 * 

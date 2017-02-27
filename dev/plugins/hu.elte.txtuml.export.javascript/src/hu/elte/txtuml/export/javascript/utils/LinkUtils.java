@@ -13,9 +13,10 @@ import hu.elte.txtuml.layout.visualizer.model.Point;
 public class LinkUtils {
 	/***
 	 * A function to get turning points from the given LineAssociation
-	 *  
+	 * 
 	 * @param link
-	 *            LineAssocitaion with a valid route set (containing at least one Point)
+	 *            LineAssocitaion with a valid route set (containing at least
+	 *            one Point)
 	 * @return The turning points of the given LineAssociation (or a point near
 	 *         the middle if it's straight)
 	 */
