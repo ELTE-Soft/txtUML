@@ -31,8 +31,8 @@ import hu.elte.txtuml.export.uml2.TxtUMLToUML2;
 import hu.elte.txtuml.layout.export.DiagramExportationReport;
 import hu.elte.txtuml.utils.Pair;
 import hu.elte.txtuml.utils.eclipse.Dialogs;
-import hu.elte.txtuml.utils.eclipse.WizardUtils;
 import hu.elte.txtuml.utils.eclipse.SaveUtils;
+import hu.elte.txtuml.utils.eclipse.WizardUtils;
 
 /**
  * Wizard for visualization of txtUML models
@@ -94,10 +94,6 @@ public class TxtUMLVisuzalizeWizard extends Wizard {
 
 		PreferencesManager.setValue(PreferencesManager.TXTUML_VISUALIZE_TXTUML_LAYOUT, layoutConfigs.values().stream()
 				.flatMap(c -> c.stream()).map(layout -> layout.getFullyQualifiedName()).collect(Collectors.toList()));
-		
-		boolean saveSucceeded = SaveUtils.saveAffectedFiles(getShell(), txtUMLProjectName, txtUMLModelName, txtUMLLayout.keySet());
-		if (!saveSucceeded)
-			return false;
 
 		for (Pair<String, String> model : layoutConfigs.keySet()) {
 			String txtUMLModelName = model.getFirst();
@@ -109,6 +105,11 @@ public class TxtUMLVisuzalizeWizard extends Wizard {
 			Map<String, String> layouts = new HashMap<String, String>();
 			layoutConfigs.get(model).forEach(
 					layout -> layouts.put(layout.getFullyQualifiedName(), layout.getJavaProject().getElementName()));
+
+			boolean saveSucceeded = SaveUtils.saveAffectedFiles(getShell(), txtUMLProjectName, txtUMLModelName,
+					txtUMLLayout.stream().map(IType::getFullyQualifiedName).collect(Collectors.toList()));
+			if (!saveSucceeded)
+				return false;
 
 			try {
 				this.checkEmptyLayoutDecsriptions();

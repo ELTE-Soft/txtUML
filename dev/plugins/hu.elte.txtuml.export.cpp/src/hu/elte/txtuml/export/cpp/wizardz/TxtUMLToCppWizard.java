@@ -4,8 +4,8 @@ import org.eclipse.jdt.core.IType;
 import org.eclipse.jface.wizard.Wizard;
 
 import hu.elte.txtuml.utils.Pair;
-import hu.elte.txtuml.utils.eclipse.WizardUtils;
 import hu.elte.txtuml.utils.eclipse.SaveUtils;
+import hu.elte.txtuml.utils.eclipse.WizardUtils;
 
 public class TxtUMLToCppWizard extends Wizard {
 
@@ -35,10 +35,6 @@ public class TxtUMLToCppWizard extends Wizard {
 
 			TxtUMLToCppPage.setThreadManagerDescription(threadManagementDescription);
 
-			boolean saveSucceeded = SaveUtils.saveAffectedFiles(getShell(), txtUMLProject, txtUMLModel, threadManagmentDescription);
-			if (!saveSucceeded)
-				return false;
-
 			boolean addRuntimeOption = createCppCodePage.getAddRuntimeOptionSelection();
 			boolean overWriteMainFileOption = createCppCodePage.getOverWriteMainFileSelection();
 
@@ -46,6 +42,11 @@ public class TxtUMLToCppWizard extends Wizard {
 					.orElse(Pair.of("", ""));
 			String txtUMLModel = model.getFirst();
 			String txtUMLProject = model.getSecond();
+
+			boolean saveSucceeded = SaveUtils.saveAffectedFiles(getShell(), txtUMLProject, txtUMLModel,
+					threadManagementDescription.getFullyQualifiedName());
+			if (!saveSucceeded)
+				return false;
 
 			TxtUMLToCppGovernor governor = new TxtUMLToCppGovernor(false);
 			governor.uml2ToCpp(txtUMLProject, txtUMLModel, threadManagementDescription.getFullyQualifiedName(),
