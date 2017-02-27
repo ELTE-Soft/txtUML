@@ -7,7 +7,9 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.jaxb.MarshallerProperties;
 import org.eclipse.persistence.jaxb.xmlmodel.ObjectFactory;
+import org.eclipse.persistence.oxm.MediaType;
 
 /**
  * 
@@ -28,7 +30,7 @@ public class JSONExporter {
 		JAXBContext jc = JAXBContextFactory.createContext(new Class[] { object.getClass(), ObjectFactory.class }, null);
 		Marshaller marshaller = jc.createMarshaller();
 		marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-		marshaller.setProperty("eclipselink.media-type", "application/json");
+		marshaller.setProperty(MarshallerProperties.MEDIA_TYPE, MediaType.APPLICATION_JSON);
 		marshaller.marshal(object, jsonfile);
 	}
 }

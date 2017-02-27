@@ -41,6 +41,15 @@ public class Exporter {
 	private TxtUMLLayoutDescriptor layout;
 	private ExportationModel model;
 
+	private static final String GENERATED_FILE = "input.js";
+	
+	private static final String GENERATED_FILE_HEAD = "var input = ";
+	private static final String GENERATED_FILE_TAIL = ";";
+	
+	private static final String FILE_TO_OPEN_IN_BROWSER = "visualize.html";
+	
+	private static final String VISUALIZER_FOLDER = "js";
+
 	/**
 	 * Creates a new <code>Exporter</code> which will handle the exportation of
 	 * the given diagrams.
@@ -54,7 +63,7 @@ public class Exporter {
 		String projectAbsLocation = ResourcesPlugin.getWorkspace().getRoot().getProject(layout.projectName)
 				.getLocation().toFile().getAbsolutePath();
 		genFolder = Paths.get(projectAbsLocation, layout.mappingFolder).toFile().getAbsolutePath();
-		target = Paths.get(genFolder, "js").toFile().getAbsolutePath();
+		target = Paths.get(genFolder, VISUALIZER_FOLDER).toFile().getAbsolutePath();
 		model = new ExportationModel();
 	}
 
@@ -77,11 +86,11 @@ public class Exporter {
 	 */
 	private void insertInput() throws IOException, JAXBException {
 
-		try (FileWriter fw = new FileWriter(Paths.get(target, "input.js").toFile());
+		try (FileWriter fw = new FileWriter(Paths.get(target, GENERATED_FILE).toFile());
 				BufferedWriter jsfile = new BufferedWriter(fw);) {
-			jsfile.write("var input = ");
+			jsfile.write(GENERATED_FILE_HEAD);
 			JSONExporter.writeObjectAsJSON(model, jsfile);
-			jsfile.write(";");
+			jsfile.write(GENERATED_FILE_TAIL);
 		}
 	}
 
@@ -95,7 +104,7 @@ public class Exporter {
 		// set to use external browser due to internal browser bug
 		// https://bugs.eclipse.org/bugs/show_bug.cgi?id=501978
 		final IWebBrowser browser = PlatformUI.getWorkbench().getBrowserSupport().getExternalBrowser();
-		browser.openURL(Paths.get(target, "visualize.html").toUri().toURL());
+		browser.openURL(Paths.get(target, FILE_TO_OPEN_IN_BROWSER).toUri().toURL());
 	}
 
 	/**

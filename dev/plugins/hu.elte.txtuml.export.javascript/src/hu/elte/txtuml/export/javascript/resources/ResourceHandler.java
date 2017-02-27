@@ -31,7 +31,7 @@ public class ResourceHandler {
 	public static void copyResourcesTo(String targetDirectory) throws IOException {
 		Class<ResourceHandler> c = ResourceHandler.class;
 		for (String file : FILES) {
-			InputStream istream = c.getResourceAsStream("res/" + file);
+			InputStream istream = c.getResourceAsStream(Paths.get(RESOURCE_FOLDER, file).toString());
 			Path target = Paths.get(targetDirectory, file);
 
 			if (!Files.exists(target)) {
