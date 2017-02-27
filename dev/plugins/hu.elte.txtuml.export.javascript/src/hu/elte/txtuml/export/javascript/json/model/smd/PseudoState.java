@@ -1,7 +1,11 @@
 package hu.elte.txtuml.export.javascript.json.model.smd;
 
-import org.eclipse.persistence.oxm.annotations.XmlAccessMethods;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+import org.eclipse.persistence.oxm.annotations.XmlAccessMethods;
+import org.eclipse.uml2.uml.PseudostateKind;
+
+import hu.elte.txtuml.export.javascript.json.EnumAdapter;
 import hu.elte.txtuml.layout.visualizer.model.Point;
 import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
 
@@ -16,7 +20,8 @@ public class PseudoState {
 	@XmlAccessMethods(getMethodName = "getName")
 	private String name;
 	@XmlAccessMethods(getMethodName = "getKind")
-	private String kind;
+	@XmlJavaTypeAdapter(EnumAdapter.class)
+	private PseudostateKind kind;
 	@XmlAccessMethods(getMethodName = "getPosition")
 	private Point position;
 	@XmlAccessMethods(getMethodName = "getWidth")
@@ -43,7 +48,7 @@ public class PseudoState {
 	public PseudoState(RectangleObject node, org.eclipse.uml2.uml.Pseudostate state) {
 		id = node.getName();
 		name = state.getLabel();
-		kind = state.getKind().getLiteral();
+		kind = state.getKind();
 		position = node.getPosition();
 		width = node.getWidth();
 		height = node.getHeight();
@@ -70,7 +75,7 @@ public class PseudoState {
 	 * 
 	 * @return the kind of the pseudo state
 	 */
-	public String getKind() {
+	public PseudostateKind getKind() {
 		return kind;
 	}
 

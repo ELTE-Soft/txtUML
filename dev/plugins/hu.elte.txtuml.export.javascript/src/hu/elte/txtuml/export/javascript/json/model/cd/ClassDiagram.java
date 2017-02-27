@@ -75,7 +75,7 @@ public class ClassDiagram {
 		// creating and sorting links into attributeLinks and nonAttributeLinks
 		for (LineAssociation link : links) {
 			if (link.getType() == AssociationType.generalization) {
-				nonAttributeLinks.add(new ClassLink(link, AssociationType.generalization.toString()));
+				nonAttributeLinks.add(new ClassLink(link));
 			} else {
 				Association assoc = (Association) map.getByName(link.getId());
 				attributeLinks.add(new ClassAttributeLink(link, assoc, (Classifier) map.getByName(link.getFrom()),

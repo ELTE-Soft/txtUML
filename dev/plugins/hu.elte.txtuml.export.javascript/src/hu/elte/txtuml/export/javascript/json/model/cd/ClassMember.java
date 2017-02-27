@@ -1,7 +1,11 @@
 package hu.elte.txtuml.export.javascript.json.model.cd;
 
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
 import org.eclipse.persistence.oxm.annotations.XmlAccessMethods;
 import org.eclipse.uml2.uml.VisibilityKind;
+
+import hu.elte.txtuml.export.javascript.json.EnumAdapter;
 
 /**
  * 
@@ -10,7 +14,8 @@ import org.eclipse.uml2.uml.VisibilityKind;
  */
 public abstract class ClassMember {
 	@XmlAccessMethods(getMethodName = "getVisibility")
-	protected String visibility;
+	@XmlJavaTypeAdapter(EnumAdapter.class)
+	protected VisibilityKind visibility;
 	@XmlAccessMethods(getMethodName = "getName")
 	protected String name;
 
@@ -30,14 +35,14 @@ public abstract class ClassMember {
 	 */
 	protected ClassMember(String name, VisibilityKind visibility) {
 		this.name = name;
-		this.visibility = visibility.getLiteral();
+		this.visibility = visibility;
 	}
 
 	/**
 	 * 
 	 * @return the visibility of the class member
 	 */
-	public String getVisibility() {
+	public VisibilityKind getVisibility() {
 		return visibility;
 	}
 

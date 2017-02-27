@@ -5,6 +5,7 @@ import java.util.List;
 import org.eclipse.persistence.oxm.annotations.XmlAccessMethods;
 
 import hu.elte.txtuml.export.javascript.utils.LinkUtils;
+import hu.elte.txtuml.layout.visualizer.model.AssociationType;
 import hu.elte.txtuml.layout.visualizer.model.LineAssociation;
 import hu.elte.txtuml.layout.visualizer.model.Point;
 
@@ -18,7 +19,7 @@ public class ClassLink {
 	@XmlAccessMethods(getMethodName = "getRoute")
 	protected List<Point> route;
 	@XmlAccessMethods(getMethodName = "getType")
-	protected String type;
+	protected AssociationType type;
 
 	/**
 	 * No-arg constructor required for serialization
@@ -26,18 +27,6 @@ public class ClassLink {
 	protected ClassLink() {
 	}
 
-	/**
-	 * Creates a ClassLink based on the layout information and type provided
-	 * 
-	 * @param assoc
-	 *            the layout information
-	 * @param type
-	 *            the type of the link
-	 */
-	public ClassLink(LineAssociation assoc, String type) {
-		this(assoc);
-		this.type = type;
-	}
 
 	/**
 	 * Creates a ClassLink based on the layout information provided
@@ -50,6 +39,7 @@ public class ClassLink {
 		fromID = assoc.getFrom();
 		toID = assoc.getTo();
 		route = LinkUtils.getTurningPoints(assoc);
+		type = assoc.getType();
 	}
 
 	/**
@@ -91,7 +81,7 @@ public class ClassLink {
 	 * 
 	 * @return the type of the link
 	 */
-	public String getType() {
+	public AssociationType getType() {
 		return type;
 	}
 

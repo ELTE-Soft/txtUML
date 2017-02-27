@@ -51,7 +51,6 @@ public class ClassAttributeLink extends ClassLink {
 	public ClassAttributeLink(LineAssociation layout, Association assoc, Classifier fromClass, Classifier toClass)
 			throws UnexpectedEndException {
 		super(layout);
-		type = "attribute";
 		name = assoc.getLabel();
 		from = null;
 		to = null;
@@ -84,14 +83,6 @@ public class ClassAttributeLink extends ClassLink {
 	 */
 	public AssociationEnd getTo() {
 		return to;
-	}
-
-	/**
-	 * 
-	 * @return the type of the association ("attribute")
-	 */
-	public String getType() {
-		return type;
 	}
 
 	/**

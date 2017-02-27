@@ -3,11 +3,14 @@ package hu.elte.txtuml.export.javascript.json.model.cd;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
 import org.eclipse.persistence.oxm.annotations.XmlAccessMethods;
 import org.eclipse.uml2.uml.Classifier;
 import org.eclipse.uml2.uml.Operation;
 import org.eclipse.uml2.uml.Property;
 
+import hu.elte.txtuml.export.javascript.json.EnumAdapter;
 import hu.elte.txtuml.layout.visualizer.model.Point;
 import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
 
@@ -28,8 +31,9 @@ public class ClassNode {
 	private String id;
 	@XmlAccessMethods(getMethodName = "getName")
 	private String name;
-	@XmlAccessMethods(getMethodName = "getType")
-	private String type;
+	@XmlAccessMethods(getMethodName = "getType") 
+	@XmlJavaTypeAdapter(EnumAdapter.class)
+	private CDNodeType type;
 	@XmlAccessMethods(getMethodName = "getAttributes")
 	private List<Attribute> attributes;
 	@XmlAccessMethods(getMethodName = "getOperations")
@@ -72,9 +76,9 @@ public class ClassNode {
 		}
 
 		if (clazz.isAbstract()) {
-			type = "abstract";
+			type = CDNodeType.ABSTRACT_CLASS;
 		} else {
-			type = "class";
+			type = CDNodeType.CLASS;
 		}
 	}
 
@@ -140,7 +144,7 @@ public class ClassNode {
 	 * @return the type of the class (note: this currently can be "class" or
 	 *         "abstract")
 	 */
-	public String getType() {
+	public CDNodeType getType() {
 		return type;
 	}
 

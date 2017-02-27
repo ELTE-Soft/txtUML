@@ -1,7 +1,12 @@
 package hu.elte.txtuml.export.javascript.json.model.cd;
 
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
 import org.eclipse.persistence.oxm.annotations.XmlAccessMethods;
 import org.eclipse.uml2.uml.Property;
+import org.eclipse.uml2.uml.VisibilityKind;
+
+import hu.elte.txtuml.export.javascript.json.EnumAdapter;
 
 /**
  * 
@@ -14,7 +19,8 @@ public class AssociationEnd {
 	@XmlAccessMethods(getMethodName = "getMultiplicity")
 	private String multiplicity;
 	@XmlAccessMethods(getMethodName = "getVisibility")
-	private String visibility;
+	@XmlJavaTypeAdapter(EnumAdapter.class)
+	private VisibilityKind visibility;
 	@XmlAccessMethods(getMethodName = "isNavigable")
 	private Boolean navigable;
 	@XmlAccessMethods(getMethodName = "isComposition")
@@ -46,7 +52,7 @@ public class AssociationEnd {
 		} else {
 			multiplicity = low + ".." + (high == -1 ? "*" : high);
 		}
-		visibility = end.getVisibility().getLiteral();
+		visibility = end.getVisibility();
 		navigable = end.isNavigable();
 		composition = end.isComposite();
 	}
@@ -71,7 +77,7 @@ public class AssociationEnd {
 	 * 
 	 * @return the visibility of the end
 	 */
-	public String getVisibility() {
+	public VisibilityKind getVisibility() {
 		return visibility;
 	}
 

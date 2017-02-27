@@ -20,6 +20,7 @@ import org.eclipse.uml2.uml.Region;
 import org.eclipse.uml2.uml.StateMachine;
 import org.eclipse.uml2.uml.UMLFactory;
 import org.eclipse.uml2.uml.UMLPackage;
+import org.eclipse.uml2.uml.VisibilityKind;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -104,8 +105,8 @@ public class SMDiagramTests {
 		Assert.assertEquals((Integer) 4, statei.getHeight());
 		Assert.assertEquals((Integer) 8, statec.getHeight());
 
-		Assert.assertEquals("initial", statei.getKind());
-		Assert.assertEquals("choice", statec.getKind());
+		Assert.assertEquals(PseudostateKind.INITIAL_LITERAL, statei.getKind());
+		Assert.assertEquals(PseudostateKind.CHOICE_LITERAL, statec.getKind());
 
 	}
 

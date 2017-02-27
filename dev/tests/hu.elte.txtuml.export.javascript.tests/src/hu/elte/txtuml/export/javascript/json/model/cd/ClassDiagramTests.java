@@ -99,12 +99,12 @@ public class ClassDiagramTests {
 		attrTypeNames.add("A");
 		attrTypeNames.addAll(primitives.getFirst());
 
-		ArrayList<String> expectedVisibilities = new ArrayList<String>(
-				Arrays.asList("public", "protected", "private", "package", "public", "protected"));
+		ArrayList<VisibilityKind> expectedVisibilities = new ArrayList<VisibilityKind>(
+				Arrays.asList(VisibilityKind.PUBLIC_LITERAL, VisibilityKind.PROTECTED_LITERAL, VisibilityKind.PRIVATE_LITERAL, VisibilityKind.PACKAGE_LITERAL, VisibilityKind.PUBLIC_LITERAL, VisibilityKind.PROTECTED_LITERAL));
 
 		for (int i = 0; i < attrNames.size(); ++i) {
 			Property p = classA.createOwnedAttribute(attrNames.get(i), attrTypes.get(i));
-			p.setVisibility(VisibilityKind.getByName(expectedVisibilities.get(i)));
+			p.setVisibility(expectedVisibilities.get(i));
 			Attribute a = new Attribute(p);
 			Assert.assertEquals(attrNames.get(i), a.getName());
 			Assert.assertEquals(attrTypeNames.get(i), a.getType());
@@ -121,7 +121,7 @@ public class ClassDiagramTests {
 		// List<Integer> lowMultiplicities = Arrays.asList(0, 2, 1, 2);
 		// List<Integer> highMultiplicities = Arrays.asList(-1, -1, 3, 2);
 		List<String> expectedMultiplocites = Arrays.asList("*", "2..*", "1..3", "2");
-		List<String> expectedVisibilities = Arrays.asList("public", "private", "protected", "package");
+		List<VisibilityKind> expectedVisibilities = Arrays.asList(VisibilityKind.PUBLIC_LITERAL, VisibilityKind.PRIVATE_LITERAL, VisibilityKind.PROTECTED_LITERAL, VisibilityKind.PACKAGE_LITERAL);
 
 		Association a = classA.createAssociation(true, AggregationKind.NONE_LITERAL, "b", 2, -1, classB, true,
 				AggregationKind.COMPOSITE_LITERAL, "a", 0, -1);
@@ -179,8 +179,8 @@ public class ClassDiagramTests {
 		Assert.assertEquals("AB", calab.getName());
 		Assert.assertEquals("AA", calaa.getName());
 
-		Assert.assertEquals("attribute", calab.getType());
-		Assert.assertEquals("attribute", calaa.getType());
+		Assert.assertEquals(AssociationType.normal, calab.getType());
+		Assert.assertEquals(AssociationType.normal, calaa.getType());
 
 		Assert.assertEquals("package.A", calab.getFromID());
 		Assert.assertEquals("package.A", calaa.getFromID());
@@ -267,7 +267,7 @@ public class ClassDiagramTests {
 		Assert.assertEquals("AA", cals.get(0).getName());
 
 		Assert.assertEquals("package.AB", cnals.get(0).getId());
-		Assert.assertEquals("generalization", cnals.get(0).getType());
+		Assert.assertEquals(AssociationType.generalization, cnals.get(0).getType());
 
 		Assert.assertEquals(0.5, cd.getSpacing(), 0.001);
 
@@ -281,13 +281,14 @@ public class ClassDiagramTests {
 		List<Point> expectedRoute = Arrays.asList(new Point(3, 2));
 
 		la.setRoute(route);
+		la.setType(AssociationType.generalization);
 
-		ClassLink cl = new ClassLink(la, "generalization");
+		ClassLink cl = new ClassLink(la);
 
 		Assert.assertEquals("package.AB", cl.getId());
 		Assert.assertEquals("package.A", cl.getFromID());
 		Assert.assertEquals("package.B", cl.getToID());
-		Assert.assertEquals("generalization", cl.getType());
+		Assert.assertEquals(AssociationType.generalization, cl.getType());
 
 		Assert.assertEquals(expectedRoute.size(), cl.getRoute().size());
 		List<Point> actualPoints = cl.getRoute();
@@ -298,7 +299,7 @@ public class ClassDiagramTests {
 
 		route = Arrays.asList(new Point(2, 2), new Point(3, 2), new Point(4, 2), new Point(5, 2));
 		la.setRoute(route);
-		cl = new ClassLink(la, "generalization");
+		cl = new ClassLink(la);
 		expectedRoute = Arrays.asList(new Point(4, 2));
 		Assert.assertEquals(expectedRoute.size(), cl.getRoute().size());
 		actualPoints = cl.getRoute();
@@ -309,7 +310,7 @@ public class ClassDiagramTests {
 
 		route = Arrays.asList(new Point(2, 2), new Point(3, 2), new Point(3, 3));
 		la.setRoute(route);
-		cl = new ClassLink(la, "generalization");
+		cl = new ClassLink(la);
 		expectedRoute = Arrays.asList(new Point(3, 2));
 		Assert.assertEquals(expectedRoute.size(), cl.getRoute().size());
 		actualPoints = cl.getRoute();
@@ -321,7 +322,7 @@ public class ClassDiagramTests {
 		route = Arrays.asList(new Point(2, 2), new Point(3, 2), new Point(4, 2), new Point(4, 3), new Point(4, 4),
 				new Point(4, 5), new Point(5, 5), new Point(6, 5), new Point(7, 5));
 		la.setRoute(route);
-		cl = new ClassLink(la, "generalization");
+		cl = new ClassLink(la);
 		expectedRoute = Arrays.asList(new Point(4, 2), new Point(4, 5));
 		Assert.assertEquals(expectedRoute.size(), cl.getRoute().size());
 		actualPoints = cl.getRoute();
@@ -379,8 +380,8 @@ public class ClassDiagramTests {
 		Assert.assertEquals("A", cnA.getName());
 		Assert.assertEquals("B", cnB.getName());
 
-		Assert.assertEquals("class", cnA.getType());
-		Assert.assertEquals("abstract", cnB.getType());
+		Assert.assertEquals(CDNodeType.CLASS, cnA.getType());
+		Assert.assertEquals(CDNodeType.ABSTRACT_CLASS, cnB.getType());
 
 		Assert.assertEquals((Integer) 1, cnA.getPosition().getX());
 		Assert.assertEquals((Integer) 5, cnB.getPosition().getX());
@@ -405,8 +406,8 @@ public class ClassDiagramTests {
 	@Test
 	public void testMemberOperation() {
 		ArrayList<String> opNames = new ArrayList<String>(Arrays.asList("a", "b", "c", "d"));
-		ArrayList<String> expectedVisibilities = new ArrayList<String>(
-				Arrays.asList("public", "protected", "private", "package"));
+		ArrayList<VisibilityKind> expectedVisibilities = new ArrayList<VisibilityKind>(
+				Arrays.asList(VisibilityKind.PUBLIC_LITERAL, VisibilityKind.PROTECTED_LITERAL, VisibilityKind.PRIVATE_LITERAL, VisibilityKind.PACKAGE_LITERAL));
 		ArrayList<Type> returnTypes = new ArrayList<Type>(
 				Arrays.asList(null, classA, primitives.getSecond().get(0), null));
 		ArrayList<String> returnTypeNames = new ArrayList<String>(
@@ -420,7 +421,7 @@ public class ClassDiagramTests {
 			List<String> argNames = opNames.subList(0, i);
 
 			Operation op = classA.createOwnedOperation(opNames.get(i), new BasicEList<String>(argNames), argTypes);
-			op.setVisibility(VisibilityKind.getByName(expectedVisibilities.get(i)));
+			op.setVisibility(expectedVisibilities.get(i));
 
 			if (returnTypes.get(i) != null) {
 				Parameter ret = op.createOwnedParameter("return", returnTypes.get(i));
