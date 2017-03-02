@@ -44,16 +44,16 @@ public class GenerationTemplates {
 		return source.replaceAll(PointerAndMemoryNames.Self, GenerationNames.ParentSmMemberName);
 	}
 
-	public static String createObject(String typeName, String objName) {
-		return createObject(typeName, objName, null, null);
+	public static String createObject(String typeName, String objName, boolean sharedObject) {
+		return createObject(typeName, objName, null, null, sharedObject);
 	}
 
-	public static String createObject(String typeName, String objName, List<String> params) {
-		return createObject(typeName, objName, null, params);
+	public static String createObject(String typeName, String objName, List<String> params, boolean sharedObject) {
+		return createObject(typeName, objName, null, params, sharedObject);
 	}
 
 	public static String createObject(String typeName, String objName, List<String> templateParams,
-			List<String> params) {
+			List<String> params, boolean sharedObject) {
 		String templateParameters = "";
 		if (templateParams != null) {
 			templateParameters = "<";
@@ -62,13 +62,18 @@ public class GenerationTemplates {
 			}
 			templateParameters = templateParameters + templateParams.get(templateParams.size() - 1) + ">";
 		}
+		if(!sharedObject) {
+			return GenerationNames.pointerType(typeName + templateParameters) + " " + objName  + " = "
+					+ allocateObject(typeName + templateParameters, templateParams, params, false) + ";\n";
+		} else {
+			return GenerationNames.sharedPtrType(typeName + templateParameters) + " " + objName  + " = "
+					+ allocateObject(typeName + templateParameters, templateParams, params, true) + ";\n";
+		}
 
-		return GenerationNames.pointerType(typeName) + " " + objName + templateParameters + " = "
-				+ allocateObject(typeName, templateParams, params) + ";\n";
 
 	}
 
-	public static String allocateObject(String typeName, List<String> templateParams, List<String> params) {
+	public static String allocateObject(String typeName, List<String> templateParams, List<String> params, boolean sharedObject) {
 
 		String parameters = "(";
 		if (params != null && params.size() > 0) {
@@ -88,20 +93,26 @@ public class GenerationTemplates {
 			}
 			templateParameters = templateParameters + templateParams.get(templateParams.size() - 1) + ">";
 		}
-		return PointerAndMemoryNames.MemoryAllocator + " " + typeName + templateParameters + parameters;
+		
+		String allocatedObject = PointerAndMemoryNames.MemoryAllocator + " " + typeName + templateParameters + parameters;
+		if(!sharedObject) {
+			return allocatedObject;
+		} else {
+			return GenerationNames.PointerAndMemoryNames.SmartPtr + "<" + typeName + ">" + "(" + allocatedObject + ")";
+		}
 
 	}
 
-	public static String allocateObject(String typeName, List<String> params) {
-		return allocateObject(typeName, null, params);
+	public static String allocateObject(String typeName, List<String> params, boolean sharedObject) {
+		return allocateObject(typeName, null, params, sharedObject);
 	}
 
 	public static String allocateObject(String typeName) {
-		return allocateObject(typeName, null, null);
+		return allocateObject(typeName, null, null, false);
 	}
 
-	public static String staticCreate(String typeName, String objName, String creatorMethod) {
-		return GenerationNames.pointerType(typeName) + " " + objName + " = " + staticMethodInvoke(typeName,creatorMethod) + ";\n";
+	public static String staticCreate(String typeName, String returnType, String objName, String creatorMethod) {
+		return returnType + " " + objName + " = " + staticMethodInvoke(typeName,creatorMethod) + ";\n";
 	}
 	
 	public static String staticMethodInvoke(String className, String method) {

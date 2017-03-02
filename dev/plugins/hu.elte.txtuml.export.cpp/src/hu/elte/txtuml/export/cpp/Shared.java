@@ -33,7 +33,6 @@ import org.eclipse.text.edits.TextEdit;
 
 import org.eclipse.cdt.core.ToolFactory;
 import org.eclipse.cdt.core.formatter.CodeFormatter;
-
 import hu.elte.txtuml.utils.Pair;
 
 public class Shared {
@@ -43,10 +42,18 @@ public class Shared {
 	public Shared(Collection<Element> modelElements) {
 		this.modelElements = modelElements;
 	}
+	
+	public void setElements(Collection<Element> elements) {
+		this.modelElements = elements;
+	}
 
-	@SuppressWarnings("unchecked")
 	public <ElementTypeT, EClassTypeT> void getTypedElements(Collection<ElementTypeT> dest, EClassTypeT eClass) {
-		for (Element item : modelElements) {
+		getTypedElements(dest,eClass,modelElements);
+	}
+	
+	@SuppressWarnings("unchecked")
+	public <ElementTypeT, EClassTypeT> void getTypedElements(Collection<ElementTypeT> dest, EClassTypeT eClass, Collection<Element> elements) {
+		for (Element item : elements) {
 			if (item.eClass().equals(eClass)) {
 				dest.add((ElementTypeT) item);
 			}

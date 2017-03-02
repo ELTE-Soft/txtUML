@@ -1,8 +1,6 @@
 #include "timer.hpp"
 
-#include "ESRoot\Types.hpp"
-
-Timer::Timer(ES::StateMachineRef sm, EventPtr event, int millisecs): command( [sm,event]() {sm->send(event);})
+Timer::Timer(ES::StateMachineRef sm, ES::EventRef event, int millisecs): command( [sm,event]() {sm->send(event);})
 {
     schedule(millisecs);
 }

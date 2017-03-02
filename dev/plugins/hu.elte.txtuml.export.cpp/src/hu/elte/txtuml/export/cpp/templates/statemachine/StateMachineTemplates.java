@@ -32,7 +32,7 @@ public class StateMachineTemplates {
 
 	public static String transitionActionDecl(String transitionActionName) {
 		List<String> params = new LinkedList<String>();
-		params.add(EventTemplates.EventBaseRefName);
+		params.add(EventTemplates.EventPointerType);
 
 		return FunctionTemplates.functionDecl(transitionActionName, params);
 	}
@@ -41,9 +41,9 @@ public class StateMachineTemplates {
 			boolean singalAcces) {
 		List<Pair<String, String>> params = new LinkedList<Pair<String, String>>();
 		if (singalAcces) {
-			params.add(new Pair<String, String>(EventTemplates.EventBaseRefName, EventTemplates.EventParamName));
+			params.add(new Pair<String, String>(EventTemplates.EventPointerType, EventTemplates.EventParamName));
 		} else {
-			params.add(new Pair<String, String>(EventTemplates.EventBaseRefName, ""));
+			params.add(new Pair<String, String>(EventTemplates.EventPointerType, ""));
 
 		}
 
@@ -53,14 +53,14 @@ public class StateMachineTemplates {
 
 	public static String guardDeclaration(String guardFunctionName) {
 		StringBuilder source = new StringBuilder(
-				"bool " + guardFunctionName + "(" + EventTemplates.EventBaseRefName + ");\n");
+				"bool " + guardFunctionName + "(" + EventTemplates.EventPointerType + ");\n");
 		return source.toString();
 	}
 
 	public static String guardDefinition(String guardFunctionName, String constraint, String className,
 			boolean eventParamUsage) {
 		StringBuilder source = new StringBuilder(
-				"bool " + className + "::" + guardFunctionName + "(" + EventTemplates.EventBaseRefName);
+				"bool " + className + "::" + guardFunctionName + "(" + EventTemplates.EventPointerType);
 		if (eventParamUsage) {
 			source.append(" " + EventTemplates.EventFParamName);
 
@@ -104,9 +104,9 @@ public class StateMachineTemplates {
 		
 		String parameter;
 		if (states == null || states.isEmpty()) {
-			parameter = EventTemplates.EventBaseRefName;
+			parameter = EventTemplates.EventPointerType;
 		} else {
-			parameter = EventTemplates.EventBaseRefName + " " + EventTemplates.EventFParamName;
+			parameter = EventTemplates.EventPointerType + " " + EventTemplates.EventFParamName;
 		}
 		
 		String source = ModifierNames.NoReturn + " " + className + "::" + typeName + "(" + parameter + ")\n{\n";

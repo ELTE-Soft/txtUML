@@ -10,6 +10,7 @@
 #include <memory>
 
 #include "runtime/ievent.hpp"
+#include "runtime/ESRoot/Types.hpp"
 
 struct EventState {
 	EventState(int e_, int s_, int p_) : event (e_), state (s_), port (p_) {}
@@ -43,11 +44,11 @@ namespace std
 class StateMachineBase
 {
 public:
- virtual bool process_event(EventBaseCRef)=0;
+ virtual bool process_event(ES::EventRef)=0;
  virtual void setInitialState()=0;
  virtual ~StateMachineBase(){}
 protected:
-  bool defaultGuard(EventBaseCRef){return true;}
+  bool defaultGuard(ES::EventRef){return true;}
 };
 
 

@@ -140,7 +140,7 @@ public class EntryExitFunctionExporter {
 	private String createFunctionDecl(FuncTypeEnum funcType) {
 		StringBuilder source = new StringBuilder("");
 		List<String> eventParameter = new LinkedList<String>();
-		eventParameter.add(EventTemplates.EventBaseRefName);
+		eventParameter.add(EventTemplates.EventPointerType);
 		for (EntryExitFunctionDescription description : getTheProperList (funcType)) {
 			source.append(FunctionTemplates.functionDecl(description.getFunctionName(),eventParameter));
 		}
@@ -152,8 +152,8 @@ public class EntryExitFunctionExporter {
 		
 		List<Pair<String, String>> hiddenParam = new LinkedList<Pair<String, String>>();
 		List<Pair<String, String>> notHiddenParam = new LinkedList<Pair<String,String>>();
-		hiddenParam.add(new Pair<String,String>(EventTemplates.EventBaseRefName,""));
-		notHiddenParam.add(new Pair<String,String>(EventTemplates.EventBaseRefName,EventTemplates.EventParamName));
+		hiddenParam.add(new Pair<String,String>(EventTemplates.EventPointerType,""));
+		notHiddenParam.add(new Pair<String,String>(EventTemplates.EventPointerType,EventTemplates.EventParamName));
 		for (EntryExitFunctionDescription description : getTheProperList (funcType)) {
 			if (description.getContainsSignalAccess()) {
 				source.append(FunctionTemplates.functionDef(className, description.getFunctionName(),notHiddenParam,description.getFunctionBody()));

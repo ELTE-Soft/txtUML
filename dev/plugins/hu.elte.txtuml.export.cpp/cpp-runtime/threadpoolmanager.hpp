@@ -8,7 +8,7 @@
 #include "threadpool.hpp"
 #include "runtimetypes.hpp"
 #include "threadconfiguration.hpp"
-#include "ESRoot\Types.hpp"
+#include "ESRoot/Types.hpp"
 
 class ThreadPoolManager
 {

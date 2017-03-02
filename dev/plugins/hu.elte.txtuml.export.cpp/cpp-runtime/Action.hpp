@@ -1,6 +1,6 @@
 /** @file actions.hpp
 */
-#include "IStateMachine.hpp"
+#include "istatemachine.hpp"
 #include "runtimetypes.hpp"
 
 #include "ESRoot/Types.hpp"
@@ -8,14 +8,14 @@
 namespace Action 
 {
 	
-void send(IStateMachine * target, EventPtr signal);
+void send(ES::StateMachineRef target, ES::EventRef signal);
 /**<
 Sends a message to a model object.
 @param target The target object where the signal have to be arrived. 
 @param signal The signal to be send.
 */
 
-void start(IStateMachine * sm);
+void start(ES::StateMachineRef sm);
 /**<
 Start a the statemachine of a model object.
 @param sm The state machine to be started. 

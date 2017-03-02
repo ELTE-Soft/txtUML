@@ -3,10 +3,16 @@
 
 #include <string>
 #include <memory>
-#include "Containers\threadsafequeue.hpp"
+#include "Containers/threadsafequeue.hpp"
 
 class IStateMachine;
+
+template<typename BaseDerived>
 class IEvent;
+class EventBase;
+
+template<typename RuntimeType>
+class IRuntime;
 
 namespace ES
 {
@@ -14,32 +20,21 @@ namespace ES
 	using String = std::string;
 
 	//ref types
-	template<typename T>
-	using SharedPtr = std::shared_ptr<T>;
 
 	template<typename T>
 	using Ptr = T*;
 
-	/*template <typename T>
-	class Ref
-	{
-	public:
-		Ref(T* ptr = nullptr) : _ptr(ptr) {}
-		Ref(const Ref& other) { _ptr = other.get(); }
-		void operator = (const Ref<T> other) { _ptr = other.get(); }
-		T* operator -> () const { return _ptr; }
-		T* get() const { return _ptr; }
-		bool operator == (Ref<T> other) const { return _ptr == other.get(); }
-		bool operator != (Ref<T> other) const { return _ptr != other.get(); }
-	private:
-		T* _ptr;		
-	};*/
+	template<typename T>
+	using SharedPtr = std::shared_ptr<T>;
 
-	using EventRef = SharedPtr<IEvent>;
-	using EventConstRef = SharedPtr<const IEvent>;
+	using EventRef = SharedPtr<IEvent<EventBase>>;
+	using EventConstRef = SharedPtr<const IEvent<EventBase>>;
 
 	using StateMachineRef = Ptr<IStateMachine>;
 	using StateMachineConstRef = Ptr<const IStateMachine>;
+
+	template<typename RuntimeType>
+	using RuntimePtr = SharedPtr<IRuntime<RuntimeType>>;
 
 	//ThreadSafeQueue types
 	using MessageQueueType = ThreadSafeQueue<EventRef>;

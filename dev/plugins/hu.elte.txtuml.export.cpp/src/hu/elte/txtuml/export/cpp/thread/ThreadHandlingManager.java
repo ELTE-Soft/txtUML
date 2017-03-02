@@ -1,6 +1,7 @@
 package hu.elte.txtuml.export.cpp.thread;
 
 import hu.elte.txtuml.export.cpp.Shared;
+import hu.elte.txtuml.export.cpp.templates.GenerationNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationTemplates;
 import hu.elte.txtuml.export.cpp.templates.PrivateFunctionalTemplates;
 import hu.elte.txtuml.export.cpp.templates.RuntimeTemplates;
@@ -34,7 +35,6 @@ public class ThreadHandlingManager {
 	private static final String ConfiguratedThreadedRuntimeName = "ConfiguratedThreadedRT";
 	private static final String SetConfigurationMethod = "configure";
 	private static final String CreatorFunction = "initRuntime";
-	private static final String CreateRTMethod = "createRuntime";
 
 	int numberOfThreads;
 
@@ -57,16 +57,19 @@ public class ThreadHandlingManager {
 		StringBuilder source = new StringBuilder("");
 		source.append(PrivateFunctionalTemplates.include(ThreadConfigurationClassName.toLowerCase()));
 		source.append(PrivateFunctionalTemplates.include(RuntimeTemplates.RuntimeHeaderName));
+		source.append(PrivateFunctionalTemplates.include(GenerationNames.FileNames.TypesFilePath));
 		source.append("\n\n");
 
 		List<String> templateParams = new ArrayList<String>();
 		templateParams.add(ConfiguratedThreadedRuntimeName);
-		source.append(GenerationTemplates.usingTemplateType(RuntimeTemplates.UsingRuntime,
+		source.append(GenerationTemplates.usingTemplateType(RuntimeTemplates.UsingRuntimePtr,
+				RuntimeTemplates.RuntimePtrType, templateParams));
+		source.append(GenerationTemplates.usingTemplateType(RuntimeTemplates.UsingRuntimeType,
 				RuntimeTemplates.RuntimeInterfaceName, templateParams));
 		source.append("\n\n");
 
 		source.append(GenerationTemplates.putNamespace(
-				FunctionTemplates.simpleFunctionDecl(RuntimeTemplates.UsingRuntime, CreatorFunction) + ";",
+				FunctionTemplates.simpleFunctionDecl(RuntimeTemplates.UsingRuntimePtr, CreatorFunction) + ";",
 				NamespaceName));
 
 		Shared.writeOutSource(dest, GenerationTemplates.headerName(ConfigurationFile),
@@ -81,7 +84,7 @@ public class ThreadHandlingManager {
 		StringBuilder source = new StringBuilder("");
 		source.append(PrivateFunctionalTemplates.include(ConfigurationFile));
 		source.append(
-				GenerationTemplates.putNamespace(FunctionTemplates.simpleFunctionDef(RuntimeTemplates.UsingRuntime,
+				GenerationTemplates.putNamespace(FunctionTemplates.simpleFunctionDef(RuntimeTemplates.UsingRuntimePtr,
 						CreatorFunction,createConfiguration() + createThreadedRuntime(),
 						RuntimeTemplates.RuntimeParameterName), NamespaceName));
 
@@ -90,8 +93,8 @@ public class ThreadHandlingManager {
 
 	private String createThreadedRuntime() {
 		StringBuilder source = new StringBuilder("");
-		source.append(GenerationTemplates.staticCreate(RuntimeTemplates.UsingRuntime,
-				RuntimeTemplates.RuntimeParameterName, CreateRTMethod));
+		source.append(GenerationTemplates.staticCreate(RuntimeTemplates.UsingRuntimeType, RuntimeTemplates.UsingRuntimePtr,
+				RuntimeTemplates.RuntimeParameterName, RuntimeTemplates.RuntimeInsanceGetter));
 		List<String> params = new ArrayList<String>();
 		params.add(ConfigurationObjectVariableName);
 		source.append(ActivityTemplates.blockStatement(ActivityTemplates.operationCallOnPointerVariable(
@@ -104,7 +107,7 @@ public class ThreadHandlingManager {
 		List<String> parameters = new ArrayList<String>();
 		parameters.add(new Integer(pools.size()).toString());
 		source.append(GenerationTemplates.createObject(ThreadConfigurationClassName, ConfigurationObjectVariableName,
-				parameters));
+				parameters, true));
 
 		for (ThreadPoolConfiguration pool : pools) {
 			parameters.clear();
@@ -113,7 +116,7 @@ public class ThreadHandlingManager {
 			parameters.add(new Integer(pool.getMaxThread()).toString());
 
 			source.append(insertToConfiguration(pool.getId(),
-					GenerationTemplates.allocateObject(ConfigurationStructName, parameters)));
+					GenerationTemplates.allocateObject(ConfigurationStructName, parameters, true)));
 		}
 
 		return source.toString();
@@ -133,12 +136,12 @@ public class ThreadHandlingManager {
 		params.add(new Integer(function.getConstant()).toString());
 		params.add(new Double(function.getGradient()).toString());
 
-		return GenerationTemplates.allocateObject(FunctionName, params);
+		return GenerationTemplates.allocateObject(FunctionName, params, true);
 	}
 
 	private String allocatePoolObject(ThreadPoolConfiguration pool) {
 		List<String> params = new ArrayList<String>();
-		return GenerationTemplates.allocateObject(ThreadPoolClassName, params);
+		return GenerationTemplates.allocateObject(ThreadPoolClassName, params, true);
 	}
 
 }

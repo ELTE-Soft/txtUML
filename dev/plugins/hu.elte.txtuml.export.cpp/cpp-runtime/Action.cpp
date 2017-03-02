@@ -4,12 +4,12 @@
 
 namespace Action 
 {
-	void send(IStateMachine * target, EventPtr signal)
+	void send(ES::StateMachineRef target, ES::EventRef signal)
 	{
 		target->send(signal);
 	}
 	
-	void start(IStateMachine * sm)
+	void start(ES::StateMachineRef sm)
 	{
 		sm->startSM();
 	}

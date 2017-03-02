@@ -31,8 +31,8 @@ public class PrivateFunctionalTemplates {
 
 	public static String typedefs(String className) {
 		return "typedef std::function<" + ModifierNames.NoReturn + "(" + className + "&,"
-				+ EventTemplates.EventBaseRefName + ")> " + GenerationNames.FunctionPtrTypeName + ";\n"
-				+ "typedef std::function<bool(" + className + "&," + EventTemplates.EventBaseRefName + ")> "
+				+ EventTemplates.EventPointerType + ")> " + GenerationNames.FunctionPtrTypeName + ";\n"
+				+ "typedef std::function<bool(" + className + "&," + EventTemplates.EventPointerType + ")> "
 				+ GenerationNames.GuardFuncTypeName + ";\n" + "typedef std::pair<" + GenerationNames.GuardFuncTypeName
 				+ "," + GenerationNames.FunctionPtrTypeName + "> " + GenerationNames.GuardActionName + ";\n";
 	}
@@ -90,7 +90,7 @@ public class PrivateFunctionalTemplates {
 
 	public static String cppType(String typeName) {
 		String cppType = typeName;
-		if (typeName != EventTemplates.EventBaseRefName && typeName != ModifierNames.NoReturn) {
+		if (typeName != EventTemplates.EventPointerType && typeName != ModifierNames.NoReturn) {
 			if (typeName != null) {
 				switch (typeName) {
 				case "Integer":
@@ -106,10 +106,10 @@ public class PrivateFunctionalTemplates {
 					cppType = BasicTypeNames.StringTypeName;
 					break;
 				case TimerNames.TimerClassName:
-					cppType = GenerationNames.sharedPtrType(typeName);
-					break;
 				case PointerAndMemoryNames.EventPtr:
-					cppType = PointerAndMemoryNames.EventPtr;
+				case RuntimeTemplates.UsingRuntimePtr:
+				case RuntimeTemplates.RuntimePtrType:
+					cppType = typeName;
 					break;
 				default:
 					cppType = GenerationNames.pointerType(typeName);

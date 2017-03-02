@@ -16,17 +16,17 @@
 #include "ievent.hpp"
 #include "threadpoolmanager.hpp"
 #include "runtimetypes.hpp"
-#include "ESRoot\Types.hpp"
+#include "ESRoot/Types.hpp"
 template<typename RuntimeType>
 class IRuntime
 {
 public:
 
-  static ES::SharedPtr<IRuntime<RuntimeType>> getRuntimeInstance()
+  static ES::RuntimePtr<RuntimeType> getRuntimeInstance()
   {
 	  if (instance == nullptr)
 	  {
-		  instance = new RuntimeType();
+		  instance = RuntimeType::createRuntime();
 	  }
 	  return instance;
   }
@@ -60,9 +60,9 @@ public:
   {
         static_cast<RuntimeType*>(this)->stopUponCompletion();
   }
-
+  
 protected:
-  static ES::SharedPtr<IRuntime<RuntimeType>> instance;
+  static ES::RuntimePtr<RuntimeType> instance;
   IRuntime() {}
 };
 
@@ -78,6 +78,7 @@ public:
 	void setConfiguration(ES::SharedPtr<ThreadConfiguration>);
 	bool isConfigurated();
 	void stopUponCompletion();
+	static ES::RuntimePtr<SingleThreadRT> createRuntime() {return ES::RuntimePtr<SingleThreadRT>(new SingleThreadRT());}	
 private:
   SingleThreadRT();
   ES::SharedPtr<ES::MessageQueueType> _messageQueue;
@@ -94,10 +95,10 @@ public:
 	void removeObject(ES::StateMachineRef);
 	void setConfiguration(ES::SharedPtr<ThreadConfiguration>);
 	bool isConfigurated();
-	void stopUponCompletion();  
+	void stopUponCompletion(); 
+	static ES::RuntimePtr<ConfiguratedThreadedRT> createRuntime() {return ES::RuntimePtr<ConfiguratedThreadedRT>(new ConfiguratedThreadedRT());}
 private:
-    ConfiguratedThreadedRT();
-
+	ConfiguratedThreadedRT();  
 	ES::SharedPtr<ThreadPoolManager> poolManager;
 	std::vector<int> numberOfObjects;
 	std::atomic_int worker;

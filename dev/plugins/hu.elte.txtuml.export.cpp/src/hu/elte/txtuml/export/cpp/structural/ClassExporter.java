@@ -55,7 +55,6 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 			throws FileNotFoundException, UnsupportedEncodingException {
 		super.init(shared);
 		super.setStructuredElement(structuredElement);
-
 		constructorExporter = new ConstructorExporter(shared,structuredElement.getOwnedOperations());
 		associationExporter = new AssociationExporter();
 		stateMachineExporter = new StateMachineExporter(shared);
@@ -155,8 +154,7 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 	private String createClassCppSource() {
 		StringBuilder source = new StringBuilder("");
 		List<StateMachine> smList = new ArrayList<StateMachine>();
-		shared.getTypedElements(smList, UMLPackage.Literals.STATE_MACHINE);
-
+		shared.getTypedElements(smList, UMLPackage.Literals.STATE_MACHINE, structuredElement.allOwnedElements());
 		if (stateMachineExporter.ownStateMachine()) {
 			source.append(stateMachineExporter.createStateMachineRelatedCppSourceCodes());
 

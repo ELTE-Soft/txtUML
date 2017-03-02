@@ -3,26 +3,6 @@
 #include <string>
 #include <math.h>
 
-int delayedInc(int i, int& out)
-{
-	out = i + 1;
-	return i;
-}
-
-int delayedDec(int i, int& out)
-{
-	out = i - 1;
-	return i;
-}
-
-namespace action 
-{
-	void log(std::string line)
-	{
-		std::cout << line << std::endl;
-	}
-}
-
 namespace conversion
 {
 	std::string to_string(IStateMachine* sm)

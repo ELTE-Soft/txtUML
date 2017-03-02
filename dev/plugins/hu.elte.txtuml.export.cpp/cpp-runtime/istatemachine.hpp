@@ -6,7 +6,7 @@
 #include <atomic>
 #include <string>
 
-#include "ESRoot\Types.hpp"
+#include "ESRoot/Types.hpp"
 
 class StateMachineThreadPool;
 

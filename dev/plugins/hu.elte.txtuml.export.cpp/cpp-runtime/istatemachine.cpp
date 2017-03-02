@@ -14,7 +14,7 @@ void IStateMachine::init()
 	processInitTransition();
 }
 
-inline ES::EventRef IStateMachine::getNextMessage() 
+ES::EventRef IStateMachine::getNextMessage() 
 { 
 	ES::EventRef event;  
 	_messageQueue->dequeue(event); 

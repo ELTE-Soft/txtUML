@@ -2,13 +2,14 @@
 #define ITIMER_H
 
 #include "istatemachine.hpp"
-#include "runtimetypes.hpp"
+#include "ESRoot/Types.hpp"
+
 class Timer;
 
 class ITimer
 {
 public:
-    static Timer* start(IStateMachine*,EventPtr,int);
+    static Timer* start(IStateMachine*,ES::EventRef,int);
 
     virtual int query() = 0;
     virtual void reset(int) = 0;

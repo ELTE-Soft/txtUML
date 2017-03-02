@@ -1,6 +1,5 @@
 #include "threadpoolmanager.hpp"
 
-#include "ESRoot\Types.hpp"
 #include <stdlib.h>
 #include <algorithm> 
 

@@ -1,15 +1,15 @@
 #include "runtime.hpp"
 #include "istatemachine.hpp"
-#include "runtimetypes.hpp"
+#include "ESRoot/Types.hpp"
 
 #include <assert.h>
 #include <stdlib.h>
 
 
-template<typename RuntimeType>
-ES::SharedPtr<IRuntime<RuntimeType>> IRuntime<RuntimeType>::instance = nullptr;
-
 //********************************SingleThreadRT**********************************
+
+template<>
+ES::RuntimePtr<SingleThreadRT> IRuntime<SingleThreadRT>::instance = nullptr;
 
 SingleThreadRT::SingleThreadRT():_messageQueue(new ES::MessageQueueType()) {}
 
@@ -32,8 +32,7 @@ void SingleThreadRT::start()
 
     while(!_messageQueue->isEmpty())
     {
-		ES::EventRef e;
-		_messageQueue->dequeue(e);
+		ES::EventRef e = _messageQueue->next();
 		const ES::StateMachineRef sm = e->getTargetSM();
 		if(sm->isStarted())
 		{
@@ -52,6 +51,9 @@ void SingleThreadRT::removeObject(ES::StateMachineRef) {}
 
 
 //********************************ConfiguratedThreadedRT************************************
+
+template<>
+ES::RuntimePtr<ConfiguratedThreadedRT> IRuntime<ConfiguratedThreadedRT>::instance = nullptr;
 
 ConfiguratedThreadedRT::ConfiguratedThreadedRT(): poolManager(new ThreadPoolManager()), worker(0), messages(0){}
 

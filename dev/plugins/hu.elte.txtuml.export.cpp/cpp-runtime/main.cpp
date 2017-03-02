@@ -6,7 +6,7 @@
 
 int main()
 {
-  /*Runtime* rt = */
+  /* UsedRuntimePtr rt = */
   deployment::initRuntime(); // the runtime type depends on deployment header options(default - threaded)
   StateMachine::initTransitionTables();
   //rt->startRT(); // the runtime could be started later too..

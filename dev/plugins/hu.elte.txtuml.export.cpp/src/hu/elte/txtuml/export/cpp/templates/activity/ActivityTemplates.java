@@ -47,29 +47,6 @@ public class ActivityTemplates {
 		return generalSetValue(leftValueName, rightValueName, ReplaceSimpleTypeOp);
 	}
 
-	public static String signalSend(String signalName, String targetName, String targetTypeName, String accessOperator,
-			List<String> params) {
-		StringBuilder source = new StringBuilder(targetName + accessOperator);
-		StringBuilder signal = new StringBuilder(GenerationNames.eventClassName(signalName) + "(");
-		signal.append(GenerationNames.derefenrencePointer(targetName) + ",");
-
-		signal.append(targetTypeName + "::" + GenerationNames.eventEnumName(signalName));
-		String paramList = operationCallParamList(params);
-		if (!paramList.isEmpty()) {
-			signal.append("," + paramList);
-		}
-		signal.append(")");
-
-		source.append(sendSignal(signal.toString()));
-		source.append(");\n");
-
-		return source.toString();
-	}
-
-	public static String sendSignal(String signalName) {
-		return "send(EventPtr(" + PointerAndMemoryNames.MemoryAllocator + " " + signalName + ")";
-	}
-
 	public static String linkObjects(String firstObjectName, String secondObjectName, String associationName,
 			String endPoint1, String endPoint2, LinkFunctionType linkType) {
 		return ActionNames.ActionFunctionsNamespace + "::" + LinkTemplates.getLinkFunctionName(linkType) + "<"
@@ -78,7 +55,7 @@ public class ActivityTemplates {
 	}
 
 	public static String signalSend(String target, String signalName) {
-		return target + PointerAndMemoryNames.PointerAccess + ActionNames.SendSignal + "(" + signalName + ");\n";
+		return ActionNames.SendSignal + "(" + target + "," + signalName + ");\n";
 	}
 
 	public static String transitionActionCall(String operationName) {
@@ -145,7 +122,7 @@ public class ActivityTemplates {
 	}
 
 	public static String startObject(String objectVariable) {
-		return ActionNames.ActionStart + "(" + objectVariable + ") +;\n";
+		return ActionNames.ActionStart + "(" + objectVariable + ");\n";
 	}
 
 	public static String deleteObject(String objectVariable) {
@@ -247,8 +224,7 @@ public class ActivityTemplates {
 		source.append(signalVariableName + " = ");
 		source.append(GenerationNames.signalType(signalType) + "(");
 		source.append(PointerAndMemoryNames.MemoryAllocator + " " + PrivateFunctionalTemplates.signalType(signalType));
-		source.append("(" + GenerationNames.StaticCast + "<const " + PrivateFunctionalTemplates.signalType(signalType)
-				+ "&>");
+		source.append("(" + GenerationNames.StaticCast + "<" + PrivateFunctionalTemplates.signalType(signalType)+ ">");
 		source.append("(" + EventTemplates.EventFParamName + ")));\n");
 		return source.toString();
 	}
@@ -308,10 +284,10 @@ public class ActivityTemplates {
 		return varName + "_us" + userVarCounter;
 	}
 
-	public static String getRealEvent(String eventName) {
-		return "const " + eventName + GenerationNames.EventClassTypeId + "& " + GenerationNames.RealEventName
-				+ "=static_cast<const " + eventName + GenerationNames.EventClassTypeId + "&>("
+	/*public static String getRealEvent(String eventName) {
+		return  eventName + GenerationNames.EventClassTypeId + " " + GenerationNames.RealEventName
+				+ "=static_cast<" + eventName + GenerationNames.EventClassTypeId + ">("
 				+ EventTemplates.EventFParamName + ");\n";
-	}
+	}*/
 
 }

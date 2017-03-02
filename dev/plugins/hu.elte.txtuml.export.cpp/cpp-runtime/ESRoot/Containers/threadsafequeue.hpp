@@ -1,11 +1,12 @@
-#ifndef THREADSAFEQUEUE_H_INCLUDED
-#define THREADSAFEQUEUE_H_INCLUDED
+#ifndef THREADSAFE_queueH_INCLUDED
+#define THREADSAFE_queueH_INCLUDED
 
 #include <queue>
 #include <thread>
 #include <mutex>
 #include <condition_variable>
 #include <atomic>
+#include <assert.h>
 
 namespace ES
 {
@@ -18,36 +19,42 @@ public:
 
   void enqueue(const T& item)
   {
-    std::unique_lock<std::mutex> mlock(mutex_);
-    queue_.push(item);
+    std::unique_lock<std::mutex> mlock(_mutex);
+    _queue.push(item);
     mlock.unlock();
     _cond.notify_one();
   }
 
    void dequeue(T& ret)
   {
-    std::unique_lock<std::mutex> mlock(mutex_);
-    while (queue_.empty() && !_stop)
+    std::unique_lock<std::mutex> mlock(_mutex);
+    while (_queue.empty() && !_stop)
     {
       _cond.wait(mlock);
     }
 
     if (!_stop)
     {
-    ret=queue_.front();
-    queue_.pop();
+    ret=_queue.front();
+    _queue.pop();
     }
 
   }
 
+	T next()
+	{
+		assert(!isEmpty());
+		return _queue.front();
+	}
+
   bool isEmpty() const
   {
-    return queue_.empty();
+    return _queue.empty();
   }
 
   size_t size()
   {
-    return queue_.size();
+    return _queue.size();
   }
 
   void startQueue ()
@@ -66,12 +73,12 @@ public:
   ThreadSafeQueue& operator=(const ThreadSafeQueue&) = delete; // disable assignment
 
  private:
-  std::queue<T> queue_;
-  std::mutex mutex_;
+  std::queue<T> _queue;
+  std::mutex _mutex;
   std::condition_variable _cond;
   std::atomic_bool _stop;
 };
 	
 }
 
-#endif // THREADSAFEQUEUE_H_INCLUDED
+#endif // THREADSAFE_queueH_INCLUDED

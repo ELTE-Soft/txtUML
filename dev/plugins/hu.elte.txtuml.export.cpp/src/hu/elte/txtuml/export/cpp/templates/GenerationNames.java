@@ -48,8 +48,8 @@ public class GenerationNames {
 		public static final String PointerAccess = "->";
 		public static final String NullPtr = "nullptr";
 		public static final String Self = "this";
-		public static final String SmartPtr = "ES::Ref";
-		public static final String EventPtr = "EventPtr";
+		public static final String SmartPtr = "ES::SharedPtr";
+		public static final String EventPtr = RootNamesapce + "::" + "EventRef";
 		
 	}
 	
@@ -98,8 +98,8 @@ public class GenerationNames {
 	public static final String StateEnumTypeId = "_ST";
 	public static final String EntryName = "entry";
 	public static final String ExitName = "exit";
-	public static final String EntryDecl = ModifierNames.NoReturn + " " + EntryName + "(" + EventTemplates.EventBaseRefName + " " + EventTemplates.EventFParamName + ");\n";
-	public static final String ExitDecl = ModifierNames.NoReturn + " " + ExitName + "(" + EventTemplates.EventBaseRefName + " " + EventTemplates.EventFParamName + ");\n";
+	public static final String EntryDecl = ModifierNames.NoReturn + " " + EntryName + "(" + EventTemplates.EventPointerType + " " + EventTemplates.EventFParamName + ");\n";
+	public static final String ExitDecl = ModifierNames.NoReturn + " " + ExitName + "(" + EventTemplates.EventPointerType + " " + EventTemplates.EventFParamName + ");\n";
 	public static final String EntryInvoke = EntryName + "(" + EventTemplates.EventFParamName + ");";
 	public static final String ExitInvoke = ExitName + "(" + EventTemplates.EventFParamName + ");";
 	public static final String StateParamName = "s_";
@@ -111,7 +111,7 @@ public class GenerationNames {
 	public static final String GuardActionName = "GuardAction";
 	public static final String EventStateTypeName = "EventState";
 	public static final String ProcessEventFName = "process_event";
-	public static final String UnParametrizadProcessEvent = "bool " + ProcessEventFName + "(" + EventTemplates.EventBaseRefName + ")";
+	public static final String UnParametrizadProcessEvent = "bool " + ProcessEventFName + "(" + EventTemplates.EventPointerType + ")";
 	public static final String ProcessEventDecl = UnParametrizadProcessEvent + ";\n";
 	public static final String SetStateDecl = ModifierNames.NoReturn + " " + SetStateFuncName + "(int "
 			+ GenerationNames.StateParamName + ");\n";
@@ -129,7 +129,7 @@ public class GenerationNames {
 			+ CompositeStateMapName + ";\n";
 	public static final String CurrentMachine = pointerType(StatemachineBaseName) + " " + CurrentMachineName + ";\n";
 	public static final String ActionCallerFName = "action_caller";
-	public static final String ActionCallerDecl = "bool " + ActionCallerFName + "(" + EventTemplates.EventBaseRefName + " "
+	public static final String ActionCallerDecl = "bool " + ActionCallerFName + "(" + EventTemplates.EventPointerType + " "
 			+ EventTemplates.EventFParamName + ");\n";
 	public static final String ParentSmName = "pSm";
 	public static final String ParentSmMemberName = "_" + ParentSmName;
@@ -176,17 +176,17 @@ public class GenerationNames {
 	}
 
 	public static String actionCallerDef(String className) {
-		return "bool " + className + "::" + ActionCallerFName + "(" + EventTemplates.EventBaseRefName + " " + EventTemplates.EventFParamName + ")\n"
+		return "bool " + className + "::" + ActionCallerFName + "(" + EventTemplates.EventPointerType + " " + EventTemplates.EventFParamName + ")\n"
 				+ simpleProcessEventDefBody();
 	}
 
 	public static String simpleProcessEventDef(String className) {
-		return "bool " + className + "::" + ProcessEventFName + "(" + EventTemplates.EventBaseRefName + " " + EventTemplates.EventFParamName + ")\n"
+		return "bool " + className + "::" + ProcessEventFName + "(" + EventTemplates.EventPointerType + " " + EventTemplates.EventFParamName + ")\n"
 				+ simpleProcessEventDefBody();
 	}
 
 	public static String hierachicalProcessEventDef(String className) {
-		return "bool " + className + "::" + ProcessEventFName + "(" + EventTemplates.EventBaseRefName  + " " + EventTemplates.EventFParamName + ")\n"
+		return "bool " + className + "::" + ProcessEventFName + "(" + EventTemplates.EventPointerType  + " " + EventTemplates.EventFParamName + ")\n"
 				+ "{\n" + "bool handled=false;\n" + "if(" + CurrentMachineName + ")\n" + "{\n" + "if("
 				+ CurrentMachineName + "->" + ProcessEventFName + "(" + EventTemplates.EventFParamName + "))\n" + "{\n"
 				+ "handled=true;\n" + "}\n" + "}\n" + "if(!handled)\n" + "{\n" + "handled=handled || "
@@ -196,7 +196,9 @@ public class GenerationNames {
 
 	private static final String simpleProcessEventDefBody() {
 		return "{\n" + "bool handled=false;\n" + "auto range = " + TransitionTableName + ".equal_range(EventState("
-				+ EventTemplates.EventFParamName + ".t," + CurrentStateName + "," + EventTemplates.EventFParamName +  ".p));\n" + "if(range.first!=" + TransitionTableName
+				+ EventTemplates.EventFParamName + GenerationNames.PointerAndMemoryNames.PointerAccess + "getType()," + 
+				  CurrentStateName + "," + 
+				  EventTemplates.EventFParamName +  GenerationNames.PointerAndMemoryNames.PointerAccess + "getPortType()));\n" + "if(range.first!=" + TransitionTableName
 				+ ".end())\n" + "{\n" + "for(auto it=range.first;it!=range.second;++it)\n" + "{\n"
 				+ "if((it->second).first(*this," + EventTemplates.EventFParamName + "))//Guard call\n" + "{\n" + ExitInvoke
 				+ "(it->second).second(*this," + EventTemplates.EventFParamName + ");//Action Call\n" + "handled=true;\n" + "break;\n"
@@ -237,9 +239,10 @@ public class GenerationNames {
 	public static String pointerType(String typeName) {
 		return typeName + "*";
 	}
+	
 
 	public static String signalType(String signalClassName) {
-		return PointerAndMemoryNames.SmartPtr + "<" + PrivateFunctionalTemplates.signalType(signalClassName) + ">";
+		return sharedPtrType(PrivateFunctionalTemplates.signalType(signalClassName));
 	}
 
 	public static String formatIncomingParamName(String paramName) {

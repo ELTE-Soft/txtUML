@@ -4,11 +4,6 @@
 #include <list>
 #include <memory>
 
-class IEvent;
-
-typedef std::shared_ptr<IEvent> EventPtr;
-
-
 const int NoPort_PE = 1;
 
 

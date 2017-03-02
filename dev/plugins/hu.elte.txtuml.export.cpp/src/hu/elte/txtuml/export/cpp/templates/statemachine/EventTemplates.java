@@ -24,25 +24,8 @@ public class EventTemplates {
 	public static final String EventParamName = "e";
 	public static final String EventHeaderName = "event";
 	public static final String EventBaseName = "EventBase";
-	public static final String EventBaseRefName = EventBaseName + "CRef";
 	public static final String EventsEnumName = "Events";
-
-	public static String eventBase(Options options) {
-		StringBuilder eventBase = new StringBuilder("");
-
-		eventBase.append(RuntimeTemplates.eventHeaderInclude()).append("\n");
-
-		eventBase.append(GenerationNames.ClassType + " " + EventTemplates.EventBaseName);
-		if (options.isAddRuntime()) {
-			eventBase.append(":" + RuntimeTemplates.EventIName);
-		}
-		eventBase.append("\n{\n" + EventTemplates.EventBaseName + "(");
-		eventBase.append("int t_):");
-
-		eventBase.append("t(t_){}\nint t;\n};\ntypedef const " + EventTemplates.EventBaseName + "& "
-				+ EventTemplates.EventBaseRefName + ";\n\n");
-		return eventBase.toString();
-	}
+	public static final String EventPointerType = GenerationNames.PointerAndMemoryNames.EventPtr;
 
 	public static String eventClass(String className, List<Pair<String, String>> params, String constructorBody,
 			List<Property> properites) {

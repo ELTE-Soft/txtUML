@@ -12,12 +12,13 @@
 #include "runtimetypes.hpp"
 
 #include "itimer.hpp"
+#include "ESRoot/Types.hpp"
 
 class Timer : public ITimer
 {           typedef std::chrono::milliseconds milliseconds;
        public:
 
-           Timer(IStateMachine*,EventPtr,int);
+           Timer(ES::StateMachineRef,ES::EventRef,int);
            ~Timer();
 
            //TODO implement

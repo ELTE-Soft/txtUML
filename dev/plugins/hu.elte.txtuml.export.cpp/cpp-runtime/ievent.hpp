@@ -2,26 +2,40 @@
 #define EVENTI_HPP_INCLUDED
 
 #include "runtimetypes.hpp"
-#include "ESRoot\Types.hpp"
+#include "ESRoot/Types.hpp"
 
+template<typename DerivedBase>
 class IEvent
 {
 public:
   IEvent () {}
   virtual ~IEvent () {}
-  virtual void setTargetSM (const ES::StateMachineRef sm) = 0;
-  virtual const ES::StateMachineRef getTargetSM () const = 0;
+  void setTargetSM (const ES::StateMachineRef sm)
+  {
+	static_cast<ES::Ptr<DerivedBase>>(this)->targetSM = sm;
+  }
+  ES::StateMachineRef getTargetSM () const 
+  {
+	return static_cast<ES::Ptr<const DerivedBase>>(this)->targetSM;
+  }
+  
+  int getType() const
+  {
+	return static_cast<ES::Ptr<const DerivedBase>>(this)->t;
+  }
+
+  int getPortType() const
+  {
+	return static_cast<ES::Ptr<const DerivedBase>>(this)->p;
+  } 
   
 };
 
-class EventBase : public IEvent
+class EventBase : public IEvent<EventBase>
 {
 public:
   EventBase (int t_) : t (t_), p (NoPort_PE) {}
-  virtual void setTargetSM (const ES::StateMachineRef sm) override {targetSM = sm;}
-  virtual const ES::StateMachineRef getTargetSM () const override {return targetSM;}
-  
-  
+    
   ES::StateMachineRef targetSM;
   int t;
   int p;
