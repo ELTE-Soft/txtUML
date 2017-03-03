@@ -87,11 +87,11 @@ class XtxtUMLFormatter extends XbaseFormatter {
 	}
 
 	def dispatch void format(TUEnumeration it, extension IFormattableDocument document) {
-		formatBlockElement(it, document, regionFor.keyword('enum'), literals,
-			false, [prepend[newLine] format(document)]);
-		regionFor.keywords(',').forEach[prepend[noSpace]]
+		formatBlockElement(it, document, regionFor.keyword('enum'), literals, false, []);
+
+		regionFor.keywords(',').forEach[prepend[noSpace].append[newLine]];
 		if (!literals.empty) {
-			regionFor.keyword('}').prepend[newLine]
+			regionFor.keyword('}').prepend[newLine];
 		}
 	}
 

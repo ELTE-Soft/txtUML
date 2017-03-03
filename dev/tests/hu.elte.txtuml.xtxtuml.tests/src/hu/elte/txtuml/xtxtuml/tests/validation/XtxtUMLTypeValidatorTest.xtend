@@ -25,22 +25,26 @@ class XtxtUMLTypeValidatorTest {
 	@Test
 	def checkTypeReference() {
 		'''
+			enum E;
 			signal Sig {
 				int a1;
 				boolean a2;
 				double a3;
 				String a4;
+				E a5;
 			}
 			class Foo {
 				int a1;
 				boolean a2;
 				double a3;
 				String a4;
+				E a5;
 				void o1(int p) {}
 				int o2(boolean p) {}
 				boolean o3(double p) {}
 				double o4(String p) {}
 				Foo o5(Foo p) {}
+				E o6(E e) {}
 			}
 		'''.parse.assertNoError(INVALID_TYPE);
 

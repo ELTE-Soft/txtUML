@@ -193,7 +193,8 @@ class XtxtUMLStructureParserTest {
 				B
 			}
 		'''
-		.parse.file("test.model", null, #[
+		.parse.
+		file("test.model", null, #[
 			[enumeration(
 				"TestEnum", #[
 					[enumerationLiteral("A")],
