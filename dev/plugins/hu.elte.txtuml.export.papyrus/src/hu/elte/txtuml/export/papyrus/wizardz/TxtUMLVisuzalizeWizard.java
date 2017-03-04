@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -76,22 +77,35 @@ public class TxtUMLVisuzalizeWizard extends Wizard {
 	 */
 	@Override
 	public boolean performFinish() {
-		List<IType> txtUMLLayout = selectTxtUmlPage.getTxtUmlLayout();
+		List<IType> txtUMLLayout = selectTxtUmlPage.getTxtUmlLayouts();
 		Map<Pair<String, String>, List<IType>> layoutConfigs = new HashMap<>();
+		List<String> invalidLayouts = new ArrayList<>();
 		for (IType layout : txtUMLLayout) {
 			IType innerLayoutClass = null;
 			try {
 				innerLayoutClass = Stream.of(layout.getTypes()).findFirst().get();
 			} catch (JavaModelException e) {
 			}
-			Pair<String, String> model = WizardUtils.getModelByAnnotations(innerLayoutClass).orElse(Pair.of("", ""));
-			if (!layoutConfigs.containsKey(model)) {
-				layoutConfigs.put(model, new ArrayList<>(Arrays.asList(layout)));
+
+			Optional<Pair<String, String>> maybeModel = WizardUtils.getModelByAnnotations(innerLayoutClass);
+			if (maybeModel.isPresent()) {
+				Pair<String, String> model = maybeModel.get();
+				if (!layoutConfigs.containsKey(model)) {
+					layoutConfigs.put(model, new ArrayList<>(Arrays.asList(layout)));
+				} else {
+					layoutConfigs.get(model).add(layout);
+				}
 			} else {
-				layoutConfigs.get(model).add(layout);
+				invalidLayouts.add(layout.getElementName());
 			}
 		}
 
+		if(!invalidLayouts.isEmpty()){
+			Dialogs.MessageBox("Invalid layouts", "The following diagram descriptions have no txtUML model attached"
+					+ ", hence no diagram is generated for them:" + System.lineSeparator() + 
+						invalidLayouts.stream().map(s -> " - ".concat(s)).collect(Collectors.joining(System.lineSeparator())));
+		}
+		
 		PreferencesManager.setValue(PreferencesManager.TXTUML_VISUALIZE_TXTUML_LAYOUT, layoutConfigs.values().stream()
 				.flatMap(c -> c.stream()).map(layout -> layout.getFullyQualifiedName()).collect(Collectors.toList()));
 
@@ -112,7 +126,7 @@ public class TxtUMLVisuzalizeWizard extends Wizard {
 				return false;
 
 			try {
-				this.checkEmptyLayoutDecsriptions();
+				this.checkNoLayoutDescriptionsSelected();
 				IProgressService progressService = PlatformUI.getWorkbench().getProgressService();
 				progressService.runInUI(progressService, new IRunnableWithProgress() {
 					@Override
@@ -198,8 +212,8 @@ public class TxtUMLVisuzalizeWizard extends Wizard {
 		return true;
 	}
 
-	private void checkEmptyLayoutDecsriptions() throws InterruptedException {
-		if (selectTxtUmlPage.getTxtUmlLayout().isEmpty()) {
+	private void checkNoLayoutDescriptionsSelected() throws InterruptedException {
+		if (selectTxtUmlPage.getTxtUmlLayouts().isEmpty()) {
 			boolean answer = Dialogs.WarningConfirm("No Layout descriptions",
 					"No diagrams will be generated using the current setup,"
 							+ " because no diagram descriptions are added." + System.lineSeparator()

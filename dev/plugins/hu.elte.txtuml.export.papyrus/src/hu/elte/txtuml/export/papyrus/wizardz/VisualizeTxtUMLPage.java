@@ -150,7 +150,7 @@ public class VisualizeTxtUMLPage extends WizardPage {
 	 * 
 	 * @return
 	 */
-	public List<IType> getTxtUmlLayout() {
+	public List<IType> getTxtUmlLayouts() {
 		List<IType> result = new ArrayList<IType>();
 		for (IType layout : txtUMLLayout) {
 			if (!"".equals(layout.getFullyQualifiedName())) {
