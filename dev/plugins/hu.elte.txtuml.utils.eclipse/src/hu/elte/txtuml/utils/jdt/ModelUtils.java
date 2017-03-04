@@ -7,7 +7,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IPackageFragment;
@@ -19,7 +18,6 @@ import org.eclipse.jdt.core.dom.PackageDeclaration;
 
 import hu.elte.txtuml.api.model.Model;
 import hu.elte.txtuml.utils.Pair;
-import hu.elte.txtuml.utils.eclipse.NotFoundException;
 import hu.elte.txtuml.utils.eclipse.PackageUtils;
 import hu.elte.txtuml.utils.eclipse.ProjectUtils;
 
@@ -63,19 +61,14 @@ public class ModelUtils {
 	}
 
 	/**
-	 * @return an empty optional if the given package name (of a type) is
-	 *         not in a txtUML model, otherwise the name of the model package
-	 *         and its java project respectively, which contains the given type
+	 * @param packageName the package name
+	 * @return an empty optional if the given package name (of a type) is not in
+	 *         a txtUML model, otherwise the name of the model package and its
+	 *         java project respectively, which contains the given type
 	 */
 	public static Optional<Pair<String, String>> getModelOf(String packageName) {
 		try {
-			List<IJavaProject> projects = Stream.of(ResourcesPlugin.getWorkspace().getRoot().getProjects()).map(pr -> {
-				try {
-					return ProjectUtils.findJavaProject(pr.getName());
-				} catch (NotFoundException e) {
-					return null;
-				}
-			}).filter(Objects::nonNull).filter(pr -> {
+			List<IJavaProject> projectsContainingPackage = ProjectUtils.getAllJavaProjectsOfWorkspace().stream().filter(pr -> {
 				IPackageFragment[] pf = null;
 				try {
 					pf = PackageUtils.findPackageFragments(pr, packageName);
@@ -85,7 +78,7 @@ public class ModelUtils {
 				return pf.length > 0;
 			}).collect(Collectors.toList());
 
-			for (IJavaProject project : projects) {
+			for (IJavaProject project : projectsContainingPackage) {
 				Stream<ICompilationUnit> modelCU = PackageUtils.findAllPackageFragmentsAsStream(project)
 						.filter(p -> packageName.startsWith(p.getElementName() + ".")
 								|| packageName.equals(p.getElementName()))
