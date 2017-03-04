@@ -203,7 +203,7 @@ public class TxtUMLVisuzalizeWizard extends Wizard {
 			boolean answer = Dialogs.WarningConfirm("No Layout descriptions",
 					"No diagrams will be generated using the current setup,"
 							+ " because no diagram descriptions are added." + System.lineSeparator()
-							+ "Use the 'Add txtUML diagram descriptions' button to avoid this message."
+							+ "In order to have diagrams visualized, select a description from the wizard."
 							+ System.lineSeparator() + System.lineSeparator()
 							+ "Do you want to continue without diagram descriptions?");
 			if (!answer)
