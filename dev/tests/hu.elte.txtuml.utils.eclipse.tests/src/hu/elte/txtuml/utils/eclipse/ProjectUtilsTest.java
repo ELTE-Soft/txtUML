@@ -1,4 +1,4 @@
-package hu.elte.txtuml.export.papyrus;
+package hu.elte.txtuml.utils.eclipse;
 
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
