@@ -30,6 +30,7 @@ import hu.elte.txtuml.export.papyrus.preferences.PreferencesManager;
 import hu.elte.txtuml.export.uml2.ExportMode;
 import hu.elte.txtuml.export.uml2.TxtUMLToUML2;
 import hu.elte.txtuml.layout.export.DiagramExportationReport;
+import hu.elte.txtuml.utils.Logger;
 import hu.elte.txtuml.utils.Pair;
 import hu.elte.txtuml.utils.eclipse.Dialogs;
 import hu.elte.txtuml.utils.eclipse.SaveUtils;
@@ -85,6 +86,8 @@ public class TxtUMLVisuzalizeWizard extends Wizard {
 			try {
 				innerLayoutClass = Stream.of(layout.getTypes()).findFirst().get();
 			} catch (JavaModelException e) {
+				Logger.user.error(e.getMessage());
+				return false;
 			}
 
 			Optional<Pair<String, String>> maybeModel = WizardUtils.getModelByAnnotations(innerLayoutClass);
@@ -100,12 +103,12 @@ public class TxtUMLVisuzalizeWizard extends Wizard {
 			}
 		}
 
-		if(!invalidLayouts.isEmpty()){
+		if (!invalidLayouts.isEmpty()) {
 			Dialogs.MessageBox("Invalid layouts", "The following diagram descriptions have no txtUML model attached"
-					+ ", hence no diagram is generated for them:" + System.lineSeparator() + 
-						invalidLayouts.stream().map(s -> " - ".concat(s)).collect(Collectors.joining(System.lineSeparator())));
+					+ ", hence no diagram is generated for them:" + System.lineSeparator() + invalidLayouts.stream()
+							.map(s -> " - ".concat(s)).collect(Collectors.joining(System.lineSeparator())));
 		}
-		
+
 		PreferencesManager.setValue(PreferencesManager.TXTUML_VISUALIZE_TXTUML_LAYOUT, layoutConfigs.values().stream()
 				.flatMap(c -> c.stream()).map(layout -> layout.getFullyQualifiedName()).collect(Collectors.toList()));
 
@@ -206,6 +209,7 @@ public class TxtUMLVisuzalizeWizard extends Wizard {
 					}
 				}, ResourcesPlugin.getWorkspace().getRoot());
 			} catch (InvocationTargetException | InterruptedException e) {
+				Logger.user.error(e.getMessage());
 				return false;
 			}
 		}
