@@ -45,7 +45,7 @@ public class ProjectUtilsTest {
 		assertTrue(root.getProject("TestProject").getName().equals("TestProject"));
 	}
 
-	@Test(expected=NullPointerException.class)
+	@Test(expected=RuntimeException.class)
 	public void testCreateProjectNull() {
 		assertTrue(root.getProjects().length == 0);
 		ProjectUtils.createProject(null);
@@ -59,7 +59,7 @@ public class ProjectUtilsTest {
 		assertTrue(p.isOpen());
 	}
 	
-	@Test(expected=NullPointerException.class)
+	@Test(expected=RuntimeException.class)
 	public void testOpenProjectNull() {
 		ProjectUtils.openProject(null);
 	}
@@ -95,7 +95,7 @@ public class ProjectUtilsTest {
 		assertTrue(p.getName().equals("TestProject"));
 	}
 	
-	@Test(expected=NullPointerException.class)
+	@Test(expected=RuntimeException.class)
 	public void testGetProjectNull() {
 		ProjectUtils.getProject(null);
 	}
