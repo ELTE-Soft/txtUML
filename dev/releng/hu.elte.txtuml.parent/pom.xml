@@ -168,6 +168,7 @@
 				<configuration>
 					<includes>
 						<include>**/UnitTests.java</include>
+						<include>**/IntegrationTests.java</include>
 					</includes>
 				</configuration>
 			</plugin>
@@ -348,17 +349,6 @@
 									<classifier>release</classifier>
 								</artifact>
 							</target>
-						</configuration>
-					</plugin>
-					<plugin>
-						<groupId>org.eclipse.tycho</groupId>
-						<artifactId>tycho-surefire-plugin</artifactId>
-						<version>${tycho.version}</version>
-						<configuration>
-							<includes>
-								<include>**/UnitTests.java</include>
-								<include>**/IntegrationTests.java</include>
-							</includes>
 						</configuration>
 					</plugin>
 				</plugins>
