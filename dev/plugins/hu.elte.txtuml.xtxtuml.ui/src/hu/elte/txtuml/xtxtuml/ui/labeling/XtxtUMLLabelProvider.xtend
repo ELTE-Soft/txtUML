@@ -10,6 +10,8 @@ import hu.elte.txtuml.xtxtuml.xtxtUML.TUConnector
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUConnectorEnd
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUConstructor
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUEntryOrExitActivity
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUEnumeration
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUEnumerationLiteral
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUExecution
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUFile
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUInterface
@@ -72,6 +74,14 @@ class XtxtUMLLabelProvider extends XbaseLabelProvider {
 
 	def image(TUClass it) {
 		"uml2/Class.gif"
+	}
+
+	def image(TUEnumeration it) {
+		"uml2/Enumeration.gif"
+	}
+
+	def image(TUEnumerationLiteral it) {
+		"uml2/EnumerationLiteral.gif"
 	}
 
 	def image(TUSignal it) {

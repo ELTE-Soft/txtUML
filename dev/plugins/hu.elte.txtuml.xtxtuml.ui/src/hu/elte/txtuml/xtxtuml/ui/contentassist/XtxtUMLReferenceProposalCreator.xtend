@@ -5,9 +5,11 @@ import com.google.common.base.Predicate
 import com.google.inject.Inject
 import hu.elte.txtuml.api.model.DataType
 import hu.elte.txtuml.api.model.ModelClass
+import hu.elte.txtuml.api.model.ModelEnum
 import hu.elte.txtuml.api.model.Signal
 import hu.elte.txtuml.api.model.external.ExternalType
 import hu.elte.txtuml.xtxtuml.common.XtxtUMLReferenceProposalScopeProvider
+import hu.elte.txtuml.xtxtuml.common.XtxtUMLReferenceProposalTypeScope
 import hu.elte.txtuml.xtxtuml.common.XtxtUMLUtils
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAssociation
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAssociationEnd
@@ -32,6 +34,7 @@ import org.eclipse.emf.ecore.EObject
 import org.eclipse.emf.ecore.EReference
 import org.eclipse.jface.text.contentassist.ICompletionProposal
 import org.eclipse.xtext.EcoreUtil2
+import org.eclipse.xtext.common.types.JvmDeclaredType
 import org.eclipse.xtext.common.types.JvmGenericType
 import org.eclipse.xtext.common.types.JvmTypeReference
 import org.eclipse.xtext.common.types.TypesPackage
@@ -65,7 +68,7 @@ class XtxtUMLReferenceProposalCreator extends XbaseReferenceProposalCreator {
 
 	/**
 	 * Provides a scope provider with a customized JDT based superscope.
-	 * @see hu.elte.txtuml.xtxtuml.common.XtxtUMLReferenceProposalTypeScope
+	 * @see XtxtUMLReferenceProposalTypeScope
 	 */
 	override getScopeProvider() {
 		return scopeProvider;
@@ -259,9 +262,9 @@ class XtxtUMLReferenceProposalCreator extends XbaseReferenceProposalCreator {
 			// convenient:
 			// supertypes are already in type reference format, which state would
 			// be difficult to achieve starting from a plain JvmType
-			proposedObj instanceof JvmGenericType && (proposedObj as JvmGenericType).superTypes.exists [
+			proposedObj instanceof JvmDeclaredType && (proposedObj as JvmDeclaredType).superTypes.exists [
 				val typeRef = toLightweightTypeReference;
-				typeRef.isSubtypeOf(DataType) || typeRef.isInterface && typeRef.isSubtypeOf(ExternalType) ||
+				typeRef.isSubtypeOf(DataType) || typeRef.isInterface && typeRef.isSubtypeOf(ExternalType) || typeRef.isSubtypeOf(ModelEnum) ||
 					isClassAllowed && typeRef.isSubtypeOf(ModelClass) || isSignalAllowed && typeRef.isSubtypeOf(Signal)
 			]
 		}

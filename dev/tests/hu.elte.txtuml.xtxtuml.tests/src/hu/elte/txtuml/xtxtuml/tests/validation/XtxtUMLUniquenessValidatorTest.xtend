@@ -31,6 +31,7 @@ class XtxtUMLUniquenessValidatorTest {
 			association __4416cWAUcf80 {}
 			interface __4416cWAUcf81 {}
 			connector __4416cWAUcf82 {}
+			enum  __4416cWAUcf83 {}
 		'''.parse.assertNoError(NOT_UNIQUE_NAME);
 
 		val rawFile = '''
@@ -41,6 +42,7 @@ class XtxtUMLUniquenessValidatorTest {
 			association Exception {}
 			interface Error {}
 			connector String {}
+			enum Integer {}
 		''';
 
 		val parsedFile = rawFile.parse;
@@ -50,6 +52,7 @@ class XtxtUMLUniquenessValidatorTest {
 		parsedFile.assertError(TU_MODEL_ELEMENT, NOT_UNIQUE_NAME, rawFile.indexOf("Exception"), 9);
 		parsedFile.assertError(TU_MODEL_ELEMENT, NOT_UNIQUE_NAME, rawFile.indexOf("Error"), 5);
 		parsedFile.assertError(TU_MODEL_ELEMENT, NOT_UNIQUE_NAME, rawFile.indexOf("String"), 6);
+		parsedFile.assertError(TU_MODEL_ELEMENT, NOT_UNIQUE_NAME, rawFile.indexOf("Integer"), 7);
 	}
 
 	@Test
@@ -84,6 +87,26 @@ class XtxtUMLUniquenessValidatorTest {
 		differentTypesParsed.assertError(TU_MODEL_ELEMENT, NOT_UNIQUE_NAME, differentTypesRaw.indexOfNth("Foo", 1), 3);
 		differentTypesParsed.assertError(TU_MODEL_ELEMENT, NOT_UNIQUE_NAME, differentTypesRaw.indexOf("Bar"), 3);
 		differentTypesParsed.assertError(TU_MODEL_ELEMENT, NOT_UNIQUE_NAME, differentTypesRaw.indexOf("bar"), 3);
+	}
+
+	@Test
+	def checkEnumLiteralIsUnique() {
+		'''
+			enum Foo {
+				A, B, C
+			}
+		'''.parse.assertNoError(NOT_UNIQUE_NAME);
+
+		val rawFile = '''
+			enum Foo {
+				BAR,
+				BAR
+			}
+		''';
+
+		val parsedFile = rawFile.parse;
+		parsedFile.assertError(TU_ENUMERATION_LITERAL, NOT_UNIQUE_NAME, rawFile.indexOfNth("BAR", 1), 3);
+		parsedFile.assertError(TU_ENUMERATION_LITERAL, NOT_UNIQUE_NAME, rawFile.indexOfNth("BAR", 2), 3);
 	}
 
 	@Test
