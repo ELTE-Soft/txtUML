@@ -113,7 +113,7 @@ class XtxtUMLStructureCompilerTest {
 			File 2 : /myProject/./src-gen/test/model/S2.java
 
 			package test.model;
-			
+
 			import test.model.S1;
 
 			@SuppressWarnings("all")
@@ -129,7 +129,7 @@ class XtxtUMLStructureCompilerTest {
 			File 3 : /myProject/./src-gen/test/model/S3.java
 
 			package test.model;
-			
+
 			import test.model.S2;
 
 			@SuppressWarnings("all")
@@ -143,7 +143,68 @@ class XtxtUMLStructureCompilerTest {
 			}
 
 		''');
-		
+
+		'''
+			package test.model;
+			signal S1 {
+				public int i;
+				public boolean b;
+			}
+			signal S3 extends S2 {
+				public String s;
+			}
+			signal S2 extends S1;
+		'''.assertCompilesTo('''
+			MULTIPLE FILES WERE GENERATED
+
+			File 1 : /myProject/./src-gen/test/model/S1.java
+
+			package test.model;
+
+			import hu.elte.txtuml.api.model.Signal;
+
+			@SuppressWarnings("all")
+			public class S1 extends Signal {
+			  public int i;
+			  
+			  public boolean b;
+			  
+			  public S1(final int i, final boolean b) {
+			    this.i = i;
+			    this.b = b;
+			  }
+			}
+
+			File 2 : /myProject/./src-gen/test/model/S2.java
+
+			package test.model;
+
+			import test.model.S1;
+
+			@SuppressWarnings("all")
+			public class S2 extends S1 {
+			  public S2(final int i, final boolean b) {
+			    super(i, b);
+			  }
+			}
+
+			File 3 : /myProject/./src-gen/test/model/S3.java
+
+			package test.model;
+
+			import test.model.S2;
+
+			@SuppressWarnings("all")
+			public class S3 extends S2 {
+			  public String s;
+			  
+			  public S3(final int i, final boolean b, final String s) {
+			    super(i, b);
+			    this.s = s;
+			  }
+			}
+
+		''');
 	}
 
 	@Test

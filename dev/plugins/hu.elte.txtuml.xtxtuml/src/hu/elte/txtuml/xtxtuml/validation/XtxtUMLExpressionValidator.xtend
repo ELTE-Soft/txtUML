@@ -18,7 +18,6 @@ import hu.elte.txtuml.xtxtuml.xtxtUML.TUSignalAccessExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUState
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUStateType
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUTransition
-import java.util.ArrayList
 import java.util.HashSet
 import java.util.List
 import org.eclipse.emf.ecore.EObject
@@ -109,11 +108,12 @@ class XtxtUMLExpressionValidator extends XtxtUMLTypeValidator {
 		val portSourceElement = sendExpr.target.actualType.type.primarySourceElement as TUPort;
 		val requiredReceptionsOfPort = portSourceElement.members.findFirst[required]?.interface?.receptions;
 
-		val List<QualifiedName> supers = new ArrayList
-		var sig = sentSignalSourceElement
-		while (sig != null) {
-			supers.add(sig.fullyQualifiedName)
-			sig = sig.superSignal
+		val List<QualifiedName> supers = newArrayList
+		if (sentSignalSourceElement.travelSignalHierarchy [
+			supers.add(fullyQualifiedName)
+			false
+		] == null) {
+			return; // circle in hierarchy
 		}
 
 		if (requiredReceptionsOfPort?.findFirst [

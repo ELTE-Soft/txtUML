@@ -19,6 +19,7 @@ import hu.elte.txtuml.api.model.Signal
 import hu.elte.txtuml.api.model.StateMachine
 import hu.elte.txtuml.api.model.To
 import hu.elte.txtuml.api.model.Trigger
+import hu.elte.txtuml.xtxtuml.common.XtxtUMLUtils
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAssociation
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAssociationEnd
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAttribute
@@ -47,7 +48,6 @@ import hu.elte.txtuml.xtxtuml.xtxtUML.TUTransitionTrigger
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUTransitionVertex
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUVisibility
 import java.util.Deque
-import java.util.LinkedList
 import java.util.Map
 import org.eclipse.emf.ecore.EObject
 import org.eclipse.xtext.common.types.JvmDeclaredType
@@ -69,9 +69,10 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 
 	Map<EObject, JvmDeclaredType> registeredTypes = newHashMap;
 
-	@Inject extension XtxtUMLTypesBuilder;
 	@Inject extension IJvmModelAssociations;
 	@Inject extension IQualifiedNameProvider;
+	@Inject extension XtxtUMLTypesBuilder;
+	@Inject extension XtxtUMLUtils;
 
 	/**
 	 * Infers the given model declaration as a specialized {@link JvmGenericType},
@@ -132,23 +133,30 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 			}
 
 			if (signal.attributes.isEmpty && signal.superSignal == null) {
-				return;
+				return
 			}
 
 			members += signal.toConstructor [
-				val Deque<TUSignal> supers = new LinkedList
-				for (var t = signal.superSignal; t != null; t = t.superSignal) {
-					supers.add(t)
+				val Deque<TUSignal> supers = newLinkedList
+				if (signal.superSignal.travelSignalHierarchy [
+					supers.add(it)
+					false
+				] == null) {
+					return // cycle in hierarchy
 				}
 
-				val Deque<TUSignalAttribute> superAttributes = new LinkedList
+				val Deque<TUSignalAttribute> superAttributes = newLinkedList
 				while (!supers.empty) {
 					superAttributes.addAll(supers.last.attributes)
 					supers.removeLast
 				}
 
-				val (TUSignalAttribute)=>void addAsParam =
-					[ attr | parameters += attr.toParameter(attr.name, attr.type) ]
+				val (TUSignalAttribute)=>void addAsParam = [ attr |
+					if (parameters.findFirst[name == attr.name] == null) {
+						// to eliminate 'duplicate local variable' errors
+						parameters += attr.toParameter(attr.name, attr.type)
+					}
+				]
 
 				superAttributes.forEach(addAsParam)
 				signal.attributes.forEach(addAsParam) 

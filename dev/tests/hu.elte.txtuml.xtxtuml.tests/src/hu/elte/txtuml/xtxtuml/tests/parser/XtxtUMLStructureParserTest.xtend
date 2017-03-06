@@ -80,7 +80,10 @@ class XtxtUMLStructureParserTest {
 			signal NotEmptyTestSignal {
 				public int testAttribute;
 			}
-			signal SubTestSignal extends NotEmptyTestSignal;
+			signal EmptySubTestSignal extends NotEmptyTestSignal;
+			signal NotEmptySubTestSignal extends EmptyTestSignal {
+				public int testAttribute;
+			}
 		'''
 		.parse.
 		file(
@@ -92,7 +95,12 @@ class XtxtUMLStructureParserTest {
 						[attribute(PUBLIC, "int", "testAttribute")]
 					]
 				)],
-				[signal("SubTestSignal", "NotEmptyTestSignal", #[])]
+				[signal("EmptySubTestSignal", "NotEmptyTestSignal", #[])],
+				[signal(
+					"NotEmptySubTestSignal", "EmptyTestSignal", #[
+						[attribute(PUBLIC, "int", "testAttribute")]
+					]
+				)]
 			]
 		)
 	}
