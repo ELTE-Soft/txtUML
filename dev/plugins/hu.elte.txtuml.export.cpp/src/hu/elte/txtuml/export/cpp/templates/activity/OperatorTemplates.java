@@ -98,7 +98,11 @@ public class OperatorTemplates {
 	public static String getStandardLibraryFunctionName(String function) {
 		switch (function) {
 		case "toString":
-			return GenerationNames.ConversionNamspace + "::" + "toString";
+			return GenerationNames.Namespaces.StringUtilsNamespace + "::" + ToString;
+		case "count":
+			return GenerationNames.Namespaces.CollectionUtilsNamespace + "::" + "count"; 
+		case "select":
+			return GenerationNames.Namespaces.CollectionUtilsNamespace + "::" + "select"; 
 		case "log":
 			return ActionNames.Log;
 		case TimerStart:

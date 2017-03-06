@@ -196,8 +196,8 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 			}
 			// TODO analyze what dependency is necessary..
 			source.append(PrivateFunctionalTemplates.include(GenerationNames.FileNames.ActionPath));
-			source.append(PrivateFunctionalTemplates
-					.include(RuntimeTemplates.RTPath + GenerationTemplates.StandardFunctionsHeader));
+			source.append(PrivateFunctionalTemplates.include(GenerationNames.FileNames.StringUtilsPath));
+			source.append(PrivateFunctionalTemplates.include(GenerationNames.FileNames.CollectionUtilsPath));
 			source.append(PrivateFunctionalTemplates
 					.include(RuntimeTemplates.RTPath + GenerationTemplates.TimerInterfaceHeader));
 			source.append(

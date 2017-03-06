@@ -15,10 +15,13 @@ public class GenerationNames {
 		public static final String TypesFilePath = ESRootPath + FileNameTypes;
 		public static final String FileNameAction = "Action";
 		public static final String ActionPath = RuntimeTemplates.RTPath + FileNameAction;
+		public static final String FileNamesStringUtilsHeaderName = "StringUtils";
+		public static final String StringUtilsPath = ESRootPath + FileNamesStringUtilsHeaderName;
+		public static final String FileNamesCollectionUtilsHeaderName = "CollectionUtils";
+		public static final String CollectionUtilsPath = ESRootPath + FileNamesCollectionUtilsHeaderName;
 		
 		public static final String HeaderExtension = "hpp";
 		public static final String SourceExtension = "cpp";
-		public static final String StandardLibaryFunctionsHeaderName = "standard_functions";
 	}
 	
 	public static class ActionNames {
@@ -80,6 +83,11 @@ public class GenerationNames {
 	public static class GeneralFunctionNames {
 		public static final String GeneralLinkFunction = "link";
 		public static final String GeneralUnlinkFunction = "unlink";
+	}
+	
+	public static class Namespaces {
+		public static final String StringUtilsNamespace = "StringUtils";
+		public static final String CollectionUtilsNamespace = "CollectionUtils";
 	}
 	
 	public static final String ClassType = "struct";
@@ -155,7 +163,6 @@ public class GenerationNames {
 
 	public static final String AssociationsHeaderName = "associations";
 	public static final String EdgeType = "EdgeType";
-	public static final String ConversionNamspace = "Conv";
 
 	public static final String DefaultParentSmInicialization = GenerationNames.ParentSmMemberName + "("
 			+ GenerationNames.ParentSmPointerName + ")";

@@ -9,6 +9,7 @@ import java.util.Map;
 import org.eclipse.uml2.uml.Region;
 
 import hu.elte.txtuml.export.cpp.CppExporterUtils;
+import hu.elte.txtuml.export.cpp.templates.GenerationNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationTemplates;
 import hu.elte.txtuml.export.cpp.templates.PrivateFunctionalTemplates;
 import hu.elte.txtuml.export.cpp.templates.statemachine.EventTemplates;
@@ -66,8 +67,8 @@ public class SubStateMachineExporter extends StateMachineExporterBase {
 	private String createSubSmClassHeaderSource() {
 		String source = "";
 		StringBuilder dependency = new StringBuilder(PrivateFunctionalTemplates.include(parentClassName));
-		dependency.append(PrivateFunctionalTemplates.include(GenerationTemplates.StandardFunctionsHeader));
-
+		dependency.append(PrivateFunctionalTemplates.include(GenerationNames.FileNames.StringUtilsPath));
+		dependency.append(PrivateFunctionalTemplates.include(GenerationNames.FileNames.CollectionUtilsPath));
 		StringBuilder privateParts = new StringBuilder(entryExitFunctionExporter.createEntryFunctionsDecl());
 		privateParts.append(entryExitFunctionExporter.createExitFunctionsDecl());
 		privateParts.append(GenerationTemplates

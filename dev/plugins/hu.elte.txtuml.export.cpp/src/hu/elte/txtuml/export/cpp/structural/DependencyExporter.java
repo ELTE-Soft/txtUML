@@ -12,6 +12,9 @@ public class DependencyExporter {
 	private Set<String> dependecies;
 
 	public DependencyExporter() {
+		if(!simpleDependenciesRegistered) {
+			registerSimpleDependencies();
+		}
 		dependecies = new HashSet<String>();
 	}
 
@@ -37,13 +40,32 @@ public class DependencyExporter {
 	}
 
 	public void addDependecy(String depndency) {
-		dependecies.add(depndency);
+		if (!isSimpleDependency(depndency)) {
+			dependecies.add(depndency);
+		}
+		
 	}
 
 	public void addDependencies(Collection<String> dependecies) {
 		for (String dependency : dependecies) {
 			addDependecy(dependency);
 		}
+	}
+	
+	private boolean isSimpleDependency(String typename) {
+		return simpleDependencyNames.contains(typename);
+	}
+	
+	private static Set<String> simpleDependencyNames;
+	private boolean simpleDependenciesRegistered = false;
+	private void registerSimpleDependencies() {
+		simpleDependencyNames = new HashSet<String>();
+		simpleDependencyNames.add("Integer");
+		simpleDependencyNames.add("Real");
+		simpleDependencyNames.add("Boolean");
+		simpleDependencyNames.add("String");
+		
+		simpleDependenciesRegistered = true;
 	}
 
 }

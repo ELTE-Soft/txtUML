@@ -9,7 +9,6 @@ import hu.elte.txtuml.export.cpp.templates.GenerationNames.TimerNames;
 public class GenerationTemplates {
 
 	public static final String StandardIOinclude = GenerationNames.StandardIOInclude;
-	public static final String StandardFunctionsHeader = FileNames.StandardLibaryFunctionsHeaderName;
 	public static final String DeploymentHeader = GenerationNames.DeploymentHeaderName;
 	public static final String TimerInterfaceHeader = TimerNames.TimerInterFaceName.toLowerCase();
 	public static final String TimerHeader = TimerNames.TimerClassName.toLowerCase();

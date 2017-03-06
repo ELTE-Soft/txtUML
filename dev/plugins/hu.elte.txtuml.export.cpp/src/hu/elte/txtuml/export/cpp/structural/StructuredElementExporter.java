@@ -95,10 +95,12 @@ public abstract class StructuredElementExporter<StructuredElement extends Operat
 					type = attribute.getType().getName();
 				}
 
-				dependencyExporter.addDependecy(type);
+				
 				if (isSimpleAttribute(attribute)) {
 
 					source.append(VariableTemplates.propertyDecl(type, attribute.getName(), attribute.getDefault()));
+				} else {
+					dependencyExporter.addDependecy(type);
 				}
 			}
 		}
