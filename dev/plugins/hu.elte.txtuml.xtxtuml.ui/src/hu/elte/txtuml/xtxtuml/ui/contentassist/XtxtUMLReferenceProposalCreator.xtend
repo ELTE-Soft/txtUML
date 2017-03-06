@@ -8,6 +8,7 @@ import hu.elte.txtuml.api.model.ModelClass
 import hu.elte.txtuml.api.model.Signal
 import hu.elte.txtuml.api.model.external.ExternalType
 import hu.elte.txtuml.xtxtuml.common.XtxtUMLReferenceProposalScopeProvider
+import hu.elte.txtuml.xtxtuml.common.XtxtUMLReferenceProposalTypeScope
 import hu.elte.txtuml.xtxtuml.common.XtxtUMLUtils
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAssociation
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAssociationEnd
@@ -65,7 +66,7 @@ class XtxtUMLReferenceProposalCreator extends XbaseReferenceProposalCreator {
 
 	/**
 	 * Provides a scope provider with a customized JDT based superscope.
-	 * @see hu.elte.txtuml.xtxtuml.common.XtxtUMLReferenceProposalTypeScope
+	 * @see XtxtUMLReferenceProposalTypeScope
 	 */
 	override getScopeProvider() {
 		return scopeProvider;
@@ -103,6 +104,8 @@ class XtxtUMLReferenceProposalCreator extends XbaseReferenceProposalCreator {
 				scope.selectOwnedStates(model)
 			case XtxtUMLPackage::eINSTANCE.TUClassPropertyAccessExpression_Right:
 				scope.selectNavigableClassProperties(model)
+			case XtxtUMLPackage::eINSTANCE.TUSignal_SuperSignal:
+				scope.selectExtendableSignals(model)
 			case XtxtUMLPackage::eINSTANCE.TUClass_SuperClass:
 				scope.selectExtendableClasses(model)
 			case XbasePackage::eINSTANCE.XAbstractFeatureCall_Feature:
@@ -194,6 +197,15 @@ class XtxtUMLReferenceProposalCreator extends XbaseReferenceProposalCreator {
 			container.ends
 		} else {
 			newArrayList
+		}
+	}
+
+	def private selectExtendableSignals(IScope scope, EObject model) {
+		if (model instanceof TUSignal) {
+			val selfName = model.fullyQualifiedName;
+			return scope.allElements.filter [
+				qualifiedName != selfName
+			]
 		}
 	}
 
