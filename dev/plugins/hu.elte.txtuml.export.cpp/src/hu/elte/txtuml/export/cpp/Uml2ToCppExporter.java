@@ -24,6 +24,7 @@ import org.eclipse.uml2.uml.Signal;
 import org.eclipse.uml2.uml.Association;
 import org.eclipse.uml2.uml.Class;
 import org.eclipse.uml2.uml.DataType;
+import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.UMLPackage;
 import org.osgi.framework.Bundle;
 
@@ -63,31 +64,32 @@ public class Uml2ToCppExporter {
 
 	private ClassExporter classExporter;
 	private DataTypeExporter dataTypeExporter;
-	private Shared shared;
 	private final Options options;
 
 	private ThreadHandlingManager threadManager;
 
 	private List<Class> classes;
-	private List<String> stateMachineOwners;
+	private Set<String> stateMachineOwners;
 	private List<DataType> dataTypes;
 	private List<String> classNames;
+	private List<Element> modelRoot;
 
-	public Uml2ToCppExporter(Shared shared, Map<String, ThreadPoolConfiguration> threadDescription,
+	public Uml2ToCppExporter(List<Element> modelRoot, Map<String, ThreadPoolConfiguration> threadDescription,
 			boolean addRuntimeOption, boolean overWriteMainFileOption) {
-		classExporter = new ClassExporter(shared);
+
+		this.modelRoot = modelRoot;
+		classExporter = new ClassExporter();
 		dataTypeExporter = new DataTypeExporter();
 		threadManager = new ThreadHandlingManager(threadDescription);
 
 		classes = new ArrayList<Class>();
 		dataTypes = new ArrayList<DataType>();
 		classNames = new LinkedList<String>();
-		stateMachineOwners = new ArrayList<String>();
+		stateMachineOwners = new HashSet<String>();
 		options = new Options(addRuntimeOption, overWriteMainFileOption);
 
-		this.shared = shared;
-		shared.getTypedElements(dataTypes, UMLPackage.Literals.DATA_TYPE);
-		classes = shared.getAllModelCLass();
+		CppExporterUtils.getTypedElements(dataTypes, UMLPackage.Literals.DATA_TYPE, modelRoot);
+		classes = CppExporterUtils.getAllModelCLass(modelRoot);
 
 	}
 
@@ -124,19 +126,18 @@ public class Uml2ToCppExporter {
 	}
 
 	private void createTransitionTableInitialSource(String outputDirectory) throws IOException {
-		Shared.writeOutSource(outputDirectory,
-				GenerationTemplates
-						.headerName(StateMachineTemplates.TransitionTableInitialSourceName),
-				Shared.format(
-						HeaderTemplates
-								.headerGuard(
+		CppExporterUtils
+				.writeOutSource(outputDirectory,
+						GenerationTemplates.headerName(StateMachineTemplates.TransitionTableInitialSourceName),
+						CppExporterUtils
+								.format(HeaderTemplates.headerGuard(
 										GenerationTemplates.putNamespace(
 												FunctionTemplates.functionDecl(
 														StateMachineTemplates.AllTransitionTableInitialProcName),
 												StateMachineTemplates.MachineNamespace),
 										StateMachineTemplates.TransitionTableInitialSourceName)));
 
-		DependencyExporter dependencyExporter = new DependencyExporter(shared.getAllModelClassNames());
+		DependencyExporter dependencyExporter = new DependencyExporter();
 		dependencyExporter.addDependencies(stateMachineOwners);
 		StringBuilder initalFunctionBody = new StringBuilder("");
 		for (String stateMachineOwner : stateMachineOwners) {
@@ -144,9 +145,9 @@ public class Uml2ToCppExporter {
 					.staticMethodInvoke(stateMachineOwner, StateMachineTemplates.InitTransitionTable)));
 		}
 
-		Shared.writeOutSource(outputDirectory,
+		CppExporterUtils.writeOutSource(outputDirectory,
 				GenerationTemplates.sourceName(StateMachineTemplates.TransitionTableInitialSourceName),
-				Shared.format(dependencyExporter
+				CppExporterUtils.format(dependencyExporter
 						.createDependencyCppIncludeCode(StateMachineTemplates.TransitionTableInitialSourceName)
 						+ GenerationTemplates.putNamespace(
 								FunctionTemplates.simpleFunctionDef(ModifierNames.NoReturn,
@@ -159,7 +160,7 @@ public class Uml2ToCppExporter {
 	private void createDataTypes(String outputDirectory) throws IOException {
 		for (DataType dataType : dataTypes) {
 			dataTypeExporter.setName(dataType.getName());
-			dataTypeExporter.init(shared);
+			dataTypeExporter.init();
 			dataTypeExporter.exportStructuredElement(dataType, outputDirectory);
 		}
 
@@ -248,7 +249,7 @@ public class Uml2ToCppExporter {
 
 	private void createEventSource(String outputDirectory) throws FileNotFoundException, UnsupportedEncodingException {
 		List<Signal> signalList = new ArrayList<Signal>();
-		shared.getTypedElements(signalList, UMLPackage.Literals.SIGNAL);
+		CppExporterUtils.getTypedElements(signalList, UMLPackage.Literals.SIGNAL, modelRoot);
 		StringBuilder forwardDecl = new StringBuilder("");
 		StringBuilder events = new StringBuilder("");
 		StringBuilder source = new StringBuilder("");
@@ -257,7 +258,7 @@ public class Uml2ToCppExporter {
 		events.append(EventTemplates.InitSignal + ENUM_EXTENSION + ",");
 		for (Signal signal : signalList) {
 			List<Pair<String, String>> currentParams = getSignalParams(signal);
-			String ctrBody = shared.signalCtrBody(signal);
+			String ctrBody = CppExporterUtils.signalCtrBody(signal, modelRoot);
 			allParam.addAll(currentParams);
 			source.append(
 					EventTemplates.eventClass(signal.getName(), currentParams, ctrBody, signal.getOwnedAttributes()));
@@ -268,7 +269,7 @@ public class Uml2ToCppExporter {
 		source.append(EventTemplates.eventClass(EventTemplates.InitSignal, new ArrayList<Pair<String, String>>(), "",
 				new ArrayList<Property>()));
 
-		DependencyExporter dependencyEporter = new DependencyExporter(shared.getAllModelClassNames());
+		DependencyExporter dependencyEporter = new DependencyExporter();
 		for (Pair<String, String> param : allParam) {
 			dependencyEporter.addDependecy(param.getSecond());
 		}
@@ -277,8 +278,8 @@ public class Uml2ToCppExporter {
 		forwardDecl.append(RuntimeTemplates.eventHeaderInclude());
 		forwardDecl.append("enum Events {" + events + "};\n");
 		forwardDecl.append(source);
-		Shared.writeOutSource(outputDirectory, (EventTemplates.EventHeader),
-				Shared.format(EventTemplates.eventHeaderGuard(forwardDecl.toString())));
+		CppExporterUtils.writeOutSource(outputDirectory, (EventTemplates.EventHeader),
+				CppExporterUtils.format(EventTemplates.eventHeaderGuard(forwardDecl.toString())));
 
 	}
 
@@ -293,7 +294,7 @@ public class Uml2ToCppExporter {
 		StringBuilder functions = new StringBuilder("");
 
 		List<Association> associationList = new ArrayList<Association>();
-		shared.getTypedElements(associationList, UMLPackage.Literals.ASSOCIATION);
+		CppExporterUtils.getTypedElements(associationList, UMLPackage.Literals.ASSOCIATION, modelRoot);
 		for (Association assoc : associationList) {
 			Property e1End = assoc.getMemberEnds().get(0);
 			Property e2End = assoc.getMemberEnds().get(1);
@@ -322,19 +323,24 @@ public class Uml2ToCppExporter {
 			preDeclerations.append(GenerationTemplates.forwardDeclaration(className));
 		}
 
-		Shared.writeOutSource(outputDirectory, (LinkTemplates.AssociationStructuresHeader),
-				Shared.format(HeaderTemplates.headerGuard(
-						PrivateFunctionalTemplates.include(RuntimeTemplates.RTPath + LinkTemplates.AssocationHeader)
-								+ preDeclerations.toString() + structures.toString(),
-						LinkTemplates.AssociationsStructuresHreaderName)));
-		Shared.writeOutSource(outputDirectory, (LinkTemplates.AssociationStructuresSource),
-				Shared.format(includes.toString() + functions.toString()));
+		CppExporterUtils
+				.writeOutSource(outputDirectory, (LinkTemplates.AssociationStructuresHeader),
+						CppExporterUtils
+								.format(HeaderTemplates
+										.headerGuard(
+												PrivateFunctionalTemplates
+														.include(RuntimeTemplates.RTPath
+																+ LinkTemplates.AssocationHeader)
+														+ preDeclerations.toString() + structures.toString(),
+												LinkTemplates.AssociationsStructuresHreaderName)));
+		CppExporterUtils.writeOutSource(outputDirectory, (LinkTemplates.AssociationStructuresSource),
+				CppExporterUtils.format(includes.toString() + functions.toString()));
 
 	}
 
 	private List<Pair<String, String>> getSignalParams(Signal signal) {
 		List<Pair<String, String>> ret = new ArrayList<Pair<String, String>>();
-		for (Parameter param : shared.getSignalConstructorParameters(signal)) {
+		for (Parameter param : CppExporterUtils.getSignalConstructorParameters(signal, modelRoot)) {
 			ret.add(new Pair<String, String>(param.getType().getName(), param.getName()));
 		}
 		return ret;

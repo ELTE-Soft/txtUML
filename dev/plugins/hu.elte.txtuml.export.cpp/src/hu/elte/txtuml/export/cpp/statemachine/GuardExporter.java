@@ -13,7 +13,6 @@ import org.eclipse.uml2.uml.Transition;
 import org.eclipse.uml2.uml.UMLPackage;
 import org.eclipse.uml2.uml.ValueSpecification;
 
-import hu.elte.txtuml.export.cpp.Shared;
 import hu.elte.txtuml.export.cpp.activity.ActivityExporter;
 import hu.elte.txtuml.export.cpp.templates.activity.OperatorTemplates;
 import hu.elte.txtuml.export.cpp.templates.statemachine.StateMachineTemplates;
@@ -25,8 +24,8 @@ public class GuardExporter extends ActivityExporter {
 	private Map<Constraint, String> constratintFunctionMap;
 	private int guardCount;
 
-	public GuardExporter(Shared shared) {
-		super(shared);
+	public GuardExporter() {
+		super();
 		constratintFunctionMap = new HashMap<Constraint, String>();
 		guardCount = 0;
 	}

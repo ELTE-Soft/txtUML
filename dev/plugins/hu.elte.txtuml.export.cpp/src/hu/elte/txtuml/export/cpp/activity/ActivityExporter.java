@@ -29,7 +29,7 @@ import org.eclipse.uml2.uml.TestIdentityAction;
 import org.eclipse.uml2.uml.UMLPackage;
 import org.eclipse.uml2.uml.ExpansionRegion;
 
-import hu.elte.txtuml.export.cpp.Shared;
+import hu.elte.txtuml.export.cpp.CppExporterUtils;
 import hu.elte.txtuml.export.cpp.templates.activity.ActivityTemplates;
 
 //import hu.elte.txtuml.utils.Logger;
@@ -47,17 +47,14 @@ public class ActivityExporter {
 	private LinkActionExporter linkActionExporter;
 	private ObjectActionExporter objectActionExporter;
 	private ReturnNodeExporter returnNodeExporter;
-	
+
 	private List<String> createdClassDependecies;
 
-	private Shared shared;
-
-	public ActivityExporter(Shared shared) {
-		this.shared = shared;
+	public ActivityExporter() {
 	}
 
 	private void init() {
-		
+
 		createdClassDependecies = new LinkedList<String>();
 
 		tempVariableExporter = new OutVariableExporter();
@@ -70,10 +67,10 @@ public class ActivityExporter {
 		callOperationExporter = new CallOperationExporter(tempVariableExporter, returnOutputsToCallActions,
 				activityExportResolver);
 		linkActionExporter = new LinkActionExporter(tempVariableExporter, activityExportResolver);
-		objectActionExporter = new ObjectActionExporter(tempVariableExporter, objectMap, activityExportResolver, createdClassDependecies);
+		objectActionExporter = new ObjectActionExporter(tempVariableExporter, objectMap, activityExportResolver,
+				createdClassDependecies);
 		controlNodeExporter = new StructuredControlNodeExporter(this, activityExportResolver, userVariableExporter,
 				returnNodeExporter);
-		
 
 	}
 
@@ -109,7 +106,7 @@ public class ActivityExporter {
 	public boolean isContainsTimerOperation() {
 		return callOperationExporter.isInvokedTimerOperation();
 	}
-	
+
 	public List<String> getAdditionalClassDependencies() {
 		return createdClassDependecies;
 	}
@@ -157,7 +154,7 @@ public class ActivityExporter {
 		List<ActivityEdge> edges = currentNode.getOutgoings();
 		// output edges from output pin
 		List<OutputPin> outputPins = new LinkedList<OutputPin>();
-		shared.getTypedElements(outputPins, UMLPackage.Literals.OUTPUT_PIN);
+		CppExporterUtils.getTypedElements(outputPins, UMLPackage.Literals.OUTPUT_PIN, node.getOwnedElements());
 		for (OutputPin pin : outputPins) {
 			edges.addAll(pin.getOutgoings());
 		}

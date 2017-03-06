@@ -8,12 +8,11 @@ import hu.elte.txtuml.export.cpp.templates.GenerationTemplates;
 import hu.elte.txtuml.export.cpp.templates.PrivateFunctionalTemplates;
 
 public class DependencyExporter {
-	private Set<String> dependecies;
-	private Set<String> modelClassNames; 
 
-	public DependencyExporter(Set<String> modelClassNames) {
+	private Set<String> dependecies;
+
+	public DependencyExporter() {
 		dependecies = new HashSet<String>();
-		this.modelClassNames = modelClassNames;
 	}
 
 	public String createDependencyCppIncludeCode(String className) {
@@ -38,10 +37,7 @@ public class DependencyExporter {
 	}
 
 	public void addDependecy(String depndency) {
-		if (modelClassNames.contains(depndency)) {
-			this.dependecies.add(depndency);
-
-		}
+		dependecies.add(depndency);
 	}
 
 	public void addDependencies(Collection<String> dependecies) {

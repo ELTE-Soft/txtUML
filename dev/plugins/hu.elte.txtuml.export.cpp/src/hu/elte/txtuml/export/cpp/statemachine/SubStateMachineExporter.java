@@ -5,8 +5,10 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
 import org.eclipse.uml2.uml.Region;
-import hu.elte.txtuml.export.cpp.Shared;
+
+import hu.elte.txtuml.export.cpp.CppExporterUtils;
 import hu.elte.txtuml.export.cpp.templates.GenerationTemplates;
 import hu.elte.txtuml.export.cpp.templates.PrivateFunctionalTemplates;
 import hu.elte.txtuml.export.cpp.templates.statemachine.EventTemplates;
@@ -22,8 +24,8 @@ public class SubStateMachineExporter extends StateMachineExporterBase {
 
 	private SubStateMachineExporter subStateMachineExporter;
 
-	public SubStateMachineExporter(Shared shared) {
-		super(shared);
+	public SubStateMachineExporter() {
+		super();
 	}
 
 	public void setRegion(Region region) {
@@ -41,7 +43,7 @@ public class SubStateMachineExporter extends StateMachineExporterBase {
 		submachineMap = getSubMachines();
 
 		for (Map.Entry<String, Pair<String, Region>> entry : submachineMap.entrySet()) {
-			subStateMachineExporter = new SubStateMachineExporter(shared);
+			subStateMachineExporter = new SubStateMachineExporter();
 			subStateMachineExporter.setRegion(entry.getValue().getSecond());
 			subStateMachineExporter.setName(entry.getValue().getFirst());
 			subStateMachineExporter.setParentClass(parentClassName);
@@ -49,15 +51,16 @@ public class SubStateMachineExporter extends StateMachineExporterBase {
 		}
 
 		source = createSubSmClassHeaderSource();
-		Shared.writeOutSource(destination, GenerationTemplates.headerName(ownerClassName),
+		CppExporterUtils.writeOutSource(destination, GenerationTemplates.headerName(ownerClassName),
 				HeaderTemplates.headerGuard(source, ownerClassName));
 
 		source = createSubSmClassCppSource().toString();
-		String dependencyIncludes = PrivateFunctionalTemplates.include(ownerClassName) + PrivateFunctionalTemplates.include(EventTemplates.EventHeaderName);
+		String dependencyIncludes = PrivateFunctionalTemplates.include(ownerClassName)
+				+ PrivateFunctionalTemplates.include(EventTemplates.EventHeaderName);
 		dependencyIncludes = GenerationTemplates.debugOnlyCodeBlock(GenerationTemplates.StandardIOinclude)
 				+ dependencyIncludes + PrivateFunctionalTemplates.include(ownerClassName);
-		Shared.writeOutSource(destination, GenerationTemplates.sourceName(ownerClassName),
-				Shared.format(dependencyIncludes + "\n" + source));
+		CppExporterUtils.writeOutSource(destination, GenerationTemplates.sourceName(ownerClassName),
+				CppExporterUtils.format(dependencyIncludes + "\n" + source));
 	}
 
 	private String createSubSmClassHeaderSource() {
@@ -79,8 +82,8 @@ public class SubStateMachineExporter extends StateMachineExporterBase {
 		publicParts.append(StateMachineTemplates.stateEnum(stateList, getInitialStateName()));
 
 		if (submachineMap.isEmpty()) {
-			source = HeaderTemplates.simpleSubStateMachineClassHeader(dependency.toString(), ownerClassName, parentClassName,
-					publicParts.toString(), protectedParts, privateParts.toString()).toString();
+			source = HeaderTemplates.simpleSubStateMachineClassHeader(dependency.toString(), ownerClassName,
+					parentClassName, publicParts.toString(), protectedParts, privateParts.toString()).toString();
 		} else {
 			source = HeaderTemplates
 					.hierarchicalSubStateMachineClassHeader(dependency.toString(), ownerClassName, parentClassName,
@@ -97,22 +100,21 @@ public class SubStateMachineExporter extends StateMachineExporterBase {
 			source.append(ConstructorTemplates.simpleSubStateMachineClassConstructor(ownerClassName, parentClassName,
 					stateMachineMap, getInitialStateName()));
 		} else {
-			source.append(ConstructorTemplates.hierarchicalSubStateMachineClassConstructor(ownerClassName, parentClassName,
-					stateMachineMap, getEventSubMachineNameMap(), getInitialStateName()));
+			source.append(ConstructorTemplates.hierarchicalSubStateMachineClassConstructor(ownerClassName,
+					parentClassName, stateMachineMap, getEventSubMachineNameMap(), getInitialStateName()));
 		}
 		StringBuilder subSmSpec = new StringBuilder(entryExitFunctionExporter.createEntryFunctionsDef());
 		subSmSpec.append(entryExitFunctionExporter.createExitFunctionsDef());
 		subSmSpec.append(guardExporter.defnieGuardFunctions(ownerClassName));
 		subSmSpec.append(transitionExporter.createTransitionFunctionsDef());
-		subSmSpec.append(
-				StateMachineTemplates.entry(ownerClassName, createStateActionMap(entryExitFunctionExporter.getEntryMap()))
-						+ "\n");
+		subSmSpec.append(StateMachineTemplates.entry(ownerClassName,
+				createStateActionMap(entryExitFunctionExporter.getEntryMap())) + "\n");
 		subSmSpec.append(
 				StateMachineTemplates.exit(ownerClassName, createStateActionMap(entryExitFunctionExporter.getExitMap()))
 						+ "\n");
 
 		source.append(GenerationTemplates.formatSubSmFunctions(subSmSpec.toString()));
-		
+
 		return source.toString();
 	}
 
