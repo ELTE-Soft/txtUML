@@ -40,6 +40,7 @@ import org.eclipse.xtext.validation.Check
 
 import static hu.elte.txtuml.xtxtuml.validation.XtxtUMLIssueCodes.*
 import static hu.elte.txtuml.xtxtuml.xtxtUML.XtxtUMLPackage.Literals.*
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUDataType
 
 class XtxtUMLUniquenessValidator extends XtxtUMLNameValidator {
 
@@ -112,13 +113,24 @@ class XtxtUMLUniquenessValidator extends XtxtUMLNameValidator {
 
 	@Check
 	def checkAttributeNameIsUnique(TUAttribute attribute) {
-		val containingClass = attribute.eContainer as TUClass;
-		if (containingClass.members.exists [
+		val predicate = [
 			it instanceof TUAttribute && (it as TUAttribute).name == attribute.name && it != attribute // direct comparison is safe here
-		]) {
-			error("Duplicate attribute " + attribute.name + " in class " + containingClass.name, attribute,
-				TU_ATTRIBUTE__NAME, NOT_UNIQUE_NAME);
-		}
+		]
+		val container = attribute.eContainer
+		switch (container) {
+			TUClass : {
+				if (container.members.exists(predicate) ) {
+					error("Duplicate attribute " + attribute.name + " in class " + container.name, attribute,
+						TU_ATTRIBUTE__NAME, NOT_UNIQUE_NAME);
+				}				
+			},
+			TUDataType : {
+				if (container.members.exists(predicate) ) {
+					error("Duplicate attribute " + attribute.name + " in data type " + container.name, attribute,
+						TU_ATTRIBUTE__NAME, NOT_UNIQUE_NAME);
+				}				
+			}			
+		}		
 	}
 
 	@Check
@@ -137,17 +149,28 @@ class XtxtUMLUniquenessValidator extends XtxtUMLNameValidator {
 
 	@Check
 	def checkOperationIsUnique(TUOperation operation) {
-		val containingClass = (operation.eContainer as TUClass);
-		if (containingClass.members.exists [
+		val predicate = [
 			it instanceof TUOperation &&
 				{
 					val siblingOperationOrSelf = it as TUOperation;
 					siblingOperationOrSelf.name == operation.name &&
 						siblingOperationOrSelf.parameters.typeNames == operation.parameters.typeNames
 				} && it != operation // direct comparison is safe here
-		]) {
-			error('''Duplicate operation «operation.name»(«operation.parameters.typeNames.join(", ")») in class «containingClass.name»''',
-				operation, TU_OPERATION__NAME, NOT_UNIQUE_OPERATION);
+		]
+		val container = operation.eContainer
+		switch (container) {
+			TUClass : {
+				if (container.members.exists(predicate)) {
+					error('''Duplicate operation «operation.name»(«operation.parameters.typeNames.join(", ")») in class «container.name»''',
+						operation, TU_OPERATION__NAME, NOT_UNIQUE_OPERATION);
+				}
+			},
+			TUDataType : {
+				if (container.members.exists(predicate)) {
+					error('''Duplicate operation «operation.name»(«operation.parameters.typeNames.join(", ")») in data type «container.name»''',
+						operation, TU_OPERATION__NAME, NOT_UNIQUE_OPERATION);
+				}				
+			}
 		}
 	}
 
