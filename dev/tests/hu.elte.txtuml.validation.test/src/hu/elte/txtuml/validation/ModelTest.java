@@ -23,7 +23,6 @@ import hu.elte.txtuml.validation.problems.association.WrongCompositionEnds;
 import hu.elte.txtuml.validation.problems.association.WrongNumberOfAssociationEnds;
 import hu.elte.txtuml.validation.problems.association.WrongTypeInAssociation;
 import hu.elte.txtuml.validation.problems.datatype.InvalidDataTypeField;
-import hu.elte.txtuml.validation.problems.datatype.InvalidDataTypeMethod;
 import hu.elte.txtuml.validation.problems.datatype.MutableDataTypeField;
 import hu.elte.txtuml.validation.problems.general.InvalidChildrenElement;
 import hu.elte.txtuml.validation.problems.general.InvalidModifier;
@@ -258,18 +257,6 @@ public class ModelTest {
 
 		checkNoOtherErrorRaised();
 	}
-	
-	@Test
-	public void testDataTypeInvalidMethod() throws Exception {
-		CompilationUnit compilationUnit = prepareAST("DataTypeInvalidMethod.java");
-
-		compilationUnit.accept(new ModelVisitor(mockCollector));
-
-		verify(mockCollector).report(isA(InvalidDataTypeMethod.class));
-
-		checkNoOtherErrorRaised();
-	}
-
 
 	private void checkNoOtherErrorRaised() {
 		verify(mockCollector, atLeast(0)).getSourceInfo();
