@@ -1,16 +1,16 @@
-package hu.elte.txtuml.export.papyrus.elementsarrangers.txtumllayout;
+package hu.elte.txtuml.export.diagrams.common.tests;
 
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.draw2d.geometry.Point;
-import org.eclipse.draw2d.geometry.Rectangle;
 import org.junit.Assert;
 import org.junit.Test;
 
-import hu.elte.txtuml.export.papyrus.elementsarrangers.txtumllayout.LayoutTransformer;
+import hu.elte.txtuml.export.diagrams.common.LayoutTransformer;
+import hu.elte.txtuml.export.diagrams.common.Point;
+import hu.elte.txtuml.export.diagrams.common.Rectangle;
 
 public class LayoutTransformerTest {
 

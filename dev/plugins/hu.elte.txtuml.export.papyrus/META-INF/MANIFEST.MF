@@ -36,7 +36,8 @@ Require-Bundle:
  org.eclipse.jdt.ui,
  com.google.guava,
  hu.elte.txtuml.utils.eclipse,
- org.eclipse.core.expressions
+ org.eclipse.core.expressions,
+ hu.elte.txtuml.export.diagrams.common
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Export-Package: hu.elte.txtuml.export.papyrus,
@@ -50,4 +51,5 @@ Export-Package: hu.elte.txtuml.export.papyrus,
  hu.elte.txtuml.export.papyrus.papyrusmodelmanagers,
  hu.elte.txtuml.export.papyrus.preferences,
  hu.elte.txtuml.export.papyrus.wizardz
-Import-Package: hu.elte.txtuml.utils.eclipse
+Import-Package: hu.elte.txtuml.export.diagrams.common,
+ hu.elte.txtuml.utils.eclipse

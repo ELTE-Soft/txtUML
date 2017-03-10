@@ -1,13 +1,10 @@
-package hu.elte.txtuml.export.papyrus.elementsarrangers.txtumllayout;
+package hu.elte.txtuml.export.diagrams.common;
 
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.Function;
-
-import org.eclipse.draw2d.geometry.Point;
-import org.eclipse.draw2d.geometry.Rectangle;
 
 /**
  * The transformer class which transforms the object coordinates to fit the GMF diagram
@@ -104,12 +101,12 @@ public class LayoutTransformer {
 	 */
 	private void flipYAxis(Map<?, Rectangle> objects, Map<?, List<Point>> connections){
 		for(Rectangle rect : objects.values()){
-			rect.setY(-rect.y);
+			rect.setY(-rect.y());
 		}
 		
 		for(List<Point> pointlist : connections.values()){
 			for(Point p: pointlist){
-				p.setY(-p.y);
+				p.setY(-p.y());
 			}
 		}
 	}	
