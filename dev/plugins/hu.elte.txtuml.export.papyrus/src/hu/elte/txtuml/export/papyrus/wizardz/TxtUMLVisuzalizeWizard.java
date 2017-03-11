@@ -7,9 +7,13 @@ import java.util.List;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubMonitor;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.wizard.Wizard;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.progress.IProgressService;
 
@@ -78,87 +82,86 @@ public class TxtUMLVisuzalizeWizard extends Wizard {
 		try {
 
 			this.checkEmptyLayoutDecsriptions();
+			Job job = new Job("Diagram Visualization"){
 
-			IProgressService progressService = PlatformUI.getWorkbench().getProgressService();
-
-			progressService.runInUI(progressService, new IRunnableWithProgress() {
 				@Override
-				public void run(IProgressMonitor monitor) throws InterruptedException {
-					monitor.beginTask("Visualization", 100);
+				protected IStatus run(IProgressMonitor monitor) {
+					Display.getDefault().asyncExec(() -> {
+						monitor.beginTask("Visualization", 100);
 
-					TxtUMLExporter exporter = new TxtUMLExporter(txtUMLProjectName, generatedFolderName,
-							txtUMLModelName, txtUMLLayout);
-					try {
-						exporter.cleanBeforeVisualization();
-					} catch (CoreException e) {
-						Dialogs.errorMsgb("txtUML export Error - cleaning resources",
-								"Error occured when cleaning resources.", e);
-						throw new InterruptedException();
-					}
-					monitor.subTask("Exporting txtUML Model to UML2 model...");
-					try {
-						TxtUMLToUML2.exportModel(txtUMLProjectName, txtUMLModelName,
-								txtUMLProjectName + "/" + generatedFolderName, ExportMode.ErrorHandlingNoActions, "gen");
-						monitor.worked(10);
-					} catch (Exception e) {
-						Dialogs.errorMsgb("txtUML export Error", "Error occured during the UML2 exportation.", e);
-						monitor.done();
-						throw new InterruptedException();
-					}
-
-					monitor.subTask("Generating txtUML layout description...");
-					TxtUMLLayoutDescriptor layoutDescriptor = null;
-					try {
-						layoutDescriptor = exporter.exportTxtUMLLayout();
-
-						List<String> warnings = new LinkedList<String>();
-						for (DiagramExportationReport report : layoutDescriptor.getReports()) {
-							warnings.addAll(report.getWarnings());
+						TxtUMLExporter exporter = new TxtUMLExporter(txtUMLProjectName, generatedFolderName,
+								txtUMLModelName, txtUMLLayout);
+						try {
+							exporter.cleanBeforeVisualization();
+						} catch (CoreException e) {
+							Dialogs.errorMsgb("txtUML export Error - cleaning resources",
+									"Error occured when cleaning resources.", e);
+						}
+						monitor.subTask("Exporting txtUML Model to UML2 model...");
+						try {
+							TxtUMLToUML2.exportModel(txtUMLProjectName, txtUMLModelName,
+									txtUMLProjectName + "/" + generatedFolderName, ExportMode.ErrorHandlingNoActions, "gen");
+							monitor.worked(10);
+						} catch (Exception e) {
+							Dialogs.errorMsgb("txtUML export Error", "Error occured during the UML2 exportation.", e);
+							monitor.done();
 						}
 
-						layoutDescriptor.mappingFolder = generatedFolderName;
-						layoutDescriptor.projectName = txtUMLProjectName;
+						monitor.subTask("Generating txtUML layout description...");
+						TxtUMLLayoutDescriptor layoutDescriptor = null;
+						try {
+							layoutDescriptor = exporter.exportTxtUMLLayout();
 
-						if (warnings.size() != 0) {
-							StringBuilder warningMessages = new StringBuilder(
-									"Warnings:" + System.lineSeparator() + System.lineSeparator() + "- ");
-							warningMessages.append(
-									String.join(System.lineSeparator() + System.lineSeparator() + "- ", warnings));
-							warningMessages.append(
-									System.lineSeparator() + System.lineSeparator() + "Do you want to continue?");
-
-							if (!Dialogs.WarningConfirm("Warnings about layout description",
-									warningMessages.toString())) {
-								throw new InterruptedException();
+							List<String> warnings = new LinkedList<String>();
+							for (DiagramExportationReport report : layoutDescriptor.getReports()) {
+								warnings.addAll(report.getWarnings());
 							}
-						}
 
-						monitor.worked(5);
-					} catch (Exception e) {
-						if (e instanceof InterruptedException) {
-							throw (InterruptedException) e;
-						} else {
+							layoutDescriptor.mappingFolder = generatedFolderName;
+							layoutDescriptor.projectName = txtUMLProjectName;
+
+							if (warnings.size() != 0) {
+								StringBuilder warningMessages = new StringBuilder(
+										"Warnings:" + System.lineSeparator() + System.lineSeparator() + "- ");
+								warningMessages.append(
+										String.join(System.lineSeparator() + System.lineSeparator() + "- ", warnings));
+								warningMessages.append(
+										System.lineSeparator() + System.lineSeparator() + "Do you want to continue?");
+
+								if (!Dialogs.WarningConfirm("Warnings about layout description",
+										warningMessages.toString())) {
+									throw new InterruptedException();
+								}
+							}
+
+							monitor.worked(5);
+						} catch (Exception e) {
 							Dialogs.errorMsgb("txtUML layout export Error",
 									"Error occured during the diagram layout interpretation.", e);
 							monitor.done();
-							throw new InterruptedException();
 						}
-					}
 
-					try {
-						PapyrusVisualizer pv = exporter.createVisualizer(layoutDescriptor);
-						pv.registerPayprusModelManager(TxtUMLPapyrusModelManager.class);
-						pv.run(SubMonitor.convert(monitor, 85));
-					} catch (Exception e) {
-						Dialogs.errorMsgb("txtUML visualization Error",
-								"Error occured during the visualization process.", e);
+						try {
+							PapyrusVisualizer pv = exporter.createVisualizer(layoutDescriptor);
+							pv.registerPayprusModelManager(TxtUMLPapyrusModelManager.class);
+							pv.run(SubMonitor.convert(monitor, 85));
+						} catch (Exception e) {
+							Dialogs.errorMsgb("txtUML visualization Error",
+									"Error occured during the visualization process.", e);
+							monitor.done();
+						}
 						monitor.done();
-						throw new InterruptedException();
-					}
+					});
+					return Status.OK_STATUS;
 				}
-			}, ResourcesPlugin.getWorkspace().getRoot());
+				
+			};
+				
+			job.setUser(true);
+			job.schedule();
+			
 			return true;
-		} catch (InvocationTargetException | InterruptedException e) {
+		} catch ( InterruptedException e) {
 			return false;
 		}
 	}
