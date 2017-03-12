@@ -42,7 +42,7 @@ void SingleThreadRT::start()
 
 }
 
-void SingleThreadRT::setConfiguration(ES::SharedPtr<ThreadConfiguration>){}
+void SingleThreadRT::setConfiguration(ESContainer::FixedArray<ES::SharedPtr<Configuration>>){}
 
 void SingleThreadRT::stopUponCompletion() {}
 
@@ -79,8 +79,8 @@ void ConfiguratedThreadedRT::start()
 void ConfiguratedThreadedRT::removeObject(ES::StateMachineRef sm)
 {
 	int objectId = sm->getPoolId();
-	numberOfObjects[(size_t) objectId]--;
-	poolManager->recalculateThreads(objectId, numberOfObjects[(size_t) objectId]);
+	numberOfObjects[objectId]--;
+	poolManager->recalculateThreads(objectId, numberOfObjects[objectId]);
 }
 
 void ConfiguratedThreadedRT::stopUponCompletion()
@@ -107,10 +107,9 @@ bool ConfiguratedThreadedRT::isConfigurated()
     return poolManager->isConfigurated();
 }
 
-void ConfiguratedThreadedRT::setConfiguration(ES::SharedPtr<ThreadConfiguration> conf)
+void ConfiguratedThreadedRT::setConfiguration(ESContainer::FixedArray<ES::SharedPtr<Configuration>> conf)
 {
     poolManager->setConfiguration(conf);
 	int numberOfConfigurations = poolManager->getNumberOfConfigurations();
-	numberOfObjects.clear();
-	numberOfObjects.resize((unsigned int)numberOfConfigurations);
+	numberOfObjects = ESContainer::FixedArray<int>(numberOfConfigurations,0);
 }

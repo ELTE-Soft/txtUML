@@ -1,18 +1,19 @@
+/** @file threadconfiguration.hpp
+*/
+
 #ifndef THREAD_CONFIGURATION_HPP
 #define THREAD_CONFIGURATION_HPP
 
-#include <vector>
 #include "threadpool.hpp"
 #include "math.h"
 
-struct LinearFunction
+/*! Represents a linear function */
+class LinearFunction
 {
 	public:
 		LinearFunction(int constant,double gradient) : 
 			_constant(constant),
-			_gradient(gradient) 
-		{
-		}
+			_gradient(gradient) {}
 
 		int operator()(int n)
 		{
@@ -23,44 +24,25 @@ struct LinearFunction
 		double _gradient;
 };
 
-struct Configuration
+
+/*! Configuration parameters datastore */
+class Configuration
 {
+public:
 
-	ES::SharedPtr<StateMachineThreadPool> threadPool;
-	ES::SharedPtr<LinearFunction> function;
-	int max;
+	Configuration(ES::SharedPtr<StateMachineThreadPool> threadPool,ES::SharedPtr<LinearFunction> function,int max) :
+	_threadPool(threadPool), _function (function), _max (max) {}
+	virtual ~Configuration() {}
+	
+	ES::SharedPtr<StateMachineThreadPool> getThreadPool() const {return _threadPool;}
+	ES::SharedPtr<LinearFunction> getFunction() const {return _function;}
+	int getMax() {return _max;}
+	
+private:
 
-	Configuration(ES::SharedPtr<StateMachineThreadPool> threadPool,ES::SharedPtr<LinearFunction> function,int max)
-	{
-		this->threadPool = threadPool;
-		this->function = function;
-		this->max = max;
-	}
-	virtual ~Configuration()
-	{
-	}
-
-};
-
-
-
-class ThreadConfiguration
-{
-	public:
-
-		ThreadConfiguration(int);
-		~ThreadConfiguration();
-
-		void insertConfiguration(int,ES::SharedPtr<Configuration>);
-		ES::SharedPtr<StateMachineThreadPool> getThreadPool(int);
-		ES::SharedPtr<LinearFunction> getFunction(int);
-		int getMax(int);
-		int getNumberOfConfigurations();
-
-	private:
-
-		std::vector<ES::SharedPtr<Configuration>> configurations;
-
+	ES::SharedPtr<StateMachineThreadPool> _threadPool;
+	ES::SharedPtr<LinearFunction> _function;
+	int _max;
 };
 
 #endif

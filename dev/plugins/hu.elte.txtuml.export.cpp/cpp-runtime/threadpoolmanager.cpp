@@ -1,17 +1,18 @@
 #include "threadpoolmanager.hpp"
+#include "threadconfiguration.hpp"
 
 #include <stdlib.h>
 #include <algorithm> 
 
-ThreadPoolManager::ThreadPoolManager() : configuration(nullptr) {}
+ThreadPoolManager::ThreadPoolManager() : configured(false) {}
 
-void ThreadPoolManager::recalculateThreads(int id,int n)
+void ThreadPoolManager::recalculateThreads(int id, int n)
 {
 	if (!isConfigurated()) {
 		abort();
 	}
 	
-	configuration->getThreadPool(id)->modifiedThreads(calculateNOfThreads(id,n));
+	configurations[id]->getThreadPool()->modifiedThreads(calculateNOfThreads(id,n));
 }
 
 int ThreadPoolManager::calculateNOfThreads(int id, int n)
@@ -20,8 +21,8 @@ int ThreadPoolManager::calculateNOfThreads(int id, int n)
 		abort();
 	}
 	
-	LinearFunction function = *(configuration->getFunction(id));
-	int max = configuration->getMax(id);
+	LinearFunction function = *(configurations[id]->getFunction());
+	int max = configurations[id]->getMax();
 	return std::min(function(n),max);
 	
 }
@@ -33,7 +34,7 @@ void ThreadPoolManager::enqueueObject(ES::StateMachineRef sm)
 	}
 	
 	int objectId = sm->getPoolId();
-	configuration->getThreadPool(objectId)->enqueueObject(sm);
+	configurations[objectId]->getThreadPool()->enqueueObject(sm);
 }
 
 int ThreadPoolManager::getNumberOfConfigurations()
@@ -42,7 +43,7 @@ int ThreadPoolManager::getNumberOfConfigurations()
 		abort();
 	}
 	
-	return ((int)configuration->getNumberOfConfigurations());
+	return (configurations.getSize());
 }
 
 ES::SharedPtr<StateMachineThreadPool> ThreadPoolManager::getPool(int id)
@@ -51,17 +52,18 @@ ES::SharedPtr<StateMachineThreadPool> ThreadPoolManager::getPool(int id)
 		abort();
 	}
 	
-	return configuration->getThreadPool(id);
+	return configurations[id]->getThreadPool();
 }
 
-void ThreadPoolManager::setConfiguration(ES::SharedPtr<ThreadConfiguration> configuration)
+void ThreadPoolManager::setConfiguration(ESContainer::FixedArray<ES::SharedPtr<Configuration>> configurations)
 {
-	this->configuration = configuration;
+	this->configurations = configurations;
+	configured = true;
 }
 
 bool ThreadPoolManager::isConfigurated()
 {
-	return configuration != nullptr;
+	return configured;
 }
 
 ThreadPoolManager::~ThreadPoolManager()

@@ -8,7 +8,6 @@
 #include <atomic>
 #include <mutex>
 #include <condition_variable>
-#include <vector>
 
 #include "runtimetypes.hpp"
 #include "istatemachine.hpp"
@@ -17,6 +16,7 @@
 #include "threadpoolmanager.hpp"
 #include "runtimetypes.hpp"
 #include "ESRoot/Types.hpp"
+#include "ESRoot/Containers/ConfArray.hpp"
 
 
 template<typename RuntimeType>
@@ -56,7 +56,7 @@ Called by the state machine destructor.
 /**<
 Sets the deployment configuration for the threaded runtime instance.
 */  
-  void configure(ES::SharedPtr<ThreadConfiguration> configuration)
+  void configure(ESContainer::FixedArray<ES::SharedPtr<Configuration>> configuration)
   {
 	  if(!(static_cast<RuntimeType*>(this)->isConfigurated()))
 	  {
@@ -98,7 +98,7 @@ Processes the events while the message queue is not empty.
 
 	void setupObjectSpecificRuntime(ES::StateMachineRef);
 	void removeObject(ES::StateMachineRef);
-	void setConfiguration(ES::SharedPtr<ThreadConfiguration>);
+	void setConfiguration(ESContainer::FixedArray<ES::SharedPtr<Configuration>>);
 	bool isConfigurated();
 	void stopUponCompletion();
 	static ES::RuntimePtr<SingleThreadRT> createRuntime() {return ES::RuntimePtr<SingleThreadRT>(new SingleThreadRT());}	
@@ -119,14 +119,15 @@ Starts the thread pools.
 
 	void setupObjectSpecificRuntime(ES::StateMachineRef);
 	void removeObject(ES::StateMachineRef);
-	void setConfiguration(ES::SharedPtr<ThreadConfiguration>);
+	void setConfiguration(ESContainer::FixedArray<ES::SharedPtr<Configuration>>);
 	bool isConfigurated();
 	void stopUponCompletion(); 
 	static ES::RuntimePtr<ConfiguratedThreadedRT> createRuntime() {return ES::RuntimePtr<ConfiguratedThreadedRT>(new ConfiguratedThreadedRT());}
 private:
 	ConfiguratedThreadedRT();  
 	ES::SharedPtr<ThreadPoolManager> poolManager;
-	std::vector<int> numberOfObjects;
+	ESContainer::FixedArray<int> numberOfObjects;
+
 	std::atomic_int worker;
 	std::atomic_int messages;
 	std::condition_variable stop_request_cond;

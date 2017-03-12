@@ -231,8 +231,6 @@ public class Uml2ToCppExporter {
 		librarySourceClasses.add("threadpool");
 		librarySourceClasses.add("threadpoolmanager");
 		librarySourceClasses.add("threadcontainer");
-		librarySourceClasses.add("threadconfiguration");
-		librarySourceClasses.add("standard_functions");
 		librarySourceClasses.add("timer");
 		librarySourceClasses.add("itimer");
 		librarySourceClasses.add(FileNames.FileNameAction);
