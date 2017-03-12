@@ -1,4 +1,4 @@
-package hu.elte.txtuml.xtxtuml.common
+package hu.elte.txtuml.xtxtuml.common;
 
 import com.google.common.base.Predicate
 import com.google.inject.Inject

@@ -156,7 +156,7 @@ class User {
 		log("\t\tI found its users!");
 		log("");
 		
-		for(User user in usersOfM) {
+		for(User user : usersOfM) {
 			user.sayHello();
 		}
 		log("");
@@ -166,7 +166,7 @@ class User {
 	 	}
 
 		boolean id0 = false;
-		for(User user in usersOfM) {
+		for(User user : usersOfM) {
 			if(user.id == 0) {
 				id0 = true;
 			}
