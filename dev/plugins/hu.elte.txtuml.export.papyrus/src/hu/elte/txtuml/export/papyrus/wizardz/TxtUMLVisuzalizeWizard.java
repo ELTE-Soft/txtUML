@@ -112,6 +112,10 @@ public class TxtUMLVisuzalizeWizard extends Wizard {
 		PreferencesManager.setValue(PreferencesManager.TXTUML_VISUALIZE_TXTUML_LAYOUT, layoutConfigs.values().stream()
 				.flatMap(c -> c.stream()).map(layout -> layout.getFullyQualifiedName()).collect(Collectors.toList()));
 
+		PreferencesManager.setValue(PreferencesManager.TXTUML_VISUALIZE_TXTUML_LAYOUT_PROJECTS,
+				layoutConfigs.values().stream().flatMap(c -> c.stream())
+						.map(layout -> layout.getJavaProject().getElementName()).collect(Collectors.toList()));
+
 		for (Pair<String, String> model : layoutConfigs.keySet()) {
 			String txtUMLModelName = model.getFirst();
 			String txtUMLProjectName = model.getSecond();

@@ -2,7 +2,6 @@ package hu.elte.txtuml.export.papyrus.wizardz;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -38,6 +37,7 @@ import hu.elte.txtuml.api.layout.ClassDiagram;
 import hu.elte.txtuml.api.layout.CompositeDiagram;
 import hu.elte.txtuml.api.layout.StateMachineDiagram;
 import hu.elte.txtuml.export.papyrus.preferences.PreferencesManager;
+import hu.elte.txtuml.utils.Logger;
 import hu.elte.txtuml.utils.eclipse.NotFoundException;
 import hu.elte.txtuml.utils.eclipse.PackageUtils;
 import hu.elte.txtuml.utils.eclipse.ProjectUtils;
@@ -165,7 +165,7 @@ public class VisualizeTxtUMLPage extends WizardPage {
 	 */
 	public void selectElementsInDiagramTree(Object[] elements) {
 		txtUMLLayout.clear();
-		Stream.of(elements).forEach(type -> tree.setCheckedElements(elements));
+		tree.setCheckedElements(elements);
 		List<IType> checkedTypes = Arrays.asList(elements).stream().filter(e -> e instanceof IType).map(e -> (IType) e)
 				.collect(Collectors.toList());
 
@@ -258,27 +258,31 @@ public class VisualizeTxtUMLPage extends WizardPage {
 	}
 
 	private void addInitialLayoutFields() {
-		Collection<String> layouts = PreferencesManager.getStrings(PreferencesManager.TXTUML_VISUALIZE_TXTUML_LAYOUT);
-		for (String layout : layouts) {
-			if (!layout.isEmpty())
-				addLayoutField(layout);
+		List<String> layouts = new ArrayList<>(
+				PreferencesManager.getStrings(PreferencesManager.TXTUML_VISUALIZE_TXTUML_LAYOUT));
+		List<String> layoutProjects = new ArrayList<>(
+				PreferencesManager.getStrings(PreferencesManager.TXTUML_VISUALIZE_TXTUML_LAYOUT_PROJECTS));
+
+		if (layouts.size() == layoutProjects.size()) {
+			for (int layoutNo = 0; layoutNo < layouts.size(); ++layoutNo) {
+				String layout = layouts.get(layoutNo);
+				String layoutProject = layoutProjects.get(layoutNo);
+				if (!layout.isEmpty()) {
+					addLayoutField(layout, layoutProject);
+				}
+			}
 		}
 	}
 
-	private void addLayoutField(String qualifiedName) {
-		// find type by qualified name
-		IProject[] allProjects = ResourcesPlugin.getWorkspace().getRoot().getProjects();
-		for (IProject pr : allProjects) {
-			IJavaProject javaProject = null;
-			try {
-				javaProject = ProjectUtils.findJavaProject(pr.getName());
-				List<IType> types = PackageUtils.findAllPackageFragmentsAsStream(javaProject)
-						.flatMap(pf -> getDiagramDescriptions(pf).stream()).collect(Collectors.toList());
-				types.stream().filter(type -> type.getFullyQualifiedName().equals(qualifiedName))
-						.forEach(type -> txtUMLLayout.add(type));
-			} catch (NotFoundException | JavaModelException ex) {
-				continue;
-			}
+	private void addLayoutField(String qualifiedName, String layoutProject) {
+		try {
+			IJavaProject layoutJavaProject = ProjectUtils.findJavaProject(layoutProject);
+			List<IType> types = PackageUtils.findAllPackageFragmentsAsStream(layoutJavaProject)
+					.flatMap(pf -> getDiagramDescriptions(pf).stream()).collect(Collectors.toList());
+			types.stream().filter(type -> type.getFullyQualifiedName().equals(qualifiedName))
+					.forEach(type -> txtUMLLayout.add(type));
+		} catch (NotFoundException | JavaModelException ex) {
+			Logger.user.error(ex.getMessage());
 		}
 	}
 
