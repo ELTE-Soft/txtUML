@@ -64,7 +64,7 @@ public class ModelClassVisitor extends VisitorBase {
 			}
 		}
 
-		Utils.checkModifiers(collector, elem);
+		Utils.checkModifiers(collector, elem, m -> m.isStatic());
 		for (Object obj : elem.parameters()) {
 			SingleVariableDeclaration param = (SingleVariableDeclaration) obj;
 			if (!Utils.isAllowedParameterType(param.getType(), false)) {
