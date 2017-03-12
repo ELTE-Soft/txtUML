@@ -103,7 +103,7 @@ public class ModelTest {
 
 		compilationUnit.accept(new ModelVisitor(mockCollector));
 
-		verify(mockCollector, times(3)).report(isA(InvalidModifier.class));
+		verify(mockCollector, times(2)).report(isA(InvalidModifier.class));
 
 		checkNoOtherErrorRaised();
 	}
