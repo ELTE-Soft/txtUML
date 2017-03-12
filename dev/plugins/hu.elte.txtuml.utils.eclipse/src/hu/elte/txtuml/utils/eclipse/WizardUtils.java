@@ -129,6 +129,9 @@ public class WizardUtils {
 	 */
 	public static Optional<Pair<String, String>> getModelByAnnotations(IType annotatedType) {
 		try {
+			List<String> referencedProjects = new ArrayList<>(
+					Arrays.asList(annotatedType.getJavaProject().getRequiredProjectNames()));
+			referencedProjects.add(annotatedType.getJavaProject().getElementName());
 			for (IAnnotation annot : annotatedType.getAnnotations()) {
 				List<Object> annotValues = Stream.of(annot.getMemberValuePairs())
 						.filter(mvp -> mvp.getValueKind() == IMemberValuePair.K_CLASS)
@@ -146,7 +149,7 @@ public class WizardUtils {
 						String[][] resolvedTypes = resolveType(annotatedType, (String) v);
 						List<String[]> resolvedTypeList = new ArrayList<>(Arrays.asList(resolvedTypes));
 						for (String[] type : resolvedTypeList) {
-							Optional<Pair<String, String>> model = ModelUtils.getModelOf(type[0]);
+							Optional<Pair<String, String>> model = ModelUtils.getModelOf(type[0], referencedProjects);
 							if (model.isPresent()) {
 								return model;
 							}

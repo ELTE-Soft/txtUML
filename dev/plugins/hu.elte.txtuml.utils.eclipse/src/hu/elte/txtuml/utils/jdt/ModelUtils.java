@@ -61,22 +61,29 @@ public class ModelUtils {
 	}
 
 	/**
-	 * @param packageName the package name
+	 * @param packageName
+	 *            the package name
+	 * @param javaProjectNames
+	 *            the java project names which might contain the package
 	 * @return an empty optional if the given package name (of a type) is not in
 	 *         a txtUML model, otherwise the name of the model package and its
 	 *         java project respectively, which contains the given type
 	 */
-	public static Optional<Pair<String, String>> getModelOf(String packageName) {
+	public static Optional<Pair<String, String>> getModelOf(String packageName, List<String> javaProjectNames) {
 		try {
-			List<IJavaProject> projectsContainingPackage = ProjectUtils.getAllJavaProjectsOfWorkspace().stream().filter(pr -> {
-				IPackageFragment[] pf = null;
-				try {
-					pf = PackageUtils.findPackageFragments(pr, packageName);
-				} catch (JavaModelException e) {
-					return false;
-				}
-				return pf.length > 0;
-			}).collect(Collectors.toList());
+			List<IJavaProject> projectsContainingPackage = ProjectUtils.getAllJavaProjectsOfWorkspace().stream()
+					.filter(pr -> {
+						if (!javaProjectNames.contains(pr.getElementName())) {
+							return false;
+						}
+						IPackageFragment[] pf = null;
+						try {
+							pf = PackageUtils.findPackageFragments(pr, packageName);
+						} catch (JavaModelException e) {
+							return false;
+						}
+						return pf.length > 0;
+					}).collect(Collectors.toList());
 
 			for (IJavaProject project : projectsContainingPackage) {
 				Stream<ICompilationUnit> modelCU = PackageUtils.findAllPackageFragmentsAsStream(project)
