@@ -10,9 +10,11 @@ import org.eclipse.uml2.uml.Classifier;
 import org.eclipse.uml2.uml.Operation;
 import org.eclipse.uml2.uml.Property;
 
+import hu.elte.txtuml.export.diagrams.common.Point;
+import hu.elte.txtuml.export.diagrams.common.Rectangle;
 import hu.elte.txtuml.export.javascript.json.EnumAdapter;
-import hu.elte.txtuml.layout.visualizer.model.Point;
-import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
+import hu.elte.txtuml.export.javascript.json.MarshalablePoint;
+
 
 /**
  * 
@@ -22,7 +24,7 @@ import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
 public class ClassNode {
 
 	@XmlAccessMethods(getMethodName = "getPosition")
-	private Point position;
+	private MarshalablePoint position;
 	@XmlAccessMethods(getMethodName = "getWidth")
 	private Integer width;
 	@XmlAccessMethods(getMethodName = "getHeight")
@@ -55,13 +57,14 @@ public class ClassNode {
 	 *            the EMF-UML model-element which holds informations of this
 	 *            diagram element
 	 */
-	public ClassNode(Classifier clazz) {
+	public ClassNode(Classifier clazz, String id) {
 		/*
 		position = layout.getPosition();
 		width = layout.getWidth();
 		height = layout.getHeight();
 		id = layout.getName();
 		*/
+		this.id = id;
 		name = clazz.getName();
 		attributes = new ArrayList<Attribute>();
 		// creating attributes
@@ -88,7 +91,7 @@ public class ClassNode {
 	 * 
 	 * @return the abstract position of the class
 	 */
-	public Point getPosition() {
+	public MarshalablePoint getPosition() {
 		return position;
 	}
 
@@ -150,9 +153,10 @@ public class ClassNode {
 		return type;
 	}
 
-	public void setLayout(RectangleObject node) {
-		width = node.getPixelWidth();
-		height = node.getPixelHeight();
+	public void setLayout(Rectangle rectangle) {
+		width = rectangle.width();
+		height = rectangle.height();
+		position = new MarshalablePoint(rectangle.getTopLeft());
 		
 		
 	}

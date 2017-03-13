@@ -11,6 +11,7 @@ Require-Bundle:
  hu.elte.txtuml.api.model,
  hu.elte.txtuml.api.layout,
  hu.elte.txtuml.utils,
+ hu.elte.txtuml.export.diagrams.common,
  hu.elte.txtuml.export.uml2,
  org.eclipse.debug.ui,
  org.eclipse.jdt.core,
@@ -27,7 +28,6 @@ Require-Bundle:
  org.eclipse.core.runtime,
  hu.elte.txtuml.export.papyrus,
  org.eclipse.persistence.moxy,
- org.eclipse.papyrus.uml.diagram.common,
- hu.elte.txtuml.export.diagrams.common
+ org.eclipse.papyrus.uml.diagram.common
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy

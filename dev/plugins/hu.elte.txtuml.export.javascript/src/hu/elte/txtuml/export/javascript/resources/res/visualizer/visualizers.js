@@ -14,7 +14,7 @@ visualizer.visualizers.Visualizer = function (diagram, padding){
 	this._populateNodesAndLinks();
 	
 	//create grid from holders padding and spacing
-	this._grid = new visualizer.Grid(this._nodes,this._links, padding, diagram.spacing);
+	//this._grid = new visualizer.Grid(this._nodes,this._links, padding, diagram.spacing);
 
 	
 }
@@ -30,14 +30,14 @@ visualizer.visualizers.Visualizer.prototype._populateNodesAndLinks = function(){
 
 //The visualization function. The diagram will be displayed in the element passed in holder
 visualizer.visualizers.Visualizer.prototype.visualize = function(holder){
-	var totalSize = this._grid.getTotalPixelSize();
+	//var totalSize = this._grid.getTotalPixelSize();
 	this._graph = new joint.dia.Graph();
 	
 	//JointJS paper
 	var paper = new joint.dia.Paper({
 		'el': holder,
-		'width': totalSize.width,
-		'height': totalSize.height,
+		'width': 1000,
+		'height': 1000,
 		'gridSize': 1,
 		'model': this._graph,
 		'linkView': this._getLinkView(), 
@@ -49,8 +49,8 @@ visualizer.visualizers.Visualizer.prototype.visualize = function(holder){
 	
 	_.each(this._nodes, function (node) {
 		//get pixel bounds from grid and set it for nodeholders
-		var bounds = this._grid.getPixelBounds(node.getGridPosition(), node.getGridSize());
-		node.setBounds(bounds);
+		//var bounds = this._grid.getPixelBounds(node.getGridPosition(), node.getGridSize());
+		//node.setBounds(bounds);
 		
 		//add node to graph
 		this._graph.addCell(node.getNode());
@@ -58,8 +58,8 @@ visualizer.visualizers.Visualizer.prototype.visualize = function(holder){
 
 	_.each(this._links, function (relation) {
 		//get pixel vertices from grid and set it for linkholders
-		var route = this._grid.translateRoute(relation.getRoute());
-		relation.setPixelRoute(route);
+		//var route = this._grid.translateRoute(relation.getRoute());
+		//relation.setPixelRoute(route);
 		
 		//add link to graph
 		this._graph.addCell(relation.getLink());
@@ -90,7 +90,7 @@ visualizer.visualizers.CDVisualizer.prototype._getLinkView = function(){
 
 //Populates holders with classes and associations
 visualizer.visualizers.CDVisualizer.prototype._populateNodesAndLinks = function(){
-	_.each(this._diagram.classes, function (node) {
+	_.each(this._diagram.classess, function (node) { 
 		this._nodes.push(new visualizer.nodeholders.ClassNode(node));
 	},this);
 

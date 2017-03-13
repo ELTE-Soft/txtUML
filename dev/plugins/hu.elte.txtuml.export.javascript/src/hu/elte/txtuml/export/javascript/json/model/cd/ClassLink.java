@@ -1,13 +1,16 @@
 package hu.elte.txtuml.export.javascript.json.model.cd;
 
 import java.util.List;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 import org.eclipse.persistence.oxm.annotations.XmlAccessMethods;
 
+import hu.elte.txtuml.export.diagrams.common.Point;
+import hu.elte.txtuml.export.javascript.json.MarshalablePoint;
 import hu.elte.txtuml.export.javascript.utils.LinkUtils;
 import hu.elte.txtuml.layout.visualizer.model.AssociationType;
 import hu.elte.txtuml.layout.visualizer.model.LineAssociation;
-import hu.elte.txtuml.layout.visualizer.model.Point;
 
 public class ClassLink {
 	@XmlAccessMethods(getMethodName = "getId")
@@ -17,7 +20,7 @@ public class ClassLink {
 	@XmlAccessMethods(getMethodName = "getToID")
 	protected String toID;
 	@XmlAccessMethods(getMethodName = "getRoute")
-	protected List<Point> route;
+	protected List<MarshalablePoint> route;
 	@XmlAccessMethods(getMethodName = "getType")
 	protected AssociationType type;
 
@@ -37,8 +40,11 @@ public class ClassLink {
 		id = assoc.getId();
 		fromID = assoc.getFrom();
 		toID = assoc.getTo();
-		route = LinkUtils.getTurningPoints(assoc);
 		type = assoc.getType();
+	}
+	
+	public void setRoute(List<Point> route){
+		this.route = route.stream().map(MarshalablePoint::new).collect(Collectors.toList());
 	}
 
 	/**
@@ -72,7 +78,7 @@ public class ClassLink {
 	 * @return the turning points of the node's abstract route (if there's none,
 	 *         then a point in the center of the link)
 	 */
-	public List<Point> getRoute() {
+	public List<MarshalablePoint> getRoute() {
 		return route;
 	}
 

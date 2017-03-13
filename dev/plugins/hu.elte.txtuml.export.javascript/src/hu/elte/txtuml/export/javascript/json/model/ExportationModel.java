@@ -25,15 +25,15 @@ public class ExportationModel {
 
 	@XmlAccessMethods(getMethodName = "getClassDiagrams")
 	private List<ClassDiagram> classDiagrams;
-	@XmlAccessMethods(getMethodName = "getStateMachines")
-	private List<SMDiagram> stateMachines;
+	//@XmlAccessMethods(getMethodName = "getStateMachines")
+	//private List<SMDiagram> stateMachines;
 
 	/**
 	 * Constructor
 	 */
 	public ExportationModel() {
 		classDiagrams = new ArrayList<ClassDiagram>();
-		stateMachines = new ArrayList<SMDiagram>();
+		//stateMachines = new ArrayList<SMDiagram>();
 	}
 
 	/**
@@ -65,7 +65,7 @@ public class ExportationModel {
 			classDiagrams.add(new ClassDiagram(diagramName, der, map));
 			break;
 		case StateMachine:
-			stateMachines.add(new SMDiagram(diagramName, der, map));
+			//stateMachines.add(new SMDiagram(diagramName, der, map));
 			break;
 		default:
 			throw new UnexpectedDiagramTypeException(diagramName, der.getType().name());
@@ -83,8 +83,8 @@ public class ExportationModel {
 	/**
 	 * @return the StateMachines contained in the model
 	 */
-	public List<SMDiagram> getStateMachines() {
+	/*public List<SMDiagram> getStateMachines() {
 		return stateMachines;
-	}
+	}*/
 
 }

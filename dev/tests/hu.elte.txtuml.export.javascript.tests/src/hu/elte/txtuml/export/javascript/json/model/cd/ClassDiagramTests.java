@@ -198,14 +198,14 @@ public class ClassDiagramTests {
 		Assert.assertEquals("a2", calaa.getTo().getName());
 
 		Assert.assertEquals(expectedRouteab.size(), calab.getRoute().size());
-		List<Point> actualPoints = calab.getRoute();
+		List<Point> actualPoints = null;//calab.getRoute();
 		for (int i = 0; i < expectedRouteab.size(); ++i) {
 			Assert.assertEquals(expectedRouteab.get(i).getX(), actualPoints.get(i).getX());
 			Assert.assertEquals(expectedRouteab.get(i).getY(), actualPoints.get(i).getY());
 		}
 
 		Assert.assertEquals(expectedRouteaa.size(), calaa.getRoute().size());
-		actualPoints = calaa.getRoute();
+		//actualPoints = calaa.getRoute();
 		for (int i = 0; i < expectedRouteaa.size(); ++i) {
 			Assert.assertEquals(expectedRouteaa.get(i).getX(), actualPoints.get(i).getX());
 			Assert.assertEquals(expectedRouteaa.get(i).getY(), actualPoints.get(i).getY());
@@ -297,7 +297,7 @@ public class ClassDiagramTests {
 		Assert.assertEquals(AssociationType.generalization, cl.getType());
 
 		Assert.assertEquals(expectedRoute.size(), cl.getRoute().size());
-		List<Point> actualPoints = cl.getRoute();
+		List<Point> actualPoints = null;//cl.getRoute();
 		for (int i = 0; i < expectedRoute.size(); ++i) {
 			Assert.assertEquals(expectedRoute.get(i).getX(), actualPoints.get(i).getX());
 			Assert.assertEquals(expectedRoute.get(i).getY(), actualPoints.get(i).getY());
@@ -308,7 +308,7 @@ public class ClassDiagramTests {
 		cl = new ClassLink(la);
 		expectedRoute = Arrays.asList(new Point(4, 2));
 		Assert.assertEquals(expectedRoute.size(), cl.getRoute().size());
-		actualPoints = cl.getRoute();
+		//actualPoints = cl.getRoute();
 		for (int i = 0; i < expectedRoute.size(); ++i) {
 			Assert.assertEquals(expectedRoute.get(i).getX(), actualPoints.get(i).getX());
 			Assert.assertEquals(expectedRoute.get(i).getY(), actualPoints.get(i).getY());
@@ -319,7 +319,7 @@ public class ClassDiagramTests {
 		cl = new ClassLink(la);
 		expectedRoute = Arrays.asList(new Point(3, 2));
 		Assert.assertEquals(expectedRoute.size(), cl.getRoute().size());
-		actualPoints = cl.getRoute();
+		//actualPoints = cl.getRoute();
 		for (int i = 0; i < expectedRoute.size(); ++i) {
 			Assert.assertEquals(expectedRoute.get(i).getX(), actualPoints.get(i).getX());
 			Assert.assertEquals(expectedRoute.get(i).getY(), actualPoints.get(i).getY());
@@ -331,7 +331,7 @@ public class ClassDiagramTests {
 		cl = new ClassLink(la);
 		expectedRoute = Arrays.asList(new Point(4, 2), new Point(4, 5));
 		Assert.assertEquals(expectedRoute.size(), cl.getRoute().size());
-		actualPoints = cl.getRoute();
+		//actualPoints = cl.getRoute();
 		for (int i = 0; i < expectedRoute.size(); ++i) {
 			Assert.assertEquals(expectedRoute.get(i).getX(), actualPoints.get(i).getX());
 			Assert.assertEquals(expectedRoute.get(i).getY(), actualPoints.get(i).getY());
@@ -364,8 +364,8 @@ public class ClassDiagramTests {
 		rectB.setWidth(7);
 		rectB.setHeight(8);
 
-		ClassNode cnA = new ClassNode(classA);
-		ClassNode cnB = new ClassNode(classB);
+		ClassNode cnA = new ClassNode(classA, rectA.getName());
+		ClassNode cnB = new ClassNode(classB, rectB.getName());
 
 		List<MemberOperation> ops = cnA.getOperations();
 		List<Attribute> attrs = cnA.getAttributes();
@@ -389,11 +389,11 @@ public class ClassDiagramTests {
 		Assert.assertEquals(CDNodeType.CLASS, cnA.getType());
 		Assert.assertEquals(CDNodeType.ABSTRACT_CLASS, cnB.getType());
 
-		Assert.assertEquals((Integer) 1, cnA.getPosition().getX());
-		Assert.assertEquals((Integer) 5, cnB.getPosition().getX());
+		Assert.assertEquals(1, cnA.getPosition().getX());
+		Assert.assertEquals(5, cnB.getPosition().getY());
 
-		Assert.assertEquals((Integer) 2, cnA.getPosition().getY());
-		Assert.assertEquals((Integer) 6, cnB.getPosition().getY());
+		Assert.assertEquals(2, cnA.getPosition().getX());
+		Assert.assertEquals(6, cnB.getPosition().getY());
 
 		Assert.assertEquals((Integer) 3, cnA.getWidth());
 		Assert.assertEquals((Integer) 7, cnB.getWidth());

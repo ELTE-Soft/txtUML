@@ -17,8 +17,8 @@ public class ClassScaler extends NodeScaler {
 	// header width
 	private final static int HEADER_TYPE_MARKER_LENGTH = 4;
 
-	private final static double HEADER_TYPE_MARKER_FONT_WIDTH = 10;
-	private final static double HEADER_FONT_WIDTH = 10;
+	private final static double HEADER_TYPE_MARKER_FONT_WIDTH = 8.8;
+	private final static double HEADER_FONT_WIDTH = 8.8;
 
 	// body height
 	private final static double MEMBER_LINE_HEIGHT = 14;
@@ -27,8 +27,8 @@ public class ClassScaler extends NodeScaler {
 	// body width
 	private final static int MEMBER_VISIBILITY_MARKER_LENGTH = 2;
 
-	private final static double MEMBER_FONT_WIDTH = 10;
-	private final static double MEMBER_PADDING_HORIZONTAL = 10;
+	private final static double MEMBER_FONT_WIDTH = 8.8;
+	private final static double MEMBER_PADDING_HORIZONTAL = 5;
 
 	private final static int TYPE_MARKER_LENGTH = 3;
 	private final static int PARAM_LIST_MARKER_LENGTH = 2;
@@ -63,12 +63,17 @@ public class ClassScaler extends NodeScaler {
 		for (MemberOperation op : node.getOperations()) {
 			int opLength = MEMBER_VISIBILITY_MARKER_LENGTH + op.getName().length() + PARAM_LIST_MARKER_LENGTH;
 			for (Argument arg : op.getArgs()) {
-				opLength += arg.getName().length() + TYPE_MARKER_LENGTH;
+				opLength += arg.getName().length() + TYPE_MARKER_LENGTH + arg.getType().length();
 			}
 			int argCount = op.getArgs().size();
 			if (argCount > 0) {
 				opLength += (argCount - 1) * PARAM_LIST_SEPARATOR_LENGTH;
 			}
+			String retType = op.getReturnType();
+			if (retType != null){
+				opLength += TYPE_MARKER_LENGTH + retType.length();
+			}
+			
 			totalWidth = Math.max(totalWidth, opLength * MEMBER_FONT_WIDTH + MEMBER_PADDING_HORIZONTAL * 2);
 			width = (int) Math.ceil(totalWidth);
 		}

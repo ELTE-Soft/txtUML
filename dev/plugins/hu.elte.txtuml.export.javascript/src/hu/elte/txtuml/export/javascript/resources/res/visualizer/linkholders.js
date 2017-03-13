@@ -76,6 +76,7 @@ visualizer.linkholders.ClassAttributeLink = function (link){
 				'fill': 'black'
 			}
 		},
+		'vertices': link.route,
 		'sourceName':visualizer.Utils.MAPS.VISIBILITY_MAP[link.from.visibility] + ' ' + link.from.name,
 		'sourceNum':link.from.multiplicity,
 		'targetName':visualizer.Utils.MAPS.VISIBILITY_MAP[link.to.visibility] + ' ' + link.to.name,
@@ -103,7 +104,8 @@ visualizer.linkholders.ClassNonAttributeLink = function (link){
 		},
 		'target':{  
 			'id':link.toID
-		}	
+		},
+		'vertices': link.route
 	};
 	
 	switch (link.type){

@@ -64,8 +64,11 @@ visualizer.nodeholders.ClassNode = function (node){
 		'name' : node.name,
 		'id' : node.id,
 		'attributes' : attributes,
-		'methods' : operations
+		'methods' : operations,
+		'position' : this._gridPosition,
+		'size' : this._gridSize
 	}
+	console.log(classData);
 	
 	switch (node.type){
 		case 'class': this._node = new visualizer.shapes.Class(classData); break;
