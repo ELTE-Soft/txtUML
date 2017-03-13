@@ -92,17 +92,18 @@ public class TxtUMLVisuzalizeWizard extends Wizard {
 
 				@Override
 				protected IStatus run(IProgressMonitor monitor) {
-					Display.getDefault().asyncExec(() -> {
 						monitor.beginTask("Visualization", 100);
 
 						TxtUMLExporter exporter = new TxtUMLExporter(txtUMLProjectName, generatedFolderName,
 								txtUMLModelName, txtUMLLayout);
-						try {
-							exporter.cleanBeforeVisualization();
-						} catch (CoreException e) {
-							Dialogs.errorMsgb("txtUML export Error - cleaning resources",
-									"Error occured when cleaning resources.", e);
-						}
+						Display.getDefault().syncExec(() -> {
+							try {
+								exporter.cleanBeforeVisualization();
+							} catch (CoreException e) {
+								Dialogs.errorMsgb("txtUML export Error - cleaning resources",
+										"Error occured when cleaning resources.", e);
+							}
+						});
 						monitor.subTask("Exporting txtUML Model to UML2 model...");
 						try {
 							TxtUMLToUML2.exportModel(txtUMLProjectName, txtUMLModelName,
@@ -110,7 +111,7 @@ public class TxtUMLVisuzalizeWizard extends Wizard {
 							monitor.worked(10);
 						} catch (Exception e) {
 							Dialogs.errorMsgb("txtUML export Error", "Error occured during the UML2 exportation.", e);
-							monitor.done();
+							return Status.CANCEL_STATUS;
 						}
 
 						monitor.subTask("Generating txtUML layout description...");
@@ -144,20 +145,20 @@ public class TxtUMLVisuzalizeWizard extends Wizard {
 						} catch (Exception e) {
 							Dialogs.errorMsgb("txtUML layout export Error",
 									"Error occured during the diagram layout interpretation.", e);
-							monitor.done();
+							return Status.CANCEL_STATUS;
 						}
-
-						try {
-							PapyrusVisualizer pv = exporter.createVisualizer(layoutDescriptor);
-							pv.registerPayprusModelManager(TxtUMLPapyrusModelManager.class);
-							pv.run(SubMonitor.convert(monitor, 85));
-						} catch (Exception e) {
-							Dialogs.errorMsgb("txtUML visualization Error",
-									"Error occured during the visualization process.", e);
-							monitor.done();
-						}
-						monitor.done();
-					});
+					
+						PapyrusVisualizer pv = exporter.createVisualizer(layoutDescriptor);
+						pv.registerPayprusModelManager(TxtUMLPapyrusModelManager.class);
+						
+						Display.getDefault().syncExec(() -> {
+							try {
+								pv.run(SubMonitor.convert(monitor, 85));
+							} catch (Exception e) {
+								Dialogs.errorMsgb("txtUML visualization Error",
+										"Error occured during the visualization process.", e);
+							}
+						});
 					return Status.OK_STATUS;
 				}
 				
