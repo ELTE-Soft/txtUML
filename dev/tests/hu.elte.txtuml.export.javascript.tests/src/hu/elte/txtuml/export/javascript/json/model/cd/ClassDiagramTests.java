@@ -6,6 +6,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -33,7 +34,9 @@ import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
+import hu.elte.txtuml.export.papyrus.elementsarrangers.ArrangeException;
 import hu.elte.txtuml.export.uml2.mapping.ModelMapProvider;
+import hu.elte.txtuml.layout.export.DiagramExportationReport;
 import hu.elte.txtuml.layout.visualizer.model.AssociationType;
 import hu.elte.txtuml.layout.visualizer.model.LineAssociation;
 import hu.elte.txtuml.layout.visualizer.model.Point;
@@ -211,7 +214,7 @@ public class ClassDiagramTests {
 	}
 
 	@Test
-	public void testClassDiagram() throws UnexpectedEndException {
+	public void testClassDiagram() throws UnexpectedEndException, ArrangeException {
 		Class classB = model.createOwnedClass("B", false);
 		LineAssociation laab = new LineAssociation("package.AB", "package.A", "package.B");
 		LineAssociation laaa = new LineAssociation("package.AA", "package.A", "package.A");
@@ -243,10 +246,13 @@ public class ClassDiagramTests {
 
 		Set<RectangleObject> nodes = new HashSet<RectangleObject>(Arrays.asList(recta, rectb));
 		Set<LineAssociation> links = new HashSet<LineAssociation>(Arrays.asList(laab, laaa));
+		DiagramExportationReport der = new DiagramExportationReport();
+		der.setNodes(nodes);
+		der.setLinks(links);
 
-		ClassDiagram cd = new ClassDiagram("package.diagram", nodes, links, mockMap, 0.5);
+		ClassDiagram cd = new ClassDiagram("package.diagram", der, mockMap);
 
-		List<ClassNode> cns = cd.getClasses();
+		Collection<ClassNode> cns = cd.getClasses();
 		List<ClassAttributeLink> cals = cd.getAttributeLinks();
 		List<ClassLink> cnals = cd.getNonAttributeLinks();
 
@@ -358,8 +364,8 @@ public class ClassDiagramTests {
 		rectB.setWidth(7);
 		rectB.setHeight(8);
 
-		ClassNode cnA = new ClassNode(rectA, classA);
-		ClassNode cnB = new ClassNode(rectB, classB);
+		ClassNode cnA = new ClassNode(classA);
+		ClassNode cnB = new ClassNode(classB);
 
 		List<MemberOperation> ops = cnA.getOperations();
 		List<Attribute> attrs = cnA.getAttributes();

@@ -28,6 +28,7 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 import hu.elte.txtuml.export.uml2.mapping.ModelMapProvider;
+import hu.elte.txtuml.layout.export.DiagramExportationReport;
 import hu.elte.txtuml.layout.visualizer.model.LineAssociation;
 import hu.elte.txtuml.layout.visualizer.model.Point;
 import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
@@ -222,8 +223,11 @@ public class SMDiagramTests {
 
 		Set<RectangleObject> nodes = new HashSet<RectangleObject>(Arrays.asList(rectS1, rectI));
 		Set<LineAssociation> links = new HashSet<LineAssociation>(Arrays.asList(lais1));
-
-		SMDiagram smd = new SMDiagram("package.diagram", nodes, links, mockMap, 0.5);
+		DiagramExportationReport der = new DiagramExportationReport();
+		der.setNodes(nodes);
+		der.setLinks(links);
+		
+		SMDiagram smd = new SMDiagram("package.diagram", der, mockMap);
 
 		Assert.assertEquals("A", smd.getMachineName());
 		Assert.assertEquals("package.diagram", smd.getName());

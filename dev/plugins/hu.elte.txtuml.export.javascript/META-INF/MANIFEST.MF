@@ -27,6 +27,7 @@ Require-Bundle:
  org.eclipse.core.runtime,
  hu.elte.txtuml.export.papyrus,
  org.eclipse.persistence.moxy,
- org.eclipse.papyrus.uml.diagram.common
+ org.eclipse.papyrus.uml.diagram.common,
+ hu.elte.txtuml.export.diagrams.common
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy

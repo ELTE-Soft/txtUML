@@ -55,11 +55,13 @@ public class ClassNode {
 	 *            the EMF-UML model-element which holds informations of this
 	 *            diagram element
 	 */
-	public ClassNode(RectangleObject layout, Classifier clazz) {
+	public ClassNode(Classifier clazz) {
+		/*
 		position = layout.getPosition();
 		width = layout.getWidth();
 		height = layout.getHeight();
 		id = layout.getName();
+		*/
 		name = clazz.getName();
 		attributes = new ArrayList<Attribute>();
 		// creating attributes
@@ -146,6 +148,13 @@ public class ClassNode {
 	 */
 	public CDNodeType getType() {
 		return type;
+	}
+
+	public void setLayout(RectangleObject node) {
+		width = node.getPixelWidth();
+		height = node.getPixelHeight();
+		
+		
 	}
 
 }

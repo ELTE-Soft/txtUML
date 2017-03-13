@@ -1,17 +1,32 @@
 package hu.elte.txtuml.export.javascript.json.model.cd;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 import org.eclipse.persistence.oxm.annotations.XmlAccessMethods;
+import org.eclipse.swt.widgets.Item;
 import org.eclipse.uml2.uml.Association;
 import org.eclipse.uml2.uml.Classifier;
 
+import hu.elte.txtuml.export.javascript.scalers.ClassScaler;
+import hu.elte.txtuml.export.javascript.scalers.NodeScaler;
+import hu.elte.txtuml.export.papyrus.elementsarrangers.ArrangeException;
+import hu.elte.txtuml.export.papyrus.elementsarrangers.txtumllayout.LayoutVisualizerManager;
 import hu.elte.txtuml.export.uml2.mapping.ModelMapProvider;
+import hu.elte.txtuml.layout.export.DiagramExportationReport;
 import hu.elte.txtuml.layout.visualizer.model.AssociationType;
 import hu.elte.txtuml.layout.visualizer.model.LineAssociation;
 import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
+import hu.elte.txtuml.export.diagrams.common.LayoutTransformer;
 
 /**
  * 
@@ -22,8 +37,8 @@ public class ClassDiagram {
 
 	@XmlAccessMethods(getMethodName = "getName")
 	private String name;
-	@XmlAccessMethods(getMethodName = "getClasses")
-	private List<ClassNode> classes;
+	@XmlTransient
+	private Map<String,ClassNode> classes;
 	@XmlAccessMethods(getMethodName = "getAttributeLinks")
 	private List<ClassAttributeLink> attributeLinks;
 	@XmlAccessMethods(getMethodName = "getNonAttributeLinks")
@@ -58,22 +73,45 @@ public class ClassDiagram {
 	 *             Exception is thrown if an association's end could not be
 	 *             linked to the EMF-UML model
 	 */
-	public ClassDiagram(String diagramName, Set<RectangleObject> nodes, Set<LineAssociation> links,
-			ModelMapProvider map, double spacing) throws UnexpectedEndException {
-		this.spacing = spacing;
+	public ClassDiagram(String diagramName, DiagramExportationReport der,
+			ModelMapProvider map) throws UnexpectedEndException, ArrangeException {
 		name = diagramName;
-		classes = new ArrayList<ClassNode>();
+		classes = new HashMap<String, ClassNode>();
 		attributeLinks = new ArrayList<ClassAttributeLink>();
 		nonAttributeLinks = new ArrayList<ClassLink>();
 
+		Set<RectangleObject> nodes = der.getNodes();
+		Set<LineAssociation> links = der.getLinks();
 		// creating ClassNodes
 		for (RectangleObject node : nodes) {
 			Classifier clazz = (Classifier) map.getByName(node.getName());
-			classes.add(new ClassNode(node, clazz));
+			ClassNode cn = new ClassNode(clazz);
+			NodeScaler scaler = new ClassScaler(cn);
+			node.setPixelWidth(scaler.getWidth());
+			node.setPixelHeight(scaler.getHeight());
+			classes.put(node.getName(), cn);
 		}
-
+		
+		LayoutVisualizerManager lvm = new LayoutVisualizerManager(nodes, der.getLinks(), der.getStatements());
+		lvm.arrange();
+		LayoutTransformer lt = new LayoutTransformer(lvm.getPixelGridRatioHorizontal(), lvm.getPixelGridRatioVertical());
+		
+		//Map<String, Rectangle> ltrmap =  nodes.stream().collect(Collectors.toMap(RectangleObject::getName, Function.identity()));
+		//Map<String, List<Point>> ltpmap =  links.stream().collect(Collectors.toMap(LineAssociation::getId, la -> la.getRoute()));
+		
+		
+		//lt.doTranformations(ltrmap, ltpmap);
+		
+		
+		
+		
+		for (RectangleObject node : nodes) {
+			classes.get(node.getName()).setLayout(node);
+		}
+		
+		
 		// creating and sorting links into attributeLinks and nonAttributeLinks
-		for (LineAssociation link : links) {
+		for (LineAssociation link : der.getLinks()) {
 			if (link.getType() == AssociationType.generalization) {
 				nonAttributeLinks.add(new ClassLink(link));
 			} else {
@@ -82,6 +120,7 @@ public class ClassDiagram {
 						(Classifier) map.getByName(link.getTo())));
 			}
 		}
+		System.out.println(lvm.getPixelGridRatioHorizontal());
 
 	}
 
@@ -97,8 +136,9 @@ public class ClassDiagram {
 	 * 
 	 * @return the ClassNodes of the diagram
 	 */
-	public List<ClassNode> getClasses() {
-		return classes;
+	@XmlElement(name="classes")
+	public Collection<ClassNode> getClasses() {
+		return classes.values();
 	}
 
 	/**

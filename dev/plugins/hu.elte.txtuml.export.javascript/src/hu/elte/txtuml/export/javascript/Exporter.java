@@ -144,37 +144,21 @@ public class Exporter {
 			String name = report.getFirst();
 			DiagramExportationReport der = report.getSecond();
 
+			/*
 			LayoutVisualizerManager lvm = new LayoutVisualizerManager(der.getNodes(), der.getLinks(),
 					der.getStatements());
 			lvm.arrange();
+			
+			*/
 			// lvm now contains all the diagram elements abstract position and
 			// size informations
 
 			ModelMapProvider map = new ModelMapProvider(URI.createFileURI(genFolder), der.getModelName());
 			// map connects the layout information to the EMF-UML model
 			// informations
-			List<Statement> statements = lvm.getStatementsSet();
 
-			double spacing = 0.8; // default spacing
-
-			// Find the first Spacing annotation provided if any
-			Statement s = statements.stream().filter(statement -> statement.getType() == StatementType.corridorsize)
-					.findFirst().orElse(null);
-
-			if (s != null) {
-				spacing = Double.parseDouble(s.getParameter(0));
-			}
-
-			switch (der.getType()) {
-			case Class:
-				model.addClassDiagram(name, lvm.getObjects(), lvm.getAssociations(), map, spacing);
-				break;
-			case StateMachine:
-				model.addStateMachine(name, lvm.getObjects(), lvm.getAssociations(), map, spacing);
-				break;
-			default:
-				throw new UnexpectedDiagramTypeException(name, der.getType().name());
-			}
+			model.createDiagram(name, report.getSecond(), map);
+			
 		}
 
 	}

@@ -9,6 +9,7 @@ import org.eclipse.persistence.oxm.annotations.XmlAccessMethods;
 import org.eclipse.uml2.uml.Region;
 
 import hu.elte.txtuml.export.uml2.mapping.ModelMapProvider;
+import hu.elte.txtuml.layout.export.DiagramExportationReport;
 import hu.elte.txtuml.layout.visualizer.model.LineAssociation;
 import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
 
@@ -55,14 +56,15 @@ public class SMDiagram {
 	 * @param spacing
 	 *            The desired spacing
 	 */
-	public SMDiagram(String diagramName, Set<RectangleObject> nodes, Set<LineAssociation> links, ModelMapProvider map,
-			double spacing) {
-		this.spacing = spacing;
+	public SMDiagram(String diagramName, DiagramExportationReport der, ModelMapProvider map
+			) {
 		name = diagramName;
 		machineName = null;
 		states = new ArrayList<State>();
 		pseudoStates = new ArrayList<PseudoState>();
 		transitions = new ArrayList<Transition>();
+		
+		Set<RectangleObject> nodes = der.getNodes();
 
 		// creating and sorting states into states and pseudoStates
 		for (RectangleObject node : nodes) {
@@ -87,7 +89,7 @@ public class SMDiagram {
 		}
 
 		// crating transitions
-		for (LineAssociation link : links) {
+		for (LineAssociation link : der.getLinks()) {
 			org.eclipse.uml2.uml.Transition t = (org.eclipse.uml2.uml.Transition) map.getByName(link.getId());
 			transitions.add(new Transition(link, t));
 		}
