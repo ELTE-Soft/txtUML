@@ -36,12 +36,17 @@ visualizer.visualizers.Visualizer.prototype.visualize = function(holder){
 	//JointJS paper
 	var paper = new joint.dia.Paper({
 		'el': holder,
-		'width': 1000,
-		'height': 1000,
 		'gridSize': 1,
 		'model': this._graph,
 		'linkView': this._getLinkView(), 
-		'perpendicularLinks': true
+		'perpendicularLinks': true,
+		'origin':{
+			'x':this._padding,
+			'y':this._padding
+		},
+		'width': 999999999999999999,
+		'height': 999999999999999999
+
 	});
 	
 	//do previsualization tasks
@@ -62,10 +67,13 @@ visualizer.visualizers.Visualizer.prototype.visualize = function(holder){
 		//relation.setPixelRoute(route);
 		
 		//add link to graph
-		this._graph.addCell(relation.getLink());
+		this._graph.addCell(relation.getLink()); 
 
 	},this);
 	
+
+	paper.fitToContent({'padding' : this._padding, 'allowNewOrigin': 'any'});
+	//paper.setOrigin(this._padding,this._padding);	
 
 }
 

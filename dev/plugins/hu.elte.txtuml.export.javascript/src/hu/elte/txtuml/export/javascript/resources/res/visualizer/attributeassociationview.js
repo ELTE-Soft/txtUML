@@ -9,7 +9,7 @@ visualizer.shapes.AttributeAssociationView = joint.dia.LinkView.extend({
 	// snaps the name and multiplicity labels to their expected locations (runs after every change of the link)
 	snapLabels: function() {
 		var snap = this.model.attr('snapLabels');
-		
+		var origin = this.paper.options.origin;
 		// check if should snap 
 		if (typeof snap !== 'undefined' && snap === true){
 			
@@ -31,7 +31,14 @@ visualizer.shapes.AttributeAssociationView = joint.dia.LinkView.extend({
 				}
 				
 				//arrowhead dimensions
-				var bbox = V(arrowhead.node).bbox();
+				var originalbbox = V(arrowhead.node).bbox();
+				var bbox = {
+						width: originalbbox.width,
+						height: originalbbox.height,
+						x: originalbbox.x - origin.x,
+						y: originalbbox.y - origin.y
+				}
+				
 
 				//setting name label target size
 				var labelbox1 = this._labelCache[idx * 2].bbox();
