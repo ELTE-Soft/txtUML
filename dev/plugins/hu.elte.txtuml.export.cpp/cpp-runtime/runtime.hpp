@@ -16,7 +16,7 @@
 #include "threadpoolmanager.hpp"
 #include "runtimetypes.hpp"
 #include "ESRoot/Types.hpp"
-#include "ESRoot/Containers/ConfArray.hpp"
+#include "ESRoot/Containers/FixedArray.hpp"
 
 
 template<typename RuntimeType>

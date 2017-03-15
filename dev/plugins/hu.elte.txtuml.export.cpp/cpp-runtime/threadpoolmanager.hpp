@@ -9,8 +9,9 @@
 #include <math.h>
 
 #include "threadpool.hpp"
+#include "threadconfiguration.hpp"
 #include "ESRoot/Types.hpp"
-#include "ESRoot/Containers/ConfArray.hpp"
+#include "ESRoot/Containers/FixedArray.hpp"
 
 /*! Menages the state of threadpools. */
 class ThreadPoolManager

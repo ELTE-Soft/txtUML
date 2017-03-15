@@ -105,7 +105,7 @@ public class OperatorTemplates {
 			return GenerationNames.Namespaces.CollectionUtilsNamespace + "::" + "select"; 
 		case "log":
 			return ActionNames.Log;
-		case TimerStart:
+		case "start":
 			return TimerNames.TimerInterFaceName + "::" + TimerStart;
 		case "inc":
 			return Increment;

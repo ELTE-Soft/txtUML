@@ -14,6 +14,8 @@ class EventBase;
 template<typename RuntimeType>
 class IRuntime;
 
+class Timer;
+
 namespace ES
 {
 	//basic types
@@ -40,10 +42,7 @@ namespace ES
 	using MessageQueueType = ThreadSafeQueue<EventRef>;
 	using PoolQueueType = ThreadSafeQueue<StateMachineRef>;
 
-	
-
-	
-
+	using TimerPtr = SharedPtr<Timer>;
 
 
 }

@@ -1,6 +1,6 @@
 #include "itimer.hpp"
 #include "timer.hpp"
 
-Timer *ITimer::start(IStateMachine *sm, ES::EventRef event, int millisecs) {
-    return new Timer(sm,event,millisecs);
+ES::TimerPtr ITimer::start(ES::StateMachineRef sm, ES::EventRef event, int millisecs) {
+    return ES::TimerPtr(new Timer(sm,event,millisecs));
 }

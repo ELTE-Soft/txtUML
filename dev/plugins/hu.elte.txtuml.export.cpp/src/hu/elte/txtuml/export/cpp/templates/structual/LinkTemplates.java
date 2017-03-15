@@ -1,7 +1,6 @@
 package hu.elte.txtuml.export.cpp.templates.structual;
 
 import hu.elte.txtuml.export.cpp.templates.GenerationNames;
-import hu.elte.txtuml.export.cpp.templates.GenerationNames.ActionNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.CollectionNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.FileNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.GeneralFunctionNames;

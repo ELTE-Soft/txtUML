@@ -3,38 +3,31 @@
 
 #include <condition_variable>
 #include <functional>
-#include <future>
 #include <chrono>
 #include <ostream>
 #include <thread>
-
-#include "istatemachine.hpp"
-#include "runtimetypes.hpp"
 
 #include "itimer.hpp"
 #include "ESRoot/Types.hpp"
 
 class Timer : public ITimer
-{           typedef std::chrono::milliseconds milliseconds;
-       public:
+{          
+typedef std::chrono::milliseconds milliseconds;
+public:
 
-           Timer(ES::StateMachineRef,ES::EventRef,int);
-           ~Timer();
+    Timer(ES::StateMachineRef,ES::EventRef,int);
+    ~Timer();
 
-           //TODO implement
-           virtual void reset(int) {}
-           virtual int query() {return 0;}
-           virtual void add(int) {}
-           virtual bool cancel() {return false;}
+private:
 
-       private:
-
-           void schedule(int millisecs);
-           void f(int millisecs);
-
-           std::condition_variable _cond;
-           std::function<void()> command;
-           std::future<void> fut;
+    void schedule(int millisecs);
+    void scheduledTask();
+	
+    std::condition_variable _cond;
+	
+	int _millisecs;
+    std::function<void()> _command;
+    std::thread _scheduler;
 
 };
 

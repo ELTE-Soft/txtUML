@@ -8,9 +8,7 @@ import org.eclipse.uml2.uml.SignalEvent;
 
 import hu.elte.txtuml.export.cpp.templates.GenerationNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.FileNames;
-import hu.elte.txtuml.export.cpp.templates.Options;
 import hu.elte.txtuml.export.cpp.templates.PrivateFunctionalTemplates;
-import hu.elte.txtuml.export.cpp.templates.RuntimeTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.HeaderTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.VariableTemplates;
 import hu.elte.txtuml.utils.Pair;

@@ -106,6 +106,8 @@ public class PrivateFunctionalTemplates {
 					cppType = BasicTypeNames.StringTypeName;
 					break;
 				case TimerNames.TimerClassName:
+					cppType = TimerNames.TimerPtrName;
+					break;
 				case PointerAndMemoryNames.EventPtr:
 				case RuntimeTemplates.UsingRuntimePtr:
 				case RuntimeTemplates.RuntimePtrType:
