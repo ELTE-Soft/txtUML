@@ -31,6 +31,7 @@ import org.osgi.framework.Bundle;
 import hu.elte.txtuml.export.cpp.thread.ThreadPoolConfiguration;
 import hu.elte.txtuml.export.cpp.structural.ClassExporter;
 import hu.elte.txtuml.export.cpp.structural.DataTypeExporter;
+import hu.elte.txtuml.export.cpp.templates.GenerationNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.FileNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.ModifierNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationTemplates;
@@ -54,13 +55,16 @@ public class Uml2ToCppExporter {
 
 	private static final String RUNTIME_DIR_PREFIX = RuntimeTemplates.RTPath;
 	private static final String RUNTIME_LIB_NAME = "libsmrt";
-	private static final String DEFAULT_TARGET_EXECUTABLE = "main";
-	private static final String DEFAULT_DEPLOYMENT_NAME = "deployment";
 	private static final String DEFAULT_ASSOCIATIONS_NAME = "associations";
 	private static final String PROJECT_NAME = "hu.elte.txtuml.export.cpp";
 	private static final String CPP_FILES_FOLDER_NAME = "cpp-runtime";
 	private static final String ENUM_EXTENSION = "_EE";
+	
+	//default sources
+	private static final String DEFAULT_TARGET_EXECUTABLE = "main";
+	private static final String DEFAULT_DEPLOYMENT_NAME = "deployment";
 	private static final String DEFAULT_INIT_MACHINE_NAME = StateMachineTemplates.TransitionTableInitialSourceName;
+	private static final String DEFAULT_ENVIOREMENT_INITIALIZER = "Env";
 
 	private ClassExporter classExporter;
 	private DataTypeExporter dataTypeExporter;
@@ -177,6 +181,14 @@ public class Uml2ToCppExporter {
 		Files.copy(Paths.get(cppFilesLocation + StateMachineTemplates.StateMachineBaseHeader),
 				Paths.get(destination + File.separator + StateMachineTemplates.StateMachineBaseHeader),
 				StandardCopyOption.REPLACE_EXISTING);
+		
+		Files.copy(Paths.get(cppFilesLocation + DEFAULT_ENVIOREMENT_INITIALIZER + GenerationNames.FileNames.HeaderExtension),
+				Paths.get(destination + File.separator + DEFAULT_ENVIOREMENT_INITIALIZER + GenerationNames.FileNames.HeaderExtension),
+				StandardCopyOption.REPLACE_EXISTING);
+		Files.copy(Paths.get(cppFilesLocation + DEFAULT_ENVIOREMENT_INITIALIZER + GenerationNames.FileNames.SourceExtension),
+				Paths.get(destination + File.separator + DEFAULT_ENVIOREMENT_INITIALIZER + GenerationNames.FileNames.SourceExtension),
+				StandardCopyOption.REPLACE_EXISTING);
+		
 		if (options.isAddRuntime()) {
 
 			File sourceRuntimeDir = new File(cppFilesLocation);
@@ -240,6 +252,7 @@ public class Uml2ToCppExporter {
 		sourceNames.add(DEFAULT_DEPLOYMENT_NAME);
 		sourceNames.add(DEFAULT_ASSOCIATIONS_NAME);
 		sourceNames.add(DEFAULT_INIT_MACHINE_NAME);
+		sourceNames.add(DEFAULT_ENVIOREMENT_INITIALIZER);
 		sourceNames.addAll(classNames);
 		cmake.addExecutableTarget(DEFAULT_TARGET_EXECUTABLE, sourceNames, "");
 		cmake.writeOutCMakeLists();
