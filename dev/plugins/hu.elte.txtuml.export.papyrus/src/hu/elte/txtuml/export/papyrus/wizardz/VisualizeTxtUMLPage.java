@@ -112,16 +112,14 @@ public class VisualizeTxtUMLPage extends WizardPage {
 						} else {
 							txtUMLLayout.remove(selectedType);
 						}
-						selectElementsInDiagramTree(txtUMLLayout.toArray());
+						selectElementsInDiagramTree(txtUMLLayout.toArray(), true);
 					}
 				}
 			}
 		});
 
-		tree.expandAll();
-		selectElementsInDiagramTree(txtUMLLayout.toArray());
-		tree.collapseAll();
-		tree.setExpandedElements(txtUMLLayout.stream().map(type -> type.getJavaProject()).toArray());
+		selectElementsInDiagramTree(txtUMLLayout.toArray(), false);
+		setExpandedLayouts(txtUMLLayout);
 
 		GridData treeGd = new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1);
 		treeGd.heightHint = 200;
@@ -162,8 +160,16 @@ public class VisualizeTxtUMLPage extends WizardPage {
 
 	/**
 	 * Selects the given elements in the diagram selection tree
+	 * 
+	 * @param elements
+	 *            the elements to select in tree
+	 * @param isTreeVisible
+	 *            is the selection tree visible at the moment
 	 */
-	public void selectElementsInDiagramTree(Object[] elements) {
+	public void selectElementsInDiagramTree(Object[] elements, boolean isTreeVisible) {
+		if (!isTreeVisible)
+			tree.expandAll();
+
 		txtUMLLayout.clear();
 		tree.setCheckedElements(elements);
 		List<IType> checkedTypes = Arrays.asList(elements).stream().filter(e -> e instanceof IType).map(e -> (IType) e)
@@ -171,6 +177,19 @@ public class VisualizeTxtUMLPage extends WizardPage {
 
 		checkedTypes.forEach(type -> txtUMLLayout.add(type));
 		Stream.of(tree.getTree().getItems()).forEach(pr -> updateParentCheck(pr));
+
+		if (!isTreeVisible)
+			tree.collapseAll();
+	}
+
+	/**
+	 * Expands the given layouts in the layout selection tree
+	 * 
+	 * @param expandableTypes
+	 *            the types to expand in tree
+	 */
+	public void setExpandedLayouts(List<IType> typesToExpand) {
+		tree.setExpandedElements(typesToExpand.stream().map(type -> type.getJavaProject()).toArray());
 	}
 
 	private CheckboxTreeViewer getDiagramTreeViewer(ScrolledComposite treeComposite) {
