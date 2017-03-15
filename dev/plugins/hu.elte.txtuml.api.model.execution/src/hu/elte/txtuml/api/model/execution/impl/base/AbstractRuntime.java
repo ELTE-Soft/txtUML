@@ -3,10 +3,13 @@ package hu.elte.txtuml.api.model.execution.impl.base;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
+import java.util.concurrent.Delayed;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.function.Consumer;
 
 import hu.elte.txtuml.api.model.ModelClass;
@@ -102,15 +105,68 @@ public abstract class AbstractRuntime<C extends ModelClassWrapper, P extends Por
 			++scheduledCount;
 		}
 
-		return currentScheduler.schedule(() -> {
-			synchronized (LOCK_ON_SCHEDULER) {
-				--scheduledCount;
-				if (scheduledCount == 0) {
-					getExecutor().removeTerminationBlocker(LOCK_ON_SCHEDULER);
-				}
-			}
-			return callable.call();
+		final ScheduledFuture<V> future = currentScheduler.schedule(() -> {
+			V result = callable.call();
+			decreaseScheduledCount();
+			return result;
 		}, inExecutionTime(delay), unit);
+
+		return new ScheduledFuture<V>() {
+
+			/*
+			 * A mock of 'future'. Only differs in the 'cancel' method.
+			 */
+
+			@Override
+			public long getDelay(TimeUnit unit) {
+				return future.getDelay(unit);
+			}
+
+			@Override
+			public int compareTo(Delayed o) {
+				return future.compareTo(o);
+			}
+
+			@Override
+			public boolean cancel(boolean mayInterruptIfRunning) {
+				boolean hasBeenCancelledNow = future.cancel(mayInterruptIfRunning);
+				if (hasBeenCancelledNow) {
+					decreaseScheduledCount();
+				}
+				return hasBeenCancelledNow;
+			}
+
+			@Override
+			public V get() throws InterruptedException, ExecutionException {
+				return future.get();
+			}
+
+			@Override
+			public V get(long timeout, TimeUnit unit)
+					throws InterruptedException, ExecutionException, TimeoutException {
+				return future.get(timeout, unit);
+			}
+
+			@Override
+			public boolean isCancelled() {
+				return future.isCancelled();
+			}
+
+			@Override
+			public boolean isDone() {
+				return future.isDone();
+			}
+
+		};
+	}
+	
+	private void decreaseScheduledCount() {
+		synchronized (LOCK_ON_SCHEDULER) {
+			--scheduledCount;
+			if (scheduledCount == 0) {
+				getExecutor().removeTerminationBlocker(LOCK_ON_SCHEDULER);
+			}
+		}
 	}
 
 	public void trace(Consumer<TraceListener> eventReporter) {
