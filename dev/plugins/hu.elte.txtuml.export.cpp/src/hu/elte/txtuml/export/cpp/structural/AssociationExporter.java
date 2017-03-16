@@ -6,6 +6,8 @@ import java.util.List;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.uml2.uml.Property;
 
+import hu.elte.txtuml.export.cpp.templates.GenerationNames;
+import hu.elte.txtuml.export.cpp.templates.GenerationTemplates;
 import hu.elte.txtuml.export.cpp.templates.PrivateFunctionalTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.LinkTemplates;
 
@@ -62,7 +64,7 @@ class AssociationExporter {
 
 		}
 		return PrivateFunctionalTemplates.include(LinkTemplates.AssociationsStructuresHreaderName)
-				+ assocDeclerations.toString();
+				+ GenerationTemplates.putNamespace(assocDeclerations.toString(), GenerationNames.Namespaces.ModelNamespace);
 	}
 	
 	List<String> getAssociatedPropertyTypes() {

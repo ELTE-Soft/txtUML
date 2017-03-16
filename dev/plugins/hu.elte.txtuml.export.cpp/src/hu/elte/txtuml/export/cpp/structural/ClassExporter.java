@@ -96,13 +96,14 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 		}
 
 		source = createClassHeaderSource();
+		//TODO refactoring the dependency to outside
 		String externalDeclerations = associationExporter.createLinkFunctionDeclarations(name);
 		CppExporterUtils.writeOutSource(dest, GenerationTemplates.headerName(name),
 				CppExporterUtils.format(HeaderTemplates.headerGuard(source + externalDeclerations, name)));
 
 		source = createClassCppSource();
 		CppExporterUtils.writeOutSource(dest, GenerationTemplates.sourceName(name),
-				CppExporterUtils.format(getAllDependencies(false) + source));
+				CppExporterUtils.format(getAllDependencies(false) + GenerationTemplates.putNamespace(source, GenerationNames.Namespaces.ModelNamespace)));
 	}
 
 	public boolean isStateMachineOwner() {
@@ -204,11 +205,11 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 					PrivateFunctionalTemplates.include(RuntimeTemplates.RTPath + GenerationTemplates.TimerHeader));
 		} else {
 			source.append(PrivateFunctionalTemplates.include(GenerationNames.FileNames.TypesFilePath));
-			source.append(dependencyExporter.createDependencyHeaderIncludeCode());
 			if (associationExporter.ownAssociation()) {
-				source.append(
-						PrivateFunctionalTemplates.include(RuntimeTemplates.RTPath + LinkTemplates.AssocationHeader));
+				source.append(PrivateFunctionalTemplates.include(RuntimeTemplates.RTPath + LinkTemplates.AssocationHeader));
 			}
+			source.append(GenerationTemplates.putNamespace(dependencyExporter.createDependencyHeaderIncludeCode(), GenerationNames.Namespaces.ModelNamespace));
+
 
 		}
 

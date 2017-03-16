@@ -27,7 +27,6 @@ public class StateMachineTemplates {
 	public static final String InitTransitionTable = "initTransitionTable";
 	public static final String AllTransitionTableInitialProcName = "initTransitionTables";
 	public static final String TransitionTableInitialSourceName = "init_maps";
-	public static final String MachineNamespace = "StateMachine";
 	public static final String ProcessInitTransitionFunctionName = "processInitTransition";
 
 	public static String transitionActionDecl(String transitionActionName) {

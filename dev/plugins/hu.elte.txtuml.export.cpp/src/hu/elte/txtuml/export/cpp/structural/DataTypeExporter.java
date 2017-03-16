@@ -6,6 +6,7 @@ import java.io.UnsupportedEncodingException;
 import org.eclipse.uml2.uml.DataType;
 
 import hu.elte.txtuml.export.cpp.CppExporterUtils;
+import hu.elte.txtuml.export.cpp.templates.GenerationNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.HeaderTemplates;
 
@@ -24,9 +25,15 @@ public class DataTypeExporter extends StructuredElementExporter<DataType> {
 	private void exportDataType(String destiation) throws FileNotFoundException, UnsupportedEncodingException {
 
 		String attributes = super.createPublicAttributes();
-		CppExporterUtils.writeOutSource(destiation, GenerationTemplates.headerName(name),
-				HeaderTemplates.headerGuard(dependencyExporter.createDependencyHeaderIncludeCode()
-						+ GenerationTemplates.dataType(name, attributes.toString()), name));
+		String source = dependencyExporter.createDependencyHeaderIncludeCode()
+				+ GenerationTemplates.dataType(name, attributes.toString());
+		
+		CppExporterUtils.writeOutSource(destiation,
+				GenerationTemplates.headerName(name),
+				HeaderTemplates.headerGuard( GenerationTemplates.putNamespace(
+						source, 
+						GenerationNames.Namespaces.ModelNamespace), 
+						name));
 	}
 
 }

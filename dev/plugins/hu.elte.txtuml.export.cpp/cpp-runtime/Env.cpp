@@ -7,6 +7,6 @@ namespace Env
 	void initEnvironment()
 	{
 		deployment::initRuntime();
-		StateMachine::initTransitionTables();
+		Model::initTransitionTables();
 	}
 }

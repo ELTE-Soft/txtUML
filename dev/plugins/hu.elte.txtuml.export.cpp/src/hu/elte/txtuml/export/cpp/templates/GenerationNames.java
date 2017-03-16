@@ -87,6 +87,7 @@ public class GenerationNames {
 	}
 	
 	public static class Namespaces {
+		public static final String ModelNamespace = "Model";
 		public static final String StringUtilsNamespace = "StringUtils";
 		public static final String CollectionUtilsNamespace = "CollectionUtils";
 	}

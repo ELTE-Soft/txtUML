@@ -138,7 +138,7 @@ public class Uml2ToCppExporter {
 										GenerationTemplates.putNamespace(
 												FunctionTemplates.functionDecl(
 														StateMachineTemplates.AllTransitionTableInitialProcName),
-												StateMachineTemplates.MachineNamespace),
+												GenerationNames.Namespaces.ModelNamespace),
 										StateMachineTemplates.TransitionTableInitialSourceName)));
 
 		DependencyExporter dependencyExporter = new DependencyExporter();
@@ -157,7 +157,7 @@ public class Uml2ToCppExporter {
 								FunctionTemplates.simpleFunctionDef(ModifierNames.NoReturn,
 										StateMachineTemplates.AllTransitionTableInitialProcName,
 										initalFunctionBody.toString(), ""),
-								StateMachineTemplates.MachineNamespace)));
+								GenerationNames.Namespaces.ModelNamespace)));
 
 	}
 
@@ -182,11 +182,11 @@ public class Uml2ToCppExporter {
 				Paths.get(destination + File.separator + StateMachineTemplates.StateMachineBaseHeader),
 				StandardCopyOption.REPLACE_EXISTING);
 		
-		Files.copy(Paths.get(cppFilesLocation + DEFAULT_ENVIOREMENT_INITIALIZER + GenerationNames.FileNames.HeaderExtension),
-				Paths.get(destination + File.separator + DEFAULT_ENVIOREMENT_INITIALIZER + GenerationNames.FileNames.HeaderExtension),
+		Files.copy(Paths.get(cppFilesLocation + DEFAULT_ENVIOREMENT_INITIALIZER + "." + GenerationNames.FileNames.HeaderExtension),
+				Paths.get(destination + File.separator + DEFAULT_ENVIOREMENT_INITIALIZER + "." + GenerationNames.FileNames.HeaderExtension),
 				StandardCopyOption.REPLACE_EXISTING);
-		Files.copy(Paths.get(cppFilesLocation + DEFAULT_ENVIOREMENT_INITIALIZER + GenerationNames.FileNames.SourceExtension),
-				Paths.get(destination + File.separator + DEFAULT_ENVIOREMENT_INITIALIZER + GenerationNames.FileNames.SourceExtension),
+		Files.copy(Paths.get(cppFilesLocation + DEFAULT_ENVIOREMENT_INITIALIZER + "." + GenerationNames.FileNames.SourceExtension),
+				Paths.get(destination + File.separator + DEFAULT_ENVIOREMENT_INITIALIZER + "." + GenerationNames.FileNames.SourceExtension),
 				StandardCopyOption.REPLACE_EXISTING);
 		
 		if (options.isAddRuntime()) {
@@ -333,19 +333,20 @@ public class Uml2ToCppExporter {
 			includes.append(PrivateFunctionalTemplates.include(className));
 			preDeclerations.append(GenerationTemplates.forwardDeclaration(className));
 		}
-
+		String headerSource = HeaderTemplates.headerGuard(
+				PrivateFunctionalTemplates
+				.include(RuntimeTemplates.RTPath
+						+ LinkTemplates.AssocationHeader) + 
+				GenerationTemplates.putNamespace(preDeclerations.toString() + structures.toString(), GenerationNames.Namespaces.ModelNamespace),
+		LinkTemplates.AssociationsStructuresHreaderName);
+		
 		CppExporterUtils
 				.writeOutSource(outputDirectory, (LinkTemplates.AssociationStructuresHeader),
-						CppExporterUtils
-								.format(HeaderTemplates
-										.headerGuard(
-												PrivateFunctionalTemplates
-														.include(RuntimeTemplates.RTPath
-																+ LinkTemplates.AssocationHeader)
-														+ preDeclerations.toString() + structures.toString(),
-												LinkTemplates.AssociationsStructuresHreaderName)));
+						CppExporterUtils.format(headerSource));
+		
+		String cppSource = includes.toString() + GenerationTemplates.putNamespace(functions.toString(), GenerationNames.Namespaces.ModelNamespace);
 		CppExporterUtils.writeOutSource(outputDirectory, (LinkTemplates.AssociationStructuresSource),
-				CppExporterUtils.format(includes.toString() + functions.toString()));
+				CppExporterUtils.format(cppSource));
 
 	}
 
