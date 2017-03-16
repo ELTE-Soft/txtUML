@@ -10,11 +10,9 @@ import org.eclipse.uml2.uml.Classifier;
 import org.eclipse.uml2.uml.Operation;
 import org.eclipse.uml2.uml.Property;
 
-import hu.elte.txtuml.export.diagrams.common.Point;
 import hu.elte.txtuml.export.diagrams.common.Rectangle;
 import hu.elte.txtuml.export.javascript.json.EnumAdapter;
 import hu.elte.txtuml.export.javascript.json.MarshalablePoint;
-
 
 /**
  * 
@@ -51,19 +49,18 @@ public class ClassNode {
 	 * Creates a ClassNode based on the EMF-UML model-element and layout
 	 * information provided
 	 * 
-	 * @param layout
-	 *            the layout information
+	 * 
 	 * @param clazz
 	 *            the EMF-UML model-element which holds informations of this
 	 *            diagram element
+	 * @param id
+	 *            the layout id of this element
 	 */
 	public ClassNode(Classifier clazz, String id) {
 		/*
-		position = layout.getPosition();
-		width = layout.getWidth();
-		height = layout.getHeight();
-		id = layout.getName();
-		*/
+		 * position = layout.getPosition(); width = layout.getWidth(); height =
+		 * layout.getHeight(); id = layout.getName();
+		 */
 		this.id = id;
 		name = clazz.getName();
 		attributes = new ArrayList<Attribute>();
@@ -85,6 +82,19 @@ public class ClassNode {
 		} else {
 			type = CDNodeType.CLASS;
 		}
+	}
+
+	/**
+	 * Sets the bounding box of a ClassNode
+	 * 
+	 * @param rectangle
+	 *            the bounding box to be set
+	 */
+	public void setLayout(Rectangle rectangle) {
+		width = rectangle.width();
+		height = rectangle.height();
+		position = new MarshalablePoint(rectangle.getTopLeft());
+
 	}
 
 	/**
@@ -151,14 +161,6 @@ public class ClassNode {
 	 */
 	public CDNodeType getType() {
 		return type;
-	}
-
-	public void setLayout(Rectangle rectangle) {
-		width = rectangle.width();
-		height = rectangle.height();
-		position = new MarshalablePoint(rectangle.getTopLeft());
-		
-		
 	}
 
 }

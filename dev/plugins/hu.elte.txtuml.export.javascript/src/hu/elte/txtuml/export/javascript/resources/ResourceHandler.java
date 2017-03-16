@@ -31,9 +31,6 @@ public class ResourceHandler {
 
 			"main.css", // visualizer main css style file
 
-			"visualizer/grid.js", // defining grid class (used for abstract to
-									// pixel grid conversions)
-
 			"visualizer/linkholders.js", // containing wrappers for links
 			"visualizer/nodeholders.js", // containing wrappers for nodes
 			"visualizer/fonts.js", // containing helper methods for calculating

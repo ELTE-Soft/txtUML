@@ -6,20 +6,15 @@ visualizer.Utils = {}
 
 visualizer.Utils.MAPS = {
 	//maps diagram type to collection names (as they appear in input)
-	DIAGRAMTYPE_TO_COLLECTION_PROPERTY : {
-		'class' : 'classDiagrams',
-		'state' : 'stateMachines'
+	DIAGRAMTYPE_TO_COLLECTION_PROPERTY: {
+		'class': 'classDiagrams',
+		'state': 'stateMachines'
 	},
 	//textual representations of visibilities
-	VISIBILITY_MAP : {
-		'public' : '+',
-		'package' : '~',
-		'protected' : '#',
-		'private' : '-'
-	},
-	//list of nonscalable pseudostate kinds
-	NON_SCALABLE_PSEUDOSTATE_KINDS : [
-		'initial'
-	]
+	VISIBILITY_MAP: {
+		'public': '+',
+		'package': '~',
+		'protected': '#',
+		'private': '-'
+	}
 }
-

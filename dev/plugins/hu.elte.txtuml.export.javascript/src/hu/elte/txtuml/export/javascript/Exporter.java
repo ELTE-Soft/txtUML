@@ -5,7 +5,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.file.Paths;
-import java.util.List;
+import java.rmi.UnexpectedException;
 
 import javax.xml.bind.JAXBException;
 
@@ -20,13 +20,10 @@ import hu.elte.txtuml.export.javascript.json.model.ExportationModel;
 import hu.elte.txtuml.export.javascript.json.model.cd.UnexpectedEndException;
 import hu.elte.txtuml.export.javascript.resources.ResourceHandler;
 import hu.elte.txtuml.export.papyrus.elementsarrangers.ArrangeException;
-import hu.elte.txtuml.export.papyrus.elementsarrangers.txtumllayout.LayoutVisualizerManager;
 import hu.elte.txtuml.export.papyrus.layout.txtuml.TxtUMLLayoutDescriptor;
 import hu.elte.txtuml.export.uml2.mapping.ModelMapException;
 import hu.elte.txtuml.export.uml2.mapping.ModelMapProvider;
 import hu.elte.txtuml.layout.export.DiagramExportationReport;
-import hu.elte.txtuml.layout.visualizer.statements.Statement;
-import hu.elte.txtuml.layout.visualizer.statements.StatementType;
 import hu.elte.txtuml.utils.Pair;
 
 /**
@@ -137,28 +134,19 @@ public class Exporter {
 	 * @throws UnknownDiagramTypeException
 	 * @throws UnexpectedEndException
 	 */
-	private void createModel()
-			throws ModelMapException, ArrangeException, UnexpectedDiagramTypeException, UnexpectedEndException {
+	private void createModel() throws ModelMapException, ArrangeException, UnexpectedDiagramTypeException,
+			UnexpectedEndException, UnexpectedException {
 
 		for (Pair<String, DiagramExportationReport> report : layout.getReportsWithDiagramNames()) {
 			String name = report.getFirst();
 			DiagramExportationReport der = report.getSecond();
 
-			/*
-			LayoutVisualizerManager lvm = new LayoutVisualizerManager(der.getNodes(), der.getLinks(),
-					der.getStatements());
-			lvm.arrange();
-			
-			*/
-			// lvm now contains all the diagram elements abstract position and
-			// size informations
-
-			ModelMapProvider map = new ModelMapProvider(URI.createFileURI(genFolder), der.getModelName());
 			// map connects the layout information to the EMF-UML model
 			// informations
+			ModelMapProvider map = new ModelMapProvider(URI.createFileURI(genFolder), der.getModelName());
 
 			model.createDiagram(name, report.getSecond(), map);
-			
+
 		}
 
 	}

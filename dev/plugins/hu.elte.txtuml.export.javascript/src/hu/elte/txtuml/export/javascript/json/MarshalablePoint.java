@@ -2,28 +2,45 @@ package hu.elte.txtuml.export.javascript.json;
 
 import javax.xml.bind.annotation.XmlAttribute;
 
-import org.eclipse.persistence.oxm.annotations.XmlAccessMethods;
-
 import hu.elte.txtuml.export.diagrams.common.Point;
 
+/**
+ * 
+ * Simple wrapper for point which has proper annotation for marshaling
+ * 
+ */
 public class MarshalablePoint {
 	private Point point;
 
 	protected MarshalablePoint() {
 	}
-	
-	public MarshalablePoint(Point p){
+
+	/**
+	 * Creates a marshalable wrapper for the given point
+	 * 
+	 * @param p
+	 *            The underlaying point
+	 */
+	public MarshalablePoint(Point p) {
 		this.point = p;
 	}
-	
 
 	@XmlAttribute(name = "x")
-    public int getX(){
-    	return point.x();
-    }
+	/**
+	 * 
+	 * @return the x coordinate of the point
+	 */
+	public int getX() {
+		return point.x();
+	}
+
+	/**
+	 * 
+	 * @return the y coordinate of the point
+	 */
 	@XmlAttribute(name = "y")
-    public int getY(){
-    	return point.y();
-    }
+	public int getY() {
+		return point.y();
+	}
 
 }

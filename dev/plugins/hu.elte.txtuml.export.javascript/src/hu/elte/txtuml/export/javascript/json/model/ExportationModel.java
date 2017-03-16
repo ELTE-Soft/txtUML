@@ -1,8 +1,8 @@
 package hu.elte.txtuml.export.javascript.json.model;
 
+import java.rmi.UnexpectedException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import org.eclipse.persistence.oxm.annotations.XmlAccessMethods;
 
@@ -13,8 +13,6 @@ import hu.elte.txtuml.export.javascript.json.model.smd.SMDiagram;
 import hu.elte.txtuml.export.papyrus.elementsarrangers.ArrangeException;
 import hu.elte.txtuml.export.uml2.mapping.ModelMapProvider;
 import hu.elte.txtuml.layout.export.DiagramExportationReport;
-import hu.elte.txtuml.layout.visualizer.model.LineAssociation;
-import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
 
 /**
  * 
@@ -25,20 +23,20 @@ public class ExportationModel {
 
 	@XmlAccessMethods(getMethodName = "getClassDiagrams")
 	private List<ClassDiagram> classDiagrams;
-	//@XmlAccessMethods(getMethodName = "getStateMachines")
-	//private List<SMDiagram> stateMachines;
+	@XmlAccessMethods(getMethodName = "getStateMachines")
+	private List<SMDiagram> stateMachines;
 
 	/**
 	 * Constructor
 	 */
 	public ExportationModel() {
 		classDiagrams = new ArrayList<ClassDiagram>();
-		//stateMachines = new ArrayList<SMDiagram>();
+		stateMachines = new ArrayList<SMDiagram>();
 	}
 
 	/**
-	 * Creates a new diagram model form the given arguments, and adds it to
-	 * the model
+	 * Creates a new diagram model form the given arguments, and adds it to the
+	 * model
 	 * 
 	 * @param diagramName
 	 *            The name of the diagram
@@ -51,26 +49,30 @@ public class ExportationModel {
 	 * @param map
 	 *            The map which links the layout informations to the EMF-UML
 	 *            model
-	 * @param spacing
-	 *            The desired spacing
 	 * @throws UnexpectedEndException
 	 *             Exception is thrown if an association's end could not be
 	 *             linked to the EMF-UML model
+	 * @throws ArrangeException
+	 *             Exception is thrown if a diagram could not be arranged
+	 * @throws UnexpectedDiagramTypeException
+	 *             Exception is thrown if a diagram type is not supported
+	 * @throws UnexpectedException
+	 *             Exception is thrown if a diagram contains unexpected parts
 	 */
-	public void createDiagram(String diagramName, DiagramExportationReport der,
-			ModelMapProvider map) throws UnexpectedEndException, ArrangeException, UnexpectedDiagramTypeException {
-		
+	public void createDiagram(String diagramName, DiagramExportationReport der, ModelMapProvider map)
+			throws UnexpectedEndException, ArrangeException, UnexpectedDiagramTypeException, UnexpectedException {
+
 		switch (der.getType()) {
 		case Class:
 			classDiagrams.add(new ClassDiagram(diagramName, der, map));
 			break;
 		case StateMachine:
-			//stateMachines.add(new SMDiagram(diagramName, der, map));
+			stateMachines.add(new SMDiagram(diagramName, der, map));
 			break;
 		default:
 			throw new UnexpectedDiagramTypeException(diagramName, der.getType().name());
 		}
-		
+
 	}
 
 	/**
@@ -83,8 +85,8 @@ public class ExportationModel {
 	/**
 	 * @return the StateMachines contained in the model
 	 */
-	/*public List<SMDiagram> getStateMachines() {
+	public List<SMDiagram> getStateMachines() {
 		return stateMachines;
-	}*/
+	}
 
 }

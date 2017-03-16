@@ -1,14 +1,12 @@
 package hu.elte.txtuml.export.javascript.json.model.cd;
 
 import java.util.List;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import org.eclipse.persistence.oxm.annotations.XmlAccessMethods;
 
 import hu.elte.txtuml.export.diagrams.common.Point;
 import hu.elte.txtuml.export.javascript.json.MarshalablePoint;
-import hu.elte.txtuml.export.javascript.utils.LinkUtils;
 import hu.elte.txtuml.layout.visualizer.model.AssociationType;
 import hu.elte.txtuml.layout.visualizer.model.LineAssociation;
 
@@ -42,8 +40,14 @@ public class ClassLink {
 		toID = assoc.getTo();
 		type = assoc.getType();
 	}
-	
-	public void setRoute(List<Point> route){
+
+	/**
+	 * Sets the route of the link
+	 * 
+	 * @param route
+	 *            the desired route
+	 */
+	public void setRoute(List<Point> route) {
 		this.route = route.stream().map(MarshalablePoint::new).collect(Collectors.toList());
 	}
 

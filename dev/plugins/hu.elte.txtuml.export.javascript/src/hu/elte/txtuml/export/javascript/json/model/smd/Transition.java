@@ -1,14 +1,14 @@
 package hu.elte.txtuml.export.javascript.json.model.smd;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.eclipse.persistence.oxm.annotations.XmlAccessMethods;
 import org.eclipse.uml2.uml.Trigger;
 
-import hu.elte.txtuml.export.javascript.utils.LinkUtils;
+import hu.elte.txtuml.export.diagrams.common.Point;
+import hu.elte.txtuml.export.javascript.json.MarshalablePoint;
 import hu.elte.txtuml.layout.visualizer.model.LineAssociation;
-import hu.elte.txtuml.layout.visualizer.model.Point;
 
 /**
  * 
@@ -25,9 +25,7 @@ public class Transition {
 	@XmlAccessMethods(getMethodName = "getTrigger")
 	private String trigger;
 	@XmlAccessMethods(getMethodName = "getRoute")
-	protected List<Point> route;
-	@XmlAccessMethods(getMethodName = "getAnchors")
-	protected List<Point> anchors;
+	protected List<MarshalablePoint> route;
 
 	/**
 	 * No-arg constructor required for serialization
@@ -55,14 +53,16 @@ public class Transition {
 		if (triggers.size() > 0) {
 			trigger = triggers.get(0).getEvent().getLabel();
 		}
-		route = LinkUtils.getTurningPoints(link);
+	}
 
-		// also export the connection points of the routes to help position the
-		// non scaling pseudo nodes
-		anchors = new ArrayList<Point>();
-		List<Point> points = link.getMinimalRoute();
-		anchors.add(points.get(0));
-		anchors.add(points.get(points.size() - 1));
+	/**
+	 * Sets the route of the link
+	 * 
+	 * @param route
+	 *            the desired route
+	 */
+	public void setRoute(List<Point> route) {
+		this.route = route.stream().map(MarshalablePoint::new).collect(Collectors.toList());
 	}
 
 	/**
@@ -105,16 +105,8 @@ public class Transition {
 	 * @return the turning points of the node's abstract route (if there's none,
 	 *         then a point in the center of the link)
 	 */
-	public List<Point> getRoute() {
+	public List<MarshalablePoint> getRoute() {
 		return route;
-	}
-
-	/**
-	 * 
-	 * @return the abstract route's connection points to the nodes
-	 */
-	public List<Point> getAnchors() {
-		return anchors;
 	}
 
 }

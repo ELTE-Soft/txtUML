@@ -5,9 +5,9 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import org.eclipse.persistence.oxm.annotations.XmlAccessMethods;
 import org.eclipse.uml2.uml.PseudostateKind;
 
+import hu.elte.txtuml.export.diagrams.common.Rectangle;
 import hu.elte.txtuml.export.javascript.json.EnumAdapter;
-import hu.elte.txtuml.layout.visualizer.model.Point;
-import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
+import hu.elte.txtuml.export.javascript.json.MarshalablePoint;
 
 /**
  * 
@@ -23,7 +23,7 @@ public class PseudoState {
 	@XmlJavaTypeAdapter(EnumAdapter.class)
 	private PseudostateKind kind;
 	@XmlAccessMethods(getMethodName = "getPosition")
-	private Point position;
+	private MarshalablePoint position;
 	@XmlAccessMethods(getMethodName = "getWidth")
 	private Integer width;
 	@XmlAccessMethods(getMethodName = "getHeight")
@@ -39,20 +39,30 @@ public class PseudoState {
 	 * Creates a PseudoState based on the EMF-UML model-element and layout
 	 * information provided
 	 * 
-	 * @param node
-	 *            the layout information
 	 * @param state
 	 *            the EMF-UML model-element which holds informations of this
 	 *            diagram element
+	 * 
+	 * @param id
+	 *            the layout id of this element
 	 */
-	public PseudoState(RectangleObject node, org.eclipse.uml2.uml.Pseudostate state) {
-		id = node.getName();
+	public PseudoState(org.eclipse.uml2.uml.Pseudostate state, String id) {
+		this.id = id;
 		name = state.getLabel();
 		kind = state.getKind();
-		position = node.getPosition();
-		width = node.getWidth();
-		height = node.getHeight();
 
+	}
+
+	/**
+	 * Sets the bounding box of this element
+	 * 
+	 * @param rectangle
+	 *            the bounding box to be set
+	 */
+	public void setLayout(Rectangle rectangle) {
+		width = rectangle.width();
+		height = rectangle.height();
+		position = new MarshalablePoint(rectangle.getTopLeft());
 	}
 
 	/**
@@ -83,7 +93,7 @@ public class PseudoState {
 	 * 
 	 * @return the position of the pseudo state
 	 */
-	public Point getPosition() {
+	public MarshalablePoint getPosition() {
 		return position;
 	}
 

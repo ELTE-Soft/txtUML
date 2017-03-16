@@ -40,6 +40,10 @@ public class Argument {
 		return name;
 	}
 
+	/**
+	 * 
+	 * @return the type of the argument
+	 */
 	public String getType() {
 		return type;
 	}
