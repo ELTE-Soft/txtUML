@@ -31,26 +31,54 @@ public final class StateMachineParser {
 	}
 
 	private VertexWrapper parse() {
-		parsePartOfSM(owner, null);
+		for (Class<?> cls = owner.getClass(); cls != ModelClass.class; cls = cls.getSuperclass()) {
+			parsePartOfSM(owner, cls.getDeclaredClasses(), null);
 
-		transitions.forEach(t -> {
-			VertexWrapperBuilder source = vertices.get(t.typeOfSource);
-			VertexWrapperBuilder target = vertices.get(t.typeOfTarget);
+			transitions.forEach(t -> {
+				VertexWrapperBuilder source = vertices.get(t.typeOfSource);
+				VertexWrapperBuilder target = vertices.get(t.typeOfTarget);
 
-			if (source == null || target == null) {
-				return;
+				if (source == null || target == null) {
+					return;
+				}
+
+				source.outgoings.add(t);
+				t.target = target;
+			});
+
+			if (initial != null) {
+				return initial.get();
 			}
 
-			source.outgoings.add(t);
-			t.target = target;
-		});
-
-		return initial == null ? null : initial.get();
+			vertices.clear();
+			transitions.clear();
+		}
+		return null;
 	}
 
+	/**
+	 * @param parent
+	 *            the parent of the sm part to parse
+	 * @param container
+	 *            {@code null} if parent is a model class instance and the
+	 *            corresponding wrapper builder if it is a composite state
+	 */
 	private void parsePartOfSM(Object parent, VertexWrapperBuilder container) {
+		parsePartOfSM(parent, parent.getClass().getDeclaredClasses(), container);
+	}
 
-		for (Class<?> inner : parent.getClass().getDeclaredClasses()) {
+	/**
+	 * @param parent
+	 *            the parent of the sm part to parse
+	 * @param innerClasses
+	 *            the inner classes to parse
+	 * @param container
+	 *            {@code null} if parent is a model class instance and the
+	 *            corresponding wrapper builder if it is a composite state
+	 */
+	private void parsePartOfSM(Object parent, Class<?>[] innerClasses, VertexWrapperBuilder container) {
+
+		for (Class<?> inner : innerClasses) {
 
 			if (Transition.class.isAssignableFrom(inner)) {
 				transitions.add(new TransitionWrapperBuilder(inner, parent));
@@ -101,7 +129,9 @@ public final class StateMachineParser {
 				result = VertexWrapper.create(getWrapped(), builtContainer, arrayOfOutGoings);
 			}
 
-			outgoings.stream().map(TransitionWrapperBuilder::get).toArray(i -> arrayOfOutGoings);
+			for (int i = 0; i < outgoings.size(); ++i) {
+				arrayOfOutGoings[i] = outgoings.get(i).get();
+			}
 		}
 	}
 
