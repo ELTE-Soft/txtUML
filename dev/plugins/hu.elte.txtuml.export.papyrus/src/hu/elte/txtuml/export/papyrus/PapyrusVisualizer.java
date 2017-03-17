@@ -1,5 +1,7 @@
 package hu.elte.txtuml.export.papyrus;
 
+import java.lang.reflect.InvocationTargetException;
+
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -10,6 +12,7 @@ import org.eclipse.papyrus.infra.core.resource.ModelMultiException;
 import org.eclipse.papyrus.infra.core.services.ServiceException;
 
 import hu.elte.txtuml.export.papyrus.papyrusmodelmanagers.AbstractPapyrusModelManager;
+import hu.elte.txtuml.export.papyrus.papyrusmodelmanagers.DefaultPapyrusModelManager;
 import hu.elte.txtuml.export.papyrus.utils.EditorOpener;
 import hu.elte.txtuml.utils.eclipse.ProjectUtils;
 
@@ -27,6 +30,7 @@ public class PapyrusVisualizer {
 	private String modelName;
 	private String sourceUMLPath;
 	private AbstractPapyrusModelManager papyrusModelManager;
+	private Class<? extends AbstractPapyrusModelManager> papyrusModelManagerClass;
 	private Object layoutDescriptor;
 	
 	/**
@@ -70,7 +74,6 @@ public class PapyrusVisualizer {
 		monitor.worked(20);
 		
 		createAndOpenPapyrusModel(SubMonitor.convert(monitor, 80));
-		SettingsRegistry.clear();
 		return Status.OK_STATUS;
 	}
 	
@@ -91,7 +94,7 @@ public class PapyrusVisualizer {
 			papyrusModelCreator.createPapyrusModel();
 			IMultiDiagramEditor editor = EditorOpener.openPapyrusEditor(papyrusModelCreator.getDi());
 			
-			papyrusModelManager = SettingsRegistry.getPapyrusModelManager(editor);
+			papyrusModelManager = createPapyrusModelManager(papyrusModelManagerClass, editor);
 			papyrusModelManager.setLayoutController(layoutDescriptor);
 			monitor.worked(10);
 			
@@ -104,7 +107,17 @@ public class PapyrusVisualizer {
 	 * @param manager
 	 */
 	public void registerPayprusModelManager(Class<? extends AbstractPapyrusModelManager> manager){
-		SettingsRegistry.setPapyrusModelManager(manager);
+		this.papyrusModelManagerClass = manager;
 	}
 
+	public static AbstractPapyrusModelManager createPapyrusModelManager(Class<? extends AbstractPapyrusModelManager> managerClass, IMultiDiagramEditor editor){
+		if(managerClass == null) return new DefaultPapyrusModelManager(editor);	
+		try {
+			return managerClass.getConstructor(IMultiDiagramEditor.class).newInstance(editor);
+		} catch (InstantiationException | IllegalAccessException
+				| IllegalArgumentException | InvocationTargetException
+				| NoSuchMethodException | SecurityException e) {
+			throw new RuntimeException(e);
+		}
+	}
 }
