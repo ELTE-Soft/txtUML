@@ -28,7 +28,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 
-import hu.elte.txtuml.examples.garage.control.glue.Glue;
+import hu.elte.txtuml.examples.garage.control.model.Glue;
 import hu.elte.txtuml.examples.garage.interfaces.IControl;
 import hu.elte.txtuml.examples.garage.interfaces.IControlled;
 
