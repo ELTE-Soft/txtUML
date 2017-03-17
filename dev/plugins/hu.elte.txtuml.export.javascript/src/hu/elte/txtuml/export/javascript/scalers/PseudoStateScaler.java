@@ -29,18 +29,18 @@ public class PseudoStateScaler extends NodeScaler {
 	}
 
 	@Override
-	protected void estimateHeight() {
-		height = this.getWidth();
+	protected int estimateHeight() {
+		return this.getWidth();
 	}
 
 	@Override
-	protected void estimateWidth() {
+	protected int estimateWidth() {
 		if (node.getKind() == PseudostateKind.CHOICE_LITERAL) {
 			double totalwidth = node.getName().length() * FONT_WIDTH + CHOICE_TEXT_PADING * 2 + FONT_HEIGHT
 					+ CHOICE_TEXT_PADING * 2;
-			width = (int) Math.ceil(Math.max(totalwidth, MIN_SIZE));
+			return (int) Math.ceil(Math.max(totalwidth, MIN_SIZE));
 		} else {
-			width = MIN_SIZE;
+			return MIN_SIZE;
 		}
 	}
 

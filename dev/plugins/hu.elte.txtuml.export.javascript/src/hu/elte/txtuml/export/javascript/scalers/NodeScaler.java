@@ -16,7 +16,7 @@ public abstract class NodeScaler {
 	 */
 	public Integer getWidth() {
 		if (width == null) {
-			estimateWidth();
+			width = estimateWidth();
 		}
 		return width;
 	}
@@ -28,18 +28,12 @@ public abstract class NodeScaler {
 	 */
 	public Integer getHeight() {
 		if (height == null) {
-			estimateHeight();
+			height = estimateHeight();
 		}
 		return height;
 	}
 
-	/**
-	 * Implementation must set height to non null
-	 */
-	protected abstract void estimateHeight();
+	protected abstract int estimateHeight();
 
-	/**
-	 * Implementation must set width to non null
-	 */
-	protected abstract void estimateWidth();
+	protected abstract int estimateWidth();
 }

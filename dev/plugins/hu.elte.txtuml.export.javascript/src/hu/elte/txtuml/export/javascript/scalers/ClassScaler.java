@@ -51,16 +51,16 @@ public class ClassScaler extends NodeScaler {
 	}
 
 	@Override
-	protected void estimateHeight() {
+	protected int estimateHeight() {
 		double totalHeight = HEADER_PADDING_VERTICAL * 2;
 		totalHeight += HEADER_LINE_HEIGHT * (node.getType() == CDNodeType.CLASS ? 1 : 2);
 		totalHeight += MEMBER_LINE_HEIGHT * node.getAttributes().size() + MEMBER_PADDING_VERTICAL * 2;
 		totalHeight += MEMBER_LINE_HEIGHT * node.getOperations().size() + MEMBER_PADDING_VERTICAL * 2;
-		height = (int) Math.ceil(totalHeight);
+		return (int) Math.ceil(totalHeight);
 	}
 
 	@Override
-	protected void estimateWidth() {
+	protected int estimateWidth() {
 		double totalWidth = node.getName().length() * HEADER_FONT_WIDTH + HEADER_PADDING_VERTICAL * 2;
 		if (node.getType() == CDNodeType.CLASS) {
 			totalWidth = Math.max(totalWidth,
@@ -87,7 +87,8 @@ public class ClassScaler extends NodeScaler {
 			}
 
 			totalWidth = Math.max(totalWidth, opLength * MEMBER_FONT_WIDTH + MEMBER_PADDING_HORIZONTAL * 2);
-			width = (int) Math.ceil(totalWidth);
+
 		}
+		return (int) Math.ceil(totalWidth);
 	}
 }

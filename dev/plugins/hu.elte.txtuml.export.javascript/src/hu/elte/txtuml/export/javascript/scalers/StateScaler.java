@@ -26,14 +26,14 @@ public class StateScaler extends NodeScaler {
 	}
 
 	@Override
-	protected void estimateHeight() {
-		this.height = STATE_HEIGHT;
+	protected int estimateHeight() {
+		return STATE_HEIGHT;
 	}
 
 	@Override
-	protected void estimateWidth() {
+	protected int estimateWidth() {
 		int headerLength = node.getName().length();
-		this.width = (int) Math.ceil(headerLength * STATE_HEADER_FONT_WIDTH + STATE_HEADER_PADING * 2);
+		return (int) Math.ceil(headerLength * STATE_HEADER_FONT_WIDTH + STATE_HEADER_PADING * 2);
 	}
 
 }
