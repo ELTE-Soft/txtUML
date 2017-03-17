@@ -28,6 +28,10 @@ public class ModelClassVisitor extends VisitorBase {
 
 	@Override
 	public boolean visit(TypeDeclaration elem) {
+		if (ElementTypeTeller.isExternal(elem)) {
+			return false;
+		}
+
 		if (ElementTypeTeller.isVertex(elem) || ElementTypeTeller.isTransition(elem)) {
 			handleStateMachineElements(elem);
 		} else if (ElementTypeTeller.isPort(elem)) {
