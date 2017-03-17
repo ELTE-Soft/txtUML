@@ -1,8 +1,14 @@
 package hu.elte.txtuml.export.papyrus.wizardz;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -10,6 +16,8 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.jdt.core.IType;
+import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.swt.widgets.Display;
 
@@ -21,8 +29,11 @@ import hu.elte.txtuml.export.papyrus.preferences.PreferencesManager;
 import hu.elte.txtuml.export.uml2.ExportMode;
 import hu.elte.txtuml.export.uml2.TxtUMLToUML2;
 import hu.elte.txtuml.layout.export.DiagramExportationReport;
+import hu.elte.txtuml.utils.Logger;
+import hu.elte.txtuml.utils.Pair;
 import hu.elte.txtuml.utils.eclipse.Dialogs;
 import hu.elte.txtuml.utils.eclipse.SaveUtils;
+import hu.elte.txtuml.utils.eclipse.WizardUtils;
 
 /**
  * Wizard for visualization of txtUML models
@@ -66,31 +77,71 @@ public class TxtUMLVisuzalizeWizard extends Wizard {
 	 */
 	@Override
 	public boolean performFinish() {
-		String txtUMLModelName = selectTxtUmlPage.getTxtUmlModelClass();
-		Map<String, String> txtUMLLayout = selectTxtUmlPage.getTxtUmlLayout();
-		String txtUMLProjectName = selectTxtUmlPage.getTxtUmlProject();
-		String generatedFolderName = PreferencesManager
-				.getString(PreferencesManager.TXTUML_VISUALIZE_DESTINATION_FOLDER);
+		List<IType> txtUMLLayout = selectTxtUmlPage.getTxtUmlLayouts();
+		Map<Pair<String, String>, List<IType>> layoutConfigs = new HashMap<>();
+		List<String> invalidLayouts = new ArrayList<>();
+		for (IType layout : txtUMLLayout) {
+			Optional<Pair<String, String>> maybeModel = Optional.empty();
+			try {
+				maybeModel = Stream.of(layout.getTypes())
+						.map(innerClass -> WizardUtils.getModelByAnnotations(innerClass)).filter(Optional::isPresent)
+						.map(Optional::get).findFirst();
+			} catch (JavaModelException e) {
+				Logger.user.error(e.getMessage());
+				return false;
+			}
 
-		PreferencesManager.setValue(PreferencesManager.TXTUML_VISUALIZE_TXTUML_PROJECT, txtUMLProjectName);
-		PreferencesManager.setValue(PreferencesManager.TXTUML_VISUALIZE_TXTUML_MODEL, txtUMLModelName);
-		PreferencesManager.setValue(PreferencesManager.TXTUML_VISUALIZE_TXTUML_LAYOUT, txtUMLLayout.keySet());
-    
-		boolean saveSucceeded = SaveUtils.saveAffectedFiles(getShell(), txtUMLProjectName, txtUMLModelName, txtUMLLayout.keySet());
-		if (!saveSucceeded)
-			return false;
+			if (maybeModel.isPresent()) {
+				Pair<String, String> model = maybeModel.get();
+				if (!layoutConfigs.containsKey(model)) {
+					layoutConfigs.put(model, new ArrayList<>(Arrays.asList(layout)));
+				} else {
+					layoutConfigs.get(model).add(layout);
+				}
+			} else {
+				invalidLayouts.add(layout.getElementName());
+			}
+		}
 
-		try {
+		if (!invalidLayouts.isEmpty()) {
+			Dialogs.MessageBox("Invalid layouts", "The following diagram descriptions have no txtUML model attached"
+					+ ", hence no diagram is generated for them:" + System.lineSeparator() + invalidLayouts.stream()
+							.map(s -> " - ".concat(s)).collect(Collectors.joining(System.lineSeparator())));
+		}
 
-			this.checkEmptyLayoutDecsriptions();
-			Job job = new Job("Diagram Visualization"){
+		PreferencesManager.setValue(PreferencesManager.TXTUML_VISUALIZE_TXTUML_LAYOUT, layoutConfigs.values().stream()
+				.flatMap(c -> c.stream()).map(layout -> layout.getFullyQualifiedName()).collect(Collectors.toList()));
 
-				@Override
-				protected IStatus run(IProgressMonitor monitor) {
+		PreferencesManager.setValue(PreferencesManager.TXTUML_VISUALIZE_TXTUML_LAYOUT_PROJECTS,
+				layoutConfigs.values().stream().flatMap(c -> c.stream())
+						.map(layout -> layout.getJavaProject().getElementName()).collect(Collectors.toList()));
+
+		for (Pair<String, String> model : layoutConfigs.keySet()) {
+			String txtUMLModelName = model.getFirst();
+			String txtUMLProjectName = model.getSecond();
+
+			String generatedFolderName = PreferencesManager
+					.getString(PreferencesManager.TXTUML_VISUALIZE_DESTINATION_FOLDER);
+
+			Map<String, String> layouts = new HashMap<String, String>();
+			layoutConfigs.get(model).forEach(
+					layout -> layouts.put(layout.getFullyQualifiedName(), layout.getJavaProject().getElementName()));
+
+			boolean saveSucceeded = SaveUtils.saveAffectedFiles(getShell(), txtUMLProjectName, txtUMLModelName,
+					txtUMLLayout.stream().map(IType::getFullyQualifiedName).collect(Collectors.toList()));
+			if (!saveSucceeded)
+				return false;
+
+			try {
+				this.checkNoLayoutDescriptionsSelected();
+				Job job = new Job("Diagram Visualization") {
+
+					@Override
+					protected IStatus run(IProgressMonitor monitor) {
 						monitor.beginTask("Visualization", 100);
 
 						TxtUMLExporter exporter = new TxtUMLExporter(txtUMLProjectName, generatedFolderName,
-								txtUMLModelName, txtUMLLayout);
+								txtUMLModelName, layouts);
 						Display.getDefault().syncExec(() -> {
 							try {
 								exporter.cleanBeforeVisualization();
@@ -102,7 +153,8 @@ public class TxtUMLVisuzalizeWizard extends Wizard {
 						monitor.subTask("Exporting txtUML Model to UML2 model...");
 						try {
 							TxtUMLToUML2.exportModel(txtUMLProjectName, txtUMLModelName,
-									txtUMLProjectName + "/" + generatedFolderName, ExportMode.ErrorHandlingNoActions, "gen");
+									txtUMLProjectName + "/" + generatedFolderName, ExportMode.ErrorHandlingNoActions,
+									"gen");
 							monitor.worked(10);
 						} catch (Exception e) {
 							Dialogs.errorMsgb("txtUML export Error", "Error occured during the UML2 exportation.", e);
@@ -142,10 +194,10 @@ public class TxtUMLVisuzalizeWizard extends Wizard {
 									"Error occured during the diagram layout interpretation.", e);
 							return Status.CANCEL_STATUS;
 						}
-					
+
 						PapyrusVisualizer pv = exporter.createVisualizer(layoutDescriptor);
 						pv.registerPayprusModelManager(TxtUMLPapyrusModelManager.class);
-						
+
 						Display.getDefault().syncExec(() -> {
 							try {
 								pv.run(SubMonitor.convert(monitor, 85));
@@ -154,31 +206,30 @@ public class TxtUMLVisuzalizeWizard extends Wizard {
 										"Error occured during the visualization process.", e);
 							}
 						});
-					return Status.OK_STATUS;
-				}
-				
-			};
-				
-			job.setUser(true);
-			job.schedule();
-			
-			return true;
-		} catch ( InterruptedException e) {
-			return false;
+						return Status.OK_STATUS;
+					}
+
+				};
+
+				job.setUser(true);
+				job.schedule();
+			} catch (InterruptedException e) {
+				return false;
+			}
 		}
+		return true;
 	}
 
-	private void checkEmptyLayoutDecsriptions() throws InterruptedException {
-		if (selectTxtUmlPage.getTxtUmlLayout().isEmpty()) {
+	private void checkNoLayoutDescriptionsSelected() throws InterruptedException {
+		if (selectTxtUmlPage.getTxtUmlLayouts().isEmpty()) {
 			boolean answer = Dialogs.WarningConfirm("No Layout descriptions",
 					"No diagrams will be generated using the current setup,"
 							+ " because no diagram descriptions are added." + System.lineSeparator()
-							+ "Use the 'Add txtUML diagram descriptions' button to avoid this message."
+							+ "In order to have diagrams visualized, select a description from the wizard."
 							+ System.lineSeparator() + System.lineSeparator()
 							+ "Do you want to continue without diagram descriptions?");
 			if (!answer)
 				throw new InterruptedException();
 		}
 	}
-
 }
