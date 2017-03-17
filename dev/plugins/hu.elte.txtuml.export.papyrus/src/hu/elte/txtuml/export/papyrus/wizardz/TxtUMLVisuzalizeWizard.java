@@ -88,7 +88,7 @@ public class TxtUMLVisuzalizeWizard extends Wizard {
 				maybeModel = Stream.of(layout.getTypes())
 						.map(innerClass -> WizardUtils.getModelByAnnotations(innerClass)).filter(Optional::isPresent)
 						.map(Optional::get).findFirst();
-			} catch (JavaModelException | NoSuchElementException e) {
+			} catch (JavaModelException e) {
 				Logger.user.error(e.getMessage());
 				return false;
 			}
