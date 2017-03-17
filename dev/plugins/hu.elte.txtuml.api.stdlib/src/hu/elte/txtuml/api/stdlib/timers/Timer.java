@@ -1,9 +1,15 @@
 package hu.elte.txtuml.api.stdlib.timers;
 
+import java.util.concurrent.Callable;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+
+import hu.elte.txtuml.api.model.Action;
+import hu.elte.txtuml.api.model.External;
+import hu.elte.txtuml.api.model.ExternalBody;
 import hu.elte.txtuml.api.model.ModelClass;
+import hu.elte.txtuml.api.model.Runtime;
 import hu.elte.txtuml.api.model.Signal;
-import hu.elte.txtuml.api.model.external.ExternalClass;
-import hu.elte.txtuml.api.stdlib.impl.timers.TimerImpl;
 
 /**
  * An external class which enhances the txtUML models with the ability of using
@@ -16,7 +22,13 @@ import hu.elte.txtuml.api.stdlib.impl.timers.TimerImpl;
  * See the documentation of {@link hu.elte.txtuml.api.Model} for an overview on
  * modeling in JtxtUML.
  */
-public interface Timer extends ExternalClass {
+public class Timer extends ModelClass {
+
+	@External
+	private final Callable<Void> action;
+
+	@External
+	private ScheduledFuture<?> future;
 
 	/**
 	 * Starts a new delayed send operation. Sends asynchronously a signal to the
@@ -28,18 +40,39 @@ public interface Timer extends ExternalClass {
 	 *            the signal which is to be sent after the delay
 	 * @param millisecs
 	 *            the time in millisecs to wait before sending the signal
-	 * @return a timer instance to manage this delayed send operation before it
+	 * @return a handle object to manage this delayed send operation before it
 	 *         happens
 	 */
-	static Timer start(ModelClass targetObj, Signal signal, int millisecs) {
-		return new TimerImpl(targetObj, signal, millisecs);
+	@ExternalBody
+	public static Timer start(ModelClass targetObj, Signal signal, int millisecs) {
+		return new Timer(targetObj, signal, millisecs);
+	}
+
+	/**
+	 * @param obj
+	 *            the target of the delayed send operation
+	 * @param s
+	 *            the signal to send after the timeout
+	 * @param millisecs
+	 *            millisecs to wait before the timeout
+	 */
+	@External
+	private Timer(ModelClass targetObj, Signal signal, int millisecs) {
+		this.action = () -> {
+			Action.send(signal, targetObj);
+			return null;
+		};
+		schedule(millisecs);
 	}
 
 	/**
 	 * @return the remaining delay in millisecs; zero or negative values
 	 *         indicate that the delay has already elapsed
 	 */
-	int query();
+	@ExternalBody
+	public long query() {
+		return (int) future.getDelay(TimeUnit.MILLISECONDS);
+	}
 
 	/**
 	 * Reschedules the timed event this handle manages to happen after the
@@ -51,7 +84,11 @@ public interface Timer extends ExternalClass {
 	 * @throws NullPointerException
 	 *             if <code>millisecs</code> is <code>null</code>
 	 */
-	void reset(int millisecs);
+	@ExternalBody
+	public void reset(long millisecs) {
+		cancel();
+		schedule(millisecs);
+	}
 
 	/**
 	 * Reschedules the timed event this handle manages to have a delay increased
@@ -63,7 +100,10 @@ public interface Timer extends ExternalClass {
 	 * @throws NullPointerException
 	 *             if <code>millisecs</code> is <code>null</code>
 	 */
-	void add(int millisecs);
+	@ExternalBody
+	public void add(int millisecs) {
+		reset(query() + millisecs);
+	}
 
 	/**
 	 * Cancels the timed event managed by this handle object.
@@ -72,6 +112,15 @@ public interface Timer extends ExternalClass {
 	 *         event managed by this handle was <i>not</i> yet cancelled or
 	 *         performed; <code>false</code> otherwise
 	 */
-	boolean cancel();
+	@ExternalBody
+	public boolean cancel() {
+		boolean isDone = future.isDone();
+		future.cancel(false);
+		return isDone;
+	}
 
+	@External
+	private void schedule(long millisecs) {
+		this.future = Runtime.currentRuntime().schedule(action, millisecs, TimeUnit.MILLISECONDS);
+	}
 }
