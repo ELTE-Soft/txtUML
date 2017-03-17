@@ -5,7 +5,6 @@ import hu.elte.txtuml.api.model.ModelClass
 import hu.elte.txtuml.api.model.ModelClass.Port
 import hu.elte.txtuml.api.model.ModelEnum
 import hu.elte.txtuml.api.model.Signal
-import hu.elte.txtuml.api.model.external.ExternalType
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAttributeOrOperationDeclarationPrefix
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUClassPropertyAccessExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUDeleteObjectExpression
@@ -90,8 +89,7 @@ class XtxtUMLTypeValidator extends XtxtUMLUniquenessValidator {
 
 	def protected isAllowedAttributeType(JvmTypeReference typeRef, boolean isVoidAllowed) {
 		isAllowedBasicType(typeRef, isVoidAllowed) || typeRef.isConformantWith(DataType) ||
-			typeRef.isConformantWith(ModelEnum) ||
-			typeRef.type.isInterface && typeRef.isConformantWith(ExternalType)
+			typeRef.isConformantWith(ModelEnum)
 	}
 
 	def protected isAllowedBasicType(JvmTypeReference typeRef, boolean isVoidAllowed) {
