@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -82,15 +83,16 @@ public class TxtUMLVisuzalizeWizard extends Wizard {
 		Map<Pair<String, String>, List<IType>> layoutConfigs = new HashMap<>();
 		List<String> invalidLayouts = new ArrayList<>();
 		for (IType layout : txtUMLLayout) {
-			IType innerLayoutClass = null;
+			Optional<Pair<String, String>> maybeModel = Optional.empty();
 			try {
-				innerLayoutClass = Stream.of(layout.getTypes()).findFirst().get();
+				maybeModel = Stream.of(layout.getTypes())
+						.map(innerClass -> WizardUtils.getModelByAnnotations(innerClass)).filter(Optional::isPresent)
+						.map(Optional::get).findFirst();
 			} catch (JavaModelException e) {
 				Logger.user.error(e.getMessage());
 				return false;
 			}
 
-			Optional<Pair<String, String>> maybeModel = WizardUtils.getModelByAnnotations(innerLayoutClass);
 			if (maybeModel.isPresent()) {
 				Pair<String, String> model = maybeModel.get();
 				if (!layoutConfigs.containsKey(model)) {
