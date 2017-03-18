@@ -39,6 +39,18 @@ import hu.elte.txtuml.api.layout.North
 import hu.elte.txtuml.api.layout.South
 import hu.elte.txtuml.xd.xDiagramDefinition.TypeExpressionList
 import hu.elte.txtuml.api.layout.Contains
+import hu.elte.txtuml.xd.xDiagramDefinition.UnaryNumberInstruction
+import hu.elte.txtuml.api.layout.Spacing
+import hu.elte.txtuml.xd.xDiagramDefinition.UnaryListInstruction
+import hu.elte.txtuml.api.layout.Column
+import hu.elte.txtuml.api.layout.Row
+import hu.elte.txtuml.api.layout.TopMost
+import hu.elte.txtuml.api.layout.BottomMost
+import hu.elte.txtuml.api.layout.LeftMost
+import hu.elte.txtuml.api.layout.RightMost
+import hu.elte.txtuml.api.layout.StateMachineDiagram
+import java.util.ArrayList
+import org.eclipse.xtext.common.types.JvmTypeReference
 
 //import hu.elte.txtuml.api.layout.Diagram;
 
@@ -105,18 +117,29 @@ class XDiagramDefinitionJvmModelInferrer extends AbstractModelInferrer {
 	def dispatch void infer(DiagramSignature element, IJvmDeclaredTypeAcceptor acceptor, boolean isPreIndexingPhase) {
 		println("infer called with diagram-signature: " + element);		
 
+		val diagType = switch (element.diagramType){
+			case "state-machine-diagram": StateMachineDiagram
+			case "class-diagram" : ClassDiagram
+			default: null
+		}
+		
+		val generics = new ArrayList<JvmTypeReference>()
+		if ("state-machine-diagram".equals(element.diagramType)){
+			generics.add(element.genArg.typeRef());
+		}
+		
 		var result = currentDiagramClass = element.toClass(element.findPackageName + element.name)[
-			superTypes += ClassDiagram.typeRef();
+			superTypes += typeRef(diagType, generics);
 			documentation = element.documentation;
 		];
+		
 //		element.associate(result);
 		acceptor.accept(result);
 		
 		var layout = currentLayoutClass = element.toClass("$Layout")[
 			superTypes += Layout.typeRef();
 			declaringType = currentDiagramClass;
-		];
-		
+		];		
 	}
 	
 	def dispatch void infer(GroupInstruction element, IJvmDeclaredTypeAcceptor acceptor, boolean isPreIndexingPhase) {
@@ -133,6 +156,30 @@ class XDiagramDefinitionJvmModelInferrer extends AbstractModelInferrer {
 			annotations += createAnnotationTEList(Contains, "value" -> element.^val);
 		]
 		acceptor.accept(groupType);
+	}
+	
+	def private parseDoubleValue(String valueStr){
+		if (valueStr.endsWith("%")) {
+			return Double.valueOf(valueStr.substring(0, valueStr.length() - 1)) / 100.0;
+		}
+		return Double.valueOf(valueStr);
+	}
+	
+	def dispatch void infer(UnaryNumberInstruction element, IJvmDeclaredTypeAcceptor acceptor, boolean isPreIndexingPhase) {
+		println("infer called with unarynumberinstruction: " + element);
+		
+		var annType = null as Class<?>;
+		annType = switch(element.op){
+			case "spacing": Spacing
+		};
+		
+		var newAnnotation = annotationRef(annType) => [ annotationRef |
+			annotationRef.explicitValues += TypesFactory::eINSTANCE.createJvmDoubleAnnotationValue => [
+				values += element.^val.parseDoubleValue();
+			]
+		]
+		
+		this.currentLayoutClass.annotations += newAnnotation;
 	}
 	
 	def dispatch void infer(PhantomInstruction element, IJvmDeclaredTypeAcceptor acceptor, boolean isPreIndexingPhase){
@@ -164,6 +211,28 @@ class XDiagramDefinitionJvmModelInferrer extends AbstractModelInferrer {
 		this.currentLayoutClass.annotations += newAnnotation;
 	}
 	
+	def dispatch void infer(UnaryListInstruction element,  IJvmDeclaredTypeAcceptor acceptor, boolean isPreIndexingPhase) {
+		println("infer called with unarylistinstruction: " + element);
+		
+        var annType = null as Class<?>; 
+		annType = switch(element.op){
+			case "row" : Row
+			case "column" : Column
+			case "topmost" : TopMost
+			case "bottommost" : BottomMost
+			case "leftmost" : LeftMost
+			case "rightmost" : RightMost
+		};
+		
+		var newAnnotation = annType.createAnnotationTEList(
+			"value" -> element.^val
+		);
+		
+		this.currentLayoutClass.annotations += newAnnotation;
+	}
+	
+	
+	
 	def dispatch void infer(BinaryListInstruction element, IJvmDeclaredTypeAcceptor acceptor, boolean isPreIndexingPhase) {
 		println("infer called with bin-list-instruction: " + element);
 
@@ -184,6 +253,8 @@ class XDiagramDefinitionJvmModelInferrer extends AbstractModelInferrer {
 						
 		this.currentLayoutClass.annotations += newAnnotation;
 	}
+	
+	
 	
 	def private createAnnotationTE(Class<?> annotationType, Pair<String, TypeExpression>... params) {
 		annotationRef(annotationType) => [ annotationRef |
@@ -210,7 +281,7 @@ class XDiagramDefinitionJvmModelInferrer extends AbstractModelInferrer {
 			}
 		]
 	}
-	
+		
 	var model = null as Model;
 
 	def Model findModel(EObject element){
