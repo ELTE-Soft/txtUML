@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -40,14 +39,14 @@ import hu.elte.txtuml.utils.eclipse.WizardUtils;
 /**
  * Wizard for visualization of txtUML models
  */
-public class TxtUMLVisuzalizeWizard extends Wizard {
+public class TxtUMLVisualizeWizard extends Wizard {
 
 	private VisualizeTxtUMLPage selectTxtUmlPage;
 
 	/**
 	 * The Constructor
 	 */
-	public TxtUMLVisuzalizeWizard() {
+	public TxtUMLVisualizeWizard() {
 		super();
 		setNeedsProgressMonitor(true);
 	}
