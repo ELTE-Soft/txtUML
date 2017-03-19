@@ -9,29 +9,36 @@
 #include <unordered_map>
 #include <memory>
 
-#include "event.hpp"
+#include "runtime/ievent.hpp"
 
-struct EventState : public std::pair<int, int> {
-  EventState(int e_, int s_) : std::pair<int, int>(e_,s_) {}
-
-  bool operator == (const EventState& a){
-    return this->first == a.first && this->second == a.second;
-  }
+struct EventState {
+	EventState(int e_, int s_, int p_) : event (e_), state (s_), port (p_) {}
+  
+	int event;
+	int state;
+	int port;
 };
+
+inline bool operator == (const EventState& a, const EventState& b) {
+	return b.event == a.event && b.state == a.state && b.port == a.port;
+
+}
 
 namespace std
 {
-  template<>
+	
+	template<>
 	struct hash<EventState> : public unary_function<EventState, size_t>
 	{
 	  std::size_t operator ()(const EventState& es_) const
 	  {
 	    hash<int> intHash;
-	    size_t hashValue = (intHash(es_.first) ^ intHash(es_.second));
+	    size_t hashValue = (intHash(es_.event) ^ intHash(es_.state) ^ intHash(es_.port) );
 	    return hashValue;
 	  }
 	};
 }
+
 
 class StateMachineBase
 {
