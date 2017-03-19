@@ -55,7 +55,7 @@ public class SubStateMachineExporter extends StateMachineExporterBase {
 		CppExporterUtils.writeOutSource(destination, GenerationTemplates.headerName(ownerClassName),
 				HeaderTemplates.headerGuard(source, ownerClassName));
 
-		source = createSubSmClassCppSource().toString();
+		source = GenerationTemplates.putNamespace(createSubSmClassCppSource().toString(), GenerationNames.Namespaces.ModelNamespace);
 		String dependencyIncludes = PrivateFunctionalTemplates.include(ownerClassName)
 				+ PrivateFunctionalTemplates.include(EventTemplates.EventHeaderName);
 		dependencyIncludes = GenerationTemplates.debugOnlyCodeBlock(GenerationTemplates.StandardIOinclude)

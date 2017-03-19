@@ -1,6 +1,9 @@
 #include "Types.hpp"
 #include <sstream>
 
+#ifndef STRING_UTILS_HPP
+#define STRING_UTILS_HPP
+
 namespace StringUtils
 {
 	template<typename T>
@@ -11,3 +14,5 @@ namespace StringUtils
 		return stream.str();
 	}
 }
+
+#endif

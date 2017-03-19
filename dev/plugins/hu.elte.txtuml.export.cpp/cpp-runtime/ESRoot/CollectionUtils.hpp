@@ -1,5 +1,8 @@
 #include <list>
 
+#ifndef COLLECTION_UTILS_HPP
+#define COLLECTION_UTILS_HPP
+
 namespace CollectionUtils
 {
 
@@ -17,5 +20,6 @@ int count(std::list<E*> elements)
 
 }
 
+#endif
 
 
