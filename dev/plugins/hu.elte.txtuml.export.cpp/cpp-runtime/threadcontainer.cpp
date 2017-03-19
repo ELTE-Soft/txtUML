@@ -1,7 +1,10 @@
 #include "threadcontainer.hpp"
 #include <algorithm>
 
-ThreadContainer::ThreadContainer(): active_threads(0),expected_threads(0) {}
+namespace Execution
+{
+
+ThreadContainer::ThreadContainer() : active_threads(0), expected_threads(0) {}
 
 void ThreadContainer::addThread(std::thread* th)
 {
@@ -15,7 +18,7 @@ void ThreadContainer::addThread(std::thread* th)
 
 void ThreadContainer::gettingThreadsReadyToStop(std::condition_variable& cond)
 {
-		
+
 	cont_it it = threads.begin();
 	cont_it it2;
 	while (isTooManyWorkers() && it != threads.end())
@@ -25,7 +28,7 @@ void ThreadContainer::gettingThreadsReadyToStop(std::condition_variable& cond)
 			active_threads--;
 			modifyThreadState(it->first, thread_state::ready_to_stop);
 			cond.notify_all();
-			it2 = it;			
+			it2 = it;
 			it++;
 			it2->second._thread->join();
 			threads.erase(it2);
@@ -48,8 +51,8 @@ void ThreadContainer::modifyThreadState(std::thread::id id, thread_state state)
 bool ThreadContainer::isReadyToStop(std::thread::id thread_id)
 {
 	std::unique_lock<std::mutex> mlock(_mutex);
-	
-	if(threads.count(thread_id) > 0)
+
+	if (threads.count(thread_id) > 0)
 	{
 		return threads[thread_id]._state == thread_state::ready_to_stop;
 	}
@@ -62,12 +65,15 @@ bool ThreadContainer::isReadyToStop(std::thread::id thread_id)
 void ThreadContainer::removeAll()
 {
 	std::unique_lock<std::mutex> mlock(_mutex);
-	threads.clear();	
+	threads.clear();
 }
 
 ThreadContainer::~ThreadContainer()
 {
 	removeAll();
 }
+
+}
+
 
 

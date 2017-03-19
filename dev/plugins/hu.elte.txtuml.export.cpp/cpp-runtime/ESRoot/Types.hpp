@@ -5,16 +5,31 @@
 #include <memory>
 #include "Containers/threadsafequeue.hpp"
 
+namespace Model
+{
 class IStateMachine;
 
+}
+
+namespace Model
+{
 template<typename BaseDerived>
 class IEvent;
 class EventBase;
+}
 
+
+namespace Execution 
+{
 template<typename RuntimeType>
 class IRuntime;
+}
 
+namespace ES
+{
 class Timer;
+}
+
 
 namespace ES
 {
@@ -29,14 +44,14 @@ namespace ES
 	template<typename T>
 	using SharedPtr = std::shared_ptr<T>;
 
-	using EventRef = SharedPtr<IEvent<EventBase>>;
-	using EventConstRef = SharedPtr<const IEvent<EventBase>>;
+	using EventRef = SharedPtr<Model::IEvent<Model::EventBase>>;
+	using EventConstRef = SharedPtr<const Model::IEvent<Model::EventBase>>;
 
-	using StateMachineRef = Ptr<IStateMachine>;
-	using StateMachineConstRef = Ptr<const IStateMachine>;
+	using StateMachineRef = Ptr<Model::IStateMachine>;
+	using StateMachineConstRef = Ptr<const Model::IStateMachine>;
 
 	template<typename RuntimeType>
-	using RuntimePtr = SharedPtr<IRuntime<RuntimeType>>;
+	using RuntimePtr = SharedPtr<Execution::IRuntime<RuntimeType>>;
 
 	//ThreadSafeQueue types
 	using MessageQueueType = ThreadSafeQueue<EventRef>;

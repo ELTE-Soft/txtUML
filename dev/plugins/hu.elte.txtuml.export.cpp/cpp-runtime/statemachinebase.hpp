@@ -11,13 +11,15 @@
 
 #include "runtime/ievent.hpp"
 #include "runtime/ESRoot/Types.hpp"
-
+namespace Model
+{
+	
 struct EventState {
-	EventState(int e_, int s_, int p_) : event (e_), state (s_), port (p_) {}
+EventState(int e_, int s_, int p_) : event (e_), state (s_), port (p_) {}
   
-	int event;
-	int state;
-	int port;
+int event;
+int state;
+int port;
 };
 
 inline bool operator == (const EventState& a, const EventState& b) {
@@ -25,13 +27,16 @@ inline bool operator == (const EventState& a, const EventState& b) {
 
 }
 
+}
+
+
 namespace std
 {
 	
 	template<>
-	struct hash<EventState> : public unary_function<EventState, size_t>
+	struct hash<Model::EventState> : public unary_function<Model::EventState, size_t>
 	{
-	  std::size_t operator ()(const EventState& es_) const
+	  std::size_t operator ()(const Model::EventState& es_) const
 	  {
 	    hash<int> intHash;
 	    size_t hashValue = (intHash(es_.event) ^ intHash(es_.state) ^ intHash(es_.port) );
@@ -40,7 +45,9 @@ namespace std
 	};
 }
 
-
+namespace Model
+{
+	
 class StateMachineBase
 {
 public:
@@ -51,5 +58,6 @@ protected:
   bool defaultGuard(ES::EventRef){return true;}
 };
 
+}
 
 #endif // STATEMACHINEBASE_H_INCLUDED

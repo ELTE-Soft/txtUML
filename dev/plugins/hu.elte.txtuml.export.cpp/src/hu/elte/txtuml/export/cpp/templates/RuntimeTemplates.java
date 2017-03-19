@@ -17,7 +17,7 @@ public class RuntimeTemplates {
 	public static final String SMRefName = "dest";
 	public static final String SMParam = STMIName + "& " + GenerationNames.formatIncomingParamName(SMRefName);
 	public static final String HeaderFuncs = "virtual void " + EventTemplates.ProcessEventFunctionName + "();\nvirtual void " + StateMachineTemplates.ProcessInitTransitionFunctionName + "();\n";
-	public static final String RuntimeInterfaceName = "IRuntime";
+	public static final String RuntimeInterfaceName = GenerationNames.Namespaces.ExecutionNamesapce + "::" + "IRuntime";
 	public static final String RuntimePtrType = "ES::RuntimePtr";
 	public static final String RuntimeSetter = "setRuntime";
 	public static final String UsingRuntimeType = "UsedRuntimeType";

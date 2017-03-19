@@ -24,14 +24,14 @@ public class ThreadHandlingManager {
 	private Map<String, ThreadPoolConfiguration> threadDescription;
 	private Set<ThreadPoolConfiguration> pools;
 	
-	private static final String ConfigurationStructName = "Configuration";
+	private static final String ConfigurationStructName = GenerationNames.Namespaces.ExecutionNamesapce + "::" + "Configuration";
 	private static final String ThreadConfigurationArray = GenerationNames.Containers.FixContainer + "<" + GenerationNames.sharedPtrType(ConfigurationStructName) + ">";
 	private static final String ConfigurationObjectVariableName = "conf";
 	private static final String ConfigurationFile = "deployment";
-	private static final String ThreadPoolClassName = "StateMachineThreadPool";
-	private static final String FunctionName = "LinearFunction";
+	private static final String ThreadPoolClassName = GenerationNames.Namespaces.ExecutionNamesapce + "::" + "StateMachineThreadPool";
+	private static final String FunctionName = GenerationNames.Namespaces.ExecutionNamesapce + "::" + "LinearFunction";
 	private static final String NamespaceName = "deployment";
-	private static final String ConfiguratedThreadedRuntimeName = "ConfiguratedThreadedRT";
+	private static final String ConfiguratedThreadedRuntimeName = GenerationNames.Namespaces.ExecutionNamesapce + "::" + "ConfiguratedThreadedRT";
 	private static final String SetConfigurationMethod = "configure";
 	private static final String CreatorFunction = "initRuntime";
 

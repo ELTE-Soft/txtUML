@@ -91,6 +91,7 @@ public class GenerationNames {
 		public static final String StringUtilsNamespace = "StringUtils";
 		public static final String CollectionUtilsNamespace = "CollectionUtils";
 		public static final String ContainerNamespace = "ESContainer";
+		public static final String ExecutionNamesapce = "Execution";
 	}
 	
 	public static class Containers {

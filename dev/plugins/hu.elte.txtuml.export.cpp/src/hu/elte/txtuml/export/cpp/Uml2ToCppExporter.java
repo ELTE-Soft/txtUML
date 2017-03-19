@@ -236,7 +236,7 @@ public class Uml2ToCppExporter {
 
 	private void createCMakeFile(String outputDirectory) throws FileNotFoundException, UnsupportedEncodingException {
 		CMakeSupport cmake = new CMakeSupport(outputDirectory);
-		cmake.addIncludeDirectory(RUNTIME_DIR_PREFIX.substring(0, RUNTIME_DIR_PREFIX.indexOf(File.separator)));
+		cmake.addIncludeDirectory(RUNTIME_DIR_PREFIX.substring(0, RUNTIME_DIR_PREFIX.indexOf(org.eclipse.core.runtime.Path.SEPARATOR)));
 		List<String> librarySourceClasses = new ArrayList<String>();
 		librarySourceClasses.add("runtime");
 		librarySourceClasses.add("istatemachine");
@@ -290,7 +290,7 @@ public class Uml2ToCppExporter {
 		forwardDecl.append("enum Events {" + events + "};\n");
 		forwardDecl.append(source);
 		CppExporterUtils.writeOutSource(outputDirectory, (EventTemplates.EventHeader),
-				CppExporterUtils.format(EventTemplates.eventHeaderGuard(forwardDecl.toString())));
+				CppExporterUtils.format(EventTemplates.eventHeaderGuard(GenerationTemplates.putNamespace(forwardDecl.toString(), GenerationNames.Namespaces.ModelNamespace))));
 
 	}
 
