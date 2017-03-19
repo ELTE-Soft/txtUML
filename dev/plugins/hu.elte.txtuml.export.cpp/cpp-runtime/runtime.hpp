@@ -26,7 +26,7 @@ class IRuntime
 {
 public:
 
-	/**<
+	/*!
 	Returns the runtime instance during the model execution.
 	*/
 	static ES::RuntimePtr<RuntimeType> getRuntimeInstance()
@@ -37,7 +37,8 @@ public:
 		}
 		return instance;
 	}
-	/**<
+
+	/*!
 	Register a state machine for the runtime instance so
 	the threaded runtime can record the number of objects instances during the model execution.
 	Called by the state machine constructor.
@@ -46,7 +47,9 @@ public:
 	{
 		static_cast<RuntimeType*>(this)->setupObjectSpecificRuntime(sm);
 	}
-	/**<
+
+
+	/*!
 	Remove a state machine for the runtime instance when
 	the threaded runtime can record the number of objects instances during the model execution.
 	Called by the state machine destructor.
@@ -55,7 +58,9 @@ public:
 	{
 		static_cast<RuntimeType*>(this)->removeObject(sm);
 	}
-	/**<
+
+
+	/*!
 	Sets the deployment configuration for the threaded runtime instance.
 	*/
 	void configure(ESContainer::FixedArray<ES::SharedPtr<Configuration>> configuration)
@@ -66,7 +71,8 @@ public:
 		}
 
 	}
-	/**<
+
+	/*!
 	Starts the model execution.
 	*/
 	void startRT()
@@ -74,7 +80,8 @@ public:
 		static_cast<RuntimeType*>(this)->start();
 	}
 
-	/**<
+
+	/*!
 	Stops the runtime instance when there is no more messages to process and there is no any execution thread.
 	*/
 	void stopUponCompletion()
@@ -82,18 +89,18 @@ public:
 		static_cast<RuntimeType*>(this)->stopUponCompletion();
 	}
 
+
 protected:
 	static ES::RuntimePtr<RuntimeType> instance;
 	IRuntime() {}
 };
-
 
 class SingleThreadRT : public IRuntime<SingleThreadRT>
 {
 public:
 	virtual ~SingleThreadRT();
 
-	/**<
+	/*!
 	Processes the events while the message queue is not empty.
 	*/
 	void start();
@@ -114,7 +121,7 @@ class ConfiguratedThreadedRT : public IRuntime<ConfiguratedThreadedRT>
 {
 public:
 	virtual ~ConfiguratedThreadedRT();
-	/**<
+	/*!
 	Starts the thread pools.
 	*/
 	void start();
