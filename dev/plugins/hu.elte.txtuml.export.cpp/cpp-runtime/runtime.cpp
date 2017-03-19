@@ -63,18 +63,15 @@ ConfiguratedThreadedRT::~ConfiguratedThreadedRT() {}
 
 void ConfiguratedThreadedRT::start()
 {
+	assert(isConfigurated() && "The configurated threaded runtime should be configured before starting.");
 	if (isConfigurated())
 	{
 		for (int i = 0; i < poolManager->getNumberOfConfigurations(); i++)
 		{
 			poolManager->getPool(i)->setWorkersCounter(&worker);
 			poolManager->getPool(i)->setStopReqest(&stop_request_cond);
-			poolManager->getPool(i)->startPool(poolManager->calculateNOfThreads(i, numberOfObjects[(size_t)i]));
+			poolManager->getPool(i)->startPool(poolManager->calculateNOfThreads(i, numberOfObjects[i]));
 		}
-	}
-	else
-	{
-		assert("The configurated threaded runtime should be configured before starting.");
 	}
 }
 
@@ -100,8 +97,8 @@ void ConfiguratedThreadedRT::setupObjectSpecificRuntime(ES::StateMachineRef sm)
 	int objectId = sm->getPoolId();
 	ES::SharedPtr<StateMachineThreadPool> matchedPool = poolManager->getPool(objectId);
 	sm->setPool(matchedPool);
-	numberOfObjects[(size_t)objectId]++;
-	poolManager->recalculateThreads(objectId, numberOfObjects[(size_t)objectId]);
+	numberOfObjects[objectId]++;
+	poolManager->recalculateThreads(objectId, numberOfObjects[objectId]);
 }
 
 bool ConfiguratedThreadedRT::isConfigurated()
