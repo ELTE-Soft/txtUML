@@ -11,10 +11,12 @@ import org.eclipse.uml2.uml.VisibilityKind;
  */
 public class EnumAdapter extends XmlAdapter<String, Enum<?>> {
 
+	@Override
 	public String marshal(Enum<?> enm) {
 		return enm.toString();
 	}
 
+	@Override
 	public VisibilityKind unmarshal(String val) {
 		throw new UnsupportedOperationException("Can not unmarshal enum value");
 	}
