@@ -3,6 +3,8 @@ package hu.elte.txtuml.export.javascript.json.model.cd;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import org.eclipse.emf.common.util.BasicEList;
 import org.eclipse.emf.common.util.EList;
@@ -51,7 +53,8 @@ public class ClassDiagramTests {
 
 	@Test
 	public void testArgument() {
-		BasicEList<String> paramNames = new BasicEList<String>(Arrays.asList("a", "b", "c", "d", "e", "f"));
+		// given
+		BasicEList<String> paramNames = new BasicEList<>(Arrays.asList("a", "b", "c", "d", "e", "f"));
 
 		BasicEList<Type> paramTypes = new BasicEList<Type>();
 		paramTypes.add(classA);
@@ -61,49 +64,61 @@ public class ClassDiagramTests {
 		paramTypeNames.add("A");
 		paramTypeNames.addAll(primitives.getFirst());
 
-		Operation op = classA.createOwnedOperation("f", (EList<String>) paramNames, (EList<Type>) paramTypes);
+		Operation op = classA.createOwnedOperation("function", (EList<String>) paramNames, (EList<Type>) paramTypes);
 
-		List<String> actualParamNames = new ArrayList<String>();
-		List<String> actualTypeNames = new ArrayList<String>();
-		for (Parameter par : op.getOwnedParameters()) {
-			Argument arg = new Argument(par);
-			actualParamNames.add(arg.getName());
-			actualTypeNames.add(arg.getType());
-		}
+		// when
+		List<Argument> instances = new ArrayList<>();
+		op.getOwnedParameters().forEach(parameter -> {
+			instances.add(new Argument(parameter));
+		});
 
-		Assert.assertArrayEquals(paramNames.toArray(), actualParamNames.toArray());
-		Assert.assertArrayEquals(paramTypeNames.toArray(), actualTypeNames.toArray());
+		// then
+		IntStream.range(0, instances.size()).forEach(i -> {
+			Argument instanceArgument = instances.get(i);
 
+			Assert.assertEquals(paramNames.get(i), instanceArgument.getName());
+			Assert.assertEquals(paramTypeNames.get(i), instanceArgument.getType());
+		});
 	}
 
 	@Test
 	public void testAttribute() {
-		ArrayList<String> attrNames = new ArrayList<String>(Arrays.asList("a", "b", "c", "d", "e", "f"));
+		// given
+		List<String> attrNames = Arrays.asList("a", "b", "c", "d", "e", "f");
 
-		ArrayList<Type> attrTypes = new ArrayList<Type>();
+		ArrayList<Type> attrTypes = new ArrayList<>();
 		attrTypes.add(classA);
 		attrTypes.addAll(primitives.getSecond());
 
-		List<String> attrTypeNames = new ArrayList<String>();
+		List<String> attrTypeNames = new ArrayList<>();
 		attrTypeNames.add("A");
 		attrTypeNames.addAll(primitives.getFirst());
 
-		ArrayList<VisibilityKind> expectedVisibilities = new ArrayList<VisibilityKind>(Arrays.asList(
-				VisibilityKind.PUBLIC_LITERAL, VisibilityKind.PROTECTED_LITERAL, VisibilityKind.PRIVATE_LITERAL,
-				VisibilityKind.PACKAGE_LITERAL, VisibilityKind.PUBLIC_LITERAL, VisibilityKind.PROTECTED_LITERAL));
+		List<VisibilityKind> expectedVisibilities = Arrays.asList(VisibilityKind.PUBLIC_LITERAL,
+				VisibilityKind.PROTECTED_LITERAL, VisibilityKind.PRIVATE_LITERAL, VisibilityKind.PACKAGE_LITERAL,
+				VisibilityKind.PUBLIC_LITERAL, VisibilityKind.PROTECTED_LITERAL);
 
+		// when
+		List<Attribute> instances = new ArrayList<>();
 		for (int i = 0; i < attrNames.size(); ++i) {
 			Property p = classA.createOwnedAttribute(attrNames.get(i), attrTypes.get(i));
 			p.setVisibility(expectedVisibilities.get(i));
-			Attribute a = new Attribute(p);
-			Assert.assertEquals(attrNames.get(i), a.getName());
-			Assert.assertEquals(attrTypeNames.get(i), a.getType());
-			Assert.assertEquals(expectedVisibilities.get(i), a.getVisibility());
+			instances.add(new Attribute(p));
 		}
+
+		// then
+		IntStream.range(0, instances.size()).forEach(i -> {
+			Attribute instanceAttribute = instances.get(i);
+
+			Assert.assertEquals(attrNames.get(i), instanceAttribute.getName());
+			Assert.assertEquals(attrTypeNames.get(i), instanceAttribute.getType());
+			Assert.assertEquals(expectedVisibilities.get(i), instanceAttribute.getVisibility());
+		});
 	}
 
 	@Test
 	public void testAssociationEnd() {
+		// given
 		Class classB = model.createOwnedClass("B", false);
 		List<String> names = Arrays.asList("a", "b", "c", "d");
 		List<Boolean> compositions = Arrays.asList(true, false, false, true);
@@ -125,19 +140,27 @@ public class ClassDiagramTests {
 		List<Property> props = Arrays.asList(a.getMemberEnd("a", classA), a.getMemberEnd("b", classB),
 				b.getMemberEnd("c", classB), b.getMemberEnd("d", classA));
 
-		for (int i = 0; i < props.size(); ++i) {
-			AssociationEnd ae = new AssociationEnd(props.get(i));
-			Assert.assertEquals(names.get(i), ae.getName());
-			Assert.assertEquals(compositions.get(i), ae.isComposition());
-			Assert.assertEquals(navigabilities.get(i), ae.isNavigable());
-			Assert.assertEquals(expectedMultiplicites.get(i), ae.getMultiplicity());
-			Assert.assertEquals(expectedVisibilities.get(i), ae.getVisibility());
-		}
+		// when
+		List<AssociationEnd> instances = new ArrayList<>();
+		props.forEach(property -> {
+			instances.add(new AssociationEnd(property));
+		});
 
+		// then
+		IntStream.range(0, instances.size()).forEach(i -> {
+			AssociationEnd instanceAssocEnd = instances.get(i);
+
+			Assert.assertEquals(names.get(i), instanceAssocEnd.getName());
+			Assert.assertEquals(compositions.get(i), instanceAssocEnd.isComposition());
+			Assert.assertEquals(navigabilities.get(i), instanceAssocEnd.isNavigable());
+			Assert.assertEquals(expectedMultiplicites.get(i), instanceAssocEnd.getMultiplicity());
+			Assert.assertEquals(expectedVisibilities.get(i), instanceAssocEnd.getVisibility());
+		});
 	}
 
 	@Test
 	public void testClassAttributeLink() throws UnexpectedEndException {
+		// given
 		Class classB = model.createOwnedClass("B", false);
 		LineAssociation lab = new LineAssociation("package.AB", "package.A", "package.B");
 		LineAssociation laa = new LineAssociation("package.AA", "package.A", "package.A");
@@ -151,9 +174,11 @@ public class ClassDiagramTests {
 
 		aa.setName("AA");
 
+		// when
 		ClassAttributeLink calab = new ClassAttributeLink(lab, ab, classA, classB);
 		ClassAttributeLink calaa = new ClassAttributeLink(laa, aa, classA, classA);
 
+		// then
 		Assert.assertEquals("package.AB", calab.getId());
 		Assert.assertEquals("package.AA", calaa.getId());
 
@@ -174,34 +199,35 @@ public class ClassDiagramTests {
 
 		Assert.assertEquals("b", calab.getTo().getName());
 		Assert.assertEquals("a2", calaa.getTo().getName());
-
 	}
 
 	@Test
 	public void testClassLink() {
+		// given
 		LineAssociation la = new LineAssociation("package.AB", "package.A", "package.B");
 		la.setType(AssociationType.generalization);
 
+		// when
 		ClassLink cl = new ClassLink(la);
 
+		// then
 		Assert.assertEquals("package.AB", cl.getId());
 		Assert.assertEquals("package.A", cl.getFromID());
 		Assert.assertEquals("package.B", cl.getToID());
 		Assert.assertEquals(AssociationType.generalization, cl.getType());
-
 	}
 
 	@Test
 	public void testClassNode() {
-		BasicEList<String> emptyStrings = new BasicEList<String>();
-		BasicEList<Type> emptyTypes = new BasicEList<Type>();
-
+		// given
 		List<String> expectedAttrNames = Arrays.asList("attr1", "attr2");
 		for (String attr : expectedAttrNames) {
 			classA.createOwnedAttribute(attr, primitives.getSecond().get(0));
 		}
 
 		List<String> expectedOpNames = Arrays.asList("op1", "op2");
+		BasicEList<String> emptyStrings = new BasicEList<String>();
+		BasicEList<Type> emptyTypes = new BasicEList<Type>();
 		for (String op : expectedOpNames) {
 			classA.createOwnedOperation(op, emptyStrings, emptyTypes);
 		}
@@ -217,22 +243,24 @@ public class ClassDiagramTests {
 		rectB.setWidth(7);
 		rectB.setHeight(8);
 
+		// when
 		ClassNode cnA = new ClassNode(classA, rectA.getName());
 		ClassNode cnB = new ClassNode(classB, rectB.getName());
 
-		List<MemberOperation> ops = cnA.getOperations();
-		List<Attribute> attrs = cnA.getAttributes();
-
 		List<String> opNames = new ArrayList<String>();
-		for (MemberOperation op : ops) {
+		for (MemberOperation op : cnA.getOperations()) {
 			opNames.add(op.getName());
 		}
 
 		List<String> attrNames = new ArrayList<String>();
-		for (Attribute attr : attrs) {
+		for (Attribute attr : cnA.getAttributes()) {
 			attrNames.add(attr.getName());
 		}
 
+		Rectangle layoutTest = new Rectangle(1, 2, 3, 4);
+		cnA.setLayout(layoutTest);
+
+		// then
 		Assert.assertEquals("package.A", cnA.getId());
 		Assert.assertEquals("package.B", cnB.getId());
 
@@ -242,40 +270,38 @@ public class ClassDiagramTests {
 		Assert.assertEquals(CDNodeType.CLASS, cnA.getType());
 		Assert.assertEquals(CDNodeType.ABSTRACT_CLASS, cnB.getType());
 
-		Rectangle layoutTest = new Rectangle(1, 2, 3, 4);
-		cnA.setLayout(layoutTest);
-
 		Assert.assertEquals(1, cnA.getPosition().getX());
 		Assert.assertEquals(2, cnA.getPosition().getY());
 
-		Assert.assertEquals((Integer) 3, cnA.getWidth());
-		Assert.assertEquals((Integer) 4, cnA.getHeight());
+		Assert.assertEquals(3, cnA.getWidth().intValue());
+		Assert.assertEquals(4, cnA.getHeight().intValue());
 
 		Assert.assertTrue(cnB.getAttributes().isEmpty());
 		Assert.assertTrue(cnB.getOperations().isEmpty());
 
 		Assert.assertArrayEquals(expectedAttrNames.toArray(), attrNames.toArray());
 		Assert.assertArrayEquals(expectedOpNames.toArray(), opNames.toArray());
-
 	}
 
 	@Test
 	public void testMemberOperation() {
-		ArrayList<String> opNames = new ArrayList<String>(Arrays.asList("a", "b", "c", "d"));
-		ArrayList<VisibilityKind> expectedVisibilities = new ArrayList<VisibilityKind>(
-				Arrays.asList(VisibilityKind.PUBLIC_LITERAL, VisibilityKind.PROTECTED_LITERAL,
-						VisibilityKind.PRIVATE_LITERAL, VisibilityKind.PACKAGE_LITERAL));
-		ArrayList<Type> returnTypes = new ArrayList<Type>(
-				Arrays.asList(null, classA, primitives.getSecond().get(0), null));
-		ArrayList<String> returnTypeNames = new ArrayList<String>(
-				Arrays.asList(null, "A", primitives.getFirst().get(0), null));
+		// given
+		List<String> opNames = Arrays.asList("a", "b", "c", "d");
+		List<VisibilityKind> expectedVisibilities = Arrays.asList(VisibilityKind.PUBLIC_LITERAL,
+				VisibilityKind.PROTECTED_LITERAL, VisibilityKind.PRIVATE_LITERAL, VisibilityKind.PACKAGE_LITERAL);
+		List<Type> returnTypes = Arrays.asList(null, classA, primitives.getSecond().get(0), null);
+		List<String> returnTypeNames = Arrays.asList(null, "A", primitives.getFirst().get(0), null);
 
+		List<MemberOperation> instances = new ArrayList<>();
+		List<List<String>> expectedArgNames = new ArrayList<>();
+		List<List<String>> expectedArgTypeNames = new ArrayList<>();
+		List<Operation> operations = new ArrayList<>();
 		for (int i = 0; i < opNames.size(); ++i) {
-			BasicEList<Type> argTypes = new BasicEList<Type>();
-			primitives.getSecond().subList(0, i).stream().forEach((PrimitiveType pt) -> argTypes.add(pt));
-
+			EList<Type> argTypes = new BasicEList<>(primitives.getSecond().subList(0, i));
 			List<String> argTypeNames = primitives.getFirst().subList(0, i);
 			List<String> argNames = opNames.subList(0, i);
+			expectedArgNames.add(argNames);
+			expectedArgTypeNames.add(argTypeNames);
 
 			Operation op = classA.createOwnedOperation(opNames.get(i), new BasicEList<String>(argNames), argTypes);
 			op.setVisibility(expectedVisibilities.get(i));
@@ -284,22 +310,31 @@ public class ClassDiagramTests {
 				Parameter ret = op.createOwnedParameter("return", returnTypes.get(i));
 				ret.setDirection(ParameterDirectionKind.RETURN_LITERAL);
 			}
-			MemberOperation mop = new MemberOperation(op);
 
-			Assert.assertEquals(opNames.get(i), mop.getName());
-			Assert.assertEquals(expectedVisibilities.get(i), mop.getVisibility());
-			Assert.assertEquals(returnTypeNames.get(i), mop.getReturnType());
+			operations.add(op);
+		}
 
-			ArrayList<String> actualArgNames = new ArrayList<String>();
-			ArrayList<String> actualArgTypeNames = new ArrayList<String>();
-			for (Argument a : mop.getArgs()) {
-				actualArgNames.add(a.getName());
-				actualArgTypeNames.add(a.getType());
-			}
+		// when
+		operations.forEach(op -> {
+			instances.add(new MemberOperation(op));
+		});
 
+		// then
+		IntStream.range(0, instances.size()).forEach(i -> {
+			MemberOperation instanceMemberOperation = instances.get(i);
+
+			List<String> actualArgNames = instanceMemberOperation.getArgs().stream().map(a -> a.getName())
+					.collect(Collectors.toList());
+			List<String> actualArgTypeNames = instanceMemberOperation.getArgs().stream().map(a -> a.getType())
+					.collect(Collectors.toList());
+			List<String> argNames = expectedArgNames.get(i);
+			List<String> argTypeNames = expectedArgTypeNames.get(i);
+
+			Assert.assertEquals(opNames.get(i), instanceMemberOperation.getName());
+			Assert.assertEquals(expectedVisibilities.get(i), instanceMemberOperation.getVisibility());
+			Assert.assertEquals(returnTypeNames.get(i), instanceMemberOperation.getReturnType());
 			Assert.assertArrayEquals(actualArgNames.toArray(), argNames.toArray());
 			Assert.assertArrayEquals(actualArgTypeNames.toArray(), argTypeNames.toArray());
-
-		}
+		});
 	}
 }
