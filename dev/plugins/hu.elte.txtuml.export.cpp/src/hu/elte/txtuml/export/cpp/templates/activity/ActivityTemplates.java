@@ -171,7 +171,7 @@ public class ActivityTemplates {
 			List<String> parameters) {
 
 		if (objectType.equals(CreateObjectType.Signal)) {
-			return GenerationNames.signalType(typeName) + " " + objName + ";\n";
+			return GenerationNames.signalPointerType(typeName) + " " + objName + ";\n";
 		} else {
 			return GenerationNames.pointerType(typeName) + " " + objName + " " + ReplaceSimpleTypeOp + " "
 					+ PointerAndMemoryNames.NullPtr + ";\n";
@@ -182,7 +182,7 @@ public class ActivityTemplates {
 	public static String constructorCall(String ownerName, String typeName, CreateObjectType objectType,
 			List<String> parameters) {
 		if (objectType.equals(CreateObjectType.Signal)) {
-			return ownerName + ReplaceSimpleTypeOp + GenerationNames.signalType(typeName) + "("
+			return ownerName + ReplaceSimpleTypeOp + GenerationNames.signalPointerType(typeName) + "("
 					+ PointerAndMemoryNames.MemoryAllocator + " " + PrivateFunctionalTemplates.signalType(typeName) + "("
 					+ operationCallParamList(parameters) + "))";
 		} else {
@@ -220,9 +220,9 @@ public class ActivityTemplates {
 
 	public static String getRealSignal(String signalType, String signalVariableName) {
 		StringBuilder source = new StringBuilder("");
-		source.append(GenerationNames.signalType(signalType) + " ");
+		source.append(GenerationNames.signalPointerType(signalType) + " ");
 		source.append(signalVariableName + " = ");
-		source.append(GenerationNames.signalType(signalType) + "(");
+		source.append(GenerationNames.signalPointerType(signalType) + "(");
 		source.append(PointerAndMemoryNames.MemoryAllocator + " " + PrivateFunctionalTemplates.signalType(signalType));
 		source.append("(" + GenerationNames.StaticCast + "<" + PrivateFunctionalTemplates.signalType(signalType)+ ">");
 		source.append("(" + EventTemplates.EventFParamName + ")));\n");

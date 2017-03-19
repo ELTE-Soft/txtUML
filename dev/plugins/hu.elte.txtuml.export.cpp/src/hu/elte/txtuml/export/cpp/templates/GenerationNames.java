@@ -230,8 +230,10 @@ public class GenerationNames {
 				+ "{\n" + "auto it=" + CompositeStateMapName + ".find(" + GenerationNames.StateParamName + ");\n"
 				+ "if(it!=" + CompositeStateMapName + ".end())\n" + "{\n" + CurrentMachineName
 				+ "=(it->second).get();\n" + CurrentMachineName + "->" + SetInitialStateName
-				+ "();//restarting from initial state\n" + CurrentMachineName + "->" + ProcessEventFName + "("
-				+ GenerationNames.InitialEventName + "_EC());\n" + "}\n" + "else\n" + "{\n" + CurrentMachineName + "="
+				+ "();//restarting from initial state\n" + CurrentMachineName + "->" + ProcessEventFName + "(" + 
+				  GenerationNames.signalPointerType(GenerationNames.InitialEventName) + "(" + GenerationNames.PointerAndMemoryNames.MemoryAllocator + " " +  
+				PrivateFunctionalTemplates.signalType(GenerationNames.InitialEventName) + "()) );\n" + 
+				"}\n" + "else\n" + "{\n" + CurrentMachineName + "="
 				+ PointerAndMemoryNames.NullPtr + ";\n" + "}\n" + CurrentStateName + "=" + GenerationNames.StateParamName + ";\n" + "}\n";
 	}
 
@@ -256,7 +258,7 @@ public class GenerationNames {
 	}
 	
 
-	public static String signalType(String signalClassName) {
+	public static String signalPointerType(String signalClassName) {
 		return sharedPtrType(PrivateFunctionalTemplates.signalType(signalClassName));
 	}
 
