@@ -90,6 +90,11 @@ public class GenerationNames {
 		public static final String ModelNamespace = "Model";
 		public static final String StringUtilsNamespace = "StringUtils";
 		public static final String CollectionUtilsNamespace = "CollectionUtils";
+		public static final String ContainerNamespace = "ESContainer";
+	}
+	
+	public static class Containers {
+		public static final String FixContainer =  Namespaces.ContainerNamespace + "::" +  "FixedArray";
 	}
 	
 	public static final String ClassType = "struct";

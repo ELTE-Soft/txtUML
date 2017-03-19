@@ -1,6 +1,6 @@
 package hu.elte.txtuml.export.cpp.templates;
 
-import java.io.File;
+import org.eclipse.core.runtime.Path;
 
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.ModifierNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.PointerAndMemoryNames;
@@ -8,7 +8,7 @@ import hu.elte.txtuml.export.cpp.templates.statemachine.EventTemplates;
 import hu.elte.txtuml.export.cpp.templates.statemachine.StateMachineTemplates;
 
 public class RuntimeTemplates {
-	public static final String RTPath = "runtime" + File.separator;
+	public static final String RTPath = "runtime" + Path.SEPARATOR;
 	public static final String RuntimeHeaderName = RTPath + "runtime";
 	public static final String EventIName = "IEvent";
 	public static final String EventIHeaderName = "ievent";

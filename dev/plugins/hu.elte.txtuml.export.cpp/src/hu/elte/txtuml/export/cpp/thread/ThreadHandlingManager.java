@@ -23,10 +23,9 @@ public class ThreadHandlingManager {
 
 	private Map<String, ThreadPoolConfiguration> threadDescription;
 	private Set<ThreadPoolConfiguration> pools;
-
-	private static final String ThreadConfigurationClassName = "ThreadConfiguration";
-	private static final String InsertConfigurationOperationName = "insertConfiguration";
+	
 	private static final String ConfigurationStructName = "Configuration";
+	private static final String ThreadConfigurationArray = GenerationNames.Containers.FixContainer + "<" + GenerationNames.sharedPtrType(ConfigurationStructName) + ">";
 	private static final String ConfigurationObjectVariableName = "conf";
 	private static final String ConfigurationFile = "deployment";
 	private static final String ThreadPoolClassName = "StateMachineThreadPool";
@@ -55,7 +54,6 @@ public class ThreadHandlingManager {
 	public void createConfigurationSource(String dest) throws FileNotFoundException, UnsupportedEncodingException {
 
 		StringBuilder source = new StringBuilder("");
-		source.append(PrivateFunctionalTemplates.include(ThreadConfigurationClassName.toLowerCase()));
 		source.append(PrivateFunctionalTemplates.include(RuntimeTemplates.RuntimeHeaderName));
 		source.append(PrivateFunctionalTemplates.include(GenerationNames.FileNames.TypesFilePath));
 		source.append("\n\n");
@@ -107,8 +105,7 @@ public class ThreadHandlingManager {
 		StringBuilder source = new StringBuilder("");
 		List<String> parameters = new ArrayList<String>();
 		parameters.add(new Integer(pools.size()).toString());
-		source.append(GenerationTemplates.createObject(ThreadConfigurationClassName, ConfigurationObjectVariableName,
-				parameters, true));
+		source.append(ThreadConfigurationArray + " " +  ConfigurationObjectVariableName + "(" + new Integer(pools.size()).toString() + ");\n");
 
 		for (ThreadPoolConfiguration pool : pools) {
 			parameters.clear();
@@ -124,12 +121,10 @@ public class ThreadHandlingManager {
 	}
 
 	private String insertToConfiguration(Integer id, String configuration) {
-		List<String> params = new ArrayList<String>();
-		params.add(id.toString());
-		params.add(configuration);
 
-		return ActivityTemplates.blockStatement(ActivityTemplates.operationCallOnPointerVariable(
-				ConfigurationObjectVariableName, InsertConfigurationOperationName, params));
+
+		return ActivityTemplates.blockStatement(
+				ConfigurationObjectVariableName + "[" + id +  "] = " + configuration);
 	}
 
 	private String allocateFunctionObject(LinearFunction function) {
