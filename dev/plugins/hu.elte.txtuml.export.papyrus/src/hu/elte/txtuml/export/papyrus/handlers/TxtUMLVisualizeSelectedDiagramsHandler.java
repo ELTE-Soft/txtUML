@@ -42,7 +42,8 @@ public class TxtUMLVisualizeSelectedDiagramsHandler extends AbstractHandler {
 			for (ICompilationUnit cu : selectedCompilationUnits) {
 				types.addAll(Arrays.asList(cu.getTypes()));
 			}
-			page.selectElementsInDiagramTree(types.toArray());
+			page.selectElementsInDiagramTree(types.toArray(), false);
+			page.setExpandedLayouts(types);
 		} catch (JavaModelException ex) {
 		}
 

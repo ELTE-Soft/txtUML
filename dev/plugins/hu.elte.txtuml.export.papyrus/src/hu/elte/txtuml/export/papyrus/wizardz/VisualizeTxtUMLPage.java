@@ -2,12 +2,9 @@ package hu.elte.txtuml.export.papyrus.wizardz;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -28,24 +25,19 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.TreeItem;
-import org.eclipse.ui.dialogs.ElementTreeSelectionDialog;
 import org.eclipse.ui.model.WorkbenchContentProvider;
-import org.eclipse.ui.model.WorkbenchLabelProvider;
 
 import hu.elte.txtuml.api.layout.ClassDiagram;
 import hu.elte.txtuml.api.layout.CompositeDiagram;
 import hu.elte.txtuml.api.layout.StateMachineDiagram;
 import hu.elte.txtuml.export.papyrus.preferences.PreferencesManager;
+import hu.elte.txtuml.utils.Logger;
 import hu.elte.txtuml.utils.eclipse.NotFoundException;
 import hu.elte.txtuml.utils.eclipse.PackageUtils;
 import hu.elte.txtuml.utils.eclipse.ProjectUtils;
@@ -56,14 +48,11 @@ import hu.elte.txtuml.utils.eclipse.WizardUtils;
  */
 public class VisualizeTxtUMLPage extends WizardPage {
 
-	private static final String browseButtonText = "Browse...";
 	private static final Class<?>[] diagramTypes = { StateMachineDiagram.class, ClassDiagram.class,
 			CompositeDiagram.class };
 
 	private Composite container;
-	private Text txtUMLModel;
 	private List<IType> txtUMLLayout = new LinkedList<>();
-	private Text txtUMLProject;
 	private ScrolledComposite sc;
 	private CheckboxTreeViewer tree;
 
@@ -73,7 +62,7 @@ public class VisualizeTxtUMLPage extends WizardPage {
 	public VisualizeTxtUMLPage() {
 		super("Visualize txtUML page");
 		setTitle("Visualize txtUML page");
-		setDescription("Provide the txtUML project, model package and diagrams to be visualized.");
+		setDescription("Select the diagrams to be visualized.");
 	}
 
 	/*
@@ -89,64 +78,6 @@ public class VisualizeTxtUMLPage extends WizardPage {
 
 		GridLayout layout = new GridLayout(4, false);
 		container.setLayout(layout);
-
-		Label label1 = new Label(container, SWT.NONE);
-		label1.setText("txtUML Project: ");
-		txtUMLProject = new Text(container, SWT.BORDER | SWT.SINGLE);
-		txtUMLProject.setText(PreferencesManager.getString(PreferencesManager.TXTUML_VISUALIZE_TXTUML_PROJECT));
-		Button browseProject = new Button(container, SWT.NONE);
-		browseProject.setText(browseButtonText);
-		browseProject.addSelectionListener(new SelectionListener() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				ElementTreeSelectionDialog dialog = new ElementTreeSelectionDialog(container.getShell(),
-						new WorkbenchLabelProvider(), new WorkbenchContentProvider() {
-							@Override
-							public Object[] getChildren(Object element) {
-								if (element instanceof IWorkspaceRoot) {
-									return Stream.of(((IWorkspaceRoot) element).getProjects()).filter(pr -> pr.isOpen())
-											.toArray();
-								}
-								return new Object[0];
-							}
-						});
-				dialog.setInput(ResourcesPlugin.getWorkspace().getRoot());
-				dialog.setTitle("Project Selection");
-				dialog.open();
-				Object[] result = dialog.getResult();
-				if (result != null && result.length > 0) {
-					txtUMLProject.setText(((IProject) result[0]).getName());
-				}
-			}
-
-			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {
-			}
-		});
-
-		Label label2 = new Label(container, SWT.NONE);
-		label2.setText("txtUML Model: ");
-		txtUMLModel = new Text(container, SWT.BORDER | SWT.SINGLE);
-		txtUMLModel.setText(PreferencesManager.getString(PreferencesManager.TXTUML_VISUALIZE_TXTUML_MODEL));
-		Button browseModel = new Button(container, SWT.NONE);
-		browseModel.setText(browseButtonText);
-		browseModel.addSelectionListener(new SelectionListener() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				ElementTreeSelectionDialog dialog = getModelBrowserDialog();
-				dialog.setInput(ResourcesPlugin.getWorkspace().getRoot());
-				dialog.setTitle("Model Selection");
-				dialog.open();
-				Object[] result = dialog.getResult();
-				if (result != null && result.length > 0) {
-					txtUMLModel.setText(((IPackageFragment) result[0]).getElementName());
-				}
-			}
-
-			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {
-			}
-		});
 
 		final Label label = new Label(container, SWT.TOP);
 		label.setText("txtUML Diagrams: ");
@@ -181,29 +112,20 @@ public class VisualizeTxtUMLPage extends WizardPage {
 						} else {
 							txtUMLLayout.remove(selectedType);
 						}
-						selectElementsInDiagramTree(txtUMLLayout.toArray());
+						selectElementsInDiagramTree(txtUMLLayout.toArray(), true);
 					}
 				}
 			}
 		});
 
-		tree.expandAll();
-		selectElementsInDiagramTree(txtUMLLayout.toArray());
-		tree.collapseAll();
+		selectElementsInDiagramTree(txtUMLLayout.toArray(), false);
+		setExpandedLayouts(txtUMLLayout);
 
-		try {
-			tree.setExpandedElements(new IJavaProject[] { ProjectUtils.findJavaProject(txtUMLProject.getText()) });
-		} catch (NotFoundException ex) {
-		}
-
-		GridData gd = new GridData(SWT.FILL, SWT.FILL, true, false, 2, 1);
 		GridData treeGd = new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1);
 		treeGd.heightHint = 200;
 		treeGd.widthHint = 150;
 		GridData labelGd = new GridData(SWT.FILL, SWT.TOP, false, false, 1, 1);
 		labelGd.verticalIndent = 5;
-		txtUMLModel.setLayoutData(gd);
-		txtUMLProject.setLayoutData(gd);
 		label.setLayoutData(labelGd);
 		treeComposite.setLayoutData(treeGd);
 
@@ -222,34 +144,15 @@ public class VisualizeTxtUMLPage extends WizardPage {
 	}
 
 	/**
-	 * Returns the txtUML ModelClass
-	 * 
-	 * @return Returns the txtUML ModelClass
-	 */
-	public String getTxtUmlModelClass() {
-		return txtUMLModel.getText();
-	}
-
-	/**
-	 * Returns the txtUML project's name
-	 * 
-	 * @return Returns the txtUML project's name
-	 */
-	public String getTxtUmlProject() {
-		return txtUMLProject.getText();
-	}
-
-	/**
-	 * Returns the txtUML model layout classes and containing project names
+	 * Returns the txtUML model layout classes
 	 * 
 	 * @return
 	 */
-	public Map<String, String> getTxtUmlLayout() {
-		HashMap<String, String> result = new HashMap<String, String>();
+	public List<IType> getTxtUmlLayouts() {
+		List<IType> result = new ArrayList<IType>();
 		for (IType layout : txtUMLLayout) {
-			String layoutName = layout.getFullyQualifiedName();
-			if (!"".equals(layoutName)) {
-				result.put(layoutName, layout.getJavaProject().getElementName());
+			if (!"".equals(layout.getFullyQualifiedName())) {
+				result.add(layout);
 			}
 		}
 		return result;
@@ -257,15 +160,36 @@ public class VisualizeTxtUMLPage extends WizardPage {
 
 	/**
 	 * Selects the given elements in the diagram selection tree
+	 * 
+	 * @param elements
+	 *            the elements to select in tree
+	 * @param isTreeVisible
+	 *            is the selection tree visible at the moment
 	 */
-	public void selectElementsInDiagramTree(Object[] elements) {
+	public void selectElementsInDiagramTree(Object[] elements, boolean isTreeVisible) {
+		if (!isTreeVisible)
+			tree.expandAll();
+
 		txtUMLLayout.clear();
-		Stream.of(elements).forEach(type -> tree.setCheckedElements(elements));
+		tree.setCheckedElements(elements);
 		List<IType> checkedTypes = Arrays.asList(elements).stream().filter(e -> e instanceof IType).map(e -> (IType) e)
 				.collect(Collectors.toList());
 
 		checkedTypes.forEach(type -> txtUMLLayout.add(type));
 		Stream.of(tree.getTree().getItems()).forEach(pr -> updateParentCheck(pr));
+
+		if (!isTreeVisible)
+			tree.collapseAll();
+	}
+
+	/**
+	 * Expands the given layouts in the layout selection tree
+	 * 
+	 * @param expandableTypes
+	 *            the types to expand in tree
+	 */
+	public void setExpandedLayouts(List<IType> typesToExpand) {
+		tree.setExpandedElements(typesToExpand.stream().map(type -> type.getJavaProject()).toArray());
 	}
 
 	private CheckboxTreeViewer getDiagramTreeViewer(ScrolledComposite treeComposite) {
@@ -353,49 +277,32 @@ public class VisualizeTxtUMLPage extends WizardPage {
 	}
 
 	private void addInitialLayoutFields() {
-		Collection<String> layouts = PreferencesManager.getStrings(PreferencesManager.TXTUML_VISUALIZE_TXTUML_LAYOUT);
-		for (String layout : layouts) {
-			if (!layout.isEmpty())
-				addLayoutField(layout);
-		}
-	}
+		List<String> layouts = new ArrayList<>(
+				PreferencesManager.getStrings(PreferencesManager.TXTUML_VISUALIZE_TXTUML_LAYOUT));
+		List<String> layoutProjects = new ArrayList<>(
+				PreferencesManager.getStrings(PreferencesManager.TXTUML_VISUALIZE_TXTUML_LAYOUT_PROJECTS));
 
-	private void addLayoutField(String qualifiedName) {
-		// find type by qualified name
-		IProject[] allProjects = ResourcesPlugin.getWorkspace().getRoot().getProjects();
-		for (IProject pr : allProjects) {
-			IJavaProject javaProject = null;
-			try {
-				javaProject = ProjectUtils.findJavaProject(pr.getName());
-				List<IType> types = PackageUtils.findAllPackageFragmentsAsStream(javaProject)
-						.flatMap(pf -> getDiagramDescriptions(pf).stream()).collect(Collectors.toList());
-				types.stream().filter(type -> type.getFullyQualifiedName().equals(qualifiedName))
-						.forEach(type -> txtUMLLayout.add(type));
-			} catch (NotFoundException | JavaModelException ex) {
-				continue;
+		if (layouts.size() == layoutProjects.size()) {
+			for (int layoutNo = 0; layoutNo < layouts.size(); ++layoutNo) {
+				String layout = layouts.get(layoutNo);
+				String layoutProject = layoutProjects.get(layoutNo);
+				if (!layout.isEmpty()) {
+					addLayoutField(layout, layoutProject);
+				}
 			}
 		}
 	}
 
-	private ElementTreeSelectionDialog getModelBrowserDialog() {
-		return new ElementTreeSelectionDialog(container.getShell(), new WorkbenchLabelProvider(),
-				new WorkbenchContentProvider() {
-					@Override
-					public Object[] getChildren(Object element) {
-						if (element instanceof IWorkspaceRoot) {
-							IJavaProject javaProject;
-							List<IPackageFragment> allPackageFragments = new ArrayList<>();
-							try {
-								javaProject = ProjectUtils.findJavaProject(txtUMLProject.getText());
-								allPackageFragments = PackageUtils.findAllPackageFragmentsAsStream(javaProject)
-										.collect(Collectors.toList());
-							} catch (NotFoundException | JavaModelException ex) {
-							}
-							return WizardUtils.getModelPackages(allPackageFragments).toArray();
-						}
-						return new Object[0];
-					}
-				});
+	private void addLayoutField(String qualifiedName, String layoutProject) {
+		try {
+			IJavaProject layoutJavaProject = ProjectUtils.findJavaProject(layoutProject);
+			List<IType> types = PackageUtils.findAllPackageFragmentsAsStream(layoutJavaProject)
+					.flatMap(pf -> getDiagramDescriptions(pf).stream()).collect(Collectors.toList());
+			types.stream().filter(type -> type.getFullyQualifiedName().equals(qualifiedName))
+					.forEach(type -> txtUMLLayout.add(type));
+		} catch (NotFoundException | JavaModelException ex) {
+			Logger.user.error(ex.getMessage());
+		}
 	}
 
 	private void updateParentCheck(TreeItem parentItem) {
