@@ -1,9 +1,18 @@
-package tester_GUI;
+package vending_machine.ui;
 
 import hu.elte.txtuml.api.model.Action;
 import hu.elte.txtuml.api.model.external.ExternalClass;
-import tester_GUI.IControl;
-import vending_machine.*;
+import vending_machine.CashRegister;
+import vending_machine.Drink;
+import vending_machine.Serve;
+import vending_machine.VendingMachine;
+import vending_machine.WorkTogether;
+import vending_machine.drinkChosen;
+import vending_machine.giveBackCash;
+import vending_machine.insertCash;
+import vending_machine.refill;
+import vending_machine.model.*;
+import vending_machine.ui.IControl;
 
 public class Glue implements ExternalClass, IControl {
 	VendingMachine machine = new VendingMachine();

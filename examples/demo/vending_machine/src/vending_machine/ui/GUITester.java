@@ -1,4 +1,4 @@
-package tester_GUI;
+package vending_machine.ui;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -27,12 +27,11 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import hu.elte.txtuml.api.model.execution.ModelExecutor;
+import vending_machine.ui.Glue;
+import vending_machine.ui.IControl;
 
 import java.util.Timer;
 import java.util.TimerTask;
-
-import tester_GUI.Glue;
-import tester_GUI.IControl;
 
 public class GUITester {
 	private MachinePanel machinePanel = new MachinePanel(this);

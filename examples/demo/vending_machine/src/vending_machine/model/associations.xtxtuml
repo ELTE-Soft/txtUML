@@ -1,4 +1,4 @@
-package vending_machine;
+package vending_machine.model;
 
 composition Serve {
 	container VendingMachine theMachine;

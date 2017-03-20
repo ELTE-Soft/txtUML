@@ -1,4 +1,4 @@
-package vending_machine;
+package vending_machine.model;
 
 import hu.elte.txtuml.api.stdlib.timers.Timer;
 

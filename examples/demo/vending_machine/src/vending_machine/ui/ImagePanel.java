@@ -1,4 +1,4 @@
-package tester_GUI;
+package vending_machine.ui;
 
 import java.awt.Dimension;
 import java.awt.Graphics;

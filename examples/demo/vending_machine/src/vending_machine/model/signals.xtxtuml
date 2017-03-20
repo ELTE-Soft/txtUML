@@ -1,4 +1,4 @@
-package vending_machine;
+package vending_machine.model;
 
 // Drink signals
 signal request;

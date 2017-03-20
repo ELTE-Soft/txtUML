@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>vending_machine_separated</name>
+	<name>vending_machine</name>
 	<comment></comment>
 	<projects>
 	</projects>
@@ -25,17 +25,23 @@
 		<link>
 			<name>src/images/VendingMachine.png</name>
 			<type>1</type>
-			<location>PROJECT_LOC/src/images/VendingMachine.png</location>
+			<locationURI>copy_PROJECT_LOC/src/images/VendingMachine.png</locationURI>
 		</link>
 		<link>
 			<name>src/sounds/coin.wav</name>
 			<type>1</type>
-			<location>PROJECT_LOC/src/sounds/coin.wav</location>
+			<locationURI>copy_PROJECT_LOC/src/sounds/coin.wav</locationURI>
 		</link>
 		<link>
 			<name>src/sounds/return.wav</name>
 			<type>1</type>
-			<location>PROJECT_LOC/src/sounds/return.wav</location>
+			<locationURI>copy_PROJECT_LOC/src/sounds/return.wav</locationURI>
 		</link>
 	</linkedResources>
+	<variableList>
+		<variable>
+			<name>copy_PROJECT_LOC</name>
+			<value>$%7BPARENT-2-PROJECT_LOC%7D/git-repo/examples/demo/vending_machine</value>
+		</variable>
+	</variableList>
 </projectDescription>

@@ -1,4 +1,4 @@
-package tester_GUI;
+package vending_machine.ui;
 
 import hu.elte.txtuml.api.layout.ClassDiagram;
 import hu.elte.txtuml.api.layout.Row;
