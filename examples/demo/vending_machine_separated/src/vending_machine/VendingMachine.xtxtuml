@@ -36,7 +36,7 @@ class VendingMachine {
 	state ShowingPrice {
 		entry {
 			Drink selectedDrink;
-			for (Drink d in VendingMachine.this->(Serve.drinks)) {
+			for (Drink d : VendingMachine.this->(Serve.drinks)) {
 				if (d.name.equals(trigger.name)) {
 					selectedDrink = d;
 				}
@@ -55,7 +55,7 @@ class VendingMachine {
 			Drink selectedDrink;
 			CashRegister register = VendingMachine.this->(WorkTogether.theCashRegister).selectAny();
 			
-			for (Drink d in VendingMachine.this->(Serve.drinks)) {
+			for (Drink d : VendingMachine.this->(Serve.drinks)) {
 				if (d.name.equals(trigger.name)) {
 					selectedDrink = d;
 				}
@@ -69,11 +69,9 @@ class VendingMachine {
 			timerHandle = Timer.start(this, new done(), 1000);
 		}
 	}
-		
-			
-	
+
 	// state machine transitions
-	
+
 	transition initalize {
 		from Init;
 		to Idle;
