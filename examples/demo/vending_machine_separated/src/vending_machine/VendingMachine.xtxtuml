@@ -3,26 +3,26 @@ package vending_machine;
 import hu.elte.txtuml.api.stdlib.timers.Timer;
 
 class VendingMachine {
-	
+
 	java.lang.String message;
+
 	Timer timerHandle;
-	
+
 	public VendingMachine () {
 		message = "";
 	}
-	
+
 	public java.lang.String getMessage() {
 		return message;
 	}
-	
+
 	public void updateMessage(java.lang.String newMessage) {
 		message = newMessage;
 	}
-	
+
 	// state machine states
-	
 	initial Init;
-	
+
 	state Idle {
 		entry {
 			if (VendingMachine.this->(WorkTogether.theCashRegister).selectAny().howMuchIsInside() == 0) {
@@ -32,7 +32,7 @@ class VendingMachine {
 			}
 		}
 	}
-	
+
 	state ShowingPrice {
 		entry {
 			Drink selectedDrink;
@@ -49,7 +49,7 @@ class VendingMachine {
 			timerHandle = Timer.start(this, new done(), 1000);
 		}
 	}
-	
+
 	state Vending {
 		entry {
 			Drink selectedDrink;
@@ -71,19 +71,18 @@ class VendingMachine {
 	}
 
 	// state machine transitions
-
 	transition initalize {
 		from Init;
 		to Idle;
 	}
-	
+
 	transition showPrice {
 		from Idle;
 		to ShowingPrice;
 		trigger drinkChosen;
 		guard ( VendingMachine.this->(WorkTogether.theCashRegister).selectAny().howMuchIsInside() == 0);
 	}
-	
+
 	transition hidePrice {
 		from ShowingPrice;
 		to Idle;
@@ -92,15 +91,14 @@ class VendingMachine {
 			timerHandle.cancel();
 		}
 	}
-	
-	
+
 	transition startVending {
 		from Idle;
 		to Vending;
 		trigger drinkChosen;
 		guard ( VendingMachine.this->(WorkTogether.theCashRegister).selectAny().howMuchIsInside() != 0);
 	}
-	
+
 	transition doneVending {
 		from Vending;
 		to Idle;
@@ -109,4 +107,6 @@ class VendingMachine {
 			timerHandle.cancel();
 		}
 	}
+
 }
+

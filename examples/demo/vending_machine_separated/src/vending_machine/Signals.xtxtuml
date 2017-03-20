@@ -23,7 +23,8 @@ signal drinkChosen {
 	String name;
 }
 
-
 // universal signals
 signal done;
+
 signal error;
+

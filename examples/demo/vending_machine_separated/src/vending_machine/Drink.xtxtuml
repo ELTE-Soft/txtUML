@@ -3,35 +3,42 @@ package vending_machine;
 import hu.elte.txtuml.api.stdlib.timers.Timer;
 
 class Drink {
+
 	int price;
+
 	int quantity;
+
 	java.lang.String name;
+
 	Timer timerHandle;
-	
+
 	public Drink(int p, int q, java.lang.String n) {
 		price = p;
 		quantity = q;
 		name = n;
 	}
-	
+
 	public int getPrice() {
 		return price;
 	}
-	
+
 	public java.lang.String getName() {
 		return name;
 	}
-	
+
 	public boolean onStock() {
 		return quantity > 0;
 	}
-	
+
 	// state machine states
-	
 	initial Init;
+
 	choice isThereMore;
+
 	state Available;
+
 	state OutOfStock;
+
 	state Giving {
 		entry {
 			quantity--;
@@ -39,14 +46,14 @@ class Drink {
 			timerHandle = Timer.start(this, new done(), 1000);
 		}
 	}
-	
+
 	state Refilling {
 		entry {
 			Drink.this->(Serve.theMachine).selectAny().updateMessage("<html><div style='text-align: center;'>Refilling<br>" + name + "</html>");
 			timerHandle = Timer.start(this, new done(), 1000);
 		}
 	}
-	
+
 	state Loading {
 		entry {
 			if (quantity <= 0) {
@@ -57,27 +64,26 @@ class Drink {
 			}
 		}
 	}
-	
+
 	state NotGiving {
 		entry {
 			Drink.this->(Serve.theMachine).selectAny().updateMessage("Out of stock");
 			timerHandle = Timer.start(this, new done(), 1000);
 		}
 	}
-	
+
 	// state machine transitions
-	
 	transition Initialize {
 		from Init;
 		to Available;
 	}
-	
+
 	transition Give {
 		from Available;
 		to Giving;
 		trigger request;
 	}
-	
+
 	transition DoneGiving {
 		from Giving;
 		to isThereMore;
@@ -88,19 +94,19 @@ class Drink {
 			send new giveBackCash(register.howMuchIsInside() - price) to register;
 		}
 	}
-	
+
 	transition ThereIs {
 		from isThereMore;
 		to Available;
 		guard( quantity > 0);
 	}
-	
+
 	transition ThereIsNot {
 		from isThereMore;
 		to OutOfStock;
 		guard( quantity == 0);
 	}
-	
+
 	transition Refill {
 		from OutOfStock;
 		to Refilling;
@@ -114,7 +120,7 @@ class Drink {
 		}
 		guard (trigger.quantity > 0);
 	}
-	
+
 	transition DoneRefilling {
 		from Refilling;
 		to isThereMore;
@@ -124,7 +130,7 @@ class Drink {
 			timerHandle.cancel();
 		}
 	}
-	
+
 	transition TakeAll {
 		from Loading;
 		to OutOfStock;
@@ -134,7 +140,7 @@ class Drink {
 			timerHandle.cancel();
 		}
 	}
-	
+
 	transition LoadMore {
 		from Available;
 		to Loading;
@@ -152,7 +158,7 @@ class Drink {
 			}
 		}
 	}
-	
+
 	transition DoneLoading {
 		from Loading;
 		to isThereMore;
@@ -162,13 +168,13 @@ class Drink {
 			timerHandle.cancel();
 		}
 	}
-	
+
 	transition NotToGive {
 		from OutOfStock;
 		to NotGiving;
 		trigger request;
 	}
-	
+
 	transition ReturnToOutOfStock {
 		from NotGiving;
 		to OutOfStock;
@@ -177,5 +183,6 @@ class Drink {
 			timerHandle.cancel();
 		}
 	}
-	
+
 }
+

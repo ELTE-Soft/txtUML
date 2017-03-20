@@ -3,23 +3,24 @@ package vending_machine;
 import hu.elte.txtuml.api.stdlib.timers.Timer;
 
 class CashRegister {
+
 	int insertedCash;
+
 	Timer timerHandle;
-	
+
 	public CashRegister() {
 		insertedCash = 0;
 	}
-	
+
 	public int howMuchIsInside() {
 		return insertedCash;
 	}
-	
+
 	// state machine states
-	
 	initial Init;
-	
+
 	state Taking;
-	
+
 	state Returning {
 		entry {
 			CashRegister.this->(WorkTogether.theMachine).selectAny().updateMessage("Returning: " + trigger.howMany);
@@ -27,20 +28,19 @@ class CashRegister {
 			timerHandle = Timer.start(this, new done(), 1000);
 		}
 	}
-	
+
 	// state machine transitions
-	
 	transition Initialize {
 		from Init;
 		to Taking;
 	}
-	
+
 	transition StopTaking {
 		from Taking;
 		to Returning;
 		trigger giveBackCash;
 	}
-	
+
 	transition StopReturning {
 		from Returning;
 		to Taking;
@@ -50,7 +50,7 @@ class CashRegister {
 			timerHandle.cancel();
 		}
 	}
-	
+
 	transition TakeCash {
 		from Taking;
 		to Taking;
@@ -60,4 +60,6 @@ class CashRegister {
 			CashRegister.this->(WorkTogether.theMachine).selectAny().updateMessage("Inserted: " + insertedCash);
 		}
 	}
+
 }
+

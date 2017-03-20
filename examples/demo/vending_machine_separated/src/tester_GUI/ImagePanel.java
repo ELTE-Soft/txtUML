@@ -15,23 +15,23 @@ public class ImagePanel extends JPanel {
 
 	ImagePanel(String imgPath) {
 		try {
-		    img = ImageIO.read(new File(imgPath));
+			img = ImageIO.read(new File(imgPath));
 			this.setSize(img.getWidth(), img.getHeight());
 		} catch (IOException e) {
 			System.out.println("Error: Cannot load image: " + imgPath);
 		}
 	}
-	
+
 	@Override
 	public Dimension getPreferredSize() {
-		if(img == null) {
-			return new Dimension(0,0);
+		if (img == null) {
+			return new Dimension(0, 0);
 		}
 		return new Dimension(img.getWidth(), img.getHeight());
 	}
-	
+
 	@Override
 	public void paintComponent(Graphics g) {
-		g.drawImage(img,0,0,null);
+		g.drawImage(img, 0, 0, null);
 	}
 }
