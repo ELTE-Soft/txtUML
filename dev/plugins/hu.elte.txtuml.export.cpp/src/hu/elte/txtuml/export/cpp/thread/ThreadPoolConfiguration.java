@@ -7,7 +7,6 @@ public class ThreadPoolConfiguration {
 		private int constant;
 
 		LinearFunction(double gradient, int constant) {
-
 			setGradient(gradient);
 			setConstant(constant);
 		}
@@ -20,7 +19,7 @@ public class ThreadPoolConfiguration {
 			return constant;
 		}
 
-		public void setGradient(double gradient) {
+		private void setGradient(double gradient) {
 			if (gradient >= 0 && gradient <= 1) {
 				this.gradient = gradient;
 			} else if (gradient < 0) {
@@ -31,7 +30,7 @@ public class ThreadPoolConfiguration {
 
 		}
 
-		public void setConstant(int constant) {
+		private void setConstant(int constant) {
 			if (constant < 0) {
 				this.constant = 0;
 			} else {
@@ -41,24 +40,23 @@ public class ThreadPoolConfiguration {
 
 	}
 
-	public ThreadPoolConfiguration(int id, double gradient, int constant) {
+	private LinearFunction function;
+	private int id;
+	private int maxThread;
+
+	public ThreadPoolConfiguration(int id, double gradient, int constant, int max) {
 		this.id = id;
 		function = new LinearFunction(gradient, constant);
+		setMaxThreads(max);
 
 	}
 
-	private LinearFunction function;
-
-	private int id;
-	private int threads;
-	private int maxThread;
+	public void decraseId() {
+		id = id - 1;
+	}
 
 	public int getId() {
 		return id;
-	}
-
-	public int getNumberOfThreads() {
-		return threads;
 	}
 
 	public int getMaxThread() {
@@ -69,11 +67,11 @@ public class ThreadPoolConfiguration {
 		return function;
 	}
 
-	public void setMaxThreads(int max) {
+	private void setMaxThreads(int max) {
 		if (max < 1) {
 			maxThread = 1;
 		} else {
-			maxThread = max;
+			maxThread = Math.max(max, function.getConstant());
 		}
 	}
 }

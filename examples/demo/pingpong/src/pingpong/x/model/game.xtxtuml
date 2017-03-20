@@ -1,0 +1,43 @@
+package pingpong.x.model;
+
+import pingpong.x.model.associations.LeftPlayer;
+import pingpong.x.model.associations.RightPlayer;
+import pingpong.x.model.connectors.Table;
+import pingpong.x.model.signals.Ball;
+
+class Game {
+ 
+	public Game() {
+		Player left = create(Player, "Left ");
+		Player right = create(Player, "Right");
+
+		link(LeftPlayer.inGame, this, LeftPlayer.player, left);
+		link(RightPlayer.inGame, this, RightPlayer.player, right);
+
+		connect(Table.left, left->(Player.BallAtPlayerPort), Table.right,
+				right->(Player.BallAtPlayerPort));
+
+		start(left);
+		start(right);
+		
+	}
+
+	initial Init;
+
+	state Waiting;
+
+	transition Initialize {
+		from Init;
+		to Waiting;
+	}
+
+	transition StartGame {
+		from Waiting;
+		to Waiting;
+		trigger Ball;
+		effect {
+			Player left = this->(LeftPlayer.player).selectAny();
+			send trigger to left;		
+		}
+	}
+}

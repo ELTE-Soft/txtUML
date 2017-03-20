@@ -1,10 +1,11 @@
-package hu.elte.txtuml.xtxtuml.typesystem
+package hu.elte.txtuml.xtxtuml.typesystem;
 
 import com.google.common.collect.ImmutableMap
 import hu.elte.txtuml.api.model.ModelClass
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUClass
 import org.eclipse.xtext.common.types.JvmDeclaredType
 import org.eclipse.xtext.common.types.JvmTypeReference
+import org.eclipse.xtext.util.CancelIndicator
 import org.eclipse.xtext.xbase.scoping.batch.IFeatureNames
 import org.eclipse.xtext.xbase.scoping.batch.IFeatureScopeSession
 import org.eclipse.xtext.xbase.typesystem.internal.LogicalContainerAwareReentrantTypeResolver
@@ -12,6 +13,11 @@ import org.eclipse.xtext.xbase.typesystem.references.ITypeReferenceOwner
 
 class XtxtUMLReentrantTypeResolver extends LogicalContainerAwareReentrantTypeResolver {
 
+	/**
+	 * Overrides the default implementation to change references to <code>this</code>
+	 * and <code>super</code> such that they refer to the enclosing XtxtUML <i>class</i>
+	 * instance and its super, respectively.
+	 */
 	override protected IFeatureScopeSession addThisAndSuper(IFeatureScopeSession session, ITypeReferenceOwner owner,
 		JvmDeclaredType thisType, /* @Nullable */ JvmTypeReference superType, boolean addNestedTypes) {
 		var childSession = session;
@@ -59,6 +65,13 @@ class XtxtUMLReentrantTypeResolver extends LogicalContainerAwareReentrantTypeRes
 			childSession = childSession.addNestedTypesToScope(thisMaybeModelClassType);
 
 		return childSession;
+	}
+
+	/**
+	 * Provides an {@link XtxtUMLRootResolvedTypes}.
+	 */
+	override protected createResolvedTypes(CancelIndicator monitor) {
+		return new XtxtUMLRootResolvedTypes(this, monitor);
 	}
 
 }

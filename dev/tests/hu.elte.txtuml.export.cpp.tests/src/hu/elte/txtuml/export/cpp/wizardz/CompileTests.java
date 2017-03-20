@@ -51,10 +51,10 @@ public class CompileTests {
 	private static final String pathToProjects = "../../../examples/demo/";
 
 	private static final Config[] testProjects = {
-			new Config("machine", "machine1.j.model", "machine1.j.DefaultConfiguration"),
-			new Config("monitoring", "monitoring.x.model", "monitoring.x.DefaultConfiguration"),
-			new Config("producer_consumer", "producer_consumer.j.model", "producer_consumer.j.DefaultConfiguration"),
-			new Config("train", "train.j.model", "train.j.DefaultConfiguration"), };
+			new Config("machine", "machine1.j.model", "machine1.j.Machine1Configuration"),
+			new Config("monitoring", "monitoring.x.model", "monitoring.x.XMonitoringConfiguration"),
+			new Config("producer_consumer", "producer_consumer.j.model", "producer_consumer.j.ProducerConsumerConfiguration"),
+			new Config("train", "train.j.model", "train.j.TrainConfiguration"), };
 
 	private static final String exportTestProjectPrefix = "exportTest_";
 	private static final String compileTestProjectPrefix = "compileTest_";
@@ -117,7 +117,7 @@ public class CompileTests {
 	public void exportTest() {
 		for (Config config : testProjects) {
 			try {
-				generateCPP(config, exportTestProjectPrefix, false);
+				generateCPP(config, exportTestProjectPrefix, false,true);
 			} catch (Exception e) {
 				e.printStackTrace();
 				assertThat(false, is(true));
@@ -129,7 +129,7 @@ public class CompileTests {
 	public void compileTest() {
 		for (Config config : testProjects) {
 			try {
-				String projectName = generateCPP(config, compileTestProjectPrefix, true);
+				String projectName = generateCPP(config, compileTestProjectPrefix, true,true);
 				if (buildStuffPresent) {
 					compileCPP(projectName, config.model);
 				}
@@ -152,7 +152,7 @@ public class CompileTests {
 		return process.waitFor();
 	}
 
-	private static String generateCPP(Config config, String testPrefix, boolean addRuntime) throws Exception {
+	private static String generateCPP(Config config, String testPrefix, boolean addRuntime, boolean overWriteMainFile) throws Exception {
 		TxtUMLToCppGovernor cppgen = new TxtUMLToCppGovernor(true);
 
 		String canPathToProjects = new File(pathToProjects).getCanonicalPath();
@@ -191,7 +191,7 @@ public class CompileTests {
 			}
 		}
 
-		cppgen.uml2ToCpp(testProject, config.model, config.deployment, addRuntime);
+		cppgen.uml2ToCpp(testProject, config.model, config.deployment, testProject, addRuntime,overWriteMainFile);
 
 		project.close(null);
 		project.delete(false, false, null);

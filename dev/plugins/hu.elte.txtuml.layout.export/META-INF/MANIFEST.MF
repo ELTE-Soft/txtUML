@@ -2,15 +2,15 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: txtUML Layout Definitions Exporter
 Bundle-SymbolicName: hu.elte.txtuml.layout.export
-Bundle-Version: 0.4.0.qualifier
+Bundle-Version: 0.5.1.qualifier
 Bundle-Vendor: ELTE
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Export-Package: hu.elte.txtuml.layout.export
-Require-Bundle: hu.elte.txtuml.utils;bundle-version="0.4.0",
- hu.elte.txtuml.layout.visualizer;bundle-version="0.4.0",
- hu.elte.txtuml.api.layout;bundle-version="0.4.0",
- hu.elte.txtuml.api.model;bundle-version="0.4.0",
- hu.elte.txtuml.export.uml2;bundle-version="0.4.0",
- hu.elte.txtuml.utils.eclipse;bundle-version="0.4.0",
+Require-Bundle: hu.elte.txtuml.utils,
+ hu.elte.txtuml.layout.visualizer,
+ hu.elte.txtuml.api.layout,
+ hu.elte.txtuml.api.model,
+ hu.elte.txtuml.export.uml2,
+ hu.elte.txtuml.utils.eclipse,
  org.eclipse.jdt.core,
  org.eclipse.core.runtime

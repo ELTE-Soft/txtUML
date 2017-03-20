@@ -25,9 +25,9 @@ public class LayoutUtils {
 	 * @throws Exception
 	 *             any exception that can be thrown during the exportation
 	 */
-	public static DiagramExportationReport exportTxtUMLLayout(String sourceProject, String txtUMLLayout)
+	public static DiagramExportationReport exportTxtUMLLayout(String sourceProject, String txtUMLLayout, String layoutProject)
 			throws Exception {
-		try (URLClassLoader loader = ClassLoaderProvider.getClassLoaderForProject(sourceProject, layoutParent)) {
+		try (URLClassLoader loader = ClassLoaderProvider.getClassLoaderForProject(layoutProject, layoutParent)) {
 			Class<?> txtUMLLayoutClass = loader.loadClass(txtUMLLayout);
 			@SuppressWarnings("unchecked")
 			DiagramExporter exporter = DiagramExporter.create(sourceProject,

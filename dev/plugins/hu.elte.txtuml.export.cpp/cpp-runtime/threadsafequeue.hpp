@@ -5,6 +5,7 @@
 #include <thread>
 #include <mutex>
 #include <condition_variable>
+#include <atomic>
 
 template <typename T>
 class ThreadSafeQueue
@@ -16,7 +17,7 @@ class ThreadSafeQueue
     std::unique_lock<std::mutex> mlock(mutex_);
     while (queue_.empty())
     {
-      cond_.wait(mlock);
+      _cond.wait(mlock);
     }
     auto val = queue_.front();
     queue_.pop();
@@ -28,7 +29,7 @@ class ThreadSafeQueue
     std::unique_lock<std::mutex> mlock(mutex_);
     while (queue_.empty())
     {
-      cond_.wait(mlock);
+      _cond.wait(mlock);
     }
     item = queue_.front();
     queue_.pop();
@@ -50,7 +51,7 @@ class ThreadSafeQueue
     std::unique_lock<std::mutex> mlock(mutex_);
     queue_.push(item);
     mlock.unlock();
-    cond_.notify_one();
+    _cond.notify_one();
   }
 
   T front()
@@ -58,7 +59,7 @@ class ThreadSafeQueue
     std::unique_lock<std::mutex> mlock(mutex_);
     while (queue_.empty())
     {
-      cond_.wait(mlock);
+      _cond.wait(mlock);
     }
     auto val = queue_.front();
     return val;
@@ -69,7 +70,7 @@ class ThreadSafeQueue
     std::unique_lock<std::mutex> mlock(mutex_);
     while (queue_.empty())
     {
-      cond_.wait(mlock);
+      _cond.wait(mlock);
     }
     queue_.pop();
   }
@@ -77,12 +78,17 @@ class ThreadSafeQueue
    void pop_front(T& ret)
   {
     std::unique_lock<std::mutex> mlock(mutex_);
-    while (queue_.empty())
+    while (queue_.empty() && !_stop)
     {
-      cond_.wait(mlock);
+      _cond.wait(mlock);
     }
+
+    if (!_stop)
+    {
     ret=queue_.front();
     queue_.pop();
+    }
+
   }
 
   bool empty() const
@@ -95,14 +101,26 @@ class ThreadSafeQueue
     return queue_.size();
   }
 
-  ThreadSafeQueue()=default;
+  void startQueue ()
+  {
+	_stop = false;
+	
+  }
+  void stopQueue ()
+  {
+	_stop = true;
+	_cond.notify_all ();
+  }
+
+  ThreadSafeQueue() : _stop(false) {}
   ThreadSafeQueue(const ThreadSafeQueue&) = delete;            // disable copying
   ThreadSafeQueue& operator=(const ThreadSafeQueue&) = delete; // disable assignment
 
  private:
   std::queue<T> queue_;
   std::mutex mutex_;
-  std::condition_variable cond_;
+  std::condition_variable _cond;
+  std::atomic_bool _stop;
 };
 
 #endif // THREADSAFEQUEUE_H_INCLUDED

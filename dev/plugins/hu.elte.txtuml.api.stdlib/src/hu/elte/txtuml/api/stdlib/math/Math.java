@@ -1,9 +1,11 @@
 package hu.elte.txtuml.api.stdlib.math;
 
+import hu.elte.txtuml.api.model.external.ExternalClass;
+
 /**
  * Proxy class for the {@linkplain java.lang.Math} class.
  */
-public interface Math {
+public interface Math extends ExternalClass {
 
 	public static long round(double d) {
 		return java.lang.Math.round(d);

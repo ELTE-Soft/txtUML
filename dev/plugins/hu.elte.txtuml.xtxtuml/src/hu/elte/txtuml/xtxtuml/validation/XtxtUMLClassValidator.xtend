@@ -1,6 +1,7 @@
 package hu.elte.txtuml.xtxtuml.validation;
 
 import com.google.inject.Inject
+import hu.elte.txtuml.xtxtuml.common.XtxtUMLUtils
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUClass
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUClassMember
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUConstructor
@@ -27,26 +28,12 @@ import static hu.elte.txtuml.xtxtuml.xtxtUML.XtxtUMLPackage.Literals.*
 class XtxtUMLClassValidator extends XtxtUMLFileValidator {
 
 	@Inject extension IQualifiedNameProvider;
+	@Inject extension XtxtUMLUtils;
 
 	@Check
 	def checkNoCycleInClassHiearchy(TUClass clazz) {
-		if (clazz.superClass == null) {
-			return;
-		}
-
-		val visitedClasses = newHashSet;
-		visitedClasses.add(clazz);
-
-		var currentClass = clazz.superClass;
-		while (currentClass != null) {
-			if (visitedClasses.contains(currentClass)) {
-				error("Cycle in hierarchy of class " + clazz.name + " reaching " + currentClass.name,
-					TU_CLASS__SUPER_CLASS, CLASS_HIERARCHY_CYCLE);
-				return;
-			}
-
-			visitedClasses.add(currentClass);
-			currentClass = currentClass.superClass;
+		if (clazz.travelClassHierarchy[false] == null) {
+			error("Cycle in hierarchy of class " + clazz.name, clazz, TU_CLASS__SUPER_CLASS, CLASS_HIERARCHY_CYCLE);
 		}
 	}
 
@@ -194,10 +181,9 @@ class XtxtUMLClassValidator extends XtxtUMLFileValidator {
 
 	@Check
 	def checkOwnerOfTriggerPort(TUTransitionPort triggerPort) {
-		val containingClass = EcoreUtil2.getContainerOfType(triggerPort, TUClass); // due to composite states
-		if (triggerPort.port != null &&
-			triggerPort.port.eContainer.fullyQualifiedName != containingClass.fullyQualifiedName) {
-			error(triggerPort.port.name + " cannot be resolved as a port of class " + containingClass.name, triggerPort,
+		val triggerEnclosingClass = EcoreUtil2.getContainerOfType(triggerPort, TUClass) as TUClass;
+		if (!triggerEnclosingClass.ownsPort(triggerPort.port)) {
+			error(triggerPort.port.name + " cannot be resolved as a port of class " + triggerEnclosingClass.name, triggerPort,
 				TU_TRANSITION_PORT__PORT, NOT_OWNED_TRIGGER_PORT);
 		}
 	}
@@ -217,11 +203,15 @@ class XtxtUMLClassValidator extends XtxtUMLFileValidator {
 			enclosingTransition.eContainer.fullyQualifiedName) {
 			error(
 				"Invalid vertex " + transitionVertex.vertex.classQualifiedName + " in transition " +
-					enclosingTransition.classQualifiedName + " – transition must not cross state machine levels",
+					enclosingTransition.classQualifiedName + " – transitions must not cross state machine levels",
 				transitionVertex, TU_TRANSITION_VERTEX__VERTEX, VERTEX_LEVEL_MISMATCH);
 		}
 	}
 
+	/**
+	 * An initial state is missing from a state machine iff
+	 * it has at least one state, but none of them is initial.
+	 */
 	def protected isInitialStateMissing(EList<? extends EObject> members) {
 		if (members == null) {
 			return false;

@@ -4,7 +4,6 @@ import hu.elte.txtuml.export.uml2.Exporter
 import hu.elte.txtuml.export.uml2.activity.ActionExporter
 import org.eclipse.jdt.core.dom.Expression
 import org.eclipse.jdt.core.dom.MethodInvocation
-import org.eclipse.uml2.uml.CallOperationAction
 import hu.elte.txtuml.export.uml2.activity.expression.EqualityExporter
 import com.google.common.base.Objects
 import org.eclipse.uml2.uml.TestIdentityAction

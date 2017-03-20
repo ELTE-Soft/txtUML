@@ -1,66 +1,47 @@
 #ifndef THREAD_POOL_H
 #define THREAD_POOL_H
 
-#include <vector>
-#include <queue>
-#include <map>
 #include <memory>
 #include <thread>
 #include <mutex>
 #include <condition_variable>
-#include <future>
 #include <functional>
 #include <stdexcept>
-#include <chrono>
 #include <atomic>
 
 #include "threadcontainer.hpp"
-
-
 #include "runtimetypes.hpp"
-#include "statemachineI.hpp"
+#include "istatemachine.hpp"
 
 class StateMachineThreadPool {
 	
 public:
-	StateMachineThreadPool(int);
+	StateMachineThreadPool();
 	void task();
-	void enqueObject(StateMachineI*);
+	void enqueueObject(IStateMachine*);
 	void stopPool();
-	void stopUponCompletion();
-	void startPool();
-	void incrementWorkers();
-	void reduceWorkers();
+	void stopUponCompletion(std::atomic_int*);
+	void startPool(int);
 	void modifiedThreads(int);
+	void setWorkersCounter(std::atomic_int* counter) {this->worker_threads = counter;}
+	void setStopReqest(std::condition_variable* stop_req) {stop_request_cond = stop_req;}
 	~StateMachineThreadPool();
 private:
-	void futureGetter();
 	
 	ThreadContainer workers;
-	
 	// the task queue
 	PoolQueueType stateMachines; //must be blocking queue
-	int threads;
+	
+	void incrementWorkers();
+	void reduceWorkers();
 
 	// synchronization
-	std::atomic_bool stop;
-	std::atomic_int worker_threads;
-	
+	std::atomic_bool stop;	
+	std::atomic_int* worker_threads;	
 	std::condition_variable cond;
-	std::condition_variable complite_cond;
-
-	std::mutex mu;
-	std::mutex worker_mu;
-	std::mutex complite_mu;
-	std::mutex start_mu;
-	
-	//synchronize remove threads
-	std::future<void> f;
-	std::condition_variable future_cond;
-	std::condition_variable future_cond_alt;
-	std::mutex future_mu;
-	std::thread* future_getter_thread;
-	bool getter_ready;
+	std::condition_variable* stop_request_cond;
+	std::mutex modifie_mutex;
+	std::mutex stop_request_mu;
 };
 
 

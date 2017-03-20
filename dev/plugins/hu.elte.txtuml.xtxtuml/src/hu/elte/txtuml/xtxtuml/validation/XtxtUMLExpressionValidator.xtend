@@ -3,21 +3,23 @@ package hu.elte.txtuml.xtxtuml.validation;
 import com.google.inject.Inject
 import hu.elte.txtuml.api.model.ModelClass.Port
 import hu.elte.txtuml.api.model.Signal
-import hu.elte.txtuml.xtxtuml.xtxtUML.RAlfDeleteObjectExpression
-import hu.elte.txtuml.xtxtuml.xtxtUML.RAlfSendSignalExpression
-import hu.elte.txtuml.xtxtuml.xtxtUML.RAlfSignalAccessExpression
+import hu.elte.txtuml.xtxtuml.common.XtxtUMLUtils
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAssociation
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAssociationEnd
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUClass
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUClassPropertyAccessExpression
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUDeleteObjectExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUEntryOrExitActivity
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUOperation
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUPort
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUSendSignalExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUSignal
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUSignalAccessExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUState
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUStateType
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUTransition
 import java.util.HashSet
+import org.eclipse.emf.ecore.EObject
 import org.eclipse.xtext.EcoreUtil2
 import org.eclipse.xtext.common.types.JvmOperation
 import org.eclipse.xtext.naming.IQualifiedNameProvider
@@ -39,6 +41,7 @@ class XtxtUMLExpressionValidator extends XtxtUMLTypeValidator {
 	@Inject extension ExtendedEarlyExitComputer;
 	@Inject extension IJvmModelAssociations;
 	@Inject extension IQualifiedNameProvider;
+	@Inject extension XtxtUMLUtils;
 
 	@Check
 	def checkMandatoryIntentionalReturn(TUOperation operation) {
@@ -70,7 +73,7 @@ class XtxtUMLExpressionValidator extends XtxtUMLTypeValidator {
 	}
 
 	@Check
-	def checkSignalAccessExpression(RAlfSignalAccessExpression sigExpr) {
+	def checkSignalAccessExpression(TUSignalAccessExpression sigExpr) {
 		var container = sigExpr.eContainer;
 		while (container != null && !(container instanceof TUEntryOrExitActivity) &&
 			!(container instanceof TUTransition)) {
@@ -81,18 +84,19 @@ class XtxtUMLExpressionValidator extends XtxtUMLTypeValidator {
 			if (container.entry) {
 				container = container.eContainer;
 			} else {
+				// exit activities are invalid in a choice
 				return;
 			}
 		}
 
 		if (container == null || container.isReachableFromInitialState(newHashSet, true)) {
 			error("'trigger' cannot be used here, as its container is directly reachable from the initial state",
-				sigExpr, RALF_SIGNAL_ACCESS_EXPRESSION__TRIGGER, INVALID_SIGNAL_ACCESS);
+				sigExpr, TU_SIGNAL_ACCESS_EXPRESSION__TRIGGER, INVALID_SIGNAL_ACCESS);
 		}
 	}
 
 	@Check
-	def checkSignalSentToPortIsRequired(RAlfSendSignalExpression sendExpr) {
+	def checkSignalSentToPortIsRequired(TUSendSignalExpression sendExpr) {
 		if (!sendExpr.target.isConformantWith(Port, false) || !sendExpr.signal.isConformantWith(Signal, false)) {
 			return;
 		}
@@ -106,33 +110,44 @@ class XtxtUMLExpressionValidator extends XtxtUMLTypeValidator {
 			signal?.fullyQualifiedName == sentSignalSourceElement?.fullyQualifiedName
 		] == null) {
 			error("Signal type " + sentSignalSourceElement.name + " is not required by port " + portSourceElement.name,
-				sendExpr, RALF_SEND_SIGNAL_EXPRESSION__SIGNAL, NOT_REQUIRED_SIGNAL);
+				sendExpr, TU_SEND_SIGNAL_EXPRESSION__SIGNAL, NOT_REQUIRED_SIGNAL);
 		}
 	}
 
 	@Check
-	def checkQueriedPortIsOwned(RAlfSendSignalExpression sendExpr) {
+	def checkQueriedPortIsOwned(TUSendSignalExpression sendExpr) {
 		if (!sendExpr.target.isConformantWith(Port, false)) {
 			return;
 		}
 
+		val sendExprEnclosingClass = EcoreUtil2.getContainerOfType(sendExpr, TUClass) as TUClass;
 		val portType = sendExpr.target.actualType.type;
-		val portEnclosingClassName = portType.eContainer?.fullyQualifiedName;
-		val sendExprEnclosingClassName = EcoreUtil2.getContainerOfType(sendExpr, TUClass)?.fullyQualifiedName;
 
-		if (portEnclosingClassName != sendExprEnclosingClassName) {
+		if (!sendExprEnclosingClass.ownsPort(portType)) {
 			error(
-				"Port " + portType.simpleName + " does not belong to class " + sendExprEnclosingClassName?.lastSegment +
+				"Port " + portType.simpleName + " does not belong to class " + sendExprEnclosingClass.fullyQualifiedName.lastSegment +
 					" – signals can be sent only to owned ports",
 				sendExpr,
-				RALF_SEND_SIGNAL_EXPRESSION__TARGET,
+				TU_SEND_SIGNAL_EXPRESSION__TARGET,
 				QUERIED_PORT_IS_NOT_OWNED
 			);
 		}
 	}
 
 	@Check
+	def checkAccessedClassPropertyIsSpecified(TUClassPropertyAccessExpression propAccessExpr) {
+		if (propAccessExpr.right == null) {
+			error("The accessed class property cannot be null", propAccessExpr,
+				TU_CLASS_PROPERTY_ACCESS_EXPRESSION__ARROW, MISSING_CLASS_PROPERTY);
+		}
+	}
+
+	@Check
 	def checkOwnerOfAccessedClassProperty(TUClassPropertyAccessExpression propAccessExpr) {
+		if (propAccessExpr.right == null) {
+			return;
+		}
+
 		val leftSourceElement = propAccessExpr.left.actualType.type.primarySourceElement;
 		if (!(leftSourceElement instanceof TUClass)) {
 			return; // typechecks will mark it
@@ -142,9 +157,10 @@ class XtxtUMLExpressionValidator extends XtxtUMLTypeValidator {
 		switch (prop : propAccessExpr.right) {
 			TUAssociationEnd: {
 				val enclosingAssociation = prop.eContainer as TUAssociation;
-				val validAccessor = enclosingAssociation.ends.findFirst[name != prop.name]?.endClass;
-
-				if (sourceClass.fullyQualifiedName != validAccessor?.fullyQualifiedName) {
+				val otherEndClassName = enclosingAssociation.ends.findFirst[name != prop.name]?.endClass
+					?.fullyQualifiedName;
+				
+				if (sourceClass.travelClassHierarchy[fullyQualifiedName == otherEndClassName] == false) {
 					error(
 						"Association end " + enclosingAssociation.name + "." + prop.name +
 							" is not accessible from class " + sourceClass?.name, propAccessExpr,
@@ -155,8 +171,7 @@ class XtxtUMLExpressionValidator extends XtxtUMLTypeValidator {
 				}
 			}
 			TUPort: {
-				val validAccessor = prop.eContainer as TUClass;
-				if (sourceClass.fullyQualifiedName != validAccessor.fullyQualifiedName) {
+				if (!sourceClass.ownsPort(prop)) {
 					error(prop.name + " cannot be resolved as a port of class " + sourceClass.name, propAccessExpr,
 						TU_CLASS_PROPERTY_ACCESS_EXPRESSION__RIGHT, NOT_ACCESSIBLE_PORT);
 				}
@@ -169,10 +184,7 @@ class XtxtUMLExpressionValidator extends XtxtUMLTypeValidator {
 	 */
 	def private doCheckNoExplicitExtensionCall(XAbstractFeatureCall featureCall) {
 		if (featureCall.isExtension) {
-			val actualArgs = featureCall.
-				actualArguments
-			;
-
+			val actualArgs = featureCall.actualArguments;
 			error('''The operation «featureCall.feature?.simpleName»(«actualArgs.drop(1).join(", ")[actualType.simpleName.replace("$", ".")]») is undefined for the class «actualArgs.head.actualType.simpleName.replace("$", ".")»''',
 				featureCall, XbasePackage.Literals.XABSTRACT_FEATURE_CALL__FEATURE, UNDEFINED_OPERATION);
 		}
@@ -193,6 +205,15 @@ class XtxtUMLExpressionValidator extends XtxtUMLTypeValidator {
 		}
 	}
 
+	/**
+	 * The purpose of this dispatch case is to enforce the common <code>EObject</code> supertype (which would
+	 * otherwise be <code>TUClassOrStateMember</code>).
+	 */
+	def protected dispatch boolean isReachableFromInitialState(EObject object, HashSet<TUState> visitedStates,
+		boolean throughPseudostatesOnly) {
+		throw new IllegalArgumentException("Unhandled parameter type: EObject");
+	}
+
 	def protected dispatch boolean isReachableFromInitialState(TUTransition transition, HashSet<TUState> visitedStates,
 		boolean throughPseudostatesOnly) {
 		val from = transition.sourceState;
@@ -200,6 +221,10 @@ class XtxtUMLExpressionValidator extends XtxtUMLTypeValidator {
 			isReachableFromInitialState(from, visitedStates, throughPseudostatesOnly);
 	}
 
+	/**
+	 * @param throughPseudostatesOnly whether only pseudostates should be considered while
+	 * checking if the given state is reachable from the initial state of the enclosing state machine
+	 */
 	def protected dispatch boolean isReachableFromInitialState(TUState state, HashSet<TUState> visitedStates,
 		boolean throughPseudostatesOnly) {
 		if (state.type == TUStateType.INITIAL) {
@@ -217,11 +242,14 @@ class XtxtUMLExpressionValidator extends XtxtUMLTypeValidator {
 		];
 	}
 
+	/**
+	 * Extends the default behavior to XtxtUML expressions.
+	 */
 	override protected isValueExpectedRecursive(XExpression expr) {
 		val container = expr.eContainer;
 		return switch (container) {
-			RAlfSendSignalExpression,
-			RAlfDeleteObjectExpression: true
+			TUSendSignalExpression,
+			TUDeleteObjectExpression: true
 			XBlockExpression: false
 			default: super.isValueExpectedRecursive(expr)
 		}

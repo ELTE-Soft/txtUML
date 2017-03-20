@@ -1,0 +1,44 @@
+package clock.x.model;
+
+import clock.x.model.signals.Tick;
+import hu.elte.txtuml.api.stdlib.timers.Timer;
+import clock.x.model.interfaces.TickIfc;
+
+class Pendulum {
+
+	private Timer timer;
+	private int unit;
+
+	public Pendulum() {
+		this.unit = 1000; // init expressions are not yet supported
+	}
+
+	port OutTickPort {
+		required TickIfc;
+	}
+
+	initial Init;
+	state Working {
+		entry {
+			send new Tick() to this->(OutTickPort);
+		}
+	}
+
+	transition Initialize {
+		from Init;
+		to Working;
+		effect {
+			timer = Timer.start(this, new Tick(), unit);
+		}
+	}
+
+	transition DoTick {
+		from Working;
+		to Working;
+		trigger Tick;
+		effect {
+			timer.reset(unit);
+		}
+	}
+
+}

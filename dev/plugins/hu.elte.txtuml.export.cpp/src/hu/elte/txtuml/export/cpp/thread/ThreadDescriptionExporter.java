@@ -18,16 +18,18 @@ public class ThreadDescriptionExporter {
 	private Map<String, ThreadPoolConfiguration> configMap;
 	private boolean descriptionExported = false;
 
-	List<String> warningList;
-	List<String> errorList;
+	private List<String> warningList;
+	private List<String> errorList;
 
-	int numberOfConfigurations;
+	private int numberOfConfigurations;
 
-	Set<String> exportedClasses;
-	Set<String> allClass;
-	public ThreadDescriptionExporter(Set<String> allClass) {
+	private Set<String> exportedClasses;
+	private Set<String> allModelClassName;
+
+	public ThreadDescriptionExporter(Set<String> allModelClassName) {
 		configMap = new HashMap<String, ThreadPoolConfiguration>();
-		this.allClass = allClass;
+
+		this.allModelClassName = allModelClassName;
 		exportedClasses = new HashSet<String>();
 		numberOfConfigurations = 0;
 
@@ -59,14 +61,12 @@ public class ThreadDescriptionExporter {
 				warningList.add("Only Group annotations are allowed to use.");
 			}
 		}
-		
+
 		exportDefaultConfiguration();
 
 		descriptionExported = true;
 
 	}
-
-
 
 	public boolean isSuccessfulExportation() {
 		if (!descriptionExported) {
@@ -89,19 +89,10 @@ public class ThreadDescriptionExporter {
 	}
 
 	private void exportGroup(Group group) {
-		numberOfConfigurations = numberOfConfigurations + 1;
 
-		if (group.gradient() < 0 || group.gradient() > 1) {
-			warningList.add("The gradient of linear function should be beetween 0 and 1.");
-		}
+		checkConfigurationOptions(group.gradient(), group.constant(), group.max());
 
-		if (group.constant() < 0) {
-			warningList.add("The constant of linear function should be higher than 0.");
-		}
-
-		ThreadPoolConfiguration config = new ThreadPoolConfiguration(numberOfConfigurations, group.gradient(),
-				group.constant());
-		config.setMaxThreads(group.max());
+		ThreadPoolConfiguration config = createNewPoolConfiguration(group.gradient(), group.constant(), group.max());
 
 		checkEmptyGroup(group.contains());
 
@@ -115,21 +106,27 @@ public class ThreadDescriptionExporter {
 
 		}
 	}
-	
+
+	private ThreadPoolConfiguration createNewPoolConfiguration(double gradient, int constant, int max) {
+		ThreadPoolConfiguration config = new ThreadPoolConfiguration(numberOfConfigurations, gradient, constant, max);
+		numberOfConfigurations++;
+
+		return config;
+	}
+
 	private void exportDefaultConfiguration() {
-		
-		if(allClass.size() != exportedClasses.size()) {
+
+		if (allModelClassName.size() != exportedClasses.size()) {
 			Set<String> nonExportedClasses = new HashSet<String>();
-			nonExportedClasses.addAll(allClass);
+			nonExportedClasses.addAll(allModelClassName);
 			nonExportedClasses.removeAll(exportedClasses);
-			
-			ThreadPoolConfiguration config = new ThreadPoolConfiguration(0,0,1);
-			config.setMaxThreads(1);
-			for(String cls : nonExportedClasses) {
-				configMap.put(cls, config);
+
+			ThreadPoolConfiguration config = createNewPoolConfiguration(0, 1, 1);
+			for (String uncategorizedClassName : nonExportedClasses) {
+				configMap.put(uncategorizedClassName, config);
 			}
 		}
-		
+
 	}
 
 	private void checkEmptyGroup(Class<? extends ModelClass>[] classes) {
@@ -137,5 +134,24 @@ public class ThreadDescriptionExporter {
 			warningList.add("Group annotation is empty.");
 		}
 
+	}
+
+	private void checkConfigurationOptions(double gradient, int constant, int max) {
+		if (gradient < 0 || gradient > 1) {
+			warningList.add("The gradient of linear function should be between 0 and 1: " + "conversion to 0.");
+		}
+
+		if (constant < 1) {
+			warningList.add("The constant of linear function should be higher than 0: " + "conversion to 1.");
+		}
+
+		if (max < 1) {
+			warningList.add("The maximum number of threads should be higher than 0: " + "conversion to 1.");
+		}
+
+		if (max < constant) {
+			warningList.add(
+					"The maximum number of threads should more or equal to constant: " + "conversion to the value of constant.");
+		}
 	}
 }

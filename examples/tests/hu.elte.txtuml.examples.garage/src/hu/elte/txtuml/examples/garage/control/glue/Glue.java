@@ -25,10 +25,10 @@ import hu.elte.txtuml.examples.garage.interfaces.IControlled;
 // This class is the glue code between the UI and the control model
 public class Glue implements ExternalClass, IControl, IControlled {
 	// Model instantiation
-	Door door = Action.create(Door.class);
-	Motor motor = Action.create(Motor.class);;
-	Alarm alarm = Action.create(Alarm.class);;
-	Keyboard keyboard = Action.create(Keyboard.class);;
+	Door door;
+	Motor motor;
+	Alarm alarm;
+	Keyboard keyboard;
 
 	// Linkage to the UI
 	IControlled controlled;
@@ -41,7 +41,13 @@ public class Glue implements ExternalClass, IControl, IControlled {
 	static Glue instance = null;
 
 	private Glue() {
-		ModelExecutor.create().launch(() -> {
+		ModelExecutor.create().start(() -> {
+			try {
+			door = Action.create(Door.class);
+			motor = Action.create(Motor.class);
+			alarm = Action.create(Alarm.class);
+			keyboard = Action.create(Keyboard.class);
+
 			// Initialize links and start object instances
 			Action.link(MotorMovesDoor.movedDoor.class, door, MotorMovesDoor.movingMotor.class, motor);
 			Action.link(DoorSwitchesOnAlarm.SwitchingDoor.class, door, DoorSwitchesOnAlarm.SwitchedAlarm.class, alarm);
@@ -50,6 +56,9 @@ public class Glue implements ExternalClass, IControl, IControlled {
 			Action.start(motor);
 			Action.start(alarm);
 			Action.start(keyboard);
+			} catch (Throwable t) {
+				t.printStackTrace();
+			}
 		});
 	}
 

@@ -2,6 +2,7 @@ package hu.elte.txtuml.validation.visitors;
 
 import org.eclipse.jdt.core.dom.Annotation;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
+import org.eclipse.jdt.core.dom.Javadoc;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.Modifier;
 import org.eclipse.jdt.core.dom.SimpleName;
@@ -16,7 +17,8 @@ import hu.elte.txtuml.validation.problems.datatype.MutableDataTypeField;
 public class DataTypeVisitor extends VisitorBase {
 
 	public static final Class<?>[] ALLOWED_DATA_TYPE_DECLARATIONS = new Class<?>[] { FieldDeclaration.class,
-			MethodDeclaration.class, SimpleName.class, SimpleType.class, Modifier.class, Annotation.class };
+			MethodDeclaration.class, SimpleName.class, SimpleType.class, Modifier.class, Annotation.class,
+			Javadoc.class };
 
 	public DataTypeVisitor(ProblemCollector collector) {
 		super(collector);

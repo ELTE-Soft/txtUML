@@ -1,0 +1,11 @@
+package clock.x.model.connectors;
+
+import clock.x.model.associations.HourHand;
+import clock.x.model.associations.DisplayInClock;
+import clock.x.model.Hand;
+import clock.x.model.Display;
+
+connector HourValues {
+	HourHand.hourHand->Hand.ValuePort hourHand;
+	DisplayInClock.face->Display.HourPort face;
+}

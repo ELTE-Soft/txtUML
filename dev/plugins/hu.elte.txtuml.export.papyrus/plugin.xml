@@ -27,6 +27,20 @@
             id="hu.elte.txtuml.export.papyrus.txtUMLVisualize"
             name="txtUMLVisualize">
       </command>
+	  <command
+            defaultHandler="hu.elte.txtuml.export.papyrus.handlers.TxtUMLVisualizeSelectedDiagramsHandler"
+            id="hu.elte.txtuml.export.papyrus.txtUMLVisualizeSelectedDiagram"
+            name="txtUMLVisualizeSelectedDiagram">
+      </command>
+   </extension>
+   <extension point="org.eclipse.core.expressions.propertyTesters">
+      <propertyTester
+            namespace="hu.elte.txtuml.export.papyrus"
+            id="hu.elte.txtuml.export.papyrus.DiagramDescriptionTester"
+            properties="hasDescriptionType"
+            type="org.eclipse.jdt.core.ICompilationUnit"
+            class="hu.elte.txtuml.export.papyrus.handlers.DiagramDescriptionTester">
+     </propertyTester>
    </extension>
    <extension
          point="org.eclipse.ui.menus">
@@ -91,6 +105,44 @@
             </command>
          </menu>
       </menuContribution>
+
+      <menuContribution 
+          locationURI="popup:org.eclipse.ui.navigator.ProjectExplorer#PopupMenu?before=additions">
+          <command
+              commandId="hu.elte.txtuml.export.papyrus.txtUMLVisualizeSelectedDiagram"
+              icon="icons/txtUML_papyrus.png"
+              label="Visualize diagram"
+              style="push">
+              <visibleWhen>
+                  <with variable="activeMenuSelection">
+                     <iterate ifEmpty="false" operator="and">
+                          <adapt type="org.eclipse.jdt.core.ICompilationUnit">
+                              <test property="hu.elte.txtuml.export.papyrus.hasDescriptionType"/>
+                          </adapt>
+                      </iterate>
+                  </with>
+              </visibleWhen>
+          </command>
+      </menuContribution>
+      
+      <menuContribution 
+          locationURI="popup:org.eclipse.jdt.ui.PackageExplorer?before=additions">
+          <command
+              commandId="hu.elte.txtuml.export.papyrus.txtUMLVisualizeSelectedDiagram"
+              icon="icons/txtUML_papyrus.png"
+              label="Visualize diagram"
+              style="push">
+              <visibleWhen>
+                  <with variable="activeMenuSelection">
+                     <iterate ifEmpty="false" operator="and">
+                          <adapt type="org.eclipse.jdt.core.ICompilationUnit">
+                              <test property="hu.elte.txtuml.export.papyrus.hasDescriptionType"/>
+                          </adapt>
+                      </iterate>
+                  </with>
+              </visibleWhen>
+          </command>
+      </menuContribution>
    </extension>
    <extension
          point="org.eclipse.ui.preferencePages">
@@ -105,6 +157,9 @@
       <initializer
             class="hu.elte.txtuml.export.papyrus.preferences.PreferencesInitializer">
       </initializer>
+   </extension>
+   <extension point="org.eclipse.ui.startup">
+      <startup class="hu.elte.txtuml.export.papyrus.handlers.Startup"/>
    </extension>
 
 </plugin>

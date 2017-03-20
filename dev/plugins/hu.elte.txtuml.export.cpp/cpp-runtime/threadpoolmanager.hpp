@@ -17,7 +17,8 @@ class ThreadPoolManager
 		~ThreadPoolManager();
 		StateMachineThreadPool* getPool(int);
 		void recalculateThreads(int,int);
-		void enqueObject(StateMachineI*);
+		int calculateNOfThreads(int,int);
+		void enqueueObject(IStateMachine*);
 		int getNumberOfConfigurations();
 		void setConfiguration(ThreadConfiguration*);
 		bool isConfigurated();
@@ -26,10 +27,5 @@ class ThreadPoolManager
 		ThreadConfiguration* configuration;
 	
 };
-
-inline StateMachineThreadPool* ThreadPoolManager::getPool(int id)
-{
-	return configuration->getThreadPool(id);
-}
 
 #endif // THEAD_POOL_MANAGER_H

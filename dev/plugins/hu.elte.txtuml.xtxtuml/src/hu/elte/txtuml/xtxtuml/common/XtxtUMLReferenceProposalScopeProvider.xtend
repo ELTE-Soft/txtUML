@@ -1,4 +1,4 @@
-package hu.elte.txtuml.xtxtuml.common
+package hu.elte.txtuml.xtxtuml.common;
 
 import com.google.inject.Inject
 import hu.elte.txtuml.xtxtuml.scoping.XtxtUMLXImportSectionNamespaceScopeProvider

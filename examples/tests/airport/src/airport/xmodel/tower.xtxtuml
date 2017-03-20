@@ -1,0 +1,442 @@
+package airport.xmodel;
+
+import hu.elte.txtuml.api.model.Collection
+import java.util.Iterator
+import hu.elte.txtuml.api.stdlib.timers.Timer
+
+class Tower {
+	private int id;
+	private int xCoor;
+	private int yCoor;
+	private int radius;
+	
+	private int temperature;
+	private int wind;
+	private int rain;
+	
+	// txtUML
+	initial Init;
+	state Working;
+	
+	Tower(int newId, int newXCoor, int newYCoor, int newRadius) {
+		id = newId;
+		xCoor = newXCoor;
+		yCoor = newYCoor;
+		radius = newRadius;
+	}
+	
+	public int getId() {
+		return id;
+	}
+	
+	public int getX() {
+		return xCoor;
+	}
+	
+	public int getY() {
+		return yCoor;
+	}
+	
+	public int getRadius() {
+		return radius;
+	}
+	
+	transition Initial {
+		from Init;
+		to Working;
+		effect {
+			send new SignalTowerWorks() to this;			
+		}
+	}
+	
+	// The tower is processing the 'PlanesWaitingTakingOff' and the 'PlanesWaitingLanding' planes
+	transition Processing {
+		from Working;
+		to Working;
+		trigger SignalTowerWorks;
+		
+		effect {			
+			// Check taking off
+			if(checkWeather()) {
+				Plane firstPlane = Tower.this->(TheFirstWaitingTakingOffPlane.thePlane).selectAny();
+				
+				while(firstPlane != null) {
+					
+					Plane thePlane = firstPlane;
+					
+					
+					
+					log("The tower give the taking off permission for the plane (" + thePlane.getId() + ") ");
+							
+					
+					send new SignalGiveTakingOffPermission() to thePlane;	
+					
+					// Unlink
+					
+					
+					unlink(TheFirstWaitingTakingOffPlane.thePlane, thePlane, TheFirstWaitingTakingOffPlane.theTower, this);
+					
+					Plane nextPlane = thePlane->(TheNextWaitingTakingOffPlane.toPlane).selectAny();
+					if(nextPlane != null) {
+						unlink(TheNextWaitingTakingOffPlane.fromPlane, thePlane, TheNextWaitingTakingOffPlane.toPlane, nextPlane);
+						link(TheFirstWaitingTakingOffPlane.thePlane, nextPlane, TheFirstWaitingTakingOffPlane.theTower, this);
+					}
+					
+					firstPlane = nextPlane;
+				}
+			
+			}
+			
+	
+			
+			// Check landing
+			if(searchFirstFreeRunway() != null) {
+			
+				Plane firstPlane = Tower.this->(TheFirstWaitingLandingPlane.thePlane).selectAny();
+				
+				if(firstPlane != null) {
+					
+					Plane thePlane = firstPlane;
+					
+					
+					
+					log("The tower give the landing permission for the plane (" + thePlane.getId() + ") ");
+							
+					Runway theRunWay = searchFirstFreeRunway();
+					send new SignalSetNewPlane(thePlane.getId()) to theRunWay;
+					
+					send new SignalGiveLandingPermission(theRunWay.getId()) to thePlane;	
+					
+					// Unlink
+					
+					
+					unlink(TheFirstWaitingLandingPlane.thePlane, thePlane, TheFirstWaitingLandingPlane.theTower, this);
+					
+					Plane nextPlane = thePlane->(TheNextWaitingLandingPlane.toPlane).selectAny();
+					if(nextPlane != null) {
+						unlink(TheNextWaitingLandingPlane.fromPlane, thePlane, TheNextWaitingLandingPlane.toPlane, nextPlane);
+						link(TheFirstWaitingLandingPlane.thePlane, nextPlane, TheFirstWaitingLandingPlane.theTower, this);
+					}
+				}
+			}
+
+			// And repeat it
+			Timer.start(this, new SignalTowerWorks(), 50); // It send a signal in every 30 sec
+		}
+	}
+	
+	// Plane asks landing permission
+	transition AskLandingPermission {
+		from Working;
+		to Working;
+		trigger SignalPlaneSendTheLandingApplicationToTower;
+		effect {
+			Plane thePlane = findThePlane(trigger.id);
+			send new SignalPleaseWait() to thePlane;
+			
+			// New version
+			Plane firstPlane = Tower.this->(TheFirstWaitingLandingPlane.thePlane).selectAny();
+			
+			if(firstPlane == null) {
+				// There isn't any waiting landing planes
+				link(TheFirstWaitingLandingPlane.thePlane, thePlane, TheFirstWaitingLandingPlane.theTower, this);
+			} else {
+				// There are any waiting landing planes
+				
+				// Find the last waiting plane
+				Plane actPlane = firstPlane;
+				Plane nextPlane = actPlane;
+				
+				while(nextPlane != null) {
+					actPlane = nextPlane;
+					nextPlane = actPlane->(TheNextWaitingLandingPlane.toPlane).selectAny();
+				}
+				
+				Plane lastPlane = actPlane;
+				link(TheNextWaitingLandingPlane.fromPlane, lastPlane, TheNextWaitingLandingPlane.toPlane, thePlane);
+			}
+			
+		}
+	}
+	
+	// Plane asks taking off permission
+	transition AskTakingOffPermission {
+		from Working;
+		to Working;
+		trigger SignalPlaneSendTheTakingOffApplicationToTower;
+		effect {
+			/*Plane thePlane = findThePlane(trigger.id);
+			send new SignalPleaseWait() to thePlane;
+			link(PlanesWaitingTakingOff.thePlane, thePlane, PlanesWaitingTakingOff.theTower, this);
+			*/
+		
+			Plane thePlane = findThePlane(trigger.id);
+			send new SignalPleaseWait() to thePlane;
+			
+			// New version
+			Plane firstPlane = Tower.this->(TheFirstWaitingTakingOffPlane.thePlane).selectAny();
+			
+			if(firstPlane == null) {
+				// There isn't any waiting landing planes
+				link(TheFirstWaitingTakingOffPlane.thePlane, thePlane, TheFirstWaitingTakingOffPlane.theTower, this);
+			} else {
+				// There are any waiting landing planes
+				
+				// Find the last waiting plane
+				Plane actPlane = firstPlane;
+				Plane nextPlane = actPlane;
+				
+				while(nextPlane != null) {
+					actPlane = nextPlane;
+					nextPlane = actPlane->(TheNextWaitingTakingOffPlane.toPlane).selectAny();
+				}
+				
+				Plane lastPlane = actPlane;
+				link(TheNextWaitingTakingOffPlane.fromPlane, lastPlane, TheNextWaitingTakingOffPlane.toPlane, thePlane);
+			}
+				
+		}
+	}
+	
+	// Plane is under landing
+		transition PlaneIsUnderLanding {
+		from Working;
+		to Working;
+		trigger SignalToTowerPlaneIsUnderLanding;
+		effect {
+			log("The plane (" + trigger.id + ") is under landing");
+		}
+	}
+	
+	// Plane is under taking off
+	transition PlaneIsUnderTakingOff {
+		from Working;
+		to Working;
+		trigger SignalToTowerPlaneIsUnderTakingOff;
+		effect {
+			log("The plane (" + trigger.id + ") is under taking off");
+		}
+	}
+	
+	// Plane has already taken off
+	transition PlaneHasAlreadyTakenOff {
+		from Working;
+		to Working;
+		trigger SignalToTowerPlaneAlreadyTakenOff;
+		effect {
+			log("The plane (" + trigger.id + ") has already taken off");
+			Runway runWay = searchTheRunway(trigger.id);
+			send new SignalSetFreeTheRunway() to runWay;
+		}
+	}
+	
+	// Plane has already landed
+		transition PlaneHasAlreadyLanded {
+		from Working;
+		to Working;
+		trigger SignalToTowerPlaneAlreadyLanded;
+		effect {
+			log("The plane (" + trigger.id + ") has already landed");
+		}
+	}
+	
+	// Plane annuals the landing request
+	transition AnnulLandingAL {
+		from Working;
+		to Working;
+		trigger SignalToTowerAnnulingTheLanding_AL;
+		effect {
+			log("The plane (" + trigger.id + ")'s landing request would be deleted!");
+			
+			Runway runWay = searchTheRunway(trigger.id);
+			
+			send new SignalSetFreeTheRunway() to runWay;
+		}
+	}
+	
+	transition AnnulLandingWL {
+		from Working;
+		to Working;
+		trigger SignalToTowerAnnulingTheLanding_WL;
+		effect {
+			log("The plane (" + trigger.id + ")'s landing request would be deleted!");
+			
+			Plane thePlane = findThePlane(trigger.id);
+			
+			Plane firstPlane = Tower.this->(TheFirstWaitingLandingPlane.thePlane).selectAny();	
+			
+			// Find the plane
+			Plane previousPlane = null;
+			Plane actualPlane = firstPlane;
+			
+			while(actualPlane != thePlane) {
+				previousPlane = actualPlane;
+				actualPlane = actualPlane->(TheNextWaitingLandingPlane.toPlane).selectAny();
+			}
+			
+			
+			Plane nextPlane = actualPlane->(TheNextWaitingLandingPlane.toPlane).selectAny();
+				
+			
+			if(actualPlane == firstPlane) {
+				// First plane
+				if(nextPlane == null) {
+					unlink(TheFirstWaitingLandingPlane.thePlane, actualPlane, TheFirstWaitingLandingPlane.theTower, this);
+				} else {
+					unlink(TheFirstWaitingLandingPlane.thePlane, actualPlane, TheFirstWaitingLandingPlane.theTower, this);
+					unlink(TheNextWaitingLandingPlane.fromPlane, thePlane, TheNextWaitingLandingPlane.toPlane, nextPlane);
+					link(TheFirstWaitingLandingPlane.thePlane, nextPlane, TheFirstWaitingLandingPlane.theTower, this);
+				}
+			} else {
+				if(nextPlane == null) {
+					// Last plane
+					unlink(TheNextWaitingLandingPlane.fromPlane, previousPlane, TheNextWaitingLandingPlane.toPlane, actualPlane);
+				} else {
+					// Not first and not last
+					unlink(TheNextWaitingLandingPlane.fromPlane, previousPlane, TheNextWaitingLandingPlane.toPlane, actualPlane);
+					link(TheNextWaitingLandingPlane.fromPlane, previousPlane, TheNextWaitingLandingPlane.toPlane, nextPlane);
+				}
+			}
+	
+		}
+	}
+	
+	// The plane annual the taking off request
+	transition AnnulTakingOff_WL {
+		from Working;
+		to Working;
+		trigger SignalToTowerAnnulingTheTakingOff_WL;
+		effect {
+			log("The plane (" + trigger.id + ")'s taking off request would be deleted!");
+			
+			
+			Plane thePlane = findThePlane(trigger.id);
+			
+			Plane firstPlane = Tower.this->(TheFirstWaitingTakingOffPlane.thePlane).selectAny();	
+			
+			// Find the plane
+			Plane previousPlane = null;
+			Plane actualPlane = firstPlane;
+			
+			while(actualPlane != thePlane) {
+				previousPlane = actualPlane;
+				actualPlane = actualPlane->(TheNextWaitingTakingOffPlane.toPlane).selectAny();
+			}
+			
+			
+			Plane nextPlane = actualPlane->(TheNextWaitingTakingOffPlane.toPlane).selectAny();
+				
+			
+			if(actualPlane == firstPlane) {
+				// First plane
+				if(nextPlane == null) {
+					unlink(TheFirstWaitingTakingOffPlane.thePlane, actualPlane, TheFirstWaitingTakingOffPlane.theTower, this);
+				} else {
+					unlink(TheFirstWaitingTakingOffPlane.thePlane, actualPlane, TheFirstWaitingTakingOffPlane.theTower, this);
+					unlink(TheNextWaitingTakingOffPlane.fromPlane, thePlane, TheNextWaitingTakingOffPlane.toPlane, nextPlane);
+					link(TheFirstWaitingTakingOffPlane.thePlane, nextPlane, TheFirstWaitingTakingOffPlane.theTower, this);
+				}
+			} else {
+				if(nextPlane == null) {
+					// Last plane
+					unlink(TheNextWaitingTakingOffPlane.fromPlane, previousPlane, TheNextWaitingTakingOffPlane.toPlane, actualPlane);
+				} else {
+					// Not first and not last
+					unlink(TheNextWaitingTakingOffPlane.fromPlane, previousPlane, TheNextWaitingTakingOffPlane.toPlane, actualPlane);
+					link(TheNextWaitingTakingOffPlane.fromPlane, previousPlane, TheNextWaitingTakingOffPlane.toPlane, nextPlane);
+				}
+			}
+		}
+	}
+	
+	transition AnnulTakingOff_AL {
+		from Working;
+		to Working;
+		trigger SignalToTowerAnnulingTheTakingOff_AL;
+		effect {
+			log("The plane (" + trigger.id + ")'s taking off request would be deleted!");
+			
+			// There isn't any task to do, because the plane isn't be in the list
+		}
+	}
+	
+	// Get the weather
+	transition GetWeather {
+		from Working;
+		to Working;
+		trigger SignalSendTheWeatherValues;
+		effect {
+			boolean oldWeatherStatus = checkWeather();
+			setWeather(trigger.temperature, trigger.wind, trigger.rain);
+			
+			if(oldWeatherStatus == true && checkWeather() == false) {
+				// Warn the planes
+				Collection<Plane> allPlane = Tower.this->(PlaneTowerUsage.thePlane);
+			
+				for(Plane a in allPlane) {
+					send new SignalDenyTakingOff() to a;	
+				}
+			
+			}
+		}
+	}
+	
+	// Functions
+		// Refresh the weather
+		private void setWeather(int t, int w, int r) {
+			temperature = t;
+			wind = w;
+			rain = r;
+		}
+		
+		// Check the weather
+		private boolean checkWeather() {
+			return temperature > -20 && wind < 5 && rain < 5;
+		}	
+		
+		// Tower uses it
+		// Find the plane
+		private Plane findThePlane(int id) {
+			Plane ret;
+			
+			Collection<Plane> allPlane = Tower.this->(PlaneTowerUsage.thePlane);
+			
+			for(Plane a in allPlane) {
+				if(a.getId() == id) {
+					ret = a;
+				}
+			}
+			
+			return ret;
+		}
+		
+		
+		// Runway
+		
+		// It gives back the first runway, if there isn't any free runways, it gives back null pointer
+		private Runway searchFirstFreeRunway() {
+			Runway ret = null;
+			
+			Collection<Runway> allRunWay = Tower.this->(TowerRunwayUsage.theRunway);
+			for (Runway runway in allRunWay) {
+				if(runway.getIsFree()) {
+					ret = runway;	
+				}
+			}
+			return ret;
+		}
+		
+		
+		// It searches the runway, where the id is = 'planeId'
+		private Runway searchTheRunway(int planeId) {
+			Runway ret = null;
+			
+			Collection<Runway> allRunWay = Tower.this->(TowerRunwayUsage.theRunway);
+			for (Runway runway in allRunWay) {
+				if(runway.getPlaneId() == planeId) {
+					ret = runway;	
+				}
+			}
+			return ret;
+		}
+}

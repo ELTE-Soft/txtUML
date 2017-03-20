@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: XtxtUML Unit Tests
 Bundle-Vendor: ELTE
-Bundle-Version: 0.4.0.qualifier
+Bundle-Version: 0.5.1.qualifier
 Bundle-SymbolicName: hu.elte.txtuml.xtxtuml.tests
 Fragment-Host: hu.elte.txtuml.xtxtuml.ui
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8

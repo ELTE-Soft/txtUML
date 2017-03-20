@@ -1,6 +1,7 @@
 package hu.elte.txtuml.xtxtuml.validation
 
 import com.google.inject.Inject
+import hu.elte.txtuml.xtxtuml.common.XtxtUMLUtils
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUComposition
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUConnector
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUConnectorEnd
@@ -14,6 +15,7 @@ import static hu.elte.txtuml.xtxtuml.xtxtUML.XtxtUMLPackage.Literals.*
 class XtxtUMLConnectorValidator extends XtxtUMLAssociationValidator {
 
 	@Inject extension IQualifiedNameProvider;
+	@Inject extension XtxtUMLUtils;
 
 	@Check
 	def checkConnectorHaveExactlyTwoEnds(TUConnector connector) {
@@ -61,7 +63,6 @@ class XtxtUMLConnectorValidator extends XtxtUMLAssociationValidator {
 			}
 		} else { // assembly connector
 			if (compositionOfRoleA == null || compositionOfRoleB == null // roles must be from compositions
-			|| compositionOfRoleA.fullyQualifiedName == compositionOfRoleB.fullyQualifiedName // underlying compositions must be different
 			|| compositionOfRoleA.ends.findFirst[container]?.endClass?.fullyQualifiedName !=
 				compositionOfRoleB.ends.findFirst[container]?.endClass?.fullyQualifiedName // container must be the same
 			) {
@@ -95,11 +96,9 @@ class XtxtUMLConnectorValidator extends XtxtUMLAssociationValidator {
 
 	@Check
 	def checkOwnerOfConnectorEndPort(TUConnectorEnd connEnd) {
-		val ownerOfPort = connEnd.port?.eContainer;
 		val classInRole = connEnd.role?.endClass;
-
-		if (ownerOfPort?.fullyQualifiedName != classInRole?.fullyQualifiedName) {
-			error(connEnd.port?.name + " cannot be resolved as a port of class " + classInRole?.name, connEnd,
+		if (!classInRole.ownsPort(connEnd.port)) {
+			error(connEnd.port.name + " cannot be resolved as a port of class " + classInRole.name, connEnd,
 				TU_CONNECTOR_END__PORT, NOT_OWNED_PORT);
 		}
 	}

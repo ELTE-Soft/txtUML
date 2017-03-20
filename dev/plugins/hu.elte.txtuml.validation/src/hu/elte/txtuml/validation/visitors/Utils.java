@@ -43,7 +43,8 @@ public class Utils {
 
 	public static boolean isAllowedAttributeType(Type type, boolean isVoidAllowed) {
 		return isBasicType(type, isVoidAllowed) || ElementTypeTeller.isDataType(type.resolveBinding())
-				|| ElementTypeTeller.isExternalInterface(type.resolveBinding());
+				|| ElementTypeTeller.isExternalInterface(type.resolveBinding())
+				|| ElementTypeTeller.isModelEnum(type.resolveBinding());
 	}
 
 	public static boolean isAllowedParameterType(Type type, boolean isVoidAllowed) {

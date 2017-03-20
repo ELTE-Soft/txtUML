@@ -274,7 +274,7 @@ public abstract class Action {
 	 * Logs an error message.
 	 * 
 	 * @param message
-	 *            the error message to logged
+	 *            the error message to be logged
 	 */
 	public static void logError(String message) {
 		Logger.user.error(message);

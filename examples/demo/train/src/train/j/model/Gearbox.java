@@ -14,20 +14,20 @@ import train.j.model.signals.Forward;
 import train.j.model.signals.LightOff;
 
 public class Gearbox extends ModelClass {
-	class Init extends Initial {
+	public class Init extends Initial {
 	}
 
-	class Neutral extends State {
+	public class Neutral extends State {
 	}
 
-	class Forwards extends CompositeState {
-		class FInit extends Initial {
+	public class Forwards extends CompositeState {
+		public class FInit extends Initial {
 		}
 
-		class F1 extends State {
+		public class F1 extends State {
 		}
 
-		class F2 extends State {
+		public class F2 extends State {
 		}
 
 		@From(FInit.class)
@@ -48,14 +48,14 @@ public class Gearbox extends ModelClass {
 		}
 	}
 
-	class Backwards extends CompositeState {
-		class BInit extends Initial {
+	public class Backwards extends CompositeState {
+		public class BInit extends Initial {
 		}
 
-		class B1 extends State {
+		public class B1 extends State {
 		}
 
-		class B2 extends State {
+		public class B2 extends State {
 		}
 
 		@From(BInit.class)
