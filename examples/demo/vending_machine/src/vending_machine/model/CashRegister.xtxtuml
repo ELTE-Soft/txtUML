@@ -4,16 +4,21 @@ import hu.elte.txtuml.api.stdlib.timers.Timer;
 
 class CashRegister {
 
-	int insertedCash;
+	private int insertedCash;
 
-	Timer timerHandle;
+	private int delay;
 
 	public CashRegister() {
 		insertedCash = 0;
+		delay = 1000;
 	}
 
 	public int howMuchIsInside() {
 		return insertedCash;
+	}
+
+	private void updateMessage(String msg) {
+		this->(WorkTogether.theMachine).selectAny().updateMessage(msg);		
 	}
 
 	// state machine states
@@ -23,9 +28,10 @@ class CashRegister {
 
 	state Returning {
 		entry {
-			CashRegister.this->(WorkTogether.theMachine).selectAny().updateMessage("Returning: " + trigger.howMany);
+			insertedCash -= trigger.paidAmount;
+			updateMessage("Returning: " + insertedCash);
 			insertedCash = 0;
-			timerHandle = Timer.start(this, new done(), 1000);
+			Timer.start(this, new Done(), delay);
 		}
 	}
 
@@ -38,26 +44,25 @@ class CashRegister {
 	transition StopTaking {
 		from Taking;
 		to Returning;
-		trigger giveBackCash;
+		trigger GiveBackCash;
 	}
 
 	transition StopReturning {
 		from Returning;
 		to Taking;
-		trigger done;
+		trigger Done;
 		effect {
-			CashRegister.this->(WorkTogether.theMachine).selectAny().updateMessage("Online");
-			timerHandle.cancel();
+			updateMessage("Online");
 		}
 	}
 
 	transition TakeCash {
 		from Taking;
 		to Taking;
-		trigger insertCash;
+		trigger InsertCoin;
 		effect {
 			insertedCash += trigger.coin;
-			CashRegister.this->(WorkTogether.theMachine).selectAny().updateMessage("Inserted: " + insertedCash);
+			updateMessage("Inserted: " + insertedCash);
 		}
 	}
 

@@ -9,8 +9,8 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 
+@SuppressWarnings("serial")
 public class ImagePanel extends JPanel {
-	private static final long serialVersionUID = 1L;
 	private BufferedImage img;
 
 	ImagePanel(String imgPath) {
