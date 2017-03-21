@@ -16,7 +16,7 @@ class ExternalClassExporter extends Exporter<TypeDeclaration, ITypeBinding, Inte
 	}
 	
 	override create(ITypeBinding typ) {
-		if(ElementTypeTeller.isExternalInterface(typ)) factory.createInterface
+		if(ElementTypeTeller.isExternalClass(typ)) factory.createInterface
 	}
 	
 	override exportContents(TypeDeclaration typeDecl) {

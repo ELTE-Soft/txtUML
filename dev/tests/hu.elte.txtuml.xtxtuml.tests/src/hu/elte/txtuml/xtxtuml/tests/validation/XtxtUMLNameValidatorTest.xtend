@@ -45,6 +45,7 @@ class XtxtUMLNameValidatorTest {
 			association Assoc {}
 			interface I {}
 			connector C {}
+			enum E {}
 		'''.parse.assertNoError(RESERVED_NAME);
 
 		val rawFile = '''
@@ -54,6 +55,7 @@ class XtxtUMLNameValidatorTest {
 			association volatile {}
 			interface transient {}
 			connector implements {}
+			enum const {}
 		''';
 
 		val parsedFile = rawFile.parse;
@@ -63,6 +65,7 @@ class XtxtUMLNameValidatorTest {
 		parsedFile.assertError(TU_MODEL_ELEMENT, RESERVED_NAME, rawFile.indexOf("volatile"), 8);
 		parsedFile.assertError(TU_MODEL_ELEMENT, RESERVED_NAME, rawFile.indexOf("transient"), 9);
 		parsedFile.assertError(TU_MODEL_ELEMENT, RESERVED_NAME, rawFile.indexOf("implements"), 10);
+		parsedFile.assertError(TU_MODEL_ELEMENT, RESERVED_NAME, rawFile.indexOf("const"), 5);
 	}
 
 	@Test

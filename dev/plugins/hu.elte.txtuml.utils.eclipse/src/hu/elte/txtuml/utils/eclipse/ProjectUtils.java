@@ -1,5 +1,10 @@
 package hu.elte.txtuml.utils.eclipse;
 
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -85,6 +90,13 @@ public class ProjectUtils {
 		return root.getProject(projectName);
 	}
 
+	/**
+	 * Identifies the given project and returns an {@link IJavaProject} instance.
+	 * 
+	 * @param projectName - the source project
+	 * @return An {@link IJavaProject} instance if the given project is a java project.
+	 * @throws NotFoundException If the project cannot be found, or not a java project.
+	 */
 	public static IJavaProject findJavaProject(String projectName) throws NotFoundException {
 		IProject project;
 		try {
@@ -98,4 +110,17 @@ public class ProjectUtils {
 		return JavaCore.create(project);
 	}
 
+	/**
+	 * Searches all projects of the workspace and returns a filtered list containing only Java projects
+	 * @return A filtered list containing only Java projects
+	 */
+	public static List<IJavaProject> getAllJavaProjectsOfWorkspace() {
+		return Stream.of(ResourcesPlugin.getWorkspace().getRoot().getProjects()).map(pr -> {
+			try {
+				return ProjectUtils.findJavaProject(pr.getName());
+			} catch (NotFoundException e) {
+				return null;
+			}
+		}).filter(Objects::nonNull).collect(Collectors.toList());
+	}
 }

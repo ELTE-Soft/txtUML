@@ -5,9 +5,10 @@ import com.google.common.base.Predicate
 import com.google.inject.Inject
 import hu.elte.txtuml.api.model.DataType
 import hu.elte.txtuml.api.model.ModelClass
+import hu.elte.txtuml.api.model.ModelEnum
 import hu.elte.txtuml.api.model.Signal
-import hu.elte.txtuml.api.model.external.ExternalType
 import hu.elte.txtuml.xtxtuml.common.XtxtUMLReferenceProposalScopeProvider
+import hu.elte.txtuml.xtxtuml.common.XtxtUMLReferenceProposalTypeScope
 import hu.elte.txtuml.xtxtuml.common.XtxtUMLUtils
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAssociation
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAssociationEnd
@@ -32,7 +33,7 @@ import org.eclipse.emf.ecore.EObject
 import org.eclipse.emf.ecore.EReference
 import org.eclipse.jface.text.contentassist.ICompletionProposal
 import org.eclipse.xtext.EcoreUtil2
-import org.eclipse.xtext.common.types.JvmGenericType
+import org.eclipse.xtext.common.types.JvmDeclaredType
 import org.eclipse.xtext.common.types.JvmTypeReference
 import org.eclipse.xtext.common.types.TypesPackage
 import org.eclipse.xtext.naming.IQualifiedNameProvider
@@ -44,7 +45,6 @@ import org.eclipse.xtext.xbase.XVariableDeclaration
 import org.eclipse.xtext.xbase.XbasePackage
 import org.eclipse.xtext.xbase.scoping.batch.InstanceFeatureDescription
 import org.eclipse.xtext.xbase.typesystem.IBatchTypeResolver
-import org.eclipse.xtext.xbase.typesystem.references.LightweightTypeReference
 import org.eclipse.xtext.xbase.typesystem.references.LightweightTypeReferenceFactory
 import org.eclipse.xtext.xbase.typesystem.references.StandardTypeReferenceOwner
 import org.eclipse.xtext.xbase.typesystem.util.CommonTypeComputationServices
@@ -65,7 +65,7 @@ class XtxtUMLReferenceProposalCreator extends XbaseReferenceProposalCreator {
 
 	/**
 	 * Provides a scope provider with a customized JDT based superscope.
-	 * @see hu.elte.txtuml.xtxtuml.common.XtxtUMLReferenceProposalTypeScope
+	 * @see XtxtUMLReferenceProposalTypeScope
 	 */
 	override getScopeProvider() {
 		return scopeProvider;
@@ -259,16 +259,12 @@ class XtxtUMLReferenceProposalCreator extends XbaseReferenceProposalCreator {
 			// convenient:
 			// supertypes are already in type reference format, which state would
 			// be difficult to achieve starting from a plain JvmType
-			proposedObj instanceof JvmGenericType && (proposedObj as JvmGenericType).superTypes.exists [
+			proposedObj instanceof JvmDeclaredType && (proposedObj as JvmDeclaredType).superTypes.exists [
 				val typeRef = toLightweightTypeReference;
-				typeRef.isSubtypeOf(DataType) || typeRef.isInterface && typeRef.isSubtypeOf(ExternalType) ||
-					isClassAllowed && typeRef.isSubtypeOf(ModelClass) || isSignalAllowed && typeRef.isSubtypeOf(Signal)
+				typeRef.isSubtypeOf(DataType) || typeRef.isSubtypeOf(ModelEnum) || isClassAllowed && typeRef.isSubtypeOf(ModelClass) ||
+					isSignalAllowed && typeRef.isSubtypeOf(Signal)
 			]
 		}
-	}
-
-	def private isInterface(LightweightTypeReference typeRef) {
-		typeRef.type instanceof JvmGenericType && (typeRef.type as JvmGenericType).isInterface();
 	}
 
 	def private toLightweightTypeReference(JvmTypeReference typeRef) {

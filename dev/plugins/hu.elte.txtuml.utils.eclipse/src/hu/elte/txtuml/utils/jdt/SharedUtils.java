@@ -15,10 +15,12 @@ import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTParser;
+import org.eclipse.jdt.core.dom.AbstractTypeDeclaration;
 import org.eclipse.jdt.core.dom.Annotation;
 import org.eclipse.jdt.core.dom.BodyDeclaration;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.Expression;
+import org.eclipse.jdt.core.dom.IAnnotationBinding;
 import org.eclipse.jdt.core.dom.IExtendedModifier;
 import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
@@ -46,7 +48,7 @@ public final class SharedUtils {
 	 *            The specified class.
 	 * @return The decision.
 	 */
-	public static boolean typeIsAssignableFrom(TypeDeclaration typeDeclaration, Class<?> specifiedClass) {
+	public static boolean typeIsAssignableFrom(AbstractTypeDeclaration typeDeclaration, Class<?> specifiedClass) {
 		return typeIsAssignableFrom(typeDeclaration.resolveBinding(), specifiedClass);
 	}
 
@@ -75,13 +77,24 @@ public final class SharedUtils {
 	}
 
 	public static Expression obtainSingleMemberAnnotationValue(BodyDeclaration declaration, Class<?> annotationClass) {
+		Annotation annotation = obtainAnnotation(declaration, annotationClass);
+		if (annotation != null && annotation.isSingleMemberAnnotation()) {
+			SingleMemberAnnotation singleMemberAnnot = (SingleMemberAnnotation) annotation;
+			return singleMemberAnnot.getValue();
+		}
+		return null;
+	}
+
+	/**
+	 * @return the annotation node if it is present on the declaration or null
+	 */
+	public static Annotation obtainAnnotation(BodyDeclaration declaration, Class<?> annotationClass) {
 		for (Object mod : declaration.modifiers()) {
 			IExtendedModifier modifier = (IExtendedModifier) mod;
 			if (modifier.isAnnotation()) {
 				Annotation annotation = (Annotation) modifier;
-				if (annotation.isSingleMemberAnnotation() && identicalAnnotations(annotation, annotationClass)) {
-					SingleMemberAnnotation singleMemberAnnot = (SingleMemberAnnotation) annotation;
-					return singleMemberAnnot.getValue();
+				if (identicalAnnotations(annotation, annotationClass)) {
+					return annotation;
 				}
 			}
 		}
@@ -96,8 +109,24 @@ public final class SharedUtils {
 		return null;
 	}
 
+	/**
+	 * @return the annotation binding if it is present on the declaration or null
+	 */
+	public static IAnnotationBinding obtainAnnotation(ITypeBinding binding, Class<?> annotationClass) {
+		for (IAnnotationBinding annotation : binding.getAnnotations()) {
+			if (identicalAnnotations(annotation, annotationClass)) {
+				return annotation;
+			}
+		}
+		return null;
+	}
+
 	private static boolean identicalAnnotations(Annotation annotation, Class<?> annotationClass) {
-		return annotation.resolveAnnotationBinding().getAnnotationType().getQualifiedName()
+		return identicalAnnotations(annotation.resolveAnnotationBinding(), annotationClass);
+	}
+	
+	private static boolean identicalAnnotations(IAnnotationBinding annotation, Class<?> annotationClass) {
+		return annotation.getAnnotationType().getQualifiedName()
 				.equals(annotationClass.getCanonicalName());
 	}
 
@@ -110,6 +139,18 @@ public final class SharedUtils {
 		return null;
 	}
 
+	/**
+	 * Parses a whole Stream of compilation units in the given Java project.
+	 * 
+	 * @param stream
+	 *            The specified compilation units to be parsed.
+	 * @param project
+	 *            The given Java project.
+	 * @return The parsed compilation units.
+	 * @throws IOException
+	 *             Thrown when I/O error occurs during reading the file.
+	 * @throws JavaModelException
+	 */
 	public static CompilationUnit[] parseICompilationUnitStream(Stream<ICompilationUnit> stream,
 			IJavaProject javaProject) throws IOException, JavaModelException {
 
@@ -139,7 +180,7 @@ public final class SharedUtils {
 
 		parser.setSource(content);
 		parser.setProject(project);
-		
+
 		parser.setResolveBindings(true);
 		parser.setBindingsRecovery(true);
 		parser.setUnitName(sourceFile.getName());

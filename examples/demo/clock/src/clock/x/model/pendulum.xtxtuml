@@ -6,7 +6,7 @@ import clock.x.model.interfaces.TickIfc;
 
 class Pendulum {
 
-	private Timer timer;
+	//FIXME private Timer timer;
 	private int unit;
 
 	public Pendulum() {
@@ -28,7 +28,7 @@ class Pendulum {
 		from Init;
 		to Working;
 		effect {
-			timer = Timer.start(this, new Tick(), unit);
+			//FIXME timer = Timer.start(this, new Tick(), unit);
 		}
 	}
 
@@ -37,7 +37,7 @@ class Pendulum {
 		to Working;
 		trigger Tick;
 		effect {
-			timer.reset(unit);
+			//FIXME timer.reset(unit);
 		}
 	}
 
