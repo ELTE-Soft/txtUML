@@ -279,7 +279,7 @@ public final class ElementTypeTeller {
 	public static boolean isInterface(ITypeBinding bnd) {
 		return SharedUtils.typeIsAssignableFrom(bnd, Interface.class);
 	}
-
+		
 	public static boolean isConnector(TypeDeclaration typeDeclaration) {
 		return SharedUtils.typeIsAssignableFrom(typeDeclaration, ConnectorBase.class);
 	}
@@ -317,8 +317,8 @@ public final class ElementTypeTeller {
 		return false;
 	}
 
-	public static boolean isExternalClass(TypeDeclaration typeDeclaration) {
-		return SharedUtils.typeIsAssignableFrom(typeDeclaration, ExternalClass.class);
+	public static boolean isExternalClass(ITypeBinding type) {
+		return SharedUtils.typeIsAssignableFrom(type, ExternalClass.class);
 	}
 
 	public static boolean isExternalInterface(ITypeBinding type) {
