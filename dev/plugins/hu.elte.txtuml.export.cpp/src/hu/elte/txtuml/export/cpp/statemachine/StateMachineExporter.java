@@ -75,7 +75,7 @@ public class StateMachineExporter extends StateMachineExporterBase {
 	}
 
 	public boolean ownSubMachine() {
-		return submachineMap.isEmpty();
+		return !submachineMap.isEmpty();
 	}
 
 	public Map<String, Pair<String, Region>> getSubMachineMap() {

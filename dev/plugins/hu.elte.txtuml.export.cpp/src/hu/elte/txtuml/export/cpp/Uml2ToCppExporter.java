@@ -116,8 +116,10 @@ public class Uml2ToCppExporter {
 			classExporter.setName(cls.getName());
 			classExporter.setPoolId(threadManager.getDescription().get(cls.getName()).getId());
 			classExporter.exportStructuredElement(cls, outputDirectory);
-
-			classNames.addAll(classExporter.getSubmachines());
+			if(classExporter.isStateMachineOwner()) {
+				classNames.addAll(classExporter.getSubmachines());
+			}
+			
 			classNames.add(cls.getName());
 			classNames.addAll(classExporter.getAdditionalSources());
 

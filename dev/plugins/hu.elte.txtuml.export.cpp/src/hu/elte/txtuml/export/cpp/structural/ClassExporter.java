@@ -75,14 +75,18 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 	}
 
 	public List<String> getSubmachines() {
-		return stateMachineExporter.getSubMachineNameList();
+		if(isStateMachineOwner()) {
+			return stateMachineExporter.getSubMachineNameList();
+		} else {
+			return null;
+		}
 	}
 
 	private void createSource(String dest) throws FileNotFoundException, UnsupportedEncodingException {
 		String source;
 		associationExporter.exportAssociations(structuredElement.getOwnedAttributes());
-		stateMachineExporter.createStateMachineRegion(structuredElement);
 		if (isStateMachineOwner()) {
+			stateMachineExporter.createStateMachineRegion(structuredElement);
 			stateMachineExporter.createMachine();
 
 			for (Map.Entry<String, Pair<String, Region>> entry : stateMachineExporter.getSubMachineMap().entrySet()) {
@@ -134,7 +138,7 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 			publicParts.append(portExporter.createPortEnumCode(structuredElement.getOwnedPorts()));
 			privateParts.append(stateMachineExporter.createStateMachineRelatedHeadedDeclarationCodes());
 
-			if (stateMachineExporter.ownSubMachine()) {
+			if (!stateMachineExporter.ownSubMachine()) {
 				source = HeaderTemplates
 						.simpleStateMachineClassHeader(getAllDependencies(true), name, getBaseClass(), null,
 								publicParts.toString(), protectedParts.toString(), privateParts.toString(), true)

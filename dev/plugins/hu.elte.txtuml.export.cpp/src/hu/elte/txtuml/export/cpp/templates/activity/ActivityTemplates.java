@@ -224,8 +224,8 @@ public class ActivityTemplates {
 		source.append(signalVariableName + " = ");
 		source.append(GenerationNames.signalPointerType(signalType) + "(");
 		source.append(PointerAndMemoryNames.MemoryAllocator + " " + PrivateFunctionalTemplates.signalType(signalType));
-		source.append("(" + GenerationNames.StaticCast + "<" + PrivateFunctionalTemplates.signalType(signalType)+ ">");
-		source.append("(" + EventTemplates.EventFParamName + ")));\n");
+		source.append("(*" + GenerationNames.StaticCast + "<" + PrivateFunctionalTemplates.signalType(signalType)+ "*>");
+		source.append("(" + EventTemplates.EventFParamName + ".get())));\n");
 		return source.toString();
 	}
 
@@ -283,11 +283,5 @@ public class ActivityTemplates {
 	public static String formatUserVar(String varName, int userVarCounter) {
 		return varName + "_us" + userVarCounter;
 	}
-
-	/*public static String getRealEvent(String eventName) {
-		return  eventName + GenerationNames.EventClassTypeId + " " + GenerationNames.RealEventName
-				+ "=static_cast<" + eventName + GenerationNames.EventClassTypeId + ">("
-				+ EventTemplates.EventFParamName + ");\n";
-	}*/
 
 }
