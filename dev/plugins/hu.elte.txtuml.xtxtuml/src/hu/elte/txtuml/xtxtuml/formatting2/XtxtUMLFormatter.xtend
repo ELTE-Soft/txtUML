@@ -281,7 +281,7 @@ class XtxtUMLFormatter extends XbaseFormatter {
 
 		formatBlockElement(it, document, typeKeyword, members, isSpacious, [
 			append[newLines = if(isSpacious) 2 else 1];
-			format(document);
+			format(it, document); // don't omit 'it'
 		])
 	}
 
