@@ -16,7 +16,6 @@ import hu.elte.txtuml.export.cpp.templates.PrivateFunctionalTemplates;
 import hu.elte.txtuml.export.cpp.templates.RuntimeTemplates;
 import hu.elte.txtuml.export.cpp.templates.activity.ActivityTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.FunctionTemplates;
-import hu.elte.txtuml.export.cpp.templates.structual.PortTemplates;
 import hu.elte.txtuml.utils.Pair;
 
 public class StateMachineTemplates {
@@ -146,7 +145,7 @@ public class StateMachineTemplates {
 						+ "(" + EventTemplates.EventsEnumName + "::");
 				source.append(GenerationNames.eventEnumName(key.getEvent()) + ","
 						+ GenerationNames.stateEnumName(key.getState()) + ","
-								+ PortTemplates.ponrtEnumName(key.getPort()) + "),");
+								+ key.getPort() + "),");
 				String guardName = GenerationNames.DefaultGuardName;
 				if (value.getFirst() != null) {
 					guardName = value.getFirst();

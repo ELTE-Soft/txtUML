@@ -1,7 +1,6 @@
 #ifndef EVENTI_HPP_INCLUDED
 #define EVENTI_HPP_INCLUDED
 
-#include "runtimetypes.hpp"
 #include "ESRoot/Types.hpp"
 
 namespace Model
@@ -37,14 +36,12 @@ public:
 class EventBase : public IEvent<EventBase>
 {
 public:
-	EventBase(int t_) : t(t_), p(NoPort_PE) {}
+	EventBase(int t_) : t(t_), p(1) {}
 
 	ES::StateMachineRef targetSM;
 	int t;
 	int p;
 };
-
-typedef const EventBase& EventBaseCRef;
 
 }
 

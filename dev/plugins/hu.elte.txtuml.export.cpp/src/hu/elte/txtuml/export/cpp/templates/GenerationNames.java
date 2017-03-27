@@ -6,7 +6,16 @@ import hu.elte.txtuml.export.cpp.templates.statemachine.EventTemplates;
 
 public class GenerationNames {
 	
-	public static final String RootNamesapce = "ES"; //ELTE-Soft
+	public static class Namespaces {
+		
+		public static final String RootNamespace = "ES"; //ELTE-Soft
+		
+		public static final String ModelNamespace = "Model";
+		public static final String StringUtilsNamespace = "StringUtils";
+		public static final String CollectionUtilsNamespace = "CollectionUtils";
+		public static final String ContainerNamespace = "ESContainer";
+		public static final String ExecutionNamesapce = "Execution";
+	}
 	
 	public static class FileNames {
 		public static final String ESRootFolderName = "ESRoot";
@@ -37,7 +46,7 @@ public class GenerationNames {
 	
 	public static class BasicTypeNames {
 
-		public static final String StringTypeName = RootNamesapce + "::" +  "String";
+		public static final String StringTypeName = Namespaces.RootNamespace + "::" +  "String";
 		public static final String Int32TypeName = "Int32";
 		public static final String Int64TypeName = "Int64";
 		
@@ -52,7 +61,7 @@ public class GenerationNames {
 		public static final String NullPtr = "nullptr";
 		public static final String Self = "this";
 		public static final String SmartPtr = "ES::SharedPtr";
-		public static final String EventPtr = RootNamesapce + "::" + "EventRef";
+		public static final String EventPtr = Namespaces.RootNamespace + "::" + "EventRef";
 		
 	}
 	
@@ -69,7 +78,7 @@ public class GenerationNames {
 		public static final String TimerInterFaceName = "ITimer";
 		public static final String StartTimerFunctionName = "start";
 		public static final String TimerClassName = "Timer";
-		public static final String TimerPtrName = RootNamesapce + "::" + "TimerPtr";
+		public static final String TimerPtrName = Namespaces.RootNamespace + "::" + "TimerPtr";
 		
 	}
 	
@@ -84,14 +93,6 @@ public class GenerationNames {
 	public static class GeneralFunctionNames {
 		public static final String GeneralLinkFunction = "link";
 		public static final String GeneralUnlinkFunction = "unlink";
-	}
-	
-	public static class Namespaces {
-		public static final String ModelNamespace = "Model";
-		public static final String StringUtilsNamespace = "StringUtils";
-		public static final String CollectionUtilsNamespace = "CollectionUtils";
-		public static final String ContainerNamespace = "ESContainer";
-		public static final String ExecutionNamesapce = "Execution";
 	}
 	
 	public static class Containers {

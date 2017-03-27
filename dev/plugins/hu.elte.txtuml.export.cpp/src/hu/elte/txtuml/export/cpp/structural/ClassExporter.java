@@ -179,7 +179,7 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 
 		if (isStateMachineOwner()) {
 			for (Map.Entry<String, Pair<String, Region>> entry : stateMachineExporter.getSubMachineMap().entrySet()) {
-				dependencyExporter.addDependecy(entry.getValue().getFirst());
+				dependencyExporter.addDependency(entry.getValue().getFirst());
 			}
 
 		}

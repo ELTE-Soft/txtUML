@@ -39,16 +39,16 @@ public class DependencyExporter {
 
 	}
 
-	public void addDependecy(String depndency) {
-		if (!isSimpleDependency(depndency)) {
-			dependecies.add(depndency);
+	public void addDependency(String dependency) {
+		if (!isSimpleDependency(dependency)) {
+			dependecies.add(dependency);
 		}
 		
 	}
 
 	public void addDependencies(Collection<String> dependecies) {
 		for (String dependency : dependecies) {
-			addDependecy(dependency);
+			addDependency(dependency);
 		}
 	}
 	

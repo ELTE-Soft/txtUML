@@ -74,11 +74,11 @@ public class ThreadHandlingManager {
 				CppExporterUtils.format(HeaderTemplates.headerGuard(source.toString(), ConfigurationFile)));
 
 		CppExporterUtils.writeOutSource(dest, GenerationTemplates.sourceName(ConfigurationFile),
-				CppExporterUtils.format(createDeplyomentFunctionDefinition()));
+				CppExporterUtils.format(createDeploymentFunctionDefinition()));
 
 	}
 
-	private String createDeplyomentFunctionDefinition() {
+	private String createDeploymentFunctionDefinition() {
 		StringBuilder source = new StringBuilder("");
 		source.append(PrivateFunctionalTemplates.include(ConfigurationFile));
 		source.append(GenerationTemplates.putNamespace(

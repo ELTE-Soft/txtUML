@@ -11,7 +11,7 @@ template<typename T>
 class FixedArray
 {
 public:
-	FixedArray() {}
+	FixedArray(): configs(nullptr) {}
 	FixedArray(int n) : fixedSize(n)
 	{
 		configs = new T[n];
@@ -26,7 +26,7 @@ public:
 	}
 	~FixedArray()
 	{
-		delete[] configs;
+		freeArray();
 	}
 
 	FixedArray(const FixedArray& c)
@@ -37,7 +37,7 @@ public:
 	FixedArray& operator=(const FixedArray& c)
 	{
 		if (&c != this) {
-			delete[] configs;
+			freeArray();
 			copy(c);
 		}
 
@@ -57,6 +57,12 @@ private:
 		for (int i = 0; i < fixedSize; i++)
 		{
 			configs[i] = c.configs[i];
+		}
+	}
+
+	void freeArray() {
+		if (configs != nullptr) {
+			delete[] configs;
 		}
 	}
 

@@ -102,8 +102,7 @@ public class LinkTemplates {
 			String endPoint2) {
 		StringBuilder source = new StringBuilder("");
 		source.append(GenerationNames.ClassType + " " + associationName);
-		source.append(" : public " + GenerationNames.AssociationClassName);
-		source.append("<" + E1 + "," + E2 + ">{\n");
+		source.append("{\n");
 		source.append(createEndPointClass(E1, endPoint1));
 		source.append(createEndPointClass(E2, endPoint2));
 		source.append("};\n");

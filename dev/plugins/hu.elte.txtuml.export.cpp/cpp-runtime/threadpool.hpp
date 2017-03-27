@@ -10,7 +10,6 @@
 #include <atomic>
 
 #include "threadcontainer.hpp"
-#include "runtimetypes.hpp"
 #include "istatemachine.hpp"
 
 namespace Execution

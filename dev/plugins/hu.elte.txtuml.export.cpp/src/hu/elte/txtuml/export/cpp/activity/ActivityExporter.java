@@ -48,14 +48,14 @@ public class ActivityExporter {
 	private ObjectActionExporter objectActionExporter;
 	private ReturnNodeExporter returnNodeExporter;
 
-	private List<String> createdClassDependecies;
+	private List<String> createdClassDependencies;
 
 	public ActivityExporter() {
 	}
 
 	private void init() {
 
-		createdClassDependecies = new LinkedList<String>();
+		createdClassDependencies = new LinkedList<String>();
 
 		tempVariableExporter = new OutVariableExporter();
 		userVariableExporter = new UserVariableExporter();
@@ -68,7 +68,7 @@ public class ActivityExporter {
 				activityExportResolver);
 		linkActionExporter = new LinkActionExporter(tempVariableExporter, activityExportResolver);
 		objectActionExporter = new ObjectActionExporter(tempVariableExporter, objectMap, activityExportResolver,
-				createdClassDependecies);
+				createdClassDependencies);
 		controlNodeExporter = new StructuredControlNodeExporter(this, activityExportResolver, userVariableExporter,
 				returnNodeExporter);
 
@@ -108,7 +108,7 @@ public class ActivityExporter {
 	}
 
 	public List<String> getAdditionalClassDependencies() {
-		return createdClassDependecies;
+		return createdClassDependencies;
 	}
 
 	private String createActivityPartCode(ActivityNode startNode) {

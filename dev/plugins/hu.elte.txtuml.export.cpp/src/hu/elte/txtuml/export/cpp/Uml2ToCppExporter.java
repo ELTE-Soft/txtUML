@@ -64,7 +64,7 @@ public class Uml2ToCppExporter {
 	private static final String DEFAULT_TARGET_EXECUTABLE = "main";
 	private static final String DEFAULT_DEPLOYMENT_NAME = "deployment";
 	private static final String DEFAULT_INIT_MACHINE_NAME = StateMachineTemplates.TransitionTableInitialSourceName;
-	private static final String DEFAULT_ENVIOREMENT_INITIALIZER = "Env";
+	private static final String DEFAULT_ENVIRONMENT_INITIALIZER = "Env";
 
 	private ClassExporter classExporter;
 	private DataTypeExporter dataTypeExporter;
@@ -184,11 +184,11 @@ public class Uml2ToCppExporter {
 				Paths.get(destination + File.separator + StateMachineTemplates.StateMachineBaseHeader),
 				StandardCopyOption.REPLACE_EXISTING);
 		
-		Files.copy(Paths.get(cppFilesLocation + DEFAULT_ENVIOREMENT_INITIALIZER + "." + GenerationNames.FileNames.HeaderExtension),
-				Paths.get(destination + File.separator + DEFAULT_ENVIOREMENT_INITIALIZER + "." + GenerationNames.FileNames.HeaderExtension),
+		Files.copy(Paths.get(cppFilesLocation + DEFAULT_ENVIRONMENT_INITIALIZER + "." + GenerationNames.FileNames.HeaderExtension),
+				Paths.get(destination + File.separator + DEFAULT_ENVIRONMENT_INITIALIZER + "." + GenerationNames.FileNames.HeaderExtension),
 				StandardCopyOption.REPLACE_EXISTING);
-		Files.copy(Paths.get(cppFilesLocation + DEFAULT_ENVIOREMENT_INITIALIZER + "." + GenerationNames.FileNames.SourceExtension),
-				Paths.get(destination + File.separator + DEFAULT_ENVIOREMENT_INITIALIZER + "." + GenerationNames.FileNames.SourceExtension),
+		Files.copy(Paths.get(cppFilesLocation + DEFAULT_ENVIRONMENT_INITIALIZER + "." + GenerationNames.FileNames.SourceExtension),
+				Paths.get(destination + File.separator + DEFAULT_ENVIRONMENT_INITIALIZER + "." + GenerationNames.FileNames.SourceExtension),
 				StandardCopyOption.REPLACE_EXISTING);
 		
 		if (options.isAddRuntime()) {
@@ -254,7 +254,7 @@ public class Uml2ToCppExporter {
 		sourceNames.add(DEFAULT_DEPLOYMENT_NAME);
 		sourceNames.add(DEFAULT_ASSOCIATIONS_NAME);
 		sourceNames.add(DEFAULT_INIT_MACHINE_NAME);
-		sourceNames.add(DEFAULT_ENVIOREMENT_INITIALIZER);
+		sourceNames.add(DEFAULT_ENVIRONMENT_INITIALIZER);
 		sourceNames.addAll(classNames);
 		cmake.addExecutableTarget(DEFAULT_TARGET_EXECUTABLE, sourceNames, "");
 		cmake.writeOutCMakeLists();
@@ -284,7 +284,7 @@ public class Uml2ToCppExporter {
 
 		DependencyExporter dependencyEporter = new DependencyExporter();
 		for (Pair<String, String> param : allParam) {
-			dependencyEporter.addDependecy(param.getSecond());
+			dependencyEporter.addDependency(param.getSecond());
 		}
 
 		forwardDecl.append(dependencyEporter.createDependencyHeaderIncludeCode());

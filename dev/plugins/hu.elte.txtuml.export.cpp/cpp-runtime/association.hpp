@@ -1,22 +1,25 @@
+/** @file association.hpp
+*/
+
 #ifndef ASSOCIATION_H
 #define ASSOCIATION_H
 
 #include <list>
 
-template<typename End1Type, typename End2Type>
-struct Association
+namespace Model
 {
-	typedef End1Type E1;
-	typedef End2Type E2;
-};
 
+/*! Represents an association end point. */
 template <typename EndType>
 class AssociationEnd
 {
 public:
 
     AssociationEnd(int lower, int upper): limits(lower,upper) {}
-
+	
+	/*!
+	Appends a new object to the association end.
+	*/
     void addAssoc(EndType* o)
     {
         if ((int)linkedObjects.size() < limits.second || limits.second == AssociationEnd::UNLIMITED())
@@ -24,12 +27,18 @@ public:
             linkedObjects.push_back(o);
         }
     }
-
+			
+	/*!
+	Remove an object from the association end.
+	*/
     void removeAssoc(EndType* o)
     {
         linkedObjects.remove(o);
     }
-
+	
+	/*!
+	Returns any object from the association end according a condation.
+	*/
     EndType* getOne(bool cond(EndType*) = [](EndType*){return true;})
     {
         EndType* object = nullptr;
@@ -42,7 +51,10 @@ public:
         }
         return object;
     }
-
+	
+	/*!
+	Returns all objects from the association end filtered by a condation.
+	*/
     std::list<EndType*> getAll(bool cond(EndType*) = [](EndType*){return true;})
     {
         std::list<EndType*> conditionedObjects;
@@ -62,6 +74,10 @@ private:
     std::pair<int,int> limits; //lower, upper
 	
 	static int UNLIMITED() {return -1;}
-};
+};	
+
+}
+
+
 
 #endif // ASSOCIATION_H

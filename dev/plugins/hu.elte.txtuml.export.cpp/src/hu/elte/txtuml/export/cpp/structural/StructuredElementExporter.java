@@ -100,7 +100,7 @@ public abstract class StructuredElementExporter<StructuredElement extends Operat
 
 					source.append(VariableTemplates.propertyDecl(type, attribute.getName(), attribute.getDefault()));
 				} else {
-					dependencyExporter.addDependecy(type);
+					dependencyExporter.addDependency(type);
 				}
 			}
 		}
@@ -117,7 +117,7 @@ public abstract class StructuredElementExporter<StructuredElement extends Operat
 							getOperationParamTypes(operation)));
 				}
 				if (returnType != null) {
-					dependencyExporter.addDependecy(returnType);
+					dependencyExporter.addDependency(returnType);
 				}
 				dependencyExporter.addDependencies(getOperationParamTypes(operation));
 			}

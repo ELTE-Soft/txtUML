@@ -22,13 +22,13 @@ public class DataTypeExporter extends StructuredElementExporter<DataType> {
 		exportDataType(sourceDestination);
 	}
 
-	private void exportDataType(String destiation) throws FileNotFoundException, UnsupportedEncodingException {
+	private void exportDataType(String destination) throws FileNotFoundException, UnsupportedEncodingException {
 
 		String attributes = super.createPublicAttributes();
 		String source = dependencyExporter.createDependencyHeaderIncludeCode()
 				+ GenerationTemplates.dataType(name, attributes.toString());
 		
-		CppExporterUtils.writeOutSource(destiation,
+		CppExporterUtils.writeOutSource(destination,
 				GenerationTemplates.headerName(name),
 				HeaderTemplates.headerGuard( GenerationTemplates.putNamespace(
 						source, 

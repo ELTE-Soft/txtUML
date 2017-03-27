@@ -9,12 +9,10 @@
 #include <mutex>
 #include <condition_variable>
 
-#include "runtimetypes.hpp"
 #include "istatemachine.hpp"
 #include "threadpool.hpp"
 #include "ievent.hpp"
 #include "threadpoolmanager.hpp"
-#include "runtimetypes.hpp"
 #include "ESRoot/Types.hpp"
 #include "ESRoot/Containers/FixedArray.hpp"
 
