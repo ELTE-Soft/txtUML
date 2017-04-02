@@ -1,4 +1,4 @@
-/** @file Actions.hpp
+/** @file Action.hpp
 */
 #include "istatemachine.hpp"
 #include "ESRoot/Types.hpp"
