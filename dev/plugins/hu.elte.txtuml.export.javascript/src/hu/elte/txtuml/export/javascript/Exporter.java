@@ -37,6 +37,7 @@ public class Exporter {
 	private String genFolder;
 	private TxtUMLLayoutDescriptor layout;
 	private ExportationModel model;
+	private String modelName;
 
 	private static final String GENERATED_FILE = "input.js";
 
@@ -55,13 +56,15 @@ public class Exporter {
 	 *            A descriptor which contains the layout descriptors, and
 	 *            informations about the target project.
 	 */
-	public Exporter(TxtUMLLayoutDescriptor layout) {
+	public Exporter(TxtUMLLayoutDescriptor layout, String modelName) {
 		this.layout = layout;
+		this.modelName = modelName;
 		String projectAbsLocation = ResourcesPlugin.getWorkspace().getRoot().getProject(layout.projectName)
 				.getLocation().toFile().getAbsolutePath();
 		genFolder = Paths.get(projectAbsLocation, layout.mappingFolder).toFile().getAbsolutePath();
-		target = Paths.get(genFolder, VISUALIZER_FOLDER).toFile().getAbsolutePath();
+		target = Paths.get(genFolder, VISUALIZER_FOLDER, this.modelName).toFile().getAbsolutePath();
 		model = new ExportationModel();
+		
 	}
 
 	/**

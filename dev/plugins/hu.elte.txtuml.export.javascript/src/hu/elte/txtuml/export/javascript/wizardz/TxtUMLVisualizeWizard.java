@@ -1,5 +1,6 @@
 package hu.elte.txtuml.export.javascript.wizardz;
 
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -144,7 +145,7 @@ public class TxtUMLVisualizeWizard extends Wizard {
 								txtUMLModelName, layouts);
 						try {
 							exporter.cleanBeforeVisualization();
-						} catch (CoreException e) {
+						} catch (CoreException | IOException e) {
 							Dialogs.errorMsgb("txtUML export Error - cleaning resources",
 									"Error occured when cleaning resources.", e);
 							throw new InterruptedException();
@@ -202,7 +203,7 @@ public class TxtUMLVisualizeWizard extends Wizard {
 
 						monitor.subTask("Exporting diagrams for JointJS visualization...");
 						try {
-							Exporter ex = new Exporter(layoutDescriptor);
+							Exporter ex = new Exporter(layoutDescriptor, txtUMLModelName);
 							ex.export();
 						} catch (Exception e) {
 							Dialogs.errorMsgb("txtUML visualization Error",
