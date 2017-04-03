@@ -130,7 +130,7 @@
           <command
               commandId="hu.elte.txtuml.export.papyrus.txtUMLVisualizeSelectedDiagram"
               icon="icons/txtUML_papyrus.png"
-              label="Visualize diagram"
+              label="Visualize as Papyrus diagram"
               style="push">
               <visibleWhen>
                   <with variable="activeMenuSelection">

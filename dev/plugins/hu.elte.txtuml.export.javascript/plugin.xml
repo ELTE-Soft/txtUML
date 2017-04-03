@@ -51,6 +51,16 @@
 	         </visibleWhen>
 	     </command>
 	  </menuContribution>
+   <menuContribution
+         allPopups="false"
+         locationURI="popup:org.eclipse.jdt.ui.PackageExplorer?before=additions">
+      <command
+            commandId="hu.elte.txtuml.export.javascript.txtUMLVisualizeSelectedDiagram"
+            icon="icons/jsdiagram.png"
+            label="Visualize as JointJS diagram"
+            style="push">
+      </command>
+   </menuContribution>
    </extension>
 
 </plugin>
