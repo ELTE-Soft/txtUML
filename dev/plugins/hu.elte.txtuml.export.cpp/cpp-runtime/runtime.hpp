@@ -37,8 +37,8 @@ public:
 	}
 
 	/*!
-	Register a state machine for the runtime instance so
-	the threaded runtime can record the number of objects instances during the model execution.
+	Registers a state machine in the runtime instance so
+	the threaded runtime can record the number of object instances during the model execution.
 	Called by the state machine constructor.
 	*/
 	void setupObject(ES::StateMachineRef sm)
@@ -48,8 +48,8 @@ public:
 
 
 	/*!
-	Remove a state machine for the runtime instance when
-	the threaded runtime can record the number of objects instances during the model execution.
+	Removes a state machine from the runtime instance when
+	the threaded runtime can record the number of object instances during the model execution.
 	Called by the state machine destructor.
 	*/
 	void removeObject(ES::StateMachineRef sm)
@@ -80,7 +80,7 @@ public:
 
 
 	/*!
-	Stops the runtime instance when there is no more messages to process and there is no any execution thread.
+	Stops the runtime instance when there are no more messages to process and under processing.
 	*/
 	void stopUponCompletion()
 	{
@@ -115,10 +115,10 @@ private:
 
 };
 
-class ConfiguratedThreadedRT : public IRuntime<ConfiguratedThreadedRT>
+class ConfiguredThreadedRT : public IRuntime<ConfiguredThreadedRT>
 {
 public:
-	virtual ~ConfiguratedThreadedRT();
+	virtual ~ConfiguredThreadedRT();
 	/*!
 	Starts the thread pools.
 	*/
@@ -129,9 +129,9 @@ public:
 	void setConfiguration(ESContainer::FixedArray<ES::SharedPtr<Configuration>>);
 	bool isConfigurated();
 	void stopUponCompletion();
-	static ES::RuntimePtr<ConfiguratedThreadedRT> createRuntime() { return ES::RuntimePtr<ConfiguratedThreadedRT>(new ConfiguratedThreadedRT()); }
+	static ES::RuntimePtr<ConfiguredThreadedRT> createRuntime() { return ES::RuntimePtr<ConfiguredThreadedRT>(new ConfiguredThreadedRT()); }
 private:
-	ConfiguratedThreadedRT();
+	ConfiguredThreadedRT();
 	ES::SharedPtr<ThreadPoolManager> poolManager;
 	ESContainer::FixedArray<int> numberOfObjects;
 

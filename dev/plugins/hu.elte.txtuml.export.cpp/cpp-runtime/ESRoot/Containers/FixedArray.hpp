@@ -6,7 +6,8 @@
 namespace ESContainer
 {
 
-/*! Fixed size array for static thread configurations */
+/*! Fixed size array for static thread configurations. */
+
 template<typename T>
 class FixedArray
 {

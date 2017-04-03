@@ -16,7 +16,7 @@
 namespace Execution 
 {
 
-/*! Menages the state of threadpools. */
+/*! Manages the state of thread pools. */
 class ThreadPoolManager
 {
 public:

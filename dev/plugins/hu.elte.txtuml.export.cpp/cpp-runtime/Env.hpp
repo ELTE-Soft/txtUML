@@ -9,7 +9,7 @@ namespace Env
 
 	void initEnvironment();
 /**<
-Initializes the execution environment which includes the followings:
+Initializes the execution environment which includes the following:
 Configured runtime initialization.
 State machine descriptor maps initialization.
 */

@@ -55,13 +55,13 @@ void SingleThreadRT::removeObject(ES::StateMachineRef) {}
 //********************************ConfiguratedThreadedRT************************************
 
 template<>
-ES::RuntimePtr<ConfiguratedThreadedRT> IRuntime<ConfiguratedThreadedRT>::instance = nullptr;
+ES::RuntimePtr<ConfiguredThreadedRT> IRuntime<ConfiguredThreadedRT>::instance = nullptr;
 
-ConfiguratedThreadedRT::ConfiguratedThreadedRT() : poolManager(new ThreadPoolManager()), worker(0), messages(0) {}
+ConfiguredThreadedRT::ConfiguredThreadedRT() : poolManager(new ThreadPoolManager()), worker(0), messages(0) {}
 
-ConfiguratedThreadedRT::~ConfiguratedThreadedRT() {}
+ConfiguredThreadedRT::~ConfiguredThreadedRT() {}
 
-void ConfiguratedThreadedRT::start()
+void ConfiguredThreadedRT::start()
 {
 	assert(isConfigurated() && "The configurated threaded runtime should be configured before starting.");
 	if (isConfigurated())
@@ -75,14 +75,14 @@ void ConfiguratedThreadedRT::start()
 	}
 }
 
-void ConfiguratedThreadedRT::removeObject(ES::StateMachineRef sm)
+void ConfiguredThreadedRT::removeObject(ES::StateMachineRef sm)
 {
 	int objectId = sm->getPoolId();
 	numberOfObjects[objectId]--;
 	poolManager->recalculateThreads(objectId, numberOfObjects[objectId]);
 }
 
-void ConfiguratedThreadedRT::stopUponCompletion()
+void ConfiguredThreadedRT::stopUponCompletion()
 {
 	for (int i = 0; i < poolManager->getNumberOfConfigurations(); i++)
 	{
@@ -90,7 +90,7 @@ void ConfiguratedThreadedRT::stopUponCompletion()
 	}
 }
 
-void ConfiguratedThreadedRT::setupObjectSpecificRuntime(ES::StateMachineRef sm)
+void ConfiguredThreadedRT::setupObjectSpecificRuntime(ES::StateMachineRef sm)
 {
 
 	sm->setMessageCounter(&messages);
@@ -101,12 +101,12 @@ void ConfiguratedThreadedRT::setupObjectSpecificRuntime(ES::StateMachineRef sm)
 	poolManager->recalculateThreads(objectId, numberOfObjects[objectId]);
 }
 
-bool ConfiguratedThreadedRT::isConfigurated()
+bool ConfiguredThreadedRT::isConfigurated()
 {
 	return poolManager->isConfigurated();
 }
 
-void ConfiguratedThreadedRT::setConfiguration(ESContainer::FixedArray<ES::SharedPtr<Configuration>> conf)
+void ConfiguredThreadedRT::setConfiguration(ESContainer::FixedArray<ES::SharedPtr<Configuration>> conf)
 {
 	poolManager->setConfiguration(conf);
 	int numberOfConfigurations = poolManager->getNumberOfConfigurations();

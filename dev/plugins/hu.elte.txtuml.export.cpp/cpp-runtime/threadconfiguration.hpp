@@ -9,7 +9,7 @@
 namespace Execution
 {
 
-/*! Represents a linear function */
+/*! Represents a linear function. */
 class LinearFunction
 {
 public:
@@ -27,7 +27,7 @@ private:
 };
 
 
-/*! Configuration parameters datastore */
+/*! Configuration parameters datastore. */
 class Configuration
 {
 public:

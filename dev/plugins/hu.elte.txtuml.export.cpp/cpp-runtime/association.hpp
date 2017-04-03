@@ -9,7 +9,7 @@
 namespace Model
 {
 
-/*! Represents an association end point. */
+/*! Represents an association end. */
 template <typename EndType>
 class AssociationEnd
 {
@@ -18,7 +18,7 @@ public:
     AssociationEnd(int lower, int upper): limits(lower,upper) {}
 	
 	/*!
-	Appends a new object to the association end.
+	Appends a new object to this association end.
 	*/
     void addAssoc(EndType* o)
     {
@@ -29,7 +29,7 @@ public:
     }
 			
 	/*!
-	Remove an object from the association end.
+	Remove an object from this association end.
 	*/
     void removeAssoc(EndType* o)
     {
@@ -37,7 +37,7 @@ public:
     }
 	
 	/*!
-	Returns any object from the association end according a condation.
+	Returns an object from this association end for which the specified condition holds.
 	*/
     EndType* getOne(bool cond(EndType*) = [](EndType*){return true;})
     {
@@ -53,7 +53,7 @@ public:
     }
 	
 	/*!
-	Returns all objects from the association end filtered by a condation.
+	Returns all objects from this association end for which the specified condition holds.
 	*/
     std::list<EndType*> getAll(bool cond(EndType*) = [](EndType*){return true;})
     {

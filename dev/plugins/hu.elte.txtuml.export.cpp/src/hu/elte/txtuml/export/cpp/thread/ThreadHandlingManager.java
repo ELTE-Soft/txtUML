@@ -31,7 +31,7 @@ public class ThreadHandlingManager {
 	private static final String ThreadPoolClassName = GenerationNames.Namespaces.ExecutionNamesapce + "::" + "StateMachineThreadPool";
 	private static final String FunctionName = GenerationNames.Namespaces.ExecutionNamesapce + "::" + "LinearFunction";
 	private static final String NamespaceName = "deployment";
-	private static final String ConfiguratedThreadedRuntimeName = GenerationNames.Namespaces.ExecutionNamesapce + "::" + "ConfiguratedThreadedRT";
+	private static final String ConfiguratedThreadedRuntimeName = GenerationNames.Namespaces.ExecutionNamesapce + "::" + "ConfiguredThreadedRT";
 	private static final String SetConfigurationMethod = "configure";
 	private static final String CreatorFunction = "initRuntime";
 
