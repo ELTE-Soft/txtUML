@@ -25,45 +25,43 @@ Logs a message.
 @param message The message to be loged. 
 */
 	
-template<typename Association, typename LeftEnd, typename RightEnd>
+template<typename LeftEnd, typename RightEnd>
 void link(typename LeftEnd::EdgeType* e1, typename RightEnd::EdgeType* e2);
 /**<
 Links two model object with each other via the specified association.
 It has no effect if the object are already linked via the specifed association.
-@param Association The association descriptior structure.
-@param LeftEnd The roule type of left end inside the Association strcutre.
-@param RightEnd The roule type of rigth end inside the Association strcutre.
+@param LeftEnd The roule type of left end inside an association strcutre.
+@param RightEnd The roule type of rigth end inside an assocication strcutre.
 @param e1 The object at the left end of the association.
 @param e2 The object at the right end of the association.
 */
 
 	
-template<typename Association, typename LeftEnd, typename RightEnd>
+template<typename LeftEnd, typename RightEnd>
 void unlink(typename LeftEnd::EdgeType* e1, typename RightEnd::EdgeType* e2);
 /**<
 Unlinks two model object with each other via the specified association.
 It has no effect if the object are already linked via the specifed association.
-@param Association The association descriptior structure.
-@param LeftEnd The roule type of left end inside the Association strcutre.
-@param RightEnd The roule type of rigth end inside the Association strcutre.
+@param LeftEnd The roule type of left end inside an association strcutre.
+@param RightEnd The roule type of rigth end inside an association strcutre.
 @param e1 The object at the left end of the association.
 @param e2 The object at the right end of the association.
 */
 
 
 
-template<typename Association, typename LeftEnd, typename RightEnd>
+template<typename LeftEnd, typename RightEnd>
 void link(typename LeftEnd::EdgeType* e1, typename RightEnd::EdgeType* e2)
 {
-	e1->template link<Association,RightEnd>(e2);
-	e2->template link<Association,LeftEnd>(e1);
+	e1->template link<RightEnd>(e2);
+	e2->template link<LeftEnd>(e1);
 }
 
-template<typename Association, typename LeftEnd, typename RightEnd>
+template<typename LeftEnd, typename RightEnd>
 void unlink(typename LeftEnd::EdgeType* e1, typename RightEnd::EdgeType* e2)
 {
-	e1->template link<Association,RightEnd>(e2);
-	e2->template link<Association,LeftEnd>(e1);
+	e1->template unlink<RightEnd>(e2);
+	e2->template unlink<LeftEnd>(e1);
 }
 
 }

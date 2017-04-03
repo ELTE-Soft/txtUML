@@ -25,7 +25,7 @@ public class LinkTemplates {
 		return className + "-" + GenerationNames.LinkAddition + "." + FileNames.SourceExtension;
 	}
 
-	public static String assocationDecl(String className, String roleName, Integer lower, Integer upper) {
+	public static String assocationEndPointDecl(String className, String roleName, Integer lower, Integer upper) {
 		return GenerationNames.AssocMultiplicityDataStruct + "<" + className + ">" + " " + roleName + " "
 				+ GenerationNames.AssigmentOperator + " " + GenerationNames.AssocMultiplicityDataStruct + "<"
 				+ className + ">" + "(" + lower + "," + upper + ");\n";
@@ -35,7 +35,6 @@ public class LinkTemplates {
 
 		StringBuilder source = new StringBuilder("");
 		source.append(GenerationNames.TemplateDecl + "<" + GenerationNames.TemplateType + " "
-				+ GenerationNames.TemplateParameterName + "," + GenerationNames.TemplateType + " "
 				+ GenerationNames.EndPointName + ">\n");
 		source.append(ModifierNames.NoReturn + " " + getLinkFunctionName(linkFunction));
 		source.append("(" + GenerationNames.TemplateType + " "
@@ -50,7 +49,7 @@ public class LinkTemplates {
 		StringBuilder source = new StringBuilder("");
 		source.append(GenerationNames.TemplateDecl + "<>\n");
 		source.append(ModifierNames.NoReturn + " " + className + "::" + getLinkFunctionName(linkFunction));
-		source.append("<" + assocName + "," + GenerationNames.TemplateType + " " + assocName + "::" + otherEndPointName
+		source.append("<" + GenerationNames.TemplateType + " " + assocName + "::" + otherEndPointName
 				+ ">");
 		source.append("(" + PrivateFunctionalTemplates.cppType(otherClassName) + ");\n");
 
@@ -64,7 +63,7 @@ public class LinkTemplates {
 			source.append(GenerationNames.TemplateDecl + "<>\n");
 			source.append(ModifierNames.NoReturn + " " + className + "::" + getLinkFunctionName(linkFunction));
 			source.append(
-					"<" + assocName + "," + GenerationNames.TemplateType + " " + assocName + "::" + roleName + ">");
+					"<" + GenerationNames.TemplateType + " " + assocName + "::" + roleName + ">");
 			source.append("(" + PrivateFunctionalTemplates.cppType(otherClassName) + " "
 					+ GenerationNames.AssocParameterName + ")\n");
 			source.append("{\n" + formatAssociationRoleName(assocName, roleName) + PointerAndMemoryNames.SimpleAccess

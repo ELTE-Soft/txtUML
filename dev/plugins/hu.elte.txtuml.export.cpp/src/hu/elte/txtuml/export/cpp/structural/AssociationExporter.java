@@ -41,7 +41,7 @@ class AssociationExporter {
 		for (Property prop : associationMembers) {
 			int upper = prop.getUpper();
 			int lower = prop.getLower();
-			String linkedClass = LinkTemplates.assocationDecl(prop.getType().getName(),
+			String linkedClass = LinkTemplates.assocationEndPointDecl(prop.getType().getName(),
 					LinkTemplates.formatAssociationRoleName(prop.getAssociation().getName(), prop.getName()),
 					lower, upper);
 			if (prop.isNavigable())

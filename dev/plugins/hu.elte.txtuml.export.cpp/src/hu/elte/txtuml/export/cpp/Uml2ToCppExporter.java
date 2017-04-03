@@ -59,8 +59,8 @@ public class Uml2ToCppExporter {
 	private static final String PROJECT_NAME = "hu.elte.txtuml.export.cpp";
 	private static final String CPP_FILES_FOLDER_NAME = "cpp-runtime";
 	private static final String ENUM_EXTENSION = "_EE";
-	
-	//default sources
+
+	// default sources
 	private static final String DEFAULT_TARGET_EXECUTABLE = "main";
 	private static final String DEFAULT_DEPLOYMENT_NAME = "deployment";
 	private static final String DEFAULT_INIT_MACHINE_NAME = StateMachineTemplates.TransitionTableInitialSourceName;
@@ -116,10 +116,10 @@ public class Uml2ToCppExporter {
 			classExporter.setName(cls.getName());
 			classExporter.setPoolId(threadManager.getDescription().get(cls.getName()).getId());
 			classExporter.exportStructuredElement(cls, outputDirectory);
-			if(classExporter.isStateMachineOwner()) {
+			if (classExporter.isStateMachineOwner()) {
 				classNames.addAll(classExporter.getSubmachines());
 			}
-			
+
 			classNames.add(cls.getName());
 			classNames.addAll(classExporter.getAdditionalSources());
 
@@ -183,14 +183,20 @@ public class Uml2ToCppExporter {
 		Files.copy(Paths.get(cppFilesLocation + StateMachineTemplates.StateMachineBaseHeader),
 				Paths.get(destination + File.separator + StateMachineTemplates.StateMachineBaseHeader),
 				StandardCopyOption.REPLACE_EXISTING);
-		
-		Files.copy(Paths.get(cppFilesLocation + DEFAULT_ENVIRONMENT_INITIALIZER + "." + GenerationNames.FileNames.HeaderExtension),
-				Paths.get(destination + File.separator + DEFAULT_ENVIRONMENT_INITIALIZER + "." + GenerationNames.FileNames.HeaderExtension),
+
+		Files.copy(
+				Paths.get(cppFilesLocation + DEFAULT_ENVIRONMENT_INITIALIZER + "."
+						+ GenerationNames.FileNames.HeaderExtension),
+				Paths.get(destination + File.separator + DEFAULT_ENVIRONMENT_INITIALIZER + "."
+						+ GenerationNames.FileNames.HeaderExtension),
 				StandardCopyOption.REPLACE_EXISTING);
-		Files.copy(Paths.get(cppFilesLocation + DEFAULT_ENVIRONMENT_INITIALIZER + "." + GenerationNames.FileNames.SourceExtension),
-				Paths.get(destination + File.separator + DEFAULT_ENVIRONMENT_INITIALIZER + "." + GenerationNames.FileNames.SourceExtension),
+		Files.copy(
+				Paths.get(cppFilesLocation + DEFAULT_ENVIRONMENT_INITIALIZER + "."
+						+ GenerationNames.FileNames.SourceExtension),
+				Paths.get(destination + File.separator + DEFAULT_ENVIRONMENT_INITIALIZER + "."
+						+ GenerationNames.FileNames.SourceExtension),
 				StandardCopyOption.REPLACE_EXISTING);
-		
+
 		if (options.isAddRuntime()) {
 
 			File sourceRuntimeDir = new File(cppFilesLocation);
@@ -238,7 +244,8 @@ public class Uml2ToCppExporter {
 
 	private void createCMakeFile(String outputDirectory) throws FileNotFoundException, UnsupportedEncodingException {
 		CMakeSupport cmake = new CMakeSupport(outputDirectory);
-		cmake.addIncludeDirectory(RUNTIME_DIR_PREFIX.substring(0, RUNTIME_DIR_PREFIX.indexOf(org.eclipse.core.runtime.Path.SEPARATOR)));
+		cmake.addIncludeDirectory(
+				RUNTIME_DIR_PREFIX.substring(0, RUNTIME_DIR_PREFIX.indexOf(org.eclipse.core.runtime.Path.SEPARATOR)));
 		List<String> librarySourceClasses = new ArrayList<String>();
 		librarySourceClasses.add("runtime");
 		librarySourceClasses.add("istatemachine");
@@ -292,7 +299,8 @@ public class Uml2ToCppExporter {
 		forwardDecl.append("enum Events {" + events + "};\n");
 		forwardDecl.append(source);
 		CppExporterUtils.writeOutSource(outputDirectory, (EventTemplates.EventHeader),
-				CppExporterUtils.format(EventTemplates.eventHeaderGuard(GenerationTemplates.putNamespace(forwardDecl.toString(), GenerationNames.Namespaces.ModelNamespace))));
+				CppExporterUtils.format(EventTemplates.eventHeaderGuard(GenerationTemplates
+						.putNamespace(forwardDecl.toString(), GenerationNames.Namespaces.ModelNamespace))));
 
 	}
 
@@ -336,17 +344,16 @@ public class Uml2ToCppExporter {
 			preDeclerations.append(GenerationTemplates.forwardDeclaration(className));
 		}
 		String headerSource = HeaderTemplates.headerGuard(
-				PrivateFunctionalTemplates
-				.include(RuntimeTemplates.RTPath
-						+ LinkTemplates.AssocationHeader) + 
-				GenerationTemplates.putNamespace(preDeclerations.toString() + structures.toString(), GenerationNames.Namespaces.ModelNamespace),
-		LinkTemplates.AssociationsStructuresHreaderName);
-		
-		CppExporterUtils
-				.writeOutSource(outputDirectory, (LinkTemplates.AssociationStructuresHeader),
-						CppExporterUtils.format(headerSource));
-		
-		String cppSource = includes.toString() + GenerationTemplates.putNamespace(functions.toString(), GenerationNames.Namespaces.ModelNamespace);
+				PrivateFunctionalTemplates.include(RuntimeTemplates.RTPath + LinkTemplates.AssocationHeader)
+						+ GenerationTemplates.putNamespace(preDeclerations.toString() + structures.toString(),
+								GenerationNames.Namespaces.ModelNamespace),
+				LinkTemplates.AssociationsStructuresHreaderName);
+
+		CppExporterUtils.writeOutSource(outputDirectory, (LinkTemplates.AssociationStructuresHeader),
+				CppExporterUtils.format(headerSource));
+
+		String cppSource = includes.toString()
+				+ GenerationTemplates.putNamespace(functions.toString(), GenerationNames.Namespaces.ModelNamespace);
 		CppExporterUtils.writeOutSource(outputDirectory, (LinkTemplates.AssociationStructuresSource),
 				CppExporterUtils.format(cppSource));
 
