@@ -25,6 +25,8 @@ public class ExportationModel {
 	private List<ClassDiagram> classDiagrams;
 	@XmlAccessMethods(getMethodName = "getStateMachines")
 	private List<SMDiagram> stateMachines;
+	@XmlAccessMethods(getMethodName = "getModelName")
+	private String modelName;
 
 	/**
 	 * Constructor
@@ -32,6 +34,7 @@ public class ExportationModel {
 	public ExportationModel() {
 		classDiagrams = new ArrayList<ClassDiagram>();
 		stateMachines = new ArrayList<SMDiagram>();
+		this.modelName = "Untitled";
 	}
 
 	/**
@@ -72,7 +75,6 @@ public class ExportationModel {
 		default:
 			throw new UnexpectedDiagramTypeException(diagramName, der.getType().name());
 		}
-
 	}
 
 	/**
@@ -87,6 +89,20 @@ public class ExportationModel {
 	 */
 	public List<SMDiagram> getStateMachines() {
 		return stateMachines;
+	}
+	
+	/**
+	 * @return the model name
+	 */
+	public String getModelName() {
+		return modelName;
+	}
+
+	/**
+	 * @param modelName - the name of the model
+	 */
+	public void setModelName(String modelName) {
+		this.modelName = modelName;
 	}
 
 }

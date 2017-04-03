@@ -64,6 +64,7 @@ public class Exporter {
 		genFolder = Paths.get(projectAbsLocation, layout.mappingFolder).toFile().getAbsolutePath();
 		target = Paths.get(genFolder, VISUALIZER_FOLDER, this.modelName).toFile().getAbsolutePath();
 		model = new ExportationModel();
+		model.setModelName(this.modelName);
 		
 	}
 
