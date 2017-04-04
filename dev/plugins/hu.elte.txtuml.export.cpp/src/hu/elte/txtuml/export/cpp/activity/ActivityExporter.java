@@ -77,6 +77,9 @@ public class ActivityExporter {
 	}
 
 	public String createFunctionBody(Activity activity) {
+		if(activity == null) {
+			return "";
+		}
 		init();
 		ActivityNode startNode = null;
 		StringBuilder source = new StringBuilder("");

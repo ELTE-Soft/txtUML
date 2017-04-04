@@ -319,9 +319,12 @@ public final class ElementTypeTeller {
 		return false;
 	}
 
-	public static boolean isExternalClass(ITypeBinding type) {
-		return false/*SharedUtils.typeIsAssignableFrom(type, ExternalClass.class)*/;
+	/*public static boolean isExternalClass(ITypeBinding type) {
+		return isModelClass(type) && containsExternalAnnotation(type.getAnnotations());
 	}
+	private static boolean containsExternalAnnotation(IAnnotationBinding[] annotations) {
+		return Stream.of(annotations).anyMatch(a -> a.getAnnotationType().getErasure().getQualifiedName().equals(External.class.getCanonicalName()));
+	}*/
 	public static boolean isModelEnum(EnumDeclaration enumDeclaration) {
 		return SharedUtils.typeIsAssignableFrom(enumDeclaration, ModelEnum.class);
 	}
@@ -349,6 +352,10 @@ public final class ElementTypeTeller {
 
 	public static boolean isExternal(ITypeBinding typeBinding) {
 		return SharedUtils.obtainAnnotation(typeBinding, External.class) != null;
+	}
+	
+	public static boolean isExternal(IVariableBinding varBinding) {
+		return SharedUtils.obtainAnnotation(varBinding, External.class) != null;
 	}
 	
 	public static boolean isExternal(BodyDeclaration declaration) {

@@ -48,8 +48,6 @@ import org.eclipse.uml2.uml.SignalEvent
 import hu.elte.txtuml.utils.jdt.ElementTypeTeller
 import hu.elte.txtuml.export.uml2.structural.OutPortExporter
 import hu.elte.txtuml.export.uml2.structural.InPortExporter
-//import hu.elte.txtuml.api.model.external.ExternalClass
-import hu.elte.txtuml.export.uml2.structural.ExternalClassExporter
 
 /**
  * Base class for exporters, methods to export different kinds of elements using specific exporters.
@@ -82,10 +80,6 @@ abstract class BaseExporter<S, A, R extends Element> {
 
 	def exportInterface(TypeDeclaration td, Consumer<Interface> store) {
 		cache.export(new InterfaceExporter(this), td, td.resolveBinding, store)
-	}
-	
-	def exportExternalClass(TypeDeclaration td, Consumer<Interface> store) {
-		cache.export(new ExternalClassExporter(this), td, td.resolveBinding, store)
 	}
 
 	def exportDataType(TypeDeclaration td, Consumer<DataType> store) {

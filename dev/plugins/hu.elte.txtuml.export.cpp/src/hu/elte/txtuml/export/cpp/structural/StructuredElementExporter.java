@@ -73,8 +73,13 @@ public abstract class StructuredElementExporter<StructuredElement extends Operat
 	protected String createOperationDefinitions() {
 		StringBuilder source = new StringBuilder("");
 		for (Operation operation : structuredElement.getOwnedOperations()) {
-			String funcBody = activityExporter.createFunctionBody(Shared.getOperationActivity(operation));
-			dependencyExporter.addDependencies(activityExporter.getAdditionalClassDependencies());
+			
+			String funcBody = "";
+			if (!operation.isAbstract()) {
+				funcBody = activityExporter.createFunctionBody(Shared.getOperationActivity(operation));
+				dependencyExporter.addDependencies(activityExporter.getAdditionalClassDependencies());
+			}
+	
 			
 			if (!Shared.isConstructor(operation)) {
 
