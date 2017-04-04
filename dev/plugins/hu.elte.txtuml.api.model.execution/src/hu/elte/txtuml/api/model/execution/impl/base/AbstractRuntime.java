@@ -48,12 +48,6 @@ public abstract class AbstractRuntime<C extends ModelClassWrapper, P extends Por
 	private ScheduledExecutorService scheduler = null;
 
 	/**
-	 * May only be accessed while holding the monitor of
-	 * {@link #LOCK_ON_SCHEDULER}.
-	 */
-	private int scheduledCount = 0;
-
-	/**
 	 * Must be called on the thread which manages the given
 	 * {@link AbstractModelExecutor} instance.
 	 */
@@ -99,15 +93,14 @@ public abstract class AbstractRuntime<C extends ModelClassWrapper, P extends Por
 				getExecutor().addTerminationListener(scheduler::shutdownNow);
 			}
 			currentScheduler = scheduler;
-			if (scheduledCount == 0) {
-				getExecutor().addTerminationBlocker(LOCK_ON_SCHEDULER);
-			}
-			++scheduledCount;
 		}
 
+		final Object blocker = new Object();
+		getExecutor().addTerminationBlocker(blocker);
+		
 		final ScheduledFuture<V> future = currentScheduler.schedule(() -> {
 			V result = callable.call();
-			decreaseScheduledCount();
+			getExecutor().removeTerminationBlocker(blocker);
 			return result;
 		}, inExecutionTime(delay), unit);
 
@@ -131,7 +124,7 @@ public abstract class AbstractRuntime<C extends ModelClassWrapper, P extends Por
 			public boolean cancel(boolean mayInterruptIfRunning) {
 				boolean hasBeenCancelledNow = future.cancel(mayInterruptIfRunning);
 				if (hasBeenCancelledNow) {
-					decreaseScheduledCount();
+					getExecutor().removeTerminationBlocker(blocker);
 				}
 				return hasBeenCancelledNow;
 			}
@@ -158,15 +151,6 @@ public abstract class AbstractRuntime<C extends ModelClassWrapper, P extends Por
 			}
 
 		};
-	}
-	
-	private void decreaseScheduledCount() {
-		synchronized (LOCK_ON_SCHEDULER) {
-			--scheduledCount;
-			if (scheduledCount == 0) {
-				getExecutor().removeTerminationBlocker(LOCK_ON_SCHEDULER);
-			}
-		}
 	}
 
 	public void trace(Consumer<TraceListener> eventReporter) {
