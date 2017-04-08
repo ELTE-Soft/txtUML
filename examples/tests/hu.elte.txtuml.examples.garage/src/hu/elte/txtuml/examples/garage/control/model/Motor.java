@@ -5,7 +5,7 @@ import hu.elte.txtuml.api.model.From;
 import hu.elte.txtuml.api.model.ModelClass;
 import hu.elte.txtuml.api.model.To;
 import hu.elte.txtuml.api.model.Trigger;
-import hu.elte.txtuml.examples.garage.control.glue.Glue;
+import hu.elte.txtuml.examples.garage.control.glue.View;
 import hu.elte.txtuml.examples.garage.control.model.associations.DoorSwitchesOnAlarm;
 import hu.elte.txtuml.examples.garage.control.model.associations.MotorMovesDoor;
 import hu.elte.txtuml.examples.garage.control.model.signals.external.DoorReachedBottom;
@@ -26,28 +26,28 @@ public class Motor extends ModelClass {
 	public class MovingUp extends State {
 		@Override
 		public void entry() {
-			Glue.getInstance().startDoorUp();
+			View.getInstance().startDoorUp();
 		}
 	}
 
 	public class MovingDown extends State {
 		@Override
 		public void entry() {
-			Glue.getInstance().startDoorDown();
+			View.getInstance().startDoorDown();
 		}
 	}
 
 	public class HeadingUp extends State {
 		@Override
 		public void entry() {
-			Glue.getInstance().stopDoor();
+			View.getInstance().stopDoor();
 		}
 	}
 
 	public class HeadingDown extends State {
 		@Override
 		public void entry() {
-			Glue.getInstance().stopDoor();
+			View.getInstance().stopDoor();
 		}
 	}
 

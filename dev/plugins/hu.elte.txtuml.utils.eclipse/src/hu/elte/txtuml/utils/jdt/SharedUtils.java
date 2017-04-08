@@ -111,6 +111,18 @@ public final class SharedUtils {
 		return null;
 	}
 
+	/**
+	 * Parses a whole Stream of compilation units in the given Java project.
+	 * 
+	 * @param stream
+	 *            The specified compilation units to be parsed.
+	 * @param project
+	 *            The given Java project.
+	 * @return The parsed compilation units.
+	 * @throws IOException
+	 *             Thrown when I/O error occurs during reading the file.
+	 * @throws JavaModelException
+	 */
 	public static CompilationUnit[] parseICompilationUnitStream(Stream<ICompilationUnit> stream,
 			IJavaProject javaProject) throws IOException, JavaModelException {
 
