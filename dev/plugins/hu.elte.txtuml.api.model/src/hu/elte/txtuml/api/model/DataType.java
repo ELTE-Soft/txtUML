@@ -41,17 +41,17 @@ import java.util.Objects;
  * <li><i>Be abstract:</i> disallowed</li>
  * <li><i>Generic parameters:</i> disallowed</li>
  * <li><i>Constructors:</i> allowed, only with parameters of types which are
- * subclasses of <code>DataType</code> or primitives (including {@code String} )
- * </li>
+ * data types, model enums, external classes or primitives (including
+ * {@code String})</li>
  * <li><i>Initialization blocks:</i> allowed, containing only simple assignments
  * to set the default values of its fields</li>
- * <li><i>Fields:</i> allowed, must be final, only of types which are subclasses
- * of <code>DataType</code>, model enums or primitives (including {@code String}
- * ); they represent attributes of the data type</li>
+ * <li><i>Fields:</i> allowed, only with parameters of types which are data
+ * types, model enums, external classes or primitives (including {@code String}
+ * ); they represent attributes of the model class</li>
  * <li><i>Methods:</i> allowed, only with parameters and return values of types
- * which are subclasses of <code>ModelClass</code>, data types, signals or
- * primitives (including {@code String}); they represent operations of the model
- * class</li>
+ * which are subclasses of <code>ModelClass</code>, signals, data types, model
+ * enums, external classes or primitives (including {@code String}); they
+ * represent operations of the data type</li>
  * <li><i>Nested interfaces:</i> disallowed</li>
  * <li><i>Nested classes:</i> disallowed</li>
  * <li><i>Nested enums:</i> disallowed</li>

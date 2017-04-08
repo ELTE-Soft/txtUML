@@ -6,7 +6,6 @@ public class Messages extends NLS {
 	private static final String BUNDLE_NAME = "hu.elte.txtuml.validation.messages"; //$NON-NLS-1$
 	public static String InvalidChildrenElement_message;
 	public static String InvalidDataTypeField_message;
-	public static String InvalidDataTypeMethod_message;
 	public static String InvalidModelClassElement_message;
 	public static String InvalidModifier_message;
 	public static String InvalidSignalContent_message;
