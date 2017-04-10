@@ -1,7 +1,7 @@
 package hu.elte.txtuml.export.papyrus.utils;
 
 import org.eclipse.core.resources.IFile;
-import org.eclipse.papyrus.infra.core.editor.IMultiDiagramEditor;
+import org.eclipse.papyrus.infra.ui.editor.IMultiDiagramEditor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;

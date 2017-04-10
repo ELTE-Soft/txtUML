@@ -4,9 +4,9 @@ import java.util.List;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.core.runtime.SubProgressMonitor;
+import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.gmf.runtime.notation.Diagram;
-import org.eclipse.papyrus.infra.core.editor.IMultiDiagramEditor;
+import org.eclipse.papyrus.infra.ui.editor.IMultiDiagramEditor;
 import org.eclipse.papyrus.infra.core.resource.ModelSet;
 import org.eclipse.papyrus.infra.core.services.ServiceException;
 import org.eclipse.papyrus.uml.tools.model.UmlModel;
@@ -85,8 +85,8 @@ public abstract class AbstractPapyrusModelManager {
 	 */
 	public void createAndFillDiagrams(IProgressMonitor monitor) {
 		monitor.beginTask("Generating Diagrams", 100);
-		createDiagrams(new SubProgressMonitor(monitor, 20));
-		addElementsToDiagrams(new SubProgressMonitor(monitor, 80));
+		createDiagrams(SubMonitor.convert(monitor, 20));
+		addElementsToDiagrams(SubMonitor.convert(monitor, 80));
 		this.editor.doSave(new NullProgressMonitor());
 	}
 	
