@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.core.IClasspathEntry;
+import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.IPackageFragmentRoot;
@@ -15,12 +16,11 @@ import hu.elte.txtuml.utils.Sneaky;
 public final class PackageUtils {
 
 	public static final String PACKAGE_INFO = "package-info.java";
-	
+
 	/**
 	 * Also returns subpackages of the specified package.
 	 */
-	public static IPackageFragment[] findPackageFragments(String projectName,
-			String packageName)
+	public static IPackageFragment[] findPackageFragments(String projectName, String packageName)
 			throws JavaModelException, NotFoundException {
 		return findPackageFragments(ProjectUtils.findJavaProject(projectName), packageName);
 	}
@@ -42,8 +42,11 @@ public final class PackageUtils {
 			throws JavaModelException {
 
 		// Sneaky.<JavaModelException> Throw();
+		// TODO check if explicit type parameters can be omitted > Neon.2
 		return getPackageFragmentRootsAsStream(javaProject)
-				.flatMap(Sneaky.unchecked(pfr -> Stream.of(pfr.getChildren()))).map(pf -> (IPackageFragment) pf);
+				.flatMap(Sneaky.<IPackageFragmentRoot, Stream<IJavaElement>, JavaModelException>unchecked(
+						pfr -> Stream.of(pfr.getChildren())))
+				.map(pf -> (IPackageFragment) pf);
 
 	}
 
