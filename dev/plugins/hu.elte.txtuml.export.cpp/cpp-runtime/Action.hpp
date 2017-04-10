@@ -28,8 +28,8 @@ Logs a message.
 template<typename LeftEnd, typename RightEnd>
 void link(typename LeftEnd::EdgeType* e1, typename RightEnd::EdgeType* e2);
 /**<
-Links two model objects with each other through the specified association.
-It has no effect if the objects are already linked through the specifed association.
+Links two model objects through the specified association.
+It has no effect if the objects are already linked through the specified association.
 @param LeftEnd The type representing the left end of the association.
 @param RightEnd The type representing the rigth end of the association.
 @param e1 The object at the left end of the association.
@@ -40,8 +40,8 @@ It has no effect if the objects are already linked through the specifed associat
 template<typename LeftEnd, typename RightEnd>
 void unlink(typename LeftEnd::EdgeType* e1, typename RightEnd::EdgeType* e2);
 /**<
-Unlinks two model objects with each other through the specified association.
-It has no effect if the objects are already linked through the specifed association.
+Unlinks two model objects through the specified association.
+It has no effect if the objects are not linked through the specified association.
 @param LeftEnd The type representing the left end of the association.
 @param RightEnd The type representing the rigth end of the association.
 @param e1 The object at the left end of the association.

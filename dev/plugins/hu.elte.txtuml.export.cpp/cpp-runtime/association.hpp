@@ -29,7 +29,7 @@ public:
     }
 			
 	/*!
-	Remove an object from this association end.
+	Removes an object from this association end.
 	*/
     void removeAssoc(EndType* o)
     {
