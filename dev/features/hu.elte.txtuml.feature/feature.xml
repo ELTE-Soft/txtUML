@@ -2,7 +2,7 @@
 <feature
       id="hu.elte.txtuml.feature"
       label="txtUML"
-      version="0.5.0.qualifier"
+      version="0.5.1.qualifier"
       provider-name="ELTE">
 
    <description url="http://txtuml.inf.elte.hu">
@@ -109,15 +109,15 @@ This Agreement is governed by the laws of the State of New York and the intellec
    </url>
 
    <requires>
-      <import feature="org.eclipse.emf.sdk" version="2.11.1.v20150806-0404" match="perfect"/>
-      <import feature="org.eclipse.papyrus.sdk.feature" version="1.1.2.201509161440" match="perfect"/>
-      <import feature="org.eclipse.xtext.runtime" version="2.8.4.v201508050135" match="perfect"/>
-      <import feature="org.eclipse.xtext.xbase" version="2.8.4.v201508050135" match="perfect"/>
-      <import feature="org.eclipse.xtext.xbase.lib" version="2.8.4.v201508050135" match="perfect"/>
-      <import feature="org.eclipse.xtext.ui" version="2.8.4.v201508050135" match="perfect"/>
-      <import feature="org.eclipse.xtext.xtext.ui" version="2.8.4.v201508050135" match="perfect"/>
+      <import feature="org.eclipse.emf.sdk" version="2.11.2.v20160208-0841" match="perfect"/>
+      <import feature="org.eclipse.papyrus.sdk.feature" version="1.1.4.201602101200" match="perfect"/>
+      <import feature="org.eclipse.xtext.runtime" version="2.9.1.v201512180746" match="perfect"/>
+      <import feature="org.eclipse.xtext.xbase" version="2.9.1.v201512180746" match="perfect"/>
+      <import feature="org.eclipse.xtext.xbase.lib" version="2.9.1.v201512180746" match="perfect"/>
+      <import feature="org.eclipse.xtext.ui" version="2.9.1.v201512180746" match="perfect"/>
+      <import feature="org.eclipse.xtext.xtext.ui" version="2.9.1.v201512180746" match="perfect"/>
       <import feature="net.sourceforge.plantuml.feature" version="1.1.8.8047" match="equivalent"/>
-      <import feature="org.eclipse.cdt" version="8.8.0.201509131935" match="equivalent"/>
+      <import feature="org.eclipse.cdt" version="8.8.1.201602051005" match="equivalent"/>
    </requires>
 
    <plugin

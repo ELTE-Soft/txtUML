@@ -223,7 +223,7 @@ public abstract class Action {
 	 * reception.
 	 * <p>
 	 * <b>Example:</b>
-	 * <p>
+	 * </p>
 	 * 
 	 * <pre>
 	 * <code>

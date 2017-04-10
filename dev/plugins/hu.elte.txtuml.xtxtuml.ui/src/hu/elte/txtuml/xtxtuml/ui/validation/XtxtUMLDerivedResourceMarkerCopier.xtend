@@ -15,10 +15,11 @@ import org.eclipse.emf.common.util.URI
 import org.eclipse.emf.ecore.resource.impl.ResourceImpl
 import org.eclipse.ui.texteditor.MarkerUtilities
 import org.eclipse.xtext.builder.smap.DerivedResourceMarkerCopier
-import org.eclipse.xtext.generator.trace.ILocationInResource
-import org.eclipse.xtext.generator.trace.ITrace
+import org.eclipse.xtext.generator.trace.SourceRelativeURI
 import org.eclipse.xtext.resource.IResourceServiceProvider
 import org.eclipse.xtext.ui.MarkerTypes
+import org.eclipse.xtext.ui.generator.trace.IEclipseTrace
+import org.eclipse.xtext.ui.generator.trace.ILocationInEclipseResource
 import org.eclipse.xtext.ui.validation.MarkerTypeProvider
 import org.eclipse.xtext.util.TextRegion
 import org.eclipse.xtext.validation.CheckType
@@ -33,7 +34,7 @@ class XtxtUMLDerivedResourceMarkerCopier extends DerivedResourceMarkerCopier {
 	@Inject
 	private var IResourceServiceProvider.Registry serviceProviderRegistry;
 
-	override void reflectErrorMarkerInSource(IFile javaFile, ITrace traceToSource) throws CoreException {
+	override void reflectErrorMarkerInSource(IFile javaFile, IEclipseTrace traceToSource) throws CoreException {
 		val srcFile = findSourceFile(traceToSource, javaFile.getWorkspace());
 		if (srcFile == null || !srcFile.exists()) {
 			return;
@@ -79,7 +80,7 @@ class XtxtUMLDerivedResourceMarkerCopier extends DerivedResourceMarkerCopier {
 		return Integer.MAX_VALUE;
 	}
 
-	private def copyProblemMarkers(IFile javaFile, ITrace traceToSource, Set<IMarker> problemsInJava,
+	private def copyProblemMarkers(IFile javaFile, IEclipseTrace traceToSource, Set<IMarker> problemsInJava,
 		IFile srcFile) throws CoreException {
 		var String sourceMarkerType = null;
 		for (marker : problemsInJava) {
@@ -114,8 +115,8 @@ class XtxtUMLDerivedResourceMarkerCopier extends DerivedResourceMarkerCopier {
 		}
 	}
 
-	private def determinateMarkerTypeByURI(URI resourceUri) {
-		val serviceProvider = serviceProviderRegistry.getResourceServiceProvider(resourceUri);
+	private def determinateMarkerTypeByURI(SourceRelativeURI resourceUri) {
+		val serviceProvider = serviceProviderRegistry.getResourceServiceProvider(resourceUri.getURI());
 		if (serviceProvider == null) {
 			return null;
 		}
@@ -144,7 +145,7 @@ class XtxtUMLDerivedResourceMarkerCopier extends DerivedResourceMarkerCopier {
 		}
 	}
 
-	private def IFile findSourceFile(ITrace traceToSource, IWorkspace workspace) {
+	private def IFile findSourceFile(IEclipseTrace traceToSource, IWorkspace workspace) {
 		val iterator = traceToSource.getAllAssociatedLocations().iterator()
 		if (iterator.hasNext()) {
 			val srcLocation = iterator.next()
@@ -153,8 +154,8 @@ class XtxtUMLDerivedResourceMarkerCopier extends DerivedResourceMarkerCopier {
 		return null
 	}
 
-	private def findIFile(ILocationInResource locationInResource, IWorkspace workspace) {
-		val storage = locationInResource.getStorage()
+	private def findIFile(ILocationInEclipseResource locationInResource, IWorkspace workspace) {
+		val storage = locationInResource.getPlatformResource()
 		if (storage == null) {
 			Logger.sys.warn("Failed to find Storage. Please make sure there are no outdated generated files. URI: " +
 				locationInResource.getAbsoluteResourceURI())

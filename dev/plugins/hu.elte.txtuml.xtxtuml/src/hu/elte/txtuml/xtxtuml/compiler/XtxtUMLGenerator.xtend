@@ -1,4 +1,4 @@
-package hu.elte.txtuml.xtxtuml.compiler
+package hu.elte.txtuml.xtxtuml.compiler;
 
 import hu.elte.txtuml.api.model.Model
 import org.eclipse.xtext.common.types.JvmDeclaredType

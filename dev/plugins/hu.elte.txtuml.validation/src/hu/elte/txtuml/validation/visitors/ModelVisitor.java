@@ -1,5 +1,6 @@
 package hu.elte.txtuml.validation.visitors;
 
+import org.eclipse.jdt.core.dom.EnumDeclaration;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 
 import hu.elte.txtuml.utils.jdt.ElementTypeTeller;
@@ -43,6 +44,16 @@ public class ModelVisitor extends VisitorBase {
 			// TODO: check interfaces
 		} else if (ElementTypeTeller.isConnector(elem)) {
 			// TODO: check connectors
+		} else {
+			collector.report(new InvalidTypeInModel(collector.getSourceInfo(), elem));
+		}
+		return false;
+	}
+
+	@Override
+	public boolean visit(EnumDeclaration elem) {
+		if (ElementTypeTeller.isModelEnum(elem)) {
+			// TODO: check model enums
 		} else {
 			collector.report(new InvalidTypeInModel(collector.getSourceInfo(), elem));
 		}

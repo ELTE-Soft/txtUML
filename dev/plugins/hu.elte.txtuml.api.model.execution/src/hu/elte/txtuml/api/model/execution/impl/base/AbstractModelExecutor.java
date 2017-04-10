@@ -346,8 +346,8 @@ public abstract class AbstractModelExecutor<S extends AbstractModelExecutor<S>> 
 	}
 
 	/**
-	 * Called if previously either {@link #shouldShutdownImmediately} or
-	 * {@link #shouldShutdownWhenNothingToDo} returned false and now it returns
+	 * Called if previously either {@link #shouldShutDownImmediately} or
+	 * {@link #shouldShutDownWhenNothingToDo} returned false and now it returns
 	 * true. All threads run by this model executor must be waken to check
 	 * whether they should shut down.
 	 * <p>

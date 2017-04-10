@@ -2,10 +2,10 @@ package hu.elte.txtuml.xtxtuml.ui;
 
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.eclipse.xtext.builder.IXtextBuilderParticipant;
+import org.eclipse.xtext.ide.editor.syntaxcoloring.ISemanticHighlightingCalculator;
 import org.eclipse.xtext.service.SingletonBinding;
 import org.eclipse.xtext.ui.editor.contentassist.AbstractJavaBasedContentProposalProvider;
 import org.eclipse.xtext.ui.editor.syntaxcoloring.IHighlightingConfiguration;
-import org.eclipse.xtext.ui.editor.syntaxcoloring.ISemanticHighlightingCalculator;
 import org.eclipse.xtext.xbase.ui.hover.XbaseDeclarativeHoverSignatureProvider;
 import org.eclipse.xtext.xbase.ui.hover.XbaseHoverDocumentationProvider;
 import org.eclipse.xtext.xbase.ui.quickfix.TypeNameGuesser;
@@ -27,7 +27,7 @@ public class XtxtUMLUiModule extends hu.elte.txtuml.xtxtuml.ui.AbstractXtxtUMLUi
 	}
 
 	@Override
-	public Class<? extends ISemanticHighlightingCalculator> bindISemanticHighlightingCalculator() {
+	public Class<? extends ISemanticHighlightingCalculator> bindIdeSemanticHighlightingCalculator() {
 		return XtxtUMLHighlightingCalculator.class;
 	}
 

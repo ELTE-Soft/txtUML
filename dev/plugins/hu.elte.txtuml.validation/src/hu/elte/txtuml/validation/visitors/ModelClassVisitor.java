@@ -2,6 +2,7 @@ package hu.elte.txtuml.validation.visitors;
 
 import org.eclipse.jdt.core.dom.Annotation;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
+import org.eclipse.jdt.core.dom.Javadoc;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.Modifier;
 import org.eclipse.jdt.core.dom.SimpleName;
@@ -19,7 +20,7 @@ public class ModelClassVisitor extends VisitorBase {
 
 	public static final Class<?>[] ALLOWED_MODEL_CLASS_DECLARATIONS = new Class<?>[] { TypeDeclaration.class,
 			FieldDeclaration.class, MethodDeclaration.class, SimpleName.class, SimpleType.class, Modifier.class,
-			Annotation.class };
+			Annotation.class, Javadoc.class };
 
 	public ModelClassVisitor(ProblemCollector collector) {
 		super(collector);

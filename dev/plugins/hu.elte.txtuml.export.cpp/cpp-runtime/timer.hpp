@@ -8,7 +8,7 @@
 #include <ostream>
 #include <thread>
 
-#include "statemachineI.hpp"
+#include "istatemachine.hpp"
 #include "runtimetypes.hpp"
 
 #include "itimer.hpp"
@@ -17,7 +17,7 @@ class Timer : public ITimer
 {           typedef std::chrono::milliseconds milliseconds;
        public:
 
-           Timer(StateMachineI*,EventPtr,int);
+           Timer(IStateMachine*,EventPtr,int);
            ~Timer();
 
            //TODO implement

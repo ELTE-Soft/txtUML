@@ -2,17 +2,17 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: txtUML Papyrus Visualizer
 Bundle-SymbolicName: hu.elte.txtuml.export.papyrus;singleton:=true
-Bundle-Version: 0.5.0.qualifier
+Bundle-Version: 0.5.1.qualifier
 Bundle-Vendor: ELTE
 Bundle-Activator: hu.elte.txtuml.export.papyrus.Activator
 Require-Bundle: 
- hu.elte.txtuml.layout.visualizer;bundle-version="0.5.0",
- hu.elte.txtuml.layout.export;bundle-version="0.5.0",
- hu.elte.txtuml.api.model;bundle-version="0.5.0",
- hu.elte.txtuml.api.layout;bundle-version="0.5.0",
- hu.elte.txtuml.utils;bundle-version="0.5.0",
- hu.elte.txtuml.export.uml2;bundle-version="0.5.0",
- hu.elte.txtuml.export.plantuml;bundle-version="0.5.0",
+ hu.elte.txtuml.layout.visualizer,
+ hu.elte.txtuml.layout.export,
+ hu.elte.txtuml.api.model,
+ hu.elte.txtuml.api.layout,
+ hu.elte.txtuml.utils,
+ hu.elte.txtuml.export.uml2,
+ hu.elte.txtuml.export.plantuml,
  org.eclipse.gmf.tooling.runtime,
  org.eclipse.debug.ui,
  org.eclipse.jdt.core,
@@ -36,7 +36,8 @@ Require-Bundle:
  org.eclipse.emf.ecore,
  org.eclipse.jdt.ui,
  com.google.guava,
- hu.elte.txtuml.utils.eclipse;bundle-version="0.5.0"
+ hu.elte.txtuml.utils.eclipse,
+ org.eclipse.core.expressions
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Export-Package: hu.elte.txtuml.export.papyrus,

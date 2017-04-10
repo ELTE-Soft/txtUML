@@ -18,9 +18,9 @@ public class TimerImpl implements Timer {
 	/**
 	 * Creates a new {@code TimerImpl}.
 	 * 
-	 * @param obj
+	 * @param targetObj
 	 *            the target of the delayed send operation
-	 * @param s
+	 * @param signal
 	 *            the signal to send after the timeout
 	 * @param millisecs
 	 *            millisecs to wait before the timeout

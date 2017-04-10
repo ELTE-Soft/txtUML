@@ -1,11 +1,14 @@
 #include <iostream>
 #include "deployment.hpp"
+#include "init_maps.hpp"
 //#include "Class1.hpp"
 //#include "Class2.hpp"
 
 int main()
 {
-  //Runtime* rt=deployment::createThreadedRuntime(); // the runtime type depends on deployment header options(default - threaded)
+  /*Runtime* rt = */
+  deployment::initRuntime(); // the runtime type depends on deployment header options(default - threaded)
+  StateMachine::initTransitionTables();
   //rt->startRT(); // the runtime could be started later too..
   
   //Class1 obj1; //create an object

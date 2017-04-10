@@ -16,6 +16,7 @@ abstract class TypedNamedExporter<T extends TypedElement & NamedElement> extends
 	override exportContents(IVariableBinding binding) {
 		result.name = binding.name
 		result.type = fetchType(binding.type)
+		result.visibility = getVisibility(binding.getModifiers)
 	}
 }
 

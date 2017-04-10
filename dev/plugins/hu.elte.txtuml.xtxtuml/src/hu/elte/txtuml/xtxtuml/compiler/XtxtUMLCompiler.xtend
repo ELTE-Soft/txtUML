@@ -1,13 +1,13 @@
-package hu.elte.txtuml.xtxtuml.compiler
+package hu.elte.txtuml.xtxtuml.compiler;
 
 import com.google.inject.Inject
 import hu.elte.txtuml.api.model.Action
 import hu.elte.txtuml.api.model.ModelClass.Port
-import hu.elte.txtuml.xtxtuml.xtxtUML.RAlfDeleteObjectExpression
-import hu.elte.txtuml.xtxtuml.xtxtUML.RAlfSendSignalExpression
-import hu.elte.txtuml.xtxtuml.xtxtUML.RAlfSignalAccessExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAssociationEnd
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUClassPropertyAccessExpression
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUDeleteObjectExpression
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUSendSignalExpression
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUSignalAccessExpression
 import org.eclipse.xtext.common.types.JvmType
 import org.eclipse.xtext.xbase.XExpression
 import org.eclipse.xtext.xbase.compiler.XbaseCompiler
@@ -21,9 +21,9 @@ class XtxtUMLCompiler extends XbaseCompiler {
 	override protected doInternalToJavaStatement(XExpression obj, ITreeAppendable builder, boolean isReferenced) {
 		switch (obj) {
 			TUClassPropertyAccessExpression,
-			RAlfDeleteObjectExpression,
-			RAlfSendSignalExpression,
-			RAlfSignalAccessExpression:
+			TUDeleteObjectExpression,
+			TUSendSignalExpression,
+			TUSignalAccessExpression:
 				obj.toJavaStatement(builder)
 			default:
 				super.doInternalToJavaStatement(obj, builder, isReferenced)
@@ -34,11 +34,11 @@ class XtxtUMLCompiler extends XbaseCompiler {
 		// intentionally left empty
 	}
 
-	def dispatch toJavaStatement(RAlfSignalAccessExpression sigExpr, ITreeAppendable it) {
+	def dispatch toJavaStatement(TUSignalAccessExpression sigExpr, ITreeAppendable it) {
 		// intentionally left empty
 	}
 
-	def dispatch toJavaStatement(RAlfDeleteObjectExpression deleteExpr, ITreeAppendable it) {
+	def dispatch toJavaStatement(TUDeleteObjectExpression deleteExpr, ITreeAppendable it) {
 		newLine;
 		append(Action);
 		append(".delete(")
@@ -46,7 +46,7 @@ class XtxtUMLCompiler extends XbaseCompiler {
 		append(");");
 	}
 
-	def dispatch toJavaStatement(RAlfSendSignalExpression sendExpr, ITreeAppendable it) {
+	def dispatch toJavaStatement(TUSendSignalExpression sendExpr, ITreeAppendable it) {
 		newLine;
 		append(Action)
 		append(".send(");
@@ -65,7 +65,7 @@ class XtxtUMLCompiler extends XbaseCompiler {
 	override protected internalToConvertedExpression(XExpression obj, ITreeAppendable it) {
 		switch (obj) {
 			TUClassPropertyAccessExpression,
-			RAlfSignalAccessExpression:
+			TUSignalAccessExpression:
 				obj.toJavaExpression(it)
 			default:
 				super.internalToConvertedExpression(obj, it)
@@ -85,7 +85,7 @@ class XtxtUMLCompiler extends XbaseCompiler {
 		append(".class)");
 	}
 
-	def dispatch toJavaExpression(RAlfSignalAccessExpression sigExpr, ITreeAppendable it) {
+	def dispatch toJavaExpression(TUSignalAccessExpression sigExpr, ITreeAppendable it) {
 		append("getTrigger(");
 		append(sigExpr.lightweightType);
 		append(".class)");
