@@ -6,7 +6,9 @@ import java.util.List;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.uml2.uml.Property;
 
+import hu.elte.txtuml.export.cpp.templates.GenerationNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationTemplates;
+import hu.elte.txtuml.export.cpp.templates.PrivateFunctionalTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.LinkTemplates;
 
 class AssociationExporter {
@@ -39,7 +41,7 @@ class AssociationExporter {
 		for (Property prop : associationMembers) {
 			int upper = prop.getUpper();
 			int lower = prop.getLower();
-			String linkedClass = LinkTemplates.assocationDecl(prop.getType().getName(),
+			String linkedClass = LinkTemplates.assocationEndPointDecl(prop.getType().getName(),
 					LinkTemplates.formatAssociationRoleName(prop.getAssociation().getName(), prop.getName()),
 					lower, upper);
 			if (prop.isNavigable())
@@ -61,8 +63,8 @@ class AssociationExporter {
 			}
 
 		}
-		return GenerationTemplates.cppInclude(LinkTemplates.AssociationsStructuresHreaderName)
-				+ assocDeclerations.toString();
+		return PrivateFunctionalTemplates.include(LinkTemplates.AssociationsStructuresHreaderName)
+				+ GenerationTemplates.putNamespace(assocDeclerations.toString(), GenerationNames.Namespaces.ModelNamespace);
 	}
 	
 	List<String> getAssociatedPropertyTypes() {
