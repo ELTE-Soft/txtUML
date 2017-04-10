@@ -1,4 +1,4 @@
-package hu.elte.txtuml.validation.problems.modelclass;
+package hu.elte.txtuml.validation.problems.general;
 
 import org.eclipse.jdt.core.dom.ASTNode;
 
