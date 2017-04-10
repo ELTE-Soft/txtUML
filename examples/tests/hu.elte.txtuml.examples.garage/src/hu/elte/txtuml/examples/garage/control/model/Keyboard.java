@@ -6,7 +6,7 @@ import hu.elte.txtuml.api.model.ModelClass;
 import hu.elte.txtuml.api.model.To;
 import hu.elte.txtuml.api.model.Trigger;
 import hu.elte.txtuml.api.stdlib.timers.Timer;
-import hu.elte.txtuml.examples.garage.control.glue.Glue;
+import hu.elte.txtuml.examples.garage.control.glue.View;
 import hu.elte.txtuml.examples.garage.control.model.associations.KeyboardProvidesCode;
 import hu.elte.txtuml.examples.garage.control.model.signals.external.KeyPress;
 import hu.elte.txtuml.examples.garage.control.model.signals.internal.KeyboardTimeout;
@@ -70,7 +70,7 @@ public class Keyboard extends ModelClass {
 		@Override
 		public void effect() {
 			keyboardTimerCount += 1;
-			Glue.getInstance().progress(keyboardTimerCount);
+			View.getInstance().progress(keyboardTimerCount);
 			keyboardTimer.reset(50);
 		}
 	}
