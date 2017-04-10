@@ -1,4 +1,4 @@
-package hu.elte.txtuml.export.diagrams.common.tests;
+package hu.elte.txtuml.utils.diagrams;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -8,9 +8,9 @@ import java.util.Map;
 import org.junit.Assert;
 import org.junit.Test;
 
-import hu.elte.txtuml.export.diagrams.common.LayoutTransformer;
-import hu.elte.txtuml.export.diagrams.common.Point;
-import hu.elte.txtuml.export.diagrams.common.Rectangle;
+import hu.elte.txtuml.utils.diagrams.LayoutTransformer;
+import hu.elte.txtuml.utils.diagrams.Point;
+import hu.elte.txtuml.utils.diagrams.Rectangle;
 
 public class LayoutTransformerTest {
 

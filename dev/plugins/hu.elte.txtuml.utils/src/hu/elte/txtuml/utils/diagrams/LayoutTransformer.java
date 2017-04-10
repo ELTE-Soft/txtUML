@@ -1,4 +1,4 @@
-package hu.elte.txtuml.export.diagrams.common;
+package hu.elte.txtuml.utils.diagrams;
 
 import java.util.Comparator;
 import java.util.List;

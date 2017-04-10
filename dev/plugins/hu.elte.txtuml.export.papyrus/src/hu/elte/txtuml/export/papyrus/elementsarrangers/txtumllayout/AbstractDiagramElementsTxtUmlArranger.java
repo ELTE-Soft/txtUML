@@ -20,7 +20,6 @@ import org.eclipse.gmf.runtime.notation.View;
 import org.eclipse.papyrus.uml.diagram.statemachine.custom.edit.part.CustomStateEditPart;
 import org.eclipse.uml2.uml.Element;
 
-import hu.elte.txtuml.export.diagrams.common.LayoutTransformer;
 import hu.elte.txtuml.export.papyrus.api.DiagramElementsModifier;
 import hu.elte.txtuml.export.papyrus.elementsarrangers.AbstractDiagramElementsArranger;
 import hu.elte.txtuml.export.papyrus.elementsarrangers.ArrangeException;
@@ -30,6 +29,7 @@ import hu.elte.txtuml.layout.visualizer.model.AssociationType;
 import hu.elte.txtuml.layout.visualizer.model.LineAssociation;
 import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
 import hu.elte.txtuml.layout.visualizer.statements.Statement;
+import hu.elte.txtuml.utils.diagrams.LayoutTransformer;
 
 /**
  * An abstract class for arranging the elements with the txtUML arranging algorithm. 
@@ -79,8 +79,8 @@ public abstract class  AbstractDiagramElementsTxtUmlArranger extends AbstractDia
 			
 			
 			List<ConnectionNodeEditPart> connections = getConnectionsOfEditParts(editParts);
-			Map<ConnectionNodeEditPart, List<hu.elte.txtuml.export.diagrams.common.Point>> linksTransform = pairRoutesToConnectionEditParts(links, connections);
-			Map<GraphicalEditPart, hu.elte.txtuml.export.diagrams.common.Rectangle> objectsTransform = createObjectRectangleMappingFromObjectsAndEditParts(objects, editParts);
+			Map<ConnectionNodeEditPart, List<hu.elte.txtuml.utils.diagrams.Point>> linksTransform = pairRoutesToConnectionEditParts(links, connections);
+			Map<GraphicalEditPart, hu.elte.txtuml.utils.diagrams.Rectangle> objectsTransform = createObjectRectangleMappingFromObjectsAndEditParts(objects, editParts);
 			
 			transformObjectsAndLinks(objectsTransform, linksTransform, 
 					vm.getPixelGridRatioHorizontal(), vm.getPixelGridRatioVertical());
@@ -90,15 +90,15 @@ public abstract class  AbstractDiagramElementsTxtUmlArranger extends AbstractDia
 		}
 	}
 
-	private Map<GraphicalEditPart, hu.elte.txtuml.export.diagrams.common.Rectangle> createObjectRectangleMappingFromObjectsAndEditParts(Set<RectangleObject> objects,
+	private Map<GraphicalEditPart, hu.elte.txtuml.utils.diagrams.Rectangle> createObjectRectangleMappingFromObjectsAndEditParts(Set<RectangleObject> objects,
 			List<GraphicalEditPart> editParts) {
-		Map<GraphicalEditPart, hu.elte.txtuml.export.diagrams.common.Rectangle> result = new HashMap<>();
+		Map<GraphicalEditPart, hu.elte.txtuml.utils.diagrams.Rectangle> result = new HashMap<>();
 		for(RectangleObject obj : objects){
 			Optional<Element> e = txtUmlRegistry.findElement(obj.getName());
 			if(e.isPresent()){
 				GraphicalEditPart ep = (GraphicalEditPart) getEditPartOfModelElement(editParts, e.get());
 				if(ep != null){
-					hu.elte.txtuml.export.diagrams.common.Rectangle rect =  new hu.elte.txtuml.export.diagrams.common.Rectangle(obj.getPosition().getX(), obj.getPosition().getY(),
+					hu.elte.txtuml.utils.diagrams.Rectangle rect =  new hu.elte.txtuml.utils.diagrams.Rectangle(obj.getPosition().getX(), obj.getPosition().getY(),
 													obj.getPixelWidth(), obj.getPixelHeight());
 					result.put(ep, rect);
 				}
@@ -119,12 +119,12 @@ public abstract class  AbstractDiagramElementsTxtUmlArranger extends AbstractDia
 	}
 
 	private void modifyConnectionEditParts(
-			Map<ConnectionNodeEditPart, List<hu.elte.txtuml.export.diagrams.common.Point>> linksTransform,
-			Map<GraphicalEditPart, hu.elte.txtuml.export.diagrams.common.Rectangle> objectTransform) {
-		linksTransform.forEach((ConnectionNodeEditPart connection, List<hu.elte.txtuml.export.diagrams.common.Point> route)  ->{
+			Map<ConnectionNodeEditPart, List<hu.elte.txtuml.utils.diagrams.Point>> linksTransform,
+			Map<GraphicalEditPart, hu.elte.txtuml.utils.diagrams.Rectangle> objectTransform) {
+		linksTransform.forEach((ConnectionNodeEditPart connection, List<hu.elte.txtuml.utils.diagrams.Point> route)  ->{
 					if(connection != null && route.size() >= 2){
-						hu.elte.txtuml.export.diagrams.common.Rectangle source = objectTransform.get(connection.getSource());
-						hu.elte.txtuml.export.diagrams.common.Rectangle target = objectTransform.get(connection.getTarget());
+						hu.elte.txtuml.utils.diagrams.Rectangle source = objectTransform.get(connection.getSource());
+						hu.elte.txtuml.utils.diagrams.Rectangle target = objectTransform.get(connection.getTarget());
 
 			        	String anchor_start = getAnchor(source.getTopLeft(), route.get(0), source.width(), source.height());
 			        	String anchor_end = getAnchor(target.getTopLeft(), route.get(route.size()-1), target.width(), target.height());
@@ -136,8 +136,8 @@ public abstract class  AbstractDiagramElementsTxtUmlArranger extends AbstractDia
 		});
 	}
 
-	private void modifyEditParts(Map<GraphicalEditPart, hu.elte.txtuml.export.diagrams.common.Rectangle> editPartsObjectsMapping) {
-		editPartsObjectsMapping.forEach((GraphicalEditPart ep, hu.elte.txtuml.export.diagrams.common.Rectangle rect) -> {
+	private void modifyEditParts(Map<GraphicalEditPart, hu.elte.txtuml.utils.diagrams.Rectangle> editPartsObjectsMapping) {
+		editPartsObjectsMapping.forEach((GraphicalEditPart ep, hu.elte.txtuml.utils.diagrams.Rectangle rect) -> {
 			if(ep instanceof CustomStateEditPart) {
 				DiagramElementsModifier.fixStateLabelHeight((CustomStateEditPart)ep);
 			}
@@ -147,8 +147,8 @@ public abstract class  AbstractDiagramElementsTxtUmlArranger extends AbstractDia
 	}
 
 	private void transformObjectsAndLinks(
-			Map<GraphicalEditPart, hu.elte.txtuml.export.diagrams.common.Rectangle> objectsTransform,
-			Map<ConnectionNodeEditPart, List<hu.elte.txtuml.export.diagrams.common.Point>> linksTransform,
+			Map<GraphicalEditPart, hu.elte.txtuml.utils.diagrams.Rectangle> objectsTransform,
+			Map<ConnectionNodeEditPart, List<hu.elte.txtuml.utils.diagrams.Point>> linksTransform,
 			int pixelGridRatioHorizontal, int pixelGridRatioVertical) {
 		
 		LayoutTransformer trans = new LayoutTransformer(pixelGridRatioHorizontal, 
@@ -156,11 +156,11 @@ public abstract class  AbstractDiagramElementsTxtUmlArranger extends AbstractDia
 		trans.doTranformations(objectsTransform, linksTransform);
 	}
 
-	private Map<ConnectionNodeEditPart, List<hu.elte.txtuml.export.diagrams.common.Point>> pairRoutesToConnectionEditParts(
+	private Map<ConnectionNodeEditPart, List<hu.elte.txtuml.utils.diagrams.Point>> pairRoutesToConnectionEditParts(
 			Collection<LineAssociation> links,
 			List<ConnectionNodeEditPart> connections) {
 		
-		Map<ConnectionNodeEditPart, List<hu.elte.txtuml.export.diagrams.common.Point>> linksTransform = new HashMap<>(); 
+		Map<ConnectionNodeEditPart, List<hu.elte.txtuml.utils.diagrams.Point>> linksTransform = new HashMap<>(); 
 		for(LineAssociation la : links){
 			
 			Optional<? extends Element> e = findConnection(la);
@@ -175,7 +175,7 @@ public abstract class  AbstractDiagramElementsTxtUmlArranger extends AbstractDia
 				Optional<Element> to = txtUmlRegistry.findElement(la.getTo());
 				if(!from.isPresent() || !to.isPresent()) continue;
 				
-				List<hu.elte.txtuml.export.diagrams.common.Point> route = new LinkedList<>();
+				List<hu.elte.txtuml.utils.diagrams.Point> route = new LinkedList<>();
 
 				List<hu.elte.txtuml.layout.visualizer.model.Point> layoutRoute = la.getMinimalRoute();
 				
@@ -189,7 +189,7 @@ public abstract class  AbstractDiagramElementsTxtUmlArranger extends AbstractDia
 						index = layoutRoute.size()-i-1;
 					}
 					
-					route.add(new hu.elte.txtuml.export.diagrams.common.Point(layoutRoute.get(index).getX(),layoutRoute.get(index).getY()));
+					route.add(new hu.elte.txtuml.utils.diagrams.Point(layoutRoute.get(index).getX(),layoutRoute.get(index).getY()));
 				}
 				linksTransform.put(connection, route);
 			}
@@ -239,8 +239,8 @@ public abstract class  AbstractDiagramElementsTxtUmlArranger extends AbstractDia
 	 * @param edge
 	 * @return
 	 */
-	protected String getAnchor(hu.elte.txtuml.export.diagrams.common.Point topleft, hu.elte.txtuml.export.diagrams.common.Point edge, int objectWidth, int objectHeight){
-		hu.elte.txtuml.export.diagrams.common.Point relativeEdge = new hu.elte.txtuml.export.diagrams.common.Point(edge.x() - topleft.x(), edge.y() -  topleft.y());
+	protected String getAnchor(hu.elte.txtuml.utils.diagrams.Point topleft, hu.elte.txtuml.utils.diagrams.Point edge, int objectWidth, int objectHeight){
+		hu.elte.txtuml.utils.diagrams.Point relativeEdge = new hu.elte.txtuml.utils.diagrams.Point(edge.x() - topleft.x(), edge.y() -  topleft.y());
 		double anchor_x = ((float) relativeEdge.x())/((float) objectWidth);
 		double anchor_y = ((float) relativeEdge.y())/((float) objectHeight);
 		return new String("("+anchor_x+", "+anchor_y+")");

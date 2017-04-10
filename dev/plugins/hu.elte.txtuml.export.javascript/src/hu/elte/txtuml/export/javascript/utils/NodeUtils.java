@@ -4,9 +4,9 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import hu.elte.txtuml.export.diagrams.common.Rectangle;
 import hu.elte.txtuml.layout.visualizer.model.Point;
 import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
+import hu.elte.txtuml.utils.diagrams.Rectangle;
 
 public class NodeUtils {
 

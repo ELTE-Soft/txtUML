@@ -1,4 +1,4 @@
-package hu.elte.txtuml.export.diagrams.common;
+package hu.elte.txtuml.utils.diagrams;
 
 public class Point {
 	private int x, y;

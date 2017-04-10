@@ -24,11 +24,11 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import hu.elte.txtuml.export.diagrams.common.Rectangle;
 import hu.elte.txtuml.layout.visualizer.model.AssociationType;
 import hu.elte.txtuml.layout.visualizer.model.LineAssociation;
 import hu.elte.txtuml.layout.visualizer.model.Point;
 import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
+import hu.elte.txtuml.utils.diagrams.Rectangle;
 import hu.elte.txtuml.utils.Pair;
 
 public class ClassDiagramTests {
