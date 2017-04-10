@@ -47,7 +47,7 @@ import java.util.Objects;
  * to set the default values of its fields</li>
  * <li><i>Fields:</i> allowed, only with parameters of types which are data
  * types, model enums, external classes or primitives (including {@code String}
- * ); they represent attributes of the model class</li>
+ * ); they represent attributes of the data type</li>
  * <li><i>Methods:</i> allowed, only with parameters and return values of types
  * which are subclasses of <code>ModelClass</code>, signals, data types, model
  * enums, external classes or primitives (including {@code String}); they
