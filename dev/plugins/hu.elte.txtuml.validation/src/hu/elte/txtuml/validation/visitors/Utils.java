@@ -33,7 +33,7 @@ public class Utils {
 			if (modifier.isStatic()) {
 				valid = false;
 			} else {
-				valid = modifier.isPrivate() || modifier.isPublic() || modifier.isProtected();
+				valid = modifier.isPrivate() || modifier.isPublic() || modifier.isProtected() || modifier.isFinal();
 			}
 			if (!valid) {
 				collector.report(new InvalidModifier(collector.getSourceInfo(), modifier));
@@ -48,7 +48,8 @@ public class Utils {
 	}
 
 	public static boolean isAllowedParameterType(Type type, boolean isVoidAllowed) {
-		if (isAllowedAttributeType(type, isVoidAllowed) || ElementTypeTeller.isModelClass(type.resolveBinding())) {
+		if (isAllowedAttributeType(type, isVoidAllowed) || ElementTypeTeller.isModelClass(type.resolveBinding())
+				|| ElementTypeTeller.isSignal(type.resolveBinding())) {
 			return true;
 		}
 
