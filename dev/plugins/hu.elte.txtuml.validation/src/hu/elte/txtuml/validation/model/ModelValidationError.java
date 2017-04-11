@@ -16,10 +16,17 @@ public abstract class ModelValidationError extends ValidationProblem.Error {
 
 	@Override
 	public abstract int getID();
-	
+
+	public abstract ModelErrors getType();
+
 	@Override
 	public String getMarkerType() {
 		return JtxtUMLCompilationParticipant.JTXTUML_MARKER_TYPE;
+	}
+	
+	@Override
+	public String toString() {
+		return getType() + " (" + getMessage() + ")";
 	}
 
 }

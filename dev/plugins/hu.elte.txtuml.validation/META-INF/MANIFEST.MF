@@ -12,6 +12,7 @@ Require-Bundle: org.eclipse.core.runtime,
  hu.elte.txtuml.utils
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
-Export-Package: hu.elte.txtuml.validation.model,
+Export-Package: hu.elte.txtuml.validation.common,
+ hu.elte.txtuml.validation.model,
  hu.elte.txtuml.validation.model.visitors
 Bundle-Vendor: ELTE

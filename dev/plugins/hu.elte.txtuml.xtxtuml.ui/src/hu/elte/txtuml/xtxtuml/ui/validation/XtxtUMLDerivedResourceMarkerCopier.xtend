@@ -3,7 +3,7 @@ package hu.elte.txtuml.xtxtuml.ui.validation;
 import com.google.common.collect.ImmutableSet
 import com.google.inject.Inject
 import hu.elte.txtuml.utils.Logger
-import hu.elte.txtuml.validation.JtxtUMLCompilationParticipant
+import hu.elte.txtuml.validation.model.JtxtUMLCompilationParticipant
 import hu.elte.txtuml.xtxtuml.validation.XtxtUMLIssueCodes
 import java.util.Set
 import org.eclipse.core.resources.IFile

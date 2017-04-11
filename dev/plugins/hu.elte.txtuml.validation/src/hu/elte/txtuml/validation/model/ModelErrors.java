@@ -10,8 +10,8 @@ import hu.elte.txtuml.validation.common.SourceInfo;
 /**
  * An enumeration to create different problems.
  * <p>
- * Messages are loaded from {@link Messages#LOADER}, after converting names to camel
- * case and appending the "_message" string to them.
+ * Messages are loaded from {@link Messages#LOADER}, after converting names to
+ * camel case and appending the "_message" string to them.
  */
 public enum ModelErrors {
 
@@ -82,6 +82,11 @@ public enum ModelErrors {
 			@Override
 			public int getID() {
 				return ordinal();
+			}
+
+			@Override
+			public ModelErrors getType() {
+				return ModelErrors.this;
 			}
 
 			@Override

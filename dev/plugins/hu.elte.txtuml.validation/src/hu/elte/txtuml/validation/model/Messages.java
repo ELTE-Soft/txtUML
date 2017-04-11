@@ -15,7 +15,7 @@ public final class Messages {
 
 	static {
 		// Create loader and load messages into fields.
-		LOADER = new MessageLoader(Messages.class.getPackage().getName());
+		LOADER = new MessageLoader(Messages.class.getCanonicalName().toLowerCase());
 		LOADER.fillFields(Messages.class);
 	}
 }
