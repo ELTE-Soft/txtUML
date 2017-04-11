@@ -8,7 +8,7 @@ public class VariableTemplates {
 
 	public static String variableDecl(String typeName, String variableName, String defaultValue, boolean isSignal) {
 		StringBuilder source = new StringBuilder("");
-		source.append(isSignal ? GenerationNames.signalType(typeName) : PrivateFunctionalTemplates.cppType(typeName));
+		source.append(isSignal ? GenerationNames.signalPointerType(typeName) : PrivateFunctionalTemplates.cppType(typeName));
 		source.append(" ");
 		source.append(variableName);
 		if (defaultValue != "" && defaultValue != null) {

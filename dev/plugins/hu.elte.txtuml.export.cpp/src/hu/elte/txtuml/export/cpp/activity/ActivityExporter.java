@@ -29,7 +29,7 @@ import org.eclipse.uml2.uml.TestIdentityAction;
 import org.eclipse.uml2.uml.UMLPackage;
 import org.eclipse.uml2.uml.ExpansionRegion;
 
-import hu.elte.txtuml.export.cpp.Shared;
+import hu.elte.txtuml.export.cpp.CppExporterUtils;
 import hu.elte.txtuml.export.cpp.templates.activity.ActivityTemplates;
 
 //import hu.elte.txtuml.utils.Logger;
@@ -47,17 +47,15 @@ public class ActivityExporter {
 	private LinkActionExporter linkActionExporter;
 	private ObjectActionExporter objectActionExporter;
 	private ReturnNodeExporter returnNodeExporter;
-	
-	private List<String> createdClassDependecies;
 
-	private Shared shared;
+	private List<String> createdClassDependencies;
 
 	public ActivityExporter() {
 	}
 
 	private void init() {
-		shared = new Shared();
-		createdClassDependecies = new LinkedList<String>();
+
+		createdClassDependencies = new LinkedList<String>();
 
 		tempVariableExporter = new OutVariableExporter();
 		userVariableExporter = new UserVariableExporter();
@@ -69,10 +67,10 @@ public class ActivityExporter {
 		callOperationExporter = new CallOperationExporter(tempVariableExporter, returnOutputsToCallActions,
 				activityExportResolver);
 		linkActionExporter = new LinkActionExporter(tempVariableExporter, activityExportResolver);
-		objectActionExporter = new ObjectActionExporter(tempVariableExporter, objectMap, activityExportResolver, createdClassDependecies);
+		objectActionExporter = new ObjectActionExporter(tempVariableExporter, objectMap, activityExportResolver,
+				createdClassDependencies);
 		controlNodeExporter = new StructuredControlNodeExporter(this, activityExportResolver, userVariableExporter,
 				returnNodeExporter);
-		
 
 	}
 
@@ -111,9 +109,9 @@ public class ActivityExporter {
 	public boolean isContainsTimerOperation() {
 		return callOperationExporter.isInvokedTimerOperation();
 	}
-	
+
 	public List<String> getAdditionalClassDependencies() {
-		return createdClassDependecies;
+		return createdClassDependencies;
 	}
 
 	private String createActivityPartCode(ActivityNode startNode) {
@@ -159,8 +157,7 @@ public class ActivityExporter {
 		List<ActivityEdge> edges = currentNode.getOutgoings();
 		// output edges from output pin
 		List<OutputPin> outputPins = new LinkedList<OutputPin>();
-		shared.setModelElements(currentNode.getOwnedElements());
-		shared.getTypedElements(outputPins, UMLPackage.Literals.OUTPUT_PIN);
+		CppExporterUtils.getTypedElements(outputPins, UMLPackage.Literals.OUTPUT_PIN, node.getOwnedElements());
 		for (OutputPin pin : outputPins) {
 			edges.addAll(pin.getOutgoings());
 		}

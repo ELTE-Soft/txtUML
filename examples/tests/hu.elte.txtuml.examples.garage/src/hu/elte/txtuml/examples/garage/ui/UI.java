@@ -29,10 +29,10 @@ import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 
 import hu.elte.txtuml.examples.garage.control.model.Glue;
-import hu.elte.txtuml.examples.garage.interfaces.IControl;
-import hu.elte.txtuml.examples.garage.interfaces.IControlled;
+import hu.elte.txtuml.examples.garage.interfaces.Control;
+import hu.elte.txtuml.examples.garage.interfaces.Controlled;
 
-public class UI implements IControlled {
+public class UI implements Controlled {
 	private GaragePanel garagePanel = new GaragePanel(this);
 	private RemotePanel remotePanel = new RemotePanel(this);
 	private JPanel spacePanel = new JPanel();
@@ -44,7 +44,7 @@ public class UI implements IControlled {
 	private JPanel alarmPanel = new JPanel();
 	private JPanel mainPanel = new JPanel();
 	private JFrame frame = new JFrame("Garage");
-	IControl control;
+	Control control;
 	
 	private UI() {
 		control = Glue.getInstance();

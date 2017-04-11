@@ -15,7 +15,7 @@ import org.eclipse.uml2.uml.ParameterDirectionKind;
 import org.eclipse.uml2.uml.TestIdentityAction;
 import org.eclipse.uml2.uml.UMLPackage;
 
-import hu.elte.txtuml.export.cpp.Shared;
+import hu.elte.txtuml.export.cpp.CppExporterUtils;
 import hu.elte.txtuml.export.cpp.templates.activity.ActivityTemplates;
 import hu.elte.txtuml.export.cpp.templates.activity.OperatorTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.VariableTemplates;
@@ -69,7 +69,7 @@ class CallOperationExporter {
 		if (returnPin != null)
 			returnOutputsToCallActions.put(node, returnPin);
 
-		if (Shared.isConstructor(node.getOperation())) {
+		if (CppExporterUtils.isConstructor(node.getOperation())) {
 
 			/*
 			 * In case of signal factory's constructor the first parameter is

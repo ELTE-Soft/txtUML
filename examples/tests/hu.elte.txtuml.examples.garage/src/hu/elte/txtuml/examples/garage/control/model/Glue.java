@@ -17,13 +17,13 @@ import hu.elte.txtuml.examples.garage.control.model.signals.external.KeyPress;
 import hu.elte.txtuml.examples.garage.control.model.signals.external.MotionSensorActivated;
 import hu.elte.txtuml.examples.garage.control.model.signals.external.RemoteControlButtonPressed;
 import hu.elte.txtuml.examples.garage.control.model.signals.external.StarPressed;
-import hu.elte.txtuml.examples.garage.interfaces.IControl;
-import hu.elte.txtuml.examples.garage.interfaces.IControlled;
+import hu.elte.txtuml.examples.garage.interfaces.Control;
+import hu.elte.txtuml.examples.garage.interfaces.Controlled;
 
 /**
  *  This class is the glue code between the UI and the control model
  */
-public class Glue extends ModelClass implements @External IControl, @External IControlled {
+public class Glue extends ModelClass implements @External Control, @External Controlled {
 
 	// Model instantiation
 	@External
@@ -37,10 +37,10 @@ public class Glue extends ModelClass implements @External IControl, @External IC
 
 	// Linkage to the UI
 	@External
-	IControlled controlled;
+	Controlled controlled;
 
 	@External
-	public void setControlled(IControlled ctd) {
+	public void setControlled(Controlled ctd) {
 		controlled = ctd;
 	}
 

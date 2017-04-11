@@ -11,40 +11,39 @@ import org.eclipse.uml2.uml.Parameter;
 import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.VisibilityKind;
 
-import hu.elte.txtuml.export.cpp.Shared;
+import hu.elte.txtuml.export.cpp.CppExporterUtils;
 import hu.elte.txtuml.export.cpp.activity.ActivityExporter;
 import hu.elte.txtuml.export.cpp.templates.structual.FunctionTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.VariableTemplates;
 
 public abstract class StructuredElementExporter<StructuredElement extends OperationOwner & AttributeOwner> {
-	
+
 	private static final String UKNOWN_TYPE = "!!UNKNOWNTYPE!!";
 
 	protected StructuredElement structuredElement;
 	protected String name;
-	
+
 	protected ActivityExporter activityExporter;
 	protected DependencyExporter dependencyExporter;
-	
-	
-	protected StructuredElementExporter() {}
-	
+
+	protected StructuredElementExporter() {
+	}
+
 	public void setName(String name) {
 		this.name = name;
 	}
-	
+
 	abstract public void exportStructuredElement(StructuredElement structuredElement, String sourceDestination)
 			throws FileNotFoundException, UnsupportedEncodingException;
-	
+
 	protected void setStructuredElement(StructuredElement structuredElement) {
 		this.structuredElement = structuredElement;
 	}
-	
+
 	public void init() {
 		dependencyExporter = new DependencyExporter();
 		activityExporter = new ActivityExporter();
 	}
-	
 
 	protected String createPublicAttributes() {
 		return createAttributes(VisibilityKind.PUBLIC_LITERAL);
@@ -57,36 +56,37 @@ public abstract class StructuredElementExporter<StructuredElement extends Operat
 	protected String createPrivateAttrbutes() {
 		return createAttributes(VisibilityKind.PRIVATE_LITERAL);
 	}
-	
+
 	protected String createPublicOperationDeclarations() {
 		return createOperationDeclarations(VisibilityKind.PUBLIC_LITERAL);
 	}
-	
+
 	protected String createProtectedOperationsDeclarations() {
 		return createOperationDeclarations(VisibilityKind.PROTECTED_LITERAL);
 	}
-	
+
 	protected String createPrivateOperationsDeclarations() {
 		return createOperationDeclarations(VisibilityKind.PRIVATE_LITERAL);
 	}
-	
+
 	protected String createOperationDefinitions() {
 		StringBuilder source = new StringBuilder("");
 		for (Operation operation : structuredElement.getOwnedOperations()) {
 			
 			String funcBody = "";
 			if (!operation.isAbstract()) {
-				funcBody = activityExporter.createFunctionBody(Shared.getOperationActivity(operation));
+				funcBody = activityExporter.createFunctionBody(CppExporterUtils.getOperationActivity(operation));
 				dependencyExporter.addDependencies(activityExporter.getAdditionalClassDependencies());
 			}
 	
 			
-			if (!Shared.isConstructor(operation)) {
+			if (!CppExporterUtils.isConstructor(operation)) {
+
 
 				String returnType = getReturnType(operation.getReturnResult());
 				source.append(FunctionTemplates.functionDef(name, returnType, operation.getName(),
-						Shared.getOperationParams(operation), funcBody));
-			}					
+						CppExporterUtils.getOperationParams(operation), funcBody));
+			}
 
 		}
 		return source.toString();
@@ -101,12 +101,12 @@ public abstract class StructuredElementExporter<StructuredElement extends Operat
 					type = attribute.getType().getName();
 				}
 
-				if (!Shared.isBasicType(type)) {
-					dependencyExporter.addDependecy(type);
-				}
+				
 				if (isSimpleAttribute(attribute)) {
-					
-					source.append(VariableTemplates.propertyDecl(type, attribute.getName(),attribute.getDefault()));
+
+					source.append(VariableTemplates.propertyDecl(type, attribute.getName(), attribute.getDefault()));
+				} else {
+					dependencyExporter.addDependency(type);
 				}
 			}
 		}
@@ -118,19 +118,19 @@ public abstract class StructuredElementExporter<StructuredElement extends Operat
 		for (Operation operation : structuredElement.getOwnedOperations()) {
 			if (operation.getVisibility().equals(modifier)) {
 				String returnType = getReturnType(operation.getReturnResult());
-				if(!Shared.isConstructor(operation)) {
-					source.append(FunctionTemplates.functionDecl(returnType, operation.getName(), getOperationParamTypes(operation)));
+				if (!CppExporterUtils.isConstructor(operation)) {
+					source.append(FunctionTemplates.functionDecl(returnType, operation.getName(),
+							getOperationParamTypes(operation)));
 				}
-				if(returnType != null) {
-					dependencyExporter.addDependecy(returnType);
+				if (returnType != null) {
+					dependencyExporter.addDependency(returnType);
 				}
 				dependencyExporter.addDependencies(getOperationParamTypes(operation));
 			}
 		}
-		
+
 		return source.toString();
 	}
-
 
 	private String getReturnType(Parameter returnResult) {
 		String returnType = null;
@@ -139,7 +139,7 @@ public abstract class StructuredElementExporter<StructuredElement extends Operat
 		}
 		return returnType;
 	}
-	
+
 	private List<String> getOperationParamTypes(Operation operation) {
 		List<String> ret = new ArrayList<String>();
 		for (Parameter param : operation.getOwnedParameters()) {

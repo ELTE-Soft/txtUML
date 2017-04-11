@@ -39,7 +39,7 @@ public class Utils {
 			if (allowSpecific.test(modifier)) {
 				valid = true;
 			} else {
-				valid = modifier.isPrivate() || modifier.isPublic() || modifier.isProtected();
+				valid = modifier.isPrivate() || modifier.isPublic() || modifier.isProtected() || modifier.isFinal();
 			}
 			if (!valid) {
 				collector.report(new InvalidModifier(collector.getSourceInfo(), modifier));
@@ -58,6 +58,7 @@ public class Utils {
 
 	public static boolean isAllowedParameterType(Type type, boolean isVoidAllowed) {
 		if (isAllowedAttributeType(type, isVoidAllowed)) {
+
 			return true;
 		}
 

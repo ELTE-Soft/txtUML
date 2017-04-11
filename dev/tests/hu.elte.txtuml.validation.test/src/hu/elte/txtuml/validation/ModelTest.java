@@ -23,14 +23,13 @@ import hu.elte.txtuml.validation.problems.association.WrongCompositionEnds;
 import hu.elte.txtuml.validation.problems.association.WrongNumberOfAssociationEnds;
 import hu.elte.txtuml.validation.problems.association.WrongTypeInAssociation;
 import hu.elte.txtuml.validation.problems.datatype.InvalidDataTypeField;
-import hu.elte.txtuml.validation.problems.datatype.InvalidDataTypeMethod;
 import hu.elte.txtuml.validation.problems.datatype.MutableDataTypeField;
 import hu.elte.txtuml.validation.problems.general.InvalidChildrenElement;
 import hu.elte.txtuml.validation.problems.general.InvalidModifier;
+import hu.elte.txtuml.validation.problems.general.InvalidParameterType;
 import hu.elte.txtuml.validation.problems.general.InvalidTypeInModel;
+import hu.elte.txtuml.validation.problems.modelclass.InvalidAttributeType;
 import hu.elte.txtuml.validation.problems.modelclass.InvalidModelClassElement;
-import hu.elte.txtuml.validation.problems.modelclass.InvalidTypeWithClassAllowed;
-import hu.elte.txtuml.validation.problems.modelclass.InvalidTypeWithClassNotAllowed;
 import hu.elte.txtuml.validation.problems.signal.InvalidSignalContent;
 import hu.elte.txtuml.validation.problems.state.StateMethodParameters;
 import hu.elte.txtuml.validation.problems.state.UnknownClassInState;
@@ -82,7 +81,8 @@ public class ModelTest {
 
 		compilationUnit.accept(new ModelVisitor(mockCollector));
 
-		verify(mockCollector, times(4)).report(isA(InvalidTypeWithClassAllowed.class));
+
+		verify(mockCollector, times(4)).report(isA(InvalidParameterType.class));
 
 		checkNoOtherErrorRaised();
 	}
@@ -93,7 +93,7 @@ public class ModelTest {
 
 		compilationUnit.accept(new ModelVisitor(mockCollector));
 
-		verify(mockCollector).report(isA(InvalidTypeWithClassNotAllowed.class));
+		verify(mockCollector).report(isA(InvalidAttributeType.class));
 
 		checkNoOtherErrorRaised();
 	}
@@ -104,7 +104,7 @@ public class ModelTest {
 
 		compilationUnit.accept(new ModelVisitor(mockCollector));
 
-		verify(mockCollector, times(3)).report(isA(InvalidModifier.class));
+		verify(mockCollector, times(2)).report(isA(InvalidModifier.class));
 
 		checkNoOtherErrorRaised();
 	}
@@ -124,7 +124,8 @@ public class ModelTest {
 
 		compilationUnit.accept(new ModelVisitor(mockCollector));
 
-		verify(mockCollector, times(3)).report(isA(InvalidTypeWithClassNotAllowed.class));
+
+		verify(mockCollector, times(3)).report(isA(InvalidAttributeType.class));
 
 		checkNoOtherErrorRaised();
 	}
@@ -135,7 +136,7 @@ public class ModelTest {
 
 		compilationUnit.accept(new ModelVisitor(mockCollector));
 
-		verify(mockCollector, times(2)).report(isA(InvalidTypeWithClassNotAllowed.class));
+		verify(mockCollector, times(2)).report(isA(InvalidAttributeType.class));
 
 		checkNoOtherErrorRaised();
 	}
@@ -267,18 +268,6 @@ public class ModelTest {
 
 		checkNoOtherErrorRaised();
 	}
-	
-	@Test
-	public void testDataTypeInvalidMethod() throws Exception {
-		CompilationUnit compilationUnit = prepareAST("DataTypeInvalidMethod.java");
-
-		compilationUnit.accept(new ModelVisitor(mockCollector));
-
-		verify(mockCollector).report(isA(InvalidDataTypeMethod.class));
-
-		checkNoOtherErrorRaised();
-	}
-
 
 	private void checkNoOtherErrorRaised() {
 		verify(mockCollector, atLeast(0)).getSourceInfo();

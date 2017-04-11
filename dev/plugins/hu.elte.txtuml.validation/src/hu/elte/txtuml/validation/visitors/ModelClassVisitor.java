@@ -13,8 +13,8 @@ import org.eclipse.jdt.core.dom.TypeDeclaration;
 import hu.elte.txtuml.utils.jdt.ElementTypeTeller;
 import hu.elte.txtuml.validation.ProblemCollector;
 import hu.elte.txtuml.validation.problems.modelclass.InvalidModelClassElement;
-import hu.elte.txtuml.validation.problems.modelclass.InvalidTypeWithClassAllowed;
-import hu.elte.txtuml.validation.problems.modelclass.InvalidTypeWithClassNotAllowed;
+import hu.elte.txtuml.validation.problems.general.InvalidParameterType;
+import hu.elte.txtuml.validation.problems.modelclass.InvalidAttributeType;
 
 public class ModelClassVisitor extends VisitorBase {
 
@@ -49,7 +49,7 @@ public class ModelClassVisitor extends VisitorBase {
 		}
 
 		if (!Utils.isAllowedAttributeType(elem.getType(), false)) {
-			collector.report(new InvalidTypeWithClassNotAllowed(collector.getSourceInfo(), elem.getType()));
+			collector.report(new InvalidAttributeType(collector.getSourceInfo(), elem.getType()));
 		} else {
 			Utils.checkModifiers(collector, elem);
 		}
@@ -64,7 +64,7 @@ public class ModelClassVisitor extends VisitorBase {
 
 		if (!elem.isConstructor()) {
 			if (elem.getReturnType2() != null && !Utils.isAllowedParameterType(elem.getReturnType2(), true)) {
-				collector.report(new InvalidTypeWithClassAllowed(collector.getSourceInfo(), elem.getReturnType2()));
+				collector.report(new InvalidParameterType(collector.getSourceInfo(), elem.getReturnType2()));
 			}
 		}
 
@@ -72,7 +72,7 @@ public class ModelClassVisitor extends VisitorBase {
 		for (Object obj : elem.parameters()) {
 			SingleVariableDeclaration param = (SingleVariableDeclaration) obj;
 			if (!Utils.isAllowedParameterType(param.getType(), false)) {
-				collector.report(new InvalidTypeWithClassAllowed(collector.getSourceInfo(), param.getType()));
+				collector.report(new InvalidParameterType(collector.getSourceInfo(), param.getType()));
 			}
 		}
 
