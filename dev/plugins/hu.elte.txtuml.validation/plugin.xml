@@ -4,7 +4,7 @@
    <extension
          point="org.eclipse.jdt.core.compilationParticipant">
       <compilationParticipant
-            class="hu.elte.txtuml.validation.JtxtUMLCompilationParticipant"
+            class="hu.elte.txtuml.validation.model.JtxtUMLCompilationParticipant"
             createsProblems="true"
             id="hu.elte.txtuml.validation.compilationParticipant"
             modifiesEnvironment="false">
