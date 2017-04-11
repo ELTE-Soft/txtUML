@@ -11,16 +11,16 @@ import org.eclipse.jdt.core.compiler.ReconcileContext;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 
 import hu.elte.txtuml.utils.Logger;
-import hu.elte.txtuml.validation.model.problems.ValidationErrorBase;
+import hu.elte.txtuml.validation.common.SourceInfo;
 
 public class ProblemCollector {
 
-	private ArrayList<ValidationErrorBase> problems = new ArrayList<>();
+	private ArrayList<ModelValidationError> problems = new ArrayList<>();
 	private SourceInfo sourceInfo;
 	private IResource resource;
 
 	public ProblemCollector(CompilationUnit unit, IFile file) throws JavaModelException {
-		this.problems = new ArrayList<ValidationErrorBase>();
+		this.problems = new ArrayList<ModelValidationError>();
 		this.sourceInfo = new SourceInfo(unit);
 		resource = file;
 	}
@@ -33,7 +33,7 @@ public class ProblemCollector {
 	/**
 	 * Adds a new problem.
 	 */
-	public void report(ValidationErrorBase problem) {
+	public void report(ModelValidationError problem) {
 		problems.add(problem);
 	}
 
@@ -48,7 +48,7 @@ public class ProblemCollector {
 		}
 		try {
 			resource.deleteMarkers(JtxtUMLCompilationParticipant.JTXTUML_MARKER_TYPE, true, IResource.DEPTH_ZERO);
-			for (ValidationErrorBase problem : problems) {
+			for (ModelValidationError problem : problems) {
 				IMarker marker = resource.createMarker(problem.getMarkerType());
 				marker.setAttribute(IMarker.CHAR_START, problem.getSourceStart());
 				marker.setAttribute(IMarker.CHAR_END, problem.getSourceEnd());

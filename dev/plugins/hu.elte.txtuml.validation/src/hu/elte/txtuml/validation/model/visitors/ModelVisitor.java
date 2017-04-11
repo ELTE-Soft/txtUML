@@ -1,12 +1,13 @@
 package hu.elte.txtuml.validation.model.visitors;
 
+import static hu.elte.txtuml.validation.model.ModelErrors.INVALID_TYPE_IN_MODEL;
+
 import org.eclipse.jdt.core.dom.EnumDeclaration;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 
 import hu.elte.txtuml.utils.jdt.ElementTypeTeller;
 import hu.elte.txtuml.validation.model.Messages;
 import hu.elte.txtuml.validation.model.ProblemCollector;
-import hu.elte.txtuml.validation.model.problems.general.InvalidTypeInModel;
 
 public class ModelVisitor extends VisitorBase {
 
@@ -45,7 +46,7 @@ public class ModelVisitor extends VisitorBase {
 		} else if (ElementTypeTeller.isConnector(elem)) {
 			// TODO: check connectors
 		} else {
-			collector.report(new InvalidTypeInModel(collector.getSourceInfo(), elem));
+			collector.report(INVALID_TYPE_IN_MODEL.create(collector.getSourceInfo(), elem));
 		}
 		return false;
 	}
@@ -55,7 +56,7 @@ public class ModelVisitor extends VisitorBase {
 		if (ElementTypeTeller.isModelEnum(elem)) {
 			// TODO: check model enums
 		} else {
-			collector.report(new InvalidTypeInModel(collector.getSourceInfo(), elem));
+			collector.report(INVALID_TYPE_IN_MODEL.create(collector.getSourceInfo(), elem));
 		}
 		return false;
 	}

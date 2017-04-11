@@ -1,5 +1,9 @@
 package hu.elte.txtuml.validation.model.visitors;
 
+import static hu.elte.txtuml.validation.model.ModelErrors.INVALID_DATA_TYPE_FIELD;
+import static hu.elte.txtuml.validation.model.ModelErrors.INVALID_PARAMETER_TYPE;
+import static hu.elte.txtuml.validation.model.ModelErrors.MUTABLE_DATA_TYPE_FIELD;
+
 import org.eclipse.jdt.core.dom.Annotation;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.Javadoc;
@@ -11,9 +15,6 @@ import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 
 import hu.elte.txtuml.utils.jdt.ElementTypeTeller;
 import hu.elte.txtuml.validation.model.ProblemCollector;
-import hu.elte.txtuml.validation.model.problems.datatype.InvalidDataTypeField;
-import hu.elte.txtuml.validation.model.problems.datatype.MutableDataTypeField;
-import hu.elte.txtuml.validation.model.problems.general.InvalidParameterType;
 
 public class DataTypeVisitor extends VisitorBase {
 
@@ -28,10 +29,10 @@ public class DataTypeVisitor extends VisitorBase {
 	@Override
 	public boolean visit(FieldDeclaration node) {
 		if (!ElementTypeTeller.isFinal(node)) {
-			collector.report(new MutableDataTypeField(collector.getSourceInfo(), node));
+			collector.report(MUTABLE_DATA_TYPE_FIELD.create(collector.getSourceInfo(), node));
 		}
 		if (!Utils.isAllowedAttributeType(node.getType(), false)) {
-			collector.report(new InvalidDataTypeField(collector.getSourceInfo(), node));
+			collector.report(INVALID_DATA_TYPE_FIELD.create(collector.getSourceInfo(), node));
 		}
 		return false;
 	}
@@ -40,7 +41,7 @@ public class DataTypeVisitor extends VisitorBase {
 	public boolean visit(MethodDeclaration node) {
 		if (!node.isConstructor()) {
 			if (node.getReturnType2() != null && !Utils.isAllowedParameterType(node.getReturnType2(), true)) {
-				collector.report(new InvalidParameterType(collector.getSourceInfo(), node.getReturnType2()));
+				collector.report(INVALID_PARAMETER_TYPE.create(collector.getSourceInfo(), node.getReturnType2()));
 			}
 		}
 
@@ -48,7 +49,7 @@ public class DataTypeVisitor extends VisitorBase {
 		for (Object obj : node.parameters()) {
 			SingleVariableDeclaration param = (SingleVariableDeclaration) obj;
 			if (!Utils.isAllowedParameterType(param.getType(), false)) {
-				collector.report(new InvalidParameterType(collector.getSourceInfo(), param.getType()));
+				collector.report(INVALID_PARAMETER_TYPE.create(collector.getSourceInfo(), param.getType()));
 			}
 		}
 

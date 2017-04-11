@@ -1,5 +1,8 @@
 package hu.elte.txtuml.validation.model.visitors;
 
+import static hu.elte.txtuml.validation.model.ModelErrors.WRONG_NUMBER_OF_ASSOCIATION_ENDS;
+import static hu.elte.txtuml.validation.model.ModelErrors.WRONG_TYPE_IN_ASSOCIATION;
+
 import org.eclipse.jdt.core.dom.Annotation;
 import org.eclipse.jdt.core.dom.Javadoc;
 import org.eclipse.jdt.core.dom.Modifier;
@@ -9,8 +12,6 @@ import org.eclipse.jdt.core.dom.TypeDeclaration;
 
 import hu.elte.txtuml.utils.jdt.ElementTypeTeller;
 import hu.elte.txtuml.validation.model.ProblemCollector;
-import hu.elte.txtuml.validation.model.problems.association.WrongNumberOfAssociationEnds;
-import hu.elte.txtuml.validation.model.problems.association.WrongTypeInAssociation;
 
 public class AssociationVisitor extends VisitorBase {
 
@@ -29,7 +30,7 @@ public class AssociationVisitor extends VisitorBase {
 	@Override
 	public boolean visit(TypeDeclaration node) {
 		if (!ElementTypeTeller.isAssociationeEnd(node)) {
-			collector.report(new WrongTypeInAssociation(collector.getSourceInfo(), node));
+			collector.report(WRONG_TYPE_IN_ASSOCIATION.create(collector.getSourceInfo(), node));
 			errorInside = true;
 		} else {
 			++members;
@@ -40,7 +41,7 @@ public class AssociationVisitor extends VisitorBase {
 	@Override
 	public void check() {
 		if (!errorInside && members != 2) {
-			collector.report(new WrongNumberOfAssociationEnds(collector.getSourceInfo(), root));
+			collector.report(WRONG_NUMBER_OF_ASSOCIATION_ENDS.create(collector.getSourceInfo(), root));
 		}
 	}
 

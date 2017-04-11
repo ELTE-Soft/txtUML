@@ -1,5 +1,8 @@
 package hu.elte.txtuml.validation.model.visitors;
 
+import static hu.elte.txtuml.validation.model.ModelErrors.INVALID_ATTRIBUTE_TYPE;
+import static hu.elte.txtuml.validation.model.ModelErrors.INVALID_SIGNAL_CONTENT;
+
 import org.eclipse.jdt.core.dom.Annotation;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.Javadoc;
@@ -10,8 +13,6 @@ import org.eclipse.jdt.core.dom.SimpleType;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 
 import hu.elte.txtuml.validation.model.ProblemCollector;
-import hu.elte.txtuml.validation.model.problems.modelclass.InvalidAttributeType;
-import hu.elte.txtuml.validation.model.problems.signal.InvalidSignalContent;
 
 public class SignalVisitor extends VisitorBase {
 
@@ -26,7 +27,7 @@ public class SignalVisitor extends VisitorBase {
 	@Override
 	public boolean visit(FieldDeclaration elem) {
 		if (!Utils.isAllowedAttributeType(elem.getType(), false)) {
-			collector.report(new InvalidAttributeType(collector.getSourceInfo(), elem.getType()));
+			collector.report(INVALID_ATTRIBUTE_TYPE.create(collector.getSourceInfo(), elem.getType()));
 		} else {
 			Utils.checkModifiers(collector, elem);
 		}
@@ -36,7 +37,7 @@ public class SignalVisitor extends VisitorBase {
 	@Override
 	public boolean visit(MethodDeclaration elem) {
 		if (!elem.isConstructor()) {
-			collector.report(new InvalidSignalContent(collector.getSourceInfo(), elem.getName()));
+			collector.report(INVALID_SIGNAL_CONTENT.create(collector.getSourceInfo(), elem.getName()));
 		} else {
 			checkConstructor(elem);
 			Utils.checkModifiers(collector, elem);
@@ -48,7 +49,7 @@ public class SignalVisitor extends VisitorBase {
 		for (Object obj : elem.parameters()) {
 			SingleVariableDeclaration param = (SingleVariableDeclaration) obj;
 			if (!Utils.isAllowedAttributeType(param.getType(), false)) {
-				collector.report(new InvalidAttributeType(collector.getSourceInfo(), param.getType()));
+				collector.report(INVALID_ATTRIBUTE_TYPE.create(collector.getSourceInfo(), param.getType()));
 			}
 		}
 		// TODO: check constructor body

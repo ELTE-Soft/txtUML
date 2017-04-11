@@ -1,5 +1,8 @@
 package hu.elte.txtuml.validation.model.visitors;
 
+import static hu.elte.txtuml.validation.model.ModelErrors.INVALID_MODIFIER;
+import static hu.elte.txtuml.validation.model.ModelErrors.INVALID_TEMPLATE;
+
 import org.eclipse.jdt.core.dom.BodyDeclaration;
 import org.eclipse.jdt.core.dom.Modifier;
 import org.eclipse.jdt.core.dom.PrimitiveType;
@@ -11,15 +14,13 @@ import hu.elte.txtuml.api.model.ModelClass;
 import hu.elte.txtuml.utils.jdt.ElementTypeTeller;
 import hu.elte.txtuml.utils.jdt.SharedUtils;
 import hu.elte.txtuml.validation.model.ProblemCollector;
-import hu.elte.txtuml.validation.model.problems.general.InvalidModifier;
-import hu.elte.txtuml.validation.model.problems.general.InvalidTemplate;
 
 public class Utils {
 
 	public static void checkTemplate(ProblemCollector collector, TypeDeclaration elem) {
 		if (elem.typeParameters().size() > 0) {
 			collector.report(
-					new InvalidTemplate(collector.getSourceInfo(), (TypeParameter) (elem.typeParameters().get(0))));
+					INVALID_TEMPLATE.create(collector.getSourceInfo(), (TypeParameter) (elem.typeParameters().get(0))));
 		}
 	}
 
@@ -36,7 +37,7 @@ public class Utils {
 				valid = modifier.isPrivate() || modifier.isPublic() || modifier.isProtected() || modifier.isFinal();
 			}
 			if (!valid) {
-				collector.report(new InvalidModifier(collector.getSourceInfo(), modifier));
+				collector.report(INVALID_MODIFIER.create(collector.getSourceInfo(), modifier));
 			}
 		}
 	}

@@ -1,10 +1,11 @@
 package hu.elte.txtuml.validation.model.visitors;
 
+import static hu.elte.txtuml.validation.model.ModelErrors.WRONG_COMPOSITION_ENDS;
+
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 
 import hu.elte.txtuml.utils.jdt.ElementTypeTeller;
 import hu.elte.txtuml.validation.model.ProblemCollector;
-import hu.elte.txtuml.validation.model.problems.association.WrongCompositionEnds;
 
 public class CompositionVisitor extends VisitorBase {
 
@@ -30,7 +31,7 @@ public class CompositionVisitor extends VisitorBase {
 
 	public void check() {
 		if (containerMembers != 1 || partMembers != 1) {
-			collector.report(new WrongCompositionEnds(collector.getSourceInfo(), root));
+			collector.report(WRONG_COMPOSITION_ENDS.create(collector.getSourceInfo(), root));
 		}
 	}
 

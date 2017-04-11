@@ -1,5 +1,7 @@
 package hu.elte.txtuml.validation.model.visitors;
 
+import static hu.elte.txtuml.validation.model.ModelErrors.UNKNOWN_CLASS_IN_STATE;
+
 import org.eclipse.jdt.core.dom.Javadoc;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.Modifier;
@@ -9,7 +11,6 @@ import org.eclipse.jdt.core.dom.TypeDeclaration;
 
 import hu.elte.txtuml.utils.jdt.ElementTypeTeller;
 import hu.elte.txtuml.validation.model.ProblemCollector;
-import hu.elte.txtuml.validation.model.problems.state.UnknownClassInState;
 
 public class CompositeStateVisitor extends StateVisitor {
 
@@ -23,7 +24,7 @@ public class CompositeStateVisitor extends StateVisitor {
 	@Override
 	public boolean visit(TypeDeclaration node) {
 		if (!ElementTypeTeller.isVertex(node) && !ElementTypeTeller.isTransition(node)) {
-			collector.report(new UnknownClassInState(collector.getSourceInfo(), node));
+			collector.report(UNKNOWN_CLASS_IN_STATE.create(collector.getSourceInfo(), node));
 		} else {
 			handleStateMachineElements(node);
 		}

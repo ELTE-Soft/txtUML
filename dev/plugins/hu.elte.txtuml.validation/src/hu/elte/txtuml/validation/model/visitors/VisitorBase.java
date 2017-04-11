@@ -1,5 +1,7 @@
 package hu.elte.txtuml.validation.model.visitors;
 
+import static hu.elte.txtuml.validation.model.ModelErrors.INVALID_CHILDREN_ELEMENT;
+
 import java.util.List;
 
 import org.eclipse.jdt.core.dom.ASTNode;
@@ -11,7 +13,6 @@ import org.eclipse.jdt.core.dom.TypeDeclaration;
 import hu.elte.txtuml.utils.jdt.ElementTypeTeller;
 import hu.elte.txtuml.validation.model.Messages;
 import hu.elte.txtuml.validation.model.ProblemCollector;
-import hu.elte.txtuml.validation.model.problems.general.InvalidChildrenElement;
 
 /**
  * Base class for visitors checking validity of java AST as txtUML model.
@@ -36,13 +37,13 @@ public class VisitorBase extends ASTVisitor {
 				for (Object child : ((List<?>) node.getStructuralProperty(spd))) {
 					if (childForbidden(child, allowedChildrenTypes)) {
 						collector.report(
-								new InvalidChildrenElement(collector.getSourceInfo(), nodeStr, (ASTNode) child));
+								INVALID_CHILDREN_ELEMENT.create(collector.getSourceInfo(), (ASTNode) child, nodeStr));
 					}
 				}
 			} else if (spd.isChildProperty()) {
 				Object child = node.getStructuralProperty(spd);
 				if (child != null && childForbidden(child, allowedChildrenTypes)) {
-					collector.report(new InvalidChildrenElement(collector.getSourceInfo(), nodeStr, (ASTNode) child));
+					collector.report(INVALID_CHILDREN_ELEMENT.create(collector.getSourceInfo(), (ASTNode) child, nodeStr));
 				}
 			}
 

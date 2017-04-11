@@ -1,4 +1,4 @@
-package hu.elte.txtuml.validation.model;
+package hu.elte.txtuml.validation.common;
 
 import org.eclipse.jdt.core.dom.CompilationUnit;
 
@@ -9,18 +9,18 @@ import org.eclipse.jdt.core.dom.CompilationUnit;
  */
 public class SourceInfo {
 
-	private CompilationUnit compUnit;
+	private CompilationUnit compilationUnit;
 
 	public SourceInfo(CompilationUnit compilationUnit) {
-		this.compUnit = compilationUnit;
+		this.compilationUnit = compilationUnit;
 	}
 
 	public int getSourceLineNumber(int charIndex) {
-		return compUnit.getLineNumber(charIndex);
+		return compilationUnit.getLineNumber(charIndex);
 	}
 
 	public String getOriginatingFileName() {
-		return compUnit.getJavaElement().getPath().toOSString();
+		return compilationUnit.getJavaElement().getPath().toOSString();
 	}
 
 }

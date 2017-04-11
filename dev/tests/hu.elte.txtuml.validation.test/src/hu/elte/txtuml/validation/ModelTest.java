@@ -19,8 +19,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 import hu.elte.txtuml.utils.jdt.SharedUtils;
+import hu.elte.txtuml.validation.common.SourceInfo;
 import hu.elte.txtuml.validation.model.ProblemCollector;
-import hu.elte.txtuml.validation.model.SourceInfo;
 import hu.elte.txtuml.validation.model.problems.association.WrongCompositionEnds;
 import hu.elte.txtuml.validation.model.problems.association.WrongNumberOfAssociationEnds;
 import hu.elte.txtuml.validation.model.problems.association.WrongTypeInAssociation;

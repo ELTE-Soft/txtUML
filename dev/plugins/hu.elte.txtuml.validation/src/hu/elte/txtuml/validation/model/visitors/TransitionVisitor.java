@@ -1,5 +1,13 @@
 package hu.elte.txtuml.validation.model.visitors;
 
+import static hu.elte.txtuml.validation.model.ModelErrors.MISSING_TRANSITION_SOURCE;
+import static hu.elte.txtuml.validation.model.ModelErrors.MISSING_TRANSITION_TARGET;
+import static hu.elte.txtuml.validation.model.ModelErrors.MISSING_TRANSITION_TRIGGER;
+import static hu.elte.txtuml.validation.model.ModelErrors.TRANSITION_METHOD_NON_VOID_RETURN;
+import static hu.elte.txtuml.validation.model.ModelErrors.TRANSITION_METHOD_PARAMETERS;
+import static hu.elte.txtuml.validation.model.ModelErrors.TRIGGER_ON_INITIAL_TRANSITION;
+import static hu.elte.txtuml.validation.model.ModelErrors.UNKNOWN_TRANSITION_METHOD;
+
 import org.eclipse.jdt.core.dom.Annotation;
 import org.eclipse.jdt.core.dom.IAnnotationBinding;
 import org.eclipse.jdt.core.dom.IMemberValuePairBinding;
@@ -16,13 +24,6 @@ import hu.elte.txtuml.api.model.To;
 import hu.elte.txtuml.api.model.Trigger;
 import hu.elte.txtuml.utils.jdt.ElementTypeTeller;
 import hu.elte.txtuml.validation.model.ProblemCollector;
-import hu.elte.txtuml.validation.model.problems.transition.MissingTransitionSource;
-import hu.elte.txtuml.validation.model.problems.transition.MissingTransitionTarget;
-import hu.elte.txtuml.validation.model.problems.transition.MissingTransitionTrigger;
-import hu.elte.txtuml.validation.model.problems.transition.TransitionMethodNonVoidReturn;
-import hu.elte.txtuml.validation.model.problems.transition.TransitionMethodParameters;
-import hu.elte.txtuml.validation.model.problems.transition.TriggerOnInitialTransition;
-import hu.elte.txtuml.validation.model.problems.transition.UnknownTransitionMethod;
 
 public class TransitionVisitor extends VisitorBase {
 
@@ -39,20 +40,20 @@ public class TransitionVisitor extends VisitorBase {
 	@Override
 	public boolean visit(MethodDeclaration node) {
 		if (!ElementTypeTeller.isEffect(node) && !ElementTypeTeller.isGuard(node)) {
-			collector.report(new UnknownTransitionMethod(collector.getSourceInfo(), node));
+			collector.report(UNKNOWN_TRANSITION_METHOD.create(collector.getSourceInfo(), node));
 			return false;
 		}
 		if (ElementTypeTeller.isEffect(node)) {
 			if (!Utils.isVoid(node.getReturnType2())) {
-				collector.report(new TransitionMethodNonVoidReturn(collector.getSourceInfo(), node.getReturnType2()));
+				collector.report(TRANSITION_METHOD_NON_VOID_RETURN.create(collector.getSourceInfo(), node.getReturnType2()));
 			}
 		} else {
 			if (!Utils.isBoolean(node.getReturnType2())) {
-				collector.report(new TransitionMethodNonVoidReturn(collector.getSourceInfo(), node.getReturnType2()));
+				collector.report(TRANSITION_METHOD_NON_VOID_RETURN.create(collector.getSourceInfo(), node.getReturnType2()));
 			}
 		}
 		if (!node.parameters().isEmpty()) {
-			collector.report(new TransitionMethodParameters(collector.getSourceInfo(), node));
+			collector.report(TRANSITION_METHOD_PARAMETERS.create(collector.getSourceInfo(), node));
 		}
 
 		// TODO: validate body
@@ -95,10 +96,10 @@ public class TransitionVisitor extends VisitorBase {
 			}
 		}
 		if (fromValue == null) {
-			collector.report(new MissingTransitionSource(collector.getSourceInfo(), transition));
+			collector.report(MISSING_TRANSITION_SOURCE.create(collector.getSourceInfo(), transition));
 		}
 		if (toValue == null) {
-			collector.report(new MissingTransitionTarget(collector.getSourceInfo(), transition));
+			collector.report(MISSING_TRANSITION_TARGET.create(collector.getSourceInfo(), transition));
 		}
 		if (fromValue != null && toValue != null) {
 			checkTrigger(triggerAnnot, triggerValue, fromValue);
@@ -108,12 +109,12 @@ public class TransitionVisitor extends VisitorBase {
 	protected void checkTrigger(Annotation signal, ITypeBinding value, ITypeBinding fromValue) {
 		if (value == null && !ElementTypeTeller.isInitialPseudoState(fromValue)
 				&& !ElementTypeTeller.isChoicePseudoState(fromValue)) {
-			collector.report(new MissingTransitionTrigger(collector.getSourceInfo(), transition));
+			collector.report(MISSING_TRANSITION_TRIGGER.create(collector.getSourceInfo(), transition));
 		}
 		if (value != null && (ElementTypeTeller.isInitialPseudoState(fromValue)
 				|| ElementTypeTeller.isChoicePseudoState(fromValue))) {
 			collector.report(
-					new TriggerOnInitialTransition(collector.getSourceInfo(), signal != null ? signal : transition));
+					TRIGGER_ON_INITIAL_TRANSITION.create(collector.getSourceInfo(), signal != null ? signal : transition));
 		}
 	}
 
