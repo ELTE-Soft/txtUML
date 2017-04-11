@@ -11,8 +11,8 @@ import org.eclipse.jdt.core.dom.StructuralPropertyDescriptor;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 
 import hu.elte.txtuml.utils.jdt.ElementTypeTeller;
+import hu.elte.txtuml.validation.common.ProblemCollector;
 import hu.elte.txtuml.validation.model.Messages;
-import hu.elte.txtuml.validation.model.ProblemCollector;
 
 /**
  * Base class for visitors checking validity of java AST as txtUML model.

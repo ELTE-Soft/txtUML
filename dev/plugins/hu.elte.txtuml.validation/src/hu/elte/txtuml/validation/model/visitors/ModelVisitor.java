@@ -6,8 +6,8 @@ import org.eclipse.jdt.core.dom.EnumDeclaration;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 
 import hu.elte.txtuml.utils.jdt.ElementTypeTeller;
+import hu.elte.txtuml.validation.common.ProblemCollector;
 import hu.elte.txtuml.validation.model.Messages;
-import hu.elte.txtuml.validation.model.ProblemCollector;
 
 public class ModelVisitor extends VisitorBase {
 

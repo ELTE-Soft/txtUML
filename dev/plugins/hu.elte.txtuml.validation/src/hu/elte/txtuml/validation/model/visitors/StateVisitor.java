@@ -9,7 +9,7 @@ import org.eclipse.jdt.core.dom.Modifier;
 import org.eclipse.jdt.core.dom.SimpleName;
 import org.eclipse.jdt.core.dom.SimpleType;
 
-import hu.elte.txtuml.validation.model.ProblemCollector;
+import hu.elte.txtuml.validation.common.ProblemCollector;
 
 public class StateVisitor extends VisitorBase {
 

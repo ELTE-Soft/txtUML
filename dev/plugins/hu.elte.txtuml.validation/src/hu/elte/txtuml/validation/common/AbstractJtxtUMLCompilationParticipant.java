@@ -1,4 +1,4 @@
-package hu.elte.txtuml.validation.model;
+package hu.elte.txtuml.validation.common;
 
 import java.io.File;
 import java.io.IOException;
@@ -14,25 +14,25 @@ import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.compiler.BuildContext;
+import org.eclipse.jdt.core.compiler.CompilationParticipant;
 import org.eclipse.jdt.core.compiler.ReconcileContext;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 
 import hu.elte.txtuml.utils.Logger;
-import hu.elte.txtuml.utils.jdt.ElementTypeTeller;
 import hu.elte.txtuml.utils.jdt.SharedUtils;
-import hu.elte.txtuml.validation.model.visitors.ModelVisitor;
 
 /**
- * Compilation participant for JtxtUML validation. Performs validation on
- * reconcile events (not typing for a few seconds) and build events
+ * Abstract base class for JtxtUML validation compilation participants.
  */
-public class JtxtUMLCompilationParticipant extends org.eclipse.jdt.core.compiler.CompilationParticipant {
+public abstract class AbstractJtxtUMLCompilationParticipant extends CompilationParticipant {
 
-	private static final String TXTUML_NATURE_ID = "hu.elte.txtuml.project.txtumlprojectNature"; //$NON-NLS-1$
-	public static final String JTXTUML_MARKER_TYPE = "hu.elte.txtuml.validation.jtxtumlmarker"; //$NON-NLS-1$
+	public static final String TXTUML_NATURE_ID = "hu.elte.txtuml.project.txtumlprojectNature"; //$NON-NLS-1$
 
 	private Map<IJavaProject, Set<BuildContext>> javaProjectToFileSet = new HashMap<>();
 
+	/**
+	 * Returns true if the project has the txtUML nature.
+	 */
 	@Override
 	public boolean isActive(IJavaProject project) {
 		try {
@@ -52,10 +52,8 @@ public class JtxtUMLCompilationParticipant extends org.eclipse.jdt.core.compiler
 	public void reconcile(ReconcileContext context) {
 		try {
 			CompilationUnit unit = context.getAST8();
-			ProblemCollector collector = new ProblemCollector(context);
-			if (ElementTypeTeller.isModelElement(unit)) {
-				unit.accept(new ModelVisitor(collector));
-			}
+			ProblemCollector collector = new ProblemCollector(getMarkerType(), context);
+			validate(unit, collector);
 			collector.refreshProblems();
 		} catch (Exception e) {
 			Logger.sys.error("Error while checking for problems", e); //$NON-NLS-1$
@@ -81,15 +79,11 @@ public class JtxtUMLCompilationParticipant extends org.eclipse.jdt.core.compiler
 	@Override
 	public void buildFinished(IJavaProject javaProject) {
 		Set<BuildContext> projectFileSet = javaProjectToFileSet.get(javaProject);
-		if (projectFileSet == null) { // buildFinished might be called without
-										// buildStarting
+		if (projectFileSet == null) {
+			// 'buildFinished' might be called without 'buildStarting'
 			return;
 		}
-
-		for (BuildContext file : projectFileSet) {
-			validateFile(file, javaProject);
-		}
-
+		projectFileSet.forEach(f -> validateFile(f, javaProject));
 		javaProjectToFileSet.remove(javaProject);
 	}
 
@@ -110,18 +104,22 @@ public class JtxtUMLCompilationParticipant extends org.eclipse.jdt.core.compiler
 			// Validation is not possible, return.
 			return;
 		}
-		if (unit == null || !ElementTypeTeller.isModelElement(unit)) {
+		if (unit == null) {
 			// Validation is not possible, return.
 			return;
 		}
 
 		try {
-			ProblemCollector collector = new ProblemCollector(unit, file.getFile());
-			unit.accept(new ModelVisitor(collector));
+			ProblemCollector collector = new ProblemCollector(getMarkerType(), unit, file.getFile());
+			validate(unit, collector);
 			collector.refreshProblems();
 		} catch (JavaModelException e) {
 			Logger.sys.error("Error while creating problem collector", e); //$NON-NLS-1$
 		}
 	}
+
+	protected abstract String getMarkerType();
+
+	protected abstract void validate(CompilationUnit unit, ProblemCollector collector);
 
 }

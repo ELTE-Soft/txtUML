@@ -12,7 +12,7 @@ import org.eclipse.jdt.core.dom.SimpleName;
 import org.eclipse.jdt.core.dom.SimpleType;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 
-import hu.elte.txtuml.validation.model.ProblemCollector;
+import hu.elte.txtuml.validation.common.ProblemCollector;
 
 public class SignalVisitor extends VisitorBase {
 

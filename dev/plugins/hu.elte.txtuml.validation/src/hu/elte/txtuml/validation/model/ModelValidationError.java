@@ -8,7 +8,7 @@ import hu.elte.txtuml.validation.common.ValidationProblem;
 /**
  * Base class for all JtxtUML model problems.
  */
-public abstract class ModelValidationError extends ValidationProblem.Error {
+public abstract class ModelValidationError extends ValidationProblem {
 
 	public ModelValidationError(SourceInfo sourceInfo, ASTNode node) {
 		super(sourceInfo, node);
@@ -20,8 +20,13 @@ public abstract class ModelValidationError extends ValidationProblem.Error {
 	public abstract ModelErrors getType();
 
 	@Override
+	public boolean isError() {
+		return true;
+	}
+	
+	@Override
 	public String getMarkerType() {
-		return JtxtUMLCompilationParticipant.JTXTUML_MARKER_TYPE;
+		return JtxtUMLModelCompilationParticipant.JTXTUML_MODEL_MARKER_TYPE;
 	}
 	
 	@Override

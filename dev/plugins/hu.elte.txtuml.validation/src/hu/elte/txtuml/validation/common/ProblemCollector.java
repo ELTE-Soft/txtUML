@@ -1,8 +1,8 @@
-package hu.elte.txtuml.validation.model;
+package hu.elte.txtuml.validation.common;
 
 import java.util.ArrayList;
+import java.util.List;
 
-import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
@@ -11,23 +11,23 @@ import org.eclipse.jdt.core.compiler.ReconcileContext;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 
 import hu.elte.txtuml.utils.Logger;
-import hu.elte.txtuml.validation.common.SourceInfo;
+import hu.elte.txtuml.validation.model.ModelValidationError;
 
 public class ProblemCollector {
 
-	private ArrayList<ModelValidationError> problems = new ArrayList<>();
-	private SourceInfo sourceInfo;
-	private IResource resource;
+	private final List<ModelValidationError> problems = new ArrayList<>();
+	private final String markerType;
+	private final SourceInfo sourceInfo;
+	private final IResource resource;
 
-	public ProblemCollector(CompilationUnit unit, IFile file) throws JavaModelException {
-		this.problems = new ArrayList<ModelValidationError>();
+	public ProblemCollector(String markerType, CompilationUnit unit, IResource resource) throws JavaModelException {
+		this.markerType = markerType;
 		this.sourceInfo = new SourceInfo(unit);
-		resource = file;
+		this.resource = resource;
 	}
 
-	public ProblemCollector(ReconcileContext context) throws JavaModelException {
-		resource = context.getWorkingCopy().getResource();
-		this.sourceInfo = new SourceInfo(context.getAST8());
+	public ProblemCollector(String markerType, ReconcileContext context) throws JavaModelException {
+		this(markerType, context.getAST8(), context.getWorkingCopy().getResource());
 	}
 
 	/**
@@ -43,17 +43,24 @@ public class ProblemCollector {
 
 	public void refreshProblems() {
 		if (resource == null) {
-			// collector is not active
+			// Collector is not active.
 			return;
 		}
 		try {
-			resource.deleteMarkers(JtxtUMLCompilationParticipant.JTXTUML_MARKER_TYPE, true, IResource.DEPTH_ZERO);
+			resource.deleteMarkers(markerType, true, IResource.DEPTH_ZERO);
 			for (ModelValidationError problem : problems) {
 				IMarker marker = resource.createMarker(problem.getMarkerType());
 				marker.setAttribute(IMarker.CHAR_START, problem.getSourceStart());
 				marker.setAttribute(IMarker.CHAR_END, problem.getSourceEnd());
-				marker.setAttribute(IMarker.SEVERITY,
-						problem.isWarning() ? IMarker.SEVERITY_WARNING : IMarker.SEVERITY_ERROR);
+				int severity;
+				if (problem.isError()) {
+					severity = IMarker.SEVERITY_ERROR;
+				} else if (problem.isWarning()) {
+					severity = IMarker.SEVERITY_WARNING;
+				} else {
+					severity = IMarker.SEVERITY_INFO;
+				}
+				marker.setAttribute(IMarker.SEVERITY, severity);
 				marker.setAttribute(IMarker.MESSAGE, problem.getMessage());
 			}
 			problems.clear();

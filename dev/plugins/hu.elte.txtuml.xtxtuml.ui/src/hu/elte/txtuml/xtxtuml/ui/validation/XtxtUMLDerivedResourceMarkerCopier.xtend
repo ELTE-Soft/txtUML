@@ -3,7 +3,6 @@ package hu.elte.txtuml.xtxtuml.ui.validation;
 import com.google.common.collect.ImmutableSet
 import com.google.inject.Inject
 import hu.elte.txtuml.utils.Logger
-import hu.elte.txtuml.validation.model.JtxtUMLCompilationParticipant
 import hu.elte.txtuml.xtxtuml.validation.XtxtUMLIssueCodes
 import java.util.Set
 import org.eclipse.core.resources.IFile
@@ -25,6 +24,7 @@ import org.eclipse.xtext.util.TextRegion
 import org.eclipse.xtext.validation.CheckType
 import org.eclipse.xtext.validation.Issue
 import org.eclipse.xtext.validation.IssueSeveritiesProvider
+import hu.elte.txtuml.validation.model.JtxtUMLModelCompilationParticipant
 
 class XtxtUMLDerivedResourceMarkerCopier extends DerivedResourceMarkerCopier {
 
@@ -128,7 +128,7 @@ class XtxtUMLDerivedResourceMarkerCopier extends DerivedResourceMarkerCopier {
 
 	private def findJtxtUMLProblemMarker(IFile javaFile, int maxSeverity) throws CoreException {
 		var problems = newHashSet()
-		for (marker : javaFile.findMarkers(JtxtUMLCompilationParticipant.JTXTUML_MARKER_TYPE, true,
+		for (marker : javaFile.findMarkers(JtxtUMLModelCompilationParticipant.JTXTUML_MODEL_MARKER_TYPE, true,
 			IResource.DEPTH_ZERO)) {
 			if (MarkerUtilities.getSeverity(marker) >= maxSeverity) {
 				problems.add(marker)

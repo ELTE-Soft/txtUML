@@ -14,7 +14,7 @@ import org.eclipse.jdt.core.dom.SimpleType;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 
 import hu.elte.txtuml.utils.jdt.ElementTypeTeller;
-import hu.elte.txtuml.validation.model.ProblemCollector;
+import hu.elte.txtuml.validation.common.ProblemCollector;
 
 public class DataTypeVisitor extends VisitorBase {
 

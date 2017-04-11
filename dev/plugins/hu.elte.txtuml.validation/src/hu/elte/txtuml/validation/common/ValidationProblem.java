@@ -5,10 +5,9 @@ import org.eclipse.jdt.core.dom.ASTNode;
 
 /**
  * Base class for all txtUML validation problems.
- * 
- * @see ValidationProblem.Error
- * @see ValidationProblem.Warning
- * @see ValidationProblem.Info
+ * <p>
+ * By default, {@link #isError}, {@link #isWarning} and {@link isInfo} all
+ * return false.
  */
 public abstract class ValidationProblem extends CategorizedProblem {
 
@@ -40,6 +39,21 @@ public abstract class ValidationProblem extends CategorizedProblem {
 	}
 
 	@Override
+	public boolean isError() {
+		return false;
+	}
+
+	@Override
+	public boolean isWarning() {
+		return false;
+	}
+
+	@Override
+	public boolean isInfo() {
+		return super.isInfo();
+	}
+
+	@Override
 	public int getSourceStart() {
 		return sourceStart;
 	}
@@ -67,65 +81,6 @@ public abstract class ValidationProblem extends CategorizedProblem {
 	@Override
 	public void setSourceLineNumber(int lineNumber) {
 		this.lineNumber = lineNumber;
-	}
-
-	public static abstract class Error extends ValidationProblem {
-
-		public Error(SourceInfo sourceInfo, ASTNode node) {
-			super(sourceInfo, node);
-		}
-
-		@Override
-		public boolean isError() {
-			return true;
-		}
-
-		@Override
-		public boolean isWarning() {
-			return false;
-		}
-
-	}
-
-	public static abstract class Warning extends ValidationProblem {
-
-		public Warning(SourceInfo sourceInfo, ASTNode node) {
-			super(sourceInfo, node);
-		}
-
-		@Override
-		public boolean isError() {
-			return false;
-		}
-
-		@Override
-		public boolean isWarning() {
-			return true;
-		}
-
-	}
-
-	public static abstract class Info extends ValidationProblem {
-
-		public Info(SourceInfo sourceInfo, ASTNode node) {
-			super(sourceInfo, node);
-		}
-
-		@Override
-		public boolean isError() {
-			return false;
-		}
-
-		@Override
-		public boolean isWarning() {
-			return false;
-		}
-
-		@Override
-		public boolean isInfo() {
-			return true;
-		}
-
 	}
 
 }

@@ -33,6 +33,9 @@ import static org.mockito.Mockito.when;
 import java.io.File;
 import java.io.IOException;
 
+import org.eclipse.core.resources.IResource;
+import org.eclipse.jdt.core.JavaModelException;
+import org.eclipse.jdt.core.compiler.ReconcileContext;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.CompilationUnit;
@@ -42,10 +45,11 @@ import org.junit.Test;
 import org.mockito.ArgumentMatcher;
 
 import hu.elte.txtuml.utils.jdt.SharedUtils;
+import hu.elte.txtuml.validation.common.ProblemCollector;
 import hu.elte.txtuml.validation.common.SourceInfo;
+import hu.elte.txtuml.validation.model.JtxtUMLModelCompilationParticipant;
 import hu.elte.txtuml.validation.model.ModelErrors;
 import hu.elte.txtuml.validation.model.ModelValidationError;
-import hu.elte.txtuml.validation.model.ProblemCollector;
 import hu.elte.txtuml.validation.model.visitors.ModelVisitor;
 
 public class ModelTest {
@@ -63,7 +67,7 @@ public class ModelTest {
 
 	@Before
 	public void before() {
-		mockCollector = mock(ProblemCollector.class);
+		mockCollector = mock(ModelProblemCollector.class);
 		SourceInfo sourceInfo = mock(SourceInfo.class);
 		when(mockCollector.getSourceInfo()).thenReturn(sourceInfo);
 		when(sourceInfo.getOriginatingFileName()).thenReturn("");
@@ -303,6 +307,18 @@ public class ModelTest {
 				return ((ModelValidationError) argument).getType() == type;
 			}
 		});
+	}
+
+	public static class ModelProblemCollector extends ProblemCollector {
+
+		public ModelProblemCollector(CompilationUnit unit, IResource resource) throws JavaModelException {
+			super(JtxtUMLModelCompilationParticipant.JTXTUML_MODEL_MARKER_TYPE, unit, resource);
+		}
+
+		public ModelProblemCollector(ReconcileContext context) throws JavaModelException {
+			super(JtxtUMLModelCompilationParticipant.JTXTUML_MODEL_MARKER_TYPE, context);
+		}
+
 	}
 
 }
