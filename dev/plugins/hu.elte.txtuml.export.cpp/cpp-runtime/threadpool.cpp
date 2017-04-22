@@ -3,33 +3,32 @@
 #include <complex> 
 
 #include "threadpool.hpp"
+namespace Execution 
+{
+StateMachineThreadPool::StateMachineThreadPool() :stop(true) {}
 
-
-
-StateMachineThreadPool::StateMachineThreadPool():stop(true){}
-	
 void StateMachineThreadPool::stopPool()
 {
 	stop = true;
-	cond.notify_all();
-	
+	stateMachines.stopQueue();
+
 }
 
 void StateMachineThreadPool::startPool(int n)
 {
-	
+	stateMachines.startQueue();
 	stop = false;
 	modifiedThreads(n);
-        
+
 }
 
 void StateMachineThreadPool::stopUponCompletion(std::atomic_int* messages)
 {
 	std::unique_lock<std::mutex> lock(stop_request_mu);
-	
-	if (!( (*messages) == 0 && (*worker_threads) == 0))
+
+	if (!((*messages) == 0 && (*worker_threads) == 0))
 	{
-		stop_request_cond->wait(lock, [this,messages] {return (*messages) == 0 && *(this->worker_threads) == 0; });
+		stop_request_cond->wait(lock, [this, messages] {return (*messages) == 0 && *(this->worker_threads) == 0; });
 	}
 
 	stopPool();
@@ -37,91 +36,75 @@ void StateMachineThreadPool::stopUponCompletion(std::atomic_int* messages)
 }
 
 void StateMachineThreadPool::task()
-{	
+{
 	while (!this->stop && !workers.isReadyToStop(std::this_thread::get_id()))
-    {
-		
-		std::unique_lock<std::mutex> mlock(mu);
-		
-		StateMachineI* sm = nullptr;
-		while(!sm && !this->stop)
+	{
+
+
+
+		ES::StateMachineRef sm = nullptr;
+		while (sm == nullptr && !this->stop)
 		{
-			
-			if(!stateMachines.empty())
-			{
-				incrementWorkers();
-				stateMachines.pop_front(sm);			
-							
-			}
-			else if (workers.isReadyToStop(std::this_thread::get_id()))
+
+			if (workers.isReadyToStop(std::this_thread::get_id()))
 			{
 				return;
 			}
-			else
-			{
-				cond.wait(mlock);
-			}
+
+			stateMachines.dequeue(sm);
+			incrementWorkers();
 		}
-		mlock.unlock();
-		
-	
-		if(sm)
+
+
+		if (sm != nullptr)
 		{
-			
-			if(sm->isStarted() && sm->isInitialized())
+
+			if (!sm->isInitialized()) sm->init();
+			for (int i = 0; i < 5 && !sm->emptyMessageQueue(); ++i)
 			{
-				for(int i = 0; i < 5 && !sm->emptyMessageQueue(); ++i)
-				{
-					sm->processEventVirtual();
-				}
-					
+				sm->processEventVirtual();
 			}
-			else if(sm->isStarted() && !sm->isInitialized())
+
+
+			if (!sm->emptyMessageQueue())
 			{
-				sm->init();
-			}
-			
-			if(!sm->emptyMessageQueue())
-			{
-				stateMachines.push_back(sm);
+				stateMachines.enqueue(sm);
 			}
 			else
 			{
 				sm->setPooled(false);
 			}
-			
-			reduceWorkers();
 
+			reduceWorkers();
 			stop_request_cond->notify_one();
-			
 		}
-					
-    }
-	
+
+	}
+
 }
 
 void StateMachineThreadPool::modifiedThreads(int n)
 {
-	if(!stop) 
+	if (!stop)
 	{
 		std::unique_lock<std::mutex> mlock(modifie_mutex);
-		
+
 		workers.setExpectedThreads(n);
-		if (workers.isTooManyWorkes())
+		if (workers.isTooManyWorkers())
 		{
 			workers.gettingThreadsReadyToStop(cond);
 		}
-		while (workers.isTooFewWorkes())
+		while (workers.isTooFewWorkers())
 		{
-			workers.addThread(new std::thread(&StateMachineThreadPool::task,this));
+			workers.addThread(new std::thread(&StateMachineThreadPool::task, this));
 		}
 	}
-	
+
 }
 
 
 void StateMachineThreadPool::incrementWorkers()
-{	
+{
 	(*worker_threads)++;
 
 }
@@ -131,14 +114,15 @@ void StateMachineThreadPool::reduceWorkers()
 	(*worker_threads)--;
 }
 
-void StateMachineThreadPool::enqueObject(StateMachineI* sm)
+void StateMachineThreadPool::enqueueObject(ES::StateMachineRef sm)
 {
-        stateMachines.push_back(sm);
-        cond.notify_one();
+	stateMachines.enqueue(sm);
 }
 
 StateMachineThreadPool::~StateMachineThreadPool()
 {
-    stopPool();
+	stopPool();
 	workers.removeAll();
 }
+}
+

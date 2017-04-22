@@ -10,43 +10,44 @@
 #include <atomic>
 
 #include "threadcontainer.hpp"
-#include "runtimetypes.hpp"
-#include "statemachineI.hpp"
+#include "istatemachine.hpp"
+
+namespace Execution
+{
 
 class StateMachineThreadPool {
-	
+
 public:
 	StateMachineThreadPool();
 	void task();
-	void enqueObject(StateMachineI*);
+	void enqueueObject(ES::StateMachineRef);
 	void stopPool();
 	void stopUponCompletion(std::atomic_int*);
 	void startPool(int);
 	void modifiedThreads(int);
-	void setWorkersCounter(std::atomic_int* counter) {this->worker_threads = counter;}
-	void setStopReqest(std::condition_variable* stop_req) {stop_request_cond = stop_req;}
+	void setWorkersCounter(std::atomic_int* counter) { this->worker_threads = counter; }
+	void setStopReqest(std::condition_variable* stop_req) { stop_request_cond = stop_req; }
 	~StateMachineThreadPool();
 private:
-	
+
 	ThreadContainer workers;
 	// the task queue
-	PoolQueueType stateMachines; //must be blocking queue
-	
+	ES::PoolQueueType stateMachines; //must be blocking queue
+
 	void incrementWorkers();
 	void reduceWorkers();
 
 	// synchronization
 	std::atomic_bool stop;
-	
 	std::atomic_int* worker_threads;
-	
 	std::condition_variable cond;
 	std::condition_variable* stop_request_cond;
-
-	std::mutex mu;
 	std::mutex modifie_mutex;
 	std::mutex stop_request_mu;
 };
+
+}
+
 
 
 #endif

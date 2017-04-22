@@ -45,16 +45,17 @@ import hu.elte.txtuml.api.model.runtime.PortWrapper;
  * <li><i>Be abstract:</i> disallowed</li>
  * <li><i>Generic parameters:</i> disallowed</li>
  * <li><i>Constructors:</i> allowed, only with parameters of types which are
- * subclasses of <code>ModelClass</code> or primitives (including {@code String}
- * )</li>
+ * subclasses of <code>ModelClass</code>, signals, data types, model enums,
+ * external classes or primitives (including {@code String})</li>
  * <li><i>Initialization blocks:</i> allowed, containing only simple assignments
  * to set the default values of its fields</li>
- * <li><i>Fields:</i> allowed, only of types which are subclasses of
- * <code>ModelClass</code> or primitives (including {@code String}); they
- * represent attributes of the model class</li>
+ * <li><i>Fields:</i> allowed, only with parameters of types which are data
+ * types, model enums, external classes or primitives (including {@code String}
+ * ); they represent attributes of the model class</li>
  * <li><i>Methods:</i> allowed, only with parameters and return values of types
- * which are subclasses of <code>ModelClass</code> or primitives (including
- * {@code String}); they represent operations of the model class</li>
+ * which are subclasses of <code>ModelClass</code>, signals, data types, model
+ * enums, external classes or primitives (including {@code String}); they
+ * represent operations of the model class</li>
  * <li><i>Nested interfaces:</i> disallowed</li>
  * <li><i>Nested classes:</i> allowed, only non-static and extending either
  * {@link StateMachine.Vertex} or {@link StateMachine.Transition}</li>

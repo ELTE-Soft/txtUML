@@ -3,13 +3,14 @@ package hu.elte.txtuml.xtxtuml.validation;
 import hu.elte.txtuml.api.model.DataType
 import hu.elte.txtuml.api.model.ModelClass
 import hu.elte.txtuml.api.model.ModelClass.Port
+import hu.elte.txtuml.api.model.ModelEnum
 import hu.elte.txtuml.api.model.Signal
 import hu.elte.txtuml.api.model.external.ExternalType
-import hu.elte.txtuml.xtxtuml.xtxtUML.RAlfDeleteObjectExpression
-import hu.elte.txtuml.xtxtuml.xtxtUML.RAlfSendSignalExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAttributeOrOperationDeclarationPrefix
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUClassPropertyAccessExpression
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUDeleteObjectExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUOperation
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUSendSignalExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUSignalAttribute
 import org.eclipse.emf.ecore.EObject
 import org.eclipse.emf.ecore.EStructuralFeature
@@ -51,28 +52,28 @@ class XtxtUMLTypeValidator extends XtxtUMLUniquenessValidator {
 		if (!isValid) {
 			error(
 				if (isAttribute) {
-					"Invalid type. Only boolean, double, int, String, model data types and external interfaces are allowed."
+					"Invalid type. Only boolean, double, int, String, model enums, model data types and external interfaces are allowed."
 				} else {
-					"Invalid type. Only boolean, double, int, String, model data types, external interfaces and model class types are allowed."
+					"Invalid type. Only boolean, double, int, String, model enums, model data types, external interfaces, signal and model class types are allowed."
 				}, typeRef, TypesPackage.Literals.JVM_PARAMETERIZED_TYPE_REFERENCE__TYPE, INVALID_TYPE);
 		}
 	}
 
 	@Check
-	def checkSendSignalExpressionTypes(RAlfSendSignalExpression sendExpr) {
+	def checkSendSignalExpressionTypes(TUSendSignalExpression sendExpr) {
 		if (!sendExpr.signal.isConformantWith(Signal, false)) {
-			typeMismatch("Signal", sendExpr, RALF_SEND_SIGNAL_EXPRESSION__SIGNAL);
+			typeMismatch("Signal", sendExpr, TU_SEND_SIGNAL_EXPRESSION__SIGNAL);
 		}
 
 		if (!sendExpr.target.isConformantWith(ModelClass, false) && !sendExpr.target.isConformantWith(Port, false)) {
-			typeMismatch("Class or Port", sendExpr, RALF_SEND_SIGNAL_EXPRESSION__TARGET);
+			typeMismatch("Class or Port", sendExpr, TU_SEND_SIGNAL_EXPRESSION__TARGET);
 		}
 	}
 
 	@Check
-	def checkDeleteObjectExpressionTypes(RAlfDeleteObjectExpression deleteExpr) {
+	def checkDeleteObjectExpressionTypes(TUDeleteObjectExpression deleteExpr) {
 		if (!deleteExpr.object.isConformantWith(ModelClass, false)) {
-			typeMismatch("Class", deleteExpr, RALF_DELETE_OBJECT_EXPRESSION__OBJECT)
+			typeMismatch("Class", deleteExpr, TU_DELETE_OBJECT_EXPRESSION__OBJECT)
 		}
 	}
 
@@ -84,11 +85,13 @@ class XtxtUMLTypeValidator extends XtxtUMLUniquenessValidator {
 	}
 
 	def protected isAllowedParameterType(JvmTypeReference typeRef, boolean isVoidAllowed) {
-		isAllowedAttributeType(typeRef, isVoidAllowed) || typeRef.isConformantWith(ModelClass)
+		isAllowedAttributeType(typeRef, isVoidAllowed) || typeRef.isConformantWith(ModelClass) ||
+			typeRef.isConformantWith(Signal)
 	}
 
 	def protected isAllowedAttributeType(JvmTypeReference typeRef, boolean isVoidAllowed) {
 		isAllowedBasicType(typeRef, isVoidAllowed) || typeRef.isConformantWith(DataType) ||
+			typeRef.isConformantWith(ModelEnum) ||
 			typeRef.type.isInterface && typeRef.isConformantWith(ExternalType)
 	}
 

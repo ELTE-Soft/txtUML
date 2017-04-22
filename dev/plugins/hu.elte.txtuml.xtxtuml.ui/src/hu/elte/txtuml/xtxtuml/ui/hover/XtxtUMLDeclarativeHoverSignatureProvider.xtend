@@ -1,4 +1,4 @@
-package hu.elte.txtuml.xtxtuml.ui.hover
+package hu.elte.txtuml.xtxtuml.ui.hover;
 
 import com.google.inject.Inject
 import hu.elte.txtuml.xtxtuml.ui.labeling.XtxtUMLLabelProvider
@@ -10,10 +10,16 @@ class XtxtUMLDeclarativeHoverSignatureProvider extends XbaseDeclarativeHoverSign
 
 	@Inject XtxtUMLLabelProvider labelProvider;
 
+	/**
+	 * Overrides the default implementation to provide Java-like operation signatures.
+	 */
 	override getSignature(EObject obj) {
 		if(obj instanceof TUOperation) labelProvider.text(obj, true).toString else labelProvider.getText(obj)
 	}
 
+	/**
+	 * Overrides the default implementation to use simple signatures.
+	 */
 	override getDerivedOrSourceSignature(EObject obj) {
 		getSignature(obj);
 	}

@@ -5,3 +5,4 @@ outlet.DEFAULT_OUTPUT.installDslAsPrimarySource=false
 outlet.DEFAULT_OUTPUT.sourceFolder.src.directory=xtend-gen
 outlet.DEFAULT_OUTPUT.sourceFolder.xtend-gen.directory=xtend-gen
 outlet.DEFAULT_OUTPUT.userOutputPerSourceFolder=true
+org.eclipse.xtext.xbase.validation.IssueCodes.discouraged_reference=ignore

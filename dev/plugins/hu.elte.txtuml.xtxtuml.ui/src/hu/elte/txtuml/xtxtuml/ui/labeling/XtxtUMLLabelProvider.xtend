@@ -1,4 +1,4 @@
-package hu.elte.txtuml.xtxtuml.ui.labeling
+package hu.elte.txtuml.xtxtuml.ui.labeling;
 
 import com.google.inject.Inject
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAssociation
@@ -10,6 +10,8 @@ import hu.elte.txtuml.xtxtuml.xtxtUML.TUConnector
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUConnectorEnd
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUConstructor
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUEntryOrExitActivity
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUEnumeration
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUEnumerationLiteral
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUExecution
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUFile
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUInterface
@@ -34,8 +36,6 @@ import org.eclipse.xtext.xbase.ui.labeling.XbaseLabelProvider
 
 /**
  * Provides labels for EObjects.
- * 
- * See https://www.eclipse.org/Xtext/documentation/304_ide_concepts.html#label-provider
  */
 class XtxtUMLLabelProvider extends XbaseLabelProvider {
 
@@ -44,6 +44,10 @@ class XtxtUMLLabelProvider extends XbaseLabelProvider {
 		super(delegate);
 	}
 
+	/**
+	 * @returns <code>null</null>
+	 * (customized icon is used instead, see {@link #image(JvmGenericType)})
+	 */
 	override protected dispatch imageDescriptor(JvmGenericType genericType) {
 		null
 	}
@@ -70,6 +74,14 @@ class XtxtUMLLabelProvider extends XbaseLabelProvider {
 
 	def image(TUClass it) {
 		"uml2/Class.gif"
+	}
+
+	def image(TUEnumeration it) {
+		"uml2/Enumeration.gif"
+	}
+
+	def image(TUEnumerationLiteral it) {
+		"uml2/EnumerationLiteral.gif"
 	}
 
 	def image(TUSignal it) {
@@ -282,6 +294,11 @@ class XtxtUMLLabelProvider extends XbaseLabelProvider {
 		}
 	}
 
+	/**
+	 * Creates a StyledString, concatenating the given name and details
+	 * section with a colon, where the latter will be formatted with the
+	 * default decorations styler.
+	 */
 	def private createStyledOutlineText(String name, String details) {
 		new StyledString(name).append(new StyledString(
 			" : " + details,

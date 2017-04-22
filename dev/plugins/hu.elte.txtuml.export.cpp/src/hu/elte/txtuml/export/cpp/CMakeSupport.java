@@ -223,6 +223,6 @@ class CMakeSupport {
 			fileContent.append("endif()\n");
 		}
 
-		Shared.writeOutSource(targetRootPath, CMAKE_FILE_NAME, fileContent.toString());
+		CppExporterUtils.writeOutSource(targetRootPath, CMAKE_FILE_NAME, fileContent.toString());
 	}
 }

@@ -31,7 +31,7 @@ import hu.elte.txtuml.api.model.external.ExternalClass;
  * If a package is marked as a model then all {@code .java} files in that
  * package and its subpackages are considered parts of the model and therefore
  * should be valid model elements.
- * <p>
+ * </p>
  * 
  * <h1>Modeling in JtxtUML</h1>
  * 
