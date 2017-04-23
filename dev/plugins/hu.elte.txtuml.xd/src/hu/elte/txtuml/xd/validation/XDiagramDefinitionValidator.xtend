@@ -3,13 +3,12 @@
  */
 package hu.elte.txtuml.xd.validation
 
-
 /**
  * This class contains custom validation rules. 
  *
  * See https://www.eclipse.org/Xtext/documentation/303_runtime_concepts.html#validation
  */
-class XDiagramDefinitionValidator extends AbstractXDiagramDefinitionValidator {
+class XDiagramDefinitionValidator extends XDiagramDiamondValidator {
 	
 //	public static val INVALID_NAME = 'invalidName'
 //

@@ -19,7 +19,7 @@ PackageDeclaration:
 
 DiagramSignature :
 	// generic types
-	diagramType = "state-machine-diagram" name=ID "for" genArg=[types::JvmType|QualifiedName] |
+	diagramType = "state-machine-diagram" name=ID "for" genArg=[types::JvmGenericType|QualifiedName] |
 	// non-generic types
 	diagramType = "class-diagram" name=ID
 ;
@@ -57,9 +57,9 @@ UnaryNumberInstruction:
 	val = WrappedNumericExpression
 ;
 
-DiamondArgName:
-	"top" | "right" | "bottom" | "left"
-;
+//DiamondArgName:
+//	"top" | "right" | "bottom" | "left"
+//;
 
 DiamondInstruction:
 	op = "diamond" args = WrappedArgumentExpressionList
@@ -101,7 +101,7 @@ WrappedTypeExpression :
 
 TypeExpression :
 	phantom="phantom" | 
-	name=[types::JvmType|QualifiedName]
+	name=[types::JvmGenericType|QualifiedName]
 ;
 
 WrappedArgumentExpressionList : 

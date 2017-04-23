@@ -80,6 +80,8 @@ class XDiagramDefinitionJvmModelInferrer extends AbstractModelInferrer {
 
 	var currentDiagramClass = null as JvmGenericType;
 	var currentLayoutClass = null as JvmGenericType;
+	
+	var anonPhantoms = newArrayList();
 
 	def dispatch void infer(Instruction element, IJvmDeclaredTypeAcceptor acceptor, boolean isPreIndexingPhase) {
 		println("infer called with instruction: " + element);		
@@ -107,7 +109,7 @@ class XDiagramDefinitionJvmModelInferrer extends AbstractModelInferrer {
 //		element.associate(result);
 		acceptor.accept(result);
 		
-		currentLayoutClass = element.toClass("$Layout")[
+		currentLayoutClass = element.toClass("__Layout")[
 			superTypes += Layout.typeRef();
 			declaringType = currentDiagramClass;
 		];		
@@ -123,8 +125,8 @@ class XDiagramDefinitionJvmModelInferrer extends AbstractModelInferrer {
 		var groupType = element.toClass(element.name) [
 			documentation = element.documentation;
 			declaringType = currentDiagramClass;
-			superTypes += NodeGroup.typeRef(); //TODO: not super.NodeGroup, but diagramClass.NodeGroup //new JvmTypeReferenceBuilder().typeRef("hu.elte.txtuml.api.layout.Diagram.NodeGroup");
-			annotations += createAnnotationTEList(Contains, "value" -> element.^val.wrapped);
+			superTypes += NodeGroup.typeRef();
+			annotations += Contains.createAnnotationTEList("value" -> element.^val.wrapped);
 		]
 		acceptor.accept(groupType);
 	}
@@ -161,6 +163,45 @@ class XDiagramDefinitionJvmModelInferrer extends AbstractModelInferrer {
 			declaringType = currentDiagramClass;
 			superTypes += Diagram.Phantom.typeRef();
 		]);
+	}
+	
+
+	def dispatch void infer(DiamondInstruction element, IJvmDeclaredTypeAcceptor acceptor, boolean isPreIndexingPhase) {
+		println("infer called with bin-id-instruction: " + element);
+		
+		var top = null as ArgumentExpression;
+		var right = null as ArgumentExpression;
+		var bottom = null as ArgumentExpression;
+		var left = null as ArgumentExpression;
+		
+		if (element.args.wrapped.expressions.exists[x|x.argName != null]){
+			top = element.args.wrapped.expressions.findFirst[x | "top".equals(x.argName)];			
+			right = element.args.wrapped.expressions.findFirst[x | "right".equals(x.argName)];			
+			bottom = element.args.wrapped.expressions.findFirst[x | "bottom".equals(x.argName)];			
+			left = element.args.wrapped.expressions.findFirst[x | "left".equals(x.argName)];			
+		} else {
+			top = element.args.wrapped.expressions.get(0);			
+			right = element.args.wrapped.expressions.get(1);			
+			bottom = element.args.wrapped.expressions.get(2);			
+			left = element.args.wrapped.expressions.get(3);			
+		}
+		
+		var newAnnotation = Diamond.createAnnotationJVMGenericType(
+			"top" -> buildTypeOrPhantom(element, top),
+			"right" -> buildTypeOrPhantom(element, right),
+			"bottom" -> buildTypeOrPhantom(element, bottom),
+			"left" -> buildTypeOrPhantom(element, left)
+		);
+		
+		this.currentLayoutClass.annotations += newAnnotation;
+	}
+	
+	def JvmGenericType buildTypeOrPhantom(DiamondInstruction element, ArgumentExpression expr){
+		if (expr == null) {
+			return element.buildPhantom();
+		} else {
+			return expr.expression.handlePhantom();
+		}
 	}
 	
 	def dispatch void infer(BinaryIdentifierInstruction element, IJvmDeclaredTypeAcceptor acceptor, boolean isPreIndexingPhase) {
@@ -212,7 +253,7 @@ class XDiagramDefinitionJvmModelInferrer extends AbstractModelInferrer {
 			case "east-of": East
 			case "west-of": West
 			case "north-of": North
-			case "south-of": South			
+			case "south-of": South
 		};
 		
 		var newAnnotation = annType.createAnnotationTEList(
@@ -225,13 +266,24 @@ class XDiagramDefinitionJvmModelInferrer extends AbstractModelInferrer {
 		this.currentLayoutClass.annotations += newAnnotation;
 	}
 	
-	
-	
+	def private createAnnotationJVMGenericType(Class<?> annotationType, Pair<String, JvmGenericType>... params){
+		annotationRef(annotationType) => [ annotationRef |
+			for (param : params) {
+				annotationRef.explicitValues += TypesFactory::eINSTANCE.createJvmTypeAnnotationValue => [
+					values += param.value.typeRef();
+					if (params.size != 1 || param.key != "value") {
+						operation = annotationRef.annotation.declaredOperations.findFirst[it.simpleName == param.key]
+					}
+				]
+			}
+		]
+	}
+		
 	def private createAnnotationTE(Class<?> annotationType, Pair<String, TypeExpression>... params) {
 		annotationRef(annotationType) => [ annotationRef |
 			for (param : params) {
 				annotationRef.explicitValues += TypesFactory::eINSTANCE.createJvmTypeAnnotationValue => [
-					values += param.value.name.typeRef();
+					values += param.value.handlePhantom().typeRef();
 					if (params.size != 1 || param.key != "value") {
 						operation = annotationRef.annotation.declaredOperations.findFirst[it.simpleName == param.key]
 					}
@@ -244,13 +296,29 @@ class XDiagramDefinitionJvmModelInferrer extends AbstractModelInferrer {
 		annotationRef(annotationType) => [ annotationRef |
 			for (param : params) {
 				annotationRef.explicitValues += TypesFactory::eINSTANCE.createJvmTypeAnnotationValue => [
-					values += param.value.expressions.map[x | x.name.typeRef()];
+					values += param.value.expressions.map[x | x.handlePhantom.typeRef()];
 					if (params.size != 1 || param.key != "value") {
 						operation = annotationRef.annotation.declaredOperations.findFirst[it.simpleName == param.key]
 					}
 				]
 			}
 		]
+	}
+	
+	def private JvmGenericType handlePhantom(TypeExpression expression){
+		if (expression.phantom != null){
+			return expression.buildPhantom();
+		}
+		return expression.name;
+	}
+	
+	def JvmGenericType buildPhantom(EObject element){			
+		var phantom = element.toClass("__Phantom" + anonPhantoms.size()) [
+				declaringType = currentDiagramClass;
+				superTypes += Diagram.Phantom.typeRef();
+			];
+			anonPhantoms.add(phantom)
+			return phantom;
 	}
 		
 	var model = null as Model;
