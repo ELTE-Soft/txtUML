@@ -22,6 +22,7 @@ import hu.elte.txtuml.api.layout.Above
 import hu.elte.txtuml.api.layout.Below
 import org.eclipse.xtext.common.types.TypesFactory
 import java.util.ArrayList
+import org.eclipse.xtext.common.types.util.TypeReferences
 
 //import hu.elte.txtuml.api.layout.Diagram;
 
@@ -38,6 +39,8 @@ class XDiagramDefinitionJvmModelInferrer extends AbstractModelInferrer {
 	 */
 	@Inject extension JvmTypesBuilder
 	@Inject extension IQualifiedNameProvider
+	
+	@Inject TypeReferences typeReferences 
 
 	/**
 	 * The dispatch method {@code infer} is called for each instance of the
@@ -84,7 +87,7 @@ class XDiagramDefinitionJvmModelInferrer extends AbstractModelInferrer {
 	var anonPhantoms = newArrayList();
 
 	def dispatch void infer(Instruction element, IJvmDeclaredTypeAcceptor acceptor, boolean isPreIndexingPhase) {
-		println("infer called with instruction: " + element);		
+		println("[WARN] infer called with instruction: " + element);		
 	}
 	
 	def dispatch void infer(DiagramSignature element, IJvmDeclaredTypeAcceptor acceptor, boolean isPreIndexingPhase) {
@@ -167,7 +170,7 @@ class XDiagramDefinitionJvmModelInferrer extends AbstractModelInferrer {
 	
 
 	def dispatch void infer(DiamondInstruction element, IJvmDeclaredTypeAcceptor acceptor, boolean isPreIndexingPhase) {
-		println("infer called with bin-id-instruction: " + element);
+		println("infer called with diamondinstruction: " + element);
 		
 		var top = null as ArgumentExpression;
 		var right = null as ArgumentExpression;
@@ -223,6 +226,24 @@ class XDiagramDefinitionJvmModelInferrer extends AbstractModelInferrer {
 		this.currentLayoutClass.annotations += newAnnotation;
 	}
 	
+	def dispatch void infer(PriorityInstruction element,  IJvmDeclaredTypeAcceptor acceptor, boolean isPreIndexingPhase) {
+		println("infer called with priorityinstruction: " + element);
+		
+		var newAnnotation = annotationRef(Priority) => [ annotationRef |
+			annotationRef.explicitValues += TypesFactory::eINSTANCE.createJvmIntAnnotationValue => [
+				values += Integer.valueOf(element.prior.wrapped);
+				operation = annotationRef.annotation.declaredOperations.findFirst[it.simpleName == "prior"];
+			]
+			annotationRef.explicitValues += TypesFactory::eINSTANCE.createJvmTypeAnnotationValue => [
+				values += element.^val.wrapped.expressions.map[it.name.typeRef()];
+				operation = annotationRef.annotation.declaredOperations.findFirst[it.simpleName == "val"];
+			]
+		]
+		
+		this.currentLayoutClass.annotations += newAnnotation;
+			
+	}
+		
 	def dispatch void infer(UnaryListInstruction element,  IJvmDeclaredTypeAcceptor acceptor, boolean isPreIndexingPhase) {
 		println("infer called with unarylistinstruction: " + element);
 		
@@ -234,6 +255,7 @@ class XDiagramDefinitionJvmModelInferrer extends AbstractModelInferrer {
 			case "bottommost" : BottomMost
 			case "leftmost" : LeftMost
 			case "rightmost" : RightMost
+			case "show" : Show
 		};
 		
 		var newAnnotation = annType.createAnnotationTEList(
@@ -256,16 +278,38 @@ class XDiagramDefinitionJvmModelInferrer extends AbstractModelInferrer {
 			case "south-of": South
 		};
 		
-		var newAnnotation = annType.createAnnotationTEList(
-			"val" -> element.^val.wrapped,
-			"from" -> element.of.wrapped
-		);
+		val linkEnd = if (element.linkEnd == null) { 
+			LinkEnd.Default 
+		} else { 
+			switch(element.linkEnd){
+				case "start" : LinkEnd.Start
+				case "end" : LinkEnd.End
+				default : LinkEnd.Default
+			}
+		};
+		
+		var newAnnotation = annotationRef(annType) => [ annotationRef |
+			if (linkEnd != LinkEnd.Default){
+//				annotationRef.explicitValues += TypesFactory::eINSTANCE.createJvmEnumAnnotationValue ??? => [
+//					values += ???
+//					operation = annotationRef.annotation.declaredOperations.findFirst[it.simpleName == "end"];
+//				]
+			}
+			annotationRef.explicitValues += TypesFactory::eINSTANCE.createJvmTypeAnnotationValue => [
+				values += element.^val.wrapped.expressions.map[it.handlePhantom().typeRef()];
+				operation = annotationRef.annotation.declaredOperations.findFirst[it.simpleName == "val"];
+			]
+			annotationRef.explicitValues += TypesFactory::eINSTANCE.createJvmTypeAnnotationValue => [
+				values += element.of.wrapped.expressions.map[it.handlePhantom().typeRef()];
+				operation = annotationRef.annotation.declaredOperations.findFirst[it.simpleName == "from"];
+			]
+		]
 		
 		element.of.wrapped.expressions.map[x | x.name.typeRef()]
 						
 		this.currentLayoutClass.annotations += newAnnotation;
 	}
-	
+		
 	def private createAnnotationJVMGenericType(Class<?> annotationType, Pair<String, JvmGenericType>... params){
 		annotationRef(annotationType) => [ annotationRef |
 			for (param : params) {

@@ -3,7 +3,7 @@ package hu.elte.txtuml.xd.validation
 import org.eclipse.xtext.validation.Check
 import hu.elte.txtuml.xd.xDiagramDefinition.DiamondInstruction
 
-class XDiagramDiamondValidator extends AbstractXDiagramDefinitionValidator{
+class XDiagramDiamondValidator extends XDiagramPriorityValidator {
 	final val DIAMOND_ARG_NAMES = #["top", "right", "bottom", "left"];
 	
 	@Check

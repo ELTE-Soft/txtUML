@@ -34,6 +34,7 @@ BinaryListInstruction:
 	val = WrappedTypeExpressionList
 	op = ("east-of" | "west-of" | "north-of" | "south-of")
 	of = WrappedTypeExpressionList
+	(linkEnd = ("start" | "end"))?
 ;
 
 PhantomInstruction:
@@ -42,7 +43,7 @@ PhantomInstruction:
 ;
 
 UnaryListInstruction:
-	op = ("topmost" | "leftmost" | "rightmost" | "bottommost" | "row" | "column") 
+	op = ("topmost" | "leftmost" | "rightmost" | "bottommost" | "row" | "column" | "show") 
 	val = WrappedTypeExpressionList
 ;
 
@@ -57,19 +58,12 @@ UnaryNumberInstruction:
 	val = WrappedNumericExpression
 ;
 
-//DiamondArgName:
-//	"top" | "right" | "bottom" | "left"
-//;
-
 DiamondInstruction:
 	op = "diamond" args = WrappedArgumentExpressionList
-//	(
-//		// TODO: this parameter list check should be moved to the validation phase
-//		args+=TypeExpression ',' args+=TypeExpression ',' args+=TypeExpression ',' args+=TypeExpression |
-//		'{' args+=TypeExpression ',' args+=TypeExpression ',' args+=TypeExpression ',' args+=TypeExpression '}' |
-//		argNames+=DiamondArgName ':' args+=TypeExpression (',' argNames+=DiamondArgName ':' args+=TypeExpression)* |
-//		'{' argNames+=DiamondArgName ':' args+=TypeExpression (',' argNames+=DiamondArgName ':' args+=TypeExpression)* '}'
-//	)
+;
+
+PriorityInstruction:
+	op = "priority" prior = WrappedIntegralExpression "for" val = WrappedTypeExpressionList
 ;
 
 Instruction:
@@ -80,7 +74,8 @@ Instruction:
 		UnaryListInstruction |
 		GroupInstruction |
 		UnaryNumberInstruction |
-		DiamondInstruction
+		DiamondInstruction |
+		PriorityInstruction
 	)
 	";"
 ;
@@ -121,4 +116,10 @@ WrappedNumericExpression : wrapped = NumericExpression | '{' wrapped = NumericEx
 
 NumericExpression :
 	Number'%'?
+;
+
+WrappedIntegralExpression : wrapped = IntegralExpression | '{' wrapped = IntegralExpression '}';
+
+IntegralExpression :
+	INT'%'?
 ;
