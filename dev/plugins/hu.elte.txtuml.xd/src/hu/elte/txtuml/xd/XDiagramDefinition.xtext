@@ -25,15 +25,15 @@ DiagramSignature :
 ;
 
 BinaryIdentifierInstruction:
-	val = TypeExpression 
+	val = WrappedTypeExpression 
 	op = ("left-of" | "right-of" | "above" | "below") 
-	of = TypeExpression
+	of = WrappedTypeExpression
 ;
 
 BinaryListInstruction:
-	val = TypeExpressionList
+	val = WrappedTypeExpressionList
 	op = ("east-of" | "west-of" | "north-of" | "south-of")
-	of = TypeExpressionList
+	of = WrappedTypeExpressionList
 ;
 
 PhantomInstruction:
@@ -43,18 +43,18 @@ PhantomInstruction:
 
 UnaryListInstruction:
 	op = ("topmost" | "leftmost" | "rightmost" | "bottommost" | "row" | "column") 
-	val = TypeExpressionList
+	val = WrappedTypeExpressionList
 ;
 
 GroupInstruction:
 	op = ("group") 
 	name=ID 
-	val = TypeExpressionList
+	val = WrappedTypeExpressionList
 ;
 
 UnaryNumberInstruction:
 	op = ("spacing") 
-	val = NumericExpression
+	val = WrappedNumericExpression
 ;
 
 DiamondArgName:
@@ -62,14 +62,14 @@ DiamondArgName:
 ;
 
 DiamondInstruction:
-	op = "diamond"
-	(
-		// TODO: this parameter list check should be moved to the validation phase
-		args+=TypeExpression ',' args+=TypeExpression ',' args+=TypeExpression ',' args+=TypeExpression |
-		'{' args+=TypeExpression ',' args+=TypeExpression ',' args+=TypeExpression ',' args+=TypeExpression '}' |
-		argNames+=DiamondArgName ':' args+=TypeExpression (',' argNames+=DiamondArgName ':' args+=TypeExpression)* |
-		'{' argNames+=DiamondArgName ':' args+=TypeExpression (',' argNames+=DiamondArgName ':' args+=TypeExpression)* '}'
-	)	
+	op = "diamond" args = WrappedArgumentExpressionList
+//	(
+//		// TODO: this parameter list check should be moved to the validation phase
+//		args+=TypeExpression ',' args+=TypeExpression ',' args+=TypeExpression ',' args+=TypeExpression |
+//		'{' args+=TypeExpression ',' args+=TypeExpression ',' args+=TypeExpression ',' args+=TypeExpression '}' |
+//		argNames+=DiamondArgName ':' args+=TypeExpression (',' argNames+=DiamondArgName ':' args+=TypeExpression)* |
+//		'{' argNames+=DiamondArgName ':' args+=TypeExpression (',' argNames+=DiamondArgName ':' args+=TypeExpression)* '}'
+//	)
 ;
 
 Instruction:
@@ -87,17 +87,38 @@ Instruction:
 
 // Argument & list types
 
+WrappedTypeExpressionList : 
+	wrapped = TypeExpressionList | '{' wrapped = TypeExpressionList '}'
+;
+
 TypeExpressionList :
-	expressions += TypeExpression (',' expressions += TypeExpression)* |
-	'{'	TypeExpressionList '}'
+	expressions += TypeExpression (',' expressions += TypeExpression)*
+;
+
+WrappedTypeExpression : 
+	wrapped = TypeExpression | '{' wrapped = TypeExpression '}'
 ;
 
 TypeExpression :
-	phantom="phantom" | name=[types::JvmType|QualifiedName]
-	// TODO: this could be also in {} (optionally of course) but that conflicts with the diamond
+	phantom="phantom" | 
+	name=[types::JvmType|QualifiedName]
 ;
+
+WrappedArgumentExpressionList : 
+	wrapped = ArgumentExpressionList | '{' wrapped = ArgumentExpressionList '}'
+;
+
+ArgumentExpressionList: 
+	expressions += ArgumentExpression (',' expressions += ArgumentExpression)*
+;
+
+ArgumentExpression: 
+	argName = ID ':' expression = TypeExpression | 
+	expression = TypeExpression
+;
+
+WrappedNumericExpression : wrapped = NumericExpression | '{' wrapped = NumericExpression '}';
 
 NumericExpression :
 	Number'%'?
-	// TODO: this could be also in {} (optionally of course)
 ;

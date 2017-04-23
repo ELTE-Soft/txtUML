@@ -3,54 +3,25 @@
  */
 package hu.elte.txtuml.xd.jvmmodel
 
+import org.eclipse.xtext.xbase.jvmmodel.*
+import org.eclipse.xtext.common.types.*
+import hu.elte.txtuml.api.layout.*
+import hu.elte.txtuml.xd.xDiagramDefinition.*
+
 import com.google.inject.Inject
-import hu.elte.txtuml.xd.xDiagramDefinition.Model
-import org.eclipse.xtext.xbase.jvmmodel.AbstractModelInferrer
-import org.eclipse.xtext.xbase.jvmmodel.IJvmDeclaredTypeAcceptor
-import org.eclipse.xtext.xbase.jvmmodel.JvmTypesBuilder
 import org.eclipse.xtext.naming.IQualifiedNameProvider
-import hu.elte.txtuml.xd.xDiagramDefinition.Instruction
-import hu.elte.txtuml.xd.xDiagramDefinition.GroupInstruction
-import hu.elte.txtuml.xd.xDiagramDefinition.DiagramSignature
 import org.eclipse.emf.ecore.EObject
-import org.eclipse.xtext.common.types.JvmType
-import org.eclipse.xtext.common.types.JvmGenericType
-//import org.eclipse.xtext.common.types.JvmVisibility
-import org.eclipse.xtext.xbase.jvmmodel.JvmTypeReferenceBuilder
 import hu.elte.txtuml.api.layout.Diagram.NodeGroup
 import hu.elte.txtuml.api.layout.ClassDiagram
 import hu.elte.txtuml.api.layout.Diagram.Layout
 import org.eclipse.xtext.xbase.jvmmodel.JvmTypeReferenceBuilder.Factory
-import hu.elte.txtuml.xd.xDiagramDefinition.BinaryIdentifierInstruction
-import hu.elte.txtuml.api.layout.Left
 import org.eclipse.xtext.xbase.jvmmodel.JvmAnnotationReferenceBuilder
-import org.eclipse.xtext.common.types.JvmAnnotationReference
+import hu.elte.txtuml.api.layout.Left
 import hu.elte.txtuml.api.layout.Right
 import hu.elte.txtuml.api.layout.Above
 import hu.elte.txtuml.api.layout.Below
 import org.eclipse.xtext.common.types.TypesFactory
-import hu.elte.txtuml.xd.xDiagramDefinition.TypeExpression
-import hu.elte.txtuml.xd.xDiagramDefinition.PhantomInstruction
-import hu.elte.txtuml.api.layout.Diagram.Phantom
-import hu.elte.txtuml.xd.xDiagramDefinition.BinaryListInstruction
-import hu.elte.txtuml.api.layout.East
-import hu.elte.txtuml.api.layout.West
-import hu.elte.txtuml.api.layout.North
-import hu.elte.txtuml.api.layout.South
-import hu.elte.txtuml.xd.xDiagramDefinition.TypeExpressionList
-import hu.elte.txtuml.api.layout.Contains
-import hu.elte.txtuml.xd.xDiagramDefinition.UnaryNumberInstruction
-import hu.elte.txtuml.api.layout.Spacing
-import hu.elte.txtuml.xd.xDiagramDefinition.UnaryListInstruction
-import hu.elte.txtuml.api.layout.Column
-import hu.elte.txtuml.api.layout.Row
-import hu.elte.txtuml.api.layout.TopMost
-import hu.elte.txtuml.api.layout.BottomMost
-import hu.elte.txtuml.api.layout.LeftMost
-import hu.elte.txtuml.api.layout.RightMost
-import hu.elte.txtuml.api.layout.StateMachineDiagram
 import java.util.ArrayList
-import org.eclipse.xtext.common.types.JvmTypeReference
 
 //import hu.elte.txtuml.api.layout.Diagram;
 
@@ -136,7 +107,7 @@ class XDiagramDefinitionJvmModelInferrer extends AbstractModelInferrer {
 //		element.associate(result);
 		acceptor.accept(result);
 		
-		var layout = currentLayoutClass = element.toClass("$Layout")[
+		currentLayoutClass = element.toClass("$Layout")[
 			superTypes += Layout.typeRef();
 			declaringType = currentDiagramClass;
 		];		
@@ -153,7 +124,7 @@ class XDiagramDefinitionJvmModelInferrer extends AbstractModelInferrer {
 			documentation = element.documentation;
 			declaringType = currentDiagramClass;
 			superTypes += NodeGroup.typeRef(); //TODO: not super.NodeGroup, but diagramClass.NodeGroup //new JvmTypeReferenceBuilder().typeRef("hu.elte.txtuml.api.layout.Diagram.NodeGroup");
-			annotations += createAnnotationTEList(Contains, "value" -> element.^val);
+			annotations += createAnnotationTEList(Contains, "value" -> element.^val.wrapped);
 		]
 		acceptor.accept(groupType);
 	}
@@ -175,7 +146,7 @@ class XDiagramDefinitionJvmModelInferrer extends AbstractModelInferrer {
 		
 		var newAnnotation = annotationRef(annType) => [ annotationRef |
 			annotationRef.explicitValues += TypesFactory::eINSTANCE.createJvmDoubleAnnotationValue => [
-				values += element.^val.parseDoubleValue();
+				values += element.^val.wrapped.parseDoubleValue();
 			]
 		]
 		
@@ -188,7 +159,7 @@ class XDiagramDefinitionJvmModelInferrer extends AbstractModelInferrer {
 		acceptor.accept(element.toClass(element.name) [
 			documentation = element.documentation;
 			declaringType = currentDiagramClass;
-			superTypes += Phantom.typeRef();
+			superTypes += Diagram.Phantom.typeRef();
 		]);
 	}
 	
@@ -204,9 +175,9 @@ class XDiagramDefinitionJvmModelInferrer extends AbstractModelInferrer {
 		};
 
 		var newAnnotation = annType.createAnnotationTE(
-			"val" -> element.^val,
-			"from" -> element.of
-		);		
+			"val" -> element.^val.wrapped,
+			"from" -> element.of.wrapped
+		);
 				
 		this.currentLayoutClass.annotations += newAnnotation;
 	}
@@ -225,7 +196,7 @@ class XDiagramDefinitionJvmModelInferrer extends AbstractModelInferrer {
 		};
 		
 		var newAnnotation = annType.createAnnotationTEList(
-			"value" -> element.^val
+			"value" -> element.^val.wrapped
 		);
 		
 		this.currentLayoutClass.annotations += newAnnotation;
@@ -245,11 +216,11 @@ class XDiagramDefinitionJvmModelInferrer extends AbstractModelInferrer {
 		};
 		
 		var newAnnotation = annType.createAnnotationTEList(
-			"val" -> element.^val,
-			"from" -> element.of
+			"val" -> element.^val.wrapped,
+			"from" -> element.of.wrapped
 		);
 		
-		element.of.expressions.map[x | x.name.typeRef()]
+		element.of.wrapped.expressions.map[x | x.name.typeRef()]
 						
 		this.currentLayoutClass.annotations += newAnnotation;
 	}
