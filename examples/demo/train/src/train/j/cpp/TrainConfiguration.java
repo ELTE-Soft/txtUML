@@ -1,4 +1,4 @@
-package train.j;
+package train.j.cpp;
 
 import hu.elte.txtuml.api.deployment.Configuration;
 import hu.elte.txtuml.api.deployment.Group;

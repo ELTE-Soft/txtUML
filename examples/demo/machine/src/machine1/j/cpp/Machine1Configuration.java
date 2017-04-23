@@ -1,4 +1,4 @@
-package machine1.j;
+package machine1.j.cpp;
 
 import hu.elte.txtuml.api.deployment.Configuration;
 import hu.elte.txtuml.api.deployment.Group;

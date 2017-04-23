@@ -102,7 +102,7 @@ public class SubStateMachineExporter extends StateMachineExporterBase {
 					stateMachineMap, getInitialStateName()));
 		} else {
 			source.append(ConstructorTemplates.hierarchicalSubStateMachineClassConstructor(ownerClassName,
-					parentClassName, stateMachineMap, getEventSubMachineNameMap(), getInitialStateName()));
+					parentClassName, stateMachineMap, getEventSubMachineNameMap(), null));
 		}
 		
 		StringBuilder subSmSpec = new StringBuilder(entryExitFunctionExporter.createEntryFunctionsDef());
