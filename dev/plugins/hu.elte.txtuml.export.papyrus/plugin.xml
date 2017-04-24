@@ -78,7 +78,7 @@
             <command
                   commandId="hu.elte.txtuml.export.papyrus.txtUMLVisualize"
                   icon="icons/txtUML_papyrus.png"
-                  label="Generate diagrams from txtUML"
+                  label="Generate Papyrus diagrams from txtUML"
                   style="push">
             </command>
 <!--
@@ -97,7 +97,26 @@
           <command
               commandId="hu.elte.txtuml.export.papyrus.txtUMLVisualizeSelectedDiagram"
               icon="icons/txtUML_papyrus.png"
-              label="Visualize diagram"
+              label="Visualize as Papyrus diagram"
+              style="push">
+              <visibleWhen>
+                  <with variable="activeMenuSelection">
+                     <iterate ifEmpty="false" operator="and">
+                          <adapt type="org.eclipse.jdt.core.ICompilationUnit">
+                              <test property="hu.elte.txtuml.export.papyrus.hasDescriptionType"/>
+                          </adapt>
+                      </iterate>
+                  </with>
+              </visibleWhen>
+          </command>
+      </menuContribution>
+      
+      <menuContribution 
+          locationURI="popup:org.eclipse.jdt.ui.PackageExplorer?before=additions">
+          <command
+              commandId="hu.elte.txtuml.export.papyrus.txtUMLVisualizeSelectedDiagram"
+              icon="icons/txtUML_papyrus.png"
+              label="Visualize as Papyrus diagram"
               style="push">
               <visibleWhen>
                   <with variable="activeMenuSelection">

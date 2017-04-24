@@ -3,11 +3,11 @@ package hu.elte.txtuml.examples.garage.control.java;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import hu.elte.txtuml.examples.garage.interfaces.IControl;
-import hu.elte.txtuml.examples.garage.interfaces.IControlled;
+import hu.elte.txtuml.examples.garage.interfaces.Control;
+import hu.elte.txtuml.examples.garage.interfaces.Controlled;
 
-public class ControlJava implements IControl {
-	static IControlled controlled;
+public class ControlJava implements Control {
+	static Controlled controlled;
 	enum DoorSecurityState {Disabled, Enabled}
 	static DoorSecurityState doorSecurityState = DoorSecurityState.Enabled;
 	enum DoorState {HeadingUp, HeadingDown, Up, Down}
@@ -20,7 +20,7 @@ public class ControlJava implements IControl {
 	static int alarmDelay = 5000;
 	static int alarmDelayInterval = 50;
 
-	public ControlJava(IControlled ctd) {
+	public ControlJava(Controlled ctd) {
 		controlled = ctd;
 	}
 	

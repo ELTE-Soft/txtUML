@@ -1,21 +1,23 @@
 package hu.elte.txtuml.xtxtuml.ui.outline;
 
-import hu.elte.txtuml.xtxtuml.xtxtUML.TUAttribute
-import hu.elte.txtuml.xtxtuml.xtxtUML.TUOperation
-import hu.elte.txtuml.xtxtuml.xtxtUML.TUFile
-import hu.elte.txtuml.xtxtuml.xtxtUML.TUExecution
-import hu.elte.txtuml.xtxtuml.xtxtUML.TUSignalAttribute
-import hu.elte.txtuml.xtxtuml.xtxtUML.TUEntryOrExitActivity
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAssociationEnd
-import org.eclipse.xtext.ui.editor.outline.impl.DocumentRootNode
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUAttribute
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUConstructor
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUEntryOrExitActivity
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUEnumerationLiteral
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUExecution
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUFile
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUOperation
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUSignalAttribute
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUTransitionEffect
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUTransitionGuard
+import org.eclipse.xtext.ui.editor.outline.impl.DefaultOutlineTreeProvider
+import org.eclipse.xtext.ui.editor.outline.impl.DocumentRootNode
 
 /**
  * Customization of the default outline structure.
  */
-class XtxtUMLOutlineTreeProvider extends org.eclipse.xtext.ui.editor.outline.impl.DefaultOutlineTreeProvider {
+class XtxtUMLOutlineTreeProvider extends DefaultOutlineTreeProvider {
 	
 	def _isLeaf(TUFile op) {
 		true
@@ -24,7 +26,11 @@ class XtxtUMLOutlineTreeProvider extends org.eclipse.xtext.ui.editor.outline.imp
 	def _isLeaf(TUExecution exec) {
 		true
 	}
-	
+
+	def _isLeaf(TUEnumerationLiteral eLit) {
+		true
+	}
+		
 	def _isLeaf(TUSignalAttribute sAttr) {
 		true
 	}

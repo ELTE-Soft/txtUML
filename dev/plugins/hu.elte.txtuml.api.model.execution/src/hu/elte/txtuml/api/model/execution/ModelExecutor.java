@@ -81,7 +81,7 @@ public interface ModelExecutor extends BaseModelExecutor, Runnable {
 	ModelExecutor start() throws LockedModelExecutorException;
 
 	/**
-	 * A shorthand operation for {@link #setInitialization(Runnable)}.
+	 * A shorthand operation for {@link #setInitialization(Runnable)}&#x2e;
 	 * {@link #start()} (optional operation).
 	 * <p>
 	 * Supported iff {@link #setInitialization(Runnable)} is supported.
@@ -115,24 +115,26 @@ public interface ModelExecutor extends BaseModelExecutor, Runnable {
 
 	/**
 	 * Sets the model executor to be shut down after the currently running and
-	 * all scheduled actions have been performed and every non-external event
-	 * caused by them have been processed and all {@link TerminatePredicate}s
-	 * become true. To shut down the executor instantly, call
-	 * {@link #shutdownNow}.
+	 * all scheduled actions have been performed, every non-external event
+	 * caused by them have been processed and all <i>termination blockers</i> of
+	 * this model executor have been removed. To shut down the executor
+	 * instantly, call {@link #shutdownNow}.
 	 * <p>
 	 * This method <b>does not</b> await the termination of the executor, it
 	 * returns instantly.
 	 * 
 	 * @return this
 	 * @see #awaitTermination
+	 * @see #addTerminationBlocker(Object)
+	 * @see #removeTerminationBlocker(Object)
 	 */
 	ModelExecutor shutdown();
 
 	/**
 	 * Shuts down the model executor without waiting for any currently running
-	 * or scheduled actions to perform (it does not wait for
-	 * {@link TerminationPredicate}s either). In most cases, {@link #shutdown}
-	 * should be called instead.
+	 * or scheduled actions to perform (it does not wait for <i>termination
+	 * blockers</i> of this model executor to be removed either). In most cases,
+	 * {@link #shutdown} should be called instead.
 	 * <p>
 	 * This method <b>does not</b> await the termination of the executor, it
 	 * returns instantly.
@@ -181,7 +183,7 @@ public interface ModelExecutor extends BaseModelExecutor, Runnable {
 	void awaitTerminationNoCatch() throws InterruptedException;
 
 	/**
-	 * A shorthand operation for {@link #start()}.
+	 * A shorthand operation for {@link #start()}&#x2e;
 	 * {@link #awaitInitialization()}.
 	 * 
 	 * @return this
@@ -191,8 +193,9 @@ public interface ModelExecutor extends BaseModelExecutor, Runnable {
 	ModelExecutor launch() throws LockedModelExecutorException;
 
 	/**
-	 * A shorthand operation for {@link #setInitialization(Runnable)}.
-	 * {@link #start()}. {@link #awaitInitialization()} (optional operation).
+	 * A shorthand operation for {@link #setInitialization(Runnable)}&#x2e;
+	 * {@link #start()}&#x2e;{@link #awaitInitialization()} (optional
+	 * operation).
 	 * <p>
 	 * Supported iff {@link #setInitialization(Runnable)} is supported.
 	 * 
@@ -205,7 +208,7 @@ public interface ModelExecutor extends BaseModelExecutor, Runnable {
 	ModelExecutor launch(Runnable initialization) throws LockedModelExecutorException;
 
 	/**
-	 * A shorthand operation for {@link #start()}. {@link #shutdown()}.
+	 * A shorthand operation for {@link #start()}&#x2e;{@link #shutdown()}&#x2e;
 	 * {@link #awaitTermination()}.
 	 * 
 	 * @throws LockedModelExecutorException
@@ -215,9 +218,9 @@ public interface ModelExecutor extends BaseModelExecutor, Runnable {
 	void run() throws LockedModelExecutorException;
 
 	/**
-	 * A shorthand operation for {@link #setInitialization(Runnable)}.
-	 * {@link #start()}. {@link #shutdown()}. {@link #awaitTermination()}
-	 * (optional operation).
+	 * A shorthand operation for {@link #setInitialization(Runnable)}&#x2e;
+	 * {@link #start()}&#x2e;{@link #shutdown()}&#x2e;
+	 * {@link #awaitTermination()} (optional operation).
 	 * <p>
 	 * Supported iff {@link #setInitialization(Runnable)} is supported.
 	 * 
@@ -397,7 +400,7 @@ public interface ModelExecutor extends BaseModelExecutor, Runnable {
 	double getExecutionTimeMultiplier();
 
 	/**
-	 * See {@link #setExecutorLog}.
+	 * See {@link #setTraceLogging}.
 	 * 
 	 * @return whether execution log is switched on
 	 */

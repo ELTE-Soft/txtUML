@@ -9,6 +9,7 @@ import java.util.stream.Stream;
 
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaProject;
+import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.CompilationUnit;
@@ -74,7 +75,7 @@ public class ClassDiagramExporter extends AbstractSourceExporter {
 			try {
 				List<Class<?>> allLinks = loadAllLinksFromModel(modelName, elementExporter);
 				elementExporter.getNodes().keySet()
-					.forEach(node -> exportImpliedLinksFromSpecifiedNode(elementExporter, allLinks, node));
+						.forEach(node -> exportImpliedLinksFromSpecifiedNode(elementExporter, allLinks, node));
 			} catch (JavaModelException | NotFoundException | IOException e) {
 				// Links could not be loaded. Nothing to do.
 			}
@@ -87,8 +88,10 @@ public class ClassDiagramExporter extends AbstractSourceExporter {
 		IJavaProject javaProject = ProjectUtils.findJavaProject(elementExporter.getSourceProjectName());
 
 		// Sneaky.<JavaModelException> Throw();
+		// TODO check if explicit type parameters can be omitted > Neon.2
 		Stream<ICompilationUnit> stream = Stream.of(PackageUtils.findPackageFragments(javaProject, modelName))
-				.flatMap(Sneaky.unchecked(pf -> Stream.of(pf.getCompilationUnits())));
+				.flatMap(Sneaky.<IPackageFragment, Stream<ICompilationUnit>, JavaModelException>unchecked(
+						pf -> Stream.of(pf.getCompilationUnits())));
 
 		CompilationUnit[] units = SharedUtils.parseICompilationUnitStream(stream, javaProject);
 
@@ -101,12 +104,12 @@ public class ClassDiagramExporter extends AbstractSourceExporter {
 			return allLinks;
 		} else {
 			// No exported nodes found.
-			throw new NotFoundException(); 	
-		}		
+			throw new NotFoundException();
+		}
 	}
 
-	private void exportImpliedLinksFromSpecifiedNode(ElementExporter elementExporter,
-			List<Class<?>> allLinks, Class<?> node) {
+	private void exportImpliedLinksFromSpecifiedNode(ElementExporter elementExporter, List<Class<?>> allLinks,
+			Class<?> node) {
 		NodeMap allNodes = elementExporter.getNodes();
 		for (Class<?> link : allLinks) { // Load associations.
 			try {

@@ -40,5 +40,7 @@ Require-Bundle:
  org.eclipse.core.expressions
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
-Export-Package: hu.elte.txtuml.export.papyrus.preferences
-Import-Package: hu.elte.txtuml.utils.eclipse
+Export-Package: hu.elte.txtuml.export.papyrus.preferences,
+ hu.elte.txtuml.export.papyrus.wizardz
+Import-Package: hu.elte.txtuml.utils.eclipse,
+ hu.elte.txtuml.utils.diagrams

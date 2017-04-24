@@ -4,6 +4,7 @@ import hu.elte.txtuml.xtxtuml.xtxtUML.TUAssociationEnd
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAttribute
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUConnectorEnd
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUConstructor
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUEnumerationLiteral
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUFile
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUModelElement
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUOperation
@@ -38,6 +39,11 @@ class XtxtUMLNameValidator extends AbstractXtxtUMLValidator {
 	@Check
 	def checkModelElementNameIsNotReserved(TUModelElement modelElement) {
 		checkReservedError(modelElement, modelElement.name, TU_MODEL_ELEMENT__NAME, "model element");
+	}
+
+	@Check
+	def checkEnumerationLiteralNameIsNotReserved(TUEnumerationLiteral enumLiteral) {
+		checkReservedError(enumLiteral, enumLiteral.name, TU_ENUMERATION_LITERAL__NAME, "enumeration literal");
 	}
 
 	@Check

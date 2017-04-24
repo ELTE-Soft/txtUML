@@ -4,8 +4,9 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
-import java.util.concurrent.ConcurrentSkipListSet;
+import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 
 import hu.elte.txtuml.api.model.execution.CastedModelExecutor;
@@ -38,8 +39,10 @@ public abstract class AbstractModelExecutor<S extends AbstractModelExecutor<S>> 
 	private final List<WarningListener> warningListeners = new ArrayList<>();
 	private final SwitchOnLogging switchOnLogging;
 
-	private final ConcurrentSkipListSet<Object> terminationBlockers = new ConcurrentSkipListSet<>(
-			(t1, t2) -> Integer.compare(t1.hashCode(), t2.hashCode()));
+	/**
+	 * May only be accessed while holding the monitor of this set instance.
+	 */
+	private final Set<Object> terminationBlockers = new HashSet<>();
 	private final Object defaultBlocker = createAndAddDefaultTerminationBlocker();
 
 	private final CountDownLatch isInitialized = new CountDownLatch(1);
@@ -142,16 +145,20 @@ public abstract class AbstractModelExecutor<S extends AbstractModelExecutor<S>> 
 	@Override
 	public S addTerminationBlocker(Object blocker) {
 		requireNonNull(blocker);
-		terminationBlockers.add(blocker);
+		synchronized (terminationBlockers) {
+			terminationBlockers.add(blocker);
+		}
 		return self();
 	}
 
 	@Override
 	public synchronized S removeTerminationBlocker(Object blocker) {
 		requireNonNull(blocker);
-		terminationBlockers.remove(blocker);
-		if (terminationBlockers.isEmpty()) {
-			wakeAllThreads();
+		synchronized (terminationBlockers) {
+			terminationBlockers.remove(blocker);
+			if (terminationBlockers.isEmpty()) {
+				wakeAllThreads();
+			}
 		}
 		return self();
 	}
@@ -342,12 +349,14 @@ public abstract class AbstractModelExecutor<S extends AbstractModelExecutor<S>> 
 	 * Thread-safe.
 	 */
 	protected boolean shouldShutDownWhenNothingToDo() {
-		return terminationBlockers.isEmpty();
+		synchronized (terminationBlockers) {
+			return terminationBlockers.isEmpty();
+		}
 	}
 
 	/**
-	 * Called if previously either {@link #shouldShutdownImmediately} or
-	 * {@link #shouldShutdownWhenNothingToDo} returned false and now it returns
+	 * Called if previously either {@link #shouldShutDownImmediately} or
+	 * {@link #shouldShutDownWhenNothingToDo} returned false and now it returns
 	 * true. All threads run by this model executor must be waken to check
 	 * whether they should shut down.
 	 * <p>

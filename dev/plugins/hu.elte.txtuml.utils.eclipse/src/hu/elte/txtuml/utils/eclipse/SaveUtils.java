@@ -62,7 +62,12 @@ public final class SaveUtils {
 			IEditorInput input = part.getEditorInput();
 
 			if (input instanceof IFileEditorInput) {
-				String packageName = JavaCore.create(((IFileEditorInput) input).getFile().getParent()).getElementName();
+				IJavaElement javaPackage = JavaCore.create(((IFileEditorInput) input).getFile().getParent());
+				if (javaPackage == null) {
+					continue;
+				}
+
+				String packageName = javaPackage.getElementName();
 				String fileName = input.getName();
 				String fullName = packageName + "." + fileName;
 
