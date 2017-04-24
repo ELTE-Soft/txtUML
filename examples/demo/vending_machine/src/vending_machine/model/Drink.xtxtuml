@@ -47,14 +47,14 @@ class Drink {
 	state Giving {
 		entry {
 			quantity--;
-			updateMessage("<html><div style='text-align: center;'>Done! Take your<br>" + name + "</html>");
+			updateMessage("Done! Take your " + name);
 			Timer.start(this, new Done(), delay);
 		}
 	}
 
 	state Refilling {
 		entry {
-			updateMessage("<html><div style='text-align: center;'>Refilling<br>" + name + "</html>");
+			updateMessage("Refilling " + name);
 			Timer.start(this, new Done(), delay);
 		}
 	}
@@ -86,13 +86,13 @@ class Drink {
 	transition ThereIs {
 		from IsThereMore;
 		to Available;
-		guard (quantity > 0);
+		guard ( quantity > 0 );
 	}
 
 	transition ThereIsNot {
 		from IsThereMore;
 		to OutOfStock;
-		guard (quantity <= 0);
+		guard ( quantity <= 0 );
 	}
 
 	transition Give {
@@ -116,13 +116,13 @@ class Drink {
 		to Refilling;
 		trigger Refill;
 		effect {
-				if (quantity + trigger.quantity < 50) {
-					quantity += trigger.quantity;
-				} else {
-					quantity = 50;
-				}
+			if (quantity + trigger.quantity < 50) {
+				quantity += trigger.quantity;
+			} else {
+				quantity = 50;
+			}
 		}
-		guard (trigger.quantity > 0);
+		guard ( trigger.quantity > 0 );
 	}
 
 	transition DoneRefilling {
@@ -154,9 +154,9 @@ class Drink {
 				quantity = 50;
 			}
 			if (trigger.quantity >= 0) {
-				updateMessage("<html><div style='text-align: center;'>Loading more<br>" + name + "</html>");
+				updateMessage("Loading more " + name);
 			} else {
-				updateMessage("<html><div style='text-align: center;'>Taking some<br>" + name + "</html>");
+				updateMessage("Taking some " + name);
 			}
 		}
 	}

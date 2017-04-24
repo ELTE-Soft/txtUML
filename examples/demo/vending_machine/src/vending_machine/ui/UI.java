@@ -2,6 +2,7 @@ package vending_machine.ui;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -16,12 +17,18 @@ import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.JTextPane;
 import javax.swing.SwingUtilities;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.MutableAttributeSet;
+import javax.swing.text.SimpleAttributeSet;
+import javax.swing.text.StyleConstants;
 
 import vending_machine.glue.Model;
 import vending_machine.glue.ViewImpl;
@@ -32,7 +39,7 @@ public class UI implements Runnable {
 	private static final String PANEL_IMAGE = ASSETS_FOLDER + "/images/VendingMachine.png";
 	private static final String COIN_SOUND = ASSETS_FOLDER + "/sounds/coin.wav";
 	private static final String RETURN_SOUND = ASSETS_FOLDER + "/sounds/return.wav";
-	
+
 	private ImagePanel machinePanel = new ImagePanel(PANEL_IMAGE);
 	private JPanel buttonPanel = new JPanel();
 	private JFrame frame = new JFrame("Vending Machine");
@@ -48,7 +55,9 @@ public class UI implements Runnable {
 
 	private JPanel cashPanel = new JPanel();
 
-	private JLabel monitor = new JLabel();
+	private JPanel monitor = new JPanel();
+	private JTextPane monitorText = new JTextPane();
+	private MutableAttributeSet monitorStyleAttributes;
 
 	private JTextField refiller = new JTextField();
 
@@ -57,18 +66,31 @@ public class UI implements Runnable {
 	private UI() {
 		ViewImpl.getInstance().setUI(this);
 		model = new Model();
-
+		Color monitorBlue = new Color(0, 0, 100);
 		buttonPanel.setOpaque(false);
 		buttonPanel.setLayout(new GridBagLayout());
 		GridBagConstraints c = new GridBagConstraints();
 
+		monitorText.setFont(new Font("Courier New", 0, 14));
+		Dimension size = new Dimension(150, 30);
+		monitorText.setMinimumSize(size);
+		monitorText.setPreferredSize(size);
+		monitorText.setMaximumSize(size);
+		monitorText.setBackground(monitorBlue);
+		monitorText.setAlignmentY(Component.CENTER_ALIGNMENT);
+
+		monitorStyleAttributes = new SimpleAttributeSet();
+		StyleConstants.setForeground(monitorStyleAttributes, Color.GREEN);
+		StyleConstants.setFontFamily(monitorStyleAttributes, "Lucida Console");
+		StyleConstants.setAlignment(monitorStyleAttributes, StyleConstants.ALIGN_CENTER);
+
 		monitor.setPreferredSize(new Dimension(150, 100));
-		monitor.setBackground(new Color(0, 0, 100));
-		monitor.setHorizontalAlignment(0);
+		monitor.setBackground(monitorBlue);
 		monitor.setOpaque(true);
-		monitor.setForeground(Color.GREEN);
-		monitor.setFont(new Font("Courier New", 0, 14));
-		monitor.setText("");
+		monitor.setLayout(new BoxLayout(monitor, BoxLayout.X_AXIS));
+		monitor.add(Box.createHorizontalGlue());
+		monitor.add(monitorText);
+		monitor.add(Box.createHorizontalGlue());
 
 		c.gridx = 1;
 		c.gridy = 0;
@@ -197,7 +219,13 @@ public class UI implements Runnable {
 	 */
 	public void showMessage(String message) {
 		SwingUtilities.invokeLater(() -> {
-			monitor.setText(message);
+			try {
+				monitorText.getDocument().remove(0, monitorText.getDocument().getLength());
+				monitorText.getDocument().insertString(0, message, monitorStyleAttributes);
+				monitorText.setParagraphAttributes(monitorStyleAttributes, true);
+			} catch (BadLocationException e) {
+				e.printStackTrace();
+			}
 		});
 	}
 

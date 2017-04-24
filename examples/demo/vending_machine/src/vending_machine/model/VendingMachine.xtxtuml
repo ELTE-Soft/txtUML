@@ -44,7 +44,7 @@ class VendingMachine {
 		entry {
 			Drink selectedDrink = getSelectedDrink(trigger.name);
 			if (selectedDrink.onStock()) {
-				updateMessage("<html><div style='text-align: center;'>" + selectedDrink.getName() + "<br/>costs " +  selectedDrink.getPrice() + "</html>");
+				updateMessage(selectedDrink.getName() + " costs " +  selectedDrink.getPrice());
 			} else {
 				updateMessage("Out of stock");
 			}
@@ -60,7 +60,7 @@ class VendingMachine {
 			if (selectedDrink.getPrice() <= register.howMuchIsInside()) {
 				send new Request() to selectedDrink;
 			} else {
-				updateMessage("<html><div style='text-align: center;'>Please, give<br/>more money</div></html>");
+				updateMessage("Please, give more money");
 			}
 			Timer.start(this, new Done(), delay);
 		}
