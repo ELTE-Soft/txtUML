@@ -21,6 +21,7 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
@@ -54,6 +55,8 @@ public class UI implements Runnable {
 			createCoinButton(100), createCoinButton(200) };
 
 	private JPanel cashPanel = new JPanel();
+	
+	private JPanel refillPanel = new JPanel();
 
 	private JPanel monitor = new JPanel();
 	private JTextPane monitorText = new JTextPane();
@@ -115,9 +118,6 @@ public class UI implements Runnable {
 		returnCash.setPreferredSize(new Dimension(90, 30));
 		returnCash.setMargin(new Insets(0, 0, 0, 0));
 
-		cashPanel.add(refiller);
-		refiller.setPreferredSize(new Dimension(40, 20));
-
 		machinePanel.setLayout(new GridBagLayout());
 		c.gridx = 0;
 		c.gridy = 0;
@@ -130,6 +130,8 @@ public class UI implements Runnable {
 		cashPanel.setPreferredSize(new Dimension(frame.getPreferredSize().width, 50));
 		cashPanel.setLayout(new FlowLayout());
 
+		cashPanel.add(new JLabel("Insert Coins: "));
+
 		// TODO these are the coin inserter buttons. they're going to be real
 		// coins
 
@@ -137,13 +139,25 @@ public class UI implements Runnable {
 			cashPanel.add(b);
 		}
 
+		refillPanel.setBackground(Color.LIGHT_GRAY);
+		refillPanel.setVisible(true);
+		refillPanel.setPreferredSize(new Dimension(frame.getPreferredSize().width, 50));
+		refillPanel.setLayout(new FlowLayout());
+		
+		refillPanel.add(new JLabel("Refill drink: "));
+		refillPanel.add(refiller);
+		refillPanel.add(new JLabel("pieces"));
+		
+		refiller.setPreferredSize(new Dimension(40, 20));
+
 		returnCash.addActionListener(e -> {
 			model.cashReturn();
 			playReturnSound();
 		});
 
 		frame.add(cashPanel, BorderLayout.NORTH);
-		frame.add(machinePanel);
+		frame.add(refillPanel, BorderLayout.CENTER);
+		frame.add(machinePanel, BorderLayout.SOUTH);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setResizable(false);
 		frame.pack();
