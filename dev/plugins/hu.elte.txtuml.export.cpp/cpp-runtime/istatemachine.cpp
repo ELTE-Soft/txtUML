@@ -2,11 +2,13 @@
 #include "threadpool.hpp"
 #include "runtime.hpp"
 
-#include <iostream>
+#include <assert.h>
 
+namespace Model
+{
 
- IStateMachine::IStateMachine(std::shared_ptr<MessageQueueType> messageQueue_)
-         :_messageQueue(messageQueue_), _pool(nullptr), _inPool(false), _started(false), _initialized(false){}
+IStateMachine::IStateMachine(ES::SharedPtr<ES::MessageQueueType> messageQueue)
+	:_messageQueue(messageQueue), _pool(nullptr), _inPool(false), _started(false), _initialized(false) {}
 
 
 void IStateMachine::init()
@@ -15,47 +17,53 @@ void IStateMachine::init()
 	processInitTransition();
 }
 
-void IStateMachine::send(EventPtr e_)
+ES::EventRef IStateMachine::getNextMessage()
 {
-  (*message_counter)++;
-  _messageQueue->push_back(e_);
-  if (_started)
-  {
-	if(_pool != nullptr)
-  	{
-    		handlePool();
-  	}
-	else
+	ES::EventRef event;
+	_messageQueue->dequeue(event);
+	(*message_counter)--;
+	return event;
+}
+
+void IStateMachine::send(const ES::EventRef e)
+{
+	(*message_counter)++;
+	e->setTargetSM(this);
+	_messageQueue->enqueue(e);
+	if (_started && _pool != nullptr)
 	{
-	    	RuntimeI<SingleThreadRT>::createRuntime()->enqueueObject(this);
+		handlePool();
 	}
-  }
-  
+
 
 }
 
 void IStateMachine::handlePool()
 {
-  std::unique_lock<std::mutex> mlock(_mutex);
-  if(!_inPool)
-  {
-    _inPool=true;
-    _pool->enqueueObject(this);
-  }
+	assert(_pool != nullptr && "Handle pool should not be called when there is no associated thread pool");
+	std::unique_lock<std::mutex> mlock(_mutex);
+	if (!_inPool)
+	{
+		_inPool = true;
+		_pool->enqueueObject(this);
+	}
 }
 
-void IStateMachine::setPooled(bool value_=true)
+void IStateMachine::setPooled(bool value_ = true)
 {
-	  _inPool=value_;
-	  _cond.notify_one();
+	_inPool = value_;
+	_cond.notify_one();
 }
 
 IStateMachine::~IStateMachine()
 {
 	std::unique_lock<std::mutex> mlock(_mutex);
-	while(_inPool)
+	while (_inPool)
 	{
 		_cond.wait(mlock);
 	}
-		
+
 }
+
+}
+

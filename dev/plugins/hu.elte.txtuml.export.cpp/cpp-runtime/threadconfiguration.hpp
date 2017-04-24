@@ -1,60 +1,53 @@
+/** @file threadconfiguration.hpp
+*/
+
 #ifndef THREAD_CONFIGURATION_HPP
 #define THREAD_CONFIGURATION_HPP
 
-#include <vector>
 #include "threadpool.hpp"
 #include "math.h"
-
-struct LinearFunction
-{
-	public:
-		LinearFunction(int constant_,double gradient_): constant(constant_),gradient(gradient_) {}
-		int operator()(int n) {return (int)round(gradient*n) + constant;}
-	private:
-		int constant;
-		double gradient;
-};
-
-struct Configuration
+namespace Execution
 {
 
-	StateMachineThreadPool* threadPool;
-	LinearFunction* function;
-	int max;
+/*! Represents a linear function. */
+class LinearFunction
+{
+public:
+	LinearFunction(int constant, double gradient) :
+		_constant(constant),
+		_gradient(gradient) {}
 
-	Configuration(StateMachineThreadPool* threadPool,LinearFunction* function,int max)
+	int operator()(int n)
 	{
-		this->threadPool = threadPool;
-		this->function = function;
-		this->max = max;
+		return (int)round(_gradient * n) + _constant;
 	}
-	~Configuration()
-	{
-		delete threadPool;
-		delete function;
-	}
-
+private:
+	int _constant;
+	double _gradient;
 };
 
 
-
-class ThreadConfiguration
+/*! Configuration parameters datastore. */
+class Configuration
 {
-	public:
+public:
 
-		ThreadConfiguration(int);
-		~ThreadConfiguration();
+	Configuration(ES::SharedPtr<StateMachineThreadPool> threadPool, ES::SharedPtr<LinearFunction> function, int max) :
+		_threadPool(threadPool), _function(function), _max(max) {}
+	virtual ~Configuration() {}
 
-		void insertConfiguration(int,Configuration*);
-		StateMachineThreadPool* getThreadPool(int);
-		LinearFunction* getFunction(int);
-		int getMax(int);
-		int getNumberOfConfigurations();
+	ES::SharedPtr<StateMachineThreadPool> getThreadPool() const { return _threadPool; }
+	ES::SharedPtr<LinearFunction> getFunction() const { return _function; }
+	int getMax() { return _max; }
 
-	private:
+private:
 
-		std::vector<Configuration*> configurations;
-
+	ES::SharedPtr<StateMachineThreadPool> _threadPool;
+	ES::SharedPtr<LinearFunction> _function;
+	int _max;
 };
+
+}
+
 
 #endif
