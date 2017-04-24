@@ -28,7 +28,12 @@ import vending_machine.glue.ViewImpl;
 
 public class UI implements Runnable {
 
-	private ImagePanel machinePanel = new ImagePanel("src/vending_machine/ui/images/VendingMachine.png");
+	private static final String ASSETS_FOLDER = "src/vending_machine/ui";
+	private static final String PANEL_IMAGE = ASSETS_FOLDER + "/images/VendingMachine.png";
+	private static final String COIN_SOUND = ASSETS_FOLDER + "/sounds/coin.wav";
+	private static final String RETURN_SOUND = ASSETS_FOLDER + "/sounds/return.wav";
+	
+	private ImagePanel machinePanel = new ImagePanel(PANEL_IMAGE);
 	private JPanel buttonPanel = new JPanel();
 	private JFrame frame = new JFrame("Vending Machine");
 
@@ -166,22 +171,14 @@ public class UI implements Runnable {
 	}
 
 	private void playCoinSound() {
-		String soundName = "src/vending_machine/ui/sounds/coin.wav";
-		AudioInputStream audioInputStream;
-		try {
-			audioInputStream = AudioSystem.getAudioInputStream(new File(soundName).getAbsoluteFile());
-			Clip clip = AudioSystem.getClip();
-			clip.open(audioInputStream);
-			clip.start();
-		} catch (UnsupportedAudioFileException | IOException e1) {
-			e1.printStackTrace();
-		} catch (LineUnavailableException e1) {
-			e1.printStackTrace();
-		}
+		playSound(COIN_SOUND);
 	}
 
 	private void playReturnSound() {
-		String soundName = "src/vending_machine/ui/sounds/return.wav";
+		playSound(RETURN_SOUND);
+	}
+
+	private void playSound(String soundName) {
 		AudioInputStream audioInputStream;
 		try {
 			audioInputStream = AudioSystem.getAudioInputStream(new File(soundName).getAbsoluteFile());
