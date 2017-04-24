@@ -1,0 +1,18 @@
+@charset "UTF-8";
+
+#selector-container, #selector-container th , #selector-container td{
+	border : 1px #ddd solid;
+	border-collapse: collapse;
+}
+
+#selector-container th, #selector-container td {
+	padding: 2px 10px;
+}
+
+#selector-container thead tr:nth-child(2){
+	background: #f8f8f8
+}
+
+#selector-container td ul{
+	padding-left: 15px;
+}

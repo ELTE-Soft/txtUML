@@ -1,5 +1,7 @@
-package hu.elte.txtuml.export.papyrus.wizardz;
+package hu.elte.txtuml.export.javascript.wizardz;
 
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -10,22 +12,21 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.SubMonitor;
-import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
+import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.wizard.Wizard;
-import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.progress.IProgressService;
 
-import hu.elte.txtuml.export.papyrus.PapyrusVisualizer;
+import hu.elte.txtuml.export.javascript.Exporter;
 import hu.elte.txtuml.export.papyrus.layout.txtuml.TxtUMLExporter;
 import hu.elte.txtuml.export.papyrus.layout.txtuml.TxtUMLLayoutDescriptor;
-import hu.elte.txtuml.export.papyrus.papyrusmodelmanagers.TxtUMLPapyrusModelManager;
 import hu.elte.txtuml.export.papyrus.preferences.PreferencesManager;
+import hu.elte.txtuml.export.papyrus.wizardz.VisualizeTxtUMLPage;
 import hu.elte.txtuml.export.uml2.ExportMode;
 import hu.elte.txtuml.export.uml2.TxtUMLToUML2;
 import hu.elte.txtuml.layout.export.DiagramExportationReport;
@@ -38,14 +39,14 @@ import hu.elte.txtuml.utils.eclipse.WizardUtils;
 /**
  * Wizard for visualization of txtUML models
  */
-public class TxtUMLVisuzalizeWizard extends Wizard {
+public class TxtUMLVisualizeWizard extends Wizard {
 
 	private VisualizeTxtUMLPage selectTxtUmlPage;
 
 	/**
 	 * The Constructor
 	 */
-	public TxtUMLVisuzalizeWizard() {
+	public TxtUMLVisualizeWizard() {
 		super();
 		setNeedsProgressMonitor(true);
 	}
@@ -57,7 +58,7 @@ public class TxtUMLVisuzalizeWizard extends Wizard {
 	 */
 	@Override
 	public String getWindowTitle() {
-		return "Create Papyrus model from txtUML model";
+		return "Create Javascript Diagrams from txtUML Model";
 	}
 
 	/*
@@ -134,22 +135,21 @@ public class TxtUMLVisuzalizeWizard extends Wizard {
 
 			try {
 				this.checkNoLayoutDescriptionsSelected();
-				Job job = new Job("Diagram Visualization") {
-
+				IProgressService progressService = PlatformUI.getWorkbench().getProgressService();
+				progressService.runInUI(progressService, new IRunnableWithProgress() {
 					@Override
-					protected IStatus run(IProgressMonitor monitor) {
+					public void run(IProgressMonitor monitor) throws InterruptedException {
 						monitor.beginTask("Visualization", 100);
 
 						TxtUMLExporter exporter = new TxtUMLExporter(txtUMLProjectName, generatedFolderName,
 								txtUMLModelName, layouts);
-						Display.getDefault().syncExec(() -> {
-							try {
-								exporter.cleanBeforeVisualization();
-							} catch (CoreException e) {
-								Dialogs.errorMsgb("txtUML export Error - cleaning resources",
-										"Error occured when cleaning resources.", e);
-							}
-						});
+						try {
+							exporter.cleanBeforeVisualization();
+						} catch (CoreException | IOException e) {
+							Dialogs.errorMsgb("txtUML export Error - cleaning resources",
+									"Error occured when cleaning resources.", e);
+							throw new InterruptedException();
+						}
 						monitor.subTask("Exporting txtUML Model to UML2 model...");
 						try {
 							TxtUMLToUML2.exportModel(txtUMLProjectName, txtUMLModelName,
@@ -158,7 +158,8 @@ public class TxtUMLVisuzalizeWizard extends Wizard {
 							monitor.worked(10);
 						} catch (Exception e) {
 							Dialogs.errorMsgb("txtUML export Error", "Error occured during the UML2 exportation.", e);
-							return Status.CANCEL_STATUS;
+							monitor.done();
+							throw new InterruptedException();
 						}
 
 						monitor.subTask("Generating txtUML layout description...");
@@ -190,30 +191,30 @@ public class TxtUMLVisuzalizeWizard extends Wizard {
 
 							monitor.worked(5);
 						} catch (Exception e) {
-							Dialogs.errorMsgb("txtUML layout export Error",
-									"Error occured during the diagram layout interpretation.", e);
-							return Status.CANCEL_STATUS;
+							if (e instanceof InterruptedException) {
+								throw (InterruptedException) e;
+							} else {
+								Dialogs.errorMsgb("txtUML layout export Error",
+										"Error occured during the diagram layout interpretation.", e);
+								monitor.done();
+								throw new InterruptedException();
+							}
 						}
 
-						PapyrusVisualizer pv = exporter.createVisualizer(layoutDescriptor);
-						pv.registerPayprusModelManager(TxtUMLPapyrusModelManager.class);
-
-						Display.getDefault().syncExec(() -> {
-							try {
-								pv.run(SubMonitor.convert(monitor, 85));
-							} catch (Exception e) {
-								Dialogs.errorMsgb("txtUML visualization Error",
-										"Error occured during the visualization process.", e);
-							}
-						});
-						return Status.OK_STATUS;
+						monitor.subTask("Exporting diagrams for JointJS visualization...");
+						try {
+							Exporter ex = new Exporter(layoutDescriptor, txtUMLModelName);
+							ex.export();
+						} catch (Exception e) {
+							Dialogs.errorMsgb("txtUML visualization Error",
+									"Error occured during the visualization process.", e);
+							monitor.done();
+							throw new InterruptedException();
+						}
 					}
-
-				};
-
-				job.setUser(true);
-				job.schedule();
-			} catch (InterruptedException e) {
+				}, ResourcesPlugin.getWorkspace().getRoot());
+			} catch (InvocationTargetException | InterruptedException e) {
+				Logger.user.error(e.getMessage());
 				return false;
 			}
 		}
@@ -232,4 +233,5 @@ public class TxtUMLVisuzalizeWizard extends Wizard {
 				throw new InterruptedException();
 		}
 	}
+
 }

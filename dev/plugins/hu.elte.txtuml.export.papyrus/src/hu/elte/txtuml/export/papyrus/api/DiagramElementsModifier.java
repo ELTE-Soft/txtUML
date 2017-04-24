@@ -169,12 +169,14 @@ public class DiagramElementsModifier {
 		SetConnectionBendpointsCommand cmd = new SetConnectionBendpointsCommand(editingDomain);
 		cmd.setEdgeAdapter(new EObjectAdapter(connection.getNotationView()));
 
-		Point sourceRef = bendpoints.get(0);
-		Point targetRef = bendpoints.get(bendpoints.size() - 1);
+		Point first = bendpoints.get(0);
+		Point last = bendpoints.get(bendpoints.size() - 1);
+		Point sourceRef = new Point(first.x(), first.y());
+		Point targetRef = new Point(last.x(), last.y());
 		PointList pointList = new PointList();
 
 		for (Point bendpoint : bendpoints) {
-			pointList.addPoint(bendpoint);
+			pointList.addPoint(new Point(bendpoint.x(), bendpoint.y()));
 		}
 
 		cmd.setNewPointList(pointList, sourceRef, targetRef);

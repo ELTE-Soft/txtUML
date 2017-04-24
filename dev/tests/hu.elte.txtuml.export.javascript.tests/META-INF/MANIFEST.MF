@@ -1,0 +1,14 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: txtUML JavaScript Visualizer Tests
+Bundle-SymbolicName: hu.elte.txtuml.export.javascript.tests
+Bundle-Version: 0.5.1.qualifier
+Fragment-Host: hu.elte.txtuml.export.javascript
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Require-Bundle: org.junit,
+ hu.elte.txtuml.layout.visualizer,
+ org.eclipse.emf.ecore,
+ org.mockito.mockito-core,
+ hu.elte.txtuml.utils,
+ hu.elte.txtuml.export.uml2,
+ org.eclipse.uml2.uml
