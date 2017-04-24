@@ -183,7 +183,11 @@ public class UI implements Runnable {
 			if (refiller.getText().equals(""))
 				model.chooseDrink(drinkName);
 			else {
-				model.refillDrink(drinkName, Integer.parseInt(refiller.getText()));
+				try{
+					model.refillDrink(drinkName, Integer.parseInt(refiller.getText()));
+				}catch(NumberFormatException ex){
+					// ignore
+				}
 				refiller.setText("");
 			}
 		});
