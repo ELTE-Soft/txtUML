@@ -86,8 +86,7 @@ public class ConstructorTemplates {
 		String parentParamName = GenerationNames.formatIncomingParamName(GenerationNames.ParentSmName);
 		String source = className + "::" + className + "(" + PrivateFunctionalTemplates.cppType(parentStateMachine)
 				+ " " + parentParamName + "):" + GenerationNames.ParentSmMemberName + "(" + parentParamName + ")"
-				+ "\n{\n" + StateMachineTemplates.stateMachineInitializationSharedBody(className,
-						intialState, false, null)
+				+ "\n{\n" + StateMachineTemplates.stateMachineInitializationSharedBody(false, null)
 				+ "}\n\n";
 		return source + StateMachineTemplates.simpleStateMachineClassConstructorSharedBody(className, machine,
 				intialState, false);
@@ -95,14 +94,13 @@ public class ConstructorTemplates {
 
 	public static String hierarchicalSubStateMachineClassConstructor(String className, String parentClassName,
 			Multimap<TransitionConditions, Pair<String, String>> machine, Map<String, String> subMachines,
-			String intialState) {
+			Integer poolId) {
 
 		String parentParamName = GenerationNames.formatIncomingParamName(GenerationNames.ParentSmName);
 		String source = className + "::" + className + "()" + " " + parentParamName + "):"
 				+ GenerationNames.CurrentMachineName + "(" + PointerAndMemoryNames.NullPtr + "),"
 				+ GenerationNames.ParentSmMemberName + "(" + parentParamName + ")" + "\n{\n";
-		return source + StateMachineTemplates.hierarchicalStateMachineClassConstructorSharedBody(className,
-				parentClassName, subMachines, intialState, false);
+		return source + StateMachineTemplates.hierarchicalStateMachineClassConstructorSharedBody(subMachines, false, poolId);
 	}
 
 }

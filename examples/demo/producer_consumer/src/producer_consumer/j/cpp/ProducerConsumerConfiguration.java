@@ -1,4 +1,4 @@
-package producer_consumer.j;
+package producer_consumer.j.cpp;
 
 import hu.elte.txtuml.api.deployment.Configuration;
 import hu.elte.txtuml.api.deployment.Group;
