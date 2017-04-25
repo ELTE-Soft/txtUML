@@ -32,9 +32,9 @@ BinaryIdentifierInstruction:
 
 BinaryListInstruction:
 	val = WrappedTypeExpressionList
+	(linkEnd = ("start" | "end"))?
 	op = ("east-of" | "west-of" | "north-of" | "south-of")
 	of = WrappedTypeExpressionList
-	(linkEnd = ("start" | "end"))?
 ;
 
 PhantomInstruction:
@@ -51,6 +51,7 @@ GroupInstruction:
 	op = ("group") 
 	name=ID 
 	val = WrappedTypeExpressionList
+	(align = ("top-to-bottom" | "bottom-to-top" | "left-to-right" | "right-to-left"))?
 ;
 
 UnaryNumberInstruction:

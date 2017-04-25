@@ -23,6 +23,8 @@ import hu.elte.txtuml.api.layout.Below
 import org.eclipse.xtext.common.types.TypesFactory
 import java.util.ArrayList
 import org.eclipse.xtext.common.types.util.TypeReferences
+import org.eclipse.xtext.common.types.impl.JvmEnumerationTypeImplCustom
+import org.eclipse.xtext.common.types.impl.JvmParameterizedTypeReferenceImplCustom
 
 //import hu.elte.txtuml.api.layout.Diagram;
 
@@ -121,17 +123,36 @@ class XDiagramDefinitionJvmModelInferrer extends AbstractModelInferrer {
 	def dispatch void infer(GroupInstruction element, IJvmDeclaredTypeAcceptor acceptor, boolean isPreIndexingPhase) {
 		println("infer called with groupinstruction: " + element);
 		
-//		var groupClassName = element.findPackageName + element.findDiagramName + "." + element.name;
-		
-//		result.extendedClass = new JvmTypeReferenceBuilder().typeRef("hu.elte.txtuml.api.layout.Diagram.NodeGroup");
-
 		var groupType = element.toClass(element.name) [
 			documentation = element.documentation;
 			declaringType = currentDiagramClass;
 			superTypes += NodeGroup.typeRef();
 			annotations += Contains.createAnnotationTEList("value" -> element.^val.wrapped);
 		]
+		
 		acceptor.accept(groupType);
+
+		val alignment = if (element.align == null){
+			null
+		} else {
+			String.valueOf(switch(element.align){
+				case "top-to-bottom" : AlignmentType.TopToBottom
+				case "bottom-to-top" : AlignmentType.BottomToTop
+				case "left-to-right" : AlignmentType.LeftToRight
+				case "right-to-left" : AlignmentType.RightToLeft
+				default : null		
+			})
+		};
+
+		if (alignment != null){
+			var newAnnotation = annotationRef(Alignment) => [ annotationRef |
+				annotationRef.explicitValues += TypesFactory::eINSTANCE.createJvmEnumAnnotationValue => [
+					values += (AlignmentType.typeRef().type as JvmEnumerationTypeImplCustom).literals.findFirst[simpleName == alignment];
+					operation = annotationRef.annotation.declaredOperations.findFirst[simpleName == "value"];
+				]
+			]
+			groupType.annotations += newAnnotation;
+		}
 	}
 	
 	def private parseDoubleValue(String valueStr){
@@ -189,7 +210,7 @@ class XDiagramDefinitionJvmModelInferrer extends AbstractModelInferrer {
 			left = element.args.wrapped.expressions.get(3);			
 		}
 		
-		var newAnnotation = Diamond.createAnnotationJVMGenericType(
+		var newAnnotation = Diamond.createAnnotationJVMGenericType(			
 			"top" -> buildTypeOrPhantom(element, top),
 			"right" -> buildTypeOrPhantom(element, right),
 			"bottom" -> buildTypeOrPhantom(element, bottom),
@@ -279,7 +300,7 @@ class XDiagramDefinitionJvmModelInferrer extends AbstractModelInferrer {
 		};
 		
 		val linkEnd = if (element.linkEnd == null) { 
-			LinkEnd.Default 
+			LinkEnd.Default
 		} else { 
 			switch(element.linkEnd){
 				case "start" : LinkEnd.Start
@@ -288,24 +309,28 @@ class XDiagramDefinitionJvmModelInferrer extends AbstractModelInferrer {
 			}
 		};
 		
+		// SOURCE: https://www.eclipse.org/forums/index.php/t/300722/
+		
 		var newAnnotation = annotationRef(annType) => [ annotationRef |
 			if (linkEnd != LinkEnd.Default){
-//				annotationRef.explicitValues += TypesFactory::eINSTANCE.createJvmEnumAnnotationValue ??? => [
-//					values += ???
-//					operation = annotationRef.annotation.declaredOperations.findFirst[it.simpleName == "end"];
-//				]
+				annotationRef.explicitValues += TypesFactory::eINSTANCE.createJvmEnumAnnotationValue => [
+					val name = String.valueOf(linkEnd);
+					values += (LinkEnd.typeRef().type as JvmEnumerationTypeImplCustom).literals.findFirst[simpleName == name];
+					operation = annotationRef.annotation.declaredOperations.findFirst[simpleName == "end"];
+				]
 			}
 			annotationRef.explicitValues += TypesFactory::eINSTANCE.createJvmTypeAnnotationValue => [
 				values += element.^val.wrapped.expressions.map[it.handlePhantom().typeRef()];
-				operation = annotationRef.annotation.declaredOperations.findFirst[it.simpleName == "val"];
+				operation = annotationRef.annotation.declaredOperations.findFirst[simpleName == "val"];
 			]
 			annotationRef.explicitValues += TypesFactory::eINSTANCE.createJvmTypeAnnotationValue => [
 				values += element.of.wrapped.expressions.map[it.handlePhantom().typeRef()];
-				operation = annotationRef.annotation.declaredOperations.findFirst[it.simpleName == "from"];
+				operation = annotationRef.annotation.declaredOperations.findFirst[simpleName == "from"];
 			]
 		]
 		
-		element.of.wrapped.expressions.map[x | x.name.typeRef()]
+		// ???
+		element.of.wrapped.expressions.map[name.typeRef()]
 						
 		this.currentLayoutClass.annotations += newAnnotation;
 	}
