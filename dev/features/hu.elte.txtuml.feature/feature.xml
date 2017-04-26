@@ -2,7 +2,7 @@
 <feature
       id="hu.elte.txtuml.feature"
       label="txtUML"
-      version="0.5.1.qualifier"
+      version="0.6.0.qualifier"
       provider-name="ELTE">
 
    <description url="http://txtuml.inf.elte.hu">
