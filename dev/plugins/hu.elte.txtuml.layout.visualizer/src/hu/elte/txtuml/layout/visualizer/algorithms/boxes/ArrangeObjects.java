@@ -323,7 +323,7 @@ public class ArrangeObjects {
 				excparam.add(e.stat());
 			}
 			throw new BoxArrangeConflictException(excparam,
-					"There were conflicts in the statements (cyclic, unsolvable)!");
+					"There were conflicts in the statements (cyclic, unsolvable)! Contradiction in class or state");
 		}
 		
 		// For all nodes in the graph G
