@@ -1,0 +1,33 @@
+package micro.model;
+
+signal MagnetronOn;
+signal MagnetronOff;
+
+class Magnetron {
+	initial Init;
+	state Off;
+	state On;
+	
+	transition Initialize {
+		from micro.model.Magnetron.Init;
+		to micro.model.Magnetron.Off;
+	}
+	
+	transition SwitchOn {
+		from micro.model.Magnetron.Off;
+		to micro.model.Magnetron.On;
+		trigger MagnetronOn;
+		effect {
+			this->(MagnetronOfOven.oven).selectAny().gui.magnetronOn();
+		}
+	}
+
+	transition SwitchOff {
+		from micro.model.Magnetron.On;
+		to micro.model.Magnetron.Off;
+		trigger MagnetronOff;
+		effect {
+			this->(MagnetronOfOven.oven).selectAny().gui.magnetronOff();
+		}
+	}
+}

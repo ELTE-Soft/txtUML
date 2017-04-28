@@ -1,0 +1,33 @@
+package micro.model;
+
+signal LampOn;
+signal LampOff;
+
+class Lamp {
+	initial Init;
+	state Off;
+	state On;
+	
+	transition Initialize {
+		from Init;
+		to Off;
+	}
+	
+	transition SwitchOn {
+		from Off;
+		to On;
+		trigger LampOn;
+		effect {
+			this->(LampOfOven.oven).selectAny().gui.lampOn();
+		}
+	}
+
+	transition SwitchOff {
+		from On;
+		to Off;
+		trigger LampOff;
+		effect {
+			this->(LampOfOven.oven).selectAny().gui.lampOff();
+		}
+	}
+}
