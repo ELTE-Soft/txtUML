@@ -121,17 +121,15 @@ public class StateMachineTemplates {
 		return source + "}\n";
 	}
 
-	public static String stateMachineInitializationSharedBody(String className, String intialState, Boolean simpleMachine,
-			Integer poolId) {
+	public static String stateMachineInitializationSharedBody(boolean isTopStateMachine, Integer poolId) {
 		StringBuilder source = new StringBuilder("");
 
 		if (poolId != null) {
 			source.append(GenerationNames.PoolIdSetter + "(" + poolId + ");\n");
 		}
-		if (simpleMachine) {
+		if (isTopStateMachine) {
 			source.append(RuntimeTemplates.initStateMachineForRuntime());
 		}
-
 		source.append(GenerationNames.SetInitialStateName + "();\n");
 
 		return source.toString();
@@ -193,10 +191,9 @@ public class StateMachineTemplates {
 	 * 
 	 * Map<String,String> <event,SubmachineName>
 	 */
-	public static String hierarchicalStateMachineClassConstructorSharedBody(String className,
-			String parentStateMchine,
-			Map<String, String> subMachines, String intialState, Boolean rt) {
+	public static String hierarchicalStateMachineClassConstructorSharedBody(Map<String, String> subMachines, Boolean rt, Integer poolId) {
 		StringBuilder source = new StringBuilder("");
+		source.append(stateMachineInitializationSharedBody(rt,poolId));
 		for (Map.Entry<String, String> entry : subMachines.entrySet()) {
 			source.append(
 					GenerationNames.CompositeStateMapName + ".emplace(" + GenerationNames.stateEnumName(entry.getKey())
@@ -223,10 +220,7 @@ public class StateMachineTemplates {
 
 	public static String simpleStateMachineInitializationDefinition(String className, String intialState, Boolean rt,
 			Integer poolId) {
-		StringBuilder body = new StringBuilder("");
-		body.append(stateMachineInitializationSharedBody(className, intialState, rt, poolId));
-
-		return FunctionTemplates.functionDef(className, GenerationNames.InitStateMachine, body.toString());
+		return FunctionTemplates.functionDef(className, GenerationNames.InitStateMachine, stateMachineInitializationSharedBody(rt, poolId));
 	}
 
 	public static String hierachialStateMachineInitialization(String className, String intialState, Boolean rt,
@@ -234,8 +228,7 @@ public class StateMachineTemplates {
 			Map<String, String> subMachines) {
 		StringBuilder body = new StringBuilder("");
 		body.append(GenerationNames.CurrentMachineName + " = " + PointerAndMemoryNames.NullPtr + ";\n");
-		body.append(hierarchicalStateMachineClassConstructorSharedBody(className, className, subMachines,
-				intialState, rt));
+		body.append(hierarchicalStateMachineClassConstructorSharedBody(subMachines, rt, poolId));
 		return FunctionTemplates.functionDef(className, GenerationNames.InitStateMachine, body.toString());
 	}
 

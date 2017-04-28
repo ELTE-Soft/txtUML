@@ -2,7 +2,7 @@
 <feature
       id="hu.elte.txtuml.feature"
       label="txtUML"
-      version="0.5.1.qualifier"
+      version="0.6.0.qualifier"
       provider-name="ELTE">
 
    <description url="http://txtuml.inf.elte.hu">
@@ -105,7 +105,8 @@ This Agreement is governed by the laws of the State of New York and the intellec
 
    <url>
       <update label="txtUML Update Site" url="http://txtuml.inf.elte.hu/releases/latest/"/>
-      <discovery label="Papyrus Extras Update Site" url="http://download.eclipse.org/modeling/mdt/papyrus/updates/releases/mars/extra"/>
+      <discovery label="Papyrus Extras Update Site" url="http://download.eclipse.org/modeling/mdt/papyrus/updates/releases/neon/extra"/>
+      <discovery label="EclipseLink Update Site" url="http://download.eclipse.org/rt/eclipselink/updates/"/>
    </url>
 
    <requires>
@@ -117,6 +118,7 @@ This Agreement is governed by the laws of the State of New York and the intellec
       <import feature="org.eclipse.xtext.ui" version="2.10.0.v201605250459" match="perfect"/>
       <import feature="org.eclipse.xtext.xtext.ui" version="2.10.0.v201605250459" match="perfect"/>
       <import feature="org.eclipse.cdt" version="9.2.0.201612061315" match="equivalent"/>
+      <import feature="org.eclipse.persistence.moxy" version="2.6.4.v20160829-44060b6" match="perfect"/>
    </requires>
 
    <plugin
@@ -247,6 +249,13 @@ This Agreement is governed by the laws of the State of New York and the intellec
 
    <plugin
          id="hu.elte.txtuml.utils.eclipse"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="hu.elte.txtuml.export.javascript"
          download-size="0"
          install-size="0"
          version="0.0.0"
