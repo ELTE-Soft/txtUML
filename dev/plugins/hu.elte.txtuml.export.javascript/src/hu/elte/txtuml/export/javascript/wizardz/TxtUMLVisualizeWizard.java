@@ -1,6 +1,5 @@
 package hu.elte.txtuml.export.javascript.wizardz;
 
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -13,7 +12,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
@@ -23,8 +21,8 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.progress.IProgressService;
 
 import hu.elte.txtuml.export.javascript.Exporter;
-import hu.elte.txtuml.export.papyrus.layout.txtuml.TxtUMLExporter;
-import hu.elte.txtuml.export.papyrus.layout.txtuml.TxtUMLLayoutDescriptor;
+import hu.elte.txtuml.export.papyrus.TxtUMLExporter;
+import hu.elte.txtuml.export.papyrus.layout.TxtUMLLayoutDescriptor;
 import hu.elte.txtuml.export.papyrus.preferences.PreferencesManager;
 import hu.elte.txtuml.export.papyrus.wizardz.VisualizeTxtUMLPage;
 import hu.elte.txtuml.export.uml2.ExportMode;
@@ -145,7 +143,7 @@ public class TxtUMLVisualizeWizard extends Wizard {
 								txtUMLModelName, layouts);
 						try {
 							exporter.cleanBeforeVisualization();
-						} catch (CoreException | IOException e) {
+						} catch (InvocationTargetException e) {
 							Dialogs.errorMsgb("txtUML export Error - cleaning resources",
 									"Error occured when cleaning resources.", e);
 							throw new InterruptedException();

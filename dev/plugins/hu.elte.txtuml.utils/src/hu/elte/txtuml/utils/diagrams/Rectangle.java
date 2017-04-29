@@ -38,4 +38,8 @@ public class Rectangle {
 	public Point getTopLeft() {
 		return new Point(x, y);
 	}
+
+	public Point getBottomRight() {
+		return new Point(x + width, y + height);
+	}
 }

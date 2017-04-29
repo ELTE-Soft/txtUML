@@ -16,5 +16,6 @@ Require-Bundle: org.junit,
  org.eclipse.papyrus.uml.diagram.activity,
  org.eclipse.papyrus.uml.diagram.statemachine,
  org.eclipse.papyrus.uml.diagram.composite,
- org.eclipse.papyrus.infra.gmfdiag.css.model
+ org.eclipse.papyrus.infra.gmfdiag.css.model,
+ hu.elte.txtuml.utils
 Import-Package: org.eclipse.uml2.uml

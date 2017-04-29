@@ -21,13 +21,13 @@ public interface StateMachineDiagramNotationManager {
 		Name(TransitionNameEditPart.VISUAL_ID), StereoType(TransitionStereotypeEditPart.VISUAL_ID), Guard(
 				TransitionGuardEditPart.VISUAL_ID);
 
-		private int visualID;
+		private String visualID;
 
-		public int getVisualID() {
+		public String getVisualID() {
 			return visualID;
 		}
 
-		private ConnectionLabelType(int visualID) {
+		private ConnectionLabelType(String visualID) {
 			this.visualID = visualID;
 		}
 	}

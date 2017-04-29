@@ -1,16 +1,16 @@
-package hu.elte.txtuml.export.papyrus.arrange;
+package hu.elte.txtuml.utils.diagrams;
 
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.draw2d.geometry.Point;
-import org.eclipse.draw2d.geometry.Rectangle;
 import org.junit.Assert;
 import org.junit.Test;
 
-import hu.elte.txtuml.export.papyrus.arrange.LayoutTransformer;
+import hu.elte.txtuml.utils.diagrams.LayoutTransformer;
+import hu.elte.txtuml.utils.diagrams.Point;
+import hu.elte.txtuml.utils.diagrams.Rectangle;
 
 public class LayoutTransformerTest {
 
@@ -159,7 +159,7 @@ public class LayoutTransformerTest {
 		Assert.assertEquals(0, connections.get("D_A").get(1).x());
 		Assert.assertEquals(1, connections.get("D_A").get(1).y());
 	}
-	
+
 	@Test
 	public void testLinksAreOnEdges(){
 		LayoutTransformer layoutTransformer = new LayoutTransformer();

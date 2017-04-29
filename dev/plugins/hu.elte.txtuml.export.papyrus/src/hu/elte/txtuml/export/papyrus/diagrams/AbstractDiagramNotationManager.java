@@ -17,7 +17,7 @@ import org.eclipse.gmf.runtime.notation.NotationFactory;
 import org.eclipse.gmf.runtime.notation.RelativeBendpoints;
 import org.eclipse.gmf.runtime.notation.View;
 import org.eclipse.gmf.runtime.notation.datatype.RelativeBendpoint;
-import org.eclipse.gmf.tooling.runtime.providers.DiagramElementTypes;
+import org.eclipse.papyrus.infra.gmfdiag.common.providers.DiagramElementTypes;
 import org.eclipse.uml2.uml.Element;
 
 import hu.elte.txtuml.export.papyrus.TransactionalCommandRunner;

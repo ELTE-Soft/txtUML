@@ -15,11 +15,12 @@ import hu.elte.txtuml.export.javascript.scalers.ClassScaler;
 import hu.elte.txtuml.export.javascript.scalers.NodeScaler;
 import hu.elte.txtuml.export.javascript.utils.LinkUtils;
 import hu.elte.txtuml.export.javascript.utils.NodeUtils;
-import hu.elte.txtuml.export.papyrus.elementsarrangers.ArrangeException;
-import hu.elte.txtuml.export.papyrus.elementsarrangers.txtumllayout.LayoutVisualizerManager;
+import hu.elte.txtuml.export.papyrus.arrange.ArrangeException;
+import hu.elte.txtuml.export.papyrus.arrange.LayoutVisualizerManager;
 import hu.elte.txtuml.export.uml2.mapping.ModelMapProvider;
 import hu.elte.txtuml.layout.export.DiagramExportationReport;
 import hu.elte.txtuml.layout.visualizer.model.AssociationType;
+import hu.elte.txtuml.layout.visualizer.model.DiagramType;
 import hu.elte.txtuml.layout.visualizer.model.LineAssociation;
 import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
 import hu.elte.txtuml.utils.diagrams.LayoutTransformer;
@@ -93,13 +94,11 @@ public class ClassDiagram {
 			classes.add(cn);
 		}
 		// arranging the diagram
-		LayoutVisualizerManager lvm = new LayoutVisualizerManager(nodes, links, der.getStatements());
+		LayoutVisualizerManager lvm = new LayoutVisualizerManager(nodes, links, der.getStatements(), DiagramType.Class, null);
 		lvm.arrange();
 
 		// scaling and transforming nodes and links
-		LayoutTransformer lt = new LayoutTransformer(lvm.getPixelGridRatioHorizontal(),
-				lvm.getPixelGridRatioVertical());
-
+		LayoutTransformer lt = new LayoutTransformer();
 		Map<String, Rectangle> ltrmap = NodeUtils.getRectMapfromROCollection(lvm.getObjects());
 		Map<String, List<Point>> ltpmap = LinkUtils.getPointMapfromLACollection(lvm.getAssociations());
 

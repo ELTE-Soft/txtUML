@@ -9,8 +9,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.draw2d.geometry.Point;
-import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.uml2.uml.Element;
 
 import hu.elte.txtuml.export.papyrus.layout.IDiagramElementsMapper;
@@ -20,6 +18,9 @@ import hu.elte.txtuml.layout.visualizer.model.DiagramType;
 import hu.elte.txtuml.layout.visualizer.model.LineAssociation;
 import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
 import hu.elte.txtuml.layout.visualizer.statements.Statement;
+import hu.elte.txtuml.utils.diagrams.LayoutTransformer;
+import hu.elte.txtuml.utils.diagrams.Point;
+import hu.elte.txtuml.utils.diagrams.Rectangle;
 import hu.elte.txtuml.utils.Logger;
 
 public abstract class AbstractDiagramElementsArranger implements IDiagramElementsArranger {
@@ -38,23 +39,23 @@ public abstract class AbstractDiagramElementsArranger implements IDiagramElement
 		Set<LineAssociation> links = report.getLinks();
 		List<Statement> statements = report.getStatements();
 		DiagramType dType = convertDiagramType(report.getType());
-	
+
 		LayoutVisualizerManager vm = new LayoutVisualizerManager(objects, links, statements, dType,
 				this.pixelDimensionProvider);
 		vm.addProgressMonitor(monitor);
 		vm.arrange();
-	
+
 		Set<RectangleObject> arrangedObjects = vm.getObjects();
 		Set<LineAssociation> arrangedLinks = vm.getAssociations();
-	
+
 		this.elementbounds = createElementsMapping(arrangedObjects);
 		Set<LineAssociation> allLinks = flattenAllLinks(arrangedLinks, arrangedObjects);
 		this.connectionRoutes = createConnectionMapping(allLinks);
-	
+
 		LayoutTransformer transformer = new LayoutTransformer();
-	
+
 		transformer.doTranformations(this.elementbounds, this.connectionRoutes);
-	
+
 		this.connectionSourceAnchors = createSourceAnchors(allLinks);
 		this.connectionTargetAnchors = createTargetAnchors(allLinks);
 	}
@@ -76,10 +77,9 @@ public abstract class AbstractDiagramElementsArranger implements IDiagramElement
 		return links;
 	}
 
-
 	private Map<Element, Rectangle> createElementsMapping(Set<RectangleObject> arrangedObjects) {
 		List<RectangleObject> flattenedObjects = flattenArrangedObjectsRecursively(arrangedObjects);
-	
+
 		return flattenedObjects.stream()
 				.collect(Collectors.toMap(ro -> this.elementsMapper.findNode(ro.getName()),
 						ro -> new Rectangle(ro.getTopLeft().getX(), ro.getTopLeft().getY(), ro.getPixelWidth(),
@@ -90,19 +90,18 @@ public abstract class AbstractDiagramElementsArranger implements IDiagramElement
 		List<RectangleObject> arrayList = new ArrayList<>();
 		arrangedObjects.forEach(object -> {
 			if (object.hasInner()) {
-				arrayList.addAll(flattenArrangedObjectsRecursively(object.getInner().Objects));			
+				arrayList.addAll(flattenArrangedObjectsRecursively(object.getInner().Objects));
 			}
-			
+
 			arrayList.add(object);
 		});
 		return arrayList;
 	}
 
 	private Map<Element, List<Point>> createConnectionMapping(Set<LineAssociation> arrangedLinks) {
-		Map<Element, List<Point>> result = arrangedLinks.stream()
-				.collect(Collectors.toMap(la -> this.elementsMapper.findConnection(la.getId()),
-						la -> la.getMinimalRoute().stream().map(p -> new Point(p.getX(), p.getY()))
-								.collect(Collectors.toList())));
+		Map<Element, List<Point>> result = arrangedLinks.stream().collect(
+				Collectors.toMap(la -> this.elementsMapper.findConnection(la.getId()), la -> la.getMinimalRoute()
+						.stream().map(p -> new Point(p.getX(), p.getY())).collect(Collectors.toList())));
 		return result;
 	}
 
@@ -113,8 +112,8 @@ public abstract class AbstractDiagramElementsArranger implements IDiagramElement
 			Rectangle targetNode = this.elementbounds.get(this.elementsMapper.findNode(l.getTo()));
 			List<Point> pointlist = this.connectionRoutes.get(connection);
 			Point endPoint = pointlist.get(pointlist.size() - 1);
-			String anchor = "(" + (endPoint.x - targetNode.x) / (float) targetNode.width + ","
-					+ (endPoint.y - targetNode.y) / (float) targetNode.height + ")";
+			String anchor = "(" + (endPoint.x() - targetNode.x()) / (float) targetNode.width() + ","
+					+ (endPoint.y() - targetNode.y()) / (float) targetNode.height() + ")";
 			result.put(connection, anchor);
 		});
 		return result;
@@ -126,25 +125,29 @@ public abstract class AbstractDiagramElementsArranger implements IDiagramElement
 			Element connection = this.elementsMapper.findConnection(l.getId());
 			Rectangle sourceNode = this.elementbounds.get(this.elementsMapper.findNode(l.getFrom()));
 			Point startPoint = this.connectionRoutes.get(connection).get(0);
-			result.put(connection, "(" + (startPoint.x - sourceNode.x) / (float) sourceNode.width + ","
-					+ (startPoint.y - sourceNode.y) / (float) sourceNode.height + ")");
+			result.put(connection, "(" + (startPoint.x() - sourceNode.x()) / (float) sourceNode.width() + ","
+					+ (startPoint.y() - sourceNode.y()) / (float) sourceNode.height() + ")");
 		});
 		return result;
 	}
 
 	@Override
-	public Rectangle getBoundsForElement(Element element) {
-		Rectangle rect = this.elementbounds.get(element);
-		if (rect == null) {
-			rect = new Rectangle(0, 0, 100, 100);
+	public org.eclipse.draw2d.geometry.Rectangle getBoundsForElement(Element element) {
+		Rectangle bounds = this.elementbounds.get(element);
+		org.eclipse.draw2d.geometry.Rectangle rect = null;
+		if (bounds == null) {
+			rect = new org.eclipse.draw2d.geometry.Rectangle(0, 0, 100, 100);
 			Logger.sys.error("Could not find bounds for an element");
+		} else {
+			rect = new org.eclipse.draw2d.geometry.Rectangle(bounds.x(), bounds.y(), bounds.width(), bounds.height());
 		}
 		return rect;
 	}
 
 	@Override
-	public List<Point> getRouteForConnection(Element connection) {
-		return this.connectionRoutes.get(connection);
+	public List<org.eclipse.draw2d.geometry.Point> getRouteForConnection(Element connection) {
+		return this.connectionRoutes.get(connection).stream()
+				.map(p -> new org.eclipse.draw2d.geometry.Point(p.x(), p.y())).collect(Collectors.toList());
 	}
 
 	@Override
@@ -166,5 +169,5 @@ public abstract class AbstractDiagramElementsArranger implements IDiagramElement
 		default:
 			return DiagramType.unknown;
 		}
-	}	
+	}
 }

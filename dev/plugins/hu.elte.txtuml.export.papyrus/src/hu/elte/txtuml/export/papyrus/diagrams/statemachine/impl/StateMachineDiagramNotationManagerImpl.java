@@ -120,7 +120,7 @@ public class StateMachineDiagramNotationManagerImpl extends AbstractDiagramNotat
 		Node node = findCanvasOfRegion(regionNode);
 
 		Runnable runnable = () -> {
-			String hint = ((IHintedType) UMLElementTypes.State_6000).getSemanticHint();
+			String hint = ((IHintedType) UMLElementTypes.State_Shape).getSemanticHint();
 			Node newNode = ViewService.createNode(node, state, hint, DIAGRAM_PREFERENCES_HINT);
 			newNode.setLayoutConstraint(createBounds(bounds, defaultStateBounds()));
 
@@ -138,7 +138,7 @@ public class StateMachineDiagramNotationManagerImpl extends AbstractDiagramNotat
 		Node node = findCanvasOfRegion(regionNode);
 
 		Runnable runnable = () -> {
-			String hint = ((IHintedType) UMLElementTypes.Pseudostate_8000).getSemanticHint();
+			String hint = ((IHintedType) UMLElementTypes.Pseudostate_InitialShape).getSemanticHint();
 			Node newNode = ViewService.createNode(node, InitialState, hint, DIAGRAM_PREFERENCES_HINT);
 			newNode.setLayoutConstraint(createBounds(bounds, defaultStateBounds()));
 
@@ -157,7 +157,7 @@ public class StateMachineDiagramNotationManagerImpl extends AbstractDiagramNotat
 
 		View sourceView = getViewOfModel(source, node);
 		View targetView = getViewOfModel(target, node);
-		IElementType elementType = UMLElementTypes.Transition_7000;
+		IElementType elementType = UMLElementTypes.Transition_Edge;
 		String hint = ((IHintedType) elementType).getSemanticHint();
 
 		Runnable runnable = () -> {
@@ -184,7 +184,7 @@ public class StateMachineDiagramNotationManagerImpl extends AbstractDiagramNotat
 		Node stateNameNode = findStateNameNodeOfState(stateNode);
 
 		Runnable runnable = () -> {
-			String hint = ((IHintedType) UMLElementTypes.Region_3000).getSemanticHint();
+			String hint = ((IHintedType) UMLElementTypes.Region_Shape).getSemanticHint();
 			Node newNode = ViewService.createNode(node, region, hint, DIAGRAM_PREFERENCES_HINT);
 
 			// The height of header must be set. Otherwise the view will be

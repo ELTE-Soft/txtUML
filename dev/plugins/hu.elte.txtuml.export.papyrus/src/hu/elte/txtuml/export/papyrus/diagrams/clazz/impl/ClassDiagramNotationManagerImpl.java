@@ -49,7 +49,7 @@ public class ClassDiagramNotationManagerImpl extends AbstractDiagramNotationMana
 	public void createClassForDiagram(Class objectToDisplay, Rectangle bounds, IProgressMonitor monitor) {
 
 		Runnable runnable = () -> {
-			String hint = ((IHintedType) UMLElementTypes.Class_2008).getSemanticHint();
+			String hint = ((IHintedType) UMLElementTypes.Class_Shape).getSemanticHint();
 			Node newNode = ViewService.createNode(diagram, objectToDisplay, hint,
 					ClassDiagramNotationManagerImpl.diagramPrefHint);
 
@@ -76,7 +76,7 @@ public class ClassDiagramNotationManagerImpl extends AbstractDiagramNotationMana
 		}
 
 		Runnable runnable = () -> {
-			String hint = ((IHintedType) UMLElementTypes.Property_3012).getSemanticHint();
+			String hint = ((IHintedType) UMLElementTypes.Property_ClassAttributeLabel).getSemanticHint();
 			ViewService.createNode(comp, propertyToDisplay, hint, ClassDiagramNotationManagerImpl.diagramPrefHint);
 		};
 
@@ -92,7 +92,7 @@ public class ClassDiagramNotationManagerImpl extends AbstractDiagramNotationMana
 		}
 
 		Runnable runnable = () -> {
-			String hint = ((IHintedType) UMLElementTypes.Operation_3013).getSemanticHint();
+			String hint = ((IHintedType) UMLElementTypes.Operation_ClassOperationLabel).getSemanticHint();
 			ViewService.createNode(comp, operationToDisplay, hint, ClassDiagramNotationManagerImpl.diagramPrefHint);
 		};
 
@@ -110,7 +110,7 @@ public class ClassDiagramNotationManagerImpl extends AbstractDiagramNotationMana
 
 		View sourceView = getViewOfModel(source, this.diagram);
 		View targetView = getViewOfModel(target, this.diagram);
-		IElementType elementType = UMLElementTypes.Association_4001;
+		IElementType elementType = UMLElementTypes.Association_Edge;
 		String hint = ((IHintedType) elementType).getSemanticHint();
 
 		Runnable runnable = () -> {
@@ -134,7 +134,7 @@ public class ClassDiagramNotationManagerImpl extends AbstractDiagramNotationMana
 
 		View sourceView = getViewOfModel(subclass, this.diagram);
 		View targetView = getViewOfModel(baseclass, this.diagram);
-		IElementType elementType = UMLElementTypes.Generalization_4002;
+		IElementType elementType = UMLElementTypes.Generalization_Edge;
 		String hint = ((IHintedType) elementType).getSemanticHint();
 
 		Runnable runnable = () -> {
