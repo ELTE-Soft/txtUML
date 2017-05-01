@@ -9,6 +9,7 @@ import org.eclipse.xtext.validation.Check
 import org.eclipse.xtext.common.types.JvmDeclaredType
 import hu.elte.txtuml.xd.xDiagramDefinition.TypeExpression
 import hu.elte.txtuml.xd.xDiagramDefinition.PackageDeclaration
+import hu.elte.txtuml.xd.xDiagramDefinition.TypeExpressionList
 
 class XDiagramModelValidator extends AbstractXDiagramDefinitionValidator {
 	protected DiagramSignature signature;
@@ -49,6 +50,13 @@ class XDiagramModelValidator extends AbstractXDiagramDefinitionValidator {
 		warning("only elements declared in model " + signature.genArg.simpleName + " or " + signature.name + " should be used", te, null);
 	}
 
+	def boolean checkSuperTypes(TypeExpressionList teList, Class<?>... superTypes){
+		for (TypeExpression tex : teList.expressions){
+			if (!tex.name.checkSuperTypes(superTypes)) return false;
+		}
+		return true;
+	}
+	
 	def boolean checkSuperTypes(JvmGenericType type, Class<?>... classes) {
 		Assert.isNotNull(classes);
 		val sup = classes.findFirst[type.actualType.getSuperType(it) != null];

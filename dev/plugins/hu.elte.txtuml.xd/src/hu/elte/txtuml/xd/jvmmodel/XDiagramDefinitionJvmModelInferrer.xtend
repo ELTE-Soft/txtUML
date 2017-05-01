@@ -45,6 +45,7 @@ import hu.elte.txtuml.xd.xDiagramDefinition.DiamondInstruction
 import hu.elte.txtuml.xd.xDiagramDefinition.GroupInstruction
 import hu.elte.txtuml.xd.xDiagramDefinition.Instruction
 import hu.elte.txtuml.xd.xDiagramDefinition.Model
+import hu.elte.txtuml.xd.xDiagramDefinition.NumericExpression
 import hu.elte.txtuml.xd.xDiagramDefinition.PackageDeclaration
 import hu.elte.txtuml.xd.xDiagramDefinition.PhantomInstruction
 import hu.elte.txtuml.xd.xDiagramDefinition.PriorityInstruction
@@ -60,8 +61,6 @@ import org.eclipse.xtext.common.types.JvmType
 import org.eclipse.xtext.common.types.JvmTypeReference
 import org.eclipse.xtext.common.types.TypesFactory
 import org.eclipse.xtext.common.types.impl.JvmEnumerationTypeImplCustom
-import org.eclipse.xtext.common.types.util.TypeReferences
-import org.eclipse.xtext.naming.IQualifiedNameProvider
 import org.eclipse.xtext.xbase.jvmmodel.AbstractModelInferrer
 import org.eclipse.xtext.xbase.jvmmodel.IJvmDeclaredTypeAcceptor
 import org.eclipse.xtext.xbase.jvmmodel.JvmTypesBuilder
@@ -83,10 +82,10 @@ class XDiagramDefinitionJvmModelInferrer extends AbstractModelInferrer {
 	@Inject extension JvmTypesBuilder
 	@Inject private IBatchTypeResolver typeResolver;
 	
-	@Inject extension IQualifiedNameProvider
+//	@Inject extension IQualifiedNameProvider
 	@Extension protected XDiagramDefinitionTypeHelper typeHelper = new XDiagramDefinitionTypeHelper();
 	
-	@Inject TypeReferences typeReferences 
+//	@Inject TypeReferences typeReferences 
 
 	/**
 	 * The dispatch method {@code infer} is called for each instance of the
@@ -218,11 +217,11 @@ class XDiagramDefinitionJvmModelInferrer extends AbstractModelInferrer {
 		}
 	}
 	
-	def private parseDoubleValue(String valueStr){
-		if (valueStr.endsWith("%")) {
-			return Double.valueOf(valueStr.substring(0, valueStr.length() - 1)) / 100.0;
+	def private parseDoubleValue(NumericExpression expression){
+		if (expression.perc == "%"){
+			return Double.valueOf(expression.value) / 100.0;
 		}
-		return Double.valueOf(valueStr);
+		return Double.valueOf(expression.value);
 	}
 	
 	def dispatch void infer(UnaryNumberInstruction element, IJvmDeclaredTypeAcceptor acceptor, boolean isPreIndexingPhase) {
@@ -305,7 +304,7 @@ class XDiagramDefinitionJvmModelInferrer extends AbstractModelInferrer {
 	def dispatch void infer(PriorityInstruction element,  IJvmDeclaredTypeAcceptor acceptor, boolean isPreIndexingPhase) {
 		var newAnnotation = annotationRef(Priority) => [ annotationRef |
 			annotationRef.explicitValues += TypesFactory::eINSTANCE.createJvmIntAnnotationValue => [
-				values += Integer.valueOf(element.prior.wrapped);
+				values += element.prior.wrapped;
 				operation = annotationRef.annotation.declaredOperations.findFirst[it.simpleName == "prior"];
 			]
 			annotationRef.explicitValues += TypesFactory::eINSTANCE.createJvmTypeAnnotationValue => [
@@ -461,10 +460,10 @@ class XDiagramDefinitionJvmModelInferrer extends AbstractModelInferrer {
 	}
 	
 	def String findDiagramName(EObject element){
-		return element.findModel.signature.name ?: "";
+		return element.findModel.diagram?.signature.name ?: "";
 	}
 	
 	def JvmType findGenericArg(EObject element){
-		return element.findModel.signature.genArg ?: null;
+		return element.findModel.diagram?.signature.genArg ?: null;
 	}
 }

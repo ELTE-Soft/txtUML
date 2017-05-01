@@ -22,10 +22,13 @@ import hu.elte.txtuml.xd.xDiagramDefinition.TypeExpressionList
 import hu.elte.txtuml.xd.xDiagramDefinition.UnaryListInstruction
 import hu.elte.txtuml.xd.xDiagramDefinition.UnaryNumberInstruction
 import hu.elte.txtuml.xd.xDiagramDefinition.WrappedArgumentExpressionList
+import hu.elte.txtuml.xd.xDiagramDefinition.WrappedNumericExpression
 import hu.elte.txtuml.xd.xDiagramDefinition.WrappedTypeExpression
 import hu.elte.txtuml.xd.xDiagramDefinition.WrappedTypeExpressionList
 import org.eclipse.xtext.formatting2.IFormattableDocument
 import org.eclipse.xtext.xbase.formatting2.XbaseFormatter
+import hu.elte.txtuml.xd.xDiagramDefinition.NumericExpression
+import hu.elte.txtuml.xd.xDiagramDefinition.Diagram
 
 class XDiagramDefinitionFormatter extends XbaseFormatter {
 
@@ -38,15 +41,19 @@ class XDiagramDefinitionFormatter extends XbaseFormatter {
 	}
 
 	def dispatch void format(PackageDeclaration it, extension IFormattableDocument document) {
-		regionFor().keyword(";").prepend[noSpace].append[newLine];
+		regionFor().keyword(";").prepend[noSpace].append[newLines = 2];
 	}
 
 	def dispatch void format(Model it, extension IFormattableDocument document) {
-		regionFor().keyword("{").prepend[oneSpace].append[newLine];
-		interior(regionFor.keyword('{'), regionFor.keyword('}'), [indent])
-		regionFor().keyword("}").prepend[newLine].append[noSpace];
 		format(package, document);
 		format(imports, document);
+		format(diagram, document);
+	}
+	
+	def dispatch void format(Diagram it, extension IFormattableDocument document){
+		regionFor().keyword("{").prepend[oneSpace].append[newLine];
+		interior(regionFor.keyword('{'), regionFor.keyword('}'), [indent])
+		regionFor().keyword("}").prepend[newLine].append[newLine];
 		format(signature, document);
 		instructions.forEach[instruction|format(instruction, document)];
 	}
@@ -137,5 +144,17 @@ class XDiagramDefinitionFormatter extends XbaseFormatter {
 
 	def dispatch void format(ArgumentExpression it, extension IFormattableDocument document) {
 		regionFor.keyword(":").prepend[noSpace].append[oneSpace];
+	}
+	
+	def dispatch void format(WrappedNumericExpression it, extension IFormattableDocument document){
+		regionFor.keyword("{").prepend[oneSpace].append[oneSpace];
+		regionFor.keyword("}").prepend[oneSpace]
+		format(wrapped);
+	}
+	
+	def dispatch void format(NumericExpression it, extension IFormattableDocument document){
+		if (perc != null) {
+			regionFor.keyword(perc).prepend[noSpace];
+		}
 	}
 }

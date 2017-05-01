@@ -41,6 +41,7 @@ Workflow {
 			}
 			// SOURCE: https://eclipse.org/Xtext/documentation/302_configuration.html
 			fragment = formatting.Formatter2Fragment2 auto-inject {}
+		    fragment = ui.outline.OutlineTreeProviderFragment2 {}
 		}
 	}
 }

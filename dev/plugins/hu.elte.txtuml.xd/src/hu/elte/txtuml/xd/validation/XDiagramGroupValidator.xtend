@@ -23,6 +23,10 @@ class XDiagramGroupValidator extends XDiagramPriorityValidator {
 			if (nodeArgsCount > 0 && linkArgsCount > 0){
 				warning("a group may only contain arguments of LinkGroup, Transition or arguments of NodeGroup, Vertex parents", group, null);
 			}
+			
+			if (nodeArgsCount == 0 && linkArgsCount > 0 && group.align != null){
+				warning("group alignment should not be used on link groups", group, null)
+			}
 		} else if (signature.diagramType == "class-diagram") {
 			val nodeArgsCount = group.^val.wrapped.expressions.filter[it.isCDNodeType()].size();
 			val linkArgsCount = group.^val.wrapped.expressions.filter[it.isCDLinkType()].size();
@@ -30,14 +34,11 @@ class XDiagramGroupValidator extends XDiagramPriorityValidator {
 			if (nodeArgsCount > 0 && linkArgsCount > 0){
 				warning("a group may only contain arguments of LinkGroup, Association, Composition or arguments of NodeGroup, ModelClass parents", group, null);
 			}
+
+			if (nodeArgsCount == 0 && linkArgsCount > 0 && group.align != null){
+				warning("group alignment should not be used on link groups", group, null)
+			}
 		}
-	}
-	
-	def boolean checkSuperTypes(TypeExpressionList teList, Class<?>... superTypes){
-		for (TypeExpression tex : teList.expressions){
-			if (!tex.name.checkSuperTypes(superTypes)) return false;
-		}
-		return true;
 	}
 	
 	def private boolean isSMDNodeType(TypeExpression exp){

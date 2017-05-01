@@ -6,7 +6,7 @@ import "http://www.eclipse.org/xtext/common/JavaVMTypes" as types
 Model:
 	(package = PackageDeclaration)?
 	(imports = XImportSection)?
-	signature = DiagramSignature '{' (instructions += Instruction)* '}'
+	(diagram = Diagram)?
 ;
 
 // environment
@@ -16,6 +16,10 @@ PackageDeclaration:
 ;
 
 // diagram instructions
+
+Diagram :
+	(signature = DiagramSignature '{' (instructions += Instruction)* '}')
+;
 
 DiagramSignature :
 	// generic types
@@ -116,11 +120,7 @@ ArgumentExpression:
 WrappedNumericExpression : wrapped = NumericExpression | '{' wrapped = NumericExpression '}';
 
 NumericExpression :
-	Number'%'?
+	value=Number (perc='%')?
 ;
 
-WrappedIntegralExpression : wrapped = IntegralExpression | '{' wrapped = IntegralExpression '}';
-
-IntegralExpression :
-	INT'%'?
-;
+WrappedIntegralExpression : wrapped = INT | '{' wrapped = INT '}';
