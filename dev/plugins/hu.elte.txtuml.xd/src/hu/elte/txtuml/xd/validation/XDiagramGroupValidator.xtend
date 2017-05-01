@@ -1,21 +1,66 @@
 package hu.elte.txtuml.xd.validation
 
-import hu.elte.txtuml.api.layout.Diagram.LinkGroup
-import hu.elte.txtuml.api.layout.Diagram.NodeGroup
 import hu.elte.txtuml.xd.xDiagramDefinition.GroupInstruction
+import hu.elte.txtuml.xd.xDiagramDefinition.TypeExpression
+import hu.elte.txtuml.xd.xDiagramDefinition.TypeExpressionList
 import org.eclipse.xtext.validation.Check
-import hu.elte.txtuml.api.model.StateMachine.Vertex
-import hu.elte.txtuml.api.model.StateMachine.Transition
+import hu.elte.txtuml.api.layout.Diagram.NodeGroup
+import hu.elte.txtuml.api.model.ModelClass
+import hu.elte.txtuml.api.layout.Diagram.LinkGroup
+import hu.elte.txtuml.api.model.Association
+import hu.elte.txtuml.api.model.Composition
+import hu.elte.txtuml.api.model.StateMachine
 
 class XDiagramGroupValidator extends XDiagramPriorityValidator {
 	@Check
 	def checkGroupArgumentsConsistent(GroupInstruction group) {
-//		if (!group.validateArgumentSuperTypes(Vertex, NodeGroup) || !group.validateArgumentSuperTypes(Transition, LinkGroup)) {
-//			error("oh noes.", group, null);
-//		}
-		if (signature.genArg != null) { // state machine diagram & co.
+		
+		
+		if (signature.diagramType == "state-machine-diagram") { // state machine diagram & co.
+			val nodeArgsCount = group.^val.wrapped.expressions.filter[it.isSMDNodeType()].size();
+			val linkArgsCount = group.^val.wrapped.expressions.filter[it.isSMDLinkType()].size();
 			
+			if (nodeArgsCount > 0 && linkArgsCount > 0){
+				warning("a group may only contain arguments of LinkGroup, Transition or arguments of NodeGroup, Vertex parents", group, null);
+			}
+		} else if (signature.diagramType == "class-diagram") {
+			val nodeArgsCount = group.^val.wrapped.expressions.filter[it.isCDNodeType()].size();
+			val linkArgsCount = group.^val.wrapped.expressions.filter[it.isCDLinkType()].size();
+			
+			if (nodeArgsCount > 0 && linkArgsCount > 0){
+				warning("a group may only contain arguments of LinkGroup, Association, Composition or arguments of NodeGroup, ModelClass parents", group, null);
+			}
 		}
-//		group.^val.wrapped.expressions.forEach[name.checkSuperTypes(Vertex, NodeGroup)]
+	}
+	
+	def boolean checkSuperTypes(TypeExpressionList teList, Class<?>... superTypes){
+		for (TypeExpression tex : teList.expressions){
+			if (!tex.name.checkSuperTypes(superTypes)) return false;
+		}
+		return true;
+	}
+	
+	def private boolean isSMDNodeType(TypeExpression exp){
+		if (exp.phantom != null) return true;
+		if (exp.name.checkSuperTypes(NodeGroup, StateMachine.Vertex)) return true;
+		return false;
+	}
+	
+	def private boolean isSMDLinkType(TypeExpression exp){
+		if (exp.phantom != null) return false;
+		if (exp.name.checkSuperTypes(LinkGroup, StateMachine.Transition)) return true;
+		return false;
+	}
+	
+	def private boolean isCDNodeType(TypeExpression exp){
+		if (exp.phantom != null) return true;
+		if (exp.name.checkSuperTypes(NodeGroup, ModelClass)) return true;
+		return false;
+	}
+	
+	def private boolean isCDLinkType(TypeExpression exp){
+		if (exp.phantom != null) return false;
+		if (exp.name.checkSuperTypes(LinkGroup, Association, Composition)) return true;
+		return false;
 	}
 }

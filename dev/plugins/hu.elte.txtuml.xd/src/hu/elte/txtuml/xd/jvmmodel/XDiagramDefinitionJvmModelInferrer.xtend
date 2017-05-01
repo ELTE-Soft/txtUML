@@ -3,28 +3,69 @@
  */
 package hu.elte.txtuml.xd.jvmmodel
 
-import org.eclipse.xtext.xbase.jvmmodel.*
-import org.eclipse.xtext.common.types.*
-import hu.elte.txtuml.api.layout.*
-import hu.elte.txtuml.xd.xDiagramDefinition.*
-
 import com.google.inject.Inject
-import org.eclipse.xtext.naming.IQualifiedNameProvider
-import org.eclipse.emf.ecore.EObject
-import hu.elte.txtuml.api.layout.Diagram.NodeGroup
-import hu.elte.txtuml.api.layout.ClassDiagram
-import hu.elte.txtuml.api.layout.Diagram.Layout
-import org.eclipse.xtext.xbase.jvmmodel.JvmTypeReferenceBuilder.Factory
-import org.eclipse.xtext.xbase.jvmmodel.JvmAnnotationReferenceBuilder
-import hu.elte.txtuml.api.layout.Left
-import hu.elte.txtuml.api.layout.Right
 import hu.elte.txtuml.api.layout.Above
+import hu.elte.txtuml.api.layout.Alignment
+import hu.elte.txtuml.api.layout.AlignmentType
 import hu.elte.txtuml.api.layout.Below
-import org.eclipse.xtext.common.types.TypesFactory
+import hu.elte.txtuml.api.layout.BottomMost
+import hu.elte.txtuml.api.layout.ClassDiagram
+import hu.elte.txtuml.api.layout.Column
+import hu.elte.txtuml.api.layout.Contains
+import hu.elte.txtuml.api.layout.Diagram
+import hu.elte.txtuml.api.layout.Diagram.Layout
+import hu.elte.txtuml.api.layout.Diagram.LinkGroup
+import hu.elte.txtuml.api.layout.Diagram.NodeGroup
+import hu.elte.txtuml.api.layout.Diamond
+import hu.elte.txtuml.api.layout.East
+import hu.elte.txtuml.api.layout.Left
+import hu.elte.txtuml.api.layout.LeftMost
+import hu.elte.txtuml.api.layout.LinkEnd
+import hu.elte.txtuml.api.layout.North
+import hu.elte.txtuml.api.layout.Priority
+import hu.elte.txtuml.api.layout.Right
+import hu.elte.txtuml.api.layout.RightMost
+import hu.elte.txtuml.api.layout.Row
+import hu.elte.txtuml.api.layout.Show
+import hu.elte.txtuml.api.layout.South
+import hu.elte.txtuml.api.layout.Spacing
+import hu.elte.txtuml.api.layout.StateMachineDiagram
+import hu.elte.txtuml.api.layout.TopMost
+import hu.elte.txtuml.api.layout.West
+import hu.elte.txtuml.api.model.Association
+import hu.elte.txtuml.api.model.Composition
+import hu.elte.txtuml.api.model.ModelClass
+import hu.elte.txtuml.api.model.StateMachine.Transition
+import hu.elte.txtuml.api.model.StateMachine.Vertex
+import hu.elte.txtuml.xd.xDiagramDefinition.ArgumentExpression
+import hu.elte.txtuml.xd.xDiagramDefinition.BinaryIdentifierInstruction
+import hu.elte.txtuml.xd.xDiagramDefinition.BinaryListInstruction
+import hu.elte.txtuml.xd.xDiagramDefinition.DiagramSignature
+import hu.elte.txtuml.xd.xDiagramDefinition.DiamondInstruction
+import hu.elte.txtuml.xd.xDiagramDefinition.GroupInstruction
+import hu.elte.txtuml.xd.xDiagramDefinition.Instruction
+import hu.elte.txtuml.xd.xDiagramDefinition.Model
+import hu.elte.txtuml.xd.xDiagramDefinition.PackageDeclaration
+import hu.elte.txtuml.xd.xDiagramDefinition.PhantomInstruction
+import hu.elte.txtuml.xd.xDiagramDefinition.PriorityInstruction
+import hu.elte.txtuml.xd.xDiagramDefinition.TypeExpression
+import hu.elte.txtuml.xd.xDiagramDefinition.TypeExpressionList
+import hu.elte.txtuml.xd.xDiagramDefinition.UnaryListInstruction
+import hu.elte.txtuml.xd.xDiagramDefinition.UnaryNumberInstruction
 import java.util.ArrayList
-import org.eclipse.xtext.common.types.util.TypeReferences
+import org.eclipse.emf.ecore.EObject
+import org.eclipse.xtext.common.types.JvmDeclaredType
+import org.eclipse.xtext.common.types.JvmGenericType
+import org.eclipse.xtext.common.types.JvmType
+import org.eclipse.xtext.common.types.JvmTypeReference
+import org.eclipse.xtext.common.types.TypesFactory
 import org.eclipse.xtext.common.types.impl.JvmEnumerationTypeImplCustom
-import org.eclipse.xtext.common.types.impl.JvmParameterizedTypeReferenceImplCustom
+import org.eclipse.xtext.common.types.util.TypeReferences
+import org.eclipse.xtext.naming.IQualifiedNameProvider
+import org.eclipse.xtext.xbase.jvmmodel.AbstractModelInferrer
+import org.eclipse.xtext.xbase.jvmmodel.IJvmDeclaredTypeAcceptor
+import org.eclipse.xtext.xbase.jvmmodel.JvmTypesBuilder
+import org.eclipse.xtext.xbase.typesystem.IBatchTypeResolver
 
 //import hu.elte.txtuml.api.layout.Diagram;
 
@@ -40,7 +81,10 @@ class XDiagramDefinitionJvmModelInferrer extends AbstractModelInferrer {
 	 * convenience API to build and initialize JVM types and their members.
 	 */
 	@Inject extension JvmTypesBuilder
+	@Inject private IBatchTypeResolver typeResolver;
+	
 	@Inject extension IQualifiedNameProvider
+	@Extension protected XDiagramDefinitionTypeHelper typeHelper = new XDiagramDefinitionTypeHelper();
 	
 	@Inject TypeReferences typeReferences 
 
@@ -50,11 +94,11 @@ class XDiagramDefinitionJvmModelInferrer extends AbstractModelInferrer {
 	 * 
 	 * @param element
 	 *            the model to create one or more
-	 *            {@link org.eclipse.xtext.common.types.JvmDeclaredType declared
+	 *            {@link JvmDeclaredType declared
 	 *            types} from.
 	 * @param acceptor
 	 *            each created
-	 *            {@link org.eclipse.xtext.common.types.JvmDeclaredType type}
+	 *            {@link JvmDeclaredType type}
 	 *            without a container should be passed to the acceptor in order
 	 *            get attached to the current resource. The acceptor's
 	 *            {@link IJvmDeclaredTypeAcceptor#accept(org.eclipse.xtext.common.types.JvmDeclaredType)
@@ -68,7 +112,6 @@ class XDiagramDefinitionJvmModelInferrer extends AbstractModelInferrer {
 	 *            <code>true</code>.
 	 */
 //	def dispatch void infer(Model element, IJvmDeclaredTypeAcceptor acceptor, boolean isPreIndexingPhase) {
-//		println("infer called with model: " + element);
 //		// Here you explain how your model is mapped to Java elements, by writing the actual translation code.
 //		
 //		// An implementation for the initial hello world example could look like this:
@@ -89,12 +132,16 @@ class XDiagramDefinitionJvmModelInferrer extends AbstractModelInferrer {
 	var anonPhantoms = newArrayList();
 
 	def dispatch void infer(Instruction element, IJvmDeclaredTypeAcceptor acceptor, boolean isPreIndexingPhase) {
-//		println("[WARN] infer called with instruction: " + element);
 		infer(element.wrapped, acceptor, isPreIndexingPhase);
 	}
 	
-	def dispatch void infer(DiagramSignature element, IJvmDeclaredTypeAcceptor acceptor, boolean isPreIndexingPhase) {
-		println("infer called with diagram-signature: " + element);		
+	def dispatch void infer(PackageDeclaration element, IJvmDeclaredTypeAcceptor acceptor, boolean isPreindexintPhase) {
+		currentPackageDecl = element;
+		currentTypeResolver = typeResolver;		
+	}
+	
+	def dispatch void infer(DiagramSignature element, IJvmDeclaredTypeAcceptor acceptor, boolean isPreIndexingPhase) {		
+		currentSignature = element;
 
 		val diagType = switch (element.diagramType){
 			case "state-machine-diagram": StateMachineDiagram
@@ -121,19 +168,34 @@ class XDiagramDefinitionJvmModelInferrer extends AbstractModelInferrer {
 		];		
 	}
 	
+	def private boolean isNodeType(TypeExpression exp){
+		if (exp.phantom != null) return true;
+		if (exp.name.checkSuperTypes(NodeGroup, ModelClass, Vertex)) return true;
+		return false;
+	}
+	
+	def private boolean isLinkType(TypeExpression exp){
+		if (exp.phantom != null) return false;
+		if (exp.name.checkSuperTypes(LinkGroup, Association, Composition, Transition)) return true;
+		return false;
+	}
+	
 	def dispatch void infer(GroupInstruction element, IJvmDeclaredTypeAcceptor acceptor, boolean isPreIndexingPhase) {
-		println("infer called with groupinstruction: " + element);
+		val nodeArgsCount = element.^val.wrapped.expressions.filter[it.isNodeType()].size();
+		val linkArgsCount = element.^val.wrapped.expressions.filter[it.isLinkType()].size();
+		
+		val isLinkGroup = nodeArgsCount == 0 && linkArgsCount > 0;
 		
 		var groupType = element.toClass(element.name) [
 			documentation = element.documentation;
 			declaringType = currentDiagramClass;
-			superTypes += NodeGroup.typeRef();
+			superTypes += if (isLinkGroup) LinkGroup.typeRef else NodeGroup.typeRef();
 			annotations += Contains.createAnnotationTEList("value" -> element.^val.wrapped);
 		]
 		
 		acceptor.accept(groupType);
 
-		val alignment = if (element.align == null){
+		val alignment = if (element.align == null || isLinkGroup) {
 			null
 		} else {
 			String.valueOf(switch(element.align){
@@ -164,8 +226,6 @@ class XDiagramDefinitionJvmModelInferrer extends AbstractModelInferrer {
 	}
 	
 	def dispatch void infer(UnaryNumberInstruction element, IJvmDeclaredTypeAcceptor acceptor, boolean isPreIndexingPhase) {
-		println("infer called with unarynumberinstruction: " + element);
-		
 		var annType = null as Class<?>;
 		annType = switch(element.op){
 			case "spacing": Spacing
@@ -181,8 +241,6 @@ class XDiagramDefinitionJvmModelInferrer extends AbstractModelInferrer {
 	}
 	
 	def dispatch void infer(PhantomInstruction element, IJvmDeclaredTypeAcceptor acceptor, boolean isPreIndexingPhase){
-		println("infer called with unary-id-instruction: " + element);
-		
 		acceptor.accept(element.toClass(element.name) [
 			documentation = element.documentation;
 			declaringType = currentDiagramClass;
@@ -192,8 +250,6 @@ class XDiagramDefinitionJvmModelInferrer extends AbstractModelInferrer {
 	
 
 	def dispatch void infer(DiamondInstruction element, IJvmDeclaredTypeAcceptor acceptor, boolean isPreIndexingPhase) {
-		println("infer called with diamondinstruction: " + element);
-		
 		var top = null as ArgumentExpression;
 		var right = null as ArgumentExpression;
 		var bottom = null as ArgumentExpression;
@@ -230,8 +286,6 @@ class XDiagramDefinitionJvmModelInferrer extends AbstractModelInferrer {
 	}
 	
 	def dispatch void infer(BinaryIdentifierInstruction element, IJvmDeclaredTypeAcceptor acceptor, boolean isPreIndexingPhase) {
-		println("infer called with bin-id-instruction: " + element);
-
         var annType = null as Class<?>; 
 		annType = switch(element.op){
 			case "left-of": Left
@@ -249,8 +303,6 @@ class XDiagramDefinitionJvmModelInferrer extends AbstractModelInferrer {
 	}
 	
 	def dispatch void infer(PriorityInstruction element,  IJvmDeclaredTypeAcceptor acceptor, boolean isPreIndexingPhase) {
-		println("infer called with priorityinstruction: " + element);
-		
 		var newAnnotation = annotationRef(Priority) => [ annotationRef |
 			annotationRef.explicitValues += TypesFactory::eINSTANCE.createJvmIntAnnotationValue => [
 				values += Integer.valueOf(element.prior.wrapped);
@@ -267,8 +319,6 @@ class XDiagramDefinitionJvmModelInferrer extends AbstractModelInferrer {
 	}
 		
 	def dispatch void infer(UnaryListInstruction element,  IJvmDeclaredTypeAcceptor acceptor, boolean isPreIndexingPhase) {
-		println("infer called with unarylistinstruction: " + element);
-		
         var annType = null as Class<?>; 
 		annType = switch(element.op){
 			case "row" : Row
@@ -290,8 +340,6 @@ class XDiagramDefinitionJvmModelInferrer extends AbstractModelInferrer {
 	
 	
 	def dispatch void infer(BinaryListInstruction element, IJvmDeclaredTypeAcceptor acceptor, boolean isPreIndexingPhase) {
-		println("infer called with bin-list-instruction: " + element);
-
         var annType = null as Class<?>; 
 		annType = switch(element.op){
 			case "east-of": East

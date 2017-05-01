@@ -30,8 +30,6 @@ class XDiagramModelValidator extends AbstractXDiagramDefinitionValidator {
 			// TODO: check the model package as well...
 			sig.validateSuperTypes(signature.genArg, ModelClass);
 		}
-		
-		println("getDiagramTypeName() -> " + getDiagramTypeName());
 	}
 
 	def private String getDiagramTypeName(){
@@ -80,4 +78,5 @@ class XDiagramModelValidator extends AbstractXDiagramDefinitionValidator {
 		classes.forEach[errorMessage.append(" " + name)];
 		error(errorMessage.toString(), source, null);
 	}
+
 }

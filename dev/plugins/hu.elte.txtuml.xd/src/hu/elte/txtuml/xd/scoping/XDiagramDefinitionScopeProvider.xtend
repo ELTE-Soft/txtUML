@@ -3,6 +3,8 @@
  */
 package hu.elte.txtuml.xd.scoping
 
+import org.eclipse.emf.ecore.EObject
+import org.eclipse.emf.ecore.EReference
 
 /**
  * This class contains custom scoping description.
@@ -11,5 +13,10 @@ package hu.elte.txtuml.xd.scoping
  * on how and when to use it.
  */
 class XDiagramDefinitionScopeProvider extends AbstractXDiagramDefinitionScopeProvider {
-
+	// SOURCE: http://stackoverflow.com/questions/36224089/xtext-2-9-scope-provider
+	
+	override getScope(EObject context, EReference reference) {
+		super.getScope(context, reference)
+	}
+	
 }
