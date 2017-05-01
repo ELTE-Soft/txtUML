@@ -10,15 +10,4 @@ package hu.elte.txtuml.xd.validation
  */
 class XDiagramDefinitionValidator extends XDiagramDiamondValidator {
 	
-//	public static val INVALID_NAME = 'invalidName'
-//
-//	@Check
-//	def checkGreetingStartsWithCapital(Greeting greeting) {
-//		if (!Character.isUpperCase(greeting.name.charAt(0))) {
-//			warning('Name should start with a capital', 
-//					XDiagramDefinitionPackage.Literals.GREETING__NAME,
-//					INVALID_NAME)
-//		}
-//	}
-	
 }

@@ -89,7 +89,8 @@ class XDiagramDefinitionJvmModelInferrer extends AbstractModelInferrer {
 	var anonPhantoms = newArrayList();
 
 	def dispatch void infer(Instruction element, IJvmDeclaredTypeAcceptor acceptor, boolean isPreIndexingPhase) {
-		println("[WARN] infer called with instruction: " + element);		
+//		println("[WARN] infer called with instruction: " + element);
+		infer(element.wrapped, acceptor, isPreIndexingPhase);
 	}
 	
 	def dispatch void infer(DiagramSignature element, IJvmDeclaredTypeAcceptor acceptor, boolean isPreIndexingPhase) {

@@ -39,6 +39,8 @@ Workflow {
 			validator = {
 				// composedCheck = "org.eclipse.xtext.validation.NamesAreUniqueValidator"
 			}
+			// SOURCE: https://eclipse.org/Xtext/documentation/302_configuration.html
+			fragment = formatting.Formatter2Fragment2 auto-inject {}
 		}
 	}
 }
