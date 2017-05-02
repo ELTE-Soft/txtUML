@@ -3,124 +3,124 @@ generate xDiagramDefinition "http://www.elte.hu/txtuml/xd/XDiagramDefinition"
 
 import "http://www.eclipse.org/xtext/common/JavaVMTypes" as types
 
-Model:
-	(package = PackageDeclaration)?
+XDModel:
+	(package = XDPackageDeclaration)?
 	(imports = XImportSection)?
-	(diagram = Diagram)?
+	(diagram = XDDiagram)?
 ;
 
 // environment
 
-PackageDeclaration:
+XDPackageDeclaration:
     'package' name=QualifiedName ';'
 ;
 
 // diagram instructions
 
-Diagram :
-	(signature = DiagramSignature '{' (instructions += Instruction)* '}')
+XDDiagram :
+	(signature = XDDiagramSignature '{' (instructions += XDInstruction)* '}')
 ;
 
-DiagramSignature :
+XDDiagramSignature :
 	// generic types
 	diagramType = "state-machine-diagram" name=ID "for" genArg=[types::JvmGenericType|QualifiedName] |
 	// non-generic types
 	diagramType = "class-diagram" name=ID
 ;
 
-BinaryIdentifierInstruction:
-	val = WrappedTypeExpression 
+XDBinaryIdentifierInstruction:
+	val = XDWrappedTypeExpression 
 	op = ("left-of" | "right-of" | "above" | "below") 
-	of = WrappedTypeExpression
+	of = XDWrappedTypeExpression
 ;
 
-BinaryListInstruction:
-	val = WrappedTypeExpressionList
+XDBinaryListInstruction:
+	val = XDWrappedTypeExpressionList
 	(linkEnd = ("start" | "end"))?
 	op = ("east-of" | "west-of" | "north-of" | "south-of")
-	of = WrappedTypeExpressionList
+	of = XDWrappedTypeExpressionList
 ;
 
-PhantomInstruction:
+XDPhantomInstruction:
 	op = "phantom"
 	name=ID
 ;
 
-UnaryListInstruction:
+XDUnaryListInstruction:
 	op = ("topmost" | "leftmost" | "rightmost" | "bottommost" | "row" | "column" | "show") 
-	val = WrappedTypeExpressionList
+	val = XDWrappedTypeExpressionList
 ;
 
-GroupInstruction:
+XDGroupInstruction:
 	op = "group"
 	name=ID 
-	val = WrappedTypeExpressionList
+	val = XDWrappedTypeExpressionList
 	(align = ("top-to-bottom" | "bottom-to-top" | "left-to-right" | "right-to-left"))?
 ;
 
-UnaryNumberInstruction:
+XDUnaryNumberInstruction:
 	op = ("spacing") 
-	val = WrappedNumericExpression
+	val = XDWrappedNumericExpression
 ;
 
-DiamondInstruction:
-	op = "diamond" args = WrappedArgumentExpressionList
+XDDiamondInstruction:
+	op = "diamond" args = XDWrappedArgumentExpressionList
 ;
 
-PriorityInstruction:
-	op = "priority" prior = WrappedIntegralExpression "for" val = WrappedTypeExpressionList
+XDPriorityInstruction:
+	op = "priority" prior = XDWrappedIntegralExpression "for" val = XDWrappedTypeExpressionList
 ;
 
-Instruction:
+XDInstruction:
 	wrapped = (
-		BinaryIdentifierInstruction |
-		BinaryListInstruction |
-		PhantomInstruction |
-		UnaryListInstruction |
-		GroupInstruction |
-		UnaryNumberInstruction |
-		DiamondInstruction |
-		PriorityInstruction
+		XDBinaryIdentifierInstruction |
+		XDBinaryListInstruction |
+		XDPhantomInstruction |
+		XDUnaryListInstruction |
+		XDGroupInstruction |
+		XDUnaryNumberInstruction |
+		XDDiamondInstruction |
+		XDPriorityInstruction
 	)
 	";"
 ;
 
 // Argument & list types
 
-WrappedTypeExpressionList : 
-	wrapped = TypeExpressionList | '{' wrapped = TypeExpressionList '}'
+XDWrappedTypeExpressionList : 
+	wrapped = XDTypeExpressionList | '{' wrapped = XDTypeExpressionList '}'
 ;
 
-TypeExpressionList :
-	expressions += TypeExpression (',' expressions += TypeExpression)*
+XDTypeExpressionList :
+	expressions += XDTypeExpression (',' expressions += XDTypeExpression)*
 ;
 
-WrappedTypeExpression : 
-	wrapped = TypeExpression | '{' wrapped = TypeExpression '}'
+XDWrappedTypeExpression : 
+	wrapped = XDTypeExpression | '{' wrapped = XDTypeExpression '}'
 ;
 
-TypeExpression :
+XDTypeExpression :
 	phantom="phantom" | 
 	name=[types::JvmGenericType|QualifiedName]
 ;
 
-WrappedArgumentExpressionList : 
-	wrapped = ArgumentExpressionList | '{' wrapped = ArgumentExpressionList '}'
+XDWrappedArgumentExpressionList : 
+	wrapped = XDArgumentExpressionList | '{' wrapped = XDArgumentExpressionList '}'
 ;
 
-ArgumentExpressionList: 
-	expressions += ArgumentExpression (',' expressions += ArgumentExpression)*
+XDArgumentExpressionList: 
+	expressions += XDArgumentExpression (',' expressions += XDArgumentExpression)*
 ;
 
-ArgumentExpression: 
-	argName = ID ':' expression = TypeExpression | 
-	expression = TypeExpression
+XDArgumentExpression: 
+	argName = ID ':' expression = XDTypeExpression | 
+	expression = XDTypeExpression
 ;
 
-WrappedNumericExpression : wrapped = NumericExpression | '{' wrapped = NumericExpression '}';
+XDWrappedNumericExpression : wrapped = XDNumericExpression | '{' wrapped = XDNumericExpression '}';
 
-NumericExpression :
+XDNumericExpression :
 	value=Number (perc='%')?
 ;
 
-WrappedIntegralExpression : wrapped = INT | '{' wrapped = INT '}';
+XDWrappedIntegralExpression : wrapped = INT | '{' wrapped = INT '}';

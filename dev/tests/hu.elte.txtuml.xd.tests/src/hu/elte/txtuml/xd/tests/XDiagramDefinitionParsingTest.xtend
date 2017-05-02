@@ -4,7 +4,7 @@
 package hu.elte.txtuml.xd.tests
 
 import com.google.inject.Inject
-import hu.elte.txtuml.xd.xDiagramDefinition.Model
+import hu.elte.txtuml.xd.xDiagramDefinition.XDModel
 import org.eclipse.xtext.junit4.InjectWith
 import org.eclipse.xtext.junit4.XtextRunner
 import org.eclipse.xtext.junit4.util.ParseHelper
@@ -17,7 +17,7 @@ import org.junit.runner.RunWith
 class XDiagramDefinitionParsingTest{
 
 	@Inject
-	ParseHelper<Model> parseHelper
+	ParseHelper<XDModel> parseHelper
 
 	@Test
 	def void loadModel() {

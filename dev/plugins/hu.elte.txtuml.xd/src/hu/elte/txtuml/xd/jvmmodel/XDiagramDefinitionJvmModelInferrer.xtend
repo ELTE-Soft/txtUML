@@ -37,22 +37,22 @@ import hu.elte.txtuml.api.model.Composition
 import hu.elte.txtuml.api.model.ModelClass
 import hu.elte.txtuml.api.model.StateMachine.Transition
 import hu.elte.txtuml.api.model.StateMachine.Vertex
-import hu.elte.txtuml.xd.xDiagramDefinition.ArgumentExpression
-import hu.elte.txtuml.xd.xDiagramDefinition.BinaryIdentifierInstruction
-import hu.elte.txtuml.xd.xDiagramDefinition.BinaryListInstruction
-import hu.elte.txtuml.xd.xDiagramDefinition.DiagramSignature
-import hu.elte.txtuml.xd.xDiagramDefinition.DiamondInstruction
-import hu.elte.txtuml.xd.xDiagramDefinition.GroupInstruction
-import hu.elte.txtuml.xd.xDiagramDefinition.Instruction
-import hu.elte.txtuml.xd.xDiagramDefinition.Model
-import hu.elte.txtuml.xd.xDiagramDefinition.NumericExpression
-import hu.elte.txtuml.xd.xDiagramDefinition.PackageDeclaration
-import hu.elte.txtuml.xd.xDiagramDefinition.PhantomInstruction
-import hu.elte.txtuml.xd.xDiagramDefinition.PriorityInstruction
-import hu.elte.txtuml.xd.xDiagramDefinition.TypeExpression
-import hu.elte.txtuml.xd.xDiagramDefinition.TypeExpressionList
-import hu.elte.txtuml.xd.xDiagramDefinition.UnaryListInstruction
-import hu.elte.txtuml.xd.xDiagramDefinition.UnaryNumberInstruction
+import hu.elte.txtuml.xd.xDiagramDefinition.XDArgumentExpression
+import hu.elte.txtuml.xd.xDiagramDefinition.XDBinaryIdentifierInstruction
+import hu.elte.txtuml.xd.xDiagramDefinition.XDBinaryListInstruction
+import hu.elte.txtuml.xd.xDiagramDefinition.XDDiagramSignature
+import hu.elte.txtuml.xd.xDiagramDefinition.XDDiamondInstruction
+import hu.elte.txtuml.xd.xDiagramDefinition.XDGroupInstruction
+import hu.elte.txtuml.xd.xDiagramDefinition.XDInstruction
+import hu.elte.txtuml.xd.xDiagramDefinition.XDModel
+import hu.elte.txtuml.xd.xDiagramDefinition.XDNumericExpression
+import hu.elte.txtuml.xd.xDiagramDefinition.XDPackageDeclaration
+import hu.elte.txtuml.xd.xDiagramDefinition.XDPhantomInstruction
+import hu.elte.txtuml.xd.xDiagramDefinition.XDPriorityInstruction
+import hu.elte.txtuml.xd.xDiagramDefinition.XDTypeExpression
+import hu.elte.txtuml.xd.xDiagramDefinition.XDTypeExpressionList
+import hu.elte.txtuml.xd.xDiagramDefinition.XDUnaryListInstruction
+import hu.elte.txtuml.xd.xDiagramDefinition.XDUnaryNumberInstruction
 import java.util.ArrayList
 import org.eclipse.emf.ecore.EObject
 import org.eclipse.xtext.common.types.JvmDeclaredType
@@ -130,16 +130,16 @@ class XDiagramDefinitionJvmModelInferrer extends AbstractModelInferrer {
 	
 	var anonPhantoms = newArrayList();
 
-	def dispatch void infer(Instruction element, IJvmDeclaredTypeAcceptor acceptor, boolean isPreIndexingPhase) {
+	def dispatch void infer(XDInstruction element, IJvmDeclaredTypeAcceptor acceptor, boolean isPreIndexingPhase) {
 		infer(element.wrapped, acceptor, isPreIndexingPhase);
 	}
 	
-	def dispatch void infer(PackageDeclaration element, IJvmDeclaredTypeAcceptor acceptor, boolean isPreindexintPhase) {
+	def dispatch void infer(XDPackageDeclaration element, IJvmDeclaredTypeAcceptor acceptor, boolean isPreindexintPhase) {
 		currentPackageDecl = element;
 		currentTypeResolver = typeResolver;		
 	}
 	
-	def dispatch void infer(DiagramSignature element, IJvmDeclaredTypeAcceptor acceptor, boolean isPreIndexingPhase) {		
+	def dispatch void infer(XDDiagramSignature element, IJvmDeclaredTypeAcceptor acceptor, boolean isPreIndexingPhase) {		
 		currentSignature = element;
 
 		val diagType = switch (element.diagramType){
@@ -167,19 +167,19 @@ class XDiagramDefinitionJvmModelInferrer extends AbstractModelInferrer {
 		];		
 	}
 	
-	def private boolean isNodeType(TypeExpression exp){
+	def private boolean isNodeType(XDTypeExpression exp){
 		if (exp.phantom != null) return true;
 		if (exp.name.checkSuperTypes(NodeGroup, ModelClass, Vertex)) return true;
 		return false;
 	}
 	
-	def private boolean isLinkType(TypeExpression exp){
+	def private boolean isLinkType(XDTypeExpression exp){
 		if (exp.phantom != null) return false;
 		if (exp.name.checkSuperTypes(LinkGroup, Association, Composition, Transition)) return true;
 		return false;
 	}
 	
-	def dispatch void infer(GroupInstruction element, IJvmDeclaredTypeAcceptor acceptor, boolean isPreIndexingPhase) {
+	def dispatch void infer(XDGroupInstruction element, IJvmDeclaredTypeAcceptor acceptor, boolean isPreIndexingPhase) {
 		val nodeArgsCount = element.^val.wrapped.expressions.filter[it.isNodeType()].size();
 		val linkArgsCount = element.^val.wrapped.expressions.filter[it.isLinkType()].size();
 		
@@ -217,14 +217,14 @@ class XDiagramDefinitionJvmModelInferrer extends AbstractModelInferrer {
 		}
 	}
 	
-	def private parseDoubleValue(NumericExpression expression){
+	def private parseDoubleValue(XDNumericExpression expression){
 		if (expression.perc == "%"){
 			return Double.valueOf(expression.value) / 100.0;
 		}
 		return Double.valueOf(expression.value);
 	}
 	
-	def dispatch void infer(UnaryNumberInstruction element, IJvmDeclaredTypeAcceptor acceptor, boolean isPreIndexingPhase) {
+	def dispatch void infer(XDUnaryNumberInstruction element, IJvmDeclaredTypeAcceptor acceptor, boolean isPreIndexingPhase) {
 		var annType = null as Class<?>;
 		annType = switch(element.op){
 			case "spacing": Spacing
@@ -239,7 +239,7 @@ class XDiagramDefinitionJvmModelInferrer extends AbstractModelInferrer {
 		this.currentLayoutClass.annotations += newAnnotation;
 	}
 	
-	def dispatch void infer(PhantomInstruction element, IJvmDeclaredTypeAcceptor acceptor, boolean isPreIndexingPhase){
+	def dispatch void infer(XDPhantomInstruction element, IJvmDeclaredTypeAcceptor acceptor, boolean isPreIndexingPhase){
 		acceptor.accept(element.toClass(element.name) [
 			documentation = element.documentation;
 			declaringType = currentDiagramClass;
@@ -248,11 +248,11 @@ class XDiagramDefinitionJvmModelInferrer extends AbstractModelInferrer {
 	}
 	
 
-	def dispatch void infer(DiamondInstruction element, IJvmDeclaredTypeAcceptor acceptor, boolean isPreIndexingPhase) {
-		var top = null as ArgumentExpression;
-		var right = null as ArgumentExpression;
-		var bottom = null as ArgumentExpression;
-		var left = null as ArgumentExpression;
+	def dispatch void infer(XDDiamondInstruction element, IJvmDeclaredTypeAcceptor acceptor, boolean isPreIndexingPhase) {
+		var top = null as XDArgumentExpression;
+		var right = null as XDArgumentExpression;
+		var bottom = null as XDArgumentExpression;
+		var left = null as XDArgumentExpression;
 		
 		if (element.args.wrapped.expressions.exists[x|x.argName != null]){
 			top = element.args.wrapped.expressions.findFirst[x | "top".equals(x.argName)];			
@@ -276,7 +276,7 @@ class XDiagramDefinitionJvmModelInferrer extends AbstractModelInferrer {
 		this.currentLayoutClass.annotations += newAnnotation;
 	}
 	
-	def JvmGenericType buildTypeOrPhantom(DiamondInstruction element, ArgumentExpression expr){
+	def JvmGenericType buildTypeOrPhantom(XDDiamondInstruction element, XDArgumentExpression expr){
 		if (expr == null) {
 			return element.buildPhantom();
 		} else {
@@ -284,7 +284,7 @@ class XDiagramDefinitionJvmModelInferrer extends AbstractModelInferrer {
 		}
 	}
 	
-	def dispatch void infer(BinaryIdentifierInstruction element, IJvmDeclaredTypeAcceptor acceptor, boolean isPreIndexingPhase) {
+	def dispatch void infer(XDBinaryIdentifierInstruction element, IJvmDeclaredTypeAcceptor acceptor, boolean isPreIndexingPhase) {
         var annType = null as Class<?>; 
 		annType = switch(element.op){
 			case "left-of": Left
@@ -301,7 +301,7 @@ class XDiagramDefinitionJvmModelInferrer extends AbstractModelInferrer {
 		this.currentLayoutClass.annotations += newAnnotation;
 	}
 	
-	def dispatch void infer(PriorityInstruction element,  IJvmDeclaredTypeAcceptor acceptor, boolean isPreIndexingPhase) {
+	def dispatch void infer(XDPriorityInstruction element,  IJvmDeclaredTypeAcceptor acceptor, boolean isPreIndexingPhase) {
 		var newAnnotation = annotationRef(Priority) => [ annotationRef |
 			annotationRef.explicitValues += TypesFactory::eINSTANCE.createJvmIntAnnotationValue => [
 				values += element.prior.wrapped;
@@ -317,7 +317,7 @@ class XDiagramDefinitionJvmModelInferrer extends AbstractModelInferrer {
 			
 	}
 		
-	def dispatch void infer(UnaryListInstruction element,  IJvmDeclaredTypeAcceptor acceptor, boolean isPreIndexingPhase) {
+	def dispatch void infer(XDUnaryListInstruction element,  IJvmDeclaredTypeAcceptor acceptor, boolean isPreIndexingPhase) {
         var annType = null as Class<?>; 
 		annType = switch(element.op){
 			case "row" : Row
@@ -338,7 +338,7 @@ class XDiagramDefinitionJvmModelInferrer extends AbstractModelInferrer {
 	
 	
 	
-	def dispatch void infer(BinaryListInstruction element, IJvmDeclaredTypeAcceptor acceptor, boolean isPreIndexingPhase) {
+	def dispatch void infer(XDBinaryListInstruction element, IJvmDeclaredTypeAcceptor acceptor, boolean isPreIndexingPhase) {
         var annType = null as Class<?>; 
 		annType = switch(element.op){
 			case "east-of": East
@@ -396,7 +396,7 @@ class XDiagramDefinitionJvmModelInferrer extends AbstractModelInferrer {
 		]
 	}
 		
-	def private createAnnotationTE(Class<?> annotationType, Pair<String, TypeExpression>... params) {
+	def private createAnnotationTE(Class<?> annotationType, Pair<String, XDTypeExpression>... params) {
 		annotationRef(annotationType) => [ annotationRef |
 			for (param : params) {
 				annotationRef.explicitValues += TypesFactory::eINSTANCE.createJvmTypeAnnotationValue => [
@@ -409,7 +409,7 @@ class XDiagramDefinitionJvmModelInferrer extends AbstractModelInferrer {
 		]
 	}
 	
-	def private createAnnotationTEList(Class<?> annotationType, Pair<String, TypeExpressionList>... params) {
+	def private createAnnotationTEList(Class<?> annotationType, Pair<String, XDTypeExpressionList>... params) {
 		annotationRef(annotationType) => [ annotationRef |
 			for (param : params) {
 				annotationRef.explicitValues += TypesFactory::eINSTANCE.createJvmTypeAnnotationValue => [
@@ -422,7 +422,7 @@ class XDiagramDefinitionJvmModelInferrer extends AbstractModelInferrer {
 		]
 	}
 	
-	def private JvmGenericType handlePhantom(TypeExpression expression){
+	def private JvmGenericType handlePhantom(XDTypeExpression expression){
 		if (expression.phantom != null){
 			return expression.buildPhantom();
 		}
@@ -438,21 +438,21 @@ class XDiagramDefinitionJvmModelInferrer extends AbstractModelInferrer {
 			return phantom;
 	}
 		
-	var model = null as Model;
+	var model = null as XDModel;
 
-	def Model findModel(EObject element){
+	def XDModel findModel(EObject element){
 		if (model != null) return model;
 		
 		var result = element;
 
 		while(result != null) {		
-			if (result instanceof Model){ 
-				return model = result as Model;
+			if (result instanceof XDModel){ 
+				return model = result as XDModel;
 			}
 			result = result.eContainer;	
 		} 
 		
-		return result as Model;
+		return result as XDModel;
 	}
 	
 	def String findPackageName(EObject element){

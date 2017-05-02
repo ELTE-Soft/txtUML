@@ -1,22 +1,22 @@
 package hu.elte.txtuml.xd.validation
 
 import hu.elte.txtuml.api.model.ModelClass
-import hu.elte.txtuml.xd.xDiagramDefinition.DiagramSignature
+import hu.elte.txtuml.xd.xDiagramDefinition.XDDiagramSignature
 import org.eclipse.core.runtime.Assert
 import org.eclipse.emf.ecore.EObject
 import org.eclipse.xtext.common.types.JvmGenericType
 import org.eclipse.xtext.validation.Check
 import org.eclipse.xtext.common.types.JvmDeclaredType
-import hu.elte.txtuml.xd.xDiagramDefinition.TypeExpression
-import hu.elte.txtuml.xd.xDiagramDefinition.PackageDeclaration
-import hu.elte.txtuml.xd.xDiagramDefinition.TypeExpressionList
+import hu.elte.txtuml.xd.xDiagramDefinition.XDTypeExpression
+import hu.elte.txtuml.xd.xDiagramDefinition.XDPackageDeclaration
+import hu.elte.txtuml.xd.xDiagramDefinition.XDTypeExpressionList
 
 class XDiagramModelValidator extends AbstractXDiagramDefinitionValidator {
-	protected DiagramSignature signature;
-	protected PackageDeclaration packageDecl;
+	protected XDDiagramSignature signature;
+	protected XDPackageDeclaration packageDecl;
 
 	@Check
-	def checkPackageDeclaration(PackageDeclaration pack){
+	def checkPackageDeclaration(XDPackageDeclaration pack){
 		packageDecl = pack;
 		if (packageDecl != null){
 			// TODO: check if it's (or it's in) a model package
@@ -24,7 +24,7 @@ class XDiagramModelValidator extends AbstractXDiagramDefinitionValidator {
 	}
 
 	@Check
-	def checkDiagramSignature(DiagramSignature sig) {
+	def checkDiagramSignature(XDDiagramSignature sig) {
 		signature = sig;
 		if (signature.diagramType == "class-diagram") {
 		} else if (signature.diagramType == "state-machine-diagram") {
@@ -39,7 +39,7 @@ class XDiagramModelValidator extends AbstractXDiagramDefinitionValidator {
 	}
 
 	@Check
-	def checkTypeExpression(TypeExpression te){
+	def checkTypeExpression(XDTypeExpression te){
 		// TODO: check the model package as well...
 		
 		if (signature.genArg == null) return;
@@ -50,8 +50,8 @@ class XDiagramModelValidator extends AbstractXDiagramDefinitionValidator {
 		warning("only elements declared in model " + signature.genArg.simpleName + " or " + signature.name + " should be used", te, null);
 	}
 
-	def boolean checkSuperTypes(TypeExpressionList teList, Class<?>... superTypes){
-		for (TypeExpression tex : teList.expressions){
+	def boolean checkSuperTypes(XDTypeExpressionList teList, Class<?>... superTypes){
+		for (XDTypeExpression tex : teList.expressions){
 			if (!tex.name.checkSuperTypes(superTypes)) return false;
 		}
 		return true;

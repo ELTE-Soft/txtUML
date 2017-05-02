@@ -1,13 +1,13 @@
 package hu.elte.txtuml.xd.validation
 
 import org.eclipse.xtext.validation.Check
-import hu.elte.txtuml.xd.xDiagramDefinition.DiamondInstruction
+import hu.elte.txtuml.xd.xDiagramDefinition.XDDiamondInstruction
 
 class XDiagramDiamondValidator extends XDiagramGroupValidator {
 	final val DIAMOND_ARG_NAMES = #["top", "right", "bottom", "left"];
 	
 	@Check
-	def checkDiamondArgumentNamesConsistent(DiamondInstruction diamond){
+	def checkDiamondArgumentNamesConsistent(XDDiamondInstruction diamond){
 		val hasEmptyArgsName = diamond.args.wrapped.expressions.exists[x|x.argName == null];
 		val hasGivenArgsName = diamond.args.wrapped.expressions.exists[x|x.argName != null];
 		
@@ -17,7 +17,7 @@ class XDiagramDiamondValidator extends XDiagramGroupValidator {
 	}
 	
 	@Check
-	def checkDiamondArgumentNamesValid(DiamondInstruction diamond){
+	def checkDiamondArgumentNamesValid(XDDiamondInstruction diamond){
 		diamond.args.wrapped.expressions
 			.filter[x | x.argName != null]
 			.filter[x | !DIAMOND_ARG_NAMES.exists[y | y.equals(x.argName)]]
@@ -28,7 +28,7 @@ class XDiagramDiamondValidator extends XDiagramGroupValidator {
 	}
 	
 	@Check
-	def checkDiamondArgumentNamesUnique(DiamondInstruction diamond){
+	def checkDiamondArgumentNamesUnique(XDDiamondInstruction diamond){
 		if (!diamond.args.wrapped.expressions.exists[x|x.argName != null]) return;
 		
 		val list = newArrayList();
@@ -41,7 +41,7 @@ class XDiagramDiamondValidator extends XDiagramGroupValidator {
 	}
 	
 	@Check
-	def checkDiamondArgumentNamesCount(DiamondInstruction diamond){
+	def checkDiamondArgumentNamesCount(XDDiamondInstruction diamond){
 		if (!diamond.args.wrapped.expressions.exists[x|x.argName == null]) return;
 		
 		if (diamond.args.wrapped.expressions.size() != 4) {

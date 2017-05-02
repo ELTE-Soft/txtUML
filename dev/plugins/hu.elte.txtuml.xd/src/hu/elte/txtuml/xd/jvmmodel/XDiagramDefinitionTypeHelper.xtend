@@ -1,7 +1,7 @@
 package hu.elte.txtuml.xd.jvmmodel
 
-import hu.elte.txtuml.xd.xDiagramDefinition.DiagramSignature
-import hu.elte.txtuml.xd.xDiagramDefinition.PackageDeclaration
+import hu.elte.txtuml.xd.xDiagramDefinition.XDDiagramSignature
+import hu.elte.txtuml.xd.xDiagramDefinition.XDPackageDeclaration
 import org.eclipse.core.runtime.Assert
 import org.eclipse.xtext.common.types.JvmDeclaredType
 import org.eclipse.xtext.common.types.JvmGenericType
@@ -11,8 +11,8 @@ import org.eclipse.xtext.xbase.typesystem.references.LightweightTypeReference
 
 class XDiagramDefinitionTypeHelper {
 	public IBatchTypeResolver currentTypeResolver;
-	public DiagramSignature currentSignature;
-	public PackageDeclaration currentPackageDecl;
+	public XDDiagramSignature currentSignature;
+	public XDPackageDeclaration currentPackageDecl;
 	
 	def LightweightTypeReference getActualType(JvmIdentifiableElement identifiable){
 		if (identifiable == null) return null;
