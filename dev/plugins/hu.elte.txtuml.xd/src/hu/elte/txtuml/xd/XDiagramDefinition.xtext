@@ -18,14 +18,13 @@ XDPackageDeclaration:
 // diagram instructions
 
 XDDiagram :
-	(signature = XDDiagramSignature '{' (instructions += XDInstruction)* '}')
-;
-
-XDDiagramSignature :
-	// generic types
-	diagramType = "state-machine-diagram" name=ID "for" genArg=[types::JvmGenericType|QualifiedName] |
-	// non-generic types
-	diagramType = "class-diagram" name=ID
+	(
+		// generic types
+		diagramType = "state-machine-diagram" name=ID "for" genArg=[types::JvmGenericType|QualifiedName] |
+		// non-generic types
+		diagramType = "class-diagram" name=ID
+	)
+	'{' (instructions += XDInstruction)* '}'
 ;
 
 XDBinaryIdentifierInstruction:

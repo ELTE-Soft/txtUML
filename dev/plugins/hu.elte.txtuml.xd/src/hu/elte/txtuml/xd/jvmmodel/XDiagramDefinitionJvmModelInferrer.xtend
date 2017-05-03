@@ -40,7 +40,7 @@ import hu.elte.txtuml.api.model.StateMachine.Vertex
 import hu.elte.txtuml.xd.xDiagramDefinition.XDArgumentExpression
 import hu.elte.txtuml.xd.xDiagramDefinition.XDBinaryIdentifierInstruction
 import hu.elte.txtuml.xd.xDiagramDefinition.XDBinaryListInstruction
-import hu.elte.txtuml.xd.xDiagramDefinition.XDDiagramSignature
+import hu.elte.txtuml.xd.xDiagramDefinition.XDDiagram
 import hu.elte.txtuml.xd.xDiagramDefinition.XDDiamondInstruction
 import hu.elte.txtuml.xd.xDiagramDefinition.XDGroupInstruction
 import hu.elte.txtuml.xd.xDiagramDefinition.XDInstruction
@@ -139,7 +139,7 @@ class XDiagramDefinitionJvmModelInferrer extends AbstractModelInferrer {
 		currentTypeResolver = typeResolver;		
 	}
 	
-	def dispatch void infer(XDDiagramSignature element, IJvmDeclaredTypeAcceptor acceptor, boolean isPreIndexingPhase) {		
+	def dispatch void infer(XDDiagram element, IJvmDeclaredTypeAcceptor acceptor, boolean isPreIndexingPhase) {		
 		currentSignature = element;
 
 		val diagType = switch (element.diagramType){
@@ -158,13 +158,15 @@ class XDiagramDefinitionJvmModelInferrer extends AbstractModelInferrer {
 			documentation = element.documentation;
 		];
 		
-//		element.associate(result);
+		element.associate(result);
 		acceptor.accept(result);
 		
 		currentLayoutClass = element.toClass("__Layout")[
 			superTypes += Layout.typeRef();
 			declaringType = currentDiagramClass;
-		];		
+		];
+		
+		element.instructions.forEach[infer(acceptor, isPreIndexingPhase)];
 	}
 	
 	def private boolean isNodeType(XDTypeExpression exp){
@@ -460,10 +462,10 @@ class XDiagramDefinitionJvmModelInferrer extends AbstractModelInferrer {
 	}
 	
 	def String findDiagramName(EObject element){
-		return element.findModel.diagram?.signature.name ?: "";
+		return element.findModel.diagram?.name ?: "";
 	}
 	
 	def JvmType findGenericArg(EObject element){
-		return element.findModel.diagram?.signature.genArg ?: null;
+		return element.findModel.diagram?.genArg ?: null;
 	}
 }

@@ -9,7 +9,6 @@ import hu.elte.txtuml.xd.xDiagramDefinition.XDArgumentExpression
 import hu.elte.txtuml.xd.xDiagramDefinition.XDArgumentExpressionList
 import hu.elte.txtuml.xd.xDiagramDefinition.XDBinaryIdentifierInstruction
 import hu.elte.txtuml.xd.xDiagramDefinition.XDBinaryListInstruction
-import hu.elte.txtuml.xd.xDiagramDefinition.XDDiagramSignature
 import hu.elte.txtuml.xd.xDiagramDefinition.XDDiamondInstruction
 import hu.elte.txtuml.xd.xDiagramDefinition.XDGroupInstruction
 import hu.elte.txtuml.xd.xDiagramDefinition.XDInstruction
@@ -34,12 +33,6 @@ class XDiagramDefinitionFormatter extends XbaseFormatter {
 
 	@Inject extension XDiagramDefinitionGrammarAccess
 
-	def dispatch void format(XDDiagramSignature it, extension IFormattableDocument document) {
-		regionFor().keyword("for").prepend[oneSpace].append[oneSpace];
-		regionFor().keyword("class-diagram").prepend[noSpace].append[oneSpace];
-		regionFor().keyword("state-machine-diagram").prepend[noSpace].append[oneSpace];
-	}
-
 	def dispatch void format(XDPackageDeclaration it, extension IFormattableDocument document) {
 		regionFor().keyword(";").prepend[noSpace].append[newLines = 2];
 	}
@@ -51,10 +44,12 @@ class XDiagramDefinitionFormatter extends XbaseFormatter {
 	}
 	
 	def dispatch void format(XDDiagram it, extension IFormattableDocument document){
+		regionFor().keyword("for").prepend[oneSpace].append[oneSpace];
+		regionFor().keyword("class-diagram").prepend[noSpace].append[oneSpace];
+		regionFor().keyword("state-machine-diagram").prepend[noSpace].append[oneSpace];
 		regionFor().keyword("{").prepend[oneSpace].append[newLine];
 		interior(regionFor.keyword('{'), regionFor.keyword('}'), [indent])
 		regionFor().keyword("}").prepend[newLine].append[newLine];
-		format(signature, document);
 		instructions.forEach[instruction|format(instruction, document)];
 	}
 

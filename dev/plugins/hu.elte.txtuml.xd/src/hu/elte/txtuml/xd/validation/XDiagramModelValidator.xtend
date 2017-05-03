@@ -1,7 +1,7 @@
 package hu.elte.txtuml.xd.validation
 
 import hu.elte.txtuml.api.model.ModelClass
-import hu.elte.txtuml.xd.xDiagramDefinition.XDDiagramSignature
+import hu.elte.txtuml.xd.xDiagramDefinition.XDDiagram
 import org.eclipse.core.runtime.Assert
 import org.eclipse.emf.ecore.EObject
 import org.eclipse.xtext.common.types.JvmGenericType
@@ -12,7 +12,7 @@ import hu.elte.txtuml.xd.xDiagramDefinition.XDPackageDeclaration
 import hu.elte.txtuml.xd.xDiagramDefinition.XDTypeExpressionList
 
 class XDiagramModelValidator extends AbstractXDiagramDefinitionValidator {
-	protected XDDiagramSignature signature;
+	protected XDDiagram signature;
 	protected XDPackageDeclaration packageDecl;
 
 	@Check
@@ -24,7 +24,7 @@ class XDiagramModelValidator extends AbstractXDiagramDefinitionValidator {
 	}
 
 	@Check
-	def checkDiagramSignature(XDDiagramSignature sig) {
+	def checkDiagramSignature(XDDiagram sig) {
 		signature = sig;
 		if (signature.diagramType == "class-diagram") {
 		} else if (signature.diagramType == "state-machine-diagram") {
