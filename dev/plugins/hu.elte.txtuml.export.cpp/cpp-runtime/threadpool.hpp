@@ -18,6 +18,8 @@ namespace Execution
 class StateMachineThreadPool {
 
 public:
+	using SharedConditionVar = ES::SharedPtr<std::condition_variable>;
+public:
 	StateMachineThreadPool();
 	void task();
 	void enqueueObject(ES::StateMachineRef);
@@ -31,16 +33,16 @@ public:
 private:
 
 	ThreadContainer workers;
+	SharedConditionVar _sharedConditionVar;
 	// the task queue
-	ES::PoolQueueType stateMachines; //must be blocking queue
+	ES::PoolQueueType _stateMachines; //must be blocking queue
 
 	void incrementWorkers();
 	void reduceWorkers();
 
 	// synchronization
-	std::atomic_bool stop;
-	std::atomic_int* worker_threads;
-	std::condition_variable cond;
+	std::atomic_bool _stop;
+	std::atomic_int* worker_threads;	
 	std::condition_variable* stop_request_cond;
 	std::mutex modifie_mutex;
 	std::mutex stop_request_mu;

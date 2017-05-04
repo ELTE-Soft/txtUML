@@ -1,6 +1,7 @@
 #include "threadcontainer.hpp"
 #include <algorithm>
 
+
 namespace Execution
 {
 
@@ -16,21 +17,21 @@ void ThreadContainer::addThread(std::thread* th)
 
 
 
-void ThreadContainer::gettingThreadsReadyToStop(std::condition_variable& cond)
+void ThreadContainer::gettingThreadsReadyToStop(ES::SharedPtr<std::condition_variable> cond)
 {
 
 	cont_it it = threads.begin();
 	cont_it it2;
 	while (isTooManyWorkers() && it != threads.end())
 	{
-		if (it->second._state == thread_state::working)
+		if (it->second.isWorking() && !it->second.threadsAreIdentical())
 		{
 			active_threads--;
-			modifyThreadState(it->first, thread_state::ready_to_stop);
-			cond.notify_all();
+			modifyThreadState(it->first, EventProcessorThread::ThreadState::ReadyToStop);
+			cond->notify_all();
 			it2 = it;
 			it++;
-			it2->second._thread->join();
+			it2->second.waitFinishing();
 			threads.erase(it2);
 
 		}
@@ -42,24 +43,16 @@ void ThreadContainer::gettingThreadsReadyToStop(std::condition_variable& cond)
 
 }
 
-void ThreadContainer::modifyThreadState(std::thread::id id, thread_state state)
+void ThreadContainer::modifyThreadState(EventProcessorThread::ThreadId id, EventProcessorThread::ThreadState state)
 {
 	std::unique_lock<std::mutex> mlock(_mutex);
-	threads[id]._state = state;
+	threads[id].modifyState(state);
 }
 
-bool ThreadContainer::isReadyToStop(std::thread::id thread_id)
+bool ThreadContainer::isReadyToStop(EventProcessorThread::ThreadId thread_id)
 {
 	std::unique_lock<std::mutex> mlock(_mutex);
-
-	if (threads.count(thread_id) > 0)
-	{
-		return threads[thread_id]._state == thread_state::ready_to_stop;
-	}
-	else
-	{
-		return false;
-	}
+	return threads.count(thread_id) > 0 && !threads[thread_id].isWorking();
 }
 
 void ThreadContainer::removeAll()

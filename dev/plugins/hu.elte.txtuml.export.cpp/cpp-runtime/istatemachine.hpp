@@ -7,6 +7,7 @@
 #include <string>
 
 #include "ESRoot/Types.hpp"
+#include "ESRoot/Containers/ThreadSafeQueue.hpp"
 
 namespace Execution {
 class StateMachineThreadPool;

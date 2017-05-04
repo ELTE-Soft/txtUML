@@ -5,19 +5,19 @@
 #include "threadpool.hpp"
 namespace Execution 
 {
-StateMachineThreadPool::StateMachineThreadPool() :stop(true) {}
+StateMachineThreadPool::StateMachineThreadPool() :_stop(true), _sharedConditionVar(new std::condition_variable()), _stateMachines(_sharedConditionVar) {}
 
 void StateMachineThreadPool::stopPool()
 {
-	stop = true;
-	stateMachines.stopQueue();
+	_stop = true;
+	_stateMachines.stopQueue();
 
 }
 
 void StateMachineThreadPool::startPool(int n)
 {
-	stateMachines.startQueue();
-	stop = false;
+	_stateMachines.startQueue();
+	_stop = false;
 	modifiedThreads(n);
 
 }
@@ -37,13 +37,13 @@ void StateMachineThreadPool::stopUponCompletion(std::atomic_int* messages)
 
 void StateMachineThreadPool::task()
 {
-	while (!this->stop && !workers.isReadyToStop(std::this_thread::get_id()))
+	while (!this->_stop && !workers.isReadyToStop(std::this_thread::get_id()))
 	{
 
 
 
 		ES::StateMachineRef sm = nullptr;
-		while (sm == nullptr && !this->stop)
+		while (sm == nullptr && !this->_stop)
 		{
 
 			if (workers.isReadyToStop(std::this_thread::get_id()))
@@ -51,7 +51,7 @@ void StateMachineThreadPool::task()
 				return;
 			}
 
-			stateMachines.dequeue(sm);
+			_stateMachines.dequeue(sm);
 			incrementWorkers();
 		}
 
@@ -68,7 +68,7 @@ void StateMachineThreadPool::task()
 
 			if (!sm->emptyMessageQueue())
 			{
-				stateMachines.enqueue(sm);
+				_stateMachines.enqueue(sm);
 			}
 			else
 			{
@@ -85,14 +85,14 @@ void StateMachineThreadPool::task()
 
 void StateMachineThreadPool::modifiedThreads(int n)
 {
-	if (!stop)
+	if (!_stop)
 	{
 		std::unique_lock<std::mutex> mlock(modifie_mutex);
 
 		workers.setExpectedThreads(n);
 		if (workers.isTooManyWorkers())
 		{
-			workers.gettingThreadsReadyToStop(cond);
+			workers.gettingThreadsReadyToStop(_sharedConditionVar);
 		}
 		while (workers.isTooFewWorkers())
 		{
@@ -116,7 +116,7 @@ void StateMachineThreadPool::reduceWorkers()
 
 void StateMachineThreadPool::enqueueObject(ES::StateMachineRef sm)
 {
-	stateMachines.enqueue(sm);
+	_stateMachines.enqueue(sm);
 }
 
 StateMachineThreadPool::~StateMachineThreadPool()
