@@ -3,9 +3,31 @@
  */
 package hu.elte.txtuml.xd
 
+import com.google.inject.Binder
+import com.google.inject.name.Names
+import org.eclipse.xtext.scoping.IScopeProvider
+import org.eclipse.xtext.scoping.impl.AbstractDeclarativeScopeProvider
+import hu.elte.txtuml.xd.scoping.XDiagramDefinitionXImportSectionScopeProvider
 
 /**
  * Use this class to register components to be used at runtime / without the Equinox extension registry.
  */
 class XDiagramDefinitionRuntimeModule extends AbstractXDiagramDefinitionRuntimeModule {
+
+	override configureIScopeProviderDelegate(Binder binder) {
+		binder
+			.bind(IScopeProvider)
+			.annotatedWith(Names.named(AbstractDeclarativeScopeProvider.NAMED_DELEGATE))
+			.to(XDiagramDefinitionXImportSectionScopeProvider);
+	}
+
+
+//	public def bindImportedTypesCollector() {
+//		return XDiagramDefinitionImportedTypesCollector;
+//	}
+//	
+//	public def bindTypeUsageCollector() {
+//		return XDiagramDefinitionImportedTypesCollector;
+//	}
+	
 }

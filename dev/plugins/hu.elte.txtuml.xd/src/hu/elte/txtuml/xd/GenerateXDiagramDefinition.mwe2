@@ -33,15 +33,21 @@ Workflow {
 			name = "hu.elte.txtuml.xd.XDiagramDefinition"
 			fileExtensions = "xd"
 			
-			serializer = {
+			scopeProvider = {
 				generateStub = false
 			}
-			validator = {
+			
+			serializer = {
+				generateStub = false				
+			}
+			validator = {				
 				// composedCheck = "org.eclipse.xtext.validation.NamesAreUniqueValidator"
 			}
 			// SOURCE: https://eclipse.org/Xtext/documentation/302_configuration.html
 			fragment = formatting.Formatter2Fragment2 auto-inject {}
-		    fragment = ui.outline.OutlineTreeProviderFragment2 {}
+		    
+			// generates the required bindings only if the grammar inherits from Xtype
+			fragment = xbase.XtypeGeneratorFragment2 auto-inject {}
 		}
 	}
 }
