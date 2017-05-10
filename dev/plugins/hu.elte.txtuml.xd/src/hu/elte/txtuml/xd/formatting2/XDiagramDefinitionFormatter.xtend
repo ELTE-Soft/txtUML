@@ -84,6 +84,7 @@ class XDiagramDefinitionFormatter extends XbaseFormatter {
 
 	def dispatch void format(XDGroupInstruction it, extension IFormattableDocument document) {
 		regionFor.keyword(op).prepend[oneSpace].append[oneSpace];
+		regionFor.keyword("of").prepend[oneSpace].append[oneSpace];
 		format(^val);
 		if (align != null) {
 			regionFor.keyword(align).prepend[oneSpace].append[noSpace];

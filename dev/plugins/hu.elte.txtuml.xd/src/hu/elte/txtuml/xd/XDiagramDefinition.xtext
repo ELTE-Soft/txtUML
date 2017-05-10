@@ -52,7 +52,8 @@ XDUnaryListInstruction:
 
 XDGroupInstruction:
 	op = "group"
-	name=ID 
+	name=ID
+	"of"
 	val = XDWrappedTypeExpressionList
 	(align = ("top-to-bottom" | "bottom-to-top" | "left-to-right" | "right-to-left"))?
 ;
