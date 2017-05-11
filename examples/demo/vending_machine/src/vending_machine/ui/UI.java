@@ -201,7 +201,7 @@ public class UI implements Runnable {
 		JButton coinButton = new JButton(String.valueOf(value));
 		coinButton.setBackground(Color.YELLOW);
 		coinButton.setOpaque(true);
-		coinButton.setPreferredSize(new Dimension(70, 25));
+		coinButton.setPreferredSize(new Dimension(50, 25));
 		coinButton.setMargin(new Insets(0, 0, 0, 0));
 
 		coinButton.addActionListener(e -> {
