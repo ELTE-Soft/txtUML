@@ -19,6 +19,10 @@ void StateMachineThreadPool::startPool(int n)
 	_stateMachines.startQueue();
 	_stop = false;
 	modifiedThreads(n);
+	for(int i = 0; i < n; ++i)
+	{
+		workers.addThread(new std::thread(&StateMachineThreadPool::task, this));
+	}
 
 }
 
@@ -39,8 +43,17 @@ void StateMachineThreadPool::task()
 {
 	while (!this->_stop && !workers.isReadyToStop(std::this_thread::get_id()))
 	{
-
-
+		if (modifie_mutex.try_lock()) {
+			if (workers.isTooManyWorkers())
+			{
+				workers.gettingThreadsReadyToStop(_sharedConditionVar);
+			}
+			while (workers.isTooFewWorkers())
+			{
+				workers.addThread(new std::thread(&StateMachineThreadPool::task, this));
+			}
+			modifie_mutex.unlock();
+		}
 
 		ES::StateMachineRef sm = nullptr;
 		while (sm == nullptr && !this->_stop)
@@ -97,19 +110,8 @@ void StateMachineThreadPool::modifiedThreads(int n)
 {
 	if (!_stop)
 	{
-		std::unique_lock<std::mutex> mlock(modifie_mutex);
-
 		workers.setExpectedThreads(n);
-		if (workers.isTooManyWorkers())
-		{
-			workers.gettingThreadsReadyToStop(_sharedConditionVar);
-		}
-		while (workers.isTooFewWorkers())
-		{
-			workers.addThread(new std::thread(&StateMachineThreadPool::task, this));
-		}
 	}
-
 }
 
 
