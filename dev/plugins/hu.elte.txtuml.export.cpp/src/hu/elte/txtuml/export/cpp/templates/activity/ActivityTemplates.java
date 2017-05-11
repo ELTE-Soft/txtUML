@@ -1,6 +1,7 @@
 package hu.elte.txtuml.export.cpp.templates.activity;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -125,8 +126,23 @@ public class ActivityTemplates {
 		return ActionNames.ActionStart + "(" + objectVariable + ");\n";
 	}
 
-	public static String deleteObject(String objectVariable) {
-		return PointerAndMemoryNames.DeleteObject + " " + objectVariable + ";\n";
+	public static String deleteObject(String objectVariable, Boolean isStateMachineOwner) {
+		StringBuilder source = new StringBuilder("");
+		if (!isStateMachineOwner) {
+			source.append(PointerAndMemoryNames.DeleteObject + " " + objectVariable + ";\n");
+
+		} else {
+			source.append(blockStatement(operationCallOnPointerVariable(objectVariable, 
+					GenerationNames.StateMachineMethodNames.DestroyStatemachineMethod, Collections.emptyList())));
+			source.append(signalSend(
+					objectVariable,
+					GenerationNames.signalPointerType(GenerationNames.FixEventNames.DestoryEventName) + "("
+							+ PointerAndMemoryNames.MemoryAllocator 
+							+ " " + PrivateFunctionalTemplates
+							.signalType(GenerationNames.FixEventNames.DestoryEventName) + "())"));
+		}
+		
+		return source.toString();
 	}
 
 	public static String simpleCondControlStruct(String control, String cond, String body) {

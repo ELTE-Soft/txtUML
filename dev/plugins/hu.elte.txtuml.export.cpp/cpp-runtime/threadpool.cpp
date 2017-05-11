@@ -52,27 +52,37 @@ void StateMachineThreadPool::task()
 			}
 
 			_stateMachines.dequeue(sm);
-			incrementWorkers();
+			
 		}
 
 
 		if (sm != nullptr)
 		{
+			incrementWorkers();
 
 			if (!sm->isInitialized()) sm->init();
-			for (int i = 0; i < 5 && !sm->emptyMessageQueue(); ++i)
+			for (int i = 0; i < 5 && sm != nullptr && !sm->emptyMessageQueue(); ++i)
 			{
-				sm->processEventVirtual();
+				if (!sm->isDestoryed()) {
+					sm->processEventVirtual();
+				}
+				else {
+					sm->setPooled(false);
+					delete sm;
+					sm = nullptr;
+				}
 			}
 
+			if (sm != nullptr) {
 
-			if (!sm->emptyMessageQueue())
-			{
-				_stateMachines.enqueue(sm);
-			}
-			else
-			{
-				sm->setPooled(false);
+				if (!sm->emptyMessageQueue())
+				{
+					_stateMachines.enqueue(sm);
+				}
+				else
+				{
+					sm->setPooled(false);
+				}
 			}
 
 			reduceWorkers();

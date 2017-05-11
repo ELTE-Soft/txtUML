@@ -45,7 +45,7 @@ public class RuntimeTemplates {
 	public static String processInitTransition(String className) {
 		String initialVar = "init";
 		return ModifierNames.NoReturn + " " + className + "::" + StateMachineTemplates.ProcessInitTransitionFunctionName + "()\n{\n"
-				+ GenerationNames.PointerAndMemoryNames.EventPtr +  " " +  initialVar + "(" +GenerationNames.PointerAndMemoryNames.MemoryAllocator + " " + GenerationNames.InitialEventName + "_EC());\n"
+				+ GenerationNames.PointerAndMemoryNames.EventPtr +  " " +  initialVar + "(" +GenerationNames.PointerAndMemoryNames.MemoryAllocator + " " + EventTemplates.InitSignal + "_EC());\n"
 				+ GenerationNames.ProcessEventFName + "(" + initialVar + ");\n}\n";
 
 	}

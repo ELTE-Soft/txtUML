@@ -8,8 +8,17 @@ namespace Model
 {
 
 IStateMachine::IStateMachine(ES::SharedPtr<ES::MessageQueueType> messageQueue)
-	:_messageQueue(messageQueue), _pool(nullptr), _inPool(false), _started(false), _initialized(false) {}
+	:_messageQueue(messageQueue), _pool(nullptr), _inPool(false), _started(false), _initialized(false), _deleted (false) {}
 
+void IStateMachine::setPoolId(int id) 
+{ 
+	poolId = id; 
+}
+
+void IStateMachine::destroy()
+{
+	_deleted = true;
+}
 
 void IStateMachine::init()
 {
@@ -25,12 +34,33 @@ ES::EventRef IStateMachine::getNextMessage()
 	return event;
 }
 
+bool IStateMachine::emptyMessageQueue() 
+{ 
+	return _messageQueue->isEmpty();
+}
+
+void IStateMachine::setPool(ES::SharedPtr<Execution::StateMachineThreadPool> pool) 
+{ 
+	_pool = pool; 
+}
+
+void IStateMachine::setMessageQueue(ES::SharedPtr<ES::MessageQueueType> messageQueue) 
+{ 
+	_messageQueue = messageQueue; 
+}
+
+void IStateMachine::startSM() 
+{ 
+	_started = true; 
+	handlePool();
+}
+
 void IStateMachine::send(const ES::EventRef e)
 {
 	(*message_counter)++;
 	e->setTargetSM(this);
 	_messageQueue->enqueue(e);
-	if (_started && _pool != nullptr)
+	if (_started)
 	{
 		handlePool();
 	}
@@ -40,23 +70,57 @@ void IStateMachine::send(const ES::EventRef e)
 
 void IStateMachine::handlePool()
 {
-	assert(_pool != nullptr && "Handle pool should not be called when there is no associated thread pool");
-	std::unique_lock<std::mutex> mlock(_mutex);
-	if (!_inPool)
+	if (!_inPool && _pool != nullptr)
 	{
 		_inPool = true;
 		_pool->enqueueObject(this);
 	}
 }
 
-void IStateMachine::setPooled(bool value_ = true)
+void IStateMachine::setPooled(bool value = true)
 {
-	_inPool = value_;
+	_inPool = value;
 	_cond.notify_one();
+}
+
+bool IStateMachine::isInPool() const 
+{ 
+	return _inPool; 
+}
+
+bool IStateMachine::isStarted() const 
+{ 
+	return _started; 
+}
+
+bool IStateMachine::isInitialized() const 
+{ 
+	return _initialized; 
+}
+
+bool IStateMachine::isDestoryed() const 
+{ 
+	return _deleted; 
+}
+
+int IStateMachine::getPoolId() const 
+{ 
+	return poolId; 
+}
+
+void IStateMachine::setMessageCounter(std::atomic_int * counter) 
+{ 
+	message_counter = counter; 
+}
+
+std::string IStateMachine::toString() const
+{ 
+	return ""; 
 }
 
 IStateMachine::~IStateMachine()
 {
+	*message_counter -= _messageQueue->size();
 	std::unique_lock<std::mutex> mlock(_mutex);
 	while (_inPool)
 	{
