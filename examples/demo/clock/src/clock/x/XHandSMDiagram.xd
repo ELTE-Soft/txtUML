@@ -1,0 +1,9 @@
+package clock.xd;
+
+import clock.x.model.Hand;
+import clock.x.model.Hand.Working;
+import clock.x.model.Hand.Init;
+
+state-machine-diagram XHandSMDiagram for Hand {
+	column Init, Working;
+}

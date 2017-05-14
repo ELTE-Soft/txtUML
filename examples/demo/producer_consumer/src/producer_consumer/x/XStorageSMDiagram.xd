@@ -1,0 +1,9 @@
+package producer_consumer.xd;
+
+import producer_consumer.x.model.Storage.Init;
+import producer_consumer.x.model.Storage.Working;
+import producer_consumer.x.model.Storage;
+
+state-machine-diagram XStorageSMDiagram for Storage {
+	column Init, Working;
+}

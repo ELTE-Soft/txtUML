@@ -1,0 +1,9 @@
+package clock.xd;
+
+import clock.x.model.Display;
+import clock.x.model.Display.Accepting;
+import clock.x.model.Display.Init;
+
+state-machine-diagram XDisplaySMDiagram for Display {
+	column Init, Accepting;
+}

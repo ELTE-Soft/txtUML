@@ -1,0 +1,10 @@
+package monitoring.xd;
+
+import monitoring.x.model.Alert;
+import monitoring.x.model.Alert.Critical;
+import monitoring.x.model.Alert.Normal;
+import monitoring.x.model.Alert.Init;
+
+state-machine-diagram XAlertSMDiagram for Alert {
+	column { Init, Normal, Critical };
+}

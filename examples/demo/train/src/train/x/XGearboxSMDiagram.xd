@@ -1,0 +1,13 @@
+package train.xd;
+
+import train.x.model.Gearbox;
+import train.x.model.Gearbox.Backwards;
+import train.x.model.Gearbox.Forwards;
+import train.x.model.Gearbox.Init;
+import train.x.model.Gearbox.Neutral;
+
+state-machine-diagram XGearboxSMDiagram for Gearbox {
+	row Init, Neutral;
+	row Forwards, Backwards;
+	Forwards below Init;
+}

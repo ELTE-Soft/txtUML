@@ -1,0 +1,10 @@
+package producer_consumer.xd;
+
+import producer_consumer.x.model.Producer;
+import producer_consumer.x.model.Producer.Active;
+import producer_consumer.x.model.Producer.Init;
+import producer_consumer.x.model.Producer.Passive;
+
+state-machine-diagram XProducerSMDiagram for Producer {
+	row Init, Active, Passive;
+}

@@ -1,0 +1,12 @@
+package clock.xd;
+
+import clock.x.model.Clock;
+import clock.x.model.Display;
+import clock.x.model.Hand;
+import clock.x.model.Pendulum;
+
+class-diagram XClockClassDiagram {
+	Clock above Hand;
+	Pendulum right-of Hand;
+	Display left-of Hand;
+}

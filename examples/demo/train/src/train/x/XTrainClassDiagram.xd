@@ -1,0 +1,9 @@
+package train.xd;
+
+import train.x.model.Engine;
+import train.x.model.Gearbox;
+import train.x.model.Lamp;
+
+class-diagram XTrainClassDiagram {
+	diamond bottom: Lamp, left: Engine, right: Gearbox;
+}

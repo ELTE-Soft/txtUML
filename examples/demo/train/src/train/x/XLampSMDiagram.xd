@@ -1,0 +1,11 @@
+package train.xd;
+
+import train.x.model.Lamp.Dark;
+import train.x.model.Lamp.Init;
+import train.x.model.Lamp.Light;
+import train.x.model.Lamp;
+
+state-machine-diagram XLampSMDiagram for Lamp {
+	Init above Light;
+	Light left-of Dark;
+}

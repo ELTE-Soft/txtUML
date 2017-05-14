@@ -1,0 +1,9 @@
+package machine2.xd;
+
+import machine2.x.model.User;
+import machine2.x.model.User.Init;
+import machine2.x.model.User.Ready;
+
+state-machine-diagram XUserSMDiagram for User {
+	column Init, Ready;
+}

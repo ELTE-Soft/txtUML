@@ -1,0 +1,10 @@
+package pingpong.xd;
+
+import pingpong.x.model.Racket;
+import pingpong.x.model.Racket.Init;
+import pingpong.x.model.Racket.Waiting;
+import pingpong.x.model.Racket.Check;
+
+state-machine-diagram XRacketSMDiagram for Racket {
+	row Init, Waiting, Check;
+}

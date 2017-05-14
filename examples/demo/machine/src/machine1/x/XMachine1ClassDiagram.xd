@@ -1,0 +1,8 @@
+package machine1.xd;
+
+import machine1.x.model.Machine;
+import machine1.x.model.User;
+
+class-diagram XMachine1ClassDiagram {
+	User right-of Machine;
+}

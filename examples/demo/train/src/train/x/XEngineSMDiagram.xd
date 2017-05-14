@@ -1,0 +1,11 @@
+package train.xd;
+
+import train.x.model.Engine.Stopped;
+import train.x.model.Engine.Init;
+import train.x.model.Engine.Working;
+import train.x.model.Engine;
+
+state-machine-diagram XEngineSMDiagram for Engine {
+	Init above Stopped;
+	Stopped left-of Working;
+}

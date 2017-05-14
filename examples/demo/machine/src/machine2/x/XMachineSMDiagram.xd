@@ -1,0 +1,11 @@
+package machine2.xd;
+
+import machine2.x.model.Machine;
+import machine2.x.model.Machine.Init;
+import machine2.x.model.Machine.Off;
+import machine2.x.model.Machine.On;
+
+state-machine-diagram XMachineSMDiagram for Machine {
+	column Init, On;
+	row On, Off;
+}

@@ -1,0 +1,9 @@
+package pingpong.xd;
+
+import pingpong.x.model.Player;
+import pingpong.x.model.Player.Init;
+import pingpong.x.model.Player.Waiting;
+
+state-machine-diagram XPlayerSMDiagram for Player {
+	row { Init, Waiting };
+}

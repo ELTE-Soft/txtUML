@@ -1,0 +1,11 @@
+package producer_consumer.xd;
+
+import producer_consumer.x.model.Consumer;
+import producer_consumer.x.model.Item;
+import producer_consumer.x.model.Producer;
+import producer_consumer.x.model.Storage;
+
+class-diagram XProducerConsumerClassDiagram {
+	row Producer, Storage, Consumer;
+	Item south-of Storage;
+}

@@ -1,0 +1,9 @@
+package monitoring.xd;
+
+import monitoring.x.model.Aggregator;
+import monitoring.x.model.Aggregator.Aggregate;
+import monitoring.x.model.Aggregator.Init;
+
+state-machine-diagram XAggregatorSMDiagram for Aggregator {
+	column Init, Aggregate;
+}

@@ -1,0 +1,11 @@
+package machine3.xd;
+
+import machine3.x.model.User;
+import machine3.x.model.User.Init;
+import machine3.x.model.User.NotWorking;
+import machine3.x.model.User.WhereToGo;
+
+state-machine-diagram XUserSMDiagram for User {
+	column Init, NotWorking;
+	row NotWorking, WhereToGo;
+}

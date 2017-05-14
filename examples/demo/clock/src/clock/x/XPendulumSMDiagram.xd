@@ -1,0 +1,9 @@
+package clock.xd;
+
+import clock.x.model.Pendulum.Working;
+import clock.x.model.Pendulum;
+import clock.x.model.Pendulum.Init;
+
+state-machine-diagram XPendulumSMDiagram for Pendulum {
+	column Init, Working;
+}

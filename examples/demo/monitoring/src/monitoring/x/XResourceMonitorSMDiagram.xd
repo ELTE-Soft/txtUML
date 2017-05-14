@@ -1,0 +1,13 @@
+package monitoring.xd;
+
+import monitoring.x.model.ResourceMonitor;
+import monitoring.x.model.ResourceMonitor.Closed;
+import monitoring.x.model.ResourceMonitor.Init;
+import monitoring.x.model.ResourceMonitor.OpenForRead;
+import monitoring.x.model.ResourceMonitor.OpenForWrite;
+
+state-machine-diagram XResourceMonitorSMDiagram for ResourceMonitor {
+	column { Init, Closed };
+	row { OpenForRead, OpenForWrite };
+	Closed north-of OpenForRead;
+}
