@@ -90,26 +90,29 @@ public:
 	void gettingThreadsReadyToStop(ES::SharedPtr<std::condition_variable> cond);
 	bool isReadyToStop(EventProcessorThread::ThreadId id);
 
-	void setExpectedThreads(int e) { expected_threads = e; }
-	bool isTooManyWorkers() { return (expected_threads < active_threads); }
-	bool isTooFewWorkers() { return (expected_threads > active_threads); }
+	void setExpectedThreads(int e) { _expectedThreads = e; }
+	bool isTooManyWorkers() { return (_expectedThreads < _activeThreads); }
+	bool isTooFewWorkers() { return (_expectedThreads > _activeThreads); }
 
 
 
 private:
 	void modifyThreadState(EventProcessorThread::ThreadId id, EventProcessorThread::ThreadState state);
 
-	std::atomic_int active_threads; // number of active threads;
-	std::atomic_int expected_threads; // how many threads should be..
+	std::atomic_int _activeThreads; // number of active threads;
+	std::atomic_int _expectedThreads; // how many threads should be..
+
+	typedef std::map<std::thread::id, EventProcessorThread>::iterator ContainerIterator;
 	std::map<std::thread::id, EventProcessorThread> threads;
 
 	std::mutex _mutex;
+	std::mutex _removeMutex;
 
 
 
 };
 
-typedef std::map<std::thread::id, EventProcessorThread>::iterator cont_it;
+
 
 }
 

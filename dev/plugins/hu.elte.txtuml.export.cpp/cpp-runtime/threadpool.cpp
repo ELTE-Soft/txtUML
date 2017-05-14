@@ -134,7 +134,7 @@ void StateMachineThreadPool::enqueueObject(ES::StateMachineRef sm)
 StateMachineThreadPool::~StateMachineThreadPool()
 {
 	stopPool();
-	workers.removeAll();
+	workers.removeAll(); // wait to all threads
 }
 }
 

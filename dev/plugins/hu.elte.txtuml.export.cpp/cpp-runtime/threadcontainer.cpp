@@ -5,28 +5,29 @@
 namespace Execution
 {
 
-ThreadContainer::ThreadContainer() : active_threads(0), expected_threads(0) {}
+ThreadContainer::ThreadContainer() : _activeThreads(0), _expectedThreads(0) {}
 
 void ThreadContainer::addThread(std::thread* th)
 {
 	std::unique_lock<std::mutex> mlock(_mutex);
 
 	threads.insert(std::pair<std::thread::id, EventProcessorThread>(th->get_id(), EventProcessorThread(th)));
-	active_threads++;
+	_activeThreads++;
 }
 
 
 
 void ThreadContainer::gettingThreadsReadyToStop(ES::SharedPtr<std::condition_variable> cond)
 {
-
-	cont_it it = threads.begin();
-	cont_it it2;
+	std::unique_lock<std::mutex> mlock(_removeMutex);
+	ContainerIterator it = threads.begin();
+	
 	while (isTooManyWorkers() && it != threads.end())
 	{
 		if (it->second.isWorking() && !it->second.threadsAreIdentical())
 		{
-			active_threads--;
+			ContainerIterator it2;
+			_activeThreads--;
 			modifyThreadState(it->first, EventProcessorThread::ThreadState::ReadyToStop);
 			cond->notify_all();
 			it2 = it;
@@ -57,13 +58,12 @@ bool ThreadContainer::isReadyToStop(EventProcessorThread::ThreadId thread_id)
 
 void ThreadContainer::removeAll()
 {
-	std::unique_lock<std::mutex> mlock(_mutex);
+	std::unique_lock<std::mutex> mlock(_removeMutex);
 	threads.clear();
 }
 
 ThreadContainer::~ThreadContainer()
 {
-	removeAll();
 }
 
 }
