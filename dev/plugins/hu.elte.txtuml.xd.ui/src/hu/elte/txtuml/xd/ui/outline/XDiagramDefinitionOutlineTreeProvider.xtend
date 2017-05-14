@@ -5,12 +5,14 @@ package hu.elte.txtuml.xd.ui.outline
 
 import org.eclipse.xtext.ui.editor.outline.impl.DefaultOutlineTreeProvider
 import org.eclipse.emf.ecore.EObject
-import hu.elte.txtuml.xd.xDiagramDefinition.XDInstruction
-import hu.elte.txtuml.xd.xDiagramDefinition.XDWrappedArgumentExpressionList
 import hu.elte.txtuml.xd.xDiagramDefinition.XDUnaryListInstruction
-import hu.elte.txtuml.xd.xDiagramDefinition.XDNumericExpression
 import hu.elte.txtuml.xd.xDiagramDefinition.XDUnaryNumberInstruction
 import hu.elte.txtuml.xd.xDiagramDefinition.XDBinaryIdentifierInstruction
+import hu.elte.txtuml.xd.xDiagramDefinition.XDBinaryListInstruction
+import hu.elte.txtuml.xd.xDiagramDefinition.XDPhantomInstruction
+import hu.elte.txtuml.xd.xDiagramDefinition.XDGroupInstruction
+import hu.elte.txtuml.xd.xDiagramDefinition.XDDiamondInstruction
+import hu.elte.txtuml.xd.xDiagramDefinition.XDPriorityInstruction
 
 /**
  * Customization of the default outline structure.
@@ -18,13 +20,15 @@ import hu.elte.txtuml.xd.xDiagramDefinition.XDBinaryIdentifierInstruction
  * See https://www.eclipse.org/Xtext/documentation/304_ide_concepts.html#outline
  */
 class XDiagramDefinitionOutlineTreeProvider extends DefaultOutlineTreeProvider {
-
 	override protected _isLeaf(EObject modelElement) {
-		if (modelElement instanceof XDUnaryListInstruction) { return true; }
-		if (modelElement instanceof XDUnaryNumberInstruction) { return true; }
-		if (modelElement instanceof XDBinaryIdentifierInstruction) { return true;}
-		
+		if (modelElement instanceof XDBinaryIdentifierInstruction) { return true; }
+		if (modelElement instanceof XDBinaryListInstruction ) { return true; }
+		if (modelElement instanceof XDPhantomInstruction ) { return true; }
+		if (modelElement instanceof XDUnaryListInstruction ) { return true; }
+		if (modelElement instanceof XDGroupInstruction ) { return true; }
+		if (modelElement instanceof XDUnaryNumberInstruction ) { return true; }
+		if (modelElement instanceof XDDiamondInstruction ) { return true; }
+		if (modelElement instanceof XDPriorityInstruction) { return true; }
 		return super._isLeaf(modelElement);
 	}
-	
 }

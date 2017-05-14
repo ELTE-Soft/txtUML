@@ -8,6 +8,9 @@ import org.eclipse.emf.edit.ui.provider.AdapterFactoryLabelProvider
 import org.eclipse.xtext.ui.label.DefaultEObjectLabelProvider
 import hu.elte.txtuml.xd.xDiagramDefinition.XDInstruction
 import org.eclipse.xtext.xtype.XImportSection
+import hu.elte.txtuml.xd.xDiagramDefinition.XDDiagram
+import hu.elte.txtuml.xd.xDiagramDefinition.XDGroupInstruction
+import hu.elte.txtuml.xd.xDiagramDefinition.XDPhantomInstruction
 
 /**
  * Provides labels for EObjects.
@@ -20,8 +23,18 @@ class XDiagramDefinitionLabelProvider extends DefaultEObjectLabelProvider {
 	new(AdapterFactoryLabelProvider delegate) {
 		super(delegate);
 	}
-
-	// Labels and icons can be computed like this:
+	
+	def text(XDDiagram element){
+		return element.diagramType + " " + element.name;
+	}
+	
+	def text(XDGroupInstruction element){
+		return element.op + " " + element.name;
+	}
+	
+	def text(XDPhantomInstruction element){
+		return element.op + " " + element.name;
+	}
 	
 	def text(XDInstruction element){
 		return 'instruction';
@@ -30,6 +43,8 @@ class XDiagramDefinitionLabelProvider extends DefaultEObjectLabelProvider {
 	def text(XImportSection element){
 		return 'import section';
 	}
+
+// Labels and icons can be computed like this:
 	
 //	def text(Greeting ele) {
 //		'A greeting to ' + ele.name
