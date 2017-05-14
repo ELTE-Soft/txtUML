@@ -6,6 +6,8 @@ package hu.elte.txtuml.xd.ui.labeling
 import com.google.inject.Inject
 import org.eclipse.emf.edit.ui.provider.AdapterFactoryLabelProvider
 import org.eclipse.xtext.ui.label.DefaultEObjectLabelProvider
+import hu.elte.txtuml.xd.xDiagramDefinition.XDInstruction
+import org.eclipse.xtext.xtype.XImportSection
 
 /**
  * Provides labels for EObjects.
@@ -20,6 +22,14 @@ class XDiagramDefinitionLabelProvider extends DefaultEObjectLabelProvider {
 	}
 
 	// Labels and icons can be computed like this:
+	
+	def text(XDInstruction element){
+		return 'instruction';
+	}
+	
+	def text(XImportSection element){
+		return 'import section';
+	}
 	
 //	def text(Greeting ele) {
 //		'A greeting to ' + ele.name

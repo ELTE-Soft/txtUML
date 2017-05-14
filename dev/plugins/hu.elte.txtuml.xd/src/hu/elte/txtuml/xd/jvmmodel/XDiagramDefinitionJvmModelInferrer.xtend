@@ -359,8 +359,6 @@ class XDiagramDefinitionJvmModelInferrer extends AbstractModelInferrer {
 			}
 		};
 		
-		// SOURCE: https://www.eclipse.org/forums/index.php/t/300722/
-		
 		var newAnnotation = annotationRef(annType) => [ annotationRef |
 			if (linkEnd != LinkEnd.Default){
 				annotationRef.explicitValues += TypesFactory::eINSTANCE.createJvmEnumAnnotationValue => [
@@ -458,7 +456,11 @@ class XDiagramDefinitionJvmModelInferrer extends AbstractModelInferrer {
 	}
 	
 	def String findPackageName(EObject element){
-		return (element.findModel.package.name + ".") ?: "";
+		val model = element.findModel;
+		if (model == null) { return ""; }
+		val pack = model.package;
+		if (pack == null) { return ""; }
+		return (pack.name + ".") ?: "";
 	}
 	
 	def String findDiagramName(EObject element){

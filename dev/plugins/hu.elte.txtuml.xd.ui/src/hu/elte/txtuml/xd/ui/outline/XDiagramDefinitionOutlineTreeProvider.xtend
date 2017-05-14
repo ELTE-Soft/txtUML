@@ -4,6 +4,13 @@
 package hu.elte.txtuml.xd.ui.outline
 
 import org.eclipse.xtext.ui.editor.outline.impl.DefaultOutlineTreeProvider
+import org.eclipse.emf.ecore.EObject
+import hu.elte.txtuml.xd.xDiagramDefinition.XDInstruction
+import hu.elte.txtuml.xd.xDiagramDefinition.XDWrappedArgumentExpressionList
+import hu.elte.txtuml.xd.xDiagramDefinition.XDUnaryListInstruction
+import hu.elte.txtuml.xd.xDiagramDefinition.XDNumericExpression
+import hu.elte.txtuml.xd.xDiagramDefinition.XDUnaryNumberInstruction
+import hu.elte.txtuml.xd.xDiagramDefinition.XDBinaryIdentifierInstruction
 
 /**
  * Customization of the default outline structure.
@@ -12,4 +19,12 @@ import org.eclipse.xtext.ui.editor.outline.impl.DefaultOutlineTreeProvider
  */
 class XDiagramDefinitionOutlineTreeProvider extends DefaultOutlineTreeProvider {
 
+	override protected _isLeaf(EObject modelElement) {
+		if (modelElement instanceof XDUnaryListInstruction) { return true; }
+		if (modelElement instanceof XDUnaryNumberInstruction) { return true; }
+		if (modelElement instanceof XDBinaryIdentifierInstruction) { return true;}
+		
+		return super._isLeaf(modelElement);
+	}
+	
 }

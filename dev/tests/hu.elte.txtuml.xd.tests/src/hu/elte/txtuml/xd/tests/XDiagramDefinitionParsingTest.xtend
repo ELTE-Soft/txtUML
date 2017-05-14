@@ -22,9 +22,8 @@ class XDiagramDefinitionParsingTest{
 	@Test
 	def void loadModel() {
 		val result = parseHelper.parse('''
-			Hello Xtext!
+		class-diagram Test {}
 		''')
 		Assert.assertNotNull(result)
 	}
-
 }

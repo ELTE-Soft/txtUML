@@ -18,9 +18,6 @@ import org.eclipse.xtext.xbase.scoping.XImportSectionNamespaceScopeProvider
  * on how and when to use it.
  */
  
-// SOURCE: http://stackoverflow.com/questions/36224089/xtext-2-9-scope-provider
-// SOURCE: https://www.slideshare.net/szarnekow/extending-the-xbase-typesystem
- 
 class XDiagramDefinitionXImportSectionScopeProvider extends XImportSectionNamespaceScopeProvider {
 
 	override protected getImportedNamespaceResolvers(EObject context, boolean ignoreCase) {
