@@ -1,4 +1,4 @@
-package hu.elte.txtuml.xd.tests
+package hu.elte.txtuml.xd.tests.parser
 import java.util.List
 
 class XDiagramDefinitionParsingTestUtils {

@@ -3,6 +3,7 @@ module hu.elte.txtuml.xd.GenerateXDiagramDefinition
 import org.eclipse.xtext.xtext.generator.*
 import org.eclipse.xtext.xtext.generator.model.project.*
 
+//var rootPath = "C:/Users/gyzsolt/git/txtUML/dev/plugins"
 var rootPath = ".."
 Workflow {
 	
