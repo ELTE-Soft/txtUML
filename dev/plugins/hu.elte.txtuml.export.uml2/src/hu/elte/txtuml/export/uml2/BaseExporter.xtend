@@ -48,6 +48,8 @@ import org.eclipse.uml2.uml.SignalEvent
 import hu.elte.txtuml.utils.jdt.ElementTypeTeller
 import hu.elte.txtuml.export.uml2.structural.OutPortExporter
 import hu.elte.txtuml.export.uml2.structural.InPortExporter
+import org.eclipse.uml2.uml.Reception
+import hu.elte.txtuml.export.uml2.structural.ReceptionExporter
 
 /**
  * Base class for exporters, methods to export different kinds of elements using specific exporters.
@@ -130,6 +132,10 @@ abstract class BaseExporter<S, A, R extends Element> {
 
 	def exportOperation(MethodDeclaration md, Consumer<Operation> store) {
 		cache.export(new OperationExporter(this), md, md.resolveBinding, store)
+	}
+	
+	def exportReception(MethodDeclaration md, Consumer<Reception> store) {
+		cache.export(new ReceptionExporter(this), md, md.resolveBinding, store)
 	}
 
 	def exportDefaultConstructor(IMethodBinding bnd, Consumer<Operation> store) {
