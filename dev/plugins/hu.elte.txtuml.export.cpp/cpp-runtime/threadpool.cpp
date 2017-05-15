@@ -5,7 +5,10 @@
 #include "threadpool.hpp"
 namespace Execution 
 {
-StateMachineThreadPool::StateMachineThreadPool() :_stop(true), _sharedConditionVar(new std::condition_variable()), _stateMachines(_sharedConditionVar) {}
+StateMachineThreadPool::StateMachineThreadPool() : 
+_sharedConditionVar(new std::condition_variable()), 
+_stateMachines(_sharedConditionVar),
+_stop(true) {}
 
 void StateMachineThreadPool::stopPool()
 {

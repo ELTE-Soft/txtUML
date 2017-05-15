@@ -10,12 +10,12 @@ class AtomicCounter {
 
 public:
 	AtomicCounter() : counter(0) {}
-	void incrementCounter(int i = 1) { counter += i; }
-	void decrementCounter(int i = 1) { counter -= i; }
+	void incrementCounter(unsigned i = 1) { counter += i; }
+	void decrementCounter(unsigned i = 1) { counter -= i; }
 	bool isZeroCounter() { return counter == 0; }
 
 private:
-	std::atomic_int counter;
+	std::atomic<unsigned> counter;
 };
 
 }

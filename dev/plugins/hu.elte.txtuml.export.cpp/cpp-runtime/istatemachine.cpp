@@ -120,7 +120,7 @@ std::string IStateMachine::toString() const
 
 IStateMachine::~IStateMachine()
 {
-	messageCounter->decrementCounter(_messageQueue->size());
+	messageCounter->decrementCounter((unsigned) _messageQueue->size());
 	std::unique_lock<std::mutex> mlock(_mutex);
 	while (_inPool)
 	{
