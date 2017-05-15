@@ -30,7 +30,7 @@ ES::EventRef IStateMachine::getNextMessage()
 {
 	ES::EventRef event;
 	_messageQueue->dequeue(event);
-	(*message_counter)--;
+	messageCounter->decrementCounter();
 	return event;
 }
 
@@ -57,7 +57,7 @@ void IStateMachine::startSM()
 
 void IStateMachine::send(const ES::EventRef e)
 {
-	(*message_counter)++;
+	messageCounter->incrementCounter();
 	e->setTargetSM(this);
 	_messageQueue->enqueue(e);
 	if (_started)
@@ -108,9 +108,9 @@ int IStateMachine::getPoolId() const
 	return poolId; 
 }
 
-void IStateMachine::setMessageCounter(std::atomic_int * counter) 
+void IStateMachine::setMessageCounter(ES::SharedPtr<ES::AtomicCounter> counter)
 { 
-	message_counter = counter; 
+	messageCounter = counter; 
 }
 
 std::string IStateMachine::toString() const
@@ -120,7 +120,7 @@ std::string IStateMachine::toString() const
 
 IStateMachine::~IStateMachine()
 {
-	*message_counter -= _messageQueue->size();
+	messageCounter->decrementCounter(_messageQueue->size());
 	std::unique_lock<std::mutex> mlock(_mutex);
 	while (_inPool)
 	{

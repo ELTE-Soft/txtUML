@@ -8,6 +8,7 @@
 
 #include "ESRoot/Types.hpp"
 #include "ESRoot/Containers/ThreadSafeQueue.hpp"
+#include "ESRoot/AtomicCounter.hpp"
 
 namespace Execution {
 class StateMachineThreadPool;
@@ -36,7 +37,7 @@ public:
 	bool isInitialized() const;
 	bool isDestoryed() const;
 	int getPoolId() const;
-	void setMessageCounter(std::atomic_int* counter);
+	void setMessageCounter(ES::SharedPtr<ES::AtomicCounter> counter);
 	virtual std::string toString() const;
 
 protected:
@@ -54,7 +55,7 @@ private:
 	std::atomic_bool _started;
 	std::atomic_bool _initialized;
 	std::atomic_bool _deleted;
-	std::atomic_int* message_counter;
+	ES::SharedPtr<ES::AtomicCounter> messageCounter;
 
 	int poolId;
 

@@ -18,7 +18,7 @@ void StateMachineThreadPool::startPool(int n)
 {
 	_stateMachines.startQueue();
 	_stop = false;
-	modifiedThreads(n);
+	modifyThreads(n);
 	for(int i = 0; i < n; ++i)
 	{
 		workers.addThread(new std::thread(&StateMachineThreadPool::task, this));
@@ -26,13 +26,13 @@ void StateMachineThreadPool::startPool(int n)
 
 }
 
-void StateMachineThreadPool::stopUponCompletion(std::atomic_int* messages)
+void StateMachineThreadPool::stopUponCompletion()
 {
 	std::unique_lock<std::mutex> lock(stop_request_mu);
 
-	if (!((*messages) == 0 && (*worker_threads) == 0))
+	if (!(nOfAllMessages->isZeroCounter () && nOfWorkerThreads->isZeroCounter ()))
 	{
-		stop_request_cond->wait(lock, [this, messages] {return (*messages) == 0 && *(this->worker_threads) == 0; });
+		stop_request_cond->wait(lock, [this] {return nOfAllMessages->isZeroCounter() && nOfWorkerThreads->isZeroCounter(); });
 	}
 
 	stopPool();
@@ -106,7 +106,7 @@ void StateMachineThreadPool::task()
 
 }
 
-void StateMachineThreadPool::modifiedThreads(int n)
+void StateMachineThreadPool::modifyThreads(int n)
 {
 	if (!_stop)
 	{
@@ -117,13 +117,13 @@ void StateMachineThreadPool::modifiedThreads(int n)
 
 void StateMachineThreadPool::incrementWorkers()
 {
-	(*worker_threads)++;
+	nOfWorkerThreads->incrementCounter();
 
 }
 
 void StateMachineThreadPool::reduceWorkers()
 {
-	(*worker_threads)--;
+	nOfWorkerThreads->decrementCounter();
 }
 
 void StateMachineThreadPool::enqueueObject(ES::StateMachineRef sm)
