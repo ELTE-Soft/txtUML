@@ -7,7 +7,7 @@ import java.util.List;
 import org.eclipse.uml2.uml.Port;
 
 import hu.elte.txtuml.export.cpp.CppExporterUtils;
-import hu.elte.txtuml.export.cpp.templates.GenerationNames;
+import hu.elte.txtuml.export.cpp.templates.GenerationNames.TypeDelcreationKeywords;
 import hu.elte.txtuml.export.cpp.templates.structual.PortTemplates;
 
 public class PortExporter {
@@ -23,7 +23,7 @@ public class PortExporter {
 		}
 
 		StringBuilder source = new StringBuilder("\n");
-		source.append(GenerationNames.EnumName).append(" ");
+		source.append(TypeDelcreationKeywords.EnumType).append(" ");
 		source.append(PortTemplates.PORT_ENUM_NAME);
 		source.append(" { ");
 		for (Port port : ports) {

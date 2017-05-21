@@ -25,6 +25,7 @@ import org.eclipse.uml2.uml.Association;
 import org.eclipse.uml2.uml.Class;
 import org.eclipse.uml2.uml.DataType;
 import org.eclipse.uml2.uml.Element;
+import org.eclipse.uml2.uml.Interface;
 import org.eclipse.uml2.uml.UMLPackage;
 import org.osgi.framework.Bundle;
 
@@ -46,7 +47,7 @@ import hu.elte.txtuml.export.cpp.templates.structual.HeaderTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.LinkTemplates;
 import hu.elte.txtuml.export.cpp.thread.ThreadHandlingManager;
 import hu.elte.txtuml.export.cpp.structural.DependencyExporter;
-
+import hu.elte.txtuml.export.cpp.structural.InterfaceExporter;
 import hu.elte.txtuml.utils.Pair;
 
 public class Uml2ToCppExporter {
@@ -68,6 +69,7 @@ public class Uml2ToCppExporter {
 
 	private ClassExporter classExporter;
 	private DataTypeExporter dataTypeExporter;
+	private InterfaceExporter interfaceExporter;
 	private final Options options;
 
 	private ThreadHandlingManager threadManager;
@@ -84,6 +86,7 @@ public class Uml2ToCppExporter {
 		this.modelRoot = modelRoot;
 		classExporter = new ClassExporter();
 		dataTypeExporter = new DataTypeExporter();
+		interfaceExporter = new InterfaceExporter();
 		threadManager = new ThreadHandlingManager(threadDescription);
 
 		classes = new ArrayList<Class>();
@@ -92,8 +95,6 @@ public class Uml2ToCppExporter {
 		stateMachineOwners = new HashSet<String>();
 		options = new Options(addRuntimeOption, overWriteMainFileOption);
 
-		CppExporterUtils.getTypedElements(dataTypes, UMLPackage.Literals.DATA_TYPE, modelRoot);
-		classes = CppExporterUtils.getAllModelCLass(modelRoot);
 
 	}
 
@@ -107,10 +108,13 @@ public class Uml2ToCppExporter {
 		createTransitionTableInitialSource(outputDirectory);
 		createDataTypes(outputDirectory);
 		createAssociationsSources(outputDirectory);
+		createInterfaces(outputDirectory);
 		createCMakeFile(outputDirectory);
 	}
 
 	private void createClassSources(String outputDirectory) throws IOException {
+		classes = CppExporterUtils.getAllModelCLass(modelRoot);
+		
 		for (Class cls : classes) {
 
 			classExporter.setName(cls.getName());
@@ -164,6 +168,7 @@ public class Uml2ToCppExporter {
 	}
 
 	private void createDataTypes(String outputDirectory) throws IOException {
+		CppExporterUtils.getTypedElements(dataTypes, UMLPackage.Literals.DATA_TYPE, modelRoot);
 		for (DataType dataType : dataTypes) {
 			dataTypeExporter.setName(dataType.getName());
 			dataTypeExporter.init();
@@ -356,6 +361,17 @@ public class Uml2ToCppExporter {
 				+ GenerationTemplates.putNamespace(functions.toString(), GenerationNames.Namespaces.ModelNamespace);
 		CppExporterUtils.writeOutSource(outputDirectory, (LinkTemplates.AssociationStructuresSource),
 				CppExporterUtils.format(cppSource));
+
+	}
+	
+	private void createInterfaces(String outputDirectory) throws FileNotFoundException, UnsupportedEncodingException {
+		List<Interface> interfaces = new ArrayList<Interface>();
+
+		CppExporterUtils.getTypedElements(interfaces, UMLPackage.Literals.INTERFACE, modelRoot);
+		for (Interface inf : interfaces) {
+			interfaceExporter.setName(inf.getName());
+			interfaceExporter.exportStructuredElement(inf, outputDirectory);
+		}
 
 	}
 

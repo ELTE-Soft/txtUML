@@ -6,6 +6,7 @@ import java.util.List;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationTemplates;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.FileNames;
+import hu.elte.txtuml.export.cpp.templates.GenerationNames.TypeDelcreationKeywords;
 import hu.elte.txtuml.export.cpp.templates.PrivateFunctionalTemplates;
 import hu.elte.txtuml.export.cpp.templates.RuntimeTemplates;
 import hu.elte.txtuml.export.cpp.templates.statemachine.StateMachineTemplates;
@@ -64,7 +65,7 @@ public class HeaderTemplates {
 			String publicPart, String protectedPart, String privatePart, Boolean sm, Boolean rt) {
 		StringBuilder source = new StringBuilder(dependency);
 		StringBuilder classDecleration = new StringBuilder("");
-		classDecleration.append(GenerationNames.ClassType + " " + className);
+		classDecleration.append(TypeDelcreationKeywords.ClassType + " " + className);
 		if (baseClassName != null) {
 			classDecleration.append(": public " + baseClassName);
 		} else if (sm) {

@@ -18,6 +18,7 @@ public class GenerationNames {
 	}
 	
 	public static class FileNames {
+		
 		public static final String ESRootFolderName = "ESRoot";
 		public static final String ESRootPath = RuntimeTemplates.RTPath + ESRootFolderName + Path.SEPARATOR;
 		public static final String FileNameTypes = "Types";		
@@ -99,10 +100,25 @@ public class GenerationNames {
 		public static final String FixContainer =  Namespaces.ContainerNamespace + "::" +  "FixedArray";
 	}
 	
-	public static final String ClassType = "struct";
-	public static final String DataType = "struct";
-	public static final String EnumName = "enum";
+	public static class TypeDelcreationKeywords {
 
+		public static final String ClassType = "struct";
+		public static final String DataType = "struct";
+		public static final String EnumType = "enum";
+		public static final String InterfacType = "class";
+		
+	}
+	
+	public static class InterfaceNames {
+		
+		public static final String SendReceptionName = "send";
+		public static final String ReciveReceptionName = "recive";
+		public static final String CommonSendAnySignalName = "sendAny";
+		public static final String CommonReciveAnySignalName = "reciveAny";
+		public static final String IntegratedBaseTemplateName = "IntegratedInf";
+		
+	}
+	
 	// NDEBUG is the only thing guaranteed, DEBUG and _DEBUG is non-standard
 	public static final String NoDebugSymbol = "NDEBUG";
 	public static final String StandardIOInclude = "#include <iostream>\n";
@@ -184,7 +200,7 @@ public class GenerationNames {
 	}
 
 	public static String friendClassDecl(String className) {
-		return "friend " + GenerationNames.ClassType + " " + className + ";\n";
+		return "friend " + TypeDelcreationKeywords.ClassType + " " + className + ";\n";
 	}
 
 	public static final String parentSmPointerNameDef(String parentType) {
@@ -273,5 +289,13 @@ public class GenerationNames {
 	public static String sharedPtrType(String typeName) {
 
 		return PointerAndMemoryNames.SmartPtr + "<" + typeName + ">";
+	}
+	
+	public static String requiredInfPartName(String infName) {
+		return infName + "ReqInf";
+	}
+	
+	public static String providedInfPartName(String infName) {
+		return infName + "ProvInf";
 	}
 }

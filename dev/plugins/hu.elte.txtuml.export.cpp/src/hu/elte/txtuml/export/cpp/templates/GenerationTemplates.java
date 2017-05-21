@@ -5,6 +5,7 @@ import java.util.List;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.FileNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.PointerAndMemoryNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.TimerNames;
+import hu.elte.txtuml.export.cpp.templates.GenerationNames.TypeDelcreationKeywords;
 
 public class GenerationTemplates {
 
@@ -22,8 +23,9 @@ public class GenerationTemplates {
 	}
 
 	public static String dataType(String datatTypeName, String attributes) {
-		return GenerationNames.DataType + " " + datatTypeName + "\n" + "{\n" + attributes + "}";
+		return TypeDelcreationKeywords.DataType + " " + datatTypeName + "\n" + "{\n" + attributes + "}";
 	}
+	
 
 	public static String paramName(String paramName) {
 		
@@ -32,7 +34,7 @@ public class GenerationTemplates {
 
 	public static String forwardDeclaration(String className) {
 		
-		return GenerationNames.ClassType + " " + className + ";\n";
+		return TypeDelcreationKeywords.ClassType + " " + className + ";\n";
 	}
 
 	public static String putNamespace(String source, String namespace) {
