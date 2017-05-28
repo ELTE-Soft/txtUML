@@ -26,6 +26,7 @@ import hu.elte.txtuml.export.papyrus.utils.LayoutUtils;
 import hu.elte.txtuml.export.uml2.ExportMode;
 import hu.elte.txtuml.export.uml2.TxtUMLToUML2;
 import hu.elte.txtuml.layout.export.DiagramExportationReport;
+import hu.elte.txtuml.utils.diagrams.Constants;
 import hu.elte.txtuml.utils.eclipse.NotFoundException;
 
 /**
@@ -49,11 +50,13 @@ public class TxtUMLExporter {
 	 * @param txtUMLModelName
 	 *            - The fully qualified name of the txtUML model
 	 * @param txtUMLLayout
-	 *            - The fully qualified name of the txtUML Diagram and the project
+	 *            - The fully qualified name of the txtUML Diagram and the
+	 *            project
 	 * @param parent
 	 *            - the parent ClassLoader
 	 */
-	public TxtUMLExporter(String projectName, String outputFolder, String txtUMLModelName, Map<String, String> txtUMLLayout) {
+	public TxtUMLExporter(String projectName, String outputFolder, String txtUMLModelName,
+			Map<String, String> txtUMLLayout) {
 
 		this.projectName = projectName;
 		this.outputFolder = outputFolder;
@@ -71,7 +74,8 @@ public class TxtUMLExporter {
 		List<DiagramExportationReport> reports = new ArrayList<>();
 
 		for (Map.Entry<String, String> layout : txtUMLLayout.entrySet()) {
-			DiagramExportationReport report = LayoutUtils.exportTxtUMLLayout(projectName, layout.getKey(), layout.getValue());
+			DiagramExportationReport report = LayoutUtils.exportTxtUMLLayout(projectName, layout.getKey(),
+					layout.getValue());
 			if (!report.isSuccessful()) {
 				StringBuilder errorMessages = new StringBuilder(
 						"Errors occured during layout exportation:" + System.lineSeparator());
@@ -94,12 +98,14 @@ public class TxtUMLExporter {
 	 * @return The Visualizer
 	 */
 	public PapyrusVisualizer createVisualizer(TxtUMLLayoutDescriptor layoutDescriptor) {
-		URI umlFileURI = URI.createFileURI(projectName + "/" + this.outputFolder + "/" + this.txtUMLModelName + ".uml");
+		URI umlFileURI = URI.createFileURI(
+				projectName + File.separator + this.outputFolder + File.separator + this.txtUMLModelName + ".uml");
 		URI UmlFileResURI = CommonPlugin.resolve(umlFileURI);
 		IFile UmlFile = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(UmlFileResURI.toFileString()));
 
-		PapyrusVisualizer pv = new PapyrusVisualizer(projectName, this.outputFolder + "/" + this.txtUMLModelName,
-				UmlFile.getRawLocationURI().toString(), layoutDescriptor);
+		PapyrusVisualizer pv = new PapyrusVisualizer(projectName,
+				this.outputFolder + File.separator + this.txtUMLModelName, UmlFile.getRawLocationURI().toString(),
+				layoutDescriptor);
 		return pv;
 	}
 
@@ -112,8 +118,9 @@ public class TxtUMLExporter {
 	 * @throws IOException
 	 */
 	public void exportModel() throws JavaModelException, NotFoundException, IOException {
-		TxtUMLToUML2.exportModel(projectName, txtUMLModelName, projectName + File.separator + "gen",
-				ExportMode.ErrorHandlingNoActions, "gen");
+		TxtUMLToUML2.exportModel(projectName, txtUMLModelName,
+				projectName + File.separator + Constants.DIAGRAM_GENERATION_FOLDER, ExportMode.ErrorHandlingNoActions,
+				Constants.DIAGRAM_GENERATION_FOLDER);
 	}
 
 	/**
@@ -152,23 +159,23 @@ public class TxtUMLExporter {
 
 		IEditorInput input = new FileEditorInput(diFile);
 
-		LayoutUtils.getDisplay().syncExec(() ->{
-				IEditorPart editor = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().findEditor(input);
-				if (editor != null) {
-					PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().closeEditor(editor, false);
+		LayoutUtils.getDisplay().syncExec(() -> {
+			IEditorPart editor = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().findEditor(input);
+			if (editor != null) {
+				PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().closeEditor(editor, false);
 
-				}
+			}
 
-				try {
-					diFile.delete(true, new NullProgressMonitor());
-					umlFile.delete(true, new NullProgressMonitor());
-					profileFile.delete(true, new NullProgressMonitor());
-					mappingFile.delete(true, new NullProgressMonitor());
-					notationFile.delete(true, new NullProgressMonitor());
-				} catch (CoreException e) {
-					throw new RuntimeException(e);
-				}
-				
-			});
+			try {
+				diFile.delete(true, new NullProgressMonitor());
+				umlFile.delete(true, new NullProgressMonitor());
+				profileFile.delete(true, new NullProgressMonitor());
+				mappingFile.delete(true, new NullProgressMonitor());
+				notationFile.delete(true, new NullProgressMonitor());
+			} catch (CoreException e) {
+				throw new RuntimeException(e);
+			}
+
+		});
 	}
 }

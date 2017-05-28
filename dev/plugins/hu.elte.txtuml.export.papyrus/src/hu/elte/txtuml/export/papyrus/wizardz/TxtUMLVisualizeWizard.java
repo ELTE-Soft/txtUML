@@ -27,6 +27,7 @@ import hu.elte.txtuml.export.papyrus.utils.LayoutUtils;
 import hu.elte.txtuml.layout.export.DiagramExportationReport;
 import hu.elte.txtuml.utils.Logger;
 import hu.elte.txtuml.utils.Pair;
+import hu.elte.txtuml.utils.diagrams.Constants;
 import hu.elte.txtuml.utils.eclipse.Dialogs;
 import hu.elte.txtuml.utils.eclipse.SaveUtils;
 import hu.elte.txtuml.utils.eclipse.WizardUtils;
@@ -97,8 +98,7 @@ public class TxtUMLVisualizeWizard extends Wizard {
 			String txtUMLModelName = model.getFirst();
 			String txtUMLProjectName = model.getSecond();
 
-			String generatedFolderName = PreferencesManager
-					.getString(PreferencesManager.TXTUML_VISUALIZE_DESTINATION_FOLDER);
+			String generatedFolderName = Constants.DIAGRAM_GENERATION_FOLDER;
 
 			Map<String, String> layouts = new HashMap<String, String>();
 			layoutConfigs.get(model).forEach(

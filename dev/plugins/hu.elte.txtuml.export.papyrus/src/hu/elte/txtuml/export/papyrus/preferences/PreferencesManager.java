@@ -24,7 +24,6 @@ public class PreferencesManager{
 	
 	public static final String TXTUML_VISUALIZE_TXTUML_MODEL = "txtUML Visualize txtUML Model";
 	public static final String TXTUML_VISUALIZE_TXTUML_PROJECT = "txtUML Visualize txtUML Project";
-	public static final String TXTUML_VISUALIZE_DESTINATION_FOLDER = "txtUML Visualize Destination Folder";
 	public static final String TXTUML_VISUALIZE_TXTUML_LAYOUT = "txtUML Visualize txtUML Layout";
 	public static final String TXTUML_VISUALIZE_TXTUML_LAYOUT_PROJECTS = "txtUML Visualize txtUML Layout Projects";
 	public static final String GENERATE_STATEMACHINES_AUTOMATICALLY = "generate StateMachines Automatically";
@@ -32,7 +31,6 @@ public class PreferencesManager{
 	static{
 		fieldsWithDefaultValues = new HashMap<String, Object>();
 		fieldsWithDefaultValues.put(TXTUML_VISUALIZE_TXTUML_MODEL, "");
-		fieldsWithDefaultValues.put(TXTUML_VISUALIZE_DESTINATION_FOLDER, "gen");
 	}
 	
 	/**

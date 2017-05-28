@@ -12,10 +12,10 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 
-import hu.elte.txtuml.export.papyrus.preferences.PreferencesManager;
 import hu.elte.txtuml.export.uml2.mapping.ModelMapException;
 import hu.elte.txtuml.export.uml2.mapping.ModelMapProvider;
 import hu.elte.txtuml.utils.Logger;
+import hu.elte.txtuml.utils.diagrams.Constants;
 
 /**
  * Keeps track of model mappings
@@ -23,8 +23,7 @@ import hu.elte.txtuml.utils.Logger;
 public class ModelMapper {
 	private static final String MAPPING_FILE_EXTENSION = ModelMapProvider.MAPPING_FILE_EXTENSION;
 	private static final String MAPPING_FILE_EXTENSION_TOKEN = "." + MAPPING_FILE_EXTENSION;
-	private static final String MAPPING_DIRECTORY_PATH =
-			PreferencesManager.getString(PreferencesManager.TXTUML_VISUALIZE_DESTINATION_FOLDER);
+	private static final String MAPPING_DIRECTORY_PATH = Constants.DIAGRAM_GENERATION_FOLDER;
 
 	private NavigableMap<String, ModelMapProvider> mappingFileNameToMapProvider = new TreeMap<String, ModelMapProvider>();
 
