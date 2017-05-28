@@ -12,9 +12,11 @@ import java.awt.Insets;
 import java.io.File;
 import java.io.IOException;
 
+import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
+import javax.sound.sampled.DataLine;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.Box;
@@ -199,7 +201,7 @@ public class UI implements Runnable {
 		JButton coinButton = new JButton(String.valueOf(value));
 		coinButton.setBackground(Color.YELLOW);
 		coinButton.setOpaque(true);
-		coinButton.setPreferredSize(new Dimension(70, 25));
+		coinButton.setPreferredSize(new Dimension(50, 25));
 		coinButton.setMargin(new Insets(0, 0, 0, 0));
 
 		coinButton.addActionListener(e -> {
@@ -219,16 +221,15 @@ public class UI implements Runnable {
 	}
 
 	private void playSound(String soundName) {
-		AudioInputStream audioInputStream;
 		try {
-			audioInputStream = AudioSystem.getAudioInputStream(new File(soundName).getAbsoluteFile());
-			Clip clip = AudioSystem.getClip();
+			AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(new File(soundName).getAbsoluteFile());
+			AudioFormat format = audioInputStream.getFormat();
+			DataLine.Info info = new DataLine.Info(Clip.class, format);
+			Clip clip = (Clip) AudioSystem.getLine(info);
 			clip.open(audioInputStream);
 			clip.start();
-		} catch (UnsupportedAudioFileException | IOException e1) {
-			e1.printStackTrace();
-		} catch (LineUnavailableException e1) {
-			e1.printStackTrace();
+		} catch (IllegalArgumentException | IOException | LineUnavailableException | UnsupportedAudioFileException e) {
+			e.printStackTrace();
 		}
 	}
 

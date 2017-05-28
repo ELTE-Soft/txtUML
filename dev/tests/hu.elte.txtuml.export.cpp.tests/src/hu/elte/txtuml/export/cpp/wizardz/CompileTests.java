@@ -51,10 +51,10 @@ public class CompileTests {
 	private static final String pathToProjects = "../../../examples/demo/";
 
 	private static final Config[] testProjects = {
-			new Config("machine", "machine1.j.model", "machine1.j.Machine1Configuration"),
-			new Config("monitoring", "monitoring.x.model", "monitoring.x.XMonitoringConfiguration"),
-			new Config("producer_consumer", "producer_consumer.j.model", "producer_consumer.j.ProducerConsumerConfiguration"),
-			new Config("train", "train.j.model", "train.j.TrainConfiguration"), };
+			new Config("machine", "machine1.j.model", "machine1.j.cpp.Machine1Configuration"),
+			new Config("monitoring", "monitoring.x.model", "monitoring.x.cpp.XMonitoringConfiguration"),
+			new Config("producer_consumer", "producer_consumer.j.model", "producer_consumer.j.cpp.ProducerConsumerConfiguration"),
+			new Config("train", "train.j.model", "train.j.cpp.TrainConfiguration"), };
 
 	private static final String exportTestProjectPrefix = "exportTest_";
 	private static final String compileTestProjectPrefix = "compileTest_";

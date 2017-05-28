@@ -208,15 +208,6 @@ text.highlighted {
     fill: #FF0000;
 }
 
-/* `outline` doesn't work in Firefox, Opera and IE9+.
-   The only engine supporting outlines on SVG elements is Webkit. */
-@media screen and (-webkit-min-device-pixel-ratio:0) {
-    .highlighted {
-        outline: 2px solid #FF0000;
-        opacity: initial;
-    }
-}
-
 /*
 Example of custom changes (in pure CSS only!):
 

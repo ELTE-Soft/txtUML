@@ -2,10 +2,16 @@ package hu.elte.txtuml.export.javascript.resources;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+
+import org.eclipse.emf.common.util.URI;
+
+import hu.elte.txtuml.export.javascript.Activator;
+import hu.elte.txtuml.utils.Logger;
 
 /**
  * 
@@ -13,7 +19,8 @@ import java.nio.file.StandardCopyOption;
  *
  */
 public class ResourceHandler {
-	private static final String RESOURCE_FOLDER = "res";
+	private static final String[] RESOURCE_FOLDER_PATH_SEGMENTS = new String[] { "src", "hu", "elte", "txtuml",
+			"export", "javascript", "resources", "res" };
 	private static final String[] FILES = {
 			// third party
 			"lib/lodash.min.js", // Lodash library (required for jointJS)
@@ -66,15 +73,25 @@ public class ResourceHandler {
 	 * @throws IOException
 	 */
 	public static void copyResourcesTo(String targetDirectory) throws IOException {
-		Class<ResourceHandler> c = ResourceHandler.class;
 		for (String file : FILES) {
-			InputStream istream = c.getResourceAsStream(Paths.get(RESOURCE_FOLDER, file).toString());
-			Path target = Paths.get(targetDirectory, file);
+			URL url;
+			try {
+				URI uri = URI.createPlatformPluginURI(Activator.PLUGIN_ID, true);
+				uri = uri.appendSegments(RESOURCE_FOLDER_PATH_SEGMENTS);
+				uri = uri.appendSegments(file.split("/"));
+				url = new URL(uri.toString());
+				InputStream istream = url.openConnection().getInputStream();
 
-			if (!Files.exists(target)) {
-				Files.createDirectories(target);
+				Path target = Paths.get(targetDirectory, file);
+
+				if (!Files.exists(target)) {
+					Files.createDirectories(target);
+				}
+				
+				Files.copy(istream, Paths.get(targetDirectory, file), StandardCopyOption.REPLACE_EXISTING);
+			} catch (IOException e) {
+				Logger.user.error("IOException during file copy", e);
 			}
-			Files.copy(istream, Paths.get(targetDirectory, file), StandardCopyOption.REPLACE_EXISTING);
 		}
 	}
 
