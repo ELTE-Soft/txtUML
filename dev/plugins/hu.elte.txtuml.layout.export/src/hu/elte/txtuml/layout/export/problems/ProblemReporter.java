@@ -27,7 +27,7 @@ public class ProblemReporter {
 	}
 
 	public void noLayoutClass() {
-		report.error("The diagram class has no inner class which is a subclass of Diagram.Layout.");
+		report.error("The diagram class should have an inner class which is a subclass of Diagram.Layout.");
 	}
 
 	public void lineStatementExportationFailed(String name, Class<?>[] nodes) {
@@ -77,10 +77,8 @@ public class ProblemReporter {
 
 	public void invalidAnonymousGroup(Class<?>[] elementClasses,
 			Class<?> elementClass) {
-		report.error("Exportation of anonymous group {"
-				+ Utils.classArrayAsString(elementClasses)
-				+ "} failed, as at least one of its elements ("
-				+ Utils.classAsString(elementClass) + ") is invalid.");
+		report.error("The element (" + Utils.classAsString(elementClass) + ")"
+				+ " is invalid. Only state and groups are allowed in a State Machine.");
 	}
 
 	public void selfContainment(Class<?> groupClass) {
@@ -167,7 +165,7 @@ public class ProblemReporter {
 	}
 
 	private void statementExportationFailed(String statement, String valid) {
-		report.error("Exportation of statement " + statement + " failed." +
+		report.error("Exportation of statement " + statement + "some of its elements are invalid. Only Class are allowed in a Class Diagram or States and Groups in a State Machine." +
 				" Acceptable model elements here: " + valid + ".");
 	}
 
