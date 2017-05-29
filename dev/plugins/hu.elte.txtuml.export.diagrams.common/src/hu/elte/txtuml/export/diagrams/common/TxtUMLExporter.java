@@ -1,4 +1,4 @@
-package hu.elte.txtuml.export.papyrus;
+package hu.elte.txtuml.export.diagrams.common;
 
 import java.io.File;
 import java.io.IOException;
@@ -20,13 +20,12 @@ import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.FileEditorInput;
 
-import hu.elte.txtuml.export.papyrus.layout.LayoutExportException;
-import hu.elte.txtuml.export.papyrus.layout.TxtUMLLayoutDescriptor;
-import hu.elte.txtuml.export.papyrus.utils.LayoutUtils;
+import hu.elte.txtuml.export.diagrams.common.arrange.TxtUMLLayoutDescriptor;
+import hu.elte.txtuml.export.diagrams.common.layout.LayoutExportException;
+import hu.elte.txtuml.export.diagrams.common.layout.LayoutUtils;
 import hu.elte.txtuml.export.uml2.ExportMode;
 import hu.elte.txtuml.export.uml2.TxtUMLToUML2;
 import hu.elte.txtuml.layout.export.DiagramExportationReport;
-import hu.elte.txtuml.utils.diagrams.Constants;
 import hu.elte.txtuml.utils.eclipse.NotFoundException;
 
 /**
@@ -91,23 +90,6 @@ public class TxtUMLExporter {
 		return new TxtUMLLayoutDescriptor(txtUMLModelName, reports);
 	}
 
-	/**
-	 * Creates a Visualizer with the correct settings
-	 * 
-	 * @param layoutDescriptor
-	 * @return The Visualizer
-	 */
-	public PapyrusVisualizer createVisualizer(TxtUMLLayoutDescriptor layoutDescriptor) {
-		URI umlFileURI = URI.createFileURI(
-				projectName + File.separator + this.outputFolder + File.separator + this.txtUMLModelName + ".uml");
-		URI UmlFileResURI = CommonPlugin.resolve(umlFileURI);
-		IFile UmlFile = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(UmlFileResURI.toFileString()));
-
-		PapyrusVisualizer pv = new PapyrusVisualizer(projectName,
-				this.outputFolder + File.separator + this.txtUMLModelName, UmlFile.getRawLocationURI().toString(),
-				layoutDescriptor);
-		return pv;
-	}
 
 	/**
 	 * Exports the txtUML model to an EMF model to the same folder where the

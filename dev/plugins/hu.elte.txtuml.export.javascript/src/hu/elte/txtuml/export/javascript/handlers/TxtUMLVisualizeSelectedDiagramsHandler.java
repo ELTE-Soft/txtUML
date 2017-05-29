@@ -17,8 +17,8 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.ui.handlers.HandlerUtil;
 
+import hu.elte.txtuml.export.diagrams.common.wizards.VisualizeTxtUMLPage;
 import hu.elte.txtuml.export.javascript.wizardz.TxtUMLVisualizeWizard;
-import hu.elte.txtuml.export.papyrus.wizardz.VisualizeTxtUMLPage;
 
 public class TxtUMLVisualizeSelectedDiagramsHandler extends AbstractHandler {
 

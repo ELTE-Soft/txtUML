@@ -10,7 +10,7 @@ import hu.elte.txtuml.export.javascript.UnexpectedDiagramTypeException;
 import hu.elte.txtuml.export.javascript.json.model.cd.ClassDiagram;
 import hu.elte.txtuml.export.javascript.json.model.cd.UnexpectedEndException;
 import hu.elte.txtuml.export.javascript.json.model.smd.SMDiagram;
-import hu.elte.txtuml.export.papyrus.arrange.ArrangeException;
+import hu.elte.txtuml.export.diagrams.common.arrange.ArrangeException;
 import hu.elte.txtuml.export.uml2.mapping.ModelMapProvider;
 import hu.elte.txtuml.layout.export.DiagramExportationReport;
 

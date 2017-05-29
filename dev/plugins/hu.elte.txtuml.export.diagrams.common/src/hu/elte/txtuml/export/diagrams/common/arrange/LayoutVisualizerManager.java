@@ -1,4 +1,4 @@
-package hu.elte.txtuml.export.papyrus.arrange;
+package hu.elte.txtuml.export.diagrams.common.arrange;
 
 import java.util.ArrayList;
 import java.util.Collection;

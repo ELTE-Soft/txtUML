@@ -23,7 +23,7 @@ import org.eclipse.papyrus.uml.diagram.wizards.command.NewPapyrusModelCommand;
 import org.eclipse.uml2.uml.Model;
 import org.eclipse.uml2.uml.Profile;
 
-import hu.elte.txtuml.export.papyrus.utils.LayoutUtils;
+import hu.elte.txtuml.export.diagrams.common.layout.LayoutUtils;
 import hu.elte.txtuml.export.uml2.TxtUMLToUML2;
 
 /**

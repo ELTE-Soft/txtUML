@@ -6,9 +6,10 @@ Bundle-Version: 0.6.0.qualifier
 Fragment-Host: hu.elte.txtuml.export.javascript
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Require-Bundle: org.junit,
- hu.elte.txtuml.layout.visualizer,
  org.eclipse.emf.ecore,
  org.mockito.mockito-core,
+ org.eclipse.uml2.uml,
  hu.elte.txtuml.utils,
+ hu.elte.txtuml.export.diagrams.common,
  hu.elte.txtuml.export.uml2,
- org.eclipse.uml2.uml
+ hu.elte.txtuml.layout.visualizer

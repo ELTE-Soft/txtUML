@@ -7,6 +7,8 @@ import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.uml2.uml.Element;
 
+import hu.elte.txtuml.export.diagrams.common.arrange.ArrangeException;
+
 /**
  * An Interface for arranging elements of a diagram 
  */

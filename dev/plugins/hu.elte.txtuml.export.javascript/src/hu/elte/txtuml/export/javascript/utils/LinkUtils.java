@@ -5,8 +5,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import hu.elte.txtuml.export.diagrams.common.Point;
 import hu.elte.txtuml.layout.visualizer.model.LineAssociation;
-import hu.elte.txtuml.utils.diagrams.Point;
 
 /***
  * 

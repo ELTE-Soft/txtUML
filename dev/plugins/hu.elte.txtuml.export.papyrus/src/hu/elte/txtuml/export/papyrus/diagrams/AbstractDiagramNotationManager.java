@@ -20,8 +20,8 @@ import org.eclipse.gmf.runtime.notation.datatype.RelativeBendpoint;
 import org.eclipse.papyrus.infra.gmfdiag.common.providers.DiagramElementTypes;
 import org.eclipse.uml2.uml.Element;
 
+import hu.elte.txtuml.export.diagrams.common.layout.LayoutUtils;
 import hu.elte.txtuml.export.papyrus.TransactionalCommandRunner;
-import hu.elte.txtuml.export.papyrus.utils.LayoutUtils;
 
 public class AbstractDiagramNotationManager {
 

@@ -26,7 +26,7 @@ import org.eclipse.uml2.uml.UMLFactory;
 import org.junit.Before;
 import org.junit.Test;
 
-import hu.elte.txtuml.export.papyrus.arrange.ArrangeException;
+import hu.elte.txtuml.export.diagrams.common.arrange.ArrangeException;
 import hu.elte.txtuml.export.papyrus.arrange.IDiagramElementsArranger;
 import hu.elte.txtuml.export.papyrus.diagrams.clazz.ClassDiagramElementsProvider;
 import hu.elte.txtuml.export.papyrus.diagrams.clazz.ClassDiagramNotationManager;

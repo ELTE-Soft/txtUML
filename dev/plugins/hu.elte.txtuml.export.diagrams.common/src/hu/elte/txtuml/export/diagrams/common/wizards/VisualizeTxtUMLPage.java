@@ -1,4 +1,4 @@
-package hu.elte.txtuml.export.papyrus.wizardz;
+package hu.elte.txtuml.export.diagrams.common.wizards;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -36,7 +36,7 @@ import org.eclipse.ui.model.WorkbenchContentProvider;
 import hu.elte.txtuml.api.layout.ClassDiagram;
 import hu.elte.txtuml.api.layout.CompositeDiagram;
 import hu.elte.txtuml.api.layout.StateMachineDiagram;
-import hu.elte.txtuml.export.papyrus.preferences.PreferencesManager;
+import hu.elte.txtuml.export.diagrams.common.preferences.PreferencesManager;
 import hu.elte.txtuml.utils.Logger;
 import hu.elte.txtuml.utils.eclipse.NotFoundException;
 import hu.elte.txtuml.utils.eclipse.PackageUtils;

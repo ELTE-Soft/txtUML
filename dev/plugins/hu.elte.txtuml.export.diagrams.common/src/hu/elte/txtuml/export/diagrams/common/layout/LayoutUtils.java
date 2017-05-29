@@ -1,4 +1,4 @@
-package hu.elte.txtuml.export.papyrus.utils;
+package hu.elte.txtuml.export.diagrams.common.layout;
 
 import java.io.IOException;
 import java.net.URLClassLoader;

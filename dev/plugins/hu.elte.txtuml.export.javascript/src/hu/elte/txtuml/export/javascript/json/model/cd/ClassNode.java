@@ -10,9 +10,9 @@ import org.eclipse.uml2.uml.Classifier;
 import org.eclipse.uml2.uml.Operation;
 import org.eclipse.uml2.uml.Property;
 
+import hu.elte.txtuml.export.diagrams.common.Rectangle;
 import hu.elte.txtuml.export.javascript.json.EnumAdapter;
 import hu.elte.txtuml.export.javascript.json.MarshalablePoint;
-import hu.elte.txtuml.utils.diagrams.Rectangle;
 
 /**
  * 

@@ -12,8 +12,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import hu.elte.txtuml.export.diagrams.common.Rectangle;
 import hu.elte.txtuml.layout.visualizer.model.LineAssociation;
-import hu.elte.txtuml.utils.diagrams.Rectangle;
 
 public class SMDiagramTests {
 	private Model model;

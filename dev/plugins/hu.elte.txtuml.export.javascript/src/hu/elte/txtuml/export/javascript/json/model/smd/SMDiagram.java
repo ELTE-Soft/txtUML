@@ -11,21 +11,21 @@ import org.eclipse.persistence.oxm.annotations.XmlAccessMethods;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.Region;
 
+import hu.elte.txtuml.export.diagrams.common.Point;
+import hu.elte.txtuml.export.diagrams.common.Rectangle;
 import hu.elte.txtuml.export.javascript.scalers.NodeScaler;
 import hu.elte.txtuml.export.javascript.scalers.PseudoStateScaler;
 import hu.elte.txtuml.export.javascript.scalers.StateScaler;
 import hu.elte.txtuml.export.javascript.utils.LinkUtils;
 import hu.elte.txtuml.export.javascript.utils.NodeUtils;
-import hu.elte.txtuml.export.papyrus.arrange.ArrangeException;
-import hu.elte.txtuml.export.papyrus.arrange.LayoutVisualizerManager;
+import hu.elte.txtuml.export.diagrams.common.arrange.ArrangeException;
+import hu.elte.txtuml.export.diagrams.common.arrange.LayoutTransformer;
+import hu.elte.txtuml.export.diagrams.common.arrange.LayoutVisualizerManager;
 import hu.elte.txtuml.export.uml2.mapping.ModelMapProvider;
 import hu.elte.txtuml.layout.export.DiagramExportationReport;
 import hu.elte.txtuml.layout.visualizer.model.DiagramType;
 import hu.elte.txtuml.layout.visualizer.model.LineAssociation;
 import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
-import hu.elte.txtuml.utils.diagrams.LayoutTransformer;
-import hu.elte.txtuml.utils.diagrams.Point;
-import hu.elte.txtuml.utils.diagrams.Rectangle;
 
 /**
  * 

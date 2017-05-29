@@ -9,8 +9,8 @@ import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.papyrus.infra.core.resource.ModelMultiException;
 import org.eclipse.papyrus.infra.core.services.ServiceException;
 
+import hu.elte.txtuml.export.diagrams.common.layout.LayoutUtils;
 import hu.elte.txtuml.export.papyrus.utils.EditorOpener;
-import hu.elte.txtuml.export.papyrus.utils.LayoutUtils;
 import hu.elte.txtuml.utils.Logger;
 import hu.elte.txtuml.utils.eclipse.ProjectUtils;
 

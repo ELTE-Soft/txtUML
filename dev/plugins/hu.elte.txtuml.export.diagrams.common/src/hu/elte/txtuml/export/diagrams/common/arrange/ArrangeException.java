@@ -1,4 +1,4 @@
-package hu.elte.txtuml.export.papyrus.arrange;
+package hu.elte.txtuml.export.diagrams.common.arrange;
 
 /**
  * An exception for any arrangement error

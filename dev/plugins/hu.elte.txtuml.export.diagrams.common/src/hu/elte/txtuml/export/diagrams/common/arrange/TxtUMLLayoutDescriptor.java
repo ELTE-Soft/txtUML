@@ -1,4 +1,4 @@
-package hu.elte.txtuml.export.papyrus.layout;
+package hu.elte.txtuml.export.diagrams.common.arrange;
 
 import java.util.Collection;
 import java.util.HashMap;

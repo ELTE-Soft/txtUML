@@ -20,6 +20,7 @@ import org.eclipse.papyrus.uml.tools.model.UmlModel;
 import org.eclipse.uml2.uml.BehavioredClassifier;
 import org.eclipse.uml2.uml.Element;
 
+import hu.elte.txtuml.export.diagrams.common.arrange.TxtUMLLayoutDescriptor;
 import hu.elte.txtuml.export.papyrus.arrange.AbstractDiagramElementsArranger;
 import hu.elte.txtuml.export.papyrus.diagrams.AbstractDiagramElementsManager;
 import hu.elte.txtuml.export.papyrus.diagrams.clazz.ClassDiagramElementsProvider;
@@ -37,7 +38,6 @@ import hu.elte.txtuml.export.papyrus.diagrams.statemachine.impl.StateMachineDiag
 import hu.elte.txtuml.export.papyrus.diagrams.statemachine.impl.StateMachineDiagramElementsProviderImpl;
 import hu.elte.txtuml.export.papyrus.diagrams.statemachine.impl.StateMachineDiagramNotationManagerImpl;
 import hu.elte.txtuml.export.papyrus.layout.TxtUMLElementsMapper;
-import hu.elte.txtuml.export.papyrus.layout.TxtUMLLayoutDescriptor;
 import hu.elte.txtuml.layout.export.DiagramExportationReport;
 import hu.elte.txtuml.layout.export.DiagramType;
 import hu.elte.txtuml.utils.Pair;

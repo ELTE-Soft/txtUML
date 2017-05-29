@@ -1,10 +1,13 @@
-package hu.elte.txtuml.utils.diagrams;
+package hu.elte.txtuml.export.diagrams.common.arrange;
 
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.Function;
+
+import hu.elte.txtuml.export.diagrams.common.Point;
+import hu.elte.txtuml.export.diagrams.common.Rectangle;
 
 /**
  * The transformer class which transforms the object coordinates to fit the GMF diagram

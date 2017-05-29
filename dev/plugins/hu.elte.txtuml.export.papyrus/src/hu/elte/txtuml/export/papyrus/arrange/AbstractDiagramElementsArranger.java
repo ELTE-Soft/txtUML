@@ -11,6 +11,11 @@ import java.util.stream.Collectors;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.uml2.uml.Element;
 
+import hu.elte.txtuml.export.diagrams.common.Point;
+import hu.elte.txtuml.export.diagrams.common.Rectangle;
+import hu.elte.txtuml.export.diagrams.common.arrange.ArrangeException;
+import hu.elte.txtuml.export.diagrams.common.arrange.LayoutTransformer;
+import hu.elte.txtuml.export.diagrams.common.arrange.LayoutVisualizerManager;
 import hu.elte.txtuml.export.papyrus.layout.IDiagramElementsMapper;
 import hu.elte.txtuml.layout.export.DiagramExportationReport;
 import hu.elte.txtuml.layout.visualizer.interfaces.IPixelDimensionProvider;
@@ -18,9 +23,6 @@ import hu.elte.txtuml.layout.visualizer.model.DiagramType;
 import hu.elte.txtuml.layout.visualizer.model.LineAssociation;
 import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
 import hu.elte.txtuml.layout.visualizer.statements.Statement;
-import hu.elte.txtuml.utils.diagrams.LayoutTransformer;
-import hu.elte.txtuml.utils.diagrams.Point;
-import hu.elte.txtuml.utils.diagrams.Rectangle;
 import hu.elte.txtuml.utils.Logger;
 
 public abstract class AbstractDiagramElementsArranger implements IDiagramElementsArranger {

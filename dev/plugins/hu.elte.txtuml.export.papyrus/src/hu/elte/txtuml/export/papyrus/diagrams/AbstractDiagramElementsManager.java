@@ -4,7 +4,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.gmf.runtime.notation.Diagram;
 
-import hu.elte.txtuml.export.papyrus.arrange.ArrangeException;
+import hu.elte.txtuml.export.diagrams.common.arrange.ArrangeException;
 import hu.elte.txtuml.export.papyrus.arrange.IDiagramElementsArranger;
 import hu.elte.txtuml.utils.Logger;
 

@@ -1,4 +1,4 @@
-package hu.elte.txtuml.utils.diagrams;
+package hu.elte.txtuml.export.diagrams.common;
 
 public class Constants {
 

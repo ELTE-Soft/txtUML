@@ -15,8 +15,8 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.papyrus.infra.gmfdiag.css,
  hu.elte.txtuml.export.uml2,
  hu.elte.txtuml.utils,
- hu.elte.txtuml.export.papyrus,
- hu.elte.txtuml.api.model.execution
+ hu.elte.txtuml.api.model.execution,
+ hu.elte.txtuml.export.diagrams.common
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Export-Package: hu.elte.txtuml.diagnostics,

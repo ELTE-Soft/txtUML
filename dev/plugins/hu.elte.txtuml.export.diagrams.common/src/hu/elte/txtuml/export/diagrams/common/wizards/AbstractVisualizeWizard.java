@@ -1,4 +1,4 @@
-package hu.elte.txtuml.export.papyrus.wizardz;
+package hu.elte.txtuml.export.diagrams.common.wizards;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -13,21 +13,19 @@ import java.util.stream.Stream;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jface.wizard.Wizard;
 
-import hu.elte.txtuml.export.papyrus.PapyrusVisualizer;
-import hu.elte.txtuml.export.papyrus.TxtUMLExporter;
-import hu.elte.txtuml.export.papyrus.layout.TxtUMLLayoutDescriptor;
-import hu.elte.txtuml.export.papyrus.preferences.PreferencesManager;
-import hu.elte.txtuml.export.papyrus.utils.LayoutUtils;
+import hu.elte.txtuml.export.diagrams.common.Constants;
+import hu.elte.txtuml.export.diagrams.common.TxtUMLExporter;
+import hu.elte.txtuml.export.diagrams.common.arrange.TxtUMLLayoutDescriptor;
+import hu.elte.txtuml.export.diagrams.common.layout.LayoutUtils;
+import hu.elte.txtuml.export.diagrams.common.preferences.PreferencesManager;
 import hu.elte.txtuml.layout.export.DiagramExportationReport;
 import hu.elte.txtuml.utils.Logger;
 import hu.elte.txtuml.utils.Pair;
-import hu.elte.txtuml.utils.diagrams.Constants;
 import hu.elte.txtuml.utils.eclipse.Dialogs;
 import hu.elte.txtuml.utils.eclipse.SaveUtils;
 import hu.elte.txtuml.utils.eclipse.WizardUtils;
@@ -35,14 +33,14 @@ import hu.elte.txtuml.utils.eclipse.WizardUtils;
 /**
  * Wizard for visualization of txtUML models
  */
-public class TxtUMLVisualizeWizard extends Wizard {
+public abstract class AbstractVisualizeWizard extends Wizard {
 
 	private VisualizeTxtUMLPage selectTxtUmlPage;
 
 	/**
 	 * The Constructor
 	 */
-	public TxtUMLVisualizeWizard() {
+	public AbstractVisualizeWizard() {
 		super();
 		setNeedsProgressMonitor(true);
 	}
@@ -134,7 +132,7 @@ public class TxtUMLVisualizeWizard extends Wizard {
 						if (monitor.isCanceled())
 							return Status.CANCEL_STATUS;
 
-						visualize(exporter, layoutDescriptor, monitor);
+						visualization(generatedFolderName, monitor, layoutDescriptor);
 
 						if (monitor.isCanceled())
 							return Status.CANCEL_STATUS;
@@ -265,18 +263,6 @@ public class TxtUMLVisualizeWizard extends Wizard {
 
 	}
 
-	protected void visualize(TxtUMLExporter exporter, TxtUMLLayoutDescriptor layoutDescriptor, IProgressMonitor monitor)
-			throws InterruptedException {
-		try {
-			PapyrusVisualizer pv = exporter.createVisualizer(layoutDescriptor);
-			pv.run(SubMonitor.convert(monitor, 85));
-		} catch (Exception e) {
-			Dialogs.errorMsgb("txtUML visualization Error", "Error occured during the visualization process.", e);
-			monitor.done();
-			throw new InterruptedException();
-		}
-	}
-
 	private boolean checkEmptyVisualizationRequested() {
 		if (selectTxtUmlPage.getTxtUmlLayouts().isEmpty()) {
 			boolean answer = Dialogs.WarningConfirm("No Layout descriptions",
@@ -289,4 +275,18 @@ public class TxtUMLVisualizeWizard extends Wizard {
 		}
 		return true;
 	}
+
+	private void visualization(String generatedFolderName, IProgressMonitor monitor,
+			TxtUMLLayoutDescriptor layoutDescriptor) throws InterruptedException {
+		try {
+			visualize(layoutDescriptor, generatedFolderName, monitor);
+		} catch (Exception e) {
+			Dialogs.errorMsgb("txtUML visualization Error", "Error occured during the visualization process.", e);
+			monitor.done();
+			throw new InterruptedException();
+		}
+	}
+
+	protected abstract void visualize(TxtUMLLayoutDescriptor layoutDescriptor, String genFolder,
+			IProgressMonitor monitor) throws Exception;
 }

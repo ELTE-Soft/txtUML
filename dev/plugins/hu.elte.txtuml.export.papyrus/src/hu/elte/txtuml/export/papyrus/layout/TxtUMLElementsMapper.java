@@ -15,6 +15,7 @@ import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.Generalization;
 import org.eclipse.uml2.uml.Transition;
 
+import hu.elte.txtuml.export.diagrams.common.arrange.TxtUMLLayoutDescriptor;
 import hu.elte.txtuml.export.papyrus.diagrams.clazz.impl.ClassDiagramElementsMapper;
 import hu.elte.txtuml.export.papyrus.diagrams.statemachine.impl.StateMachineDiagramElementsMapper;
 import hu.elte.txtuml.export.uml2.mapping.ModelMapException;

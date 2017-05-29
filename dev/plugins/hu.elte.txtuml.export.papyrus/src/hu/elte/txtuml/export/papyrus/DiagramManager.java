@@ -12,7 +12,7 @@ import org.eclipse.papyrus.infra.core.services.ServicesRegistry;
 import org.eclipse.papyrus.infra.gmfdiag.common.model.NotationModel;
 import org.eclipse.uml2.uml.Element;
 
-import hu.elte.txtuml.export.papyrus.utils.LayoutUtils;
+import hu.elte.txtuml.export.diagrams.common.layout.LayoutUtils;
 
 /**
  * Controls the diagrams.
