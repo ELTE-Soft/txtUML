@@ -1,4 +1,4 @@
-package hu.elte.txtuml.export.papyrus.diagrams.clazz.impl;
+package hu.elte.txtuml.export.javascript.json.model.cd;
 
 import org.eclipse.uml2.uml.Classifier;
 import org.eclipse.uml2.uml.Element;

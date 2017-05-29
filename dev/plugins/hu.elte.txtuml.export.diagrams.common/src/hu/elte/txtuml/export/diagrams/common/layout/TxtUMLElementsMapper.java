@@ -1,4 +1,4 @@
-package hu.elte.txtuml.export.papyrus.layout;
+package hu.elte.txtuml.export.diagrams.common.layout;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -16,8 +16,6 @@ import org.eclipse.uml2.uml.Generalization;
 import org.eclipse.uml2.uml.Transition;
 
 import hu.elte.txtuml.export.diagrams.common.arrange.TxtUMLLayoutDescriptor;
-import hu.elte.txtuml.export.papyrus.diagrams.clazz.impl.ClassDiagramElementsMapper;
-import hu.elte.txtuml.export.papyrus.diagrams.statemachine.impl.StateMachineDiagramElementsMapper;
 import hu.elte.txtuml.export.uml2.mapping.ModelMapException;
 import hu.elte.txtuml.export.uml2.mapping.ModelMapProvider;
 import hu.elte.txtuml.export.uml2.mapping.ModelMapUtils;
@@ -55,6 +53,20 @@ public class TxtUMLElementsMapper {
 		} catch (ModelMapException e) {
 			throw new RuntimeException(e);
 		}
+	}
+	
+	/**
+	 * The Constructor
+	 * 
+	 * @param providers
+	 *            - The Model map provider
+	 * @param descriptor
+	 *            - The {@Link TxtUMLLayoutDescriptor} which contains the txtUML
+	 *            Layout informations
+	 */
+	public TxtUMLElementsMapper(Collection<ModelMapProvider> providers, TxtUMLLayoutDescriptor descriptor){
+		this.modelMapProviders = providers;
+		init(providers, descriptor);
 	}
 
 	/**
@@ -192,13 +204,6 @@ public class TxtUMLElementsMapper {
 	}
 
 	public IDiagramElementsMapper getMapperForReport(DiagramExportationReport report) {
-		switch (report.getType()) {
-		case Class:
-			return new ClassDiagramElementsMapper(this.elementMaps.get(report), this.connectionMaps.get(report));
-		case StateMachine:
-			return new StateMachineDiagramElementsMapper(this.elementMaps.get(report), this.connectionMaps.get(report));
-		default:
-			return null;
-		}
+			return new DiagramElementsMapper(this.elementMaps.get(report), this.connectionMaps.get(report));
 	}
 }

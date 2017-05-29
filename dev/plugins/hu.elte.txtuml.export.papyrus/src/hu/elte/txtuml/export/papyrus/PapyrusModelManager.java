@@ -21,23 +21,22 @@ import org.eclipse.uml2.uml.BehavioredClassifier;
 import org.eclipse.uml2.uml.Element;
 
 import hu.elte.txtuml.export.diagrams.common.arrange.TxtUMLLayoutDescriptor;
+import hu.elte.txtuml.export.diagrams.common.layout.IDiagramElementsMapper;
+import hu.elte.txtuml.export.diagrams.common.layout.TxtUMLElementsMapper;
 import hu.elte.txtuml.export.papyrus.arrange.AbstractDiagramElementsArranger;
 import hu.elte.txtuml.export.papyrus.diagrams.AbstractDiagramElementsManager;
 import hu.elte.txtuml.export.papyrus.diagrams.clazz.ClassDiagramElementsProvider;
 import hu.elte.txtuml.export.papyrus.diagrams.clazz.ClassDiagramNotationManager;
 import hu.elte.txtuml.export.papyrus.diagrams.clazz.impl.ClassDiagramElementsArranger;
 import hu.elte.txtuml.export.papyrus.diagrams.clazz.impl.ClassDiagramElementsManager;
-import hu.elte.txtuml.export.papyrus.diagrams.clazz.impl.ClassDiagramElementsMapper;
 import hu.elte.txtuml.export.papyrus.diagrams.clazz.impl.ClassDiagramElementsProviderImpl;
 import hu.elte.txtuml.export.papyrus.diagrams.clazz.impl.ClassDiagramNotationManagerImpl;
 import hu.elte.txtuml.export.papyrus.diagrams.statemachine.StateMachineDiagramElementsProvider;
 import hu.elte.txtuml.export.papyrus.diagrams.statemachine.StateMachineDiagramNotationManager;
 import hu.elte.txtuml.export.papyrus.diagrams.statemachine.impl.StateMachineDiagramElementsArranger;
 import hu.elte.txtuml.export.papyrus.diagrams.statemachine.impl.StateMachineDiagramElementsManager;
-import hu.elte.txtuml.export.papyrus.diagrams.statemachine.impl.StateMachineDiagramElementsMapper;
 import hu.elte.txtuml.export.papyrus.diagrams.statemachine.impl.StateMachineDiagramElementsProviderImpl;
 import hu.elte.txtuml.export.papyrus.diagrams.statemachine.impl.StateMachineDiagramNotationManagerImpl;
-import hu.elte.txtuml.export.papyrus.layout.TxtUMLElementsMapper;
 import hu.elte.txtuml.layout.export.DiagramExportationReport;
 import hu.elte.txtuml.layout.export.DiagramType;
 import hu.elte.txtuml.utils.Pair;
@@ -109,7 +108,8 @@ public class PapyrusModelManager {
 		SubMonitor subMonitor = SubMonitor.convert(monitor, 100);
 		subMonitor.setTaskName("Generating Diagrams");
 		createDiagrams(subMonitor.newChild(20));
-		if(monitor.isCanceled()) return;
+		if (monitor.isCanceled())
+			return;
 		addElementsToDiagrams(subMonitor.newChild(80));
 
 		try {
@@ -135,7 +135,8 @@ public class PapyrusModelManager {
 
 		int i = 1;
 		for (Diagram diagram : diags) {
-			if(monitor.isCanceled()) return;
+			if (monitor.isCanceled())
+				return;
 			loopProgress.setTaskName("Filling diagrams " + i + "/" + diagNum);
 			addElementsToDiagram(diagram, loopProgress.newChild(1));
 			i++;
@@ -156,7 +157,7 @@ public class PapyrusModelManager {
 		DiagramExportationReport report = this.descriptor.getReportByDiagramName(diagram.getName());
 		SubMonitor subMonitor = SubMonitor.convert(monitor, 100);
 		if (diagram.getType().equals(diagramType_CD)) {
-			ClassDiagramElementsMapper mapper = (ClassDiagramElementsMapper) this.mapper.getMapperForReport(report);
+			IDiagramElementsMapper mapper = this.mapper.getMapperForReport(report);
 
 			ClassDiagramElementsProvider provider = new ClassDiagramElementsProviderImpl(mapper);
 			AbstractDiagramElementsArranger arranger = new ClassDiagramElementsArranger(report, mapper);
@@ -164,8 +165,7 @@ public class PapyrusModelManager {
 			diagramElementsManager = new ClassDiagramElementsManager(diagram, provider, notation, arranger,
 					subMonitor.newChild(100));
 		} else if (diagram.getType().equals(diagramType_SMD)) {
-			StateMachineDiagramElementsMapper mapper = (StateMachineDiagramElementsMapper) this.mapper
-					.getMapperForReport(report);
+			IDiagramElementsMapper mapper = this.mapper.getMapperForReport(report);
 
 			StateMachineDiagramElementsProvider provider = new StateMachineDiagramElementsProviderImpl(report, mapper);
 			StateMachineDiagramElementsArranger arranger = new StateMachineDiagramElementsArranger(report, mapper);

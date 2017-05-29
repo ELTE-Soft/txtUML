@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.file.Paths;
 import java.rmi.UnexpectedException;
+import java.util.Arrays;
+import java.util.List;
 
 import javax.xml.bind.JAXBException;
 
@@ -15,12 +17,13 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.browser.IWebBrowser;
 
+import hu.elte.txtuml.export.diagrams.common.arrange.ArrangeException;
+import hu.elte.txtuml.export.diagrams.common.arrange.TxtUMLLayoutDescriptor;
+import hu.elte.txtuml.export.diagrams.common.layout.TxtUMLElementsMapper;
 import hu.elte.txtuml.export.javascript.json.JSONExporter;
 import hu.elte.txtuml.export.javascript.json.model.ExportationModel;
 import hu.elte.txtuml.export.javascript.json.model.cd.UnexpectedEndException;
 import hu.elte.txtuml.export.javascript.resources.ResourceHandler;
-import hu.elte.txtuml.export.diagrams.common.arrange.ArrangeException;
-import hu.elte.txtuml.export.diagrams.common.arrange.TxtUMLLayoutDescriptor;
 import hu.elte.txtuml.export.uml2.mapping.ModelMapException;
 import hu.elte.txtuml.export.uml2.mapping.ModelMapProvider;
 import hu.elte.txtuml.layout.export.DiagramExportationReport;
@@ -65,7 +68,7 @@ public class Exporter {
 		target = Paths.get(genFolder, VISUALIZER_FOLDER, this.modelName).toFile().getAbsolutePath();
 		model = new ExportationModel();
 		model.setModelName(this.modelName);
-		
+
 	}
 
 	/**
@@ -148,8 +151,10 @@ public class Exporter {
 			// map connects the layout information to the EMF-UML model
 			// informations
 			ModelMapProvider map = new ModelMapProvider(URI.createFileURI(genFolder), der.getModelName());
+			List<ModelMapProvider> providers = Arrays.asList(map);
+			TxtUMLElementsMapper elementsMapper = new TxtUMLElementsMapper(providers, layout);
 
-			model.createDiagram(name, report.getSecond(), map);
+			model.createDiagram(name, report.getSecond(), map, elementsMapper);
 
 		}
 

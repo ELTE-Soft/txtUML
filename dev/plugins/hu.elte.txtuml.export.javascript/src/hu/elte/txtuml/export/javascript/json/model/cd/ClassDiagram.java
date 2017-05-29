@@ -13,13 +13,13 @@ import org.eclipse.uml2.uml.Classifier;
 
 import hu.elte.txtuml.export.diagrams.common.Point;
 import hu.elte.txtuml.export.diagrams.common.Rectangle;
+import hu.elte.txtuml.export.diagrams.common.arrange.ArrangeException;
+import hu.elte.txtuml.export.diagrams.common.arrange.LayoutTransformer;
+import hu.elte.txtuml.export.diagrams.common.arrange.LayoutVisualizerManager;
 import hu.elte.txtuml.export.javascript.scalers.ClassScaler;
 import hu.elte.txtuml.export.javascript.scalers.NodeScaler;
 import hu.elte.txtuml.export.javascript.utils.LinkUtils;
 import hu.elte.txtuml.export.javascript.utils.NodeUtils;
-import hu.elte.txtuml.export.diagrams.common.arrange.ArrangeException;
-import hu.elte.txtuml.export.diagrams.common.arrange.LayoutTransformer;
-import hu.elte.txtuml.export.diagrams.common.arrange.LayoutVisualizerManager;
 import hu.elte.txtuml.export.uml2.mapping.ModelMapProvider;
 import hu.elte.txtuml.layout.export.DiagramExportationReport;
 import hu.elte.txtuml.layout.visualizer.model.AssociationType;
@@ -72,8 +72,8 @@ public class ClassDiagram {
 	 * @throws UnexpectedException
 	 *             Exception is thrown if a diagram contains unexpected parts
 	 */
-	public ClassDiagram(String diagramName, DiagramExportationReport der, ModelMapProvider map)
-			throws UnexpectedEndException, ArrangeException {
+	public ClassDiagram(String diagramName, DiagramExportationReport der, ModelMapProvider map,
+			ClassDiagramPixelDimensionProvider provider) throws UnexpectedEndException, ArrangeException {
 		name = diagramName;
 		classes = new ArrayList<ClassNode>();
 		attributeLinks = new ArrayList<ClassAttributeLink>();
@@ -93,8 +93,10 @@ public class ClassDiagram {
 
 			classes.add(cn);
 		}
+
 		// arranging the diagram
-		LayoutVisualizerManager lvm = new LayoutVisualizerManager(nodes, links, der.getStatements(), DiagramType.Class, null);
+		LayoutVisualizerManager lvm = new LayoutVisualizerManager(nodes, links, der.getStatements(), DiagramType.Class,
+				provider);
 		lvm.arrange();
 
 		// scaling and transforming nodes and links

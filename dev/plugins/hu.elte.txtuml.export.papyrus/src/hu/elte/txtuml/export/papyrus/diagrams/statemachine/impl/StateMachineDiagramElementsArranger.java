@@ -4,13 +4,14 @@ import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.StateMachine;
 
+import hu.elte.txtuml.export.diagrams.common.layout.IDiagramElementsMapper;
 import hu.elte.txtuml.export.papyrus.arrange.AbstractDiagramElementsArranger;
 import hu.elte.txtuml.layout.export.DiagramExportationReport;
 
 public class StateMachineDiagramElementsArranger extends AbstractDiagramElementsArranger {
 
 	public StateMachineDiagramElementsArranger(DiagramExportationReport report,
-			StateMachineDiagramElementsMapper mapper) {
+			IDiagramElementsMapper mapper) {
 		this.report = report;
 		this.elementsMapper = mapper;
 		this.pixelDimensionProvider = new StateMachineDiagramPixelDimensionProvider();

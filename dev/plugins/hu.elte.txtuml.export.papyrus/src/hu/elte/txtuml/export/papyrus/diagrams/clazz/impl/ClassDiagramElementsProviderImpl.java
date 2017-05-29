@@ -20,6 +20,7 @@ import org.eclipse.uml2.uml.Realization;
 import org.eclipse.uml2.uml.Relationship;
 import org.eclipse.uml2.uml.Signal;
 
+import hu.elte.txtuml.export.diagrams.common.layout.IDiagramElementsMapper;
 import hu.elte.txtuml.export.papyrus.diagrams.clazz.ClassDiagramElementsProvider;
 
 public class ClassDiagramElementsProviderImpl implements ClassDiagramElementsProvider {
@@ -27,16 +28,16 @@ public class ClassDiagramElementsProviderImpl implements ClassDiagramElementsPro
 	private Collection<Element> nodes;
 	private Collection<Relationship> connections;
 
-	public ClassDiagramElementsProviderImpl(ClassDiagramElementsMapper classDiagramElementsMapper) {
+	public ClassDiagramElementsProviderImpl(IDiagramElementsMapper classDiagramElementsMapper) {
 		cacheNodes(classDiagramElementsMapper);
 		cacheConnections(classDiagramElementsMapper);
 	}
 
-	private void cacheNodes(ClassDiagramElementsMapper mapper) {
+	private void cacheNodes(IDiagramElementsMapper mapper) {
 		this.nodes = mapper.getNodes();
 	}
 
-	private void cacheConnections(ClassDiagramElementsMapper mapper) {
+	private void cacheConnections(IDiagramElementsMapper mapper) {
 		this.connections = mapper.getConnections().stream().filter(e -> e instanceof Relationship)
 				.map(e -> (Relationship) e).collect(Collectors.toList());
 	}

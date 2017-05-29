@@ -13,6 +13,7 @@ import org.eclipse.uml2.uml.State;
 import org.eclipse.uml2.uml.StateMachine;
 import org.eclipse.uml2.uml.Transition;
 
+import hu.elte.txtuml.export.diagrams.common.layout.IDiagramElementsMapper;
 import hu.elte.txtuml.export.papyrus.diagrams.statemachine.StateMachineDiagramElementsProvider;
 import hu.elte.txtuml.layout.export.DiagramExportationReport;
 
@@ -23,8 +24,7 @@ public class StateMachineDiagramElementsProviderImpl implements StateMachineDiag
 	private Collection<Element> nodes;
 	private Collection<Transition> connections;
 
-	public StateMachineDiagramElementsProviderImpl(DiagramExportationReport report,
-			StateMachineDiagramElementsMapper mapper) {
+	public StateMachineDiagramElementsProviderImpl(DiagramExportationReport report, IDiagramElementsMapper mapper) {
 		this.report = report;
 		cacheNodes(mapper);
 		cacheConnections(mapper);
@@ -33,19 +33,19 @@ public class StateMachineDiagramElementsProviderImpl implements StateMachineDiag
 		this.mainElement = (StateMachine) clazz.getClassifierBehavior();
 	}
 
-	private void cacheConnections(StateMachineDiagramElementsMapper mapper) {
+	private void cacheConnections(IDiagramElementsMapper mapper) {
 		this.connections = mapper.getConnections().stream().filter(c -> c instanceof Transition)
 				.map(c -> (Transition) c).collect(Collectors.toList());
 	}
 
-	private void cacheNodes(StateMachineDiagramElementsMapper mapper) {
+	private void cacheNodes(IDiagramElementsMapper mapper) {
 		this.nodes = mapper.getNodes();
 	}
 
 	@Override
 	public Collection<State> getStatesForRegion(Region region) {
 		List<State> result = new ArrayList<>();
-		
+
 		result = region.getSubvertices().stream().filter(e -> (e instanceof State) && this.nodes.contains(e))
 				.map(e -> (State) e).collect(Collectors.toList());
 		return result;

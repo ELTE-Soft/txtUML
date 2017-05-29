@@ -42,6 +42,5 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Export-Package: hu.elte.txtuml.export.papyrus,
  hu.elte.txtuml.export.papyrus.arrange,
- hu.elte.txtuml.export.papyrus.layout,
  hu.elte.txtuml.export.papyrus.wizardz
 Import-Package: hu.elte.txtuml.utils.eclipse

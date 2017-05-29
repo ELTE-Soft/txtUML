@@ -28,6 +28,8 @@ import org.eclipse.uml2.uml.UMLFactory;
 import org.junit.Before;
 import org.junit.Test;
 
+import hu.elte.txtuml.export.diagrams.common.layout.IDiagramElementsMapper;
+
 public class ClassDiagramElementsProviderImplTest {
 
 	private List<Class> classes;
@@ -85,7 +87,7 @@ public class ClassDiagramElementsProviderImplTest {
 		connections.addAll(realiziations);
 		connections.addAll(interfaceRealizations);
 		
-		ClassDiagramElementsMapper mapper = mock(ClassDiagramElementsMapper.class);
+		IDiagramElementsMapper mapper = mock(IDiagramElementsMapper.class);
 		when(mapper.getConnections()).thenReturn(connections);
 		when(mapper.getNodes()).thenReturn(nodes);
 

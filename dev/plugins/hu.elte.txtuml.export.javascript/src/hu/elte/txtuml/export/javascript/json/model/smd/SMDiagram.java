@@ -13,14 +13,14 @@ import org.eclipse.uml2.uml.Region;
 
 import hu.elte.txtuml.export.diagrams.common.Point;
 import hu.elte.txtuml.export.diagrams.common.Rectangle;
+import hu.elte.txtuml.export.diagrams.common.arrange.ArrangeException;
+import hu.elte.txtuml.export.diagrams.common.arrange.LayoutTransformer;
+import hu.elte.txtuml.export.diagrams.common.arrange.LayoutVisualizerManager;
 import hu.elte.txtuml.export.javascript.scalers.NodeScaler;
 import hu.elte.txtuml.export.javascript.scalers.PseudoStateScaler;
 import hu.elte.txtuml.export.javascript.scalers.StateScaler;
 import hu.elte.txtuml.export.javascript.utils.LinkUtils;
 import hu.elte.txtuml.export.javascript.utils.NodeUtils;
-import hu.elte.txtuml.export.diagrams.common.arrange.ArrangeException;
-import hu.elte.txtuml.export.diagrams.common.arrange.LayoutTransformer;
-import hu.elte.txtuml.export.diagrams.common.arrange.LayoutVisualizerManager;
 import hu.elte.txtuml.export.uml2.mapping.ModelMapProvider;
 import hu.elte.txtuml.layout.export.DiagramExportationReport;
 import hu.elte.txtuml.layout.visualizer.model.DiagramType;
@@ -70,8 +70,8 @@ public class SMDiagram {
 	 * @throws UnexpectedException
 	 *             Exception is thrown if a diagram contains unexpected parts
 	 */
-	public SMDiagram(String diagramName, DiagramExportationReport der, ModelMapProvider map)
-			throws UnexpectedException, ArrangeException {
+	public SMDiagram(String diagramName, DiagramExportationReport der, ModelMapProvider map,
+			StateMachineDiagramPixelDimensionProvider provider) throws UnexpectedException, ArrangeException {
 		name = diagramName;
 		machineName = null;
 		states = new ArrayList<State>();
@@ -111,7 +111,8 @@ public class SMDiagram {
 
 		}
 		// arranging
-		LayoutVisualizerManager lvm = new LayoutVisualizerManager(nodes, links, der.getStatements(), DiagramType.State, null);
+		LayoutVisualizerManager lvm = new LayoutVisualizerManager(nodes, links, der.getStatements(), DiagramType.State,
+				provider);
 		lvm.arrange();
 		LayoutTransformer lt = new LayoutTransformer();
 

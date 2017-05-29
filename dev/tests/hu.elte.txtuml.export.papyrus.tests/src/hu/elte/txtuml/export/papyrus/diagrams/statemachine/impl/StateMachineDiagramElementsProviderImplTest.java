@@ -20,6 +20,7 @@ import org.eclipse.uml2.uml.UMLPackage;
 import org.junit.Before;
 import org.junit.Test;
 
+import hu.elte.txtuml.export.diagrams.common.layout.IDiagramElementsMapper;
 import hu.elte.txtuml.layout.export.DiagramExportationReport;
 
 public class StateMachineDiagramElementsProviderImplTest {
@@ -74,7 +75,7 @@ public class StateMachineDiagramElementsProviderImplTest {
 		trans3.setTarget(state2);
 
 		// create instance
-		StateMachineDiagramElementsMapper mapper = mock(StateMachineDiagramElementsMapper.class);
+		IDiagramElementsMapper mapper = mock(IDiagramElementsMapper.class);
 		when(mapper.getNodes()).thenReturn(Arrays.asList(initial1, initial2, state1, state2, compositeState));
 		when(mapper.getConnections()).thenReturn(Arrays.asList(trans1, trans2, trans3));
 		Class class1 = UMLFactory.eINSTANCE.createClass();

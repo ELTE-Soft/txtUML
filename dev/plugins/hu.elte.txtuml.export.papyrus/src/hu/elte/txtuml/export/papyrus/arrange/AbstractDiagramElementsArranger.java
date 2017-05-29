@@ -16,7 +16,7 @@ import hu.elte.txtuml.export.diagrams.common.Rectangle;
 import hu.elte.txtuml.export.diagrams.common.arrange.ArrangeException;
 import hu.elte.txtuml.export.diagrams.common.arrange.LayoutTransformer;
 import hu.elte.txtuml.export.diagrams.common.arrange.LayoutVisualizerManager;
-import hu.elte.txtuml.export.papyrus.layout.IDiagramElementsMapper;
+import hu.elte.txtuml.export.diagrams.common.layout.IDiagramElementsMapper;
 import hu.elte.txtuml.layout.export.DiagramExportationReport;
 import hu.elte.txtuml.layout.visualizer.interfaces.IPixelDimensionProvider;
 import hu.elte.txtuml.layout.visualizer.model.DiagramType;
