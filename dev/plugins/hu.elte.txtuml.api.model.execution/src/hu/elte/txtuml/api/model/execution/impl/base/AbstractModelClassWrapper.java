@@ -1,13 +1,13 @@
 package hu.elte.txtuml.api.model.execution.impl.base;
 
 import hu.elte.txtuml.api.model.AssociationEnd;
-import hu.elte.txtuml.api.model.Collection;
+import hu.elte.txtuml.api.model.AssociationEnd.Navigable;
+import hu.elte.txtuml.api.model.GeneralCollection;
 import hu.elte.txtuml.api.model.ModelClass;
 import hu.elte.txtuml.api.model.ModelClass.Port;
 import hu.elte.txtuml.api.model.ModelClass.Status;
 import hu.elte.txtuml.api.model.Signal;
 import hu.elte.txtuml.api.model.StateMachine.Transition;
-import hu.elte.txtuml.api.model.assocends.Navigability.Navigable;
 import hu.elte.txtuml.api.model.execution.impl.assoc.AssociationEndWrapper;
 import hu.elte.txtuml.api.model.execution.impl.assoc.MultipleContainerException;
 import hu.elte.txtuml.api.model.execution.impl.assoc.MultiplicityException;
@@ -102,7 +102,7 @@ public abstract class AbstractModelClassWrapper extends AbstractSignalTargetWrap
 	}
 
 	@Override
-	public <T extends ModelClass, C extends Collection<T>, AE extends AssociationEnd<T, C> & Navigable> C navigateThroughAssociation(
+	public <T extends ModelClass, C extends GeneralCollection<T>, AE extends AssociationEnd<C> & Navigable> C navigateThroughAssociation(
 			Class<AE> otherEnd) {
 		return getAssoc(otherEnd).getCollection();
 	}
@@ -383,33 +383,33 @@ public abstract class AbstractModelClassWrapper extends AbstractSignalTargetWrap
 	 * collection containing the objects in association with the wrapped
 	 * ModelClass instance and being on the specified opposite association end.
 	 */
-	public abstract <T extends ModelClass, C extends Collection<T>> AssociationEndWrapper<T, C> getAssoc(
-			Class<? extends AssociationEnd<T, C>> otherEnd);
+	public abstract <T extends ModelClass, C extends GeneralCollection<T>> AssociationEndWrapper<T, C> getAssoc(
+			Class<? extends AssociationEnd<C>> otherEnd);
 
 	/**
 	 * Checks if the specified object is an element of the collection containing
 	 * the objects in association with the wrapped ModelClass instance and being
 	 * on the specified opposite association end.
 	 */
-	public abstract <T extends ModelClass, C extends Collection<T>> boolean hasAssoc(
-			Class<? extends AssociationEnd<T, C>> otherEnd, T object);
+	public abstract <T extends ModelClass, C extends GeneralCollection<T>> boolean hasAssoc(
+			Class<? extends AssociationEnd<C>> otherEnd, T object);
 
 	/**
 	 * Adds the specified object to the collection containing the objects in
 	 * association with the wrapped ModelClass instance and being on the
 	 * specified opposite association end.
 	 */
-	public abstract <T extends ModelClass, C extends Collection<T>> void addToAssoc(
-			Class<? extends AssociationEnd<T, C>> otherEnd, T object)
-					throws MultiplicityException, MultipleContainerException;
+	public abstract <T extends ModelClass, C extends GeneralCollection<T>> void addToAssoc(
+			Class<? extends AssociationEnd<C>> otherEnd, T object)
+			throws MultiplicityException, MultipleContainerException;
 
 	/**
 	 * Removes the specified object from the collection containing the objects
 	 * in association with the wrapped ModelClass instance and being on the
 	 * specified opposite association end.
 	 */
-	public abstract <T extends ModelClass, C extends Collection<T>> void removeFromAssoc(
-			Class<? extends AssociationEnd<T, C>> otherEnd, T object);
+	public abstract <T extends ModelClass, C extends GeneralCollection<T>> void removeFromAssoc(
+			Class<? extends AssociationEnd<C>> otherEnd, T object);
 
 	@Override
 	public abstract void delete();
