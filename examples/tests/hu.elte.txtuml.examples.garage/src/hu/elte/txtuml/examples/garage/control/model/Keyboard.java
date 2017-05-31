@@ -42,7 +42,7 @@ public class Keyboard extends ModelClass {
 	public class TSpontaneousKeyPress extends Transition {
 		@Override
 		public void effect() {
-			Alarm a = Keyboard.this.assoc(KeyboardProvidesCode.Receiver.class).selectAny();
+			Alarm a = Keyboard.this.assoc(KeyboardProvidesCode.Receiver.class).one();
 			Action.send(getTrigger(KeyPress.class), a);
 		}
 	}
@@ -81,7 +81,7 @@ public class Keyboard extends ModelClass {
 	public class TExpectedKeyPress extends Transition {
 		@Override
 		public void effect() {
-			Alarm a = Keyboard.this.assoc(KeyboardProvidesCode.Receiver.class).selectAny();
+			Alarm a = Keyboard.this.assoc(KeyboardProvidesCode.Receiver.class).one();
 			Action.send(getTrigger(KeyPress.class), a);
 		}
 	}
@@ -97,7 +97,7 @@ public class Keyboard extends ModelClass {
 
 		@Override
 		public void effect() {
-			Alarm a = Keyboard.this.assoc(KeyboardProvidesCode.Receiver.class).selectAny();
+			Alarm a = Keyboard.this.assoc(KeyboardProvidesCode.Receiver.class).one();
 			Action.send(new KeyboardTimeout(), a);
 		}
 	}

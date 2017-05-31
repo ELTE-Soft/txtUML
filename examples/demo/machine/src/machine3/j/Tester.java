@@ -30,7 +30,7 @@ public class Tester {
 
 		Action.log("One of the users is starting to do his or her work.");
 
-		User oneOfTheUsers = m.assoc(Usage.userOfMachine.class).selectAny();
+		User oneOfTheUsers = m.assoc(Usage.userOfMachine.class).one();
 		// In Machine1 and Machine2 models this cannot be done as userOfMachine
 		// association end is non-navigable in that model.
 		Action.send(new DoYourWork(), oneOfTheUsers);

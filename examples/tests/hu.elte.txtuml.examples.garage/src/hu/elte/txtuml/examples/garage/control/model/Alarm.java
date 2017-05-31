@@ -44,7 +44,7 @@ public class Alarm extends ModelClass {
 		@Override
 		public void entry() {
 			View.getInstance().codeExpected();
-			Keyboard kb = Alarm.this.assoc(KeyboardProvidesCode.Provider.class).selectAny();
+			Keyboard kb = Alarm.this.assoc(KeyboardProvidesCode.Provider.class).one();
 			Action.send(new WaitForCode(), kb);
 		}
 	}
@@ -60,7 +60,7 @@ public class Alarm extends ModelClass {
 		@Override
 		public void entry() {
 			View.getInstance().oldCodeExpected();
-			Keyboard kb = Alarm.this.assoc(KeyboardProvidesCode.Provider.class).selectAny();
+			Keyboard kb = Alarm.this.assoc(KeyboardProvidesCode.Provider.class).one();
 			Action.send(new WaitForCode(), kb);
 		}
 	}
@@ -69,7 +69,7 @@ public class Alarm extends ModelClass {
 		@Override
 		public void entry() {
 			View.getInstance().newCodeExpected();
-			Keyboard kb = Alarm.this.assoc(KeyboardProvidesCode.Provider.class).selectAny();
+			Keyboard kb = Alarm.this.assoc(KeyboardProvidesCode.Provider.class).one();
 			Action.send(new WaitForCode(), kb);
 		}
 	}

@@ -3,10 +3,10 @@ package train.j;
 import hu.elte.txtuml.api.layout.Above;
 import hu.elte.txtuml.api.layout.Left;
 import hu.elte.txtuml.api.layout.StateMachineDiagram;
+import train.j.model.Lamp;
 import train.j.model.Lamp.Dark;
 import train.j.model.Lamp.Init;
 import train.j.model.Lamp.Light;
-import train.j.model.Lamp;
 
 public class LampSMDiagram extends StateMachineDiagram<Lamp>{
 	

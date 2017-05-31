@@ -23,7 +23,7 @@ public class Door extends ModelClass {
 	public class Enabled extends State {
 		@Override
 		public void entry() {
-			Motor m = Door.this.assoc(MotorMovesDoor.movingMotor.class).selectAny();
+			Motor m = Door.this.assoc(MotorMovesDoor.movingMotor.class).one();
 			Action.send(new ReenableMotor(), m);
 		}
 	}
@@ -72,7 +72,7 @@ public class Door extends ModelClass {
 	public class TAcceptRemoteControl extends Transition {
 		@Override
 		public void effect() {
-			Motor m = Door.this.assoc(MotorMovesDoor.movingMotor.class).selectAny();
+			Motor m = Door.this.assoc(MotorMovesDoor.movingMotor.class).one();
 			Action.send(new ChangeMotorMode(), m);
 		}
 	}

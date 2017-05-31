@@ -15,7 +15,7 @@ public class World extends ModelClass {
 	
 	public void step() {
 		ready = false;
-		MoonLander lander = assoc(LanderWorld.lander.class).selectAny();
+		MoonLander lander = assoc(LanderWorld.lander.class).one();
 		Action.send(new ControlCycleSignal(h, v), lander);
 	}
 	

@@ -262,7 +262,7 @@ public class Microwave extends ModelClass {
 	public class Finishing extends Transition {
 		@Override
 		public void effect() {
-			Human h = Microwave.this.assoc(Usage.userOfMicrowave.class).selectAny();
+			Human h = Microwave.this.assoc(Usage.userOfMicrowave.class).one();
 			Action.send(new Ding(), h);
 		}
 	}
