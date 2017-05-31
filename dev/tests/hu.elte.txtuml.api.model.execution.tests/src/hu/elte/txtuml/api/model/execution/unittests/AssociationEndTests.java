@@ -7,7 +7,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import hu.elte.txtuml.api.model.Action;
-import hu.elte.txtuml.api.model.Collection;
+import hu.elte.txtuml.api.model.GeneralCollection;
 import hu.elte.txtuml.api.model.ModelClass;
 import hu.elte.txtuml.api.model.execution.testmodel.A;
 import hu.elte.txtuml.api.model.execution.testmodel.B;
@@ -79,7 +79,7 @@ public class AssociationEndTests extends UnitTestsBase {
 		assertCollection(new A[] { a1 }, a2.assoc(A_A.a2.class));
 	}
 
-	private static <T extends ModelClass> void assertCollection(T[] expecteds, Collection<T> collection) {
+	private static <T extends ModelClass> void assertCollection(T[] expecteds, GeneralCollection<T> collection) {
 		List<T> actuals = new ArrayList<>();
 		collection.forEach(actuals::add);
 
