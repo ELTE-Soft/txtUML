@@ -17,7 +17,7 @@ package hu.elte.txtuml.api.model;
  * See the documentation of {@link Model} for an overview on modeling in
  * JtxtUML.
  */
-public abstract class API {
+public interface API {
 
 	/**
 	 * Asynchronously sends the specified signal to the specified target object.
@@ -33,7 +33,7 @@ public abstract class API {
 	 * @throws NullPointerException
 	 *             if {@code target} is {@code null}
 	 */
-	public static void send(Signal signal, ModelClass target) {
+	static void send(Signal signal, ModelClass target) {
 		Action.send(signal, target);
 	}
 
@@ -43,7 +43,7 @@ public abstract class API {
 	 * @param message
 	 *            the message to be logged
 	 */
-	public static void log(String message) {
+	static void log(String message) {
 		Action.log(message);
 	}
 
@@ -53,7 +53,7 @@ public abstract class API {
 	 * @param message
 	 *            the error message to be logged
 	 */
-	public static void logError(String message) {
+	static void logError(String message) {
 		Action.logError(message);
 	}
 
