@@ -1,6 +1,6 @@
 package hu.elte.txtuml.export.uml2.structural
 
-import hu.elte.txtuml.api.model.assocends.Navigability.Navigable
+import hu.elte.txtuml.api.model.AssociationEnd.Navigable
 import hu.elte.txtuml.export.uml2.BaseExporter
 import hu.elte.txtuml.export.uml2.Exporter
 import hu.elte.txtuml.export.uml2.utils.MultiplicityProvider
@@ -23,9 +23,10 @@ class AssociationEndExporter extends Exporter<TypeDeclaration, ITypeBinding, Pro
 
 	override exportContents(TypeDeclaration decl) {
 		result.name = decl.name.identifier
-		result.type = fetchType(decl.resolveBinding.superclass.typeArguments.get(0))
-		result.lower = MultiplicityProvider.getLowerBound(decl);
-		result.upper = MultiplicityProvider.getUpperBound(decl);
+		val collectionType = decl.resolveBinding.superclass.typeArguments.get(0)
+		result.type = fetchType(collectionType.typeArguments.get(0))
+		result.lower = MultiplicityProvider.getLowerBound(collectionType);
+		result.upper = MultiplicityProvider.getUpperBound(collectionType);
 
 		result.association = (parent as AssociationExporter).result
 		result.isNavigable = SharedUtils.typeIsAssignableFrom(decl, Navigable)

@@ -11,8 +11,6 @@ import hu.elte.txtuml.api.model.ConnectorBase.One
 import hu.elte.txtuml.api.model.Delegation
 import hu.elte.txtuml.api.model.From
 import hu.elte.txtuml.api.model.Interface
-import hu.elte.txtuml.api.model.Max
-import hu.elte.txtuml.api.model.Min
 import hu.elte.txtuml.api.model.ModelClass
 import hu.elte.txtuml.api.model.ModelClass.Port
 import hu.elte.txtuml.api.model.ModelEnum
@@ -220,15 +218,7 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 			documentation = assocEnd.documentation
 			visibility = JvmVisibility.PUBLIC
 
-			val calcApiSuperTypeResult = assocEnd.calculateApiSuperType
-			superTypes += calcApiSuperTypeResult.key
-
-			if (calcApiSuperTypeResult.value != null) {
-				annotations += calcApiSuperTypeResult.value.key.toAnnotationRef(Min)
-				if (!assocEnd.multiplicity.isUpperInf) {
-					annotations += calcApiSuperTypeResult.value.value.toAnnotationRef(Max)
-				}
-			}
+			superTypes += assocEnd.calculateApiSuperType
 		]
 	}
 
@@ -433,14 +423,6 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 		)
 	}
 
-	def private toAnnotationRef(int i, Class<?> annotationType) {
-		annotationRef(annotationType) => [
-			explicitValues += TypesFactory::eINSTANCE.createJvmIntAnnotationValue => [
-				values += i
-			]
-		]
-	}
-
 	/**
 	 * Creates a type reference for the given annotation type with the given parameters.
 	 */
@@ -465,42 +447,34 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 			// The inferred type will be Class<? extend MaybeOneBase>, which is invalid,
 			// as MaybeOneBase is a package private class in its own package.
 			if (notNavigable) {
-				return HiddenContainer.typeRef(endClassTypeParam) -> null
+				return HiddenContainer.typeRef(endClassTypeParam)
 			} else {
-				return Container.typeRef(endClassTypeParam) -> null
+				return Container.typeRef(endClassTypeParam)
 			}
 		}
 
 		val optionalHidden = if(notNavigable) "Hidden" else ""
-		var Pair<Integer, Integer> explicitMultiplicities = null
 		val apiBoundTypeName = if (multiplicity == null) // omitted
 				"One"
 			else if (multiplicity.any) // *
-				"Many"
+				"Any"
 			else if (!multiplicity.upperSet) { // <lower> (exact)
 				if (multiplicity.lower == 1)
 					"One"
-				else {
-					explicitMultiplicities = multiplicity.lower -> multiplicity.lower
-					"Multiple"
-				}
 			} else { // <lower> .. <upper>
 				if (multiplicity.lower == 0 && multiplicity.upper == 1)
-					"MaybeOne"
+					"ZeroToOne"
 				else if (multiplicity.lower == 1 && multiplicity.upper == 1)
 					"One"
 				else if (multiplicity.lower == 0 && multiplicity.upperInf)
-					"Many"
+					"Any"
 				else if (multiplicity.lower == 1 && multiplicity.upperInf)
-					"Some"
-				else {
-					explicitMultiplicities = multiplicity.lower -> multiplicity.upper
-					"Multiple"
-				}
+					"ZeroToAny"
 			}
 
-		val endClassImpl = "hu.elte.txtuml.api.model.Association$" + optionalHidden + apiBoundTypeName
-		return endClassImpl.typeRef(endClassTypeParam) -> explicitMultiplicities
+		val endClassImpl = "hu.elte.txtuml.api.model.Association$" + optionalHidden + "End"
+		val endCollectionImpl = "hu.elte.txtuml.api.model." + apiBoundTypeName
+		return endClassImpl.typeRef(endCollectionImpl.typeRef(endClassTypeParam))
 	}
 
 	def private inferredTypeRef(EObject sourceElement) {

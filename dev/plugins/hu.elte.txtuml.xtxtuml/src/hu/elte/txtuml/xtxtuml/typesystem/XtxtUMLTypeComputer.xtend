@@ -1,7 +1,7 @@
 package hu.elte.txtuml.xtxtuml.typesystem;
 
 import com.google.inject.Inject
-import hu.elte.txtuml.api.model.Collection
+import hu.elte.txtuml.api.model.GeneralCollection
 import hu.elte.txtuml.api.model.ModelClass
 import hu.elte.txtuml.api.model.ModelClass.Port
 import hu.elte.txtuml.api.model.Signal
@@ -59,7 +59,7 @@ class XtxtUMLTypeComputer extends XbaseWithAnnotationsTypeComputer {
 
 		switch (rightChild) {
 			TUAssociationEnd: {
-				val collectionOfAssocEndTypeRef = getTypeForName(Collection, state).
+				val collectionOfAssocEndTypeRef = getTypeForName(GeneralCollection, state).
 					rawTypeReference as ParameterizedTypeReference;
 				collectionOfAssocEndTypeRef.addTypeArgument(
 					state.nullSafeJvmElementTypeRef(rightChild.endClass, ModelClass));

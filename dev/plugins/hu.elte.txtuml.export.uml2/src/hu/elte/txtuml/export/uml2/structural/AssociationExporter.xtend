@@ -1,6 +1,6 @@
 package hu.elte.txtuml.export.uml2.structural
 
-import hu.elte.txtuml.api.model.assocends.Navigability.Navigable
+import hu.elte.txtuml.api.model.AssociationEnd.Navigable
 import hu.elte.txtuml.export.uml2.BaseExporter
 import hu.elte.txtuml.export.uml2.Exporter
 import hu.elte.txtuml.utils.jdt.ElementTypeTeller
