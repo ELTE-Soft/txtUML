@@ -2,12 +2,12 @@ package hu.elte.txtuml.api.model.runtime;
 
 import hu.elte.txtuml.api.model.Action;
 import hu.elte.txtuml.api.model.AssociationEnd;
-import hu.elte.txtuml.api.model.Collection;
+import hu.elte.txtuml.api.model.AssociationEnd.Navigable;
+import hu.elte.txtuml.api.model.GeneralCollection;
 import hu.elte.txtuml.api.model.ModelClass;
 import hu.elte.txtuml.api.model.ModelClass.Port;
 import hu.elte.txtuml.api.model.ModelClass.Status;
 import hu.elte.txtuml.api.model.Signal;
-import hu.elte.txtuml.api.model.assocends.Navigability;
 
 /**
  * Wraps a model class instance, providing additional runtime information and
@@ -48,7 +48,7 @@ public interface ModelClassWrapper extends SignalTargetWrapper<ModelClass>, Runt
 	 */
 	Status getStatus();
 
-	<T extends ModelClass, C extends Collection<T>, AE extends AssociationEnd<T, C> & Navigability.Navigable> C navigateThroughAssociation(
+	<T extends ModelClass, C extends GeneralCollection<T>, AE extends AssociationEnd<C> & Navigable> C navigateThroughAssociation(
 			Class<AE> otherEnd);
 
 	<P extends Port<?, ?>> P getPortInstance(Class<P> portType);

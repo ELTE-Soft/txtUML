@@ -1,8 +1,8 @@
 package hu.elte.txtuml.api.model;
 
-import hu.elte.txtuml.api.model.assocends.ContainmentKind;
-import hu.elte.txtuml.api.model.assocends.Multiplicity;
-import hu.elte.txtuml.api.model.assocends.Navigability;
+import hu.elte.txtuml.api.model.AssociationEnd.ContainerEnd;
+import hu.elte.txtuml.api.model.AssociationEnd.Navigable;
+import hu.elte.txtuml.api.model.AssociationEnd.NonNavigable;
 
 /**
  * A base class for a composition associations in the model.
@@ -134,8 +134,8 @@ public abstract class Composition extends Association {
 	 * @param <T>
 	 *            the type of model objects to be contained in this collection
 	 */
-	public abstract class Container<T extends ModelClass> extends MaybeEnd<T>
-			implements Multiplicity.ZeroToOne, Navigability.Navigable, ContainmentKind.ContainerEnd {
+	public abstract class Container<T extends ModelClass> extends AssociationEnd<ZeroToOne<T>>
+			implements ContainerEnd, Navigable {
 	}
 
 	/**
@@ -190,8 +190,8 @@ public abstract class Composition extends Association {
 	 * @param <T>
 	 *            the type of model objects to be contained in this collection
 	 */
-	public abstract class HiddenContainer<T extends ModelClass> extends MaybeEnd<T>
-			implements Multiplicity.ZeroToOne, Navigability.NonNavigable, ContainmentKind.ContainerEnd {
+	public abstract class HiddenContainer<T extends ModelClass> extends AssociationEnd<ZeroToOne<T>>
+			implements ContainerEnd, NonNavigable {
 	}
 
 }

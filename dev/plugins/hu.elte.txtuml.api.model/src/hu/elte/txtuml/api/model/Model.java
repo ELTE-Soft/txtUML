@@ -136,8 +136,7 @@ import hu.elte.txtuml.api.model.external.ExternalClass;
  * the model (which condition the block represents) holds or not.
  * <p>
  * Condition evaluations in JtxtUML include
- * {@link StateMachine.Transition#guard() guards} of transitions and conditions
- * of certain <code>Collection</code> methods ( {@link Collection#selectAll} ).
+ * {@link StateMachine.Transition#guard() guards} of transitions.
  * <p>
  * A condition evaluation is exported as a single model query, so it <b>may
  * include only the following actions</b>:

@@ -5,8 +5,8 @@ import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Proxy;
 
+import hu.elte.txtuml.api.model.AssociationEnd.Navigable;
 import hu.elte.txtuml.api.model.Runtime.Described;
-import hu.elte.txtuml.api.model.assocends.Navigability;
 import hu.elte.txtuml.api.model.error.PortParameterError;
 import hu.elte.txtuml.api.model.runtime.ModelClassWrapper;
 import hu.elte.txtuml.api.model.runtime.PortWrapper;
@@ -195,7 +195,7 @@ public abstract class ModelClass extends StateMachine {
 	 * @return collection containing the objects in association with this object
 	 *         and being on <code>otherEnd</code>
 	 */
-	public final <T extends ModelClass, C extends Collection<T>, AE extends AssociationEnd<T, C> & Navigability.Navigable> C assoc(
+	public final <T extends ModelClass, C extends GeneralCollection<T>, AE extends AssociationEnd<C> & Navigable> C assoc(
 			Class<AE> otherEnd) {
 		return runtimeInfo().navigateThroughAssociation(otherEnd);
 	}
