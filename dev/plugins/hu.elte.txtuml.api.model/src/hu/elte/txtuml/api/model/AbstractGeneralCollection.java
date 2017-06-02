@@ -1,6 +1,7 @@
 package hu.elte.txtuml.api.model;
 
 import java.util.Iterator;
+import java.util.StringJoiner;
 import java.util.function.Consumer;
 
 import hu.elte.txtuml.api.model.error.CollectionCreationError;
@@ -103,6 +104,18 @@ abstract class AbstractGeneralCollection<E, B extends java.util.Collection<E>, C
 	public final boolean equals(Object obj) {
 		// TODO collection equals
 		return super.equals(obj);
+	}
+
+	@Override
+	public String toString() {
+		return getElementsListed();
+	}
+
+	@Override
+	public final String getElementsListed() {
+		StringJoiner joiner = new StringJoiner(", ");
+		backend.forEach(e -> joiner.add(e.toString()));
+		return joiner.toString();
 	}
 
 	// PACKAGE PRIVATE HELPER METHODS

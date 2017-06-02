@@ -2,6 +2,7 @@ package hu.elte.txtuml.api.model;
 
 import java.util.Iterator;
 import java.util.Spliterator;
+import java.util.function.Consumer;
 
 //TODO document
 public abstract class GeneralCollection<E> implements Iterable<E>, GeneralCollectionProperties {
@@ -53,7 +54,7 @@ public abstract class GeneralCollection<E> implements Iterable<E>, GeneralCollec
 	 * Any<Integer> ints4 = ints.as(One.class);
 	 * 
 	 * Note: a perfect declaration of "as" cannot be written due to the
-	 * properties of the Java language.
+	 * properties of Java.
 	 */
 	public abstract <C2 extends GeneralCollection<? super E>, C3 extends GeneralCollection<?>> C2 as(
 			Class<C3> collectionType);
@@ -72,8 +73,15 @@ public abstract class GeneralCollection<E> implements Iterable<E>, GeneralCollec
 
 	public abstract GeneralCollection<E> unbound();
 
+	public abstract String getElementsListed();
+
 	@Override
 	public abstract Iterator<E> iterator();
+
+	@Override
+	public final void forEach(Consumer<? super E> action) {
+		Iterable.super.forEach(action);
+	}
 
 	/**
 	 * This method <b>must not be used in the model</b>.

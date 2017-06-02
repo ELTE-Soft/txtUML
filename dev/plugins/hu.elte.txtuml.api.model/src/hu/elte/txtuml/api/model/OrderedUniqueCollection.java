@@ -41,4 +41,9 @@ public abstract class OrderedUniqueCollection<E, C extends OrderedUniqueCollecti
 		return builder.build();
 	}
 
+	@Override
+	public String toString() {
+		return "<" + getElementsListed() + ">";
+	}
+
 }

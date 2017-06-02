@@ -60,5 +60,10 @@ public abstract class Collection<E, C extends Collection<E, C>>
 		backendBuilder.accept(builder::add);
 		return builder.build();
 	}
+	
+	@Override
+	public String toString() {
+		return "[" + getElementsListed() + "]";
+	}
 
 }

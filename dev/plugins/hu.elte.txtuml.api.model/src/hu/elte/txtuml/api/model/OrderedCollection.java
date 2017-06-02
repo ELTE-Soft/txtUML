@@ -38,4 +38,9 @@ public abstract class OrderedCollection<E, C extends OrderedCollection<E, C>> ex
 		return asOrderedAnyUnsafe();
 	}
 
+	@Override
+	public String toString() {
+		return "(" + getElementsListed() + ")";
+	}
+	
 }

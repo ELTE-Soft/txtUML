@@ -43,4 +43,9 @@ public abstract class UniqueCollection<E, C extends UniqueCollection<E, C>>
 		return builder.build();
 	}
 
+	@Override
+	public String toString() {
+		return "{" + getElementsListed() + "}";
+	}
+
 }
