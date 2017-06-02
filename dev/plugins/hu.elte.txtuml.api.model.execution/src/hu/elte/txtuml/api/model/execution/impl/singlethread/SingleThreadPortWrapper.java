@@ -7,9 +7,9 @@ import hu.elte.txtuml.api.model.execution.impl.base.AbstractPortWrapper;
 import hu.elte.txtuml.api.model.execution.impl.base.AbstractSignalTargetWrapper;
 
 /**
- * A {@link PortWrapper} implementation for model executors that use only one
- * model executor thread. This may not be used in a multi-thread executor as it
- * lacks the necessary synchronizations.
+ * A {@link hu.elte.txtuml.api.model.runtime.PortWrapper} implementation for
+ * model executors that use only one model executor thread. This may not be used
+ * in a multi-thread executor as it lacks the necessary synchronizations.
  */
 public class SingleThreadPortWrapper extends AbstractPortWrapper {
 
@@ -19,12 +19,12 @@ public class SingleThreadPortWrapper extends AbstractPortWrapper {
 	public SingleThreadPortWrapper(Port<?, ?> wrapped, AbstractModelClassWrapper owner) {
 		super(wrapped, owner);
 	}
-	
+
 	@Override
 	public AbstractSignalTargetWrapper<?> getOuterConnection() {
 		return outer;
 	}
-	
+
 	@Override
 	public AbstractSignalTargetWrapper<?> getInnerConnection() {
 		return inner;

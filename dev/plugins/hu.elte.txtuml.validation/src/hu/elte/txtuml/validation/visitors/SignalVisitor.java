@@ -10,7 +10,7 @@ import org.eclipse.jdt.core.dom.SimpleType;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 
 import hu.elte.txtuml.validation.ProblemCollector;
-import hu.elte.txtuml.validation.problems.modelclass.InvalidTypeWithClassNotAllowed;
+import hu.elte.txtuml.validation.problems.modelclass.InvalidAttributeType;
 import hu.elte.txtuml.validation.problems.signal.InvalidSignalContent;
 
 public class SignalVisitor extends VisitorBase {
@@ -26,7 +26,7 @@ public class SignalVisitor extends VisitorBase {
 	@Override
 	public boolean visit(FieldDeclaration elem) {
 		if (!Utils.isAllowedAttributeType(elem.getType(), false)) {
-			collector.report(new InvalidTypeWithClassNotAllowed(collector.getSourceInfo(), elem.getType()));
+			collector.report(new InvalidAttributeType(collector.getSourceInfo(), elem.getType()));
 		} else {
 			Utils.checkModifiers(collector, elem);
 		}
@@ -48,7 +48,7 @@ public class SignalVisitor extends VisitorBase {
 		for (Object obj : elem.parameters()) {
 			SingleVariableDeclaration param = (SingleVariableDeclaration) obj;
 			if (!Utils.isAllowedAttributeType(param.getType(), false)) {
-				collector.report(new InvalidTypeWithClassNotAllowed(collector.getSourceInfo(), param.getType()));
+				collector.report(new InvalidAttributeType(collector.getSourceInfo(), param.getType()));
 			}
 		}
 		// TODO: check constructor body

@@ -19,8 +19,8 @@ import hu.elte.txtuml.api.model.Signal;
  * send operation can be started, which means that a signal will be
  * asynchronously sent to the a target model object after a specified timeout.
  * <p>
- * See the documentation of {@link hu.elte.txtuml.api.Model} for an overview on
- * modeling in JtxtUML.
+ * See the documentation of {@link hu.elte.txtuml.api.model.Model} for an
+ * overview on modeling in JtxtUML.
  */
 public class Timer extends ModelClass {
 
@@ -28,7 +28,7 @@ public class Timer extends ModelClass {
 	private final Callable<Void> action;
 
 	@External
-	private ScheduledFuture<?> future;
+	private ScheduledFuture<Void> future;
 
 	/**
 	 * Starts a new delayed send operation. Sends asynchronously a signal to the
@@ -62,7 +62,7 @@ public class Timer extends ModelClass {
 			Action.send(signal, targetObj);
 			return null;
 		};
-		schedule(millisecs);
+		this.future = schedule(millisecs);
 	}
 
 	/**
@@ -70,7 +70,7 @@ public class Timer extends ModelClass {
 	 *         indicate that the delay has already elapsed
 	 */
 	@ExternalBody
-	public long query() {
+	public int query() {
 		return (int) future.getDelay(TimeUnit.MILLISECONDS);
 	}
 
@@ -85,9 +85,10 @@ public class Timer extends ModelClass {
 	 *             if <code>millisecs</code> is <code>null</code>
 	 */
 	@ExternalBody
-	public void reset(long millisecs) {
+	public void reset(int millisecs) {
+		ScheduledFuture<Void> newFuture = schedule(millisecs);
 		cancel();
-		schedule(millisecs);
+		this.future = newFuture;
 	}
 
 	/**
@@ -120,7 +121,7 @@ public class Timer extends ModelClass {
 	}
 
 	@External
-	private void schedule(long millisecs) {
-		this.future = Runtime.currentRuntime().schedule(action, millisecs, TimeUnit.MILLISECONDS);
+	private ScheduledFuture<Void> schedule(int millisecs) {
+		return Runtime.currentRuntime().schedule(action, millisecs, TimeUnit.MILLISECONDS);
 	}
 }

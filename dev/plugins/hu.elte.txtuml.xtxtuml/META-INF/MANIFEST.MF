@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: XtxtUML Runtime
 Bundle-Vendor: ELTE
-Bundle-Version: 0.5.1.qualifier
+Bundle-Version: 0.6.0.qualifier
 Bundle-SymbolicName: hu.elte.txtuml.xtxtuml; singleton:=true
 Bundle-ActivationPolicy: lazy
 Require-Bundle: org.eclipse.core.runtime,

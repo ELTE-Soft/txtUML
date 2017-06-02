@@ -5,6 +5,7 @@ import hu.elte.txtuml.api.model.From;
 import hu.elte.txtuml.api.model.ModelClass;
 import hu.elte.txtuml.api.model.To;
 import hu.elte.txtuml.api.model.Trigger;
+import hu.elte.txtuml.examples.garage.control.glue.View;
 import hu.elte.txtuml.examples.garage.control.model.associations.KeyboardProvidesCode;
 import hu.elte.txtuml.examples.garage.control.model.signals.external.AlarmSensorActivated;
 import hu.elte.txtuml.examples.garage.control.model.signals.external.HashPressed;
@@ -27,22 +28,22 @@ public class Alarm extends ModelClass {
 	public class Off extends State {
 		@Override
 		public void entry() {
-			Glue.getInstance().stopSiren();
-			Glue.getInstance().alarmOff();
+			View.getInstance().stopSiren();
+			View.getInstance().alarmOff();
 		}
 	}
 
 	public class On extends State {
 		@Override
 		public void entry() {
-			Glue.getInstance().alarmOn();
+			View.getInstance().alarmOn();
 		}
 	}
 
 	public class ExpectingCode extends State {
 		@Override
 		public void entry() {
-			Glue.getInstance().codeExpected();
+			View.getInstance().codeExpected();
 			Keyboard kb = Alarm.this.assoc(KeyboardProvidesCode.Provider.class).selectAny();
 			Action.send(new WaitForCode(), kb);
 		}
@@ -51,14 +52,14 @@ public class Alarm extends ModelClass {
 	public class InAlarm extends State {
 		@Override
 		public void entry() {
-			Glue.getInstance().startSiren();
+			View.getInstance().startSiren();
 		}
 	}
 
 	public class ExpectingOldCode extends State {
 		@Override
 		public void entry() {
-			Glue.getInstance().oldCodeExpected();
+			View.getInstance().oldCodeExpected();
 			Keyboard kb = Alarm.this.assoc(KeyboardProvidesCode.Provider.class).selectAny();
 			Action.send(new WaitForCode(), kb);
 		}
@@ -67,7 +68,7 @@ public class Alarm extends ModelClass {
 	public class ExpectingNewCode extends State {
 		@Override
 		public void entry() {
-			Glue.getInstance().newCodeExpected();
+			View.getInstance().newCodeExpected();
 			Keyboard kb = Alarm.this.assoc(KeyboardProvidesCode.Provider.class).selectAny();
 			Action.send(new WaitForCode(), kb);
 		}

@@ -53,7 +53,7 @@ class XtxtUMLTypeValidator extends XtxtUMLUniquenessValidator {
 				if (isAttribute) {
 					"Invalid type. Only boolean, double, int, String, model enums, model data types and external interfaces are allowed."
 				} else {
-					"Invalid type. Only boolean, double, int, String, model enums, model data types, external interfaces and model class types are allowed."
+					"Invalid type. Only boolean, double, int, String, model enums, model data types, external interfaces, signal and model class types are allowed."
 				}, typeRef, TypesPackage.Literals.JVM_PARAMETERIZED_TYPE_REFERENCE__TYPE, INVALID_TYPE);
 		}
 	}
@@ -84,7 +84,8 @@ class XtxtUMLTypeValidator extends XtxtUMLUniquenessValidator {
 	}
 
 	def protected isAllowedParameterType(JvmTypeReference typeRef, boolean isVoidAllowed) {
-		isAllowedAttributeType(typeRef, isVoidAllowed) || typeRef.isConformantWith(ModelClass)
+		isAllowedAttributeType(typeRef, isVoidAllowed) || typeRef.isConformantWith(ModelClass) ||
+			typeRef.isConformantWith(Signal)
 	}
 
 	def protected isAllowedAttributeType(JvmTypeReference typeRef, boolean isVoidAllowed) {

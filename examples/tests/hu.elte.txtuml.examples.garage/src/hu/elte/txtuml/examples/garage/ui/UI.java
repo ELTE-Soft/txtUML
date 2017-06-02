@@ -28,36 +28,38 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 
-import hu.elte.txtuml.examples.garage.control.model.Glue;
-import hu.elte.txtuml.examples.garage.interfaces.IControl;
-import hu.elte.txtuml.examples.garage.interfaces.IControlled;
+import hu.elte.txtuml.examples.garage.control.glue.Model;
+import hu.elte.txtuml.examples.garage.control.glue.ViewImpl;
+import hu.elte.txtuml.examples.garage.interfaces.Control;
+import hu.elte.txtuml.examples.garage.interfaces.Controlled;
 
-public class UI implements IControlled {
-	private GaragePanel garagePanel = new GaragePanel(this);
-	private RemotePanel remotePanel = new RemotePanel(this);
-	private JPanel spacePanel = new JPanel();
-	private JPanel labelPanel = new JPanel();
-	private JLabel statusLabel = new JLabel("Alarmed");
-	private JProgressBar progressBar = new JProgressBar(0,100); 
-	private KeypadPanel keypadPanel = new KeypadPanel(this);
-	private JPanel controlPanel = new JPanel();
-	private JPanel alarmPanel = new JPanel();
-	private JPanel mainPanel = new JPanel();
-	private JFrame frame = new JFrame("Garage");
-	IControl control;
-	
+public class UI implements Controlled {
+	private final GaragePanel garagePanel = new GaragePanel(this);
+	private final RemotePanel remotePanel = new RemotePanel(this);
+	private final JPanel spacePanel = new JPanel();
+	private final JPanel labelPanel = new JPanel();
+	private final JLabel statusLabel = new JLabel("Alarmed");
+	private final JProgressBar progressBar = new JProgressBar(0, 100);
+	private final KeypadPanel keypadPanel = new KeypadPanel(this);
+	private final JPanel controlPanel = new JPanel();
+	private final JPanel alarmPanel = new JPanel();
+	private final JPanel mainPanel = new JPanel();
+	private final JFrame frame = new JFrame("Garage");
+	final Control control;
+
 	private UI() {
-		control = Glue.getInstance();
-		((Glue)control).setControlled(this);
+		ViewImpl.getInstance().setControlled(this);
+		control = new Model();
+
 		alarmPanel.setLayout(new BoxLayout(alarmPanel, BoxLayout.Y_AXIS));
 		controlPanel.setLayout(new BorderLayout());
-		controlPanel.add(remotePanel,BorderLayout.NORTH);
+		controlPanel.add(remotePanel, BorderLayout.NORTH);
 		controlPanel.setBackground(Color.WHITE);
 		labelPanel.setBackground(Color.RED);
-		labelPanel.setPreferredSize(new Dimension(remotePanel.getWidth(),30));
-		labelPanel.setMaximumSize(new Dimension(remotePanel.getWidth(),30));
+		labelPanel.setPreferredSize(new Dimension(remotePanel.getWidth(), 30));
+		labelPanel.setMaximumSize(new Dimension(remotePanel.getWidth(), 30));
 		labelPanel.setLayout(new BorderLayout());
-		labelPanel.add(statusLabel,BorderLayout.CENTER);
+		labelPanel.add(statusLabel, BorderLayout.CENTER);
 		alarmPanel.add(labelPanel);
 		alarmPanel.add(progressBar);
 		alarmPanel.add(keypadPanel);
@@ -66,12 +68,9 @@ public class UI implements IControlled {
 		mainPanel.add(garagePanel);
 		mainPanel.add(controlPanel);
 
-		int spaceHeight = garagePanel.getHeight()
-						- remotePanel.getHeight()
-						- labelPanel.getHeight()
-						- progressBar.getHeight()
-						- keypadPanel.getHeight(); 
-		spacePanel.setPreferredSize(new Dimension(remotePanel.getWidth(),spaceHeight));
+		int spaceHeight = garagePanel.getHeight() - remotePanel.getHeight() - labelPanel.getHeight()
+				- progressBar.getHeight() - keypadPanel.getHeight();
+		spacePanel.setPreferredSize(new Dimension(remotePanel.getWidth(), spaceHeight));
 
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setResizable(false);
@@ -79,38 +78,38 @@ public class UI implements IControlled {
 		frame.pack();
 		frame.setVisible(true);
 	}
-	
+
 	public static void main(String[] args) {
 		new UI();
 	}
-	
+
 	@Override
 	public void stopDoor() {
 		garagePanel.direction = GaragePanel.Direction.STOPPED;
 	}
-	
+
 	@Override
 	public void startDoorDown() {
 		garagePanel.direction = GaragePanel.Direction.DOWN;
-		if(!garagePanel.motor.isAlive()) {
+		if (!garagePanel.motor.isAlive()) {
 			garagePanel.motor = garagePanel.new Motor(garagePanel);
 			garagePanel.motor.start();
 		}
 	}
-	
+
 	@Override
 	public void startDoorUp() {
 		garagePanel.direction = GaragePanel.Direction.UP;
-		if(!garagePanel.motor.isAlive()) {
+		if (!garagePanel.motor.isAlive()) {
 			garagePanel.motor = garagePanel.new Motor(garagePanel);
 			garagePanel.motor.start();
 		}
 	}
-	
+
 	@Override
 	public void startSiren() {
 		garagePanel.sirenActive = true;
-		if(!garagePanel.siren.isAlive()) {
+		if (!garagePanel.siren.isAlive()) {
 			garagePanel.siren = garagePanel.new Siren(garagePanel);
 			garagePanel.siren.start();
 		}
@@ -126,37 +125,37 @@ public class UI implements IControlled {
 		labelPanel.setBackground(Color.ORANGE);
 		statusLabel.setText("Enter code");
 	}
-	
+
 	@Override
 	public void oldCodeExpected() {
 		labelPanel.setBackground(Color.ORANGE);
 		statusLabel.setText("Enter old code");
 	}
-	
+
 	@Override
 	public void newCodeExpected() {
 		labelPanel.setBackground(Color.ORANGE);
 		statusLabel.setText("Enter new code");
 	}
-	
+
 	@Override
 	public void progress(int percent) {
 		progressBar.setValue(percent);
 	}
-	
+
 	@Override
 	public void alarmOff() {
 		progressBar.setValue(progressBar.getMinimum());
 		labelPanel.setBackground(Color.GREEN);
 		statusLabel.setText("Alarm off");
 	}
-	
+
 	@Override
 	public void alarmOn() {
 		labelPanel.setBackground(Color.RED);
-		statusLabel.setText("Alarm on");		
+		statusLabel.setText("Alarm on");
 	}
-	
+
 }
 
 class GaragePanel extends ImagePanel {
@@ -166,7 +165,11 @@ class GaragePanel extends ImagePanel {
 	private final int doorX = 147;
 	private final int doorY = 178;
 	Motor motor = new Motor(this);
-	public enum Direction { STOPPED, UP, DOWN }
+
+	public enum Direction {
+		STOPPED, UP, DOWN
+	}
+
 	public Direction direction;
 	private UI parent;
 	Siren siren = new Siren(this);
@@ -181,9 +184,9 @@ class GaragePanel extends ImagePanel {
 		super("src/hu/elte/txtuml/examples/garage/images/garage.jpg");
 		parent = p;
 		try {
-		    doorImg = ImageIO.read(new File("src/hu/elte/txtuml/examples/garage/images/door.jpg"));
-		    sirenImg1 = ImageIO.read(new File("src/hu/elte/txtuml/examples/garage/images/siren1.jpg"));
-		    sirenImg2 = ImageIO.read(new File("src/hu/elte/txtuml/examples/garage/images/siren2.jpg"));
+			doorImg = ImageIO.read(new File("src/hu/elte/txtuml/examples/garage/images/door.jpg"));
+			sirenImg1 = ImageIO.read(new File("src/hu/elte/txtuml/examples/garage/images/siren1.jpg"));
+			sirenImg2 = ImageIO.read(new File("src/hu/elte/txtuml/examples/garage/images/siren2.jpg"));
 		} catch (IOException e) {
 			System.out.println("Error: Cannot load some image.");
 		}
@@ -191,7 +194,7 @@ class GaragePanel extends ImagePanel {
 			@Override
 			public void mouseMoved(MouseEvent me) {
 				Rectangle doorRect = new Rectangle(doorX, doorY, doorImg.getWidth(), doorImg.getHeight());
-				if( doorRect.contains(me.getPoint())) {
+				if (doorRect.contains(me.getPoint())) {
 					parent.control.motionSensorActivated();
 					parent.control.alarmSensorActivated();
 					setCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
@@ -201,103 +204,101 @@ class GaragePanel extends ImagePanel {
 			}
 		});
 	}
-		
+
 	@Override
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
-		BufferedImage lifted = doorImg.getSubimage(0, doorLift, doorImg.getWidth(), doorImg.getHeight()-doorLift);
-		g.drawImage(lifted,doorX,doorY,null);
-		if(sirenLamp) {
+		BufferedImage lifted = doorImg.getSubimage(0, doorLift, doorImg.getWidth(), doorImg.getHeight() - doorLift);
+		g.drawImage(lifted, doorX, doorY, null);
+		if (sirenLamp) {
 			g.drawImage(sirenImg2, sirenX, sirenY, null);
 		} else {
 			g.drawImage(sirenImg1, sirenX, sirenY, null);
 		}
 	}
-	
+
 	class Motor extends Thread {
 		private GaragePanel parent;
-		
+
 		public Motor(GaragePanel p) {
 			parent = p;
 		}
-		
+
 		@Override
 		public void run() {
 			try {
-				while((direction == Direction.UP && doorLift + 10 < doorImg.getHeight())
-				   || (direction == Direction.DOWN && doorLift > 0)) {
-					if(direction == Direction.UP)
+				while ((direction == Direction.UP && doorLift + 10 < doorImg.getHeight())
+						|| (direction == Direction.DOWN && doorLift > 0)) {
+					if (direction == Direction.UP)
 						++doorLift;
-					else if(direction == Direction.DOWN)
+					else if (direction == Direction.DOWN)
 						--doorLift;
 					parent.repaint();
 					parent.parent.control.alarmSensorActivated();
-				    Thread.sleep(100);
+					Thread.sleep(100);
 				}
-				if(direction == Direction.UP) {
+				if (direction == Direction.UP) {
 					parent.parent.control.doorReachedTop();
-				} else if(direction == Direction.DOWN) {
+				} else if (direction == Direction.DOWN) {
 					parent.parent.control.doorReachedBottom();
 				}
-			} catch(InterruptedException ex) {
+			} catch (InterruptedException ex) {
 			}
 		}
 	}
-	
+
 	class Siren extends Thread {
 		private GaragePanel parent;
 		private String sirenFile = "src/hu/elte/txtuml/examples/garage/sounds/siren.wav";
 		private boolean soundOn = false;
 		private Clip clip;
-		
+
 		public Siren(GaragePanel p) {
 			parent = p;
 		}
-		
+
 		@Override
 		public void run() {
 			try {
-				while(sirenActive) {
+				while (sirenActive) {
 					sirenLamp = !sirenLamp;
 					parent.repaint();
-					for(int i=0; i<50; ++i) {
-						if(!soundOn) {
-							if(clip != null) {
-			                	clip.stop();
-			                	clip.close();
+					for (int i = 0; i < 50; ++i) {
+						if (!soundOn) {
+							if (clip != null) {
+								clip.stop();
+								clip.close();
 							}
 							playSirenSound();
 						}
-					    Thread.sleep(10);
+						Thread.sleep(10);
 					}
 				}
 				sirenLamp = false;
 				parent.repaint();
-			} catch(InterruptedException ex) {
+			} catch (InterruptedException ex) {
 			}
 		}
-		
+
 		private void playSirenSound() {
 			try {
-		    	File soundFile = new File(sirenFile);
-		    	AudioInputStream soundIn = AudioSystem.getAudioInputStream(soundFile);
-		    	AudioFormat format = soundIn.getFormat();
-		    	DataLine.Info info = new DataLine.Info(Clip.class, format);
-		    	clip = (Clip)AudioSystem.getLine(info);
-		        clip.addLineListener(new LineListener()
-		        {
-		            @Override
-		            public void update(LineEvent event)
-		            {
-		                if (event.getType() == LineEvent.Type.STOP) {
-		                	soundOn = false;
-		                }
-		            }
-		        });
-		    	clip.open(soundIn);
-		    	clip.start();
-		    	soundOn = true;
-			} catch(Exception e) {
+				File soundFile = new File(sirenFile);
+				AudioInputStream soundIn = AudioSystem.getAudioInputStream(soundFile);
+				AudioFormat format = soundIn.getFormat();
+				DataLine.Info info = new DataLine.Info(Clip.class, format);
+				clip = (Clip) AudioSystem.getLine(info);
+				clip.addLineListener(new LineListener() {
+					@Override
+					public void update(LineEvent event) {
+						if (event.getType() == LineEvent.Type.STOP) {
+							soundOn = false;
+						}
+					}
+				});
+				clip.open(soundIn);
+				clip.start();
+				soundOn = true;
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
@@ -308,7 +309,7 @@ class GaragePanel extends ImagePanel {
 class RemotePanel extends ImagePanel {
 	private static final long serialVersionUID = 1L;
 	private UI parent;
-	private final Point buttonCenter = new Point(119,62);
+	private final Point buttonCenter = new Point(119, 62);
 	private final int buttonSize = 20;
 
 	RemotePanel(UI p) {
@@ -317,7 +318,7 @@ class RemotePanel extends ImagePanel {
 		addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent me) {
-				if(buttonCenter.distance(me.getPoint()) < buttonSize) {
+				if (buttonCenter.distance(me.getPoint()) < buttonSize) {
 					parent.control.remoteControlButtonPressed();
 				}
 			}
@@ -325,7 +326,7 @@ class RemotePanel extends ImagePanel {
 		addMouseMotionListener(new MouseMotionAdapter() {
 			@Override
 			public void mouseMoved(MouseEvent me) {
-				if(buttonCenter.distance(me.getPoint()) < buttonSize) {
+				if (buttonCenter.distance(me.getPoint()) < buttonSize) {
 					setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 				} else {
 					setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
@@ -345,30 +346,30 @@ class KeypadPanel extends ImagePanel {
 	KeypadPanel(UI p) {
 		super("src/hu/elte/txtuml/examples/garage/images/keypad.jpg");
 		parent = p;
-		buttons[0] = new Rectangle(76,170,49,27);
-		buttons[1] = new Rectangle(8,28,49,27);
-		buttons[2] = new Rectangle(76,28,49,27);
-		buttons[3] = new Rectangle(143,28,49,27);
-		buttons[4] = new Rectangle(8,75,49,27);
-		buttons[5] = new Rectangle(76,75,49,27);
-		buttons[6] = new Rectangle(143,75,49,27);
-		buttons[7] = new Rectangle(8,122,49,27);
-		buttons[8] = new Rectangle(76,122,49,27);
-		buttons[9] = new Rectangle(143,122,49,27);
-		buttonStar = new Rectangle(8,170,49,27);
-		buttonHash = new Rectangle(143,170,49,27);
+		buttons[0] = new Rectangle(76, 170, 49, 27);
+		buttons[1] = new Rectangle(8, 28, 49, 27);
+		buttons[2] = new Rectangle(76, 28, 49, 27);
+		buttons[3] = new Rectangle(143, 28, 49, 27);
+		buttons[4] = new Rectangle(8, 75, 49, 27);
+		buttons[5] = new Rectangle(76, 75, 49, 27);
+		buttons[6] = new Rectangle(143, 75, 49, 27);
+		buttons[7] = new Rectangle(8, 122, 49, 27);
+		buttons[8] = new Rectangle(76, 122, 49, 27);
+		buttons[9] = new Rectangle(143, 122, 49, 27);
+		buttonStar = new Rectangle(8, 170, 49, 27);
+		buttonHash = new Rectangle(143, 170, 49, 27);
 		addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent me) {
-				for(int i=0; i<10; ++i) {
-					if(buttons[i].contains(me.getPoint())) {
+				for (int i = 0; i < 10; ++i) {
+					if (buttons[i].contains(me.getPoint())) {
 						parent.control.keyPress(i);
 					}
 				}
-				if(buttonStar.contains(me.getPoint())) {
+				if (buttonStar.contains(me.getPoint())) {
 					parent.control.starPressed();
 				}
-				if(buttonHash.contains(me.getPoint())) {
+				if (buttonHash.contains(me.getPoint())) {
 					parent.control.hashPressed();
 				}
 			}
@@ -377,18 +378,18 @@ class KeypadPanel extends ImagePanel {
 			@Override
 			public void mouseMoved(MouseEvent me) {
 				boolean onButton = false;
-				for(int i=0; i<10; ++i) {
-					if(buttons[i].contains(me.getPoint())) {
+				for (int i = 0; i < 10; ++i) {
+					if (buttons[i].contains(me.getPoint())) {
 						onButton = true;
 					}
 				}
-				if(buttonStar.contains(me.getPoint())) {
+				if (buttonStar.contains(me.getPoint())) {
 					onButton = true;
 				}
-				if(buttonHash.contains(me.getPoint())) {
+				if (buttonHash.contains(me.getPoint())) {
 					onButton = true;
 				}
-				if(onButton) {
+				if (onButton) {
 					setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 				} else {
 					setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));

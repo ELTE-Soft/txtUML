@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+
+   
+   <extension
+         point="org.eclipse.ui.commands">
+      <command
+            defaultHandler="hu.elte.txtuml.export.javascript.handlers.TxtUMLVisualizeHandler"
+            id="hu.elte.txtuml.export.javascript.txtUMLVisualize"
+            name="txtUMLVisualize">
+      </command>
+  	  <command
+            defaultHandler="hu.elte.txtuml.export.javascript.handlers.TxtUMLVisualizeSelectedDiagramsHandler"
+            id="hu.elte.txtuml.export.javascript.txtUMLVisualizeSelectedDiagram"
+            name="txtUMLVisualizeSelectedDiagram">
+      </command>
+   </extension>
+   <extension
+         point="org.eclipse.ui.menus">
+      <menuContribution
+            allPopups="false"
+            locationURI="menu:org.eclipse.ui.main.menu">
+         <menu
+               id="hu.elte.txtuml.export.menu"
+               label="txtUML">
+            <command
+                  commandId="hu.elte.txtuml.export.javascript.txtUMLVisualize"
+                  icon="icons/jsdiagram.png"
+                  label="Generate JointJS diagrams from txtUML"
+                  style="push">
+            </command>
+         </menu>
+      </menuContribution>
+      
+	  <menuContribution 
+	     locationURI="popup:org.eclipse.ui.navigator.ProjectExplorer#PopupMenu?before=additions">
+	     <command
+            commandId="hu.elte.txtuml.export.javascript.txtUMLVisualizeSelectedDiagram"
+            icon="icons/jsdiagram.png"
+            label="Visualize as JointJS diagram"
+            style="push">
+	         <visibleWhen>
+	             <with variable="activeMenuSelection">
+	                <iterate ifEmpty="false" operator="and">
+	                     <adapt type="org.eclipse.jdt.core.ICompilationUnit">
+	                         <test property="hu.elte.txtuml.export.papyrus.hasDescriptionType"/>
+	                     </adapt>
+	                 </iterate>
+	             </with>
+	         </visibleWhen>
+	     </command>
+	  </menuContribution>
+   <menuContribution
+         locationURI="popup:org.eclipse.jdt.ui.PackageExplorer?before=additions">
+      <command
+            commandId="hu.elte.txtuml.export.javascript.txtUMLVisualizeSelectedDiagram"
+            icon="icons/jsdiagram.png"
+            label="Visualize as JointJS diagram"
+            style="push">
+         <visibleWhen>
+            <with
+                  variable="activeMenuSelection">
+               <iterate
+                     ifEmpty="false"
+                     operator="and">
+                  <adapt
+                        type="org.eclipse.jdt.core.ICompilationUnit">
+                     <test
+                           property="hu.elte.txtuml.export.papyrus.hasDescriptionType">
+                     </test>
+                  </adapt>
+               </iterate>
+            </with>
+         </visibleWhen>
+      </command>
+   </menuContribution>
+   </extension>
+
+</plugin>

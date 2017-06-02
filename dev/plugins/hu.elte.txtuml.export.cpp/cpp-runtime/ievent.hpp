@@ -1,28 +1,49 @@
 #ifndef EVENTI_HPP_INCLUDED
 #define EVENTI_HPP_INCLUDED
 
-#include "runtimetypes.hpp"
+#include "ESRoot/Types.hpp"
 
-class StateMachineI;
-
-struct IEvent
+namespace Model
 {
-  IEvent () {}
-  virtual ~IEvent () {}
-  
-  int t;
-  int p; 
-  
+
+template<typename DerivedBase>
+class IEvent
+{
+public:
+	IEvent() {}
+	virtual ~IEvent() {}
+	void setTargetSM(const ES::StateMachineRef sm)
+	{
+		static_cast<ES::Ptr<DerivedBase>>(this)->targetSM = sm;
+	}
+	ES::StateMachineRef getTargetSM() const
+	{
+		return static_cast<ES::Ptr<const DerivedBase>>(this)->targetSM;
+	}
+
+	int getType() const
+	{
+		return static_cast<ES::Ptr<const DerivedBase>>(this)->t;
+	}
+
+	int getPortType() const
+	{
+		return static_cast<ES::Ptr<const DerivedBase>>(this)->p;
+	}
+
 };
 
-struct EventBase : public IEvent
+class EventBase : public IEvent<EventBase>
 {
-  EventBase (int t_) : t (t_), p (NoPort_PE) {}
-	
-  int t;
-  int p;
+public:
+	EventBase(int t_) : t(t_), p(1) {}
+
+	ES::StateMachineRef targetSM;
+	int t;
+	int p;
 };
 
-typedef const EventBase& EventBaseCRef;
+}
+
 
 #endif // EVENTI_HPP_INCLUDED

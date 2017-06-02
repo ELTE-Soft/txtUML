@@ -1,0 +1,32 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: txtUML Javascript Visualizer
+Bundle-SymbolicName: hu.elte.txtuml.export.javascript;singleton:=true
+Bundle-Version: 0.6.0.qualifier
+Bundle-Activator: hu.elte.txtuml.export.javascript.Activator
+Bundle-Vendor: ELTE
+Require-Bundle: 
+ hu.elte.txtuml.layout.visualizer,
+ hu.elte.txtuml.layout.export,
+ hu.elte.txtuml.api.model,
+ hu.elte.txtuml.api.layout,
+ hu.elte.txtuml.utils,
+ hu.elte.txtuml.utils.eclipse,
+ hu.elte.txtuml.export.uml2,
+ org.eclipse.debug.ui,
+ org.eclipse.jdt.core,
+ org.eclipse.jdt.launching,
+ org.eclipse.ui.ide,
+ org.eclipse.uml2.uml,
+ org.eclipse.emf.ecore,
+ org.eclipse.jdt.ui,
+ com.google.guava,
+ org.eclipse.ui.workbench,
+ org.eclipse.jface,
+ org.eclipse.osgi,
+ org.eclipse.core.runtime,
+ org.eclipse.persistence.moxy,
+ org.eclipse.papyrus.uml.diagram.common,
+ hu.elte.txtuml.export.papyrus
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-ActivationPolicy: lazy
