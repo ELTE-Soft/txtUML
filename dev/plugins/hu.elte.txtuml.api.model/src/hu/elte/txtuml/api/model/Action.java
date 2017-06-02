@@ -296,7 +296,7 @@ public interface Action {
 	// TODO document
 	@SafeVarargs
 	@SuppressWarnings("unchecked")
-	static <E, C extends GeneralCollection<? super E>, C2 extends GeneralCollection<?>> C collection(
+	static <E, C extends GeneralCollection<E>, C2 extends GeneralCollection<?>> C collection(
 			Class<C2> collectionType, E... elements) {
 		return (C) AbstractGeneralCollection.create(collectionType, Builder.createConsumerFor(elements));
 	}
