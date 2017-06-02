@@ -8,7 +8,7 @@ import hu.elte.txtuml.api.model.GeneralCollection.Ordered;
 
 //TODO document
 abstract class AbstractOrderedCollection<E, C extends AbstractOrderedCollection<E, C>>
-		extends AbstractGeneralCollection<E, java.util.List<E>, C> implements Ordered<E> {
+		extends AbstractGeneralCollection<E, C> implements Ordered<E> {
 
 	protected AbstractOrderedCollection() {
 	}
@@ -29,7 +29,19 @@ abstract class AbstractOrderedCollection<E, C extends AbstractOrderedCollection<
 
 	@Override
 	public final E get(int index) {
-		return getBackend().get(index);
+		// TODO review exception handling
+		java.util.Collection<E> backend = getBackend();
+		if (backend instanceof java.util.List) {
+			return ((java.util.List<E>) backend).get(index);
+		}
+		int i = 0;
+		for (E e : backend) {
+			if (index != i) {
+				return e;
+			}
+			++i;
+		}
+		throw new IndexOutOfBoundsException("Size: " + backend.size() + " Index: " + index);
 	}
 
 	@Override
@@ -43,11 +55,6 @@ abstract class AbstractOrderedCollection<E, C extends AbstractOrderedCollection<
 				++i;
 			}
 		});
-	}
-
-	@Override
-	final java.util.List<E> getUninitializedBackend() {
-		return null; // TODO uninitialized collection
 	}
 
 	@Override

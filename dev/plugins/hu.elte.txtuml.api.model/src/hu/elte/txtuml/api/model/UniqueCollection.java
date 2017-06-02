@@ -9,15 +9,15 @@ import hu.elte.txtuml.api.model.GeneralCollection.Unordered;
 
 // TODO document
 public abstract class UniqueCollection<E, C extends UniqueCollection<E, C>>
-		extends AbstractGeneralCollection<E, java.util.Collection<E>, C> implements Unordered<E>, Unique<E> {
+		extends AbstractGeneralCollection<E, C> implements Unordered<E>, Unique<E> {
 
 	protected UniqueCollection() {
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public final <C2 extends GeneralCollection<? super E>,
-		C3 extends GeneralCollection<?>> C2 as(Class<C3> collectionType) {
+	public final <C2 extends GeneralCollection<? super E>, C3 extends GeneralCollection<?>> C2 as(
+			Class<C3> collectionType) {
 		if (Unordered.class.isAssignableFrom(collectionType)) {
 			return (C2) asUnsafe(collectionType);
 		} else {
@@ -29,11 +29,6 @@ public abstract class UniqueCollection<E, C extends UniqueCollection<E, C>>
 	@Override
 	public final UniqueAny<E> unbound() {
 		return asUniqueAnyUnsafe();
-	}
-
-	@Override
-	final java.util.Collection<E> getUninitializedBackend() {
-		return null; // TODO uninitialized collection
 	}
 
 	@Override

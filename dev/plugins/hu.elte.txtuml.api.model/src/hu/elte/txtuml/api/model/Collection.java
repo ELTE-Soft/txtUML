@@ -10,18 +10,16 @@ import hu.elte.txtuml.api.model.GeneralCollection.Unordered;
 
 // TODO document
 public abstract class Collection<E, C extends Collection<E, C>>
-		extends AbstractGeneralCollection<E, java.util.Collection<E>, C>
-		implements Unordered<E>, NonUnique<E> {
+		extends AbstractGeneralCollection<E, C> implements Unordered<E>, NonUnique<E> {
 
 	protected Collection() {
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public final <C2 extends GeneralCollection<? super E>,
-		C3 extends GeneralCollection<?>> C2 as(Class<C3> collectionType) {
-		if (Unordered.class.isAssignableFrom(collectionType)
-				&& NonUnique.class.isAssignableFrom(collectionType)) {
+	public final <C2 extends GeneralCollection<? super E>, C3 extends GeneralCollection<?>> C2 as(
+			Class<C3> collectionType) {
+		if (Unordered.class.isAssignableFrom(collectionType) && NonUnique.class.isAssignableFrom(collectionType)) {
 			return (C2) asUnsafe(collectionType);
 		} else {
 			// TODO exception handling
@@ -50,17 +48,12 @@ public abstract class Collection<E, C extends Collection<E, C>>
 	}
 
 	@Override
-	final java.util.Collection<E> getUninitializedBackend() {
-		return null; // TODO uninitialized collection
-	}
-
-	@Override
 	java.util.Collection<E> createBackend(Consumer<Builder<E>> backendBuilder) {
 		ImmutableMultiset.Builder<E> builder = ImmutableMultiset.builder();
 		backendBuilder.accept(builder::add);
 		return builder.build();
 	}
-	
+
 	@Override
 	public String toString() {
 		return "[" + getElementsListed() + "]";
