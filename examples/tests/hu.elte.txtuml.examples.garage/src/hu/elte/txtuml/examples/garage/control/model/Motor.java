@@ -5,7 +5,6 @@ import hu.elte.txtuml.api.model.From;
 import hu.elte.txtuml.api.model.ModelClass;
 import hu.elte.txtuml.api.model.To;
 import hu.elte.txtuml.api.model.Trigger;
-import hu.elte.txtuml.examples.garage.control.glue.View;
 import hu.elte.txtuml.examples.garage.control.model.associations.DoorSwitchesOnAlarm;
 import hu.elte.txtuml.examples.garage.control.model.associations.MotorMovesDoor;
 import hu.elte.txtuml.examples.garage.control.model.signals.external.DoorReachedBottom;

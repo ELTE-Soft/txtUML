@@ -1,4 +1,4 @@
-package hu.elte.txtuml.examples.garage.control.glue;
+package hu.elte.txtuml.examples.garage.control;
 
 import hu.elte.txtuml.api.model.API;
 import hu.elte.txtuml.api.model.Action;
