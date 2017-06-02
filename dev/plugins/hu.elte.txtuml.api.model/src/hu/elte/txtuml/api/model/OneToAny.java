@@ -8,13 +8,13 @@ public final class OneToAny<E> extends Collection<E, OneToAny<E>> {
 	}
 
 	@Override
-	final int getLowerBound() {
+	final int getLowerBoundPackagePrivate() {
 		return 1;
 	}
 
 	@Override
-	final int getUpperBound() {
-		return -1;
+	final int getUpperBoundPackagePrivate() {
+		return GeneralCollection.INFINITE_BOUND;
 	}
 
 }

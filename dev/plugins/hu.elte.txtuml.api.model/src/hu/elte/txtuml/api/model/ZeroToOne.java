@@ -9,12 +9,12 @@ public final class ZeroToOne<E> extends Collection<E, ZeroToOne<E>> {
 	}
 
 	@Override
-	final int getLowerBound() {
+	final int getLowerBoundPackagePrivate() {
 		return 0;
 	}
 
 	@Override
-	final int getUpperBound() {
+	final int getUpperBoundPackagePrivate() {
 		return 1;
 	}
 

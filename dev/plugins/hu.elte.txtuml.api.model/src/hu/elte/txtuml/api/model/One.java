@@ -9,12 +9,12 @@ public final class One<E> extends Collection<E, One<E>> {
 	}
 
 	@Override
-	final int getLowerBound() {
+	final int getLowerBoundPackagePrivate() {
 		return 1;
 	}
 
 	@Override
-	final int getUpperBound() {
+	final int getUpperBoundPackagePrivate() {
 		return 1;
 	}
 

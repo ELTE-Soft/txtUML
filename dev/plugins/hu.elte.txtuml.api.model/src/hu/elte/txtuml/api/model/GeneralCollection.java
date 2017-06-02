@@ -4,12 +4,15 @@ import java.util.Iterator;
 import java.util.Spliterator;
 
 //TODO document
-public abstract class GeneralCollection<E> implements Iterable<E> {
+public abstract class GeneralCollection<E> implements Iterable<E>, GeneralCollectionProperties {
+
+	public static final int INFINITE_BOUND = -1;
 
 	GeneralCollection() {
 	}
 
-	public abstract <C2 extends GeneralCollection<E>> C2 as(Class<C2> collectionType);
+	public abstract <C2 extends GeneralCollection<? super E>,
+		C3 extends GeneralCollection<?>> C2 as(Class<C3> collectionType);
 
 	public abstract boolean isEmpty();
 
@@ -24,7 +27,7 @@ public abstract class GeneralCollection<E> implements Iterable<E> {
 	public abstract GeneralCollection<E> remove(Object element);
 
 	public abstract GeneralCollection<E> unbound();
-	
+
 	@Override
 	public abstract Iterator<E> iterator();
 
@@ -55,24 +58,42 @@ public abstract class GeneralCollection<E> implements Iterable<E> {
 		E get(int index);
 
 		Ordered<E> remove(int index);
+
+		@Override
+		default boolean isOrdered() {
+			return true;
+		}
 	}
 
 	public interface Unordered<E> extends Ordering<Unordered<E>> {
+		@Override
+		default boolean isOrdered() {
+			return false;
+		}
 	}
 
 	public interface Unique<E> extends Uniqueness<Unique<E>> {
+		@Override
+		default boolean isUnique() {
+			return true;
+		}
 	}
 
 	public interface NonUnique<E> extends Uniqueness<NonUnique<E>> {
 		int countOf(E element);
+
+		@Override
+		default boolean isUnique() {
+			return false;
+		}
 	}
 
 	// PRIVATE INTERFACES
 
-	private interface Ordering<O extends Ordering<O>> {
+	private interface Ordering<O extends Ordering<O>> extends GeneralCollectionProperties {
 	}
 
-	private interface Uniqueness<U extends Uniqueness<U>> {
+	private interface Uniqueness<U extends Uniqueness<U>> extends GeneralCollectionProperties {
 	}
 
 }

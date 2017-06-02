@@ -7,13 +7,13 @@ public final class UniqueAny<E> extends UniqueCollection<E, UniqueAny<E>> {
 	}
 
 	@Override
-	final int getLowerBound() {
+	final int getLowerBoundPackagePrivate() {
 		return 0;
 	}
 
 	@Override
-	final int getUpperBound() {
-		return -1;
+	final int getUpperBoundPackagePrivate() {
+		return GeneralCollection.INFINITE_BOUND;
 	}
 
 }

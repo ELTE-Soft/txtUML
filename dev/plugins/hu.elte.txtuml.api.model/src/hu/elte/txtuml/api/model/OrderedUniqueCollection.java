@@ -17,8 +17,10 @@ public abstract class OrderedUniqueCollection<E, C extends OrderedUniqueCollecti
 	}
 
 	@Override
-	public <C2 extends GeneralCollection<E>> C2 as(Class<C2> collectionType) {
-		return asUnsafe(collectionType);
+	@SuppressWarnings("unchecked")
+	public final <C2 extends GeneralCollection<? super E>,
+		C3 extends GeneralCollection<?>> C2 as(Class<C3> collectionType) {
+		return (C2) asUnsafe(collectionType);
 	}
 
 	@Override

@@ -32,7 +32,7 @@ abstract class AbstractGeneralCollection<E, B extends java.util.Collection<E>, C
 	}
 
 	@Override
-	public E one() {
+	public final E one() {
 		// FIXME NoSuchElementException
 		return backend.iterator().next();
 	}
@@ -51,7 +51,7 @@ abstract class AbstractGeneralCollection<E, B extends java.util.Collection<E>, C
 	}
 
 	@Override
-	public C remove(Object element) {
+	public final C remove(Object element) {
 		return createSameTyped(builder -> {
 			Iterator<E> it = backend.iterator();
 			while (it.hasNext()) {
@@ -67,7 +67,17 @@ abstract class AbstractGeneralCollection<E, B extends java.util.Collection<E>, C
 	}
 
 	@Override
-	public Iterator<E> iterator() {
+	public final int getLowerBound() {
+		return getLowerBoundPackagePrivate();
+	}
+
+	@Override
+	public final int getUpperBound() {
+		return getUpperBoundPackagePrivate();
+	}
+
+	@Override
+	public final Iterator<E> iterator() {
 		return backend.iterator();
 	}
 
@@ -107,7 +117,7 @@ abstract class AbstractGeneralCollection<E, B extends java.util.Collection<E>, C
 	}
 
 	@SuppressWarnings("unchecked")
-	final <C2 extends GeneralCollection<E>> C2 asUnsafe(Class<C2> collectionType)
+	final <C2 extends GeneralCollection<?>> C2 asUnsafe(Class<C2> collectionType)
 			throws CollectionCreationError, MultiplicityError {
 		C2 result = createUninitialized(collectionType);
 		((AbstractGeneralCollection<E, ?, ?>) result).setBackendUnsafe(backend);
@@ -148,14 +158,14 @@ abstract class AbstractGeneralCollection<E, B extends java.util.Collection<E>, C
 		return backend;
 	}
 
-	int getLowerBound() {
+	int getLowerBoundPackagePrivate() {
 		Min min = getClass().getAnnotation(Min.class);
 		return (min == null) ? 0 : min.value();
 	}
 
-	int getUpperBound() {
+	int getUpperBoundPackagePrivate() {
 		Max max = getClass().getAnnotation(Max.class);
-		return (max == null) ? -1 : max.value();
+		return (max == null) ? GeneralCollection.INFINITE_BOUND : max.value();
 	}
 
 	abstract B getUninitializedBackend();
@@ -173,8 +183,8 @@ abstract class AbstractGeneralCollection<E, B extends java.util.Collection<E>, C
 		}
 	}
 
-	private static <C extends GeneralCollection<E>, E> C fillUninitialized(C collection, Consumer<Builder<E>> backendBuilder)
-			throws CollectionCreationError, MultiplicityError {
+	private static <C extends GeneralCollection<E>, E> C fillUninitialized(C collection,
+			Consumer<Builder<E>> backendBuilder) throws CollectionCreationError, MultiplicityError {
 		try {
 			@SuppressWarnings("unchecked")
 			AbstractGeneralCollection<E, ?, ?> casted = ((AbstractGeneralCollection<E, ?, ?>) collection);
@@ -189,11 +199,11 @@ abstract class AbstractGeneralCollection<E, B extends java.util.Collection<E>, C
 
 	private void setBackend(B backend) throws MultiplicityError {
 		int size = backend.size();
-		if (size < getLowerBound()) {
+		if (size < getLowerBoundPackagePrivate()) {
 			throw new LowerBoundError();
 		}
 
-		int upperBound = getUpperBound();
+		int upperBound = getUpperBoundPackagePrivate();
 		if (size > upperBound && upperBound >= 0) {
 			throw new UpperBoundError();
 		}

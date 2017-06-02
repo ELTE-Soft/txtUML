@@ -17,10 +17,12 @@ public abstract class Collection<E, C extends Collection<E, C>>
 	}
 
 	@Override
-	public <C2 extends GeneralCollection<E>> C2 as(Class<C2> collectionType) {
+	@SuppressWarnings("unchecked")
+	public final <C2 extends GeneralCollection<? super E>,
+		C3 extends GeneralCollection<?>> C2 as(Class<C3> collectionType) {
 		if (Unordered.class.isAssignableFrom(collectionType)
 				&& NonUnique.class.isAssignableFrom(collectionType)) {
-			return asUnsafe(collectionType);
+			return (C2) asUnsafe(collectionType);
 		} else {
 			// TODO exception handling
 			throw new Error();
