@@ -24,7 +24,7 @@ public abstract class OrderedUniqueCollection<E, C extends OrderedUniqueCollecti
 	}
 
 	@Override
-	public final GeneralCollection<E> unbound() {
+	public final OrderedUniqueAny<E> unbound() {
 		return asOrderedUniqueAnyUnsafe();
 	}
 

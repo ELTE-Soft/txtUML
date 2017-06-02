@@ -285,14 +285,20 @@ public interface Action {
 	// TODO document
 	@SafeVarargs
 	static <E> Any<E> collection(E... elements) {
-		return AbstractGeneralCollection.createAnyOf(Builder.createFor(elements));
+		return AbstractGeneralCollection.createAnyOf(Builder.createConsumerFor(elements));
 	}
 
+	/*
+	 * This method is declared as it is because of similar reasons why the "as"
+	 * method of the GeneralCollection class is declared as that is. For
+	 * details, read the comments at the "as" method.
+	 */
 	// TODO document
 	@SafeVarargs
-	static <C extends GeneralCollection<E>, E> C collection(Class<C> collectionType,
-			E... elements) {
-		return AbstractGeneralCollection.create(collectionType, Builder.createFor(elements));
+	@SuppressWarnings("unchecked")
+	static <E, C extends GeneralCollection<? super E>, C2 extends GeneralCollection<?>> C collection(
+			Class<C2> collectionType, E... elements) {
+		return (C) AbstractGeneralCollection.create(collectionType, Builder.createConsumerFor(elements));
 	}
 
 }

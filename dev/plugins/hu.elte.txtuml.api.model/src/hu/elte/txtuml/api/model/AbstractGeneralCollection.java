@@ -120,7 +120,7 @@ abstract class AbstractGeneralCollection<E, B extends java.util.Collection<E>, C
 
 	// PACKAGE PRIVATE HELPER METHODS
 
-	static <C extends GeneralCollection<E>, E> C create(Class<C> collectionType, Consumer<Builder<E>> backendBuilder)
+	static <C extends GeneralCollection<?>, E> C create(Class<C> collectionType, Consumer<Builder<E>> backendBuilder)
 			throws CollectionCreationError, MultiplicityError {
 		return fillUninitialized(createUninitialized(collectionType), backendBuilder);
 	}
@@ -196,7 +196,7 @@ abstract class AbstractGeneralCollection<E, B extends java.util.Collection<E>, C
 		}
 	}
 
-	private static <C extends GeneralCollection<E>, E> C fillUninitialized(C collection,
+	private static <C extends GeneralCollection<?>, E> C fillUninitialized(C collection,
 			Consumer<Builder<E>> backendBuilder) throws CollectionCreationError, MultiplicityError {
 		try {
 			@SuppressWarnings("unchecked")
@@ -240,12 +240,8 @@ abstract class AbstractGeneralCollection<E, B extends java.util.Collection<E>, C
 	interface Builder<E> {
 
 		@SafeVarargs
-		static <E> Consumer<Builder<E>> createFor(E... elements) {
-			return builder -> {
-				for (E e : elements) {
-					builder.add(e);
-				}
-			};
+		static <E> Consumer<Builder<E>> createConsumerFor(E... elements) {
+			return builder -> builder.add(elements);
 		}
 
 		void addNoReturn(E element);

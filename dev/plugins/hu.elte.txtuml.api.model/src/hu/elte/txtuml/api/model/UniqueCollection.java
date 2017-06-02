@@ -27,7 +27,7 @@ public abstract class UniqueCollection<E, C extends UniqueCollection<E, C>>
 	}
 
 	@Override
-	public final GeneralCollection<E> unbound() {
+	public final UniqueAny<E> unbound() {
 		return asUniqueAnyUnsafe();
 	}
 

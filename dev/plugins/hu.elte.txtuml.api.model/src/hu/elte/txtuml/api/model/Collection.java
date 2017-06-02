@@ -45,7 +45,7 @@ public abstract class Collection<E, C extends Collection<E, C>>
 	}
 
 	@Override
-	public final GeneralCollection<E> unbound() {
+	public final Any<E> unbound() {
 		return asAnyUnsafe();
 	}
 

@@ -34,7 +34,7 @@ public abstract class OrderedCollection<E, C extends OrderedCollection<E, C>> ex
 	}
 
 	@Override
-	public final GeneralCollection<E> unbound() {
+	public final OrderedAny<E> unbound() {
 		return asOrderedAnyUnsafe();
 	}
 
