@@ -295,7 +295,7 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 	def dispatch private toJvmMember(TUConstructor ctor) {
 		ctor.toConstructor [
 			documentation = ctor.documentation
-			visibility = ctor.visibility.toJvmVisibility
+			visibility = ctor.modifiers.visibility.toJvmVisibility
 
 			for (param : ctor.parameters) {
 				parameters += param.toParameter(param.name, param.parameterType) => [
@@ -310,7 +310,7 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 	def dispatch private toJvmMember(TUAttribute attr) {
 		attr.toField(attr.name, attr.prefix.type) [
 			documentation = attr.documentation
-			visibility = attr.prefix.visibility.toJvmVisibility
+			visibility = attr.prefix.modifiers.visibility.toJvmVisibility
 		]
 	}
 
@@ -330,7 +330,7 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 	def dispatch private toJvmMember(TUOperation op) {
 		op.toMethod(op.name, op.prefix.type) [
 			documentation = op.documentation
-			visibility = op.prefix.visibility.toJvmVisibility
+			visibility = op.prefix.modifiers.visibility.toJvmVisibility
 
 			for (JvmFormalParameter param : op.parameters) {
 				parameters += param.toParameter(param.name, param.parameterType) => [

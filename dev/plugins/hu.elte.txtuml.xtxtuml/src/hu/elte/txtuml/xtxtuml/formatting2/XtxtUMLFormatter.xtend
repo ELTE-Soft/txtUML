@@ -17,6 +17,7 @@ import hu.elte.txtuml.xtxtuml.xtxtUML.TUExecution
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUFile
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUInterface
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUModelDeclaration
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUModifiers
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUMultiplicity
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUOperation
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUPort
@@ -136,8 +137,14 @@ class XtxtUMLFormatter extends XbaseFormatter {
 		}
 	}
 
+	def dispatch void format(TUModifiers it, extension IFormattableDocument document) {
+		regionFor.feature(TU_MODIFIERS__STATIC).append[oneSpace];
+		regionFor.feature(TU_MODIFIERS__EXTERNALITY).append[oneSpace];
+		regionFor.feature(TU_MODIFIERS__VISIBILITY).append[oneSpace];	
+	}
+	
 	def dispatch void format(TUConstructor it, extension IFormattableDocument document) {
-		regionFor.feature(TU_CONSTRUCTOR__VISIBILITY).append[oneSpace];
+		format(modifiers, document)
 		regionFor.keyword('(').surround[noSpace];
 		regionFor.keyword(')').prepend[noSpace].append[oneSpace];
 		regionFor.keywords(',').forEach[prepend[noSpace].append[oneSpace]];
@@ -149,7 +156,7 @@ class XtxtUMLFormatter extends XbaseFormatter {
 	}
 
 	def dispatch void format(TUAttributeOrOperationDeclarationPrefix it, extension IFormattableDocument document) {
-		regionFor.feature(TU_ATTRIBUTE_OR_OPERATION_DECLARATION_PREFIX__VISIBILITY).append[oneSpace];
+		format(modifiers, document)
 		format(type, document);
 	}
 
