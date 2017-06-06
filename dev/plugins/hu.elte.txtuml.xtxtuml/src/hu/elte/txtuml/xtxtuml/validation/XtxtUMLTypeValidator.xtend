@@ -1,5 +1,6 @@
 package hu.elte.txtuml.xtxtuml.validation;
 
+import com.google.inject.Inject
 import hu.elte.txtuml.api.model.DataType
 import hu.elte.txtuml.api.model.ModelClass
 import hu.elte.txtuml.api.model.ModelClass.Port
@@ -24,8 +25,12 @@ import static hu.elte.txtuml.xtxtuml.xtxtUML.XtxtUMLPackage.Literals.*
 
 class XtxtUMLTypeValidator extends XtxtUMLUniquenessValidator {
 
+	@Inject extension XtxtUMLExternalityHelper;
+
 	@Check
 	def checkTypeReference(JvmTypeReference typeRef) {
+		if (typeRef.external) return;
+
 		var isAttribute = false;
 		val isValid = switch (container : typeRef.eContainer) {
 			TUSignalAttribute: {

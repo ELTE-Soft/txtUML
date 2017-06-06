@@ -221,7 +221,7 @@ enum TUVisibility :
 ;
 
 enum TUExternality :
-	NONE = 'non-external' | EXTERNAL = 'external' | EXTERNAL_BODY = 'external-body' 
+	NON_EXTERNAL = 'non-external' | EXTERNAL = 'external' | EXTERNAL_BODY = 'external-body' 
 ;
 
 // Actions
