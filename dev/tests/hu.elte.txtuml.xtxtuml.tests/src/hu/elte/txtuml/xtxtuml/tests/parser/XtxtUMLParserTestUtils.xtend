@@ -135,7 +135,7 @@ class XtxtUMLParserTestUtils {
 		assertTrue(member instanceof TUAttribute);
 		val attribute = member as TUAttribute;
 
-		assertEquals(visibility, attribute.prefix.visibility);
+		assertEquals(visibility, attribute.prefix.modifiers.visibility);
 		assertEquals(typeName, attribute.prefix.type.simpleName);
 		assertEquals(name, attribute.name);
 	}
@@ -145,7 +145,7 @@ class XtxtUMLParserTestUtils {
 		assertTrue(member instanceof TUOperation);
 		val operation = member as TUOperation;
 
-		assertEquals(visibility, operation.prefix.visibility);
+		assertEquals(visibility, operation.prefix.modifiers.visibility);
 		assertEquals(typeName, operation.prefix.type.simpleName);
 		assertEquals(name, operation.name);
 
@@ -163,7 +163,7 @@ class XtxtUMLParserTestUtils {
 		assertTrue(member instanceof TUConstructor);
 		val ctor = member as TUConstructor;
 
-		assertEquals(visibility, ctor.visibility);
+		assertEquals(visibility, ctor.modifiers.visibility);
 		assertEquals(name, ctor.name);
 
 		ctor.parameters.performChecks(parameterChecks);
