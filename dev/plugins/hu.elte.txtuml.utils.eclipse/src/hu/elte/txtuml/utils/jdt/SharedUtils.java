@@ -21,6 +21,7 @@ import org.eclipse.jdt.core.dom.BodyDeclaration;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.Expression;
 import org.eclipse.jdt.core.dom.IAnnotationBinding;
+import org.eclipse.jdt.core.dom.IBinding;
 import org.eclipse.jdt.core.dom.IExtendedModifier;
 import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
@@ -112,7 +113,7 @@ public final class SharedUtils {
 	/**
 	 * @return the annotation binding if it is present on the declaration or null
 	 */
-	public static IAnnotationBinding obtainAnnotation(ITypeBinding binding, Class<?> annotationClass) {
+	public static IAnnotationBinding obtainAnnotation(IBinding binding, Class<?> annotationClass) {
 		for (IAnnotationBinding annotation : binding.getAnnotations()) {
 			if (identicalAnnotations(annotation, annotationClass)) {
 				return annotation;

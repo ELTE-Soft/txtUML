@@ -87,6 +87,8 @@ public class GenerationNames {
 		public static final String NoReturn = "void";
 		//Modifies
 		public static final String StaticModifier = "static";
+		public static final String AbstractModifier = "virtual";
+		public static final String PublicModifier = "public";
 		
 	}
 	
