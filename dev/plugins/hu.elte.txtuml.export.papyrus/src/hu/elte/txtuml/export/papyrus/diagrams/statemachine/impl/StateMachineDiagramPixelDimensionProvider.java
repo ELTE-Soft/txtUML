@@ -1,5 +1,8 @@
 package hu.elte.txtuml.export.papyrus.diagrams.statemachine.impl;
 
+import java.util.Arrays;
+import java.util.List;
+
 import hu.elte.txtuml.layout.visualizer.interfaces.IPixelDimensionProvider;
 import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
 import hu.elte.txtuml.layout.visualizer.model.SpecialBox;
@@ -21,7 +24,8 @@ public class StateMachineDiagramPixelDimensionProvider implements IPixelDimensio
 		int border = 0;
 		int header = 0;
 		if (!box.hasInner()) {
-			if (box.isSpecial() && box.getSpecial().equals(SpecialBox.Initial)) {
+			List<SpecialBox> pseduostateKinds = Arrays.asList(SpecialBox.Initial, SpecialBox.Final, SpecialBox.Choice); // TODO: Join node has a different shape 
+			if (box.isSpecial() && pseduostateKinds.contains(box.getSpecial())) {
 				width = PSEUDOSTATE_WIDTH;
 				height = PSEUDOSTATE_HEIGHT;
 			} else {

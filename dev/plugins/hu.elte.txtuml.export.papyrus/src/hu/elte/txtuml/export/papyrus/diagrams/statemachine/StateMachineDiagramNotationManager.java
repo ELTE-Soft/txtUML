@@ -55,4 +55,25 @@ public interface StateMachineDiagramNotationManager {
 
 	void hideConnectionLabelOfTransition(Transition transition, ConnectionLabelType name);
 
+	void createChoiceNodeForRegion(Region region, Pseudostate choiceNode, Rectangle boundsForElement,
+			IProgressMonitor monitor);
+
+	void createForkNodeForRegion(Region region, Pseudostate forkNode, Rectangle boundsForElement,
+			IProgressMonitor monitor);
+
+	void createJoinNodeForRegion(Region region, Pseudostate joinNode, Rectangle boundsForElement,
+			IProgressMonitor monitor);
+
+	void createJunctionNodeForRegion(Region region, Pseudostate junctionNode, Rectangle boundsForElement,
+			IProgressMonitor monitor);
+
+	void createTerminateNodeForRegion(Region region, Pseudostate terminateNode, Rectangle boundsForElement,
+			IProgressMonitor monitor);
+
+	void createEntryPointForRegion(Region region, Pseudostate entryPoint, Rectangle boundsForElement,
+			IProgressMonitor monitor);
+
+	void createExitPointForRegion(Region region, Pseudostate exitPoint, Rectangle boundsForElement,
+			IProgressMonitor monitor);
+
 }

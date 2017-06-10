@@ -24,6 +24,18 @@ public interface StateMachineDiagramElementsProvider {
 	StateMachine getMainElement();
 
 	Collection<Element> getElementsOfRegion(Region region);
+
+	Collection<Pseudostate> getChioceNodesForRegion(Region region);
 	
-	//State , CompositeState?, PseudoState, FinalState, Choice, Merge etc.
+	Collection<Pseudostate> getForkNodesForRegion(Region region);
+
+	Collection<Pseudostate> getJoinNodesForRegion(Region region);
+
+	Collection<Pseudostate> getJunctionNodesForRegion(Region region);
+
+	Collection<Pseudostate> getTerminateNodesForRegion(Region region);
+
+	Collection<Pseudostate> getEntryPointForRegion(Region region);
+
+	Collection<Pseudostate> getExitPointForRegion(Region region);
 }

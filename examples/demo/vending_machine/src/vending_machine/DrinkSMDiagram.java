@@ -1,5 +1,6 @@
 package vending_machine;
 
+import hu.elte.txtuml.api.layout.North;
 import hu.elte.txtuml.api.layout.Row;
 import hu.elte.txtuml.api.layout.StateMachineDiagram;
 import vending_machine.model.Drink;
@@ -15,6 +16,7 @@ import vending_machine.model.Drink.Refilling;
 public class DrinkSMDiagram extends StateMachineDiagram<Drink> {
 
 	@Row({ Available.class, Giving.class, IsThereMore.class, Init.class })
+	@North(val=Available.class, from=Loading.class)
 	@Row({ Loading.class, NotGiving.class, OutOfStock.class, Refilling.class })
 	class MyLayout extends Layout {
 	}

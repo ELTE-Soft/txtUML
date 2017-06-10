@@ -189,6 +189,12 @@ public class ArrangeAssociations {
 				if (boxAtLinkEnd.getSpecial().equals(SpecialBox.Initial)) {
 					result.addAll(boxAtLinkEnd.getCenterPoints().stream()
 							.map(poi -> new Pair<Point, Double>(poi, defaultWeight)).collect(Collectors.toSet()));
+				}else if(boxAtLinkEnd.getSpecial().equals(SpecialBox.Choice)){
+					result.addAll(boxAtLinkEnd.getCenterPoints().stream()
+							.map(poi -> new Pair<Point, Double>(poi, defaultWeight)).collect(Collectors.toSet()));
+				}else if(boxAtLinkEnd.getSpecial().equals(SpecialBox.Final)){
+					result.addAll(boxAtLinkEnd.getCenterPoints().stream()
+							.map(poi -> new Pair<Point, Double>(poi, defaultWeight)).collect(Collectors.toSet()));
 				}
 				// TODO: other specials
 			} else {

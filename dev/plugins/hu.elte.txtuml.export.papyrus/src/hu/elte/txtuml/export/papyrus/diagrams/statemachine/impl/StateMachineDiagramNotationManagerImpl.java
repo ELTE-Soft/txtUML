@@ -132,23 +132,6 @@ public class StateMachineDiagramNotationManagerImpl extends AbstractDiagramNotat
 	}
 
 	@Override
-	public void createInitialStateForRegion(Region region, Pseudostate InitialState, Rectangle bounds,
-			IProgressMonitor monitor) {
-		Node regionNode = this.nodeMap.get(region);
-		Node node = findCanvasOfRegion(regionNode);
-
-		Runnable runnable = () -> {
-			String hint = ((IHintedType) UMLElementTypes.Pseudostate_InitialShape).getSemanticHint();
-			Node newNode = ViewService.createNode(node, InitialState, hint, DIAGRAM_PREFERENCES_HINT);
-			newNode.setLayoutConstraint(createBounds(bounds, defaultStateBounds()));
-
-			this.nodeMap.put(InitialState, newNode);
-		};
-
-		runInTransactionalCommand(runnable, "Creating Initialstate for Node " + node, monitor);
-	}
-
-	@Override
 	public void createTransitionForRegion(Region region, Vertex source, Vertex target, Transition transition,
 			List<Point> route, String sourceAnchor, String targetAnchor, IProgressMonitor monitor) {
 
@@ -267,4 +250,72 @@ public class StateMachineDiagramNotationManagerImpl extends AbstractDiagramNotat
 		};
 		runInTransactionalCommand(runnable, "Hiding connection labels ", null);
 	}
+	
+	@Override
+	public void createInitialStateForRegion(Region region, Pseudostate initialState, Rectangle bounds,
+			IProgressMonitor monitor) {
+		createPseudoStateForRegion(region, initialState, bounds, monitor, UMLElementTypes.Pseudostate_InitialShape);
+	}
+
+	@Override
+	public void createChoiceNodeForRegion(Region region, Pseudostate choiceNode, Rectangle bounds,
+			IProgressMonitor monitor) {
+		createPseudoStateForRegion(region, choiceNode, bounds, monitor, UMLElementTypes.Pseudostate_ChoiceShape);
+	}
+
+	@Override
+	public void createForkNodeForRegion(Region region, Pseudostate forkNode, Rectangle bounds,
+			IProgressMonitor monitor) {
+		createPseudoStateForRegion(region, forkNode, bounds, monitor, UMLElementTypes.Pseudostate_ForkShape);
+	}
+
+	@Override
+	public void createJoinNodeForRegion(Region region, Pseudostate joinNode, Rectangle bounds,
+			IProgressMonitor monitor) {
+		createPseudoStateForRegion(region, joinNode, bounds, monitor, UMLElementTypes.Pseudostate_JoinShape);
+	}
+
+	@Override
+	public void createJunctionNodeForRegion(Region region, Pseudostate junctionNode, Rectangle bounds,
+			IProgressMonitor monitor) {
+		createPseudoStateForRegion(region, junctionNode, bounds, monitor, UMLElementTypes.Pseudostate_JunctionShape);
+		
+	}
+
+	@Override
+	public void createTerminateNodeForRegion(Region region, Pseudostate terminateNode, Rectangle bounds,
+			IProgressMonitor monitor) {
+		createPseudoStateForRegion(region, terminateNode, bounds, monitor, UMLElementTypes.Pseudostate_TerminateShape);
+	}
+
+	@Override
+	public void createEntryPointForRegion(Region region, Pseudostate entryPoint, Rectangle bounds,
+			IProgressMonitor monitor) {
+		createPseudoStateForRegion(region, entryPoint, bounds, monitor, UMLElementTypes.Pseudostate_EntryPointShape);
+	}
+
+	@Override
+	public void createExitPointForRegion(Region region, Pseudostate exitPoint, Rectangle bounds,
+			IProgressMonitor monitor) {
+		createPseudoStateForRegion(region, exitPoint, bounds, monitor, UMLElementTypes.Pseudostate_ExitPointShape);
+	}
+	
+
+	private void createPseudoStateForRegion(Region region, Pseudostate InitialState, Rectangle bounds,
+			IProgressMonitor monitor, IElementType semanticHintedType) {
+		Node regionNode = this.nodeMap.get(region);
+		Node node = findCanvasOfRegion(regionNode);
+		Runnable runnable = () -> {
+			
+			String hint = ((IHintedType) semanticHintedType).getSemanticHint();
+			Node newNode = ViewService.createNode(node, InitialState, hint, DIAGRAM_PREFERENCES_HINT);
+			newNode.setLayoutConstraint(createBounds(bounds, defaultStateBounds()));
+
+			this.nodeMap.put(InitialState, newNode);
+		};
+
+		runInTransactionalCommand(runnable, "Creating InitialState for Node " + node, monitor);
+	}
+
+
 }

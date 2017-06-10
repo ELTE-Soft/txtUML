@@ -87,10 +87,47 @@ public class StateMachineDiagramElementsManager extends AbstractDiagramElementsM
 					addSubelementsRecursively(this.elementsProvider.getRegionsOfState(state));
 				}
 			});
+			
 			this.elementsProvider.getInitialStatesForRegion(region).forEach(initialState -> {
 				this.notationManager.createInitialStateForRegion(region, initialState,
 						this.arranger.getBoundsForElement(initialState), monitor);
 			});
+			
+			this.elementsProvider.getChioceNodesForRegion(region).forEach(choiceNode -> {
+				this.notationManager.createChoiceNodeForRegion(region, choiceNode,
+						this.arranger.getBoundsForElement(choiceNode), monitor);
+			});
+			
+			this.elementsProvider.getForkNodesForRegion(region).forEach(forkNode -> {
+				this.notationManager.createForkNodeForRegion(region, forkNode,
+						this.arranger.getBoundsForElement(forkNode), monitor);
+			});
+
+			this.elementsProvider.getJoinNodesForRegion(region).forEach(joinNode -> {
+				this.notationManager.createJoinNodeForRegion(region, joinNode,
+						this.arranger.getBoundsForElement(joinNode), monitor);
+			});
+
+			this.elementsProvider.getJunctionNodesForRegion(region).forEach(junctionNode -> {
+				this.notationManager.createJunctionNodeForRegion(region, junctionNode,
+						this.arranger.getBoundsForElement(junctionNode), monitor);
+			});
+
+			this.elementsProvider.getTerminateNodesForRegion(region).forEach(terminateNode -> {
+				this.notationManager.createTerminateNodeForRegion(region, terminateNode,
+						this.arranger.getBoundsForElement(terminateNode), monitor);
+			});
+
+			this.elementsProvider.getEntryPointForRegion(region).forEach(entryPoint -> {
+				this.notationManager.createEntryPointForRegion(region, entryPoint,
+						this.arranger.getBoundsForElement(entryPoint), monitor);
+			});
+			
+			this.elementsProvider.getExitPointForRegion(region).forEach(exitPoint -> {
+				this.notationManager.createExitPointForRegion(region, exitPoint,
+						this.arranger.getBoundsForElement(exitPoint), monitor);
+			});
+			
 			this.elementsProvider.getTransitionsForRegion(region).forEach(transition -> {
 
 				Vertex source = transition.getSource();

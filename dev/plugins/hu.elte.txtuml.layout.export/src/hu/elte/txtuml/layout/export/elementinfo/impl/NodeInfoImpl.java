@@ -1,5 +1,6 @@
 package hu.elte.txtuml.layout.export.elementinfo.impl;
 
+import hu.elte.txtuml.api.model.StateMachine.Choice;
 import hu.elte.txtuml.api.model.StateMachine.Initial;
 import hu.elte.txtuml.layout.export.elementinfo.NodeInfo;
 import hu.elte.txtuml.layout.export.interfaces.ElementExporter;
@@ -40,9 +41,12 @@ public class NodeInfoImpl extends ElementInfoImpl implements NodeInfo {
 
 	@Override
 	public SpecialBox getSpecialProperty() {
-		if (!isVirtualPhantom() &&
-				Initial.class.isAssignableFrom(getElementClass())) {
-			return SpecialBox.Initial;
+		if (!isVirtualPhantom()){
+			if(Initial.class.isAssignableFrom(getElementClass())) {
+				return SpecialBox.Initial;
+			}else if(Choice.class.isAssignableFrom(getElementClass())){
+				return SpecialBox.Choice;
+			}
 		}
 
 		return SpecialBox.None;
