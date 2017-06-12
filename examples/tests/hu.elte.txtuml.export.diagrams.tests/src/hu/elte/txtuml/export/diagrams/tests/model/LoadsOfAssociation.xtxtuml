@@ -1,0 +1,100 @@
+package hu.elte.txtuml.export.diagrams.tests.model;
+
+class A{
+	
+}
+
+class B{
+	
+}
+
+class C{
+	
+}
+
+class D{
+	
+}
+
+class E{
+	
+}
+
+class F{
+	
+}
+
+association ab{
+	1 A a;
+	1 B b;
+}
+
+association ac{
+	1 A a;
+	1 C c;
+}
+
+association ad{
+	1 A a;
+	1 D d;
+}
+
+association ae{
+	1 A a;
+	1 E e;
+}
+
+association af{
+	1 A a;
+	1 F f;
+}
+
+association bc{
+	1 B b;
+	1 C c;
+}
+
+association bd{
+	1 B b;
+	1 D d;
+}
+
+association be{
+	1 B b;
+	1 E e;
+}
+
+association bf{
+	1 B b;
+	1 F f;
+}
+
+association cd{
+	1 C c;
+	1 D d;
+}
+
+association ce{
+	1 C c;
+	1 E e;
+}
+
+association cf{
+	1 C c;
+	1 F f;
+}
+
+association de{
+	1 D d;
+	1 E e;
+}
+
+association df{
+	1 D d;
+	1 F f;
+}
+
+association ef{
+	1 E e;
+	1 F f;
+}

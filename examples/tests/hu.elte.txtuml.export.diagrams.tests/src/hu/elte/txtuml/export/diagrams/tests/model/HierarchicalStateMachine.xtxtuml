@@ -1,0 +1,79 @@
+package hu.elte.txtuml.export.diagrams.tests.model;
+
+class HierarchicalStateMachine{
+	
+	initial Init;
+	
+	state StateA;
+	
+	composite CStateB{
+		initial InitB;
+		
+		state StateBA;
+		
+		state StateBB;
+		
+		composite CStateBC{
+			initial InitBC;
+			
+			state StateBCA;
+			
+			state StateBCB;
+			
+			state StateBCC;
+			
+			transition initBCToStateBCA{
+				from InitBC;
+				to StateBCA;
+			} 
+			
+			transition StateBCAToStateBCB{
+				from StateBCA;
+				to StateBCB;
+				trigger S7;
+			}
+			
+			transition StateBCBToStateBCC{
+				from StateBCB;
+				to StateBCC;
+				trigger S6;
+			}
+		}
+		
+		transition initBToStateBA{
+			from InitB;
+			to StateBA;
+		} 
+		
+		transition StateBAToStateBB{
+			from StateBA;
+			to StateBB;
+			trigger S5;
+		}
+		
+		transition StateBBToStateBC{
+			from StateBB;
+			to CStateBC;
+			trigger S4;
+		}
+	}
+	
+	state StateC;
+	
+	transition initToStateA{
+		from Init;
+		to StateA;
+	} 
+	
+	transition StateAToStateB{
+		from StateA;
+		to CStateB;
+		trigger S3;
+	}
+	
+	transition StateBToStateC{
+		from CStateB;
+		to StateC;
+		trigger S2;
+	}
+}
