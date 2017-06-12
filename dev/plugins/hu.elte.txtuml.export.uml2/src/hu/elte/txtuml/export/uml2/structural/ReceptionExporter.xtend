@@ -6,6 +6,7 @@ import hu.elte.txtuml.export.uml2.Exporter
 import org.eclipse.jdt.core.dom.MethodDeclaration
 import hu.elte.txtuml.export.uml2.BaseExporter
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration
+import org.eclipse.uml2.uml.Signal
 
 class ReceptionExporter extends Exporter<MethodDeclaration, IMethodBinding, Reception> {
 	
@@ -19,7 +20,8 @@ class ReceptionExporter extends Exporter<MethodDeclaration, IMethodBinding, Rece
 	
 	override exportContents(MethodDeclaration decl) {
 		val binding = decl.resolveBinding
-		result.name = binding.name
+		result.name = binding.name		
+		result.signal = (fetchType(binding.parameterTypes.get(0)) as Signal)
 		result.ownedParameters += decl.parameters.map [
 			exportParameter((it as SingleVariableDeclaration).resolveBinding) 
 		]

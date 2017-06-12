@@ -43,13 +43,13 @@ public class InterfaceTemplates {
 		source.append(infPartDecl(infName + ReqPostFix, sendFunctions.toString(), sendAny));
 		source.append(infPartDecl(infName + ProvPostFix, reciveFunctions.toString(), reciveAny));
 		source.append(integratedInfDef(infName));
-		return "";
+		return source.toString();
 	}
 	private static String infPartDecl(String partName, String receptions, String anyReception) {
 		return TypeDelcreationKeywords.InterfacType +  " " + 
 					partName + "\n" + 
 					"{\n" + "public: \n" + receptions +
-					"private: \n " + anyReception + "\n};\n";
+					"private: \n" + anyReception + "\n};\n";
 	}
 	private static String infReceptionDef(ReceptionType type, String singalName) {
 		String name = "";
@@ -71,7 +71,7 @@ public class InterfaceTemplates {
 		
 		return ModifierNames.NoReturn + " " + name + 
 		"(" + GenerationNames.signalPointerType(singalName) + " " + singalParam + ")" + 
-		"{" + anyName + "(" + singalParam + ")" +  "}";
+		"{" + anyName + "(" + singalParam + ");" +  "}\n";
 		
 		
 	}
