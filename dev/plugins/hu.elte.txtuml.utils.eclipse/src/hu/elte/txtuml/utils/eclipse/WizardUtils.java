@@ -137,6 +137,10 @@ public class WizardUtils {
 						.filter(mvp -> mvp.getValueKind() == IMemberValuePair.K_CLASS)
 						.flatMap(mvp -> Stream.of(mvp.getValue())).collect(Collectors.toList());
 
+				if (annotValues.isEmpty()) {
+					throw new NoSuchElementException("Group is empty.");
+				}
+				
 				for (Object val : annotValues) {
 					List<Object> annotations = new ArrayList<>();
 					if (val instanceof String) {
@@ -157,7 +161,7 @@ public class WizardUtils {
 					}
 				}
 			}
-		} catch (JavaModelException | NoSuchElementException e) {
+		} catch (JavaModelException e) {
 		}
 
 		return Optional.empty();

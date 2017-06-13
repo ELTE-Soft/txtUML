@@ -15,6 +15,8 @@ import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.internal.ui.wizards.TypedElementSelectionValidator;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
@@ -69,6 +71,12 @@ public class TxtUMLToCppPage extends WizardPage {
 
 		threadManagerDescriptionText = new Text(composite, SWT.BORDER | SWT.SINGLE);
 		threadManagerDescriptionText.setText(DESCRIPTION_NAME);
+		threadManagerDescriptionText.addModifyListener(new ModifyListener() {
+			@Override
+			public void modifyText(ModifyEvent e) {
+				setPageComplete(!threadManagerDescriptionText.getText().equals(""));
+			}
+		});
 
 		descriptionBrowser = new Button(composite, SWT.NONE);
 		descriptionBrowser.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false));
@@ -108,7 +116,7 @@ public class TxtUMLToCppPage extends WizardPage {
 		overWriteMainFle.setText("Overwrite main file if it exists");
 
 		setControl(composite);
-		setPageComplete(true);
+		setPageComplete(!threadManagerDescriptionText.getText().trim().equals(""));
 	}
 
 	public IType getThreadDescription() {
