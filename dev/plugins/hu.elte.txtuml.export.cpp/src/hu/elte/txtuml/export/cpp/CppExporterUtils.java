@@ -246,4 +246,8 @@ public class CppExporterUtils {
 
 		return false;
 	}
+	
+	public static boolean isStateMachineOwner(Class cls) {
+		return CppExporterUtils.getStateMachine(cls) != null;
+	}
 }

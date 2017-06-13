@@ -3,7 +3,6 @@
 
 #include <string>
 #include <memory>
-#include "Containers/threadsafequeue.hpp"
 
 namespace Model
 {
@@ -28,6 +27,9 @@ class IRuntime;
 namespace ES
 {
 class Timer;
+
+template<typename T>
+class ThreadSafeQueue;
 }
 
 
