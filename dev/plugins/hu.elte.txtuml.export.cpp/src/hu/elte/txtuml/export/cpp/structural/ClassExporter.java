@@ -86,10 +86,6 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 		}
 	}
 
-	public boolean isStateMachineOwner() {
-		return isStateMachineOwner;
-	}
-
 	public void setAbstractInterface(String abstractInterface) {
 		this.abstractInterface = abstractInterface;
 	}
