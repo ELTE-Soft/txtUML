@@ -56,9 +56,9 @@ class XtxtUMLTypeValidator extends XtxtUMLUniquenessValidator {
 		if (!isValid) {
 			error(
 				if (isAttribute) {
-					"Invalid type. Only boolean, double, int, String, model enums, model data types and external interfaces are allowed."
+					"Invalid type. Only boolean, double, int, String, model enums and model data types are allowed."
 				} else {
-					"Invalid type. Only boolean, double, int, String, model enums, model data types, external interfaces, signal and model class types are allowed."
+					"Invalid type. Only boolean, double, int, String, model enums, model data types, signal and model class types are allowed."
 				}, typeRef, TypesPackage.Literals.JVM_PARAMETERIZED_TYPE_REFERENCE__TYPE, INVALID_TYPE);
 		}
 	}
