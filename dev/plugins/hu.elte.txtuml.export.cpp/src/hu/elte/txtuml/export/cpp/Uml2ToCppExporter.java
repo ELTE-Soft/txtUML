@@ -125,14 +125,14 @@ public class Uml2ToCppExporter {
 			classExporter.setName(cls.getName());
 			classExporter.setPoolId(threadManager.getDescription().get(cls.getName()).getId());
 			classExporter.exportStructuredElement(cls, outputDirectory);
-			if (classExporter.isStateMachineOwner()) {
+			if (CppExporterUtils.isStateMachineOwner(cls)) {
 				classNames.addAll(classExporter.getSubmachines());
 			}
 
 			classNames.add(cls.getName());
 			classNames.addAll(classExporter.getAdditionalSources());
 
-			if (classExporter.isStateMachineOwner()) {
+			if (CppExporterUtils.isStateMachineOwner(cls)) {
 				stateMachineOwners.add(cls.getName());
 				stateMachineOwners.addAll(classExporter.getSubmachines());
 			}
@@ -295,6 +295,7 @@ public class Uml2ToCppExporter {
 		List<Pair<String, String>> allParam = new LinkedList<Pair<String, String>>();
 
 		events.append(EventTemplates.InitSignal + ENUM_EXTENSION + ",");
+		events.append(EventTemplates.DestroySignal + ENUM_EXTENSION + ",");
 		for (Signal signal : signalList) {
 			List<Pair<String, String>> currentParams = getSignalParams(signal);
 			String ctrBody = CppExporterUtils.signalCtrBody(signal, modelRoot);
@@ -306,6 +307,8 @@ public class Uml2ToCppExporter {
 		events = new StringBuilder(events.substring(0, events.length() - 1));
 
 		source.append(EventTemplates.eventClass(EventTemplates.InitSignal, new ArrayList<Pair<String, String>>(), "",
+				new ArrayList<Property>()));
+		source.append(EventTemplates.eventClass(EventTemplates.DestroySignal, new ArrayList<Pair<String, String>>(), "",
 				new ArrayList<Property>()));
 
 		DependencyExporter dependencyEporter = new DependencyExporter();
