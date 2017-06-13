@@ -29,7 +29,7 @@ namespace Execution
 		EventProcessorThread(EventProcessorThread&& e)
 		{
 			_thread = e._thread;
-			_state = e._state; ;
+			_state = e._state;
 			e._thread = nullptr;
 		}
 		virtual ~EventProcessorThread()
@@ -47,7 +47,7 @@ namespace Execution
 
 		void waitFinishing() {
 
-			assert(!threadsAreIdentical()); //deadlock situatuion
+			assert(!threadsAreIdentical()); //deadlock situation
 
 			if (_thread->joinable()) {
 				_thread->join();

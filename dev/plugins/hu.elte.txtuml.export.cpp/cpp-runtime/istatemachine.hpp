@@ -35,7 +35,7 @@ public:
 	bool isInPool() const;
 	bool isStarted() const;
 	bool isInitialized() const;
-	bool isDestoryed() const;
+	bool isDestroyed() const;
 	int getPoolId() const;
 	void setMessageCounter(ES::SharedPtr<ES::AtomicCounter> counter);
 	virtual std::string toString() const;

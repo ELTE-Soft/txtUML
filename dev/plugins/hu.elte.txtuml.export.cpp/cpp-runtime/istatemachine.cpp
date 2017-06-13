@@ -98,7 +98,7 @@ bool IStateMachine::isInitialized() const
 	return _initialized; 
 }
 
-bool IStateMachine::isDestoryed() const 
+bool IStateMachine::isDestroyed() const
 { 
 	return _deleted; 
 }

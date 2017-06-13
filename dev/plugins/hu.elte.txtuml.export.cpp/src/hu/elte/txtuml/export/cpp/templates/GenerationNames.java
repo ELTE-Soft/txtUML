@@ -101,7 +101,7 @@ public class GenerationNames {
 	
 	public static class FixEventNames {
 		public static final String InitialEventName = "InitSignal";
-		public static final String DestoryEventName = "DestorySignal";
+		public static final String DestroyEventName = "DestroySignal";
 
 	}
 	

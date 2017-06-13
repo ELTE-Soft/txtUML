@@ -136,10 +136,10 @@ public class ActivityTemplates {
 					GenerationNames.StateMachineMethodNames.DestroyStatemachineMethod, Collections.emptyList())));
 			source.append(signalSend(
 					objectVariable,
-					GenerationNames.signalPointerType(GenerationNames.FixEventNames.DestoryEventName) + "("
+					GenerationNames.signalPointerType(GenerationNames.FixEventNames.DestroyEventName) + "("
 							+ PointerAndMemoryNames.MemoryAllocator 
 							+ " " + PrivateFunctionalTemplates
-							.signalType(GenerationNames.FixEventNames.DestoryEventName) + "())"));
+							.signalType(GenerationNames.FixEventNames.DestroyEventName) + "())"));
 		}
 		
 		return source.toString();

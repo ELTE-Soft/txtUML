@@ -17,7 +17,7 @@ public class EventTemplates {
 	
 	public static final String EventHeader = EventTemplates.EventHeaderName + "." + FileNames.HeaderExtension;
 	public static final String InitSignal = GenerationNames.FixEventNames.InitialEventName;
-	public static final String DestorySignal = GenerationNames.FixEventNames.DestoryEventName;
+	public static final String DestroySignal = GenerationNames.FixEventNames.DestroyEventName;
 	public static final String ProcessEventFunctionName = "processEventVirtual";
 	public static final String EventFParamName = GenerationNames.formatIncomingParamName(EventTemplates.EventParamName);
 	public static final String EventParamName = "e";

@@ -79,7 +79,7 @@ void StateMachineThreadPool::task()
 			if (!sm->isInitialized()) sm->init();
 			for (int i = 0; i < 5 && sm != nullptr && !sm->emptyMessageQueue(); ++i)
 			{
-				if (!sm->isDestoryed()) {
+				if (!sm->isDestroyed()) {
 					sm->processEventVirtual();
 				}
 				else {
