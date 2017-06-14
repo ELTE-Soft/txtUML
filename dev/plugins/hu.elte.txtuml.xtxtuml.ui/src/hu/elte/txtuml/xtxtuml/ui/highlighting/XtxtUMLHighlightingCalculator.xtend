@@ -3,6 +3,7 @@ package hu.elte.txtuml.xtxtuml.ui.highlighting;
 import com.google.inject.Inject
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAttribute
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUConstructor
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUEnumerationLiteral
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUMultiplicity
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUOperation
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUSignalAttribute
@@ -43,6 +44,9 @@ class XtxtUMLHighlightingCalculator extends XbaseHighlightingCalculator {
 			TUMultiplicity: {
 				val textRegion = NodeModelUtils.findActualNodeFor(object).textRegion;
 				acceptor.addPosition(textRegion.offset, textRegion.length, MULTIPLICITY);
+			}
+			TUEnumerationLiteral: {
+				highlightFeature(acceptor, object, TU_ENUMERATION_LITERAL__NAME, ENUMERATION_LITERAL)
 			}
 			default:
 				super.highlightElement(object, acceptor, cancelIndicator)

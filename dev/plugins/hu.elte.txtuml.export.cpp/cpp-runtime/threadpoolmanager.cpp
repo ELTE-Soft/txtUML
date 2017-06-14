@@ -1,16 +1,20 @@
 #include "threadpoolmanager.hpp"
+#include "threadconfiguration.hpp"
+
 #include <stdlib.h>
 #include <algorithm> 
+namespace Execution 
+{
 
-ThreadPoolManager::ThreadPoolManager() : configuration(nullptr) {}
+ThreadPoolManager::ThreadPoolManager() : configured(false) {}
 
-void ThreadPoolManager::recalculateThreads(int id,int n)
+void ThreadPoolManager::recalculateThreads(int id, int n)
 {
 	if (!isConfigurated()) {
 		abort();
 	}
-	
-	configuration->getThreadPool(id)->modifiedThreads(calculateNOfThreads(id,n));
+
+	configurations[id]->getThreadPool()->modifyThreads(calculateNOfThreads(id, n));
 }
 
 int ThreadPoolManager::calculateNOfThreads(int id, int n)
@@ -18,21 +22,21 @@ int ThreadPoolManager::calculateNOfThreads(int id, int n)
 	if (!isConfigurated()) {
 		abort();
 	}
-	
-	LinearFunction function = *(configuration->getFunction(id));
-	int max = configuration->getMax(id);
-	return std::min(function(n),max);
-	
+
+	LinearFunction function = *(configurations[id]->getFunction());
+	int max = configurations[id]->getMax();
+	return std::min(function(n), max);
+
 }
 
-void ThreadPoolManager::enqueObject(StateMachineI* sm)
+void ThreadPoolManager::enqueueObject(ES::StateMachineRef sm)
 {
 	if (!isConfigurated()) {
 		abort();
 	}
-	
+
 	int objectId = sm->getPoolId();
-	configuration->getThreadPool(objectId)->enqueObject(sm);
+	configurations[objectId]->getThreadPool()->enqueueObject(sm);
 }
 
 int ThreadPoolManager::getNumberOfConfigurations()
@@ -40,32 +44,34 @@ int ThreadPoolManager::getNumberOfConfigurations()
 	if (!isConfigurated()) {
 		abort();
 	}
-	
-	return ((int)configuration->getNumberOfConfigurations());
+
+	return (configurations.getSize());
 }
 
-StateMachineThreadPool* ThreadPoolManager::getPool(int id)
+ES::SharedPtr<StateMachineThreadPool> ThreadPoolManager::getPool(int id)
 {
 	if (!isConfigurated()) {
 		abort();
 	}
-	
-	return configuration->getThreadPool(id);
+
+	return configurations[id]->getThreadPool();
 }
 
-ThreadPoolManager::~ThreadPoolManager()
+void ThreadPoolManager::setConfiguration(ESContainer::FixedArray<ES::SharedPtr<Configuration>> configurations)
 {
-	if(isConfigurated())
-		delete configuration;
-}
-
-void ThreadPoolManager::setConfiguration(ThreadConfiguration* configuration)
-{
-	this->configuration = configuration;
+	this->configurations = configurations;
+	configured = true;
 }
 
 bool ThreadPoolManager::isConfigurated()
 {
-	return configuration != nullptr;
+	return configured;
 }
+
+ThreadPoolManager::~ThreadPoolManager()
+{
+}
+
+}
+
 

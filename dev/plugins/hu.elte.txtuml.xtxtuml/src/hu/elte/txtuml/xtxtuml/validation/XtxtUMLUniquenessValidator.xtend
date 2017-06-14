@@ -11,6 +11,8 @@ import hu.elte.txtuml.xtxtuml.xtxtUML.TUConnector
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUConnectorEnd
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUConstructor
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUEntryOrExitActivity
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUEnumeration
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUEnumerationLiteral
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUFile
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUInterface
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUModelElement
@@ -71,6 +73,18 @@ class XtxtUMLUniquenessValidator extends XtxtUMLNameValidator {
 				NOT_UNIQUE_NAME);
 		}
 	}
+
+	@Check
+	def checkEnumerationLiteralNameIsUnique(TUEnumerationLiteral literal) {
+		val containingEnumeration = literal.eContainer as TUEnumeration;
+		if (containingEnumeration.literals.exists [
+			name == literal.name && it != literal // direct comparison is safe here
+		]) {
+			error("Duplicate literal " + literal.name + " in enumeration " + containingEnumeration.name, literal,
+				TU_ENUMERATION_LITERAL__NAME, NOT_UNIQUE_NAME);
+		}
+	}
+
 
 	@Check
 	def checkReceptionIsUnique(TUReception reception) {

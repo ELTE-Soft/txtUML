@@ -59,6 +59,17 @@ public class MultiplicityProvider {
 	public static boolean isOneToUnlimited(TypeDeclaration typeDeclaration) {
 		return SharedUtils.typeIsAssignableFrom(typeDeclaration, Multiplicity.OneToUnlimited.class);
 	}
+	/**
+	 * Decides if the txtUML element represented by the specified class has *..*
+	 * multiplicity.
+	 * 
+	 * @param specifiedClass
+	 *            The specified class representing a txtUML element.
+	 * @return The decision.
+	 */
+	public static boolean isMultiple(TypeDeclaration typeDeclaration) {
+		return SharedUtils.typeIsAssignableFrom(typeDeclaration, Multiplicity.MinToMax.class);
+	}
 
 	private static Integer getExplicitMultiplicity(TypeDeclaration typeDeclaration, String annotationName) {
 		for (Object modifier : typeDeclaration.modifiers()) {
@@ -102,7 +113,7 @@ public class MultiplicityProvider {
 		if (explicitLowerBound != null) {
 			return explicitLowerBound;
 		}
-		if (isZeroToOne(typeDeclaration) || isZeroToUnlimited(typeDeclaration))
+		if (isZeroToOne(typeDeclaration) || isZeroToUnlimited(typeDeclaration)|| isMultiple(typeDeclaration))
 			return 0;
 		else
 			return 1;
@@ -121,7 +132,7 @@ public class MultiplicityProvider {
 		if (explicitUpperBound != null) {
 			return explicitUpperBound;
 		}
-		if (isOneToUnlimited(typeDeclaration) || isZeroToUnlimited(typeDeclaration))
+		if (isOneToUnlimited(typeDeclaration) || isZeroToUnlimited(typeDeclaration)|| isMultiple(typeDeclaration))
 			return org.eclipse.uml2.uml.LiteralUnlimitedNatural.UNLIMITED;
 		else
 			return 1;

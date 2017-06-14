@@ -1,20 +1,30 @@
 package hu.elte.txtuml.utils.eclipse;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.core.IAnnotation;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaProject;
+import org.eclipse.jdt.core.IMemberValuePair;
 import org.eclipse.jdt.core.IPackageDeclaration;
 import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
+import org.eclipse.jdt.ui.JavaElementLabelProvider;
+import org.eclipse.jface.viewers.DelegatingStyledCellLabelProvider;
+import org.eclipse.jface.viewers.IBaseLabelProvider;
+import org.eclipse.jface.viewers.StyledString;
 
 import hu.elte.txtuml.api.model.Model;
+import hu.elte.txtuml.utils.Pair;
+import hu.elte.txtuml.utils.jdt.ModelUtils;
 
 public class WizardUtils {
 
@@ -58,7 +68,7 @@ public class WizardUtils {
 		List<IPackageFragment> modelPackages = new ArrayList<>();
 		for (IPackageFragment pFragment : packageFragments) {
 			Optional<ICompilationUnit> foundPackageInfoCompilationUnit = Optional
-					.of(pFragment.getCompilationUnit("package-info.java"));
+					.of(pFragment.getCompilationUnit(PackageUtils.PACKAGE_INFO));
 
 			if (!foundPackageInfoCompilationUnit.isPresent() || !foundPackageInfoCompilationUnit.get().exists()) {
 				continue;
@@ -91,6 +101,73 @@ public class WizardUtils {
 					.anyMatch(pf -> !getTypesBySuperclass(pf, superClasses).isEmpty());
 		} catch (JavaModelException ex) {
 			return false;
+		}
+	}
+
+	public static IBaseLabelProvider getPostQualifiedLabelProvider() {
+		return new DelegatingStyledCellLabelProvider(new JavaElementLabelProvider(
+				JavaElementLabelProvider.SHOW_POST_QUALIFIED | JavaElementLabelProvider.SHOW_SMALL_ICONS)) {
+			@Override
+			protected StyledString getStyledText(Object element) {
+				String nameWithQualifier = getStyledStringProvider().getStyledText(element).getString() + " ";
+				int separatorIndex = nameWithQualifier.indexOf('-');
+
+				if (separatorIndex == -1)
+					return new StyledString(nameWithQualifier);
+
+				StyledString name = new StyledString(nameWithQualifier.substring(0, separatorIndex));
+				String qualifier = nameWithQualifier.substring(separatorIndex);
+				return name.append(new StyledString(qualifier, StyledString.QUALIFIER_STYLER));
+			};
+		};
+	}
+
+	/**
+	 * @return an empty optional if the given type is not annotated, otherwise
+	 *         the name of the model package and its java project respectively,
+	 *         which contains the types of the given annotation
+	 */
+	public static Optional<Pair<String, String>> getModelByAnnotations(IType annotatedType) {
+		try {
+			List<String> referencedProjects = new ArrayList<>(
+					Arrays.asList(annotatedType.getJavaProject().getRequiredProjectNames()));
+			referencedProjects.add(annotatedType.getJavaProject().getElementName());
+			for (IAnnotation annot : annotatedType.getAnnotations()) {
+				List<Object> annotValues = Stream.of(annot.getMemberValuePairs())
+						.filter(mvp -> mvp.getValueKind() == IMemberValuePair.K_CLASS)
+						.flatMap(mvp -> Stream.of(mvp.getValue())).collect(Collectors.toList());
+
+				for (Object val : annotValues) {
+					List<Object> annotations = new ArrayList<>();
+					if (val instanceof String) {
+						annotations.add(val);
+					} else {
+						annotations.addAll(Arrays.asList((Object[]) val));
+					}
+
+					for (Object v : annotations) {
+						String[][] resolvedTypes = resolveType(annotatedType, (String) v);
+						List<String[]> resolvedTypeList = new ArrayList<>(Arrays.asList(resolvedTypes));
+						for (String[] type : resolvedTypeList) {
+							Optional<Pair<String, String>> model = ModelUtils.getModelOf(type[0], referencedProjects);
+							if (model.isPresent()) {
+								return model;
+							}
+						}
+					}
+				}
+			}
+		} catch (JavaModelException | NoSuchElementException e) {
+		}
+
+		return Optional.empty();
+	}
+
+	private static String[][] resolveType(IType context, String typeName) {
+		try {
+			return context.resolveType(typeName);
+		} catch (JavaModelException e) {
+			return new String[][] {};
 		}
 	}
 

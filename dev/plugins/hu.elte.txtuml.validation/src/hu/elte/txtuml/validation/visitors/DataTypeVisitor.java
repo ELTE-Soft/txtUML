@@ -7,12 +7,13 @@ import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.Modifier;
 import org.eclipse.jdt.core.dom.SimpleName;
 import org.eclipse.jdt.core.dom.SimpleType;
+import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 
 import hu.elte.txtuml.utils.jdt.ElementTypeTeller;
 import hu.elte.txtuml.validation.ProblemCollector;
 import hu.elte.txtuml.validation.problems.datatype.InvalidDataTypeField;
-import hu.elte.txtuml.validation.problems.datatype.InvalidDataTypeMethod;
 import hu.elte.txtuml.validation.problems.datatype.MutableDataTypeField;
+import hu.elte.txtuml.validation.problems.general.InvalidParameterType;
 
 public class DataTypeVisitor extends VisitorBase {
 
@@ -29,8 +30,7 @@ public class DataTypeVisitor extends VisitorBase {
 		if (!ElementTypeTeller.isFinal(node)) {
 			collector.report(new MutableDataTypeField(collector.getSourceInfo(), node));
 		}
-		if (!Utils.isBasicType(node.getType(), false)
-				&& !ElementTypeTeller.isDataType(node.getType().resolveBinding())) {
+		if (!Utils.isAllowedAttributeType(node.getType(), false)) {
 			collector.report(new InvalidDataTypeField(collector.getSourceInfo(), node));
 		}
 		return false;
@@ -39,8 +39,19 @@ public class DataTypeVisitor extends VisitorBase {
 	@Override
 	public boolean visit(MethodDeclaration node) {
 		if (!node.isConstructor()) {
-			collector.report(new InvalidDataTypeMethod(collector.getSourceInfo(), node));
+			if (node.getReturnType2() != null && !Utils.isAllowedParameterType(node.getReturnType2(), true)) {
+				collector.report(new InvalidParameterType(collector.getSourceInfo(), node.getReturnType2()));
+			}
 		}
+
+		Utils.checkModifiers(collector, node);
+		for (Object obj : node.parameters()) {
+			SingleVariableDeclaration param = (SingleVariableDeclaration) obj;
+			if (!Utils.isAllowedParameterType(param.getType(), false)) {
+				collector.report(new InvalidParameterType(collector.getSourceInfo(), param.getType()));
+			}
+		}
+
 		// TODO: check body
 		return false;
 	}

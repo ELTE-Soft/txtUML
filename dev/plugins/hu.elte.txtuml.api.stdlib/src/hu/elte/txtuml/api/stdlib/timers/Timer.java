@@ -13,8 +13,8 @@ import hu.elte.txtuml.api.stdlib.impl.timers.TimerImpl;
  * send operation can be started, which means that a signal will be
  * asynchronously sent to the a target model object after a specified timeout.
  * <p>
- * See the documentation of {@link hu.elte.txtuml.api.Model} for an overview on
- * modeling in JtxtUML.
+ * See the documentation of {@link hu.elte.txtuml.api.model.Model} for an
+ * overview on modeling in JtxtUML.
  */
 public interface Timer extends ExternalClass {
 

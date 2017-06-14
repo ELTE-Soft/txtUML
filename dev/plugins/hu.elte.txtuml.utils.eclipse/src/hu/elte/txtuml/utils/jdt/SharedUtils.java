@@ -15,6 +15,7 @@ import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTParser;
+import org.eclipse.jdt.core.dom.AbstractTypeDeclaration;
 import org.eclipse.jdt.core.dom.Annotation;
 import org.eclipse.jdt.core.dom.BodyDeclaration;
 import org.eclipse.jdt.core.dom.CompilationUnit;
@@ -46,7 +47,7 @@ public final class SharedUtils {
 	 *            The specified class.
 	 * @return The decision.
 	 */
-	public static boolean typeIsAssignableFrom(TypeDeclaration typeDeclaration, Class<?> specifiedClass) {
+	public static boolean typeIsAssignableFrom(AbstractTypeDeclaration typeDeclaration, Class<?> specifiedClass) {
 		return typeIsAssignableFrom(typeDeclaration.resolveBinding(), specifiedClass);
 	}
 
@@ -110,6 +111,18 @@ public final class SharedUtils {
 		return null;
 	}
 
+	/**
+	 * Parses a whole Stream of compilation units in the given Java project.
+	 * 
+	 * @param stream
+	 *            The specified compilation units to be parsed.
+	 * @param project
+	 *            The given Java project.
+	 * @return The parsed compilation units.
+	 * @throws IOException
+	 *             Thrown when I/O error occurs during reading the file.
+	 * @throws JavaModelException
+	 */
 	public static CompilationUnit[] parseICompilationUnitStream(Stream<ICompilationUnit> stream,
 			IJavaProject javaProject) throws IOException, JavaModelException {
 

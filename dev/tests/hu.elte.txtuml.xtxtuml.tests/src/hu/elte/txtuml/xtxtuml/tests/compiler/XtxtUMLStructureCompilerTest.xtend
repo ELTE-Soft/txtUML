@@ -74,8 +74,8 @@ class XtxtUMLStructureCompilerTest {
 			}
 		''');
 		}
-		
-		@Test
+
+	@Test
 	def compileSignalInheritance() {
 		'''
 			package test.model;
@@ -249,6 +249,45 @@ class XtxtUMLStructureCompilerTest {
 			public class B extends A {
 			}
 
+		''');
+	}
+
+
+	@Test
+	def compileEnum() {
+		'''
+			package test.model;
+			enum E;
+		'''.assertCompilesTo('''
+			package test.model;
+
+			import hu.elte.txtuml.api.model.ModelEnum;
+
+			@SuppressWarnings("all")
+			public enum E implements ModelEnum {
+			}
+		''');
+
+		'''
+			package test.model;
+			enum E {
+				A,
+				B,
+				C,
+			}
+		'''.assertCompilesTo('''
+			package test.model;
+
+			import hu.elte.txtuml.api.model.ModelEnum;
+
+			@SuppressWarnings("all")
+			public enum E implements ModelEnum {
+			  A,
+			  
+			  B,
+			  
+			  C;
+			}
 		''');
 	}
 

@@ -26,7 +26,7 @@ public class Tester {
 	}
 
 	public static void main(String[] args) {
-		ModelExecutor.create().setTraceLogging(false).run(Tester::init);
+		ModelExecutor.create().setTraceLogging(true).run(Tester::init);
 	}
 
 }

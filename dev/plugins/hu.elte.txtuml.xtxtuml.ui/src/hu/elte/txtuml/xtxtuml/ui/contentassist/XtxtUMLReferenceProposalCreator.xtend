@@ -5,6 +5,7 @@ import com.google.common.base.Predicate
 import com.google.inject.Inject
 import hu.elte.txtuml.api.model.DataType
 import hu.elte.txtuml.api.model.ModelClass
+import hu.elte.txtuml.api.model.ModelEnum
 import hu.elte.txtuml.api.model.Signal
 import hu.elte.txtuml.api.model.external.ExternalType
 import hu.elte.txtuml.xtxtuml.common.XtxtUMLReferenceProposalScopeProvider
@@ -33,6 +34,7 @@ import org.eclipse.emf.ecore.EObject
 import org.eclipse.emf.ecore.EReference
 import org.eclipse.jface.text.contentassist.ICompletionProposal
 import org.eclipse.xtext.EcoreUtil2
+import org.eclipse.xtext.common.types.JvmDeclaredType
 import org.eclipse.xtext.common.types.JvmGenericType
 import org.eclipse.xtext.common.types.JvmTypeReference
 import org.eclipse.xtext.common.types.TypesPackage
@@ -255,12 +257,11 @@ class XtxtUMLReferenceProposalCreator extends XbaseReferenceProposalCreator {
 		}
 
 		return if (isClassAllowed != null) {
-			val isSignalAllowed = EcoreUtil2.getContainerOfType(model, XBlockExpression) != null;
-			scope.allElements.filter[isAllowedType(isClassAllowed, isSignalAllowed)]
+			scope.allElements.filter[isAllowedType(isClassAllowed)]
 		}
 	}
 
-	def private isAllowedType(IEObjectDescription desc, boolean isClassAllowed, boolean isSignalAllowed) {
+	def private isAllowedType(IEObjectDescription desc, boolean isClassAllowed) {
 		// primitives are handled as keywords on this level, nothing to do with them
 		allowedJavaClassTypes.contains(desc.qualifiedName.toString) || {
 			val proposedObj = desc.EObjectOrProxy;
@@ -271,10 +272,10 @@ class XtxtUMLReferenceProposalCreator extends XbaseReferenceProposalCreator {
 			// convenient:
 			// supertypes are already in type reference format, which state would
 			// be difficult to achieve starting from a plain JvmType
-			proposedObj instanceof JvmGenericType && (proposedObj as JvmGenericType).superTypes.exists [
+			proposedObj instanceof JvmDeclaredType && (proposedObj as JvmDeclaredType).superTypes.exists [
 				val typeRef = toLightweightTypeReference;
-				typeRef.isSubtypeOf(DataType) || typeRef.isInterface && typeRef.isSubtypeOf(ExternalType) ||
-					isClassAllowed && typeRef.isSubtypeOf(ModelClass) || isSignalAllowed && typeRef.isSubtypeOf(Signal)
+				typeRef.isSubtypeOf(DataType) || typeRef.isInterface && typeRef.isSubtypeOf(ExternalType) || typeRef.isSubtypeOf(ModelEnum) ||
+					isClassAllowed && (typeRef.isSubtypeOf(ModelClass) || typeRef.isSubtypeOf(Signal))
 			]
 		}
 	}

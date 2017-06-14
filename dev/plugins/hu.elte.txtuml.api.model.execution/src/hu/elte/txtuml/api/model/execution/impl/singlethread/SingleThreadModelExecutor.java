@@ -8,8 +8,9 @@ import hu.elte.txtuml.api.model.execution.impl.base.ModelExecutorThread;
 import hu.elte.txtuml.utils.Logger;
 
 /**
- * Abstract base class for {@link ModelExecutor} implementations which use only
- * one model executor thread.
+ * Abstract base class for
+ * {@link hu.elte.txtuml.api.model.execution.ModelExecutor} implementations
+ * which use only one model executor thread.
  */
 public abstract class SingleThreadModelExecutor<S extends SingleThreadModelExecutor<S>>
 		extends AbstractModelExecutor<S> {

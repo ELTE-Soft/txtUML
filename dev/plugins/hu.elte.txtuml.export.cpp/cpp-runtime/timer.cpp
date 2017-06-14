@@ -1,25 +1,33 @@
 #include "timer.hpp"
 
-Timer::Timer(StateMachineI *sm, EventPtr event, int millisecs): command([sm,event]() {sm->send(event);})
+#include "istatemachine.hpp"
+
+namespace ES
 {
-    schedule(millisecs);
+
+Timer::Timer(ES::StateMachineRef sm, ES::EventRef event, int millisecs) : _command([sm, event]() {sm->send(event); })
+{
+	schedule(millisecs);
 }
 
 Timer::~Timer()
 {
-    fut.wait();
-    fut.get();
+	_scheduler.join();
 }
 
 void Timer::schedule(int millisecs)
 {
-    fut = std::async (std::launch::async,&Timer::f,this,millisecs);
+	_millisecs = millisecs;
+	_scheduler = std::thread(&Timer::scheduledTask, this);
 }
 
-void Timer::f(int millisecs)
+void Timer::scheduledTask()
 {
-    std::mutex mu;
-    std::unique_lock<std::mutex> lock(mu);
-    _cond.wait_for(lock,milliseconds(millisecs));
-    command();
+	std::mutex mu;
+	std::unique_lock<std::mutex> lock(mu);
+	_cond.wait_for(lock, milliseconds(_millisecs));
+	_command();
 }
+
+}
+
