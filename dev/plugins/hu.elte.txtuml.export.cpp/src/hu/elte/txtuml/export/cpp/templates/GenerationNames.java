@@ -100,8 +100,18 @@ public class GenerationNames {
 		public static final String FixContainer =  Namespaces.ContainerNamespace + "::" +  "FixedArray";
 	}
 	
-	public static class TypeDelcreationKeywords {
 
+	public static class FixEventNames {
+		public static final String InitialEventName = "InitSignal";
+		public static final String DestroyEventName = "DestroySignal";
+
+	}
+	
+	public static class StateMachineMethodNames {
+		public static final String DestroyStatemachineMethod = "destroy";
+	}	
+	
+	public static class TypeDelcreationKeywords {
 		public static final String ClassType = "struct";
 		public static final String DataType = "struct";
 		public static final String EnumType = "enum";
@@ -175,7 +185,7 @@ public class GenerationNames {
 	public static final String InitStateMachine = "initStateMachine";
 
 	public static final String PoolIdSetter = "setPoolId";
-	public static final String InitialEventName = "InitSignal";
+	
 	public static final String AssigmentOperator = "=";
 	public static final String AddAssocToAssocationFunctionName = "addAssoc";
 	public static final String RemoveAssocToAssocationFunctionName = "removeAssoc";
@@ -248,8 +258,8 @@ public class GenerationNames {
 				+ "if(it!=" + CompositeStateMapName + ".end())\n" + "{\n" + CurrentMachineName
 				+ "=(it->second).get();\n" + CurrentMachineName + "->" + SetInitialStateName
 				+ "();//restarting from initial state\n" + CurrentMachineName + "->" + ProcessEventFName + "(" + 
-				EventTemplates.eventPtr(GenerationNames.InitialEventName) + "(" + GenerationNames.PointerAndMemoryNames.MemoryAllocator + " " +  
-				EventTemplates.signalType(GenerationNames.InitialEventName) + "()) );\n" + 
+				EventTemplates.eventPtr(GenerationNames.FixEventNames.InitialEventName) + "(" + GenerationNames.PointerAndMemoryNames.MemoryAllocator + " " +  
+				EventTemplates.signalType(GenerationNames.FixEventNames.InitialEventName) + "()) );\n" + 
 				"}\n" + "else\n" + "{\n" + CurrentMachineName + "="
 				+ PointerAndMemoryNames.NullPtr + ";\n" + "}\n" + CurrentStateName + "=" + GenerationNames.StateParamName + ";\n" + "}\n";
 	}
