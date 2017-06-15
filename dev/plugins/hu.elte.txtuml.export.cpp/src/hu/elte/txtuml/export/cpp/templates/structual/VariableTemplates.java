@@ -1,5 +1,8 @@
 package hu.elte.txtuml.export.cpp.templates.structual;
 
+import java.util.List;
+
+import hu.elte.txtuml.export.cpp.CppExporterUtils;
 import hu.elte.txtuml.export.cpp.templates.PrivateFunctionalTemplates;
 import hu.elte.txtuml.export.cpp.templates.activity.ActivityTemplates;
 import hu.elte.txtuml.export.cpp.templates.statemachine.EventTemplates;
@@ -27,6 +30,12 @@ public class VariableTemplates {
 		return variableDecl(typeName, variableName, "", isSignal);
 	}
 
+	public static String propertyDecl(String typeName, String variableName, String defaultValue, List<String> templateParameters) {
+		return variableDecl(typeName + 
+				CppExporterUtils.createTemplateParametersCode(templateParameters), 
+				variableName, defaultValue, false);
+	}
+	
 	public static String propertyDecl(String typeName, String variableName, String defaultValue) {
 		return variableDecl(typeName, variableName, defaultValue, false);
 	}

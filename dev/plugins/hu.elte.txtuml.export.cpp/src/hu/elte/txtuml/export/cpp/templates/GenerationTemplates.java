@@ -2,6 +2,7 @@ package hu.elte.txtuml.export.cpp.templates;
 
 import java.util.List;
 
+import hu.elte.txtuml.export.cpp.CppExporterUtils;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.FileNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.PointerAndMemoryNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.TimerNames;
@@ -55,14 +56,7 @@ public class GenerationTemplates {
 
 	public static String createObject(String typeName, String objName, List<String> templateParams,
 			List<String> params, boolean sharedObject) {
-		String templateParameters = "";
-		if (templateParams != null) {
-			templateParameters = "<";
-			for (int i = 0; i < templateParams.size() - 1; i++) {
-				templateParameters = templateParameters + templateParams.get(i) + ",";
-			}
-			templateParameters = templateParameters + templateParams.get(templateParams.size() - 1) + ">";
-		}
+		String templateParameters = CppExporterUtils.createTemplateParametersCode(templateParams);
 		if(!sharedObject) {
 			return GenerationNames.pointerType(typeName + templateParameters) + " " + objName  + " = "
 					+ allocateObject(typeName + templateParameters, templateParams, params, false) + ";\n";

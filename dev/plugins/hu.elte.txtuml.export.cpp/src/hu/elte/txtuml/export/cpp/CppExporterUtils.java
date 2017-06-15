@@ -9,6 +9,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import org.eclipse.cdt.core.ToolFactory;
@@ -21,13 +22,16 @@ import org.eclipse.text.edits.TextEdit;
 import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.Behavior;
 import org.eclipse.uml2.uml.Class;
+import org.eclipse.uml2.uml.Classifier;
 import org.eclipse.uml2.uml.Element;
+import org.eclipse.uml2.uml.Interface;
 import org.eclipse.uml2.uml.Operation;
 import org.eclipse.uml2.uml.Parameter;
 import org.eclipse.uml2.uml.Signal;
 import org.eclipse.uml2.uml.StateMachine;
 import org.eclipse.uml2.uml.Stereotype;
 import org.eclipse.uml2.uml.UMLPackage;
+import org.eclipse.uml2.uml.Usage;
 
 import hu.elte.txtuml.export.cpp.activity.ActivityExporter;
 import hu.elte.txtuml.export.cpp.templates.activity.ActivityTemplates;
@@ -217,20 +221,58 @@ public class CppExporterUtils {
 
 		return signalParameters;
 	}
-	public static StateMachine getStateMachine(Class cls) {
+	public static Optional<StateMachine> getStateMachine(Class cls) {
 	
 		List<StateMachine> smList = new ArrayList<StateMachine>();
 		getTypedElements(smList, UMLPackage.Literals.STATE_MACHINE, cls.getOwnedElements());
 		
 		if (!smList.isEmpty()) {
-			return smList.get(0);
+			return Optional.of(smList.get(0));
 
 		} else {
-			return null;
+			return Optional.empty();
 		}
 	}
 
+	public static boolean isStateMachineOwner(Class cls) {
+		return CppExporterUtils.getStateMachine(cls).isPresent();
+	}
 	
+	
+	public static Optional<String> getFirstGeneralClassName(Classifier cls) {
+		if (!cls.getGeneralizations().isEmpty()) {
+			return Optional.of(cls.getGeneralizations().get(0).getGeneral().getName());
+		} else {
+			return Optional.empty();
+		}
+		
+	}
+	
+	public static Optional<String> getUsedInterfaceName(List<Usage> usages, Interface inf) {
+		Optional<Usage> infOptionalUsage = usages.stream().filter(u -> u.getClients().contains(inf)).findFirst();
+		if(infOptionalUsage.isPresent()) {
+			Usage infUsage = infOptionalUsage.get();
+			if (infUsage.getSuppliers().isEmpty()) {
+				return Optional.empty();
+			}
+			return Optional.of(infUsage.getSuppliers().get(0).getName());
+		} else {
+			return Optional.empty();
+		}
+	}
+	
+	public static String createTemplateParametersCode(List<String> templateParamList) {
+		StringBuilder source = new StringBuilder("");
+		if (templateParamList != null) {
+			source.append("<");
+			for (int i = 0; i < templateParamList.size() - 1; i++) {
+				source.append(templateParamList.get(i) + ",");
+			}
+			source.append(templateParamList.get(templateParamList.size() - 1) + ">");
+		}
+		
+		return source.toString();
+	}
 	private static boolean isSignalFactoryClass(Class cls, List<Element> elements) {
 		List<Signal> signals = new ArrayList<Signal>();
 		getTypedElements(signals, UMLPackage.Literals.SIGNAL, elements);
@@ -247,7 +289,6 @@ public class CppExporterUtils {
 		return false;
 	}
 	
-	public static boolean isStateMachineOwner(Class cls) {
-		return CppExporterUtils.getStateMachine(cls) != null;
-	}
+
+	
 }

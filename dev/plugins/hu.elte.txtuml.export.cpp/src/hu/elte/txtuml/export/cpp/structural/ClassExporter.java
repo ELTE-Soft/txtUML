@@ -6,11 +6,13 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.eclipse.uml2.uml.Class;
 import org.eclipse.uml2.uml.Region;
 import org.eclipse.uml2.uml.StateMachine;
 import org.eclipse.uml2.uml.UMLPackage;
+import org.eclipse.uml2.uml.Usage;
 
 import hu.elte.txtuml.export.cpp.CppExporterUtils;
 import hu.elte.txtuml.export.cpp.statemachine.StateMachineExporter;
@@ -29,6 +31,7 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 
 	private List<String> subMachines;
 	private List<String> additionalSourcesNames;
+	
 	private AssociationExporter associationExporter;
 	private ConstructorExporter constructorExporter;
 
@@ -37,7 +40,8 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 	private SubStateMachineExporter subStateMachineExporter;
 
 	private int poolId;
-
+	private List<Usage> usages;
+	
 	public List<String> getAdditionalSources() {
 		return additionalSourcesNames;
 	}
@@ -53,10 +57,9 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 		subMachines = new LinkedList<String>();
 		portExporter = new PortExporter();
 
-		StateMachine classSM = CppExporterUtils.getStateMachine(structuredElement);
-		if (classSM != null) {
-
-			stateMachineExporter = new StateMachineExporter(classSM);
+		Optional<StateMachine> classOptionalSM = CppExporterUtils.getStateMachine(structuredElement);
+		if (classOptionalSM.isPresent()) {
+			stateMachineExporter = new StateMachineExporter(classOptionalSM.get());
 			stateMachineExporter.setName(name);
 			stateMachineExporter.setStateMachineThreadPoolId(poolId);
 		}
@@ -67,6 +70,10 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 
 	public void setPoolId(int poolId) {
 		this.poolId = poolId;
+	}
+	
+	public void setUsages(List<Usage> usages) {
+		this.usages = usages;
 	}
 
 	public List<String> getSubmachines() {
@@ -113,6 +120,7 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 				super.createProtectedAttributes() + super.createProtectedOperationsDeclarations());
 		StringBuilder publicParts = new StringBuilder(
 				super.createPublicAttributes() + super.createPublicOperationDeclarations());
+		
 
 		publicParts.append(constructorExporter.exportConstructorDeclarations(name));
 		publicParts.append(ConstructorTemplates.destructorDecl(name));
@@ -126,6 +134,7 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 
 			publicParts.append(stateMachineExporter.createStateEnumCode());
 			publicParts.append(portExporter.createPortEnumCode(structuredElement.getOwnedPorts()));
+			publicParts.append(portExporter.createPortDeclerations(usages, structuredElement.getOwnedPorts()));
 			privateParts.append(stateMachineExporter.createStateMachineRelatedHeadedDeclarationCodes());
 
 			if (!stateMachineExporter.ownSubMachine()) {

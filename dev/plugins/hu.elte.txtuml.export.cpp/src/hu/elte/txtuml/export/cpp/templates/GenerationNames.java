@@ -126,6 +126,7 @@ public class GenerationNames {
 		public static final String CommonSendAnySignalName = "sendAny";
 		public static final String CommonReciveAnySignalName = "reciveAny";
 		public static final String IntegratedBaseTemplateName = "IntegratedInf";
+		public static final String EmptyInfName = "EmptyInf";
 		
 	}
 	
