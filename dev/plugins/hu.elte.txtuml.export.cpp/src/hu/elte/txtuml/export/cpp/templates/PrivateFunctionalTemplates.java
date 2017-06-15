@@ -12,10 +12,6 @@ import hu.elte.txtuml.utils.Pair;
 
 public class PrivateFunctionalTemplates {
 
-	public static String signalType(String type) {
-		return type + GenerationNames.EventClassTypeId;
-	}
-
 	public static String classHeaderIncludes(Boolean rt) {
 		String source = include(GenerationNames.StatemachineBaseHeaderName);
 

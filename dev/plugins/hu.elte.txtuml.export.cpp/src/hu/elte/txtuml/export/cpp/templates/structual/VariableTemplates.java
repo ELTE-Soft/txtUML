@@ -1,14 +1,15 @@
 package hu.elte.txtuml.export.cpp.templates.structual;
 
-import hu.elte.txtuml.export.cpp.templates.GenerationNames;
 import hu.elte.txtuml.export.cpp.templates.PrivateFunctionalTemplates;
 import hu.elte.txtuml.export.cpp.templates.activity.ActivityTemplates;
+import hu.elte.txtuml.export.cpp.templates.statemachine.EventTemplates;
 
 public class VariableTemplates {
 
 	public static String variableDecl(String typeName, String variableName, String defaultValue, boolean isSignal) {
 		StringBuilder source = new StringBuilder("");
-		source.append(isSignal ? GenerationNames.signalPointerType(typeName) : PrivateFunctionalTemplates.cppType(typeName));
+		source.append(isSignal ? EventTemplates.eventPtr(typeName) : 
+			PrivateFunctionalTemplates.cppType(typeName));
 		source.append(" ");
 		source.append(variableName);
 		if (defaultValue != "" && defaultValue != null) {

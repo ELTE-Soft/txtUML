@@ -1,5 +1,6 @@
 package hu.elte.txtuml.export.cpp.templates.statemachine;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
@@ -9,6 +10,7 @@ import org.eclipse.uml2.uml.SignalEvent;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.FileNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.TypeDelcreationKeywords;
+import hu.elte.txtuml.export.cpp.templates.GenerationTemplates;
 import hu.elte.txtuml.export.cpp.templates.PrivateFunctionalTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.HeaderTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.VariableTemplates;
@@ -70,6 +72,21 @@ public class EventTemplates {
 
 	public static String eventParamName() {
 		return GenerationNames.formatIncomingParamName(EventTemplates.EventParamName);
+	}
+	
+	public static String eventPtrTypeDef(String eventName) {
+		
+		return GenerationTemplates.usingTemplateType(eventPtr(eventName), 
+				GenerationNames.PointerAndMemoryNames.SmartPtr, 
+				Arrays.asList(signalType(eventName)));
+	}
+	
+	public static String eventPtr(String eventName) {
+		return eventName + "Ptr";
+	}
+
+	public static String signalType(String type) {
+		return type + GenerationNames.EventClassTypeId;
 	}
 
 

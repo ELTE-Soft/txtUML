@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.eclipse.uml2.uml.Signal;
 
-import hu.elte.txtuml.export.cpp.templates.GenerationNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.InterfaceNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.ModifierNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.TypeDelcreationKeywords;
@@ -70,7 +69,7 @@ public class InterfaceTemplates {
 		}
 		
 		return ModifierNames.NoReturn + " " + name + 
-		"(" + GenerationNames.signalPointerType(singalName) + " " + singalParam + ")" + 
+		"(" + EventTemplates.eventPtr(singalName) + " " + singalParam + ")" + 
 		"{" + anyName + "(" + singalParam + ");" +  "}\n";
 		
 		

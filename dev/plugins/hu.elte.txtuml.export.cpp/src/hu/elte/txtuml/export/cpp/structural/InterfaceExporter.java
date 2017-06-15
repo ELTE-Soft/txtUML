@@ -11,6 +11,8 @@ import org.eclipse.uml2.uml.Signal;
 import hu.elte.txtuml.export.cpp.CppExporterUtils;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationTemplates;
+import hu.elte.txtuml.export.cpp.templates.PrivateFunctionalTemplates;
+import hu.elte.txtuml.export.cpp.templates.statemachine.EventTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.HeaderTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.InterfaceTemplates;
 
@@ -29,11 +31,11 @@ public class InterfaceExporter extends StructuredElementExporter<Interface> {
 				.createInterface(structuredElement.getName(), receptionSignals);
 		
 		String source = GenerationTemplates.
-				putNamespace(interfaceDecl, GenerationNames.Namespaces.ModelNamespace); 
-		
+				putNamespace(interfaceDecl, GenerationNames.Namespaces.ModelNamespace);
+		String dependency = PrivateFunctionalTemplates.include(EventTemplates.EventHeaderName); 
 		CppExporterUtils.writeOutSource(sourceDestination, 
 				GenerationTemplates.headerName(name), 
-				HeaderTemplates.headerGuard(source, name));		
+				HeaderTemplates.headerGuard(dependency + source, name));		
 		
 	}
 

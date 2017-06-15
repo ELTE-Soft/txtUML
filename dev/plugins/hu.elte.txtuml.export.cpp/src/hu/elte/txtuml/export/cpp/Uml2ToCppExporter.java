@@ -10,6 +10,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -275,37 +276,43 @@ public class Uml2ToCppExporter {
 	private void createEventSource(String outputDirectory) throws FileNotFoundException, UnsupportedEncodingException {
 		List<Signal> signalList = new ArrayList<Signal>();
 		CppExporterUtils.getTypedElements(signalList, UMLPackage.Literals.SIGNAL, modelRoot);
-		StringBuilder forwardDecl = new StringBuilder("");
-		StringBuilder events = new StringBuilder("");
 		StringBuilder source = new StringBuilder("");
+		StringBuilder eventClasses = new StringBuilder("");
+		StringBuilder events = new StringBuilder("");
+		StringBuilder typeDefinitions = new StringBuilder("");	
 		List<Pair<String, String>> allParam = new LinkedList<Pair<String, String>>();
 
 		events.append(EventTemplates.InitSignal + ENUM_EXTENSION + ",");
+		eventClasses.append(
+				EventTemplates.eventClass(EventTemplates.InitSignal, 
+				Collections.emptyList(), "",
+				Collections.emptyList()));
+		
 		for (Signal signal : signalList) {
 			List<Pair<String, String>> currentParams = getSignalParams(signal);
 			String ctrBody = CppExporterUtils.signalCtrBody(signal, modelRoot);
 			allParam.addAll(currentParams);
-			source.append(
-					EventTemplates.eventClass(signal.getName(), currentParams, ctrBody, signal.getOwnedAttributes()));
+			eventClasses.append(EventTemplates.eventClass(signal.getName(), currentParams, ctrBody, signal.getOwnedAttributes()));
+			typeDefinitions.append(EventTemplates.eventPtrTypeDef(signal.getName()));
 			events.append(signal.getName() + ENUM_EXTENSION + ",");
 		}
 		events = new StringBuilder(events.substring(0, events.length() - 1));
 
-		source.append(EventTemplates.eventClass(EventTemplates.InitSignal, new ArrayList<Pair<String, String>>(), "",
-				new ArrayList<Property>()));
+
 
 		DependencyExporter dependencyEporter = new DependencyExporter();
 		for (Pair<String, String> param : allParam) {
 			dependencyEporter.addDependency(param.getSecond());
 		}
 
-		forwardDecl.append(dependencyEporter.createDependencyHeaderIncludeCode());
-		forwardDecl.append(RuntimeTemplates.eventHeaderInclude());
-		forwardDecl.append("enum Events {" + events + "};\n");
-		forwardDecl.append(source);
+		source.append(dependencyEporter.createDependencyHeaderIncludeCode());
+		source.append(RuntimeTemplates.eventHeaderInclude());
+		source.append("enum Events {" + events + "};\n");
+		source.append(eventClasses);
+		source.append(typeDefinitions);
 		CppExporterUtils.writeOutSource(outputDirectory, (EventTemplates.EventHeader),
 				CppExporterUtils.format(EventTemplates.eventHeaderGuard(GenerationTemplates
-						.putNamespace(forwardDecl.toString(), GenerationNames.Namespaces.ModelNamespace))));
+						.putNamespace(source.toString(), GenerationNames.Namespaces.ModelNamespace))));
 
 	}
 
@@ -368,11 +375,14 @@ public class Uml2ToCppExporter {
 		List<Interface> interfaces = new ArrayList<Interface>();
 
 		CppExporterUtils.getTypedElements(interfaces, UMLPackage.Literals.INTERFACE, modelRoot);
+		
 		for (Interface inf : interfaces) {
-			interfaceExporter.setName(inf.getName());
-			interfaceExporter.exportStructuredElement(inf, outputDirectory);
-		}
+			if (!inf.getOwnedReceptions().isEmpty()) {
+				interfaceExporter.setName(inf.getName());
+				interfaceExporter.exportStructuredElement(inf, outputDirectory);
+			}
 
+		}
 	}
 
 	private List<Pair<String, String>> getSignalParams(Signal signal) {

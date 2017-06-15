@@ -171,7 +171,7 @@ public class ActivityTemplates {
 			List<String> parameters) {
 
 		if (objectType.equals(CreateObjectType.Signal)) {
-			return GenerationNames.signalPointerType(typeName) + " " + objName + ";\n";
+			return EventTemplates.eventPtr(typeName) + " " + objName + ";\n";
 		} else {
 			return GenerationNames.pointerType(typeName) + " " + objName + " " + ReplaceSimpleTypeOp + " "
 					+ PointerAndMemoryNames.NullPtr + ";\n";
@@ -182,8 +182,8 @@ public class ActivityTemplates {
 	public static String constructorCall(String ownerName, String typeName, CreateObjectType objectType,
 			List<String> parameters) {
 		if (objectType.equals(CreateObjectType.Signal)) {
-			return ownerName + ReplaceSimpleTypeOp + GenerationNames.signalPointerType(typeName) + "("
-					+ PointerAndMemoryNames.MemoryAllocator + " " + PrivateFunctionalTemplates.signalType(typeName)
+			return ownerName + ReplaceSimpleTypeOp + EventTemplates.eventPtr(typeName) + "("
+					+ PointerAndMemoryNames.MemoryAllocator + " " + EventTemplates.signalType(typeName)
 					+ "(" + operationCallParamList(parameters) + "))";
 		} else {
 			if (ownerName != PointerAndMemoryNames.Self) {
@@ -220,12 +220,12 @@ public class ActivityTemplates {
 
 	public static String getRealSignal(String signalType, String signalVariableName) {
 		StringBuilder source = new StringBuilder("");
-		source.append(GenerationNames.signalPointerType(signalType) + " ");
+		source.append(EventTemplates.eventPtr(signalType) + " ");
 		source.append(signalVariableName + " = ");
-		source.append(GenerationNames.signalPointerType(signalType) + "(");
-		source.append(PointerAndMemoryNames.MemoryAllocator + " " + PrivateFunctionalTemplates.signalType(signalType));
+		source.append(EventTemplates.eventPtr(signalType) + "(");
+		source.append(PointerAndMemoryNames.MemoryAllocator + " " + EventTemplates.signalType(signalType));
 		source.append(
-				"(*" + GenerationNames.StaticCast + "<" + PrivateFunctionalTemplates.signalType(signalType) + "*>");
+				"(*" + GenerationNames.StaticCast + "<" + EventTemplates.signalType(signalType) + "*>");
 		source.append("(" + EventTemplates.EventFParamName + ".get())));\n");
 		return source.toString();
 	}
