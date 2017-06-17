@@ -28,6 +28,7 @@ import org.eclipse.uml2.uml.DataType;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.Interface;
 import org.eclipse.uml2.uml.UMLPackage;
+import org.eclipse.uml2.uml.Usage;
 import org.osgi.framework.Bundle;
 
 import hu.elte.txtuml.export.cpp.thread.ThreadPoolConfiguration;
@@ -64,9 +65,9 @@ public class Uml2ToCppExporter {
 
 	// default sources
 	private static final String DEFAULT_TARGET_EXECUTABLE = "main";
-	private static final String DEFAULT_DEPLOYMENT_NAME = "deployment";
-	private static final String DEFAULT_INIT_MACHINE_NAME = StateMachineTemplates.TransitionTableInitialSourceName;
-	private static final String DEFAULT_ENVIRONMENT_INITIALIZER = "Env";
+	private static final String DEPLOYMENT_NAME = "deployment";
+	private static final String INIT_MACHINE_NAME = StateMachineTemplates.TransitionTableInitialSourceName;
+	private static final String ENVIRONMENT_INITIALIZER = "Env";
 
 	private ClassExporter classExporter;
 	private DataTypeExporter dataTypeExporter;
@@ -75,9 +76,7 @@ public class Uml2ToCppExporter {
 
 	private ThreadHandlingManager threadManager;
 
-	private List<Class> classes;
 	private Set<String> stateMachineOwners;
-	private List<DataType> dataTypes;
 	private List<String> classNames;
 	private List<Element> modelRoot;
 
@@ -90,12 +89,9 @@ public class Uml2ToCppExporter {
 		interfaceExporter = new InterfaceExporter();
 		threadManager = new ThreadHandlingManager(threadDescription);
 
-		classes = new ArrayList<Class>();
-		dataTypes = new ArrayList<DataType>();
 		classNames = new LinkedList<String>();
 		stateMachineOwners = new HashSet<String>();
 		options = new Options(addRuntimeOption, overWriteMainFileOption);
-
 
 	}
 
@@ -114,12 +110,15 @@ public class Uml2ToCppExporter {
 	}
 
 	private void createClassSources(String outputDirectory) throws IOException {
-		classes = CppExporterUtils.getAllModelCLass(modelRoot);
-		
+		List<Class> classes = CppExporterUtils.getAllModelCLass(modelRoot);
+		List<Usage> usages = new ArrayList<>();
+		CppExporterUtils.getTypedElements(usages, UMLPackage.Literals.USAGE, modelRoot);
+
 		for (Class cls : classes) {
 
 			classExporter.setName(cls.getName());
 			classExporter.setPoolId(threadManager.getDescription().get(cls.getName()).getId());
+			classExporter.setUsages(usages);
 			classExporter.exportStructuredElement(cls, outputDirectory);
 			if (CppExporterUtils.isStateMachineOwner(cls)) {
 				classNames.addAll(classExporter.getSubmachines());
@@ -169,6 +168,7 @@ public class Uml2ToCppExporter {
 	}
 
 	private void createDataTypes(String outputDirectory) throws IOException {
+		List<DataType> dataTypes = new ArrayList<>();
 		CppExporterUtils.getTypedElements(dataTypes, UMLPackage.Literals.DATA_TYPE, modelRoot);
 		for (DataType dataType : dataTypes) {
 			dataTypeExporter.setName(dataType.getName());
@@ -191,15 +191,15 @@ public class Uml2ToCppExporter {
 				StandardCopyOption.REPLACE_EXISTING);
 
 		Files.copy(
-				Paths.get(cppFilesLocation + DEFAULT_ENVIRONMENT_INITIALIZER + "."
+				Paths.get(cppFilesLocation + ENVIRONMENT_INITIALIZER + "."
 						+ GenerationNames.FileNames.HeaderExtension),
-				Paths.get(destination + File.separator + DEFAULT_ENVIRONMENT_INITIALIZER + "."
+				Paths.get(destination + File.separator + ENVIRONMENT_INITIALIZER + "."
 						+ GenerationNames.FileNames.HeaderExtension),
 				StandardCopyOption.REPLACE_EXISTING);
 		Files.copy(
-				Paths.get(cppFilesLocation + DEFAULT_ENVIRONMENT_INITIALIZER + "."
+				Paths.get(cppFilesLocation + ENVIRONMENT_INITIALIZER + "."
 						+ GenerationNames.FileNames.SourceExtension),
-				Paths.get(destination + File.separator + DEFAULT_ENVIRONMENT_INITIALIZER + "."
+				Paths.get(destination + File.separator + ENVIRONMENT_INITIALIZER + "."
 						+ GenerationNames.FileNames.SourceExtension),
 				StandardCopyOption.REPLACE_EXISTING);
 
@@ -264,10 +264,10 @@ public class Uml2ToCppExporter {
 		cmake.addStaticLibraryTarget(RUNTIME_LIB_NAME, librarySourceClasses, RUNTIME_DIR_PREFIX);
 		List<String> sourceNames = new ArrayList<String>();
 		sourceNames.add(DEFAULT_TARGET_EXECUTABLE);
-		sourceNames.add(DEFAULT_DEPLOYMENT_NAME);
+		sourceNames.add(DEPLOYMENT_NAME);
 		sourceNames.add(DEFAULT_ASSOCIATIONS_NAME);
-		sourceNames.add(DEFAULT_INIT_MACHINE_NAME);
-		sourceNames.add(DEFAULT_ENVIRONMENT_INITIALIZER);
+		sourceNames.add(INIT_MACHINE_NAME);
+		sourceNames.add(ENVIRONMENT_INITIALIZER);
 		sourceNames.addAll(classNames);
 		cmake.addExecutableTarget(DEFAULT_TARGET_EXECUTABLE, sourceNames, "");
 		cmake.writeOutCMakeLists();
@@ -279,29 +279,25 @@ public class Uml2ToCppExporter {
 		StringBuilder source = new StringBuilder("");
 		StringBuilder eventClasses = new StringBuilder("");
 		StringBuilder events = new StringBuilder("");
-		StringBuilder typeDefinitions = new StringBuilder("");	
+		StringBuilder typeDefinitions = new StringBuilder("");
 		List<Pair<String, String>> allParam = new LinkedList<Pair<String, String>>();
 
 		events.append(EventTemplates.InitSignal + ENUM_EXTENSION + ",");
-		eventClasses.append(
-				EventTemplates.eventClass(EventTemplates.InitSignal, 
-				Collections.emptyList(), "",
+		eventClasses.append(EventTemplates.eventClass(EventTemplates.InitSignal, Collections.emptyList(), "",
 				Collections.emptyList()));
-		eventClasses.append(
-				EventTemplates.eventClass(EventTemplates.DestroySignal, 
-				Collections.emptyList(), "",
+		eventClasses.append(EventTemplates.eventClass(EventTemplates.DestroySignal, Collections.emptyList(), "",
 				Collections.emptyList()));
-		
+
 		for (Signal signal : signalList) {
 			List<Pair<String, String>> currentParams = getSignalParams(signal);
 			String ctrBody = CppExporterUtils.signalCtrBody(signal, modelRoot);
 			allParam.addAll(currentParams);
-			eventClasses.append(EventTemplates.eventClass(signal.getName(), currentParams, ctrBody, signal.getOwnedAttributes()));
+			eventClasses.append(
+					EventTemplates.eventClass(signal.getName(), currentParams, ctrBody, signal.getOwnedAttributes()));
 			typeDefinitions.append(EventTemplates.eventPtrTypeDef(signal.getName()));
 			events.append(signal.getName() + ENUM_EXTENSION + ",");
 		}
 		events = new StringBuilder(events.substring(0, events.length() - 1));
-
 
 		DependencyExporter dependencyEporter = new DependencyExporter();
 		for (Pair<String, String> param : allParam) {
@@ -373,12 +369,12 @@ public class Uml2ToCppExporter {
 				CppExporterUtils.format(cppSource));
 
 	}
-	
+
 	private void createInterfaces(String outputDirectory) throws FileNotFoundException, UnsupportedEncodingException {
 		List<Interface> interfaces = new ArrayList<Interface>();
 
 		CppExporterUtils.getTypedElements(interfaces, UMLPackage.Literals.INTERFACE, modelRoot);
-		
+
 		for (Interface inf : interfaces) {
 			if (!inf.getOwnedReceptions().isEmpty()) {
 				interfaceExporter.setName(inf.getName());

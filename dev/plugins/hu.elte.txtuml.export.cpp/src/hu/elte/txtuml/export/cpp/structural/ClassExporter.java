@@ -29,7 +29,6 @@ import hu.elte.txtuml.utils.Pair;
 
 public class ClassExporter extends StructuredElementExporter<Class> {
 
-	private List<String> subMachines;
 	private List<String> additionalSourcesNames;
 	
 	private AssociationExporter associationExporter;
@@ -54,7 +53,6 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 		constructorExporter = new ConstructorExporter(structuredElement.getOwnedOperations());
 		associationExporter = new AssociationExporter();
 		additionalSourcesNames = new ArrayList<String>();
-		subMachines = new LinkedList<String>();
 		portExporter = new PortExporter();
 
 		Optional<StateMachine> classOptionalSM = CppExporterUtils.getStateMachine(structuredElement);
@@ -90,7 +88,7 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 		if (CppExporterUtils.isStateMachineOwner(structuredElement)) {
 			stateMachineExporter.createStateMachineRegion(structuredElement);
 			stateMachineExporter.createMachine();
-
+			List<String> subMachines = new LinkedList<String>();
 			for (Map.Entry<String, Pair<String, Region>> entry : stateMachineExporter.getSubMachineMap().entrySet()) {
 				subStateMachineExporter = new SubStateMachineExporter();
 				subStateMachineExporter.setRegion(entry.getValue().getSecond());
@@ -129,12 +127,13 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 
 		publicParts.append(LinkTemplates.templateLinkFunctionGeneralDef(LinkTemplates.LinkFunctionType.Link));
 		publicParts.append(LinkTemplates.templateLinkFunctionGeneralDef(LinkTemplates.LinkFunctionType.Unlink));
+		
+		publicParts.append(portExporter.createPortEnumCode(structuredElement.getOwnedPorts()));
+		publicParts.append(portExporter.createPortDeclerations(usages, structuredElement.getOwnedPorts()));
 
 		if (CppExporterUtils.isStateMachineOwner(structuredElement)) {
 
 			publicParts.append(stateMachineExporter.createStateEnumCode());
-			publicParts.append(portExporter.createPortEnumCode(structuredElement.getOwnedPorts()));
-			publicParts.append(portExporter.createPortDeclerations(usages, structuredElement.getOwnedPorts()));
 			privateParts.append(stateMachineExporter.createStateMachineRelatedHeadedDeclarationCodes());
 
 			if (!stateMachineExporter.ownSubMachine()) {
