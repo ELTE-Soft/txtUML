@@ -38,7 +38,7 @@ TUExecution :
 ;
 
 TUSignal :
-	'signal' name=ValidID ('{'
+	'signal' name=ValidID ('extends' superSignal=[TUSignal|QualifiedName])? ('{'
 		attributes+=TUSignalAttribute*
 	'}' ';'? | ';')
 ;

@@ -103,6 +103,8 @@ class XtxtUMLReferenceProposalCreator extends XbaseReferenceProposalCreator {
 				scope.selectOwnedStates(model)
 			case XtxtUMLPackage::eINSTANCE.TUClassPropertyAccessExpression_Right:
 				scope.selectNavigableClassProperties(model)
+			case XtxtUMLPackage::eINSTANCE.TUSignal_SuperSignal:
+				scope.selectExtendableSignals(model)
 			case XtxtUMLPackage::eINSTANCE.TUClass_SuperClass:
 				scope.selectExtendableClasses(model)
 			case XbasePackage::eINSTANCE.XAbstractFeatureCall_Feature:
@@ -194,6 +196,15 @@ class XtxtUMLReferenceProposalCreator extends XbaseReferenceProposalCreator {
 			container.ends
 		} else {
 			newArrayList
+		}
+	}
+
+	def private selectExtendableSignals(IScope scope, EObject model) {
+		if (model instanceof TUSignal) {
+			val selfName = model.fullyQualifiedName;
+			return scope.allElements.filter [
+				qualifiedName != selfName
+			]
 		}
 	}
 

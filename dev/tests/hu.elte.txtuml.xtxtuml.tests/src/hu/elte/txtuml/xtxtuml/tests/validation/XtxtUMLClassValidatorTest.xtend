@@ -22,6 +22,34 @@ class XtxtUMLClassValidatorTest {
 	@Inject extension XtxtUMLValidationTestUtils;
 
 	@Test
+	def checkNoCycleInSignalHiearchy() {
+		'''
+			signal A;
+			signal B extends A;
+			signal C extends B;
+			signal D extends B;
+			signal E extends C;
+		'''.parse.assertNoError(SIGNAL_HIERARCHY_CYCLE);
+
+		val rawFile = '''
+			signal A extends A;
+			signal B extends C;
+			signal C extends D;
+			signal D extends B;
+			signal E extends D;
+			signal F extends E;
+		''';
+
+		val parsedFile = rawFile.parse;
+		parsedFile.assertError(TU_SIGNAL, SIGNAL_HIERARCHY_CYCLE, rawFile.indexOfNth("A", 1), 1);
+		parsedFile.assertError(TU_SIGNAL, SIGNAL_HIERARCHY_CYCLE, rawFile.indexOfNth("C", 0), 1);
+		parsedFile.assertError(TU_SIGNAL, SIGNAL_HIERARCHY_CYCLE, rawFile.indexOfNth("D", 0), 1);
+		parsedFile.assertError(TU_SIGNAL, SIGNAL_HIERARCHY_CYCLE, rawFile.indexOfNth("B", 1), 1);
+		parsedFile.assertError(TU_SIGNAL, SIGNAL_HIERARCHY_CYCLE, rawFile.indexOfNth("D", 2), 1);
+		parsedFile.assertError(TU_SIGNAL, SIGNAL_HIERARCHY_CYCLE, rawFile.indexOfNth("E", 1), 1);
+	}
+
+	@Test
 	def checkNoCycleInClassHiearchy() {
 		'''
 			class A;

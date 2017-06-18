@@ -14,6 +14,7 @@ class XtxtUMLIssueCodes {
 	// Uniqueness-related issues
 
 	public static val NOT_UNIQUE_NAME = ISSUE_CODE_PREFIX + "not_unique_name";
+	public static val NOT_UNIQUE_SIGNAL_ATTRIBUTE = ISSUE_CODE_PREFIX + "not_unique_signal_attribute";
 	public static val NOT_UNIQUE_CONSTRUCTOR = ISSUE_CODE_PREFIX + "not_unique_constructor";
 	public static val NOT_UNIQUE_OPERATION = ISSUE_CODE_PREFIX + "not_unique_operation";
 	public static val NOT_UNIQUE_INITIAL_STATE = ISSUE_CODE_PREFIX + "not_unique_initial_state";
@@ -49,6 +50,7 @@ class XtxtUMLIssueCodes {
 	// Class-related issues
 
 	public static val CLASS_HIERARCHY_CYCLE = ISSUE_CODE_PREFIX + "class_hierarchy_cycle";
+	public static val SIGNAL_HIERARCHY_CYCLE = ISSUE_CODE_PREFIX + "signal_hierarchy_cycle";
 	public static val INVALID_CONSTRUCTOR_NAME = ISSUE_CODE_PREFIX + "invalid_constructor_name";
 	public static val MISSING_INITIAL_STATE = ISSUE_CODE_PREFIX + "missing_initial_state";
 	public static val NOT_LEAVABLE_PSEUDOSTATE = ISSUE_CODE_PREFIX + "not_leavable_pseudostate";

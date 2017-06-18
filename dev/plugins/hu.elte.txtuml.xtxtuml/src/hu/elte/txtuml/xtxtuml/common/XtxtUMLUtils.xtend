@@ -2,6 +2,7 @@ package hu.elte.txtuml.xtxtuml.common
 
 import com.google.inject.Inject
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUClass
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUSignal
 import org.eclipse.emf.ecore.EObject
 import org.eclipse.xtext.naming.IQualifiedNameProvider
 import org.eclipse.xtext.resource.IEObjectDescription
@@ -40,23 +41,18 @@ public class XtxtUMLUtils {
 	 * Travels the class hierarchy of <code>clazz</code> upwards (inclusive), until a class
 	 * which satisfies <code>predicate</code> is found, or the hierarchy ends, or a cycle in
 	 * the hierarchy is found.
-	 * 
+	 *
 	 * @return
 	 * <ul>
 	 * 	<li><code>true</code> if an appropriate class has been found,</li>
 	 * 	<li><code>false</code> if no appropriate class has been found,</li>
 	 * 	<li><code>null</code> if a cycle has been found during the traversal.</li>
-	 * </ul> 
+	 * </ul>
 	 */
 	def travelClassHierarchy(TUClass clazz, (TUClass)=>Boolean predicate) {
-		if (predicate.apply(clazz)) {
-			return true;
-		}
-
 		val visitedClassNames = newHashSet;
-		visitedClassNames.add(clazz.fullyQualifiedName);
+		var currentClass = clazz;
 
-		var currentClass = clazz.superClass;
 		while (currentClass != null) {
 			if (visitedClassNames.contains(currentClass.fullyQualifiedName)) {
 				return null;
@@ -68,6 +64,39 @@ public class XtxtUMLUtils {
 
 			visitedClassNames.add(currentClass.fullyQualifiedName);
 			currentClass = currentClass.superClass;
+		}
+
+		return false;
+	}
+
+	/**
+	 * Travels the signal hierarchy of <code>signal</code> upwards (inclusive), until a signal
+	 * which satisfies <code>predicate</code> is found, or the hierarchy ends, or a cycle in
+	 * the hierarchy is found.
+	 *
+	 * @return
+	 * <ul>
+	 * 	<li><code>true</code> if an appropriate signal has been found,</li>
+	 * 	<li><code>false</code> if no appropriate signal has been found,</li>
+	 * 	<li><code>null</code> if a cycle has been found during the traversal.</li>
+	 * </ul>
+	 */
+	def travelSignalHierarchy(TUSignal signal, (TUSignal)=>Boolean predicate) {
+		// TODO technically a duplicate of travelClassHierarchy, should be eliminated ASAP
+		val visitedSignalNames = newHashSet;
+		var currentSignal = signal;
+
+		while (currentSignal != null) {
+			if (visitedSignalNames.contains(currentSignal.fullyQualifiedName)) {
+				return null;
+			}
+
+			if (predicate.apply(currentSignal)) {
+				return true;
+			}
+
+			visitedSignalNames.add(currentSignal.fullyQualifiedName);
+			currentSignal = currentSignal.superSignal;
 		}
 
 		return false;
