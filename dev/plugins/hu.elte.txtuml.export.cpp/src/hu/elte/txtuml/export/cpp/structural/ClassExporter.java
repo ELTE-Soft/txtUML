@@ -23,6 +23,7 @@ import hu.elte.txtuml.export.cpp.templates.PrivateFunctionalTemplates;
 import hu.elte.txtuml.export.cpp.templates.RuntimeTemplates;
 import hu.elte.txtuml.export.cpp.templates.statemachine.EventTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.ConstructorTemplates;
+import hu.elte.txtuml.export.cpp.templates.structual.FunctionTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.HeaderTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.LinkTemplates;
 import hu.elte.txtuml.utils.Pair;
@@ -53,7 +54,7 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 		constructorExporter = new ConstructorExporter(structuredElement.getOwnedOperations());
 		associationExporter = new AssociationExporter();
 		additionalSourcesNames = new ArrayList<String>();
-		portExporter = new PortExporter();
+		portExporter = new PortExporter(usages,structuredElement.getOwnedPorts());
 
 		Optional<StateMachine> classOptionalSM = CppExporterUtils.getStateMachine(structuredElement);
 		if (classOptionalSM.isPresent()) {
@@ -128,9 +129,7 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 		publicParts.append(LinkTemplates.templateLinkFunctionGeneralDef(LinkTemplates.LinkFunctionType.Link));
 		publicParts.append(LinkTemplates.templateLinkFunctionGeneralDef(LinkTemplates.LinkFunctionType.Unlink));
 		
-		publicParts.append(portExporter.createPortEnumCode(structuredElement.getOwnedPorts()));
-		publicParts.append(portExporter.createPortDeclerations(usages, structuredElement.getOwnedPorts()));
-
+		publicParts.append(portExporter.crearePortRelatedCodes());
 		if (CppExporterUtils.isStateMachineOwner(structuredElement)) {
 
 			publicParts.append(stateMachineExporter.createStateEnumCode());
@@ -167,6 +166,7 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 		source.append(constructorExporter.exportConstructorsDefinitions(name, CppExporterUtils.isStateMachineOwner(structuredElement)));
 		source.append(CppExporterUtils.isStateMachineOwner(structuredElement) ? ConstructorTemplates.destructorDef(name, true)
 				: ConstructorTemplates.destructorDef(name, false));
+		source.append(FunctionTemplates.functionDef(name, GenerationNames.InitiliazetFixFunctionNames.InitPorts, portExporter.createInitPortsCode()));
 
 		return source.toString();
 	}

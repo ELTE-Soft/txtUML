@@ -130,6 +130,11 @@ public class GenerationNames {
 		
 	}
 	
+	public static class InitiliazetFixFunctionNames {
+		public static final String InitPorts = "initPorts";
+		public static final String InitStateMachine = "initStateMachine";
+	}
+	
 	// NDEBUG is the only thing guaranteed, DEBUG and _DEBUG is non-standard
 	public static final String NoDebugSymbol = "NDEBUG";
 	public static final String StandardIOInclude = "#include <iostream>\n";
@@ -183,7 +188,6 @@ public class GenerationNames {
 	public static final String AssocationHeaderName = "association";
 	public static final String DeploymentHeaderName = "deployment";
 
-	public static final String InitStateMachine = "initStateMachine";
 
 	public static final String PoolIdSetter = "setPoolId";
 	

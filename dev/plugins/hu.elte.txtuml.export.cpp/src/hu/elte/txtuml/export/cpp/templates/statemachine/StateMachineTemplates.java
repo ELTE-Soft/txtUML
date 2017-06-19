@@ -20,7 +20,7 @@ import hu.elte.txtuml.utils.Pair;
 
 public class StateMachineTemplates {
 
-	public static final String InitStateMachineProcedureName = GenerationNames.InitStateMachine;
+	public static final String InitStateMachineProcedureName = GenerationNames.InitiliazetFixFunctionNames.InitStateMachine;
 	public static final String StateMachineBaseHeader = GenerationNames.StatemachineBaseHeaderName + "."
 			+ FileNames.HeaderExtension;
 	public static final String InitTransitionTable = "initTransitionTable";
@@ -175,7 +175,7 @@ public class StateMachineTemplates {
 	}
 
 	public static String simpleStateMachineClassFixPrivateParts(String className) {
-		return  FunctionTemplates.functionDecl(GenerationNames.InitStateMachine) + "\n" + 
+		return  FunctionTemplates.functionDecl(GenerationNames.InitiliazetFixFunctionNames.InitStateMachine) + "\n" + 
 				GenerationNames.SetStateDecl + GenerationNames.EntryDecl + GenerationNames.ExitDecl + 
 				"\n" + "int " + GenerationNames.CurrentStateName + ";\n";
 	}
@@ -220,7 +220,7 @@ public class StateMachineTemplates {
 
 	public static String simpleStateMachineInitializationDefinition(String className, String intialState, Boolean rt,
 			Integer poolId) {
-		return FunctionTemplates.functionDef(className, GenerationNames.InitStateMachine, stateMachineInitializationSharedBody(rt, poolId));
+		return FunctionTemplates.functionDef(className, GenerationNames.InitiliazetFixFunctionNames.InitStateMachine, stateMachineInitializationSharedBody(rt, poolId));
 	}
 
 	public static String hierachialStateMachineInitialization(String className, String intialState, Boolean rt,
@@ -229,7 +229,7 @@ public class StateMachineTemplates {
 		StringBuilder body = new StringBuilder("");
 		body.append(GenerationNames.CurrentMachineName + " = " + PointerAndMemoryNames.NullPtr + ";\n");
 		body.append(hierarchicalStateMachineClassConstructorSharedBody(subMachines, rt, poolId));
-		return FunctionTemplates.functionDef(className, GenerationNames.InitStateMachine, body.toString());
+		return FunctionTemplates.functionDef(className, GenerationNames.InitiliazetFixFunctionNames.InitStateMachine, body.toString());
 	}
 
 	public static String hiearchialStateMachineFixFunctionDefinitions(String className, String intialState,
