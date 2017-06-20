@@ -17,6 +17,7 @@ import hu.elte.txtuml.export.cpp.templates.RuntimeTemplates;
 import hu.elte.txtuml.export.cpp.templates.activity.ActivityTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.FunctionTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.HeaderTemplates;
+import hu.elte.txtuml.export.cpp.templates.structual.ObjectDeclDefTemplates;
 import hu.elte.txtuml.export.cpp.thread.ThreadPoolConfiguration.LinearFunction;
 
 public class ThreadHandlingManager {
@@ -114,7 +115,7 @@ public class ThreadHandlingManager {
 			parameters.add(new Integer(pool.getMaxThread()).toString());
 
 			source.append(insertToConfiguration(pool.getId(),
-					GenerationTemplates.allocateObject(ConfigurationStructName, parameters, true)));
+					ObjectDeclDefTemplates.allocateObject(ConfigurationStructName, parameters, true)));
 		}
 
 		return source.toString();
@@ -132,12 +133,12 @@ public class ThreadHandlingManager {
 		params.add(new Integer(function.getConstant()).toString());
 		params.add(new Double(function.getGradient()).toString());
 
-		return GenerationTemplates.allocateObject(FunctionName, params, true);
+		return ObjectDeclDefTemplates.allocateObject(FunctionName, params, true);
 	}
 
 	private String allocatePoolObject(ThreadPoolConfiguration pool) {
 		List<String> params = new ArrayList<String>();
-		return GenerationTemplates.allocateObject(ThreadPoolClassName, params, true);
+		return ObjectDeclDefTemplates.allocateObject(ThreadPoolClassName, params, true);
 	}
 
 }

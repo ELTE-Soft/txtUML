@@ -14,7 +14,7 @@ import org.eclipse.uml2.uml.VisibilityKind;
 import hu.elte.txtuml.export.cpp.CppExporterUtils;
 import hu.elte.txtuml.export.cpp.activity.ActivityExporter;
 import hu.elte.txtuml.export.cpp.templates.structual.FunctionTemplates;
-import hu.elte.txtuml.export.cpp.templates.structual.VariableTemplates;
+import hu.elte.txtuml.export.cpp.templates.structual.ObjectDeclDefTemplates;
 
 public abstract class StructuredElementExporter<StructuredElement extends OperationOwner & AttributeOwner> {
 
@@ -98,7 +98,7 @@ public abstract class StructuredElementExporter<StructuredElement extends Operat
 				
 				if (isSimpleAttribute(attribute)) {
 
-					source.append(VariableTemplates.propertyDecl(type, attribute.getName(), attribute.getDefault()));
+					source.append(ObjectDeclDefTemplates.propertyDecl(type, attribute.getName(), attribute.getDefault()));
 				} else {
 					dependencyExporter.addDependency(type);
 				}

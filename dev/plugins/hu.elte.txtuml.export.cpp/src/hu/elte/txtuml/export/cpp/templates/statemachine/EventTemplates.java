@@ -13,7 +13,7 @@ import hu.elte.txtuml.export.cpp.templates.GenerationNames.TypeDelcreationKeywor
 import hu.elte.txtuml.export.cpp.templates.GenerationTemplates;
 import hu.elte.txtuml.export.cpp.templates.PrivateFunctionalTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.HeaderTemplates;
-import hu.elte.txtuml.export.cpp.templates.structual.VariableTemplates;
+import hu.elte.txtuml.export.cpp.templates.structual.ObjectDeclDefTemplates;
 import hu.elte.txtuml.utils.Pair;
 
 public class EventTemplates {
@@ -43,7 +43,7 @@ public class EventTemplates {
 		StringBuilder body = new StringBuilder("\n{\n" + constructorBody + "}\n");
 
 		for (Property property : properites) {
-			body.append(VariableTemplates.variableDecl(property.getType().getName(), property.getName(), null, false));
+			body.append(ObjectDeclDefTemplates.variableDecl(property.getType().getName(), property.getName()));
 		}
 		source.append(body).append("};\n\n");
 		body.setLength(0);

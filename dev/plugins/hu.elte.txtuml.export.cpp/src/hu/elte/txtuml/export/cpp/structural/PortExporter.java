@@ -14,11 +14,10 @@ import org.eclipse.uml2.uml.Usage;
 
 import hu.elte.txtuml.export.cpp.CppExporterUtils;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames;
-import hu.elte.txtuml.export.cpp.templates.GenerationTemplates;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.TypeDelcreationKeywords;
 import hu.elte.txtuml.export.cpp.templates.structual.FunctionTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.PortTemplates;
-import hu.elte.txtuml.export.cpp.templates.structual.VariableTemplates;
+import hu.elte.txtuml.export.cpp.templates.structual.ObjectDeclDefTemplates;
 import hu.elte.txtuml.utils.Pair;
 
 public class PortExporter {
@@ -82,14 +81,14 @@ public class PortExporter {
 			parameters.add(PortTemplates.ponrtEnumName(port.getName()));
 			parameters.add(GenerationNames.PointerAndMemoryNames.Self);
 		}
-		return GenerationTemplates.createObject(portTypeName, port.getName(), 
-				Arrays.asList(interfaces.getFirst(),interfaces.getSecond()), parameters, false);
+		return ObjectDeclDefTemplates.setAllocatedObjectToObjectVariable(portTypeName, 
+				Arrays.asList(interfaces.getFirst(),interfaces.getSecond()), port.getName(), parameters, true);
 	}
 	private String createinterfacePrortCode(Port port) {
 		assert(port != null && isInterfacePort(port));
 		String portTypeName = getPortTypeName(port);
 		Pair<String,String> interfaces = getPortActualInterfaceTypes(port);		
-		return VariableTemplates.propertyDecl(portTypeName,port.getName(),"",Arrays.asList(interfaces.getFirst(),interfaces.getSecond()));
+		return ObjectDeclDefTemplates.propertyDecl(portTypeName,port.getName(),"",Arrays.asList(interfaces.getFirst(),interfaces.getSecond()), ObjectDeclDefTemplates.VariableType.SharedPtr);
 	}
 	
 	private Pair<String,String> getPortActualInterfaceTypes(Port port) {

@@ -12,6 +12,7 @@ import hu.elte.txtuml.export.cpp.templates.GenerationNames.PointerAndMemoryNames
 import hu.elte.txtuml.export.cpp.templates.PrivateFunctionalTemplates;
 import hu.elte.txtuml.export.cpp.templates.statemachine.EventTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.LinkTemplates;
+import hu.elte.txtuml.export.cpp.templates.structual.ObjectDeclDefTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.LinkTemplates.LinkFunctionType;
 import hu.elte.txtuml.utils.Pair;
 
@@ -202,8 +203,7 @@ public class ActivityTemplates {
 					+ "(" + operationCallParamList(parameters) + "))";
 		} else {
 			if (ownerName != PointerAndMemoryNames.Self) {
-				return ownerName + ReplaceSimpleTypeOp + PointerAndMemoryNames.MemoryAllocator + " " + typeName + "("
-						+ operationCallParamList(parameters) + ")";
+				return ObjectDeclDefTemplates.setAllocatedObjectToObjectVariable(typeName,Collections.emptyList(), ownerName,parameters, false);
 			} else {
 				return ownerName + PointerAndMemoryNames.PointerAccess + GenerationNames.initFunctionName(typeName)
 						+ "(" + operationCallParamList(parameters) + ")";

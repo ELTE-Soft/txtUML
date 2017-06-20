@@ -48,9 +48,6 @@ public class PrivateFunctionalTemplates {
 		return transitionTableType(className) + " " + className + "::" + GenerationNames.TransitionTableName + ";\n";
 	}
 
-	public static String pointerBaseType(String typeName) {
-		return typeName.substring(0, typeName.indexOf("*"));
-	}
 
 	public static String paramList(List<Pair<String, String>> params) {
 		if (params == null || params.size() == 0)

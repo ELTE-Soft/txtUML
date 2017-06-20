@@ -36,7 +36,7 @@ public class HeaderTemplates {
 
 		return HeaderTemplates.simpleStateMachineClassHeader(dependency, className, null, parentClass, publicPart,
 				protectedPart,
-				VariableTemplates.variableDecl(parentClass, GenerationNames.ParentSmMemberName, null, false)
+				ObjectDeclDefTemplates.variableDecl(parentClass, GenerationNames.ParentSmMemberName)
 						+ (privatePart),
 				false);
 	}
@@ -103,7 +103,7 @@ public class HeaderTemplates {
 
 		return HeaderTemplates.hierarchicalStateMachineClassHeader(dependency, className, null, publicPart,
 				protectedPart,
-				VariableTemplates.variableDecl(parentClass, GenerationNames.ParentSmMemberName, null, false)
+				ObjectDeclDefTemplates.variableDecl(parentClass, GenerationNames.ParentSmMemberName)
 						+ (privatePart),
 				false);
 	}
