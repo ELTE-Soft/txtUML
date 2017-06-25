@@ -13,6 +13,8 @@ import org.eclipse.jdt.core.dom.TypeDeclaration
 import org.eclipse.uml2.uml.SignalEvent
 import org.eclipse.uml2.uml.Transition
 import org.eclipse.uml2.uml.Vertex
+import org.eclipse.uml2.uml.Port
+import hu.elte.txtuml.export.uml2.structural.PortExporter
 
 class TransitionExporter extends Exporter<TypeDeclaration, ITypeBinding, Transition> {
 
@@ -29,13 +31,19 @@ class TransitionExporter extends Exporter<TypeDeclaration, ITypeBinding, Transit
 		result.source = fetchElement(SharedUtils.obtainTypeLiteralAnnotation(source, From)) as Vertex
 		result.target = fetchElement(SharedUtils.obtainTypeLiteralAnnotation(source, To)) as Vertex
 
-		val triggerSignal = SharedUtils.obtainTypeLiteralAnnotation(source, Trigger)
+		val triggerSignal = SharedUtils.obtainTypeLiteralAnnotation(source, Trigger, "value")
+		val triggerPort = SharedUtils.obtainTypeLiteralAnnotation(source, Trigger, "port")
+		
 		if (triggerSignal != null) {
 			val sigEvent = fetchElement(triggerSignal, new SignalEventExporter(this)) as SignalEvent
 			val trigger = result.createTrigger(sigEvent.name + "_trigger")
 			trigger.event = sigEvent
+			if(triggerPort != null) {
+				val port = fetchElement(triggerPort, new PortExporter(this)) as Port
+				trigger.ports += port
+			}
+			
 		}
-
 		if (exportActions) {
 			source.bodyDeclarations.filter[it instanceof MethodDeclaration].filter [
 				(it as MethodDeclaration).name.identifier == "effect"

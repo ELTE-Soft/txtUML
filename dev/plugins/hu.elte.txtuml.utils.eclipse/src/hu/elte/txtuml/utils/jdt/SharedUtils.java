@@ -20,7 +20,9 @@ import org.eclipse.jdt.core.dom.Annotation;
 import org.eclipse.jdt.core.dom.BodyDeclaration;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.Expression;
+import org.eclipse.jdt.core.dom.IAnnotationBinding;
 import org.eclipse.jdt.core.dom.IExtendedModifier;
+import org.eclipse.jdt.core.dom.IMemberValuePairBinding;
 import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
@@ -89,11 +91,49 @@ public final class SharedUtils {
 		return null;
 	}
 	
-	public static ITypeBinding obtainTypeLiteralAnnotation(BodyDeclaration declaration, Class<?> annotationClass) {
-		Expression expr = obtainSingleMemberAnnotationValue(declaration, annotationClass);
-		if (expr instanceof TypeLiteral) {
+	public static IAnnotationBinding obatinAnnotationBinding(BodyDeclaration declaration, Class<?> annotationClass) {
+		for (Object mod : declaration.modifiers()) {
+			IExtendedModifier modifier = (IExtendedModifier) mod;
+			if (modifier.isAnnotation()) {
+				Annotation annotation = (Annotation) modifier;
+				if (identicalAnnotations(annotation, annotationClass)) {
+					return annotation.resolveAnnotationBinding();
+				}
+			}
+		}
+		return null;
+	}
+	
+	public static ITypeBinding obatinTypeBindingFromExpression(Expression expr) {
+		if(expr instanceof TypeLiteral) {
 			return ((TypeLiteral) expr).getType().resolveBinding();
 		}
+		
+		return null;
+	}
+	
+	public static ITypeBinding obtainTypeLiteralAnnotation(BodyDeclaration declaration, Class<?> annotationClass) {
+		Expression expr = obtainSingleMemberAnnotationValue(declaration, annotationClass);
+		return obatinTypeBindingFromExpression(expr);
+
+		
+	}
+	
+	public static ITypeBinding obtainTypeLiteralAnnotation(BodyDeclaration declaration, Class<?> annotationClass, String name) {
+		//TODO NA: need a better solution instead of string literals..
+		IAnnotationBinding annot = obatinAnnotationBinding(declaration, annotationClass);
+		if (annot != null) {
+			for(IMemberValuePairBinding annotValue : annot.getAllMemberValuePairs()) {
+				if(annotValue.getName().equals(name)) {
+					Object value = annotValue.getValue();
+					if(value instanceof ITypeBinding) {
+						return (ITypeBinding) value;
+					}
+					
+				}
+				
+			}
+		}		
 		return null;
 	}
 
