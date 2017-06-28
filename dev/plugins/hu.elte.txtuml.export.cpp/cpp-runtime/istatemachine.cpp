@@ -7,8 +7,13 @@
 namespace Model
 {
 
-IStateMachine::IStateMachine(ES::SharedPtr<ES::MessageQueueType> messageQueue)
-	:_messageQueue(messageQueue), _pool(nullptr), _inPool(false), _started(false), _initialized(false), _deleted (false) {}
+IStateMachine::IStateMachine()
+	:_messageQueue(new ES::MessageQueueType()),
+	_pool(nullptr), 
+	_inPool(false), 
+	_started(false), 
+	_initialized(false), 
+	_deleted (false) {}
 
 void IStateMachine::setPoolId(int id) 
 { 

@@ -17,6 +17,7 @@ SingleThreadRT::SingleThreadRT() :_messageQueue(new ES::MessageQueueType()) {}
 
 void SingleThreadRT::setupObjectSpecificRuntime(ES::StateMachineRef sm)
 {
+	sm->setMessageQueue(_messageQueue);
 	sm->setMessageCounter(ES::SharedPtr<ES::AtomicCounter>(new ES::AtomicCounter()));
 }
 
@@ -38,7 +39,12 @@ void SingleThreadRT::start()
 		const ES::StateMachineRef sm = e->getTargetSM();
 		if (sm->isStarted())
 		{
-			sm->processEventVirtual();
+			if (!sm->isInitialized()) {
+				sm->init();
+			}
+			else {
+				sm->processEventVirtual();
+			}
 		}
 	}
 

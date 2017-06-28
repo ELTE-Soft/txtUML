@@ -41,7 +41,7 @@ public:
 	virtual std::string toString() const;
 
 protected:
-	IStateMachine(ES::SharedPtr<ES::MessageQueueType> messageQueue = ES::SharedPtr<ES::MessageQueueType>(new ES::MessageQueueType()));
+	IStateMachine();
 	void setPoolId(int id);
 	void destroy();
 private:
