@@ -37,7 +37,7 @@ class Weather {
 			//Collection<Tower> allTowers = Weather.this->TowerWeatherUsage::theTower;
 			Collection<Tower> allTowers = Weather.this->(TowerWeatherUsage.theTower);
 		
-			for(Tower t in allTowers) {
+			for(Tower t : allTowers) {
 				send new SignalSendTheWeatherValues(temperature, wind, rain) to t;
 			}
 			
