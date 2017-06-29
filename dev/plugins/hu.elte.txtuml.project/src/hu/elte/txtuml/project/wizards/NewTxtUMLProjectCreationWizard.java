@@ -64,12 +64,13 @@ public class NewTxtUMLProjectCreationWizard extends Wizard implements INewWizard
 	public boolean performFinish() {
 		String projectName = page.getProjectName();
 		IPath projectLocation = page.getLocationPath();
+		boolean includeStdLib = page.includeStdLib();
 		projectLocation = projectLocation.append(projectName);
-		boolean success = setUptxtUMLProject(projectLocation, projectName);
+		boolean success = setUptxtUMLProject(projectLocation, projectName, includeStdLib);
 		return success;
 	}
 
-	private boolean setUptxtUMLProject(IPath projectLocation, String projectName) {
+	private boolean setUptxtUMLProject(IPath projectLocation, String projectName, boolean includeStdLib) {
 		IRunnableWithProgress op = new WorkspaceModifyOperation() {
 
 			@Override
@@ -94,7 +95,7 @@ public class NewTxtUMLProjectCreationWizard extends Wizard implements INewWizard
 					settings.source = src;
 					settings.sourcegen = srcgen;
 
-					ProjectCreator.addProjectSettings(project, settings);
+					ProjectCreator.addProjectSettings(project, settings, includeStdLib);
 
 					project.refreshLocal(IResource.DEPTH_INFINITE, null);
 
