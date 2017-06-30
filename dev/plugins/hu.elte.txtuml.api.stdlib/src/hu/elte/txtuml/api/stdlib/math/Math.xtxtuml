@@ -1,0 +1,30 @@
+package hu.elte.txtuml.api.stdlib.math;
+
+/**
+ * Proxy class for the {@linkplain java.lang.Math} class.
+ */
+class Math {
+
+	/**
+	 * This class cannot be instantiated from the model.
+	 */
+	private external-body Math() {}
+
+	public static external-body int round(double d) {
+		return java.lang.Math.round(d) as int;
+	}
+
+	public static external-body double sin(double d) {
+		return java.lang.Math.sin(d);
+	}
+
+	public static external-body double cos(double d) {
+		return java.lang.Math.cos(d);
+	}
+
+	public static external-body double toRadians(double d) {
+		return java.lang.Math.toRadians(d);
+	}
+
+}
+
