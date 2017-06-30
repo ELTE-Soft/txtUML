@@ -49,7 +49,7 @@ public class Door extends ModelClass {
 				Timer timer = assoc(DoorUsesTimer.timer.class).selectAny();
 				Action.unlink(DoorUsesTimer.timer.class, timer, DoorUsesTimer.door.class, Door.this);				
 			}
-			Timer timer = Timer.start(Door.this, new DoorTimerExpired(), 2000);
+			Timer timer = Timer.start(new DoorTimerExpired(), Door.this, 2000);
 			Action.link(DoorUsesTimer.timer.class, timer, DoorUsesTimer.door.class, Door.this);
 		}
 	}
