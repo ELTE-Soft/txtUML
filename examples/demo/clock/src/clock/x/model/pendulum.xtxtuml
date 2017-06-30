@@ -1,12 +1,12 @@
 package clock.x.model;
 
+import clock.x.model.associations.TimerOfPendulum;
+import clock.x.model.interfaces.TickIfc;
 import clock.x.model.signals.Tick;
 import hu.elte.txtuml.api.stdlib.timers.Timer;
-import clock.x.model.interfaces.TickIfc;
 
 class Pendulum {
 
-	//FIXME private Timer timer;
 	private int unit;
 
 	public Pendulum() {
@@ -28,7 +28,8 @@ class Pendulum {
 		from Init;
 		to Working;
 		effect {
-			//FIXME timer = Timer.start(this, new Tick(), unit);
+			Timer timer = Timer.start(new Tick(), this, unit);
+			link(TimerOfPendulum.timer, timer, TimerOfPendulum.pendulum, this);
 		}
 	}
 
@@ -37,8 +38,9 @@ class Pendulum {
 		to Working;
 		trigger Tick;
 		effect {
-			//FIXME timer.reset(unit);
+			this->(TimerOfPendulum.timer).selectAny().reset(unit);
 		}
 	}
 
 }
+
