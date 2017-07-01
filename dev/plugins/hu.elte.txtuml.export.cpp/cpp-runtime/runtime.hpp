@@ -15,6 +15,7 @@
 #include "threadpoolmanager.hpp"
 #include "ESRoot/Types.hpp"
 #include "ESRoot/Containers/FixedArray.hpp"
+#include "ESRoot/AtomicCounter.hpp"
 
 namespace Execution 
 {
@@ -135,8 +136,8 @@ private:
 	ES::SharedPtr<ThreadPoolManager> poolManager;
 	ESContainer::FixedArray<int> numberOfObjects;
 
-	std::atomic_int worker;
-	std::atomic_int messages;
+	ES::SharedPtr<ES::AtomicCounter> worker;
+	ES::SharedPtr<ES::AtomicCounter> messages;
 	std::condition_variable stop_request_cond;
 };
 

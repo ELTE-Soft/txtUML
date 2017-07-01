@@ -5,30 +5,37 @@
 #include "threadpool.hpp"
 namespace Execution 
 {
-StateMachineThreadPool::StateMachineThreadPool() :stop(true) {}
+StateMachineThreadPool::StateMachineThreadPool() : 
+_sharedConditionVar(new std::condition_variable()), 
+_stateMachines(_sharedConditionVar),
+_stop(true) {}
 
 void StateMachineThreadPool::stopPool()
 {
-	stop = true;
-	stateMachines.stopQueue();
+	_stop = true;
+	_stateMachines.stopQueue();
 
 }
 
 void StateMachineThreadPool::startPool(int n)
 {
-	stateMachines.startQueue();
-	stop = false;
-	modifiedThreads(n);
+	_stateMachines.startQueue();
+	_stop = false;
+	modifyThreads(n);
+	for(int i = 0; i < n; ++i)
+	{
+		workers.addThread(new std::thread(&StateMachineThreadPool::task, this));
+	}
 
 }
 
-void StateMachineThreadPool::stopUponCompletion(std::atomic_int* messages)
+void StateMachineThreadPool::stopUponCompletion()
 {
 	std::unique_lock<std::mutex> lock(stop_request_mu);
 
-	if (!((*messages) == 0 && (*worker_threads) == 0))
+	if (!(nOfAllMessages->isZeroCounter () && nOfWorkerThreads->isZeroCounter ()))
 	{
-		stop_request_cond->wait(lock, [this, messages] {return (*messages) == 0 && *(this->worker_threads) == 0; });
+		stop_request_cond->wait(lock, [this] {return nOfAllMessages->isZeroCounter() && nOfWorkerThreads->isZeroCounter(); });
 	}
 
 	stopPool();
@@ -37,13 +44,22 @@ void StateMachineThreadPool::stopUponCompletion(std::atomic_int* messages)
 
 void StateMachineThreadPool::task()
 {
-	while (!this->stop && !workers.isReadyToStop(std::this_thread::get_id()))
+	while (!this->_stop && !workers.isReadyToStop(std::this_thread::get_id()))
 	{
-
-
+		if (modifie_mutex.try_lock()) {
+			if (workers.isTooManyWorkers())
+			{
+				workers.gettingThreadsReadyToStop(_sharedConditionVar);
+			}
+			while (workers.isTooFewWorkers())
+			{
+				workers.addThread(new std::thread(&StateMachineThreadPool::task, this));
+			}
+			modifie_mutex.unlock();
+		}
 
 		ES::StateMachineRef sm = nullptr;
-		while (sm == nullptr && !this->stop)
+		while (sm == nullptr && !this->_stop)
 		{
 
 			if (workers.isReadyToStop(std::this_thread::get_id()))
@@ -51,28 +67,38 @@ void StateMachineThreadPool::task()
 				return;
 			}
 
-			stateMachines.dequeue(sm);
-			incrementWorkers();
+			_stateMachines.dequeue(sm);
+			
 		}
 
 
 		if (sm != nullptr)
 		{
+			incrementWorkers();
 
 			if (!sm->isInitialized()) sm->init();
-			for (int i = 0; i < 5 && !sm->emptyMessageQueue(); ++i)
+			for (int i = 0; i < 5 && sm != nullptr && !sm->emptyMessageQueue(); ++i)
 			{
-				sm->processEventVirtual();
+				if (!sm->isDestroyed()) {
+					sm->processEventVirtual();
+				}
+				else {
+					sm->setPooled(false);
+					delete sm;
+					sm = nullptr;
+				}
 			}
 
+			if (sm != nullptr) {
 
-			if (!sm->emptyMessageQueue())
-			{
-				stateMachines.enqueue(sm);
-			}
-			else
-			{
-				sm->setPooled(false);
+				if (!sm->emptyMessageQueue())
+				{
+					_stateMachines.enqueue(sm);
+				}
+				else
+				{
+					sm->setPooled(false);
+				}
 			}
 
 			reduceWorkers();
@@ -83,46 +109,35 @@ void StateMachineThreadPool::task()
 
 }
 
-void StateMachineThreadPool::modifiedThreads(int n)
+void StateMachineThreadPool::modifyThreads(int n)
 {
-	if (!stop)
+	if (!_stop)
 	{
-		std::unique_lock<std::mutex> mlock(modifie_mutex);
-
 		workers.setExpectedThreads(n);
-		if (workers.isTooManyWorkers())
-		{
-			workers.gettingThreadsReadyToStop(cond);
-		}
-		while (workers.isTooFewWorkers())
-		{
-			workers.addThread(new std::thread(&StateMachineThreadPool::task, this));
-		}
 	}
-
 }
 
 
 void StateMachineThreadPool::incrementWorkers()
 {
-	(*worker_threads)++;
+	nOfWorkerThreads->incrementCounter();
 
 }
 
 void StateMachineThreadPool::reduceWorkers()
 {
-	(*worker_threads)--;
+	nOfWorkerThreads->decrementCounter();
 }
 
 void StateMachineThreadPool::enqueueObject(ES::StateMachineRef sm)
 {
-	stateMachines.enqueue(sm);
+	_stateMachines.enqueue(sm);
 }
 
 StateMachineThreadPool::~StateMachineThreadPool()
 {
 	stopPool();
-	workers.removeAll();
+	workers.removeAll(); // wait to all threads
 }
 }
 

@@ -14,7 +14,7 @@ void ThreadPoolManager::recalculateThreads(int id, int n)
 		abort();
 	}
 
-	configurations[id]->getThreadPool()->modifiedThreads(calculateNOfThreads(id, n));
+	configurations[id]->getThreadPool()->modifyThreads(calculateNOfThreads(id, n));
 }
 
 int ThreadPoolManager::calculateNOfThreads(int id, int n)

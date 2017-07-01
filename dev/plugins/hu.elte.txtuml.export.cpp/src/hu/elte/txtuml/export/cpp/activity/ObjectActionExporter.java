@@ -3,6 +3,7 @@ package hu.elte.txtuml.export.cpp.activity;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.uml2.uml.Class;
 import org.eclipse.uml2.uml.CreateObjectAction;
 import org.eclipse.uml2.uml.DestroyObjectAction;
 import org.eclipse.uml2.uml.SendObjectAction;
@@ -10,8 +11,10 @@ import org.eclipse.uml2.uml.StartClassifierBehaviorAction;
 import org.eclipse.uml2.uml.StartObjectBehaviorAction;
 import org.eclipse.uml2.uml.UMLPackage;
 
+import hu.elte.txtuml.export.cpp.CppExporterUtils;
 import hu.elte.txtuml.export.cpp.templates.activity.ActivityTemplates;
 import hu.elte.txtuml.export.cpp.templates.activity.ActivityTemplates.CreateObjectType;
+import hu.elte.txtuml.utils.Logger;
 
 class ObjectActionExporter {
 
@@ -48,7 +51,15 @@ class ObjectActionExporter {
 	}
 
 	public String createDestroyObjectActionCode(DestroyObjectAction node) {
-		return ActivityTemplates.deleteObject(activityExportResolver.getTargetFromInputPin(node.getTarget()));
+		try {
+			Class cls = (Class) node.getTarget().getType();
+			return ActivityTemplates.deleteObject(activityExportResolver.getTargetFromInputPin(node.getTarget()), 
+					CppExporterUtils.isStateMachineOwner(cls));
+		} catch (ClassCastException e) {
+			Logger.sys.error("Delete object: Cannot cast target type");
+			return "";
+		}
+
 	}
 
 	public String createStartObjectActionCode(StartClassifierBehaviorAction node) {
