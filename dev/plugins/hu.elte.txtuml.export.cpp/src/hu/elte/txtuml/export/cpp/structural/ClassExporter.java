@@ -32,8 +32,6 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 	private AssociationExporter associationExporter;
 	private ConstructorExporter constructorExporter;
 
-	private boolean isStateMachineOwner;
-
 	private StateMachineExporter stateMachineExporter;
 	private PortExporter portExporter;
 	private SubStateMachineExporter subStateMachineExporter;
@@ -58,12 +56,9 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 		StateMachine classSM = CppExporterUtils.getStateMachine(structuredElement);
 		if (classSM != null) {
 
-			isStateMachineOwner = true;
 			stateMachineExporter = new StateMachineExporter(classSM);
 			stateMachineExporter.setName(name);
 			stateMachineExporter.setStateMachineThreadPoolId(poolId);
-		} else {
-			isStateMachineOwner = false;
 		}
 
 		createSource(sourceDestination);
@@ -75,7 +70,7 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 	}
 
 	public List<String> getSubmachines() {
-		if(isStateMachineOwner()) {
+		if(CppExporterUtils.isStateMachineOwner(structuredElement)) {
 			return stateMachineExporter.getSubMachineNameList();
 		} else {
 			return null;
@@ -85,7 +80,7 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 	private void createSource(String dest) throws FileNotFoundException, UnsupportedEncodingException {
 		String source;
 		associationExporter.exportAssociations(structuredElement.getOwnedAttributes());
-		if (isStateMachineOwner()) {
+		if (CppExporterUtils.isStateMachineOwner(structuredElement)) {
 			stateMachineExporter.createStateMachineRegion(structuredElement);
 			stateMachineExporter.createMachine();
 
@@ -110,11 +105,6 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 				CppExporterUtils.format(getAllDependencies(false) + GenerationTemplates.putNamespace(source, GenerationNames.Namespaces.ModelNamespace)));
 	}
 
-	public boolean isStateMachineOwner() {
-		return isStateMachineOwner;
-
-	}
-
 	private String createClassHeaderSource() {
 		String source = "";
 		StringBuilder privateParts = new StringBuilder(
@@ -132,7 +122,7 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 		publicParts.append(LinkTemplates.templateLinkFunctionGeneralDef(LinkTemplates.LinkFunctionType.Link));
 		publicParts.append(LinkTemplates.templateLinkFunctionGeneralDef(LinkTemplates.LinkFunctionType.Unlink));
 
-		if (isStateMachineOwner()) {
+		if (CppExporterUtils.isStateMachineOwner(structuredElement)) {
 
 			publicParts.append(stateMachineExporter.createStateEnumCode());
 			publicParts.append(portExporter.createPortEnumCode(structuredElement.getOwnedPorts()));
@@ -160,14 +150,14 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 		List<StateMachine> smList = new ArrayList<StateMachine>();
 		CppExporterUtils.getTypedElements(smList, UMLPackage.Literals.STATE_MACHINE,
 				structuredElement.allOwnedElements());
-		if (isStateMachineOwner()) {
+		if (CppExporterUtils.isStateMachineOwner(structuredElement)) {
 			source.append(stateMachineExporter.createStateMachineRelatedCppSourceCodes());
 
 		}
 
 		source.append(super.createOperationDefinitions());
-		source.append(constructorExporter.exportConstructorsDefinitions(name, isStateMachineOwner()));
-		source.append(isStateMachineOwner() ? ConstructorTemplates.destructorDef(name, true)
+		source.append(constructorExporter.exportConstructorsDefinitions(name, CppExporterUtils.isStateMachineOwner(structuredElement)));
+		source.append(CppExporterUtils.isStateMachineOwner(structuredElement) ? ConstructorTemplates.destructorDef(name, true)
 				: ConstructorTemplates.destructorDef(name, false));
 
 		return source.toString();
@@ -177,7 +167,7 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 		StringBuilder source = new StringBuilder("");
 		dependencyExporter.addDependencies(associationExporter.getAssociatedPropertyTypes());
 
-		if (isStateMachineOwner()) {
+		if (CppExporterUtils.isStateMachineOwner(structuredElement)) {
 			for (Map.Entry<String, Pair<String, Region>> entry : stateMachineExporter.getSubMachineMap().entrySet()) {
 				dependencyExporter.addDependency(entry.getValue().getFirst());
 			}
@@ -190,7 +180,7 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 
 		if (!isHeader) {
 			source.append(dependencyExporter.createDependencyCppIncludeCode(name));
-			if (isStateMachineOwner()) {
+			if (CppExporterUtils.isStateMachineOwner(structuredElement)) {
 				source.append(PrivateFunctionalTemplates.include(GenerationTemplates.DeploymentHeader));
 				source.append(GenerationTemplates.debugOnlyCodeBlock(GenerationTemplates.StandardIOinclude));
 			}

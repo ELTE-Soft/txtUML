@@ -108,11 +108,12 @@ class XtxtUMLParserTestUtils {
 		(execution.body as XBlockExpression).expressions.performChecks(expressionChecks);
 	}
 
-	def signal(TUModelElement element, String name, List<Procedure1<TUSignalAttribute>> attributeChecks) {
+	def signal(TUModelElement element, String name, String superName, List<Procedure1<TUSignalAttribute>> attributeChecks) {
 		assertTrue(element instanceof TUSignal);
 		val signal = element as TUSignal;
 
 		assertEquals(name, signal.name);
+		assertEquals(superName, signal.superSignal?.name);
 		signal.attributes.performChecks(attributeChecks);
 	}
 

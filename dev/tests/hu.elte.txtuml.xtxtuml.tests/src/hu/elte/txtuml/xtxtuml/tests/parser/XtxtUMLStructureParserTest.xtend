@@ -80,14 +80,24 @@ class XtxtUMLStructureParserTest {
 			signal NotEmptyTestSignal {
 				public int testAttribute;
 			}
+			signal EmptySubTestSignal extends NotEmptyTestSignal;
+			signal NotEmptySubTestSignal extends EmptyTestSignal {
+				public int testAttribute;
+			}
 		'''
 		.parse.
 		file(
 			"test.model",
 			null, #[
-				[signal("EmptyTestSignal", #[])],
+				[signal("EmptyTestSignal", null, #[])],
 				[signal(
-					"NotEmptyTestSignal", #[
+					"NotEmptyTestSignal", null, #[
+						[attribute(PUBLIC, "int", "testAttribute")]
+					]
+				)],
+				[signal("EmptySubTestSignal", "NotEmptyTestSignal", #[])],
+				[signal(
+					"NotEmptySubTestSignal", "EmptyTestSignal", #[
 						[attribute(PUBLIC, "int", "testAttribute")]
 					]
 				)]
@@ -252,7 +262,7 @@ class XtxtUMLStructureParserTest {
 		file(
 			"test.model",
 			null, #[
-				[signal("Sig", #[])],
+				[signal("Sig", null, #[])],
 				[class_(
 					"TestClass", null, #[
 						[port(false, "Port", #[])],
@@ -407,7 +417,7 @@ class XtxtUMLStructureParserTest {
 		file(
 			"test.model",
 			null, #[
-				[signal("TestSignal", #[])],
+				[signal("TestSignal", null, #[])],
 				[interface_("EmptyTestInterface", #[])],
 				[interface_(
 					"NotEmptyTestInterface", #[

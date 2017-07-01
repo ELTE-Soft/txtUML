@@ -41,7 +41,7 @@ class XtxtUMLExpressionParserTest {
 		file(
 			"test.model",
 			null, #[
-				[signal("TestSignal", #[])],
+				[signal("TestSignal", null, #[])],
 				[class_(
 					"TestClass", null, #[
 						[operation(
@@ -95,7 +95,7 @@ class XtxtUMLExpressionParserTest {
 			"test.model",
 			null, #[
 				[signal(
-					"TestSignal", #[
+					"TestSignal", null, #[
 						[attribute(PUBLIC, "String", "message")]
 					]
 				)],
@@ -249,7 +249,7 @@ class XtxtUMLExpressionParserTest {
 						[port(false, "P", #[])]
 					]
 				)],
-				[signal("S", #[])],
+				[signal("S", null, #[])],
 				[class_("B", null, #[])],
 				[association(
 					false, "AB", #[
