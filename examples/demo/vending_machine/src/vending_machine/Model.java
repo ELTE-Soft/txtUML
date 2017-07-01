@@ -1,4 +1,4 @@
-package vending_machine.glue;
+package vending_machine;
 
 import hu.elte.txtuml.api.model.API;
 import hu.elte.txtuml.api.model.Action;
