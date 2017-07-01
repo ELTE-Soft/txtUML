@@ -5,6 +5,8 @@ import java.util.NoSuchElementException;
 import java.util.function.Predicate;
 
 import hu.elte.txtuml.api.model.Collection;
+import hu.elte.txtuml.api.model.External;
+import hu.elte.txtuml.api.model.ExternalBody;
 
 /**
  * An immutable collection which may contain at most one element but is also
@@ -22,11 +24,13 @@ public class Maybe<T> implements Collection<T> {
 	 * The element contained in this collection or {@code null} if this
 	 * collection is empty.
 	 */
+	@External
 	private final T obj;
 
 	/**
 	 * Creates an empty {@code Maybe}.
 	 */
+	@ExternalBody
 	public static <T> Maybe<T> empty() {
 		return new Maybe<T>(null);
 	}
@@ -37,15 +41,18 @@ public class Maybe<T> implements Collection<T> {
 	 * @param element
 	 *            the element this collection will contain
 	 */
+	@ExternalBody
 	public static <T> Maybe<T> of(T element) {
 		return new Maybe<T>(element);
 	}
 
+	@ExternalBody
 	private Maybe(T element) {
 		this.obj = element;
 	}
 
 	@Override
+	@ExternalBody
 	public final Iterator<T> iterator() {
 		return new Iterator<T>() {
 
@@ -74,21 +81,25 @@ public class Maybe<T> implements Collection<T> {
 	}
 
 	@Override
+	@ExternalBody
 	public final int count() {
 		return this.obj == null ? 0 : 1;
 	}
 
 	@Override
+	@ExternalBody
 	public final boolean contains(Object element) {
 		return this.obj == null ? element == null : this.obj.equals(element);
 	}
 
 	@Override
+	@ExternalBody
 	public final T selectAny() {
 		return obj;
 	}
 
 	@Override
+	@ExternalBody
 	public final Collection<T> selectAll(Predicate<T> cond) {
 		if (obj == null || cond.test(obj)) {
 			return this;
@@ -97,6 +108,7 @@ public class Maybe<T> implements Collection<T> {
 	}
 
 	@Override
+	@ExternalBody
 	public final Collection<T> add(T element) {
 		if (obj == null) {
 			return Maybe.of(element);
@@ -105,11 +117,13 @@ public class Maybe<T> implements Collection<T> {
 	}
 
 	@Override
+	@ExternalBody
 	public final Collection<T> addAll(Collection<T> elements) {
 		return Sequence.<T> builder().add(obj).addAll(elements).build();
 	}
 
 	@Override
+	@ExternalBody
 	public final Collection<T> remove(Object element) {
 		if (element == null || !element.equals(this.obj)) {
 			return this;
@@ -118,6 +132,7 @@ public class Maybe<T> implements Collection<T> {
 	}
 
 	@Override
+	@ExternalBody
 	public String toString() {
 		return obj == null ? "null" : obj.toString();
 	}

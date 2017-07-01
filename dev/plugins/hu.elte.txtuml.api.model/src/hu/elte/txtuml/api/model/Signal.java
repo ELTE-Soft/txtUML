@@ -65,6 +65,10 @@ package hu.elte.txtuml.api.model;
  */
 public abstract class Signal extends Event {
 
+	@ExternalBody
+	protected Signal() {
+	}
+
 	@Override
 	public String toString() {
 		return "signal:" + getClass().getSimpleName();

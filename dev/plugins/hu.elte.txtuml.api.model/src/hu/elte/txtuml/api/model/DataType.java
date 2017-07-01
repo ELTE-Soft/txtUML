@@ -88,6 +88,7 @@ import java.util.Objects;
 public abstract class DataType {
 
 	@Override
+	@ExternalBody
 	public final boolean equals(Object obj) {
 		if (this == obj) {
 			return true;
@@ -114,6 +115,7 @@ public abstract class DataType {
 	}
 
 	@Override
+	@External
 	public final int hashCode() {
 		final int prime = 1873;
 		int result = 1;
@@ -137,6 +139,7 @@ public abstract class DataType {
 		return "data_type:" + getClass().getSimpleName();
 	}
 
+	@External
 	private final List<Field[]> getAllFields() {
 		List<Field[]> fields = new ArrayList<>();
 		for (Class<?> cls = getClass(); cls != DataType.class; cls = cls.getSuperclass()) {

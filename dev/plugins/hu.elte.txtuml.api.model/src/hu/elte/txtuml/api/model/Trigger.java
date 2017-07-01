@@ -95,6 +95,7 @@ public @interface Trigger {
 	 * See the documentation of {@link Model} for an overview on modeling in
 	 * JtxtUML.
 	 */
+	@External
 	abstract class AnyPort extends Port<Interface, Interface> {
 
 		/**
