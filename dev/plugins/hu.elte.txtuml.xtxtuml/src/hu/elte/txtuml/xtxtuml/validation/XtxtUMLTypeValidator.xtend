@@ -1,11 +1,11 @@
 package hu.elte.txtuml.xtxtuml.validation;
 
+import com.google.inject.Inject
 import hu.elte.txtuml.api.model.DataType
 import hu.elte.txtuml.api.model.ModelClass
 import hu.elte.txtuml.api.model.ModelClass.Port
 import hu.elte.txtuml.api.model.ModelEnum
 import hu.elte.txtuml.api.model.Signal
-import hu.elte.txtuml.api.model.external.ExternalType
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAttributeOrOperationDeclarationPrefix
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUClassPropertyAccessExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUDeleteObjectExpression
@@ -25,8 +25,12 @@ import static hu.elte.txtuml.xtxtuml.xtxtUML.XtxtUMLPackage.Literals.*
 
 class XtxtUMLTypeValidator extends XtxtUMLUniquenessValidator {
 
+	@Inject extension XtxtUMLExternalityHelper;
+
 	@Check
 	def checkTypeReference(JvmTypeReference typeRef) {
+		if (typeRef.external) return;
+
 		var isAttribute = false;
 		val isValid = switch (container : typeRef.eContainer) {
 			TUSignalAttribute: {
@@ -52,9 +56,9 @@ class XtxtUMLTypeValidator extends XtxtUMLUniquenessValidator {
 		if (!isValid) {
 			error(
 				if (isAttribute) {
-					"Invalid type. Only boolean, double, int, String, model enums, model data types and external interfaces are allowed."
+					"Invalid type. Only boolean, double, int, String, model enums and model data types are allowed."
 				} else {
-					"Invalid type. Only boolean, double, int, String, model enums, model data types, external interfaces, signal and model class types are allowed."
+					"Invalid type. Only boolean, double, int, String, model enums, model data types, signal and model class types are allowed."
 				}, typeRef, TypesPackage.Literals.JVM_PARAMETERIZED_TYPE_REFERENCE__TYPE, INVALID_TYPE);
 		}
 	}
@@ -91,8 +95,7 @@ class XtxtUMLTypeValidator extends XtxtUMLUniquenessValidator {
 
 	def protected isAllowedAttributeType(JvmTypeReference typeRef, boolean isVoidAllowed) {
 		isAllowedBasicType(typeRef, isVoidAllowed) || typeRef.isConformantWith(DataType) ||
-			typeRef.isConformantWith(ModelEnum) ||
-			typeRef.type.isInterface && typeRef.isConformantWith(ExternalType)
+			typeRef.isConformantWith(ModelEnum)
 	}
 
 	def protected isAllowedBasicType(JvmTypeReference typeRef, boolean isVoidAllowed) {

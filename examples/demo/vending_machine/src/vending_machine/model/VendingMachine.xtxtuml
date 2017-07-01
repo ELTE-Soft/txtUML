@@ -1,7 +1,6 @@
 package vending_machine.model;
 
 import hu.elte.txtuml.api.stdlib.timers.Timer;
-import vending_machine.glue.View;
 
 class VendingMachine {
 
@@ -48,7 +47,7 @@ class VendingMachine {
 			} else {
 				updateMessage("Out of stock");
 			}
-			Timer.start(this, new Done(), delay);
+			Timer.start(new Done(), this, delay);
 		}
 	}
 
@@ -62,7 +61,7 @@ class VendingMachine {
 			} else {
 				updateMessage("Please, give more money");
 			}
-			Timer.start(this, new Done(), delay);
+			Timer.start(new Done(), this, delay);
 		}
 	}
 

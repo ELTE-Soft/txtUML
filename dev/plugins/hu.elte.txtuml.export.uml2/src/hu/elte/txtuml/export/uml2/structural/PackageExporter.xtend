@@ -36,7 +36,7 @@ abstract class AbstractPackageExporter<S, T extends Package> extends Exporter<S,
 	}
 
 	def exportCompUnit(ICompilationUnit compUnit) {
-		parseCompUnit(compUnit).types.forEach[exportType]
+		parseCompUnit(compUnit).types.filter[t | !ElementTypeTeller.isExternal(t as TypeDeclaration)].forEach[exportType]
 	}
 
 	override storePackaged(PackageableElement pkg) {

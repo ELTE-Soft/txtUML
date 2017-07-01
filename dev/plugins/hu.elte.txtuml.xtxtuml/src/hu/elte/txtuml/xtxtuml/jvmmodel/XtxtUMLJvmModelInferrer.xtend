@@ -9,6 +9,8 @@ import hu.elte.txtuml.api.model.Composition.HiddenContainer
 import hu.elte.txtuml.api.model.Connector
 import hu.elte.txtuml.api.model.ConnectorBase.One
 import hu.elte.txtuml.api.model.Delegation
+import hu.elte.txtuml.api.model.External
+import hu.elte.txtuml.api.model.ExternalBody
 import hu.elte.txtuml.api.model.From
 import hu.elte.txtuml.api.model.Interface
 import hu.elte.txtuml.api.model.ModelClass
@@ -323,7 +325,13 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 	def dispatch private toJvmMember(TUConstructor ctor) {
 		ctor.toConstructor [
 			documentation = ctor.documentation
-			visibility = ctor.visibility.toJvmVisibility
+			val modifiers = ctor.modifiers
+			visibility = modifiers.visibility.toJvmVisibility
+			switch (modifiers.externality) {
+				case EXTERNAL: annotations += External.annotationRef
+				case EXTERNAL_BODY: annotations += ExternalBody.annotationRef
+				default: {}
+			}
 
 			for (param : ctor.parameters) {
 				parameters += param.toParameter(param.name, param.parameterType) => [
@@ -338,7 +346,15 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 	def dispatch private toJvmMember(TUAttribute attr) {
 		attr.toField(attr.name, attr.prefix.type) [
 			documentation = attr.documentation
-			visibility = attr.prefix.visibility.toJvmVisibility
+			
+			val modifiers = attr.prefix.modifiers
+			static = modifiers.static
+			visibility = modifiers.visibility.toJvmVisibility
+
+			switch (modifiers.externality) {
+				case EXTERNAL: annotations += External.annotationRef
+				default: {}
+			}
 		]
 	}
 
@@ -358,7 +374,15 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 	def dispatch private toJvmMember(TUOperation op) {
 		op.toMethod(op.name, op.prefix.type) [
 			documentation = op.documentation
-			visibility = op.prefix.visibility.toJvmVisibility
+			val modifiers = op.prefix.modifiers
+			static = modifiers.static
+			visibility = modifiers.visibility.toJvmVisibility
+
+			switch (modifiers.externality) {
+				case EXTERNAL: annotations += External.annotationRef
+				case EXTERNAL_BODY: annotations += ExternalBody.annotationRef
+				default: {}
+			}
 
 			for (JvmFormalParameter param : op.parameters) {
 				parameters += param.toParameter(param.name, param.parameterType) => [

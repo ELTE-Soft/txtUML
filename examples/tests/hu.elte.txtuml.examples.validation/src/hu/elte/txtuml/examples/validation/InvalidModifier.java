@@ -8,6 +8,6 @@ public class InvalidModifier extends ModelClass {
 	
 	final void g() {}
 	
-	static void h() {}
+	static int i;
 	
 }

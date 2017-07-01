@@ -51,6 +51,7 @@ public interface Action {
 	 * @throws NullPointerException
 	 *             if <code>classType</code> is <code>null</code>
 	 */
+	@ExternalBody
 	static <T extends ModelClass> T create(Class<T> classType, Object... parameters) throws ObjectCreationError {
 		try {
 			return InstanceCreator.create(classType, parameters);
@@ -81,6 +82,7 @@ public interface Action {
 	 * @throws NullPointerException
 	 *             if <code>classType</code> is <code>null</code>
 	 */
+	@ExternalBody
 	static <T extends ModelClass> T createWithName(Class<T> classType, String name, Object... parameters)
 			throws ObjectCreationError {
 		T ret = create(classType, parameters);
@@ -101,6 +103,7 @@ public interface Action {
 	 * @throws NullPointerException
 	 *             if <code>obj</code> is <code>null</code>
 	 */
+	@ExternalBody
 	static void delete(ModelClass obj) {
 		obj.runtimeInfo().delete();
 	}
@@ -123,6 +126,7 @@ public interface Action {
 	 *             if either <code>leftPort</code> or <code>rightPort</code> is
 	 *             <code>null</code>
 	 */
+	@ExternalBody
 	static <C1 extends ConnectorEnd<?, P1>, P1 extends Port<I1, I2>, C2 extends ConnectorEnd<?, P2>, P2 extends Port<I2, I1>, I1 extends Interface, I2 extends Interface> void connect(
 			Class<C1> leftEnd, P1 leftPort, Class<C2> rightEnd, P2 rightPort) {
 		leftPort.getRuntime().connect(leftEnd, leftPort, rightEnd, rightPort);
@@ -143,6 +147,7 @@ public interface Action {
 	 *             if either <code>leftPort</code> or <code>rightPort</code> is
 	 *             <code>null</code>
 	 */
+	@ExternalBody
 	static <P1 extends Port<I1, I2>, C extends ConnectorEnd<?, P2>, P2 extends Port<I1, I2>, I1 extends Interface, I2 extends Interface> void connect(
 			P1 parentPort, Class<C> childEnd, P2 childPort) {
 		parentPort.getRuntime().connect(parentPort, childEnd, childPort);
@@ -172,6 +177,7 @@ public interface Action {
 	 * @see AssociationEnd
 	 * @see ModelClass.Status#DELETED
 	 */
+	@ExternalBody
 	static <L extends ModelClass, R extends ModelClass, CL extends GeneralCollection<L>, CR extends GeneralCollection<R>> void link(
 			Class<? extends AssociationEnd<CL>> leftEnd, L leftObj, Class<? extends AssociationEnd<CR>> rightEnd,
 			R rightObj) {
@@ -200,6 +206,7 @@ public interface Action {
 	 * @see Association
 	 * @see AssociationEnd
 	 */
+	@ExternalBody
 	static <L extends ModelClass, R extends ModelClass, CL extends GeneralCollection<L>, CR extends GeneralCollection<R>> void unlink(
 			Class<? extends AssociationEnd<CL>> leftEnd, L leftObj, Class<? extends AssociationEnd<CR>> rightEnd,
 			R rightObj) {
@@ -216,6 +223,7 @@ public interface Action {
 	 * @throws NullPointerException
 	 *             if <code>obj</code> is <code>null</code>
 	 */
+	@ExternalBody
 	static void start(ModelClass obj) {
 		obj.runtimeInfo().start();
 	}
@@ -240,6 +248,7 @@ public interface Action {
 	 * @throws NullPointerException
 	 *             if <code>reception</code> is <code>null</code>
 	 */
+	@ExternalBody
 	static <S extends Signal> void send(S signal, Reception<S> reception) {
 		reception.accept(signal);
 	}
@@ -258,6 +267,7 @@ public interface Action {
 	 * @throws NullPointerException
 	 *             if <code>target</code> is <code>null</code>
 	 */
+	@ExternalBody
 	static void send(Signal signal, ModelClass target) {
 		target.runtimeInfo().send(signal);
 	}
@@ -268,6 +278,7 @@ public interface Action {
 	 * @param message
 	 *            the message to be logged
 	 */
+	@ExternalBody
 	static void log(String message) {
 		Logger.user.info(message);
 	}
@@ -278,6 +289,7 @@ public interface Action {
 	 * @param message
 	 *            the error message to be logged
 	 */
+	@ExternalBody
 	static void logError(String message) {
 		Logger.user.error(message);
 	}

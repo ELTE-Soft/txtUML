@@ -33,8 +33,8 @@ import javax.swing.text.MutableAttributeSet;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 
-import vending_machine.glue.Model;
-import vending_machine.glue.ViewImpl;
+import vending_machine.Model;
+import vending_machine.model.View;
 
 public class UI implements Runnable {
 
@@ -69,7 +69,7 @@ public class UI implements Runnable {
 	private final Model model;
 
 	private UI() {
-		ViewImpl.getInstance().setUI(this);
+		View.getInstance().setUI(this);
 		model = new Model();
 		Color monitorBlue = new Color(0, 0, 100);
 		buttonPanel.setOpaque(false);

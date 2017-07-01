@@ -34,6 +34,7 @@ import hu.elte.txtuml.api.model.runtime.RuntimeInfo;
  * See the documentation of {@link hu.elte.txtuml.api.model.Model} for an
  * overview on modeling in JtxtUML.
  */
+@External
 public abstract class Runtime {
 
 	/**
@@ -144,6 +145,9 @@ public abstract class Runtime {
 	/**
 	 * Base class for model elements that have a runtime information provider.
 	 * 
+	 * <i>Note:</i> some methods of this class are marked external because they
+	 * are visible in subclasses but should not be used in the model.
+	 * 
 	 * @param <I>
 	 *            the type of the runtime information provider of this model
 	 *            element
@@ -160,11 +164,13 @@ public abstract class Runtime {
 		 * Implementation must not depend on fields of any subclass of
 		 * {@link Described} as this method is called in the constructor.
 		 */
+		@External
 		abstract I createRuntimeInfo();
 
 		/**
 		 * Returns the runtime information provider of this model element.
 		 */
+		@External
 		public final I runtimeInfo() {
 			return runtimeInfo;
 		}
@@ -173,7 +179,8 @@ public abstract class Runtime {
 		 * A shorthand operation for {@link #runtimeInfo()}.
 		 * {@link RuntimeInfo#getRuntime() getRuntime()}.
 		 */
-		Runtime getRuntime() {
+		@External
+		final Runtime getRuntime() {
 			return runtimeInfo().getRuntime();
 		}
 

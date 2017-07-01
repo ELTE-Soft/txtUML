@@ -6,15 +6,14 @@ import hu.elte.txtuml.api.model.ModelClass;
 import hu.elte.txtuml.api.model.To;
 import hu.elte.txtuml.api.model.Trigger;
 import hu.elte.txtuml.api.stdlib.timers.Timer;
-import hu.elte.txtuml.examples.garage.control.glue.View;
 import hu.elte.txtuml.examples.garage.control.model.associations.KeyboardProvidesCode;
+import hu.elte.txtuml.examples.garage.control.model.associations.KeyboardUsesTimer;
 import hu.elte.txtuml.examples.garage.control.model.signals.external.KeyPress;
 import hu.elte.txtuml.examples.garage.control.model.signals.internal.KeyboardTimeout;
 import hu.elte.txtuml.examples.garage.control.model.signals.internal.KeyboardTimerExpired;
 import hu.elte.txtuml.examples.garage.control.model.signals.internal.WaitForCode;
 
 public class Keyboard extends ModelClass {
-	Timer keyboardTimer;
 	int keyboardTimerCount;
 	int keyboardTimerMaxCount = 100;
 
@@ -54,7 +53,12 @@ public class Keyboard extends ModelClass {
 		@Override
 		public void effect() {
 			keyboardTimerCount += 0;
-			keyboardTimer = Timer.start(Keyboard.this, new KeyboardTimerExpired(), 50);
+			if (!assoc(KeyboardUsesTimer.timer.class).isEmpty()) {
+				Timer timer = assoc(KeyboardUsesTimer.timer.class).selectAny();
+				Action.unlink(KeyboardUsesTimer.timer.class, timer, KeyboardUsesTimer.keyboard.class, Keyboard.this);				
+			}
+			Timer timer = Timer.start(new KeyboardTimerExpired(), Keyboard.this, 50);
+			Action.link(KeyboardUsesTimer.timer.class, timer, KeyboardUsesTimer.keyboard.class, Keyboard.this);
 		}
 	}
 
@@ -71,7 +75,7 @@ public class Keyboard extends ModelClass {
 		public void effect() {
 			keyboardTimerCount += 1;
 			View.getInstance().progress(keyboardTimerCount);
-			keyboardTimer.reset(50);
+			assoc(KeyboardUsesTimer.timer.class).selectAny().reset(50);
 		}
 	}
 

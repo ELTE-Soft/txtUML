@@ -3,6 +3,7 @@ package hu.elte.txtuml.api.model;
 // TODO document
 public abstract class AssociationEnd<T> {
 
+	@ExternalBody
 	AssociationEnd() {
 	}
 

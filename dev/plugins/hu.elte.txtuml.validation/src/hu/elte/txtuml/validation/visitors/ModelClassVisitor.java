@@ -28,6 +28,10 @@ public class ModelClassVisitor extends VisitorBase {
 
 	@Override
 	public boolean visit(TypeDeclaration elem) {
+		if (ElementTypeTeller.isExternal(elem)) {
+			return false;
+		}
+
 		if (ElementTypeTeller.isVertex(elem) || ElementTypeTeller.isTransition(elem)) {
 			handleStateMachineElements(elem);
 		} else if (ElementTypeTeller.isPort(elem)) {
@@ -40,6 +44,10 @@ public class ModelClassVisitor extends VisitorBase {
 
 	@Override
 	public boolean visit(FieldDeclaration elem) {
+		if (ElementTypeTeller.isExternal(elem)) {
+			return false;
+		}
+
 		if (!Utils.isAllowedAttributeType(elem.getType(), false)) {
 			collector.report(new InvalidAttributeType(collector.getSourceInfo(), elem.getType()));
 		} else {
@@ -50,19 +58,28 @@ public class ModelClassVisitor extends VisitorBase {
 
 	@Override
 	public boolean visit(MethodDeclaration elem) {
+		if (ElementTypeTeller.isExternal(elem)) {
+			return false;
+		}
+
 		if (!elem.isConstructor()) {
 			if (elem.getReturnType2() != null && !Utils.isAllowedParameterType(elem.getReturnType2(), true)) {
 				collector.report(new InvalidParameterType(collector.getSourceInfo(), elem.getReturnType2()));
 			}
 		}
 
-		Utils.checkModifiers(collector, elem);
+		Utils.checkModifiers(collector, elem, m -> m.isStatic());
 		for (Object obj : elem.parameters()) {
 			SingleVariableDeclaration param = (SingleVariableDeclaration) obj;
 			if (!Utils.isAllowedParameterType(param.getType(), false)) {
 				collector.report(new InvalidParameterType(collector.getSourceInfo(), param.getType()));
 			}
 		}
+
+		if (ElementTypeTeller.hasExternalBody(elem)) {
+			return false;
+		}
+
 		// TODO: check body
 		return false;
 	}

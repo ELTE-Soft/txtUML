@@ -17,7 +17,7 @@ import hu.elte.txtuml.api.model.ModelClass
 
 class ClassExporter extends Exporter<TypeDeclaration, ITypeBinding, Class> {
 
-	private Region region
+	private Region region	
 
 	new(BaseExporter<?, ?, ?> parent) {
 		super(parent)
@@ -32,8 +32,8 @@ class ClassExporter extends Exporter<TypeDeclaration, ITypeBinding, Class> {
 		result.isAbstract = ElementTypeTeller.isAbstract(typeBnd)
 		result.name = typeBnd.name
 		// fields and methods
-		typeBnd.declaredFields.forEach[exportField[result.ownedAttributes += it]]
-		typeDecl.methods.forEach[exportOperation[result.ownedOperations += it]]
+		typeBnd.declaredFields.filter[f | !ElementTypeTeller.isExternal(f)].forEach[exportField[result.ownedAttributes += it]]
+		typeDecl.methods.filter[o | !ElementTypeTeller.isExternal(o)].forEach[exportOperation[result.ownedOperations += it]]
 		typeBnd.declaredMethods.filter[isDefaultConstructor].forEach [
 			exportDefaultConstructor[result.ownedOperations += it]
 			if (exportActions) {
@@ -41,7 +41,7 @@ class ClassExporter extends Exporter<TypeDeclaration, ITypeBinding, Class> {
 			}
 		]
 		if (exportActions) {
-			typeDecl.methods.forEach[exportActivity[result.ownedBehaviors += it]]
+			typeDecl.methods.filter[m | !ElementTypeTeller.hasExternalBody(m) && !ElementTypeTeller.isExternal(m)].forEach[exportActivity[result.ownedBehaviors += it]]
 		}
 		// superclasses
 		if (typeDecl.superclassType != null &&

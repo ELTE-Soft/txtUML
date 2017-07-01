@@ -28,8 +28,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 
-import hu.elte.txtuml.examples.garage.control.glue.Model;
-import hu.elte.txtuml.examples.garage.control.glue.ViewImpl;
+import hu.elte.txtuml.examples.garage.control.Model;
+import hu.elte.txtuml.examples.garage.control.model.View;
 import hu.elte.txtuml.examples.garage.interfaces.Control;
 import hu.elte.txtuml.examples.garage.interfaces.Controlled;
 
@@ -48,7 +48,7 @@ public class UI implements Controlled {
 	final Control control;
 
 	private UI() {
-		ViewImpl.getInstance().setControlled(this);
+		View.getInstance().setControlled(this);
 		control = new Model();
 
 		alarmPanel.setLayout(new BoxLayout(alarmPanel, BoxLayout.Y_AXIS));

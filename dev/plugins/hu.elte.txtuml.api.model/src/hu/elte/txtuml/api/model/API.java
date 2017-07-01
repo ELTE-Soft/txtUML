@@ -33,6 +33,7 @@ public interface API {
 	 * @throws NullPointerException
 	 *             if {@code target} is {@code null}
 	 */
+	@ExternalBody
 	static void send(Signal signal, ModelClass target) {
 		Action.send(signal, target);
 	}
@@ -43,6 +44,7 @@ public interface API {
 	 * @param message
 	 *            the message to be logged
 	 */
+	@ExternalBody
 	static void log(String message) {
 		Action.log(message);
 	}
@@ -53,6 +55,7 @@ public interface API {
 	 * @param message
 	 *            the error message to be logged
 	 */
+	@ExternalBody
 	static void logError(String message) {
 		Action.logError(message);
 	}

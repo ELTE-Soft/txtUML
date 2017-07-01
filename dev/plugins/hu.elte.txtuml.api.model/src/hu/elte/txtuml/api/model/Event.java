@@ -28,6 +28,7 @@ package hu.elte.txtuml.api.model;
  */
 public abstract class Event {
 
+	@ExternalBody
 	Event() {
 	}
 

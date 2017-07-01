@@ -136,7 +136,7 @@ public class User extends ModelClass {
 
 		Action.send(new DoTasks(workToDo), myMachine);
 
-		Timer.start(myMachine, new ButtonPress(), 2000);
+		Timer.start(new ButtonPress(), myMachine, 2000);
 		// Switching off the machine with some delay.
 
 		Action.log("\t" + name.toString() + ": work finished...");

@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.uml2.uml.Class;
+import org.eclipse.uml2.uml.Generalization;
 import org.eclipse.uml2.uml.Region;
 import org.eclipse.uml2.uml.StateMachine;
 import org.eclipse.uml2.uml.UMLPackage;
@@ -29,14 +30,21 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 
 	private List<String> subMachines;
 	private List<String> additionalSourcesNames;
+	private List<String> baseClasses;
 	private AssociationExporter associationExporter;
 	private ConstructorExporter constructorExporter;
 
 	private StateMachineExporter stateMachineExporter;
 	private PortExporter portExporter;
 	private SubStateMachineExporter subStateMachineExporter;
+	private String abstractInterface;
 
 	private int poolId;
+
+	public ClassExporter() {
+		subMachines = new LinkedList<String>();
+		baseClasses = new LinkedList<String>();
+	}
 
 	public List<String> getAdditionalSources() {
 		return additionalSourcesNames;
@@ -50,7 +58,8 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 		constructorExporter = new ConstructorExporter(structuredElement.getOwnedOperations());
 		associationExporter = new AssociationExporter();
 		additionalSourcesNames = new ArrayList<String>();
-		subMachines = new LinkedList<String>();
+		subMachines.clear();
+		baseClasses.clear();
 		portExporter = new PortExporter();
 
 		StateMachine classSM = CppExporterUtils.getStateMachine(structuredElement);
@@ -77,6 +86,14 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 		}
 	}
 
+	public void setAbstractInterface(String abstractInterface) {
+		this.abstractInterface = abstractInterface;
+	}
+
+	public void removeAbstractInterface() {
+		this.abstractInterface = null;
+	}
+
 	private void createSource(String dest) throws FileNotFoundException, UnsupportedEncodingException {
 		String source;
 		associationExporter.exportAssociations(structuredElement.getOwnedAttributes());
@@ -95,14 +112,15 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 		}
 
 		source = createClassHeaderSource();
-		//TODO refactoring the dependency to outside
+		// TODO refactoring the dependency to outside
 		String externalDeclerations = associationExporter.createLinkFunctionDeclarations(name);
 		CppExporterUtils.writeOutSource(dest, GenerationTemplates.headerName(name),
 				CppExporterUtils.format(HeaderTemplates.headerGuard(source + externalDeclerations, name)));
 
 		source = createClassCppSource();
 		CppExporterUtils.writeOutSource(dest, GenerationTemplates.sourceName(name),
-				CppExporterUtils.format(getAllDependencies(false) + GenerationTemplates.putNamespace(source, GenerationNames.Namespaces.ModelNamespace)));
+				CppExporterUtils.format(getAllDependencies(false)
+						+ GenerationTemplates.putNamespace(source, GenerationNames.Namespaces.ModelNamespace)));
 	}
 
 	private String createClassHeaderSource() {
@@ -122,6 +140,7 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 		publicParts.append(LinkTemplates.templateLinkFunctionGeneralDef(LinkTemplates.LinkFunctionType.Link));
 		publicParts.append(LinkTemplates.templateLinkFunctionGeneralDef(LinkTemplates.LinkFunctionType.Unlink));
 
+		collectModelBaseClasses();
 		if (CppExporterUtils.isStateMachineOwner(structuredElement)) {
 
 			publicParts.append(stateMachineExporter.createStateEnumCode());
@@ -130,16 +149,16 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 
 			if (!stateMachineExporter.ownSubMachine()) {
 				source = HeaderTemplates
-						.simpleStateMachineClassHeader(getAllDependencies(true), name, getBaseClass(), null,
+						.simpleStateMachineClassHeader(getAllDependencies(true), name, baseClasses, null,
 								publicParts.toString(), protectedParts.toString(), privateParts.toString(), true)
 						.toString();
 			} else {
 				source = HeaderTemplates.hierarchicalStateMachineClassHeader(getAllDependencies(true), name,
-						getBaseClass(), getSubmachines(), publicParts.toString(), protectedParts.toString(),
+						baseClasses, getSubmachines(), publicParts.toString(), protectedParts.toString(),
 						privateParts.toString(), true);
 			}
 		} else {
-			source = HeaderTemplates.classHeader(getAllDependencies(true), name, getBaseClass(), publicParts.toString(),
+			source = HeaderTemplates.classHeader(getAllDependencies(true), name, baseClasses, publicParts.toString(),
 					protectedParts.toString(), privateParts.toString(), true);
 		}
 		return source;
@@ -166,16 +185,15 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 	private String getAllDependencies(Boolean isHeader) {
 		StringBuilder source = new StringBuilder("");
 		dependencyExporter.addDependencies(associationExporter.getAssociatedPropertyTypes());
+		for (String baseClassName : baseClasses) {
+			source.append(PrivateFunctionalTemplates.include(baseClassName));
+		}
 
 		if (CppExporterUtils.isStateMachineOwner(structuredElement)) {
 			for (Map.Entry<String, Pair<String, Region>> entry : stateMachineExporter.getSubMachineMap().entrySet()) {
 				dependencyExporter.addDependency(entry.getValue().getFirst());
 			}
 
-		}
-
-		if (getBaseClass() != null) {
-			source.append(PrivateFunctionalTemplates.include(getBaseClass()));
 		}
 
 		if (!isHeader) {
@@ -200,10 +218,11 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 		} else {
 			source.append(PrivateFunctionalTemplates.include(GenerationNames.FileNames.TypesFilePath));
 			if (associationExporter.ownAssociation()) {
-				source.append(PrivateFunctionalTemplates.include(RuntimeTemplates.RTPath + LinkTemplates.AssocationHeader));
+				source.append(
+						PrivateFunctionalTemplates.include(RuntimeTemplates.RTPath + LinkTemplates.AssocationHeader));
 			}
-			source.append(GenerationTemplates.putNamespace(dependencyExporter.createDependencyHeaderIncludeCode(), GenerationNames.Namespaces.ModelNamespace));
-
+			source.append(GenerationTemplates.putNamespace(dependencyExporter.createDependencyHeaderIncludeCode(),
+					GenerationNames.Namespaces.ModelNamespace));
 
 		}
 
@@ -211,12 +230,15 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 		return source.toString();
 	}
 
-	private String getBaseClass() {
-		if (!structuredElement.getGeneralizations().isEmpty()) {
-			return structuredElement.getGeneralizations().get(0).getGeneral().getName();
-		} else {
-			return null;
+	private void collectModelBaseClasses() {
+		for (Generalization base : structuredElement.getGeneralizations()) {
+			baseClasses.add(base.getGeneral().getName());
 		}
+
+		if (abstractInterface != null && !baseClasses.contains(abstractInterface)) {
+			baseClasses.add(abstractInterface);
+		}
+
 	}
 
 }
