@@ -29,6 +29,7 @@ import org.eclipse.uml2.uml.UMLPackage;
 import org.osgi.framework.Bundle;
 
 import hu.elte.txtuml.export.cpp.thread.ThreadPoolConfiguration;
+import hu.elte.txtuml.api.deployment.RuntimeType;
 import hu.elte.txtuml.export.cpp.structural.ClassExporter;
 import hu.elte.txtuml.export.cpp.structural.DataTypeExporter;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames;
@@ -78,13 +79,13 @@ public class Uml2ToCppExporter {
 	private List<String> classNames;
 	private List<Element> modelRoot;
 
-	public Uml2ToCppExporter(List<Element> modelRoot, Map<String, ThreadPoolConfiguration> threadDescription,
+	public Uml2ToCppExporter(List<Element> modelRoot, Pair<RuntimeType, Map<String, ThreadPoolConfiguration>> config,
 			boolean addRuntimeOption, boolean overWriteMainFileOption) {
 
 		this.modelRoot = modelRoot;
 		classExporter = new ClassExporter();
 		dataTypeExporter = new DataTypeExporter();
-		threadManager = new ThreadHandlingManager(threadDescription);
+		threadManager = new ThreadHandlingManager(config);
 
 		classes = new ArrayList<Class>();
 		dataTypes = new ArrayList<DataType>();
@@ -114,7 +115,7 @@ public class Uml2ToCppExporter {
 		for (Class cls : classes) {
 
 			classExporter.setName(cls.getName());
-			classExporter.setPoolId(threadManager.getDescription().get(cls.getName()).getId());
+			classExporter.setPoolId(threadManager.getConfiguratedPoolId(cls.getName()));
 			classExporter.exportStructuredElement(cls, outputDirectory);
 			if (CppExporterUtils.isStateMachineOwner(cls)) {
 				classNames.addAll(classExporter.getSubmachines());
