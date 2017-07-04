@@ -42,7 +42,7 @@ public class ThreadDescriptionExporter {
 		errorList = new ArrayList<String>();
 	}
 
-	public Pair<RuntimeType, Map<String, ThreadPoolConfiguration>> getExportedConfigurstion() {
+	public Pair<RuntimeType, Map<String, ThreadPoolConfiguration>> getExportedConfiguration() {
 		return new Pair<>(runtime,configMap);
 	}
 
