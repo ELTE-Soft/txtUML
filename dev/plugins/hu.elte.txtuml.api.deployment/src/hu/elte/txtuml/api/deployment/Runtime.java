@@ -5,6 +5,19 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+/**
+ * <p>
+ * Configures the properties of the model executor.
+ * The {@link #value} defines the type of the executor.
+ *
+ * 
+ * <p>
+ * <b>Example:</b>
+ * 
+ * <pre>
+ * <code>@Runtime(RuntimeType.THREADED)</code>
+ * </pre>
+ */
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
