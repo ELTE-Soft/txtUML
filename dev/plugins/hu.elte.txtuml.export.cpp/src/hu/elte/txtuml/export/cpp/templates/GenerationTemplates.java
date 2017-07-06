@@ -28,6 +28,10 @@ public class GenerationTemplates {
 	public static String generatedAbstractClassName(String className) {
 		return "Abstract" + className;
 	}
+	
+	public static String generatedErrorMessage(String functionName) {
+		return " Not implemented external method: " + functionName;
+	}
 
 	public static String paramName(String paramName) {
 

@@ -92,6 +92,14 @@ public class GenerationNames {
 		
 	}
 	
+	public static class Macros {
+		public static final String ErrorMacro = "#error";
+	}
+	
+	public static class Comments {
+		public static final String ToDoMessage = comment("TODO: Add your source code here\n"); 
+	}
+	
 	public static class GeneralFunctionNames {
 		public static final String GeneralLinkFunction = "link";
 		public static final String GeneralUnlinkFunction = "unlink";
@@ -181,6 +189,10 @@ public class GenerationNames {
 	public static final String InitFunctionName = "init";
 	
 
+	public static String comment(String text){
+		return "//" + text;
+	}
+	
 	public static String initFunctionName(String className) {
 		return InitFunctionName + className;
 	}
