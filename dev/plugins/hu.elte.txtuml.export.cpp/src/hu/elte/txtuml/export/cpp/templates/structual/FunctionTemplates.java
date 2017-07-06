@@ -3,6 +3,8 @@ package hu.elte.txtuml.export.cpp.templates.structual;
 import java.util.List;
 
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.ModifierNames;
+import hu.elte.txtuml.export.cpp.templates.GenerationTemplates;
+import hu.elte.txtuml.export.cpp.templates.GenerationNames;
 import hu.elte.txtuml.export.cpp.templates.PrivateFunctionalTemplates;
 import hu.elte.txtuml.export.cpp.templates.activity.ActivityTemplates;
 import hu.elte.txtuml.utils.Pair;
@@ -60,7 +62,7 @@ public class FunctionTemplates {
 			return mainDef + body + "}\n\n";
 
 		} else {
-			return mainDef + "//TODO\n" + "}\n\n";
+			return mainDef + GenerationNames.Comments.ToDoMessage + GenerationNames.Macros.ErrorMacro +  GenerationTemplates.generatedErrorMessage(functionName) + "\n}\n\n";
 		}
 	}
 
