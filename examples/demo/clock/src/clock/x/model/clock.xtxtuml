@@ -11,7 +11,6 @@ import clock.x.model.connectors.MinuteValues;
 import clock.x.model.connectors.Minutes;
 import clock.x.model.connectors.SecondValues;
 import clock.x.model.connectors.Seconds;
-import java.util.concurrent.Callable;
 
 // Classes
 
