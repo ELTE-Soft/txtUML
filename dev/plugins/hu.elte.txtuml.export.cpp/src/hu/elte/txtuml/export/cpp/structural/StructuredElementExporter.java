@@ -100,10 +100,10 @@ public abstract class StructuredElementExporter<StructuredElement extends Operat
 				String returnType = getReturnType(operation.getReturnResult());
 				if (!operation.isAbstract()) {
 					source.append(FunctionTemplates.functionDef(name, returnType, operation.getName(),
-							CppExporterUtils.getOperationParams(operation), funcBody, false));
+							CppExporterUtils.getOperationParams(operation), funcBody));
 				} else {
-					source.append(FunctionTemplates.functionDef(name, returnType, operation.getName(),
-							CppExporterUtils.getOperationParams(operation), funcBody, true));
+					source.append(FunctionTemplates.abstractFunctionDef(name, returnType, operation.getName(),
+							CppExporterUtils.getOperationParams(operation)));
 
 				}
 			}
