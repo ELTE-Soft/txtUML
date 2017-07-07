@@ -16,11 +16,11 @@ public class ModelVisitor extends VisitorBase {
 
 	@Override
 	public boolean visit(TypeDeclaration elem) {
-		Utils.checkTemplate(collector, elem);
-
 		if (ElementTypeTeller.isExternal(elem)) {
 			return false;
 		}
+
+		Utils.checkTypeParameter(collector, elem);
 
 		if (ElementTypeTeller.isSignal(elem)) {
 			Utils.checkModifiers(collector, elem);
