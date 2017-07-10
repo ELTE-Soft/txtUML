@@ -6,6 +6,14 @@
 namespace Model
 {
 
+
+enum class SpecialSignalType {
+	NoSpecial,
+	InitSignal,
+	DestorySignal
+};
+
+
 template<typename DerivedBase>
 class IEvent
 {
@@ -14,33 +22,64 @@ public:
 	virtual ~IEvent() {}
 	void setTargetSM(const ES::StateMachineRef sm)
 	{
-		static_cast<ES::Ptr<DerivedBase>>(this)->targetSM = sm;
+		static_cast<DerivedBase*>(this)->targetSM = sm;
 	}
 	ES::StateMachineRef getTargetSM() const
 	{
-		return static_cast<ES::Ptr<const DerivedBase>>(this)->targetSM;
+		return static_cast<const DerivedBase*>(this)->targetSM;
 	}
 
 	int getType() const
 	{
-		return static_cast<ES::Ptr<const DerivedBase>>(this)->t;
+		return static_cast<const DerivedBase*>(this)->t;
 	}
 
 	int getPortType() const
 	{
-		return static_cast<ES::Ptr<const DerivedBase>>(this)->p;
+		return static_cast<const DerivedBase*>(this)->p;
 	}
 
+	SpecialSignalType getSpecialType() const
+	{
+		return static_cast<const DerivedBase*>(this)->specialType;
+	}
+
+};
+
+template<typename Derived>
+class CompareEvents {
+public:
+	bool operator() (ES::EventRef& e1, ES::EventRef& e2) {
+		return e1->getSpecialType() == SpecialSignalType::NoSpecial
+			&& e2->getSpecialType() != SpecialSignalType::NoSpecial;
+	}
 };
 
 class EventBase : public IEvent<EventBase>
 {
 public:
-	EventBase(int t_) : t(t_), p(1) {}
+	EventBase(int t_, SpecialSignalType extermalType_ = SpecialSignalType::NoSpecial) :
+		t(t_),
+		specialType(extermalType_),
+		p(1) {}
 
 	ES::StateMachineRef targetSM;
 	int t;
+	SpecialSignalType specialType;
 	int p;
+
+};
+
+class InitExtermalSignal : public EventBase
+{
+public:
+	InitExtermalSignal() : EventBase(0, SpecialSignalType::InitSignal) {}
+};
+
+class DestoryExtermalSignal : public EventBase
+{
+public:
+	DestoryExtermalSignal() : EventBase(0, SpecialSignalType::DestorySignal) {}
 };
 
 }

@@ -7,81 +7,88 @@
 #include <condition_variable>
 #include <atomic>
 #include <assert.h>
-#include "../Types.hpp"
 
 namespace ES
 {
 
-template <typename T>
+template <typename QueueType>
 class ThreadSafeQueue
 {
 public:
-  typedef typename std::queue<T>::size_type size_type;
+	typedef typename QueueType::size_type  SizeType;
+	typedef typename QueueType::value_type ValueType;
 
-  ThreadSafeQueue(SharedPtr<std::condition_variable> cond = std::shared_ptr<std::condition_variable>(new std::condition_variable())) : _cond(cond), _stop(false) {
+	ThreadSafeQueue(std::shared_ptr<std::condition_variable> cond = std::shared_ptr<std::condition_variable>(new std::condition_variable())) : 
+		  _cond(cond), 
+		  _stop(false) {
 
-  }
+	}
 
-  void enqueue(const T& item)
-  {
-    std::unique_lock<std::mutex> mlock(_mutex);
-    _queue.push(item);
-    mlock.unlock();
-    _cond->notify_one();
-  }
+	void enqueue(const ValueType& item)
+	{
+	  std::unique_lock<std::mutex> mlock(_mutex);
+	  _queue.push(item);
+	  mlock.unlock();
+	  _cond->notify_one();
+	}
 
-   void dequeue(T& ret)
-  {
-    std::unique_lock<std::mutex> mlock(_mutex);
-    while (_queue.empty() && !_stop)
-    {
-      _cond->wait(mlock);
-    }
+	void dequeue(ValueType& ret)
+	{
+	  std::unique_lock<std::mutex> mlock(_mutex);
+	  while (_queue.empty() && !_stop)
+	  {
+	    _cond->wait(mlock);
+	  }
 
-    if (!_stop)
-    {
-		ret = _queue.front();
-		_queue.pop();
-    }
+	  if (!_stop)
+	  {
+			ret = _queue.front();
+			_queue.pop();
+	  }
 
-  }
+	}
 
-	T next()
+	ValueType next()
 	{
 		assert(!isEmpty());
 		return _queue.front();
 	}
 
-  bool isEmpty() const
-  {
-    return _queue.empty();
-  }
+	bool isEmpty() const
+	{
+		return _queue.empty();
+	}
 
-  size_t size()
-  {
-    return _queue.size();
-  }
+	SizeType size()
+	{
+		return _queue.size();
+	}
 
-  void startQueue ()
-  {
-	_stop = false;
+	void startQueue ()
+	{
+		_stop = false;
 	
-  }
-  void stopQueue ()
-  {
-	_stop = true;
-	_cond->notify_all ();
-  }
+	}
 
-  ThreadSafeQueue(const ThreadSafeQueue&) = delete;            // disable copying
-  ThreadSafeQueue& operator=(const ThreadSafeQueue&) = delete; // disable assignment
+	void stopQueue ()
+	{
+		_stop = true;
+		_cond->notify_all ();
+	}
 
- private:
-  std::queue<T> _queue;
-  std::mutex _mutex;
-  std::shared_ptr<std::condition_variable> _cond;
-  std::atomic_bool _stop;
+	ThreadSafeQueue(const ThreadSafeQueue&) = delete;            // disable copying
+	ThreadSafeQueue& operator=(const ThreadSafeQueue&) = delete; // disable assignment
+
+private:
+	QueueType _queue;
+
+	std::mutex _mutex;
+	std::shared_ptr<std::condition_variable> _cond;
+	std::atomic_bool _stop;
 };
+
+
+
 	
 }
 

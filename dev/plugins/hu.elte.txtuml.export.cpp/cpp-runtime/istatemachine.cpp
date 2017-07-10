@@ -22,7 +22,8 @@ void IStateMachine::setPoolId(int id)
 
 void IStateMachine::destroy()
 {
-	_deleted = true;
+	setPooled(false);
+	delete this;
 }
 
 void IStateMachine::init()
@@ -54,7 +55,29 @@ void IStateMachine::setMessageQueue(ES::SharedPtr<ES::MessageQueueType> messageQ
 	_messageQueue = messageQueue; 
 }
 
-void IStateMachine::startSM() 
+bool IStateMachine::processNextEvent()
+{
+	ES::EventRef nextEvent = _messageQueue->next();
+	switch (nextEvent->getSpecialType()) {
+	case SpecialSignalType::NoSpecial:
+		processEventVirtual();
+		break;
+	case SpecialSignalType::InitSignal:
+		init();
+		break;
+	case SpecialSignalType::DestorySignal:
+		destroy();
+		return false;
+		break;
+	default:
+		assert(false);
+		return false;
+	}
+
+	return false;
+}
+
+void IStateMachine::startSM()
 { 
 	_started = true; 
 	handlePool();

@@ -37,15 +37,8 @@ void SingleThreadRT::start()
 	{
 		ES::EventRef e = _messageQueue->next();
 		const ES::StateMachineRef sm = e->getTargetSM();
-		if (sm->isStarted())
-		{
-			if (!sm->isInitialized()) {
-				sm->init();
-			}
-			else {
-				sm->processEventVirtual();
-			}
-		}
+		sm->processNextEvent();
+
 	}
 
 }

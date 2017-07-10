@@ -24,9 +24,12 @@ public:
 	virtual void processEventVirtual() = 0;
 	virtual void processInitTransition() = 0;
 
+	bool processNextEvent();
+
 	void startSM();
 	void send(const ES::EventRef e);
-	void init();
+	
+
 	ES::EventRef getNextMessage();
 	bool emptyMessageQueue();
 	void setPool(ES::SharedPtr<Execution::StateMachineThreadPool> pool);
@@ -43,7 +46,7 @@ public:
 protected:
 	IStateMachine();
 	void setPoolId(int id);
-	void destroy();
+
 private:
 	void handlePool();
 
@@ -56,6 +59,9 @@ private:
 	std::atomic_bool _initialized;
 	std::atomic_bool _deleted;
 	ES::SharedPtr<ES::AtomicCounter> messageCounter;
+
+	void init();
+	void destroy();
 
 	int poolId;
 

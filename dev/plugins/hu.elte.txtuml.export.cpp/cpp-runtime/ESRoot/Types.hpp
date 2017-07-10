@@ -3,6 +3,8 @@
 
 #include <string>
 #include <memory>
+#include <queue>
+#include "Containers/PriorityQueue.hpp"
 
 namespace Model
 {
@@ -15,6 +17,8 @@ namespace Model
 template<typename BaseDerived>
 class IEvent;
 class EventBase;
+template<typename BaseDerived>
+class CompareEvents;
 }
 
 
@@ -30,6 +34,10 @@ class Timer;
 
 template<typename T>
 class ThreadSafeQueue;
+
+template<typename T, typename Container, typename Compare>
+class PriorityQueue;
+
 }
 
 
@@ -39,25 +47,21 @@ namespace ES
 	using String = std::string;
 
 	//ref types
-
-	template<typename T>
-	using Ptr = T*;
-
 	template<typename T>
 	using SharedPtr = std::shared_ptr<T>;
 
 	using EventRef = SharedPtr<Model::IEvent<Model::EventBase>>;
 	using EventConstRef = SharedPtr<const Model::IEvent<Model::EventBase>>;
 
-	using StateMachineRef = Ptr<Model::IStateMachine>;
-	using StateMachineConstRef = Ptr<const Model::IStateMachine>;
+	using StateMachineRef = Model::IStateMachine*;
+	using StateMachineConstRef = Model::IStateMachine const *;
 
 	template<typename RuntimeType>
 	using RuntimePtr = SharedPtr<Execution::IRuntime<RuntimeType>>;
 
 	//ThreadSafeQueue types
-	using MessageQueueType = ThreadSafeQueue<EventRef>;
-	using PoolQueueType = ThreadSafeQueue<StateMachineRef>;
+	using MessageQueueType = ThreadSafeQueue<PriorityQueue<EventRef, std::vector<EventRef>, Model::CompareEvents<Model::EventBase>>>;
+	using PoolQueueType = ThreadSafeQueue<std::queue<StateMachineRef>>;
 
 	using TimerPtr = SharedPtr<Timer>;
 
