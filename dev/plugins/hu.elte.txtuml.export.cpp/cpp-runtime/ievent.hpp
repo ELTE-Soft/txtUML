@@ -44,7 +44,20 @@ public:
 		return static_cast<const DerivedBase*>(this)->specialType;
 	}
 
+public:
+	static void invalidatesEvent(ES::EventRef& event) {
+		event->setTargetSM(nullptr);
+	}
+
+	static bool eventIsValid(const ES::EventRef& event) {
+		return event->getTargetSM() != nullptr;
+	}
+
 };
+//TODO to cpp
+
+
+
 
 template<typename Derived>
 class CompareEvents {
@@ -70,16 +83,16 @@ public:
 
 };
 
-class InitExtermalSignal : public EventBase
+class InitSpecialSignal : public EventBase
 {
 public:
-	InitExtermalSignal() : EventBase(0, SpecialSignalType::InitSignal) {}
+	InitSpecialSignal() : EventBase(0, SpecialSignalType::InitSignal) {}
 };
 
-class DestoryExtermalSignal : public EventBase
+class DestorySpecialSignal : public EventBase
 {
 public:
-	DestoryExtermalSignal() : EventBase(0, SpecialSignalType::DestorySignal) {}
+	DestorySpecialSignal() : EventBase(0, SpecialSignalType::DestorySignal) {}
 };
 
 }

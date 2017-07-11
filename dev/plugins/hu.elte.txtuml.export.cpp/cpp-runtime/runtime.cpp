@@ -1,6 +1,7 @@
 #include "runtime.hpp"
 #include "istatemachine.hpp"
 #include "ESRoot/Types.hpp"
+#include "ievent.hpp"
 
 #include <assert.h>
 #include <stdlib.h>
@@ -36,8 +37,14 @@ void SingleThreadRT::start()
 	while (!_messageQueue->isEmpty())
 	{
 		ES::EventRef e = _messageQueue->next();
-		const ES::StateMachineRef sm = e->getTargetSM();
-		sm->processNextEvent();
+		if (Model::IEvent<Model::EventBase>::eventIsValid(e)) {
+			const ES::StateMachineRef sm = e->getTargetSM();
+			sm->processNextEvent();
+		}
+		else {
+			_messageQueue->dequeue(e); // drop event
+		}
+
 
 	}
 

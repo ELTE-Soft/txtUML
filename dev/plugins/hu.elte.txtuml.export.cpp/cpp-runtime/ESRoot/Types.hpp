@@ -35,7 +35,7 @@ class Timer;
 template<typename T>
 class ThreadSafeQueue;
 
-template<typename T, typename Container, typename Compare>
+template<typename T, typename Compare>
 class PriorityQueue;
 
 }
@@ -60,8 +60,8 @@ namespace ES
 	using RuntimePtr = SharedPtr<Execution::IRuntime<RuntimeType>>;
 
 	//ThreadSafeQueue types
-	using MessageQueueType = ThreadSafeQueue<PriorityQueue<EventRef, std::vector<EventRef>, Model::CompareEvents<Model::EventBase>>>;
-	using PoolQueueType = ThreadSafeQueue<std::queue<StateMachineRef>>;
+	using MessageQueueType = ThreadSafeQueue<PriorityQueue<EventRef, Model::CompareEvents<Model::EventBase>>>;
+	using PoolQueueType = ThreadSafeQueue<Queue<StateMachineRef>>;
 
 	using TimerPtr = SharedPtr<Timer>;
 

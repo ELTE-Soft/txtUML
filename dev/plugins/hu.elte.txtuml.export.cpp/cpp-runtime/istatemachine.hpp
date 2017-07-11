@@ -27,20 +27,16 @@ public:
 	bool processNextEvent();
 
 	void startSM();
+	void deleteSM();
 	void send(const ES::EventRef e);
 	
-
 	ES::EventRef getNextMessage();
-	bool emptyMessageQueue();
 	void setPool(ES::SharedPtr<Execution::StateMachineThreadPool> pool);
 	void setMessageQueue(ES::SharedPtr<ES::MessageQueueType> messageQueue);
 	void setPooled(bool value);
-	bool isInPool() const;
-	bool isStarted() const;
-	bool isInitialized() const;
-	bool isDestroyed() const;
-	int getPoolId() const;
 	void setMessageCounter(ES::SharedPtr<ES::AtomicCounter> counter);
+
+	int getPoolId() const;
 	virtual std::string toString() const;
 
 protected:
@@ -51,13 +47,11 @@ private:
 	void handlePool();
 
 	ES::SharedPtr<ES::MessageQueueType> _messageQueue;
-	ES::SharedPtr<Execution::StateMachineThreadPool> _pool;//safe because: controlled by the runtime, but we can not set it in the constructor
+	ES::SharedPtr<Execution::StateMachineThreadPool> _pool;
 	std::mutex _mutex;
 	std::condition_variable _cond;
 	std::atomic_bool _inPool;
 	std::atomic_bool _started;
-	std::atomic_bool _initialized;
-	std::atomic_bool _deleted;
 	ES::SharedPtr<ES::AtomicCounter> messageCounter;
 
 	void init();

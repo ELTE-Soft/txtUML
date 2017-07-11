@@ -76,6 +76,11 @@ public:
 		_cond->notify_all ();
 	}
 
+	void modifyElements(std::function<bool(const ValueType&)> p, void m(ValueType&)) {
+		std::unique_lock<std::mutex> mlock(_mutex);
+		_queue.modifyElements(p,m);
+	}
+
 	ThreadSafeQueue(const ThreadSafeQueue&) = delete;            // disable copying
 	ThreadSafeQueue& operator=(const ThreadSafeQueue&) = delete; // disable assignment
 

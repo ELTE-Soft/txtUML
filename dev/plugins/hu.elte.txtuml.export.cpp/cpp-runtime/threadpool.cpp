@@ -46,7 +46,8 @@ void StateMachineThreadPool::task()
 {
 	while (!this->_stop && !workers.isReadyToStop(std::this_thread::get_id()))
 	{
-		if (modifie_mutex.try_lock()) {
+		if (modifie_mutex.try_lock()) 
+		{
 			if (workers.isTooManyWorkers())
 			{
 				workers.gettingThreadsReadyToStop(_sharedConditionVar);
@@ -75,30 +76,20 @@ void StateMachineThreadPool::task()
 		if (sm != nullptr)
 		{
 			incrementWorkers();
-
-			//if (!sm->isInitialized()) sm->init();
-			for (int i = 0; i < 5 && sm != nullptr && !sm->emptyMessageQueue(); ++i)
+			bool hasNextEvent = true;
+			for (int i = 0; i < 5 && hasNextEvent; ++i)
 			{
-				if (!sm->isDestroyed()) {
-					sm->processNextEvent();
-				}
-				else {
-					sm->setPooled(false);
-					delete sm;
-					sm = nullptr;
-				}
+				hasNextEvent = sm->processNextEvent();
 			}
 
-			if (sm != nullptr) {
 
-				if (!sm->emptyMessageQueue())
-				{
-					_stateMachines.enqueue(sm);
-				}
-				else
-				{
-					sm->setPooled(false);
-				}
+			if (hasNextEvent)
+			{
+				_stateMachines.enqueue(sm);
+			}
+			else
+			{
+				sm->setPooled(false);
 			}
 
 			reduceWorkers();
