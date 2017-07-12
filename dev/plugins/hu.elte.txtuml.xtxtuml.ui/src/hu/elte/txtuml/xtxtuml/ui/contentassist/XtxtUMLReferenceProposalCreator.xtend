@@ -7,8 +7,8 @@ import hu.elte.txtuml.api.model.DataType
 import hu.elte.txtuml.api.model.ModelClass
 import hu.elte.txtuml.api.model.ModelEnum
 import hu.elte.txtuml.api.model.Signal
+import hu.elte.txtuml.xtxtuml.common.XtxtUMLExternalityHelper
 import hu.elte.txtuml.xtxtuml.common.XtxtUMLReferenceProposalScopeProvider
-import hu.elte.txtuml.xtxtuml.common.XtxtUMLReferenceProposalTypeScope
 import hu.elte.txtuml.xtxtuml.common.XtxtUMLUtils
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAssociation
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAssociationEnd
@@ -18,6 +18,7 @@ import hu.elte.txtuml.xtxtuml.xtxtUML.TUClassPropertyAccessExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUComposition
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUConnector
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUConnectorEnd
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUConstructor
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUOperation
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUPort
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUSignal
@@ -58,14 +59,15 @@ class XtxtUMLReferenceProposalCreator extends XbaseReferenceProposalCreator {
 
 	@Inject extension IBatchTypeResolver;
 	@Inject extension IQualifiedNameProvider;
+	@Inject extension XtxtUMLExternalityHelper;
 	@Inject extension XtxtUMLUtils;
 
 	@Inject XtxtUMLReferenceProposalScopeProvider scopeProvider;
 	@Inject CommonTypeComputationServices services;
 
 	/**
-	 * Provides a scope provider with a customized JDT based superscope.
-	 * @see XtxtUMLReferenceProposalTypeScope
+	 * Returns a scope provider which uses a context-sensitive global scope.
+	 * @see XtxtUMLReferenceProposalScopeProvider
 	 */
 	override getScopeProvider() {
 		return scopeProvider;
@@ -242,11 +244,16 @@ class XtxtUMLReferenceProposalCreator extends XbaseReferenceProposalCreator {
 	}
 
 	def private selectAllowedTypes(IScope scope, EObject model) {
+		if (model.external) {
+			return null;
+		}
+
 		val isClassAllowed = switch (model) {
 			TUSignal,
 			TUSignalAttribute: false
 			TUClass,
 			TUAttributeOrOperationDeclarationPrefix,
+			TUConstructor,
 			TUOperation,
 			XBlockExpression,
 			XVariableDeclaration: true
@@ -269,6 +276,7 @@ class XtxtUMLReferenceProposalCreator extends XbaseReferenceProposalCreator {
 			// convenient:
 			// supertypes are already in type reference format, which state would
 			// be difficult to achieve starting from a plain JvmType
+
 			proposedObj instanceof JvmDeclaredType && (proposedObj as JvmDeclaredType).superTypes.exists [
 				val typeRef = toLightweightTypeReference;
 				typeRef.isSubtypeOf(DataType) || typeRef.isSubtypeOf(ModelEnum) ||

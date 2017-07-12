@@ -1,4 +1,4 @@
-package hu.elte.txtuml.xtxtuml.validation;
+package hu.elte.txtuml.xtxtuml.common;
 
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAttribute
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUConstructor
