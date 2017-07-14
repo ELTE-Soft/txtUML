@@ -163,7 +163,8 @@ public class StateMachineTemplates {
 		source.append(ModifierNames.StaticModifier + " " + FunctionTemplates.functionDecl(InitTransitionTable));
 		source.append(GenerationNames.ProcessEventDecl + GenerationNames.SetInitialStateDecl + "\n");
 		if (ownStateMachine) {
-			source.append("//RuntimeFunctions\n" + RuntimeTemplates.HeaderFuncs + "\n");
+			source.append("//RuntimeFunctions\n" + 
+					RuntimeTemplates.processEventVirtualDecl() + RuntimeTemplates.processInitTransitionDecl() + "\n");
 		}
 		return source.toString();
 	}

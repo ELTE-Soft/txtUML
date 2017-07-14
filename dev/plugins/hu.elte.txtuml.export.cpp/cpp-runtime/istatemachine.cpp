@@ -29,9 +29,9 @@ void IStateMachine::destroy()
 	delete this;
 }
 
-void IStateMachine::init()
+bool IStateMachine::emptyMessageQueue() const
 {
-	processInitTransition();
+	return _messageQueue->isEmpty();
 }
 
 ES::EventRef IStateMachine::getNextMessage()
@@ -57,17 +57,14 @@ bool IStateMachine::processNextEvent()
 	ES::EventRef nextEvent = getNextMessage();
 	switch (nextEvent->getSpecialType()) {
 	case SpecialSignalType::NoSpecial:
-		processEventVirtual();
-		return !_messageQueue->isEmpty();
-		break;
-	case SpecialSignalType::InitSignal:
-		init();
+		processEventVirtual(nextEvent);
 		return true;
-		break;
+	case SpecialSignalType::InitSignal:
+		processInitTransition(nextEvent);
+		return true;
 	case SpecialSignalType::DestorySignal:
 		destroy();
 		return false;
-		break;
 	default:
 		assert(false);
 		return false;
@@ -77,14 +74,18 @@ bool IStateMachine::processNextEvent()
 
 void IStateMachine::startSM()
 { 
-	send(ES::EventRef(new InitSpecialSignal()));
 	_started = true;
+	send(ES::EventRef(new InitSpecialSignal()));
+	
 }
 
 void IStateMachine::deleteSM()
 {
 	send(ES::EventRef(new DestorySpecialSignal()));
-	handlePool();
+	if (!_started) {
+		handlePool();
+	}
+	
 }
 
 void IStateMachine::send(const ES::EventRef e)
@@ -103,12 +104,12 @@ void IStateMachine::handlePool()
 {
 	if (!_inPool && _pool != nullptr)
 	{
-		_inPool = true;
+		setPooled();
 		_pool->enqueueObject(this);
 	}
 }
 
-void IStateMachine::setPooled(bool value = true)
+void IStateMachine::setPooled(bool value)
 {
 	_inPool = value;
 	_cond.notify_one();

@@ -99,14 +99,11 @@ public class GenerationNames {
 		public static final String FixContainer =  Namespaces.ContainerNamespace + "::" +  "FixedArray";
 	}
 	
-	public static class FixEventNames {
-		public static final String InitialEventName = "InitSignal";
-		public static final String DestroyEventName = "DestroySignal";
-
-	}
-	
 	public static class StateMachineMethodNames {
-		public static final String DestroyStatemachineMethod = "destroy";
+		public static final String DeleteStatemachine = "deleteSM";
+		public static final String InitFunctionName = "init";
+		public static final String ProcessEventFName = "process_event";
+		public static final String InitTansitionFunctionName = "Initialize";
 	}
 	
 	public static final String ClassType = "struct";
@@ -137,8 +134,7 @@ public class GenerationNames {
 	public static final String GuardFuncTypeName = "GuardFuncType";
 	public static final String GuardActionName = "GuardAction";
 	public static final String EventStateTypeName = "EventState";
-	public static final String ProcessEventFName = "process_event";
-	public static final String UnParametrizadProcessEvent = "bool " + ProcessEventFName + "(" + EventTemplates.EventPointerType + ")";
+	public static final String UnParametrizadProcessEvent = "bool " + StateMachineMethodNames.ProcessEventFName + "(" + EventTemplates.EventPointerType + ")";
 	public static final String ProcessEventDecl = UnParametrizadProcessEvent + ";\n";
 	public static final String SetStateDecl = ModifierNames.NoReturn + " " + SetStateFuncName + "(int "
 			+ GenerationNames.StateParamName + ");\n";
@@ -186,11 +182,10 @@ public class GenerationNames {
 	public static final String DefaultParentSmInicialization = GenerationNames.ParentSmMemberName + "("
 			+ GenerationNames.ParentSmPointerName + ")";
 
-	public static final String InitFunctionName = "init";
 	
 
 	public static String initFunctionName(String className) {
-		return InitFunctionName + className;
+		return StateMachineMethodNames.InitFunctionName + className;
 	}
 
 	public static String friendClassDecl(String className) {
@@ -207,14 +202,14 @@ public class GenerationNames {
 	}
 
 	public static String simpleProcessEventDef(String className) {
-		return "bool " + className + "::" + ProcessEventFName + "(" + EventTemplates.EventPointerType + " " + EventTemplates.EventFParamName + ")\n"
+		return "bool " + className + "::" + StateMachineMethodNames.ProcessEventFName + "(" + EventTemplates.EventPointerType + " " + EventTemplates.EventFParamName + ")\n"
 				+ simpleProcessEventDefBody();
 	}
 
 	public static String hierachicalProcessEventDef(String className) {
-		return "bool " + className + "::" + ProcessEventFName + "(" + EventTemplates.EventPointerType  + " " + EventTemplates.EventFParamName + ")\n"
+		return "bool " + className + "::" + StateMachineMethodNames.ProcessEventFName + "(" + EventTemplates.EventPointerType  + " " + EventTemplates.EventFParamName + ")\n"
 				+ "{\n" + "bool handled=false;\n" + "if(" + CurrentMachineName + ")\n" + "{\n" + "if("
-				+ CurrentMachineName + "->" + ProcessEventFName + "(" + EventTemplates.EventFParamName + "))\n" + "{\n"
+				+ CurrentMachineName + "->" + StateMachineMethodNames.ProcessEventFName + "(" + EventTemplates.EventFParamName + "))\n" + "{\n"
 				+ "handled=true;\n" + "}\n" + "}\n" + "if(!handled)\n" + "{\n" + "handled=handled || "
 				+ ActionCallerFName + "(" + EventTemplates.EventFParamName + ");\n" + "}\n//else unhandled event in this state\n"
 				+ "return handled;\n" + "}\n";
@@ -241,9 +236,9 @@ public class GenerationNames {
 				+ "{\n" + "auto it=" + CompositeStateMapName + ".find(" + GenerationNames.StateParamName + ");\n"
 				+ "if(it!=" + CompositeStateMapName + ".end())\n" + "{\n" + CurrentMachineName
 				+ "=(it->second).get();\n" + CurrentMachineName + "->" + SetInitialStateName
-				+ "();//restarting from initial state\n" + CurrentMachineName + "->" + ProcessEventFName + "(" + 
+				+ "();//restarting from initial state\n" /*+ CurrentMachineName + "->" + ProcessEventFName + "(" + 
 				  GenerationNames.signalPointerType(GenerationNames.FixEventNames.InitialEventName) + "(" + GenerationNames.PointerAndMemoryNames.MemoryAllocator + " " +  
-				PrivateFunctionalTemplates.signalType(GenerationNames.FixEventNames.InitialEventName) + "()) );\n" + 
+				PrivateFunctionalTemplates.signalType(GenerationNames.FixEventNames.InitialEventName) + "()) );\n"*/ + 
 				"}\n" + "else\n" + "{\n" + CurrentMachineName + "="
 				+ PointerAndMemoryNames.NullPtr + ";\n" + "}\n" + CurrentStateName + "=" + GenerationNames.StateParamName + ";\n" + "}\n";
 	}

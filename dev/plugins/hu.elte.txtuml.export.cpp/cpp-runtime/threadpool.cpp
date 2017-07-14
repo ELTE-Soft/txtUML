@@ -76,20 +76,24 @@ void StateMachineThreadPool::task()
 		if (sm != nullptr)
 		{
 			incrementWorkers();
-			bool hasNextEvent = true;
-			for (int i = 0; i < 5 && hasNextEvent; ++i)
+			bool validSM = true;
+			for (int i = 0; i < 5 && !sm->emptyMessageQueue(); ++i)
 			{
-				hasNextEvent = sm->processNextEvent();
+				validSM = sm->processNextEvent();
+				if (!validSM) {
+					break;
+				}
 			}
 
-
-			if (hasNextEvent)
-			{
-				_stateMachines.enqueue(sm);
-			}
-			else
-			{
-				sm->setPooled(false);
+			if (validSM) {
+				if (!sm->emptyMessageQueue()) 
+				{
+					_stateMachines.enqueue(sm);
+				}
+				else 
+				{
+					sm->setPooled(false);
+				}
 			}
 
 			reduceWorkers();

@@ -36,7 +36,7 @@ public class TransitionExporter {
 	String createTransitionFunctionDecl() {
 		StringBuilder source = new StringBuilder("");
 		for (Transition item : transitions) {
-			source.append(StateMachineTemplates.transitionActionDecl(item.getName()));
+			source.append(StateMachineTemplates.transitionActionDecl(transitionName(item)));
 		}
 		source.append("\n");
 		return source.toString();
@@ -44,15 +44,15 @@ public class TransitionExporter {
 
 	String createTransitionFunctionsDef() {
 		StringBuilder source = new StringBuilder("");
-		for (Transition item : transitions) {
+		for (Transition transition : transitions) {
 			String body = "";
-			Behavior b = item.getEffect();
-			String setState = createSetState(item);
+			Behavior b = transition.getEffect();
+			String setState = createSetState(transition);
 			if (b != null && b.eClass().equals(UMLPackage.Literals.ACTIVITY)) {
 				body = activityExporter.createFunctionBody((Activity) b);
 
 			}
-			source.append(StateMachineTemplates.transitionActionDef(className, item.getName(),
+			source.append(StateMachineTemplates.transitionActionDef(className, transitionName(transition),
 					body + setState + "\n" + GenerationNames.EntryInvoke, true));
 		}
 		source.append("\n");
@@ -91,5 +91,11 @@ public class TransitionExporter {
 			source = StateMachineTemplates.setState("UNKNOWN_TRANSITION_TARGET");
 		}
 		return source;
+	}
+	
+	private String transitionName(Transition transition) {
+		return transition.getTriggers().isEmpty() ? 
+				 GenerationNames.StateMachineMethodNames.InitTansitionFunctionName : 
+				 transition.getName();
 	}
 }

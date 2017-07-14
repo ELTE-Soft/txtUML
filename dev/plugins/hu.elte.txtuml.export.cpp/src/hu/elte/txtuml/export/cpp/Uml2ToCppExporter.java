@@ -275,9 +275,6 @@ public class Uml2ToCppExporter {
 		StringBuilder events = new StringBuilder("");
 		StringBuilder source = new StringBuilder("");
 		List<Pair<String, String>> allParam = new LinkedList<Pair<String, String>>();
-
-		events.append(EventTemplates.InitSignal + ENUM_EXTENSION + ",");
-		events.append(EventTemplates.DestroySignal + ENUM_EXTENSION + ",");
 		for (Signal signal : signalList) {
 			List<Pair<String, String>> currentParams = getSignalParams(signal);
 			String ctrBody = CppExporterUtils.signalCtrBody(signal, modelRoot);
@@ -287,11 +284,6 @@ public class Uml2ToCppExporter {
 			events.append(signal.getName() + ENUM_EXTENSION + ",");
 		}
 		events = new StringBuilder(events.substring(0, events.length() - 1));
-
-		source.append(EventTemplates.eventClass(EventTemplates.InitSignal, new ArrayList<Pair<String, String>>(), "",
-				new ArrayList<Property>()));
-		source.append(EventTemplates.eventClass(EventTemplates.DestroySignal, new ArrayList<Pair<String, String>>(), "",
-				new ArrayList<Property>()));
 
 		DependencyExporter dependencyEporter = new DependencyExporter();
 		for (Pair<String, String> param : allParam) {

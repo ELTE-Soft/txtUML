@@ -23,7 +23,6 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 
 import hu.elte.txtuml.export.cpp.templates.PrivateFunctionalTemplates;
-import hu.elte.txtuml.export.cpp.templates.statemachine.EventTemplates;
 import hu.elte.txtuml.export.cpp.templates.statemachine.StateMachineTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.FunctionTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.PortTemplates;
@@ -51,12 +50,6 @@ public class StateMachineExporterBase {
 		searchInitialState();
 		for (Transition item : stateMachineRegion.getTransitions()) {
 			TransitionConditions transitionCondition = null;
-
-			if (item.getSource().getName().equals(getInitialStateName())) {
-				transitionCondition = new TransitionConditions(EventTemplates.InitSignal, item.getSource().getName(),
-						PortTemplates.NO_PORT);
-			}
-
 			for (Trigger tri : item.getTriggers()) {
 				Event e = tri.getEvent();
 

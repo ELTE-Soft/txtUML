@@ -21,30 +21,33 @@ class IStateMachine
 {
 public:
 	virtual ~IStateMachine();
-	virtual void processEventVirtual() = 0;
-	virtual void processInitTransition() = 0;
-
 	bool processNextEvent();
 
 	void startSM();
 	void deleteSM();
 	void send(const ES::EventRef e);
 	
-	ES::EventRef getNextMessage();
 	void setPool(ES::SharedPtr<Execution::StateMachineThreadPool> pool);
+	void setPooled(bool value = true);
 	void setMessageQueue(ES::SharedPtr<ES::MessageQueueType> messageQueue);
-	void setPooled(bool value);
 	void setMessageCounter(ES::SharedPtr<ES::AtomicCounter> counter);
 
 	int getPoolId() const;
 	virtual std::string toString() const;
+	bool emptyMessageQueue() const;
 
 protected:
 	IStateMachine();
+
+	virtual void processEventVirtual(ES::EventRef event) = 0;
+	virtual void processInitTransition(ES::EventRef event) = 0;
+
+	ES::EventRef getNextMessage();
 	void setPoolId(int id);
 
 private:
 	void handlePool();
+	void destroy();
 
 	ES::SharedPtr<ES::MessageQueueType> _messageQueue;
 	ES::SharedPtr<Execution::StateMachineThreadPool> _pool;
@@ -53,9 +56,7 @@ private:
 	std::atomic_bool _inPool;
 	std::atomic_bool _started;
 	ES::SharedPtr<ES::AtomicCounter> messageCounter;
-
-	void init();
-	void destroy();
+	
 
 	int poolId;
 
