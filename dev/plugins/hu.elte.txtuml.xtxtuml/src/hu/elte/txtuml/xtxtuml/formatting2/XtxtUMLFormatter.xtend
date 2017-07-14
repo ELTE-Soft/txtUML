@@ -261,8 +261,12 @@ class XtxtUMLFormatter extends XbaseFormatter {
 	}
 
 	def dispatch void format(TUAttribute it, extension IFormattableDocument document) {
-		formatSimpleMember(it, document, TU_ATTRIBUTE__NAME);
+		regionFor.feature(TU_ATTRIBUTE__NAME).prepend[oneSpace];
+		regionFor.keyword('=').surround[oneSpace];
+		regionFor.keyword(';').prepend[noSpace];
+
 		format(prefix, document);
+		format(initExpression, document);
 	}
 
 	def dispatch void format(TUClassPropertyAccessExpression it, extension IFormattableDocument document) {

@@ -52,6 +52,7 @@ class XtxtUMLIssueCodes {
 	public static val CLASS_HIERARCHY_CYCLE = ISSUE_CODE_PREFIX + "class_hierarchy_cycle";
 	public static val SIGNAL_HIERARCHY_CYCLE = ISSUE_CODE_PREFIX + "signal_hierarchy_cycle";
 	public static val INVALID_CONSTRUCTOR_NAME = ISSUE_CODE_PREFIX + "invalid_constructor_name";
+	public static val INITIALIZER_ON_NON_EXTERNAL_ATTRIBUTE = ISSUE_CODE_PREFIX + "initializer_on_non_external_attribute";
 	public static val MISSING_INITIAL_STATE = ISSUE_CODE_PREFIX + "missing_initial_state";
 	public static val NOT_LEAVABLE_PSEUDOSTATE = ISSUE_CODE_PREFIX + "not_leavable_pseudostate";
 	public static val UNREACHABLE_STATE = ISSUE_CODE_PREFIX + "unreachable_state";
