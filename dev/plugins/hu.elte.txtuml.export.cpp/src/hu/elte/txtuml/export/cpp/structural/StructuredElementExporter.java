@@ -29,9 +29,14 @@ public abstract class StructuredElementExporter<StructuredElement extends Operat
 	protected ActivityExporter activityExporter;
 	protected DependencyExporter dependencyExporter;
 	private Predicate<Operation> pred;
+	private Boolean testing;
 
 	public void setName(String name) {
 		this.name = name;
+	}
+	
+	public void setTesting(Boolean testing) {
+		this.testing = testing;
 	}
 
 	abstract public void exportStructuredElement(StructuredElement structuredElement, String sourceDestination)
@@ -102,8 +107,9 @@ public abstract class StructuredElementExporter<StructuredElement extends Operat
 					source.append(FunctionTemplates.functionDef(name, returnType, operation.getName(),
 							CppExporterUtils.getOperationParams(operation), funcBody));
 				} else {
+					assert(testing != null);
 					source.append(FunctionTemplates.abstractFunctionDef(name, returnType, operation.getName(),
-							CppExporterUtils.getOperationParams(operation)));
+							CppExporterUtils.getOperationParams(operation),testing));
 
 				}
 			}

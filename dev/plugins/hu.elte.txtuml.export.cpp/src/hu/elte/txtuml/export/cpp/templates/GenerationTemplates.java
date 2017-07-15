@@ -30,7 +30,7 @@ public class GenerationTemplates {
 	}
 	
 	public static String generatedErrorMessage(String functionName) {
-		return " Not implemented external method: " + functionName;
+		return " Not implemented external method: " + functionName + "\n";
 	}
 
 	public static String paramName(String paramName) {

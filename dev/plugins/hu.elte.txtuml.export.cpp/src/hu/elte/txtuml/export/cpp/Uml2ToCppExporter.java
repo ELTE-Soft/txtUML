@@ -81,10 +81,11 @@ public class Uml2ToCppExporter {
 	private List<Element> modelRoot;
 
 	public Uml2ToCppExporter(List<Element> modelRoot, Map<String, ThreadPoolConfiguration> threadDescription,
-			boolean addRuntimeOption, boolean overWriteMainFileOption) {
+			boolean addRuntimeOption, boolean overWriteMainFileOption, Boolean testing) {
 
 		this.modelRoot = modelRoot;
 		classExporter = new ClassExporter();
+		classExporter.setTesting(testing);
 		dataTypeExporter = new DataTypeExporter();
 		abstractOperationExporter = new OnlyAbstractOperationExporter();
 		threadManager = new ThreadHandlingManager(threadDescription);

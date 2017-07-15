@@ -61,9 +61,13 @@ public class FunctionTemplates {
 	}
 
 	public static String abstractFunctionDef(String className, String returnTypeName, String functionName,
-			List<Pair<String, String>> params) {
-		return functionDef(className, returnTypeName, functionName, params, GenerationNames.Comments.ToDoMessage
-				+ GenerationNames.Macros.ErrorMacro + GenerationTemplates.generatedErrorMessage(functionName));
+			List<Pair<String, String>> params, Boolean testing) {
+		StringBuilder body = new StringBuilder("");
+		body.append(GenerationNames.Comments.ToDoMessage);
+		if(!testing) {
+			body.append(GenerationNames.Macros.ErrorMacro + GenerationTemplates.generatedErrorMessage(functionName));
+		}
+		return functionDef(className, returnTypeName, functionName, params, body.toString());
 	}
 
 	public static String simpleFunctionDef(String returnType, String functionName, String body, String returnVariable) {
