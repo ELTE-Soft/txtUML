@@ -59,7 +59,7 @@ public class Machine extends ModelClass {
 
 		@From(Init.class)
 		@To(Active.class)
-		class Initialize extends Transition {
+		class Initializee extends Transition {
 		}
 
 		@From(Active.class)
