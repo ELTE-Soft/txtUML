@@ -6,6 +6,7 @@
 #include "$fmuclass.hpp"
 #include "event.hpp"
 #include "deployment.hpp"
+#include "init_maps.hpp"
 
 #include <iostream>
 
@@ -74,6 +75,7 @@ fmi2Component fmi2Instantiate( fmi2String /*instanceName*/,
 
   // start the runtime
   fmu->uml_rt = deployment::initRuntime();
+  StateMachine::initTransitionTables();
   fmu->uml_rt->startRT();
 
   fmu->fmu_env = new fmu_environment;
@@ -267,8 +269,8 @@ fmi2Status fmi2DoStep( fmi2Component c,
                        fmi2Real /*communicationStepSize*/,
                        fmi2Boolean /*noSetFMUStatePriorToCurrentPoint*/) {
   FMU* fmu = static_cast<FMU*>(c);
-  ControlCycleSignal_EC* sig = new ControlCycleSignal_EC(fmu->fmu_env->vars->h, fmu->fmu_env->vars->v);
-  fmu->fmu_class->send(std::shared_ptr<ControlCycleSignal_EC>(sig));
+  $cyclesignal_EC* sig = new $cyclesignal_EC($setinputvariables);
+  fmu->fmu_class->send(std::shared_ptr<$cyclesignal_EC>(sig));
   return fmi2Pending;
 }
 

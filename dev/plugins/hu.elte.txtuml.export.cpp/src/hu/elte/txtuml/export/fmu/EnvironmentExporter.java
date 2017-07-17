@@ -47,6 +47,9 @@ public class EnvironmentExporter {
 			} else if (matcher.group().equals("$setoutputvariables")) {
 				String replacement = generateSetOutputVariables(fmuConfig.outputVariables);
 				matcher.appendReplacement(sb, replacement);
+			} else if (matcher.group().equals("$setinputvariables")) {
+				String replacement = generateCycleSignalMemberRefs(fmuConfig.inputVariables);
+				matcher.appendReplacement(sb, replacement);
 			} else if (matcher.group().equals("$outputssize")) {
 				matcher.appendReplacement(sb, Integer.toString(fmuConfig.outputVariables.size()));
 			} else if (matcher.group().equals("$variableoffsets")) {
@@ -55,6 +58,7 @@ public class EnvironmentExporter {
 			}
 		}
 		matcher.appendTail(sb);
+		Files.createDirectories(projectLoc.resolve("fmu"));
 		Files.write(projectLoc.resolve("fmu/FMUEnvironment.cpp"), sb.toString().getBytes());
 	}
 	
@@ -107,6 +111,17 @@ public class EnvironmentExporter {
 			return "fmi2String";
 		}
 		return "";
+	}
+	
+	private String generateCycleSignalMemberRefs(List<VariableDefinition> inputVariables) {
+		StringBuilder sb = new StringBuilder();
+		if (inputVariables.size() > 0) {
+			sb.append("fmu->fmu_env->vars->" + inputVariables.get(0).name);
+		}
+		for (int i = 1; i < inputVariables.size(); i++) {
+			sb.append(", ").append("fmu->fmu_env->vars->").append(inputVariables.get(i).name);
+		}
+		return sb.toString();
 	}
 
 	private String generateCycleSignalMembers(List<VariableDefinition> inputVariables) {

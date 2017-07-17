@@ -152,6 +152,7 @@ class CMakeSupport {
 		addCompileOption(fileContent, STRICTLY_NO_WARNINGS, false, false, false);
 		// TODO remove these later on
 		addCompileOption(fileContent, "-Wno-error=unused-parameter", false, false, false);
+		addCompileOption(fileContent, "-Wno-error=unused-variable", false, false, false);
 		// only clang supports it
 		addCompileOption(fileContent, "-Wno-error=unused-private-field", true, false, false);
 		if (DEBUG_ONLY_COMPILE_OPTIONS.length() > 0) {

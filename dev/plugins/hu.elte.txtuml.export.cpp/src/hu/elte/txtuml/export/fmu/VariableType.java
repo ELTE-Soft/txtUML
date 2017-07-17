@@ -21,7 +21,7 @@ public enum VariableType {
 			return REAL;
 		case "I":
 			return INTEGER;
-		case "B":
+		case "Z":
 			return BOOLEAN;
 		case "String":
 			return STRING;
