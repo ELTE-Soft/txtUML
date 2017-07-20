@@ -26,11 +26,11 @@ public:
 	
 	T front()
 	{
-		return top();
+		return this->top();
 	}
 
 	void modifyElements(std::function<bool(const T&)> p, std::function<void(T&)> m) {
-		modifyContainerElements<T, ContainerIterator>(c.begin(), c.end(), p, m);		
+		modifyContainerElements<T, ContainerIterator>(this->c.begin(), this->c.end(), p, m);		
 	}
 };
 
@@ -39,7 +39,7 @@ class Queue : public std::queue<T> {
 	typedef typename std::vector<T>::iterator ContainerIterator;
 public:
 	void modifyElements(std::function<bool(const T&)> p, std::function<void(T&)> m) {
-		modifyContainerElements<T, ContainerIterator>(c.begin(), c.end(), p, m);
+		modifyContainerElements<T, ContainerIterator>(this->c.begin(), this->c.end(), p, m);
 
 	}
 };
