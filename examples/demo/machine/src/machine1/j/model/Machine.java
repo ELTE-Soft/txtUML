@@ -15,23 +15,23 @@ import hu.elte.txtuml.api.model.Trigger;
 import machine1.j.model.signals.ButtonPress;
 
 public class Machine extends ModelClass {
-	
+
 	@External private List<String> switchOnLog = new ArrayList<String>();
 	@External private DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
-	
+
 	@ExternalBody
-	private void saveOnDate() {
+	private void logSwitchOn() {
 		LocalDateTime now = LocalDateTime.now();
-        switchOnLog.add(dtf.format(now));
-	} 
-	
+		switchOnLog.add(dtf.format(now));
+	}
+
 	@ExternalBody
-	public void printSwitchOnDates() {
+	public void printSwitchOnLog() {
 		for (String date : switchOnLog) {
 			System.out.println(date);
 		}
 	}
-	
+
 	public class Init extends Initial {}
 
 	public class Off extends State {
@@ -50,14 +50,13 @@ public class Machine extends ModelClass {
 		@Override
 		public void entry() {
 			Action.log("\tMachine enters state: 'on'");
-			saveOnDate();
+			logSwitchOn();
 		}
 
 		@Override
 		public void exit() {
 			Action.log("\tMachine exits state: 'on'");
 		}
-
 	}
 
 	@From(Init.class) @To(Off.class)
@@ -74,7 +73,6 @@ public class Machine extends ModelClass {
 		public void effect() {
 			Action.log("\tMachine: switching on...");
 		}
-
 	}
 
 	@From(On.class) @To(Off.class) @Trigger(ButtonPress.class)

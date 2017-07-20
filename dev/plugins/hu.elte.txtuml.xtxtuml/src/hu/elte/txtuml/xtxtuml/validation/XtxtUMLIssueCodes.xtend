@@ -85,12 +85,12 @@ class XtxtUMLIssueCodes {
 
 	// Modifier-related issues
 
-	public static val CONSTRUCTOR_IS_STATIC = ISSUE_CODE_PREFIX + "constructor_is_static";
-	public static val ATTRIBUTE_HAS_EXTERNAL_BODY = ISSUE_CODE_PREFIX + "attribute_has_external_body";
-	public static val ATTRIBUTE_IS_STATIC = ISSUE_CODE_PREFIX + "attribute_is_static";
+	public static val EXTERNAL_BODY_ON_ATTRIBUTE = ISSUE_CODE_PREFIX + "external_body_on_attribute";
+	public static val STATIC_ATTRIBUTE = ISSUE_CODE_PREFIX + "static_attribute";
+	public static val STATIC_CONSTRUCTOR = ISSUE_CODE_PREFIX + "static_constructor";
 
 	// UI-related issues
-	
+
 	public static val WRONG_PACKAGE = ISSUE_CODE_PREFIX + "wrong_package";
 
 	/**

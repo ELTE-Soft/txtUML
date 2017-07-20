@@ -188,7 +188,7 @@ class XtxtUMLStructureParserTest {
 			]
 		)
 	}
-	
+
 	@Test
 	def parseEmptyEnum() {
 		'''

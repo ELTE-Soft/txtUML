@@ -3,7 +3,6 @@ package hu.elte.txtuml.xtxtuml.common;
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAttribute
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUConstructor
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUExternality
-import hu.elte.txtuml.xtxtuml.xtxtUML.TUModifiers
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUOperation
 import java.util.HashMap
 import java.util.Map
@@ -84,14 +83,13 @@ class XtxtUMLExternalityHelper {
 			case EXTERNAL_BODY:
 				if(object instanceof XBlockExpression) EXTERNAL else NON_EXTERNAL
 			case NON_EXTERNAL: {
-				var TUModifiers modifiers
-				switch (object) {
+				var modifiers = switch (object) {
 					TUAttribute:
-						modifiers = (object as TUAttribute).prefix.modifiers
+						object.prefix.modifiers
 					TUOperation:
-						modifiers = (object as TUOperation).prefix.modifiers
+						object.prefix.modifiers
 					TUConstructor:
-						modifiers = (object as TUConstructor).modifiers
+						object.modifiers
 				}
 				modifiers?.externality ?: NON_EXTERNAL
 			}

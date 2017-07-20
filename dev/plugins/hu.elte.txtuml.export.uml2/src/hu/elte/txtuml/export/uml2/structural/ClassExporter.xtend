@@ -17,7 +17,7 @@ import hu.elte.txtuml.api.model.ModelClass
 
 class ClassExporter extends Exporter<TypeDeclaration, ITypeBinding, Class> {
 
-	private Region region	
+	private Region region
 
 	new(BaseExporter<?, ?, ?> parent) {
 		super(parent)

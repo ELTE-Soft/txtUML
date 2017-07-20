@@ -27,7 +27,7 @@ class XtxtUMLModifierValidatorTest {
 			class Foo {
 				Foo() {}
 			}
-		'''.parse.assertNoError(CONSTRUCTOR_IS_STATIC);
+		'''.parse.assertNoError(STATIC_CONSTRUCTOR);
 
 		val rawFile = '''
 			class Foo {
@@ -37,8 +37,8 @@ class XtxtUMLModifierValidatorTest {
 		''';
 
 		val parsedFile = rawFile.parse;
-		parsedFile.assertError(TU_MODIFIERS, CONSTRUCTOR_IS_STATIC, rawFile.indexOfNth("static", 0), 6);
-		parsedFile.assertError(TU_MODIFIERS, CONSTRUCTOR_IS_STATIC, rawFile.indexOfNth("static", 1), 6);
+		parsedFile.assertError(TU_MODIFIERS, STATIC_CONSTRUCTOR, rawFile.indexOfNth("static", 0), 6);
+		parsedFile.assertError(TU_MODIFIERS, STATIC_CONSTRUCTOR, rawFile.indexOfNth("static", 1), 6);
 	}
 
 	@Test
@@ -48,7 +48,7 @@ class XtxtUMLModifierValidatorTest {
 				int bar;
 				external int baz;
 			}
-		'''.parse.assertNoError(ATTRIBUTE_HAS_EXTERNAL_BODY);
+		'''.parse.assertNoError(EXTERNAL_BODY_ON_ATTRIBUTE);
 
 		val rawFile = '''
 			class Foo {
@@ -56,7 +56,7 @@ class XtxtUMLModifierValidatorTest {
 			}
 		''';
 
-		rawFile.parse.assertError(TU_MODIFIERS, ATTRIBUTE_HAS_EXTERNAL_BODY, rawFile.indexOf("external-body"), 13);
+		rawFile.parse.assertError(TU_MODIFIERS, EXTERNAL_BODY_ON_ATTRIBUTE, rawFile.indexOf("external-body"), 13);
 	}
 
 	@Test
@@ -66,7 +66,7 @@ class XtxtUMLModifierValidatorTest {
 				int bar;
 				external static int baz;
 			}
-		'''.parse.assertNoError(ATTRIBUTE_IS_STATIC);
+		'''.parse.assertNoError(STATIC_ATTRIBUTE);
 
 		val rawFile = '''
 			class Foo {
@@ -74,7 +74,7 @@ class XtxtUMLModifierValidatorTest {
 			}
 		''';
 
-		rawFile.parse.assertError(TU_MODIFIERS, ATTRIBUTE_IS_STATIC, rawFile.indexOf("static"), 6);
+		rawFile.parse.assertError(TU_MODIFIERS, STATIC_ATTRIBUTE, rawFile.indexOf("static"), 6);
 	}
 
 }

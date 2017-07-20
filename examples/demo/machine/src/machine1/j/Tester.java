@@ -8,8 +8,8 @@ import machine1.j.model.associations.Usage;
 import machine1.j.model.signals.DoYourWork;
 
 public class Tester {
-	
 	static Machine m;
+
 	static void init() {
 		m = Action.create(Machine.class);
 		User u1 = Action.create(User.class);
@@ -28,7 +28,6 @@ public class Tester {
 
 	public static void main(String[] args) {
 		ModelExecutor.create().setTraceLogging(true).run(Tester::init);
-		m.printSwitchOnDates();
+		m.printSwitchOnLog();
 	}
-
 }
