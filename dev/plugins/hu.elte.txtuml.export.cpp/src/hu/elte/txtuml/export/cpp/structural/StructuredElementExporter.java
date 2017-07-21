@@ -9,6 +9,7 @@ import org.eclipse.uml2.uml.Operation;
 import org.eclipse.uml2.uml.OperationOwner;
 import org.eclipse.uml2.uml.Parameter;
 import org.eclipse.uml2.uml.Property;
+import org.eclipse.uml2.uml.UMLPackage;
 import org.eclipse.uml2.uml.VisibilityKind;
 
 import hu.elte.txtuml.export.cpp.CppExporterUtils;
@@ -89,6 +90,9 @@ public abstract class StructuredElementExporter<StructuredElement extends Operat
 	private String createAttributes(VisibilityKind modifyer) {
 		StringBuilder source = new StringBuilder("");
 		for (Property attribute : structuredElement.getOwnedAttributes()) {
+			if(attribute.getType().eClass().equals(UMLPackage.Literals.INTERFACE)) {
+				continue;
+			}
 			if (attribute.getVisibility().equals(modifyer)) {
 				String type = UKNOWN_TYPE;
 				if (attribute.getType() != null) {
