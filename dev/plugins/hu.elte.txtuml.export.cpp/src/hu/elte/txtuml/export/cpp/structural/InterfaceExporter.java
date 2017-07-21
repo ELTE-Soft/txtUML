@@ -16,27 +16,24 @@ import hu.elte.txtuml.export.cpp.templates.statemachine.EventTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.HeaderTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.InterfaceTemplates;
 
-
 public class InterfaceExporter extends StructuredElementExporter<Interface> {
 
 	@Override
 	public void exportStructuredElement(Interface structuredElement, String sourceDestination)
 			throws FileNotFoundException, UnsupportedEncodingException {
-				
+
 		this.name = structuredElement.getName();
-		List<Signal> receptionSignals =  structuredElement.getOwnedReceptions().
-				stream().map(r -> r.getSignal()).collect(Collectors.toList());
-		
-		String interfaceDecl = InterfaceTemplates
-				.createInterface(structuredElement.getName(), receptionSignals);
-		
-		String source = GenerationTemplates.
-				putNamespace(interfaceDecl, GenerationNames.Namespaces.ModelNamespace);
-		String dependency = PrivateFunctionalTemplates.include(EventTemplates.EventHeaderName); 
-		CppExporterUtils.writeOutSource(sourceDestination, 
-				GenerationTemplates.headerName(name), 
-				HeaderTemplates.headerGuard(dependency + source, name));		
-		
+		List<Signal> receptionSignals = structuredElement.getOwnedReceptions().stream().map(r -> r.getSignal())
+				.collect(Collectors.toList());
+
+		String interfaceDecl = InterfaceTemplates.createInterface(structuredElement.getName(), receptionSignals);
+
+		String source = GenerationTemplates.putNamespace(interfaceDecl, GenerationNames.Namespaces.ModelNamespace);
+		String dependency = PrivateFunctionalTemplates.include(EventTemplates.EventHeaderName)
+				+ PrivateFunctionalTemplates.include(GenerationNames.FileNames.InterfaceUtilsPath);
+		CppExporterUtils.writeOutSource(sourceDestination, GenerationTemplates.headerName(name),
+				HeaderTemplates.headerGuard(dependency + source, name));
+
 	}
 
 }

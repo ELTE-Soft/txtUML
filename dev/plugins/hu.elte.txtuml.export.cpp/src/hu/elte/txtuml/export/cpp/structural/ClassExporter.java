@@ -130,7 +130,6 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 		publicParts.append(LinkTemplates.templateLinkFunctionGeneralDef(LinkTemplates.LinkFunctionType.Unlink));
 		
 		publicParts.append(portExporter.crearePortRelatedCodes());
-		dependencyExporter.addDependencies(portExporter.getUsedInterfaces());
 		if (CppExporterUtils.isStateMachineOwner(structuredElement)) {
 
 			publicParts.append(stateMachineExporter.createStateEnumCode());
@@ -202,11 +201,13 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 			source.append(PrivateFunctionalTemplates.include(GenerationNames.FileNames.ActionPath));
 			source.append(PrivateFunctionalTemplates.include(GenerationNames.FileNames.StringUtilsPath));
 			source.append(PrivateFunctionalTemplates.include(GenerationNames.FileNames.CollectionUtilsPath));
-			source.append(PrivateFunctionalTemplates
-					.include(RuntimeTemplates.RTPath + GenerationTemplates.TimerInterfaceHeader));
-			source.append(
-					PrivateFunctionalTemplates.include(RuntimeTemplates.RTPath + GenerationTemplates.TimerHeader));
+			source.append(PrivateFunctionalTemplates.include(RuntimeTemplates.RTPath + GenerationTemplates.TimerInterfaceHeader));
+			source.append(PrivateFunctionalTemplates.include(RuntimeTemplates.RTPath + GenerationTemplates.TimerHeader));
+			source.append(PrivateFunctionalTemplates.include(GenerationNames.FileNames.PortUtilsPath));
 		} else {
+			for (String interfaceDependency : portExporter.getUsedInterfaces()) {
+				source.append(PrivateFunctionalTemplates.include(interfaceDependency));
+			}
 			source.append(PrivateFunctionalTemplates.include(GenerationNames.FileNames.TypesFilePath));
 			if (associationExporter.ownAssociation()) {
 				source.append(PrivateFunctionalTemplates.include(RuntimeTemplates.RTPath + LinkTemplates.AssocationHeader));

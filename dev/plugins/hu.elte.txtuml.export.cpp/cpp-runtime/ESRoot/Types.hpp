@@ -32,6 +32,15 @@ template<typename T>
 class ThreadSafeQueue;
 }
 
+namespace Model
+{
+template <typename RequiredInf, typename ProvidedInf>
+class Port;
+
+template <typename RequiredInf, typename ProvidedInf>
+class BehaviorPort;
+}
+
 
 namespace ES
 {

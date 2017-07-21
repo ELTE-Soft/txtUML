@@ -74,7 +74,7 @@ public class PortExporter {
 	}
 	
 	public String createPortDeclerations() {
-		return ports.stream().map(p -> createinterfacePrortCode(p)).reduce("", (d1,d2) -> d1 + d2);
+		return ports.stream().map(p -> createinterfacePortCode(p)).reduce("", (d1,d2) -> d1 + d2);
 	}
 	
 	public String createInitPortsCode() {
@@ -83,7 +83,7 @@ public class PortExporter {
 	
 	private String crteaInterfacePortDefinitionCode(Port port) {
 		assert(port != null && isInterfacePort(port));
-		String portTypeName = getPortTypeName(port);
+		String portTypeName = getPortTypeName(port, true);
 		Pair<String,String> interfaces = getPortActualInterfaceTypes(port);
 		List<String> parameters = new ArrayList<>();
 		if(port.isBehavior()) {
@@ -93,9 +93,9 @@ public class PortExporter {
 		return ObjectDeclDefTemplates.setAllocatedObjectToObjectVariable(portTypeName, 
 				Arrays.asList(interfaces.getFirst(),interfaces.getSecond()), port.getName(), parameters, true);
 	}
-	private String createinterfacePrortCode(Port port) {
+	private String createinterfacePortCode(Port port) {
 		assert(port != null && isInterfacePort(port));
-		String portTypeName = getPortTypeName(port);
+		String portTypeName = getPortTypeName(port, false);
 		Pair<String,String> interfaces = getPortActualInterfaceTypes(port);		
 		return ObjectDeclDefTemplates.propertyDecl(portTypeName,port.getName(),"",Arrays.asList(interfaces.getFirst(),interfaces.getSecond()), ObjectDeclDefTemplates.VariableType.SharedPtr);
 	}
@@ -112,10 +112,16 @@ public class PortExporter {
 		return new Pair<String,String>(actualProvidedInfName,actualRequiredInfName);
 		
 	}
-	private String getPortTypeName(Port port) {
-		return port.isBehavior()? 
+	private String getPortTypeName(Port port, Boolean alloc) {
+		StringBuilder baseType = new StringBuilder(port.isBehavior()? 
 				PortTemplates.BehaviorPortTypeName : 
-				PortTemplates.PortTypeName;
+				PortTemplates.PortTypeName);
+		if(alloc) {
+			baseType.append("Impl");
+		}
+		
+		return baseType.toString();
+
 	}
 	public boolean isInterfacePort(Port port) {
 		return port.getType().eClass().equals(UMLPackage.Literals.INTERFACE);

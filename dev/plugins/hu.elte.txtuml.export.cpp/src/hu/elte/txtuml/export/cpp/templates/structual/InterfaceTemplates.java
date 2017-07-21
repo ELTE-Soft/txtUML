@@ -36,7 +36,7 @@ public class InterfaceTemplates {
 		
 		String reciveAny = "virtual " + 
 				ModifierNames.NoReturn + " " + 
-				InterfaceNames.ReciveReceptionName + 
+				InterfaceNames.CommonReciveAnySignalName + 
 				"(" + EventTemplates.EventPointerType + " " + singalParam  + ") = 0;\n";
 		
 		source.append(infPartDecl(infName + ReqPostFix, sendFunctions.toString(), sendAny));

@@ -29,6 +29,8 @@ public class GenerationNames {
 		public static final String StringUtilsPath = ESRootPath + FileNamesStringUtilsHeaderName;
 		public static final String FileNamesCollectionUtilsHeaderName = "CollectionUtils";
 		public static final String CollectionUtilsPath = ESRootPath + FileNamesCollectionUtilsHeaderName;
+		public static final String PortUtilsPath = RuntimeTemplates.RTPath + "PortUtils";
+		public static final String InterfaceUtilsPath = RuntimeTemplates.RTPath + "InterfaceUtils";
 		
 		public static final String HeaderExtension = "hpp";
 		public static final String SourceExtension = "cpp";
