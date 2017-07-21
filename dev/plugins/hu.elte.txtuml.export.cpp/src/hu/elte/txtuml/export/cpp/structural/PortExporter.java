@@ -34,7 +34,16 @@ public class PortExporter {
 				CppExporterUtils.format(PortTemplates.portHeaderGuard("")));
 	}
 
-
+	public List<String> getUsedInterfaces() {
+		List<String> usedInterfaces = new ArrayList<>();
+		for (Port port : ports) {
+			Pair<String,String> interaces = getPortActualInterfaceTypes(port);
+			usedInterfaces.add(interaces.getFirst());
+			usedInterfaces.add(interaces.getSecond());
+		}
+		
+		return usedInterfaces;
+	}
 	
 	public String crearePortRelatedCodes() {
 		StringBuilder source = new StringBuilder("");

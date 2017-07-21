@@ -130,6 +130,7 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 		publicParts.append(LinkTemplates.templateLinkFunctionGeneralDef(LinkTemplates.LinkFunctionType.Unlink));
 		
 		publicParts.append(portExporter.crearePortRelatedCodes());
+		dependencyExporter.addDependencies(portExporter.getUsedInterfaces());
 		if (CppExporterUtils.isStateMachineOwner(structuredElement)) {
 
 			publicParts.append(stateMachineExporter.createStateEnumCode());
