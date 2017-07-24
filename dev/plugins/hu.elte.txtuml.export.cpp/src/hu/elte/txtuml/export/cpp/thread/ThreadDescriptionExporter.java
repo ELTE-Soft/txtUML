@@ -72,7 +72,7 @@ public class ThreadDescriptionExporter {
 		}
 		
 		if (!runtimeTypeIsPresent) {
-			warningList.add("You haven't sepcified the runtime type!\n "
+			warningList.add("You haven't specified the runtime type!\n "
 					+ "The default runtime type is: MultiThreadedRT");
 			runtime = RuntimeType.THREADED;
 		}

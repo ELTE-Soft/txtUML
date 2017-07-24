@@ -8,7 +8,7 @@ import machine1.x.model.Machine;
 import machine1.x.model.User;
 
 @Group(contains = { Machine.class, User.class })
-@Runtime(RuntimeType.THREADED)
+@Runtime(RuntimeType.SINGLE)
 public class XMachine1Configuration extends Configuration {
 
 }

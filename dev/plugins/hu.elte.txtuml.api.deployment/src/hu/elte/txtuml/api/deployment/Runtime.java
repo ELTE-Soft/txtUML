@@ -8,7 +8,8 @@ import java.lang.annotation.Target;
 /**
  * <p>
  * Configures the properties of the model executor.
- * The {@link #value} defines the type of the executor.
+ * The {@link #value} defines the type of the executor. 
+ * The default value is the Threaded runtime.
  *
  * 
  * <p>
