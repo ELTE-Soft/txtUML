@@ -35,8 +35,8 @@ public class StateMachineTemplates {
 		return FunctionTemplates.functionDecl(transitionActionName, params);
 	}
 
-	public static String transitionActionDef(String className, String transitionActionName, String body,
-			boolean singalAcces) {
+	public static String transitionActionDef(String className, String transitionFunctionName, 
+			String transitionActionName, String body, boolean singalAcces) {
 		List<Pair<String, String>> params = new LinkedList<Pair<String, String>>();
 		if (singalAcces) {
 			params.add(new Pair<String, String>(EventTemplates.EventPointerType, EventTemplates.EventParamName));
@@ -45,7 +45,7 @@ public class StateMachineTemplates {
 
 		}
 
-		return FunctionTemplates.functionDef(className, transitionActionName, params,
+		return FunctionTemplates.functionDef(className, transitionFunctionName, params,
 				PrivateFunctionalTemplates.debugLogMessage(className, transitionActionName) + body);
 	}
 

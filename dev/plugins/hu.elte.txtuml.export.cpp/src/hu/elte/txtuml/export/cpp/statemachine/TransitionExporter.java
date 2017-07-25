@@ -52,8 +52,8 @@ public class TransitionExporter {
 				body = activityExporter.createFunctionBody((Activity) b);
 
 			}
-			source.append(StateMachineTemplates.transitionActionDef(className, transitionName(transition),
-					body + setState + "\n" + GenerationNames.EntryInvoke, true));
+			source.append(StateMachineTemplates.transitionActionDef(className, transitionName(transition), 
+					transition.getName(), body + setState + "\n" + GenerationNames.EntryInvoke, true));
 		}
 		source.append("\n");
 		return source.toString();
