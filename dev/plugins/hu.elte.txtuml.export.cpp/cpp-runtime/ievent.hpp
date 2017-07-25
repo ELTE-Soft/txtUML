@@ -54,17 +54,13 @@ public:
 	}
 
 };
-//TODO to cpp
-
-
 
 
 template<typename Derived>
-class CompareEvents {
+class SpecialEventChecker {
 public:
-	bool operator() (ES::EventRef& e1, ES::EventRef& e2) {
-		return e1->getSpecialType() == SpecialSignalType::NoSpecial
-			&& e2->getSpecialType() != SpecialSignalType::NoSpecial;
+	bool operator() (const ES::EventRef& e) {
+		return e->getSpecialType() != SpecialSignalType::NoSpecial;
 	}
 };
 

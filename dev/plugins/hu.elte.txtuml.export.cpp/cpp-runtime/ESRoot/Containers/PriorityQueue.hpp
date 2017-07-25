@@ -8,41 +8,65 @@
 namespace ES
 {
 
+	template<typename T>
+	class Queue : public std::queue<T> {
+	public:
+		void modifyElements(std::function<bool(const T&)> p, std::function<void(T&)> m) {
+			for (container_type::iterator it = this->c.begin(); it != this->c.end(); it++) {
+				if (p(*it)) {
+					m(*it);
+				}
+			}
 
-
-template<typename T, typename CI>
-void modifyContainerElements(CI begin, CI end, std::function<bool(const T&)> p, std::function<void(T&)> m) {
-	for (CI it = begin; it != end; it++) {
-		if (p(*it)) {
-			m(*it);
 		}
-	}
-}
+	};
 
-template<typename T, typename Compare>
-class PriorityQueue : public std::priority_queue<T, std::vector<T>, Compare> {
-	typedef typename std::vector<T>::iterator ContainerIterator;
-public:
-	
-	T front()
-	{
-		return this->top();
-	}
+	template<typename T, typename Special>
+	class SpecialPriorityQueue {
+	public:
 
-	void modifyElements(std::function<bool(const T&)> p, std::function<void(T&)> m) {
-		modifyContainerElements<T, ContainerIterator>(this->c.begin(), this->c.end(), p, m);		
-	}
-};
+		typedef typename Queue<T>::size_type  size_type;
+		typedef typename Queue<T>::value_type value_type;
+	public:
 
-template<typename T>
-class Queue : public std::queue<T> {
-	typedef typename std::vector<T>::iterator ContainerIterator;
-public:
-	void modifyElements(std::function<bool(const T&)> p, std::function<void(T&)> m) {
-		modifyContainerElements<T, ContainerIterator>(this->c.begin(), this->c.end(), p, m);
+		T front()
+		{
+			return specialQueue.empty() ? simpleQueue.front() : specialQueue.front();
+		}
 
-	}
-};
+		void push(const T& item) {
+			if (isSpecial(item)) {
+				specialQueue.push(item);
+			}
+			else {
+				simpleQueue.push(item);
+			}
+		}
+
+		void pop() {
+			specialQueue.empty() ? simpleQueue.pop() : specialQueue.pop();
+		}
+
+		void modifyElements(std::function<bool(const T&)> p, std::function<void(T&)> m) {
+			simpleQueue.modifyElements(p, m);
+			specialQueue.modifyElements(p, m);
+		}
+
+		bool empty() const {
+			return simpleQueue.empty() && specialQueue.empty();
+		}
+
+		size_type size() const {
+			return simpleQueue.size() + specialQueue.size();
+		}
+
+	private:
+		Special isSpecial;
+		Queue<T> simpleQueue;
+		Queue<T> specialQueue;
+	};
+
+
 
 
 }

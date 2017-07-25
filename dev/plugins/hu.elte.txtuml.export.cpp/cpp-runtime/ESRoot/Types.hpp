@@ -18,7 +18,7 @@ template<typename BaseDerived>
 class IEvent;
 class EventBase;
 template<typename BaseDerived>
-class CompareEvents;
+class SpecialEventChecker;
 }
 
 
@@ -36,7 +36,7 @@ template<typename T>
 class ThreadSafeQueue;
 
 template<typename T, typename Compare>
-class PriorityQueue;
+class SpecialPriorityQueue;
 
 }
 
@@ -60,7 +60,7 @@ namespace ES
 	using RuntimePtr = SharedPtr<Execution::IRuntime<RuntimeType>>;
 
 	//ThreadSafeQueue types
-	using MessageQueueType = ThreadSafeQueue<PriorityQueue<EventRef, Model::CompareEvents<Model::EventBase>>>;
+	using MessageQueueType = ThreadSafeQueue<SpecialPriorityQueue<EventRef, Model::SpecialEventChecker<Model::EventBase>>>;
 	using PoolQueueType = ThreadSafeQueue<Queue<StateMachineRef>>;
 
 	using TimerPtr = SharedPtr<Timer>;
