@@ -12,7 +12,7 @@ namespace ES
 	class Queue : public std::queue<T> {
 	public:
 		void modifyElements(std::function<bool(const T&)> p, std::function<void(T&)> m) {
-			for (container_type::iterator it = this->c.begin(); it != this->c.end(); it++) {
+			for (typename std::queue<T>::container_type::iterator it = this->c.begin(); it != this->c.end(); it++) {
 				if (p(*it)) {
 					m(*it);
 				}
