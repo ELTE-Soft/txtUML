@@ -34,4 +34,5 @@ public @interface Group {
 	int constant() default 1;
 
 	int max() default 1;
+	
 }

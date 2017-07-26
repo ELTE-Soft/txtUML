@@ -21,41 +21,42 @@ class IStateMachine
 {
 public:
 	virtual ~IStateMachine();
-	virtual void processEventVirtual() = 0;
-	virtual void processInitTransition() = 0;
+	bool processNextEvent();
 
 	void startSM();
+	void deleteSM();
 	void send(const ES::EventRef e);
-	void init();
-	ES::EventRef getNextMessage();
-	bool emptyMessageQueue();
+	
 	void setPool(ES::SharedPtr<Execution::StateMachineThreadPool> pool);
+	void setPooled(bool value = true);
 	void setMessageQueue(ES::SharedPtr<ES::MessageQueueType> messageQueue);
-	void setPooled(bool value);
-	bool isInPool() const;
-	bool isStarted() const;
-	bool isInitialized() const;
-	bool isDestroyed() const;
-	int getPoolId() const;
 	void setMessageCounter(ES::SharedPtr<ES::AtomicCounter> counter);
+
+	int getPoolId() const;
 	virtual std::string toString() const;
+	bool emptyMessageQueue() const;
 
 protected:
-	IStateMachine(ES::SharedPtr<ES::MessageQueueType> messageQueue = ES::SharedPtr<ES::MessageQueueType>(new ES::MessageQueueType()));
+	IStateMachine();
+
+	virtual void processEventVirtual(ES::EventRef event) = 0;
+	virtual void processInitTransition(ES::EventRef event) = 0;
+
+	ES::EventRef getNextMessage();
 	void setPoolId(int id);
-	void destroy();
+
 private:
 	void handlePool();
+	void destroy();
 
 	ES::SharedPtr<ES::MessageQueueType> _messageQueue;
-	ES::SharedPtr<Execution::StateMachineThreadPool> _pool;//safe because: controlled by the runtime, but we can not set it in the constructor
+	ES::SharedPtr<Execution::StateMachineThreadPool> _pool;
 	std::mutex _mutex;
 	std::condition_variable _cond;
 	std::atomic_bool _inPool;
 	std::atomic_bool _started;
-	std::atomic_bool _initialized;
-	std::atomic_bool _deleted;
 	ES::SharedPtr<ES::AtomicCounter> messageCounter;
+	
 
 	int poolId;
 

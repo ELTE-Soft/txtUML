@@ -1,14 +1,18 @@
 #include "istatemachine.hpp"
 #include "threadpool.hpp"
 #include "runtime.hpp"
+#include "ievent.hpp"
 
 #include <assert.h>
 
 namespace Model
 {
 
-IStateMachine::IStateMachine(ES::SharedPtr<ES::MessageQueueType> messageQueue)
-	:_messageQueue(messageQueue), _pool(nullptr), _inPool(false), _started(false), _initialized(false), _deleted (false) {}
+IStateMachine::IStateMachine()
+	:_messageQueue(new ES::MessageQueueType()),
+	_pool(nullptr), 
+	_inPool(false), 
+	_started(false) {}
 
 void IStateMachine::setPoolId(int id) 
 { 
@@ -17,13 +21,17 @@ void IStateMachine::setPoolId(int id)
 
 void IStateMachine::destroy()
 {
-	_deleted = true;
+	setPooled(false);
+	messageCounter->decrementCounter((unsigned)_messageQueue->size());
+	std::function<bool(const ES::EventRef&)> p = [this](const ES::EventRef& e) {return e->getTargetSM() == this; };
+	_messageQueue->modifyElements([this](const ES::EventRef& e) {return e->getTargetSM() == this; },
+		[](ES::EventRef& e) {IEvent<EventBase>::invalidatesEvent(e); });
+	delete this;
 }
 
-void IStateMachine::init()
+bool IStateMachine::emptyMessageQueue() const
 {
-	_initialized = true;
-	processInitTransition();
+	return _messageQueue->isEmpty();
 }
 
 ES::EventRef IStateMachine::getNextMessage()
@@ -32,11 +40,6 @@ ES::EventRef IStateMachine::getNextMessage()
 	_messageQueue->dequeue(event);
 	messageCounter->decrementCounter();
 	return event;
-}
-
-bool IStateMachine::emptyMessageQueue() 
-{ 
-	return _messageQueue->isEmpty();
 }
 
 void IStateMachine::setPool(ES::SharedPtr<Execution::StateMachineThreadPool> pool) 
@@ -49,10 +52,40 @@ void IStateMachine::setMessageQueue(ES::SharedPtr<ES::MessageQueueType> messageQ
 	_messageQueue = messageQueue; 
 }
 
-void IStateMachine::startSM() 
+bool IStateMachine::processNextEvent()
+{
+	ES::EventRef nextEvent = getNextMessage();
+	switch (nextEvent->getSpecialType()) {
+	case SpecialSignalType::NoSpecial:
+		processEventVirtual(nextEvent);
+		return true;
+	case SpecialSignalType::InitSignal:
+		processInitTransition(nextEvent);
+		return true;
+	case SpecialSignalType::DestorySignal:
+		destroy();
+		return false;
+	default:
+		assert(false);
+		return false;
+	}
+
+}
+
+void IStateMachine::startSM()
 { 
-	_started = true; 
-	handlePool();
+	_started = true;
+	send(ES::EventRef(new InitSpecialSignal()));
+	
+}
+
+void IStateMachine::deleteSM()
+{
+	send(ES::EventRef(new DestorySpecialSignal()));
+	if (!_started) {
+		handlePool();
+	}
+	
 }
 
 void IStateMachine::send(const ES::EventRef e)
@@ -65,42 +98,21 @@ void IStateMachine::send(const ES::EventRef e)
 		handlePool();
 	}
 
-
 }
 
 void IStateMachine::handlePool()
 {
 	if (!_inPool && _pool != nullptr)
 	{
-		_inPool = true;
+		setPooled();
 		_pool->enqueueObject(this);
 	}
 }
 
-void IStateMachine::setPooled(bool value = true)
+void IStateMachine::setPooled(bool value)
 {
 	_inPool = value;
 	_cond.notify_one();
-}
-
-bool IStateMachine::isInPool() const 
-{ 
-	return _inPool; 
-}
-
-bool IStateMachine::isStarted() const 
-{ 
-	return _started; 
-}
-
-bool IStateMachine::isInitialized() const 
-{ 
-	return _initialized; 
-}
-
-bool IStateMachine::isDestroyed() const
-{ 
-	return _deleted; 
 }
 
 int IStateMachine::getPoolId() const 
@@ -120,7 +132,6 @@ std::string IStateMachine::toString() const
 
 IStateMachine::~IStateMachine()
 {
-	messageCounter->decrementCounter((unsigned) _messageQueue->size());
 	std::unique_lock<std::mutex> mlock(_mutex);
 	while (_inPool)
 	{
