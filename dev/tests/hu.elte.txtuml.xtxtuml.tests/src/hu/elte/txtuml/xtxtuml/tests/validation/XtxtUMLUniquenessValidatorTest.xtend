@@ -31,6 +31,7 @@ class XtxtUMLUniquenessValidatorTest {
 			association __4416cWAUcf80 {}
 			interface __4416cWAUcf81 {}
 			connector __4416cWAUcf82 {}
+			enum  __4416cWAUcf83 {}
 		'''.parse.assertNoError(NOT_UNIQUE_NAME);
 
 		val rawFile = '''
@@ -41,6 +42,7 @@ class XtxtUMLUniquenessValidatorTest {
 			association Exception {}
 			interface Error {}
 			connector String {}
+			enum Integer {}
 		''';
 
 		val parsedFile = rawFile.parse;
@@ -50,6 +52,7 @@ class XtxtUMLUniquenessValidatorTest {
 		parsedFile.assertError(TU_MODEL_ELEMENT, NOT_UNIQUE_NAME, rawFile.indexOf("Exception"), 9);
 		parsedFile.assertError(TU_MODEL_ELEMENT, NOT_UNIQUE_NAME, rawFile.indexOf("Error"), 5);
 		parsedFile.assertError(TU_MODEL_ELEMENT, NOT_UNIQUE_NAME, rawFile.indexOf("String"), 6);
+		parsedFile.assertError(TU_MODEL_ELEMENT, NOT_UNIQUE_NAME, rawFile.indexOf("Integer"), 7);
 	}
 
 	@Test
@@ -87,6 +90,26 @@ class XtxtUMLUniquenessValidatorTest {
 	}
 
 	@Test
+	def checkEnumLiteralIsUnique() {
+		'''
+			enum Foo {
+				A, B, C
+			}
+		'''.parse.assertNoError(NOT_UNIQUE_NAME);
+
+		val rawFile = '''
+			enum Foo {
+				BAR,
+				BAR
+			}
+		''';
+
+		val parsedFile = rawFile.parse;
+		parsedFile.assertError(TU_ENUMERATION_LITERAL, NOT_UNIQUE_NAME, rawFile.indexOfNth("BAR", 1), 3);
+		parsedFile.assertError(TU_ENUMERATION_LITERAL, NOT_UNIQUE_NAME, rawFile.indexOfNth("BAR", 2), 3);
+	}
+
+	@Test
 	def checkReceptionIsUnique() {
 		'''
 			signal Foo;
@@ -109,14 +132,17 @@ class XtxtUMLUniquenessValidatorTest {
 	}
 
 	@Test
-	def checkSignalAttributeNameIsUnique() {
+	def checkSignalAttributeIsUnique() {
 		'''
 			signal Foo {
 				int bar;
 			}
-		'''.parse.assertNoError(NOT_UNIQUE_NAME);
+			signal Bar extends Foo {
+				int baz;
+			}
+		'''.parse.assertNoError(NOT_UNIQUE_SIGNAL_ATTRIBUTE);
 
-		val rawFile = '''
+		val sameLevelDuplicateRaw = '''
 			signal Foo {
 				int bar;
 				int bar;
@@ -124,10 +150,36 @@ class XtxtUMLUniquenessValidatorTest {
 			}
 		''';
 
-		val parsedFile = rawFile.parse;
-		parsedFile.assertError(TU_SIGNAL_ATTRIBUTE, NOT_UNIQUE_NAME, rawFile.indexOfNth("bar", 0), 3);
-		parsedFile.assertError(TU_SIGNAL_ATTRIBUTE, NOT_UNIQUE_NAME, rawFile.indexOfNth("bar", 1), 3);
-		parsedFile.assertError(TU_SIGNAL_ATTRIBUTE, NOT_UNIQUE_NAME, rawFile.indexOfNth("bar", 2), 3);
+		val sameLevelDuplicateParsed = sameLevelDuplicateRaw.parse;
+		sameLevelDuplicateParsed.assertError(TU_SIGNAL_ATTRIBUTE, NOT_UNIQUE_SIGNAL_ATTRIBUTE,
+			sameLevelDuplicateRaw.indexOfNth("bar", 0), 3);
+		sameLevelDuplicateParsed.assertError(TU_SIGNAL_ATTRIBUTE, NOT_UNIQUE_SIGNAL_ATTRIBUTE,
+			sameLevelDuplicateRaw.indexOfNth("bar", 1), 3);
+		sameLevelDuplicateParsed.assertError(TU_SIGNAL_ATTRIBUTE, NOT_UNIQUE_SIGNAL_ATTRIBUTE,
+			sameLevelDuplicateRaw.indexOfNth("bar", 2), 3);
+
+		val shadowingRaw = '''
+			signal S1 {
+				int i1;
+				double d1;
+			}
+			signal S2 extends S1 {
+				String i1;
+				int i2;
+			}
+			signal S3 extends S2 {
+				int i1;
+				double d1;
+			}
+		''';
+
+		val shadowingParsed = shadowingRaw.parse;
+		shadowingParsed.assertError(TU_SIGNAL_ATTRIBUTE, NOT_UNIQUE_SIGNAL_ATTRIBUTE,
+			shadowingRaw.indexOfNth("i1", 1), 2);
+		shadowingParsed.assertError(TU_SIGNAL_ATTRIBUTE, NOT_UNIQUE_SIGNAL_ATTRIBUTE,
+			shadowingRaw.indexOfNth("i1", 2), 2);
+		shadowingParsed.assertError(TU_SIGNAL_ATTRIBUTE, NOT_UNIQUE_SIGNAL_ATTRIBUTE,
+			shadowingRaw.indexOfNth("d1", 1), 2);
 	}
 
 	@Test

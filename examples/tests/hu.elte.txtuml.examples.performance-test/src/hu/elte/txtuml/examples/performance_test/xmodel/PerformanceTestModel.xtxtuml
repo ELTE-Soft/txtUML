@@ -21,7 +21,7 @@ class A {
 	state A1 {
 		entry {
 			if (remainingCycles-- <= 0) {
-				for (B b in A.this->(AB.b)) {
+				for (B b : A.this->(AB.b)) {
 					unlink(AB.a, A.this, AB.b, b);
 				}
 				delete A.this;

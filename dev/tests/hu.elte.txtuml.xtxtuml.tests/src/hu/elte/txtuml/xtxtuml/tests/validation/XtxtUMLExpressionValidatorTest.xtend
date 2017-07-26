@@ -278,6 +278,7 @@ class XtxtUMLExpressionValidatorTest {
 		'''
 			signal S1;
 			signal S2;
+			signal S3 extends S2;
 			interface If {
 				reception S1;
 				reception S2;
@@ -287,12 +288,14 @@ class XtxtUMLExpressionValidatorTest {
 				void foo() {
 					send new S1() to this->(Po);
 					send new S2() to this->(Po);
+					send new S3() to this->(Po);
 				}
 			}
 		'''.parse.assertNoError(NOT_REQUIRED_SIGNAL);
 
 		val rawFile = '''
-			signal S1;
+			signal S0;
+			signal S1 extends S0;
 			signal S2;
 			interface If {
 				reception S1;
@@ -305,6 +308,7 @@ class XtxtUMLExpressionValidatorTest {
 					send new S2() to this->(P1);
 					send new S1() to this->(P2);
 					send new S2() to this->(P2);
+					send new S0() to this->(P1);
 				}
 			}
 		''';
@@ -313,6 +317,7 @@ class XtxtUMLExpressionValidatorTest {
 		parsedFile.assertError(TU_SEND_SIGNAL_EXPRESSION, NOT_REQUIRED_SIGNAL, rawFile.indexOfNth("new S2()", 0), 8);
 		parsedFile.assertError(TU_SEND_SIGNAL_EXPRESSION, NOT_REQUIRED_SIGNAL, rawFile.indexOfNth("new S1()", 1), 8);
 		parsedFile.assertError(TU_SEND_SIGNAL_EXPRESSION, NOT_REQUIRED_SIGNAL, rawFile.indexOfNth("new S2()", 1), 8);
+		parsedFile.assertError(TU_SEND_SIGNAL_EXPRESSION, NOT_REQUIRED_SIGNAL, rawFile.indexOf("new S0()"), 8);
 	}
 
 	@Test

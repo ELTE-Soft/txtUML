@@ -43,5 +43,6 @@ public class ClassDiagramElementsTxtUmlArranger extends AbstractDiagramElementsT
 				AssociationMultiplicityTargetEditPart.class,
 				AssociationMultiplicitySourceEditPart.class
 				));
+		DiagramElementsModifier.repositionConnectionLabels(this.diagep, children);
 	}
 }

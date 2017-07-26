@@ -4,6 +4,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import org.eclipse.core.resources.IProject;
+import org.eclipse.jdt.core.IType;
 import org.eclipse.jface.wizard.Wizard;
 
 import hu.elte.txtuml.export.cpp.Uml2ToCppExporter;
@@ -12,8 +13,10 @@ import hu.elte.txtuml.export.fmu.FMUConfig;
 import hu.elte.txtuml.export.fmu.FMUExportGovernor;
 import hu.elte.txtuml.export.fmu.FMUResourceHandler;
 import hu.elte.txtuml.export.fmu.ModelDescriptionExporter;
+import hu.elte.txtuml.utils.Pair;
 import hu.elte.txtuml.utils.eclipse.ProjectUtils;
 import hu.elte.txtuml.utils.eclipse.SaveUtils;
+import hu.elte.txtuml.utils.eclipse.WizardUtils;
 
 public class TxtUMLToCppWizard extends Wizard {
 
@@ -38,31 +41,30 @@ public class TxtUMLToCppWizard extends Wizard {
 	@Override
 	public boolean performFinish() {
 		try {
-			String txtUMLProject = createCppCodePage.getProject();
-			String txtUMLModel = createCppCodePage.getModel();
-			String threadManagmentDescription = createCppCodePage.getThreadDescription();
-			String descriptionProjectName = createCppCodePage.getThreadDescriptionProjectName();
+			IType threadManagementDescription = createCppCodePage.getThreadDescription();
+			String descriptionProjectName = threadManagementDescription.getJavaProject().getElementName();
 			
 			boolean generateFMU = createCppCodePage.generateFMU();
 			String fmuDescription = createCppCodePage.getFMUDescription();
-
-			TxtUMLToCppPage.PROJECT_NAME = txtUMLProject;
-			TxtUMLToCppPage.MODEL_NAME = txtUMLModel;
-			TxtUMLToCppPage.DESCRIPTION_NAME = threadManagmentDescription;
-			TxtUMLToCppPage.DESCRIPTION_PROJECT_NAME = descriptionProjectName;
 			
 			TxtUMLToCppPage.FMU_NEEDED = generateFMU;
 			TxtUMLToCppPage.FMU_CONFIG_FILE = fmuDescription;
-
-			boolean saveSucceeded = SaveUtils.saveAffectedFiles(getShell(), txtUMLProject, txtUMLModel, threadManagmentDescription);
-			if (!saveSucceeded)
-				return false;
 			boolean addRuntimeOption = createCppCodePage.getAddRuntimeOptionSelection();
 			boolean overWriteMainFileOption = createCppCodePage.getOverWriteMainFileSelection();
 
+			Pair<String, String> model = WizardUtils.getModelByAnnotations(threadManagementDescription)
+					.orElse(Pair.of("", ""));
+			String txtUMLModel = model.getFirst();
+			String txtUMLProject = model.getSecond();
+
+			boolean saveSucceeded = SaveUtils.saveAffectedFiles(getShell(), txtUMLProject, txtUMLModel,
+					threadManagementDescription.getFullyQualifiedName());
+			if (!saveSucceeded)
+				return false;
+
 			TxtUMLToCppGovernor governor = new TxtUMLToCppGovernor(false);
-			governor.uml2ToCpp(txtUMLProject, txtUMLModel, threadManagmentDescription, descriptionProjectName,
-					addRuntimeOption, overWriteMainFileOption);
+			governor.uml2ToCpp(txtUMLProject, txtUMLModel, threadManagementDescription.getFullyQualifiedName(),
+					descriptionProjectName, addRuntimeOption, overWriteMainFileOption);
 			
 			if (generateFMU) {
 				FMUExportGovernor fmuGovernor = new FMUExportGovernor();

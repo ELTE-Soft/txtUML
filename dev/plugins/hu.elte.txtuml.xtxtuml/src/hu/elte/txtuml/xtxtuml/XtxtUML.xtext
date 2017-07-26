@@ -26,6 +26,7 @@ TUModelElement
 	: TUExecution
 	| TUSignal
 	| TUClass
+	| TUEnumeration
 	| TUAssociation
 	| TUInterface
 	| TUConnector
@@ -37,7 +38,7 @@ TUExecution :
 ;
 
 TUSignal :
-	'signal' name=ValidID ('{'
+	'signal' name=ValidID ('extends' superSignal=[TUSignal|QualifiedName])? ('{'
 		attributes+=TUSignalAttribute*
 	'}' ';'? | ';')
 ;
@@ -46,6 +47,16 @@ TUClass :
 	'class' name=ValidID ('extends' superClass=[TUClass|QualifiedName])? ('{'
 		members+=TUClassMember*
 	'}' ';'? | ';')
+;
+
+TUEnumeration :
+	'enum' name=ValidID ('{'
+		(literals+=TUEnumerationLiteral (',' literals+=TUEnumerationLiteral)*)? 
+	'}' ';'? | ';')
+;
+
+TUEnumerationLiteral :
+	name=ValidID
 ;
 
 TUAssociation returns TUAssociation:

@@ -1,6 +1,7 @@
 package hu.elte.txtuml.xtxtuml.validation;
 
 import com.google.inject.Inject
+import hu.elte.txtuml.xtxtuml.common.XtxtUMLUtils
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAssociation
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAssociationEnd
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAttribute
@@ -10,6 +11,8 @@ import hu.elte.txtuml.xtxtuml.xtxtUML.TUConnector
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUConnectorEnd
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUConstructor
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUEntryOrExitActivity
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUEnumeration
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUEnumerationLiteral
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUFile
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUInterface
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUModelElement
@@ -42,6 +45,7 @@ import static hu.elte.txtuml.xtxtuml.xtxtUML.XtxtUMLPackage.Literals.*
 class XtxtUMLUniquenessValidator extends XtxtUMLNameValidator {
 
 	@Inject extension IQualifiedNameProvider;
+	@Inject extension XtxtUMLUtils;
 
 	@Check
 	def checkModelElementNameIsUniqueExternal(TUModelElement modelElement) {
@@ -71,6 +75,18 @@ class XtxtUMLUniquenessValidator extends XtxtUMLNameValidator {
 	}
 
 	@Check
+	def checkEnumerationLiteralNameIsUnique(TUEnumerationLiteral literal) {
+		val containingEnumeration = literal.eContainer as TUEnumeration;
+		if (containingEnumeration.literals.exists [
+			name == literal.name && it != literal // direct comparison is safe here
+		]) {
+			error("Duplicate literal " + literal.name + " in enumeration " + containingEnumeration.name, literal,
+				TU_ENUMERATION_LITERAL__NAME, NOT_UNIQUE_NAME);
+		}
+	}
+
+
+	@Check
 	def checkReceptionIsUnique(TUReception reception) {
 		val enclosingInterface = reception.eContainer as TUInterface;
 		if (enclosingInterface.receptions.exists [
@@ -86,13 +102,15 @@ class XtxtUMLUniquenessValidator extends XtxtUMLNameValidator {
 	 * TODO override local variable shadowing check defined in AbstractTypeComputationState
 	 */
 	@Check
-	def checkSignalAttributeNameIsUnique(TUSignalAttribute attribute) {
+	def checkSignalAttributeIsUnique(TUSignalAttribute attribute) {
 		val containingSignal = attribute.eContainer as TUSignal;
-		if (containingSignal.attributes.exists [
-			name == attribute.name && it != attribute // direct comparison is safe here
+		if (containingSignal.travelSignalHierarchy [
+			attributes.findFirst [
+				name == attribute.name && it != attribute // direct comparison is safe here
+			] != null
 		]) {
 			error("Duplicate attribute " + attribute.name + " in signal " + containingSignal.name, attribute,
-				TU_SIGNAL_ATTRIBUTE__NAME, NOT_UNIQUE_NAME);
+				TU_SIGNAL_ATTRIBUTE__NAME, NOT_UNIQUE_SIGNAL_ATTRIBUTE);
 		}
 	}
 

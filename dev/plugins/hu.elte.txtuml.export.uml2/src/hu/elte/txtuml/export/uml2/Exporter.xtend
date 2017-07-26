@@ -9,6 +9,7 @@ import hu.elte.txtuml.export.uml2.activity.apicalls.CreateLinkActionExporter
 import hu.elte.txtuml.export.uml2.activity.apicalls.DeleteActionExporter
 import hu.elte.txtuml.export.uml2.activity.apicalls.EqualsCallExporter
 import hu.elte.txtuml.export.uml2.activity.apicalls.GetSignalExporter
+import hu.elte.txtuml.export.uml2.activity.apicalls.IgnoredAPICallExporter
 import hu.elte.txtuml.export.uml2.activity.apicalls.LogActionExporter
 import hu.elte.txtuml.export.uml2.activity.apicalls.PrimitiveToStringExporter
 import hu.elte.txtuml.export.uml2.activity.apicalls.ReadLinkActionExporter
@@ -122,7 +123,6 @@ import org.eclipse.uml2.uml.PackageableElement
 import org.eclipse.uml2.uml.PrimitiveType
 import org.eclipse.uml2.uml.Type
 import org.eclipse.uml2.uml.VisibilityKind
-import hu.elte.txtuml.export.uml2.activity.apicalls.IgnoredAPICallExporter
 
 /** An exporter is able to fully or partially export a given element. 
  * Partial export only creates the UML object itself, while full export also creates its contents.

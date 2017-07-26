@@ -2,8 +2,9 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: txtUML Utils
 Bundle-SymbolicName: hu.elte.txtuml.utils
-Bundle-Version: 0.5.1.qualifier
+Bundle-Version: 0.6.0.qualifier
 Bundle-Vendor: ELTE
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Export-Package: hu.elte.txtuml.utils
+Export-Package: hu.elte.txtuml.utils,
+ hu.elte.txtuml.utils.diagrams
 Require-Bundle: org.apache.log4j

@@ -13,14 +13,14 @@ import hu.elte.txtuml.api.stdlib.timers.Timer;
 public class TimerImpl implements Timer {
 
 	private final Callable<Void> action;
-	private ScheduledFuture<?> future;
+	private ScheduledFuture<Void> future;
 
 	/**
 	 * Creates a new {@code TimerImpl}.
 	 * 
-	 * @param obj
+	 * @param targetObj
 	 *            the target of the delayed send operation
-	 * @param s
+	 * @param signal
 	 *            the signal to send after the timeout
 	 * @param millisecs
 	 *            millisecs to wait before the timeout
@@ -30,7 +30,7 @@ public class TimerImpl implements Timer {
 			Action.send(signal, targetObj);
 			return null;
 		};
-		schedule(millisecs);
+		this.future = schedule(millisecs);
 	}
 
 	@Override
@@ -40,8 +40,9 @@ public class TimerImpl implements Timer {
 
 	@Override
 	public void reset(int millisecs) {
+		ScheduledFuture<Void> newFuture = schedule(millisecs);
 		cancel();
-		schedule(millisecs);
+		this.future = newFuture;
 	}
 
 	@Override
@@ -56,8 +57,8 @@ public class TimerImpl implements Timer {
 		return isDone;
 	}
 
-	private void schedule(int millisecs) {
-		this.future = Runtime.currentRuntime().schedule(action, millisecs, TimeUnit.MILLISECONDS);
+	private ScheduledFuture<Void> schedule(int millisecs) {
+		return Runtime.currentRuntime().schedule(action, millisecs, TimeUnit.MILLISECONDS);
 	}
 
 }

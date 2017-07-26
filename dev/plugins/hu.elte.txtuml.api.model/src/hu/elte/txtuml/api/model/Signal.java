@@ -35,8 +35,8 @@ package hu.elte.txtuml.api.model;
  * <li><i>Constructors:</i> allowed, containing only simple assignments to set
  * the values of its fields</li>
  * <li><i>Initialization blocks:</i> disallowed</li>
- * <li><i>Fields:</i> allowed, only of primitive types (including String) to
- * represent parameters of the signal</li>
+ * <li><i>Fields:</i> allowed, only of primitive types (including
+ * String), model enums or data types to represent parameters of the signal</li>
  * <li><i>Methods:</i> disallowed</li>
  * <li><i>Nested interfaces:</i> disallowed</li>
  * <li><i>Nested classes:</i> disallowed</li>

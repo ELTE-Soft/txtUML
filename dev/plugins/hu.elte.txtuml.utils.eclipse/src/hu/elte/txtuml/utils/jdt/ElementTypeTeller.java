@@ -10,6 +10,7 @@ import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.IPackageFragmentRoot;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.EnumDeclaration;
 import org.eclipse.jdt.core.dom.Expression;
 import org.eclipse.jdt.core.dom.FieldAccess;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
@@ -38,6 +39,7 @@ import hu.elte.txtuml.api.model.ModelClass;
 import hu.elte.txtuml.api.model.ModelClass.InPort;
 import hu.elte.txtuml.api.model.ModelClass.OutPort;
 import hu.elte.txtuml.api.model.ModelClass.Port;
+import hu.elte.txtuml.api.model.ModelEnum;
 import hu.elte.txtuml.api.model.Signal;
 import hu.elte.txtuml.api.model.StateMachine.Choice;
 import hu.elte.txtuml.api.model.StateMachine.CompositeState;
@@ -320,6 +322,14 @@ public final class ElementTypeTeller {
 
 	public static boolean isExternalClass(TypeDeclaration typeDeclaration) {
 		return SharedUtils.typeIsAssignableFrom(typeDeclaration, ExternalClass.class);
+	}
+
+	public static boolean isModelEnum(EnumDeclaration enumDeclaration) {
+		return SharedUtils.typeIsAssignableFrom(enumDeclaration, ModelEnum.class);
+	}
+
+	public static boolean isModelEnum(ITypeBinding binding) {
+		return binding.isEnum() && SharedUtils.typeIsAssignableFrom(binding, ModelEnum.class);
 	}
 
 	public static boolean isExternalInterface(ITypeBinding type) {

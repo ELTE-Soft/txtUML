@@ -23,7 +23,7 @@ import hu.elte.txtuml.api.model.execution.impl.base.ModelExecutorThread;
 import hu.elte.txtuml.utils.InstanceCreator;
 
 /**
- * A {@link ModelClassWrapper} implementation for model executors that use only
+ * A {@link hu.elte.txtuml.api.model.runtime.ModelClassWrapper} implementation for model executors that use only
  * one model executor thread. This may not be used in a multi-thread executor as
  * it lacks the necessary synchronizations.
  */

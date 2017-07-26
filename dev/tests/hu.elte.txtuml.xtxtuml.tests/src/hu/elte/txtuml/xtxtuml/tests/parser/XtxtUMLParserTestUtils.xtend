@@ -13,6 +13,8 @@ import hu.elte.txtuml.xtxtuml.xtxtUML.TUConnectorEnd
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUConstructor
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUDeleteObjectExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUEntryOrExitActivity
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUEnumeration
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUEnumerationLiteral
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUExecution
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUFile
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUInterface
@@ -106,11 +108,12 @@ class XtxtUMLParserTestUtils {
 		(execution.body as XBlockExpression).expressions.performChecks(expressionChecks);
 	}
 
-	def signal(TUModelElement element, String name, List<Procedure1<TUSignalAttribute>> attributeChecks) {
+	def signal(TUModelElement element, String name, String superName, List<Procedure1<TUSignalAttribute>> attributeChecks) {
 		assertTrue(element instanceof TUSignal);
 		val signal = element as TUSignal;
 
 		assertEquals(name, signal.name);
+		assertEquals(superName, signal.superSignal?.name);
 		signal.attributes.performChecks(attributeChecks);
 	}
 
@@ -220,6 +223,18 @@ class XtxtUMLParserTestUtils {
 		if (guardCheck != null) {
 			guardCheck.apply(guard.expression);
 		}
+	}
+
+	def enumeration(TUModelElement element, String name, List<Procedure1<TUEnumerationLiteral>> literalChecks) {
+		assertTrue(element instanceof TUEnumeration);
+		val enumeration = element as TUEnumeration;
+
+		assertEquals(name, enumeration.name);
+		enumeration.literals.performChecks(literalChecks);
+	}
+
+	def enumerationLiteral(TUEnumerationLiteral literal, String name) {
+		assertEquals(name, literal.name);
 	}
 
 	def association(TUModelElement element, boolean isComposition, String name,
