@@ -26,6 +26,6 @@ int main()
 	Action::start(&u2);
 
 	Action::send(&u1, ES::SharedPtr<Model::DoYourWork_EC>(new Model::DoYourWork_EC()));
-	rt->startRT(); // in case of signle runtime, process all current messages
+	rt->startRT(); // in case of single runtime, process all current messages
 	return 0;
 }
