@@ -133,13 +133,7 @@ public class ActivityTemplates {
 
 		} else {
 			source.append(blockStatement(operationCallOnPointerVariable(objectVariable, 
-					GenerationNames.StateMachineMethodNames.DestroyStatemachineMethod, Collections.emptyList())));
-			source.append(signalSend(
-					objectVariable,
-					GenerationNames.signalPointerType(GenerationNames.FixEventNames.DestroyEventName) + "("
-							+ PointerAndMemoryNames.MemoryAllocator 
-							+ " " + PrivateFunctionalTemplates
-							.signalType(GenerationNames.FixEventNames.DestroyEventName) + "())"));
+					GenerationNames.StateMachineMethodNames.DeleteStatemachine, Collections.emptyList())));
 		}
 		
 		return source.toString();
