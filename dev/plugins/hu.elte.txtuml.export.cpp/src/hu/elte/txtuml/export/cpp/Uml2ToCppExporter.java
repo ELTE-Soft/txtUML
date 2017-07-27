@@ -18,20 +18,20 @@ import java.util.Set;
 
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Platform;
-import org.eclipse.uml2.uml.Parameter;
-import org.eclipse.uml2.uml.Property;
-import org.eclipse.uml2.uml.Signal;
 import org.eclipse.uml2.uml.Association;
 import org.eclipse.uml2.uml.Class;
 import org.eclipse.uml2.uml.DataType;
 import org.eclipse.uml2.uml.Element;
+import org.eclipse.uml2.uml.Parameter;
+import org.eclipse.uml2.uml.Property;
+import org.eclipse.uml2.uml.Signal;
 import org.eclipse.uml2.uml.UMLPackage;
 import org.osgi.framework.Bundle;
 
-import hu.elte.txtuml.export.cpp.thread.ThreadPoolConfiguration;
 import hu.elte.txtuml.api.deployment.RuntimeType;
 import hu.elte.txtuml.export.cpp.structural.ClassExporter;
 import hu.elte.txtuml.export.cpp.structural.DataTypeExporter;
+import hu.elte.txtuml.export.cpp.structural.DependencyExporter;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.FileNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.ModifierNames;
@@ -46,8 +46,7 @@ import hu.elte.txtuml.export.cpp.templates.structual.FunctionTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.HeaderTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.LinkTemplates;
 import hu.elte.txtuml.export.cpp.thread.ThreadHandlingManager;
-import hu.elte.txtuml.export.cpp.structural.DependencyExporter;
-
+import hu.elte.txtuml.export.cpp.thread.ThreadPoolConfiguration;
 import hu.elte.txtuml.utils.Pair;
 
 public class Uml2ToCppExporter {
