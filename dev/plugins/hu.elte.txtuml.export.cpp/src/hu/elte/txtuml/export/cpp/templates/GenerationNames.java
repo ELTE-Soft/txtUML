@@ -116,6 +116,9 @@ public class GenerationNames {
 		public static final String DataType = "struct";
 		public static final String EnumType = "enum";
 		public static final String InterfacType = "class";
+		public static final String PublicPartSign = "public:";
+		public static final String ProtectedPartSign = "protected:";
+		public static final String PrivatePartSign = "private:";
 		
 	}
 	
