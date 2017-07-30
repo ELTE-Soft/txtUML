@@ -12,7 +12,6 @@ int main()
 {
 	Env::initEnvironment();
 	UsedRuntimePtr rt = UsedRuntimeType::getRuntimeInstance();
-	rt->startRT();
 
 	Model::Machine m;
 	Model::User u1;
@@ -28,7 +27,7 @@ int main()
 
 	Action::send(&u1, ES::SharedPtr<Model::DoYourWork_EC>(new Model::DoYourWork_EC()));
 
-	rt->stopUponCompletion(); // wait for processing all messages
+	rt->startRT(); // in case of single runtime, process all current messages
 	m.printSwitchOnLog();
 
 	return 0;
