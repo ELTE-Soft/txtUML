@@ -1,6 +1,7 @@
 package hu.elte.txtuml.xtxtuml.validation;
 
 import com.google.inject.Inject
+import hu.elte.txtuml.xtxtuml.common.XtxtUMLUtils
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAssociation
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAssociationEnd
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAttribute
@@ -44,6 +45,7 @@ import static hu.elte.txtuml.xtxtuml.xtxtUML.XtxtUMLPackage.Literals.*
 class XtxtUMLUniquenessValidator extends XtxtUMLNameValidator {
 
 	@Inject extension IQualifiedNameProvider;
+	@Inject extension XtxtUMLUtils;
 
 	@Check
 	def checkModelElementNameIsUniqueExternal(TUModelElement modelElement) {
@@ -100,13 +102,15 @@ class XtxtUMLUniquenessValidator extends XtxtUMLNameValidator {
 	 * TODO override local variable shadowing check defined in AbstractTypeComputationState
 	 */
 	@Check
-	def checkSignalAttributeNameIsUnique(TUSignalAttribute attribute) {
+	def checkSignalAttributeIsUnique(TUSignalAttribute attribute) {
 		val containingSignal = attribute.eContainer as TUSignal;
-		if (containingSignal.attributes.exists [
-			name == attribute.name && it != attribute // direct comparison is safe here
+		if (containingSignal.travelSignalHierarchy [
+			attributes.findFirst [
+				name == attribute.name && it != attribute // direct comparison is safe here
+			] != null
 		]) {
 			error("Duplicate attribute " + attribute.name + " in signal " + containingSignal.name, attribute,
-				TU_SIGNAL_ATTRIBUTE__NAME, NOT_UNIQUE_NAME);
+				TU_SIGNAL_ATTRIBUTE__NAME, NOT_UNIQUE_SIGNAL_ATTRIBUTE);
 		}
 	}
 

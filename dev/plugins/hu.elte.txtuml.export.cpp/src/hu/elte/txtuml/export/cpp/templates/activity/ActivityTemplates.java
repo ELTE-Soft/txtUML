@@ -133,15 +133,10 @@ public class ActivityTemplates {
 			source.append(PointerAndMemoryNames.DeleteObject + " " + objectVariable + ";\n");
 
 		} else {
-			source.append(blockStatement(operationCallOnPointerVariable(objectVariable, 
-					GenerationNames.StateMachineMethodNames.DestroyStatemachineMethod, Collections.emptyList())));
-			source.append(signalSend(
-					objectVariable,
-					EventTemplates.eventPtr(GenerationNames.FixEventNames.DestroyEventName) + "("
-							+ PointerAndMemoryNames.MemoryAllocator 
-							+ " " + EventTemplates.signalType(GenerationNames.FixEventNames.DestroyEventName) + "())"));
+			source.append(blockStatement(operationCallOnPointerVariable(objectVariable,
+					GenerationNames.StateMachineMethodNames.DeleteStatemachine, Collections.emptyList())));
 		}
-		
+
 		return source.toString();
 	}
 
@@ -199,11 +194,12 @@ public class ActivityTemplates {
 			List<String> parameters) {
 		if (objectType.equals(CreateObjectType.Signal)) {
 			return ownerName + ReplaceSimpleTypeOp + EventTemplates.eventPtr(typeName) + "("
-					+ PointerAndMemoryNames.MemoryAllocator + " " + EventTemplates.signalType(typeName)
-					+ "(" + operationCallParamList(parameters) + "))";
+					+ PointerAndMemoryNames.MemoryAllocator + " " + EventTemplates.signalType(typeName) + "("
+					+ operationCallParamList(parameters) + "))";
 		} else {
 			if (ownerName != PointerAndMemoryNames.Self) {
-				return ObjectDeclDefTemplates.setAllocatedObjectToObjectVariable(typeName,Collections.emptyList(), ownerName,parameters, false);
+				return ObjectDeclDefTemplates.setAllocatedObjectToObjectVariable(typeName, Collections.emptyList(),
+						ownerName, parameters, false);
 			} else {
 				return ownerName + PointerAndMemoryNames.PointerAccess + GenerationNames.initFunctionName(typeName)
 						+ "(" + operationCallParamList(parameters) + ")";
@@ -239,8 +235,7 @@ public class ActivityTemplates {
 		source.append(signalVariableName + " = ");
 		source.append(EventTemplates.eventPtr(signalType) + "(");
 		source.append(PointerAndMemoryNames.MemoryAllocator + " " + EventTemplates.signalType(signalType));
-		source.append(
-				"(*" + GenerationNames.StaticCast + "<" + EventTemplates.signalType(signalType) + "*>");
+		source.append("(*" + GenerationNames.StaticCast + "<" + EventTemplates.signalType(signalType) + "*>");
 		source.append("(" + EventTemplates.EventFParamName + ".get())));\n");
 		return source.toString();
 	}

@@ -32,6 +32,7 @@ import org.eclipse.uml2.uml.Usage;
 import org.osgi.framework.Bundle;
 
 import hu.elte.txtuml.export.cpp.thread.ThreadPoolConfiguration;
+import hu.elte.txtuml.api.deployment.RuntimeType;
 import hu.elte.txtuml.export.cpp.structural.ClassExporter;
 import hu.elte.txtuml.export.cpp.structural.DataTypeExporter;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames;
@@ -80,14 +81,14 @@ public class Uml2ToCppExporter {
 	private List<String> classNames;
 	private List<Element> modelRoot;
 
-	public Uml2ToCppExporter(List<Element> modelRoot, Map<String, ThreadPoolConfiguration> threadDescription,
+	public Uml2ToCppExporter(List<Element> modelRoot, Pair<RuntimeType, Map<String, ThreadPoolConfiguration>> config,
 			boolean addRuntimeOption, boolean overWriteMainFileOption) {
 
 		this.modelRoot = modelRoot;
 		classExporter = new ClassExporter();
 		dataTypeExporter = new DataTypeExporter();
 		interfaceExporter = new InterfaceExporter();
-		threadManager = new ThreadHandlingManager(threadDescription);
+		threadManager = new ThreadHandlingManager(config);
 
 		classNames = new LinkedList<String>();
 		stateMachineOwners = new HashSet<String>();
@@ -117,8 +118,9 @@ public class Uml2ToCppExporter {
 		for (Class cls : classes) {
 
 			classExporter.setName(cls.getName());
-			classExporter.setPoolId(threadManager.getDescription().get(cls.getName()).getId());
+			classExporter.setPoolId(threadManager.getConfiguratedPoolId(cls.getName()));
 			classExporter.setUsages(usages);
+
 			classExporter.exportStructuredElement(cls, outputDirectory);
 			if (CppExporterUtils.isStateMachineOwner(cls)) {
 				classNames.addAll(classExporter.getSubmachines());
@@ -281,13 +283,6 @@ public class Uml2ToCppExporter {
 		StringBuilder events = new StringBuilder("");
 		StringBuilder typeDefinitions = new StringBuilder("");
 		List<Pair<String, String>> allParam = new LinkedList<Pair<String, String>>();
-
-		events.append(EventTemplates.InitSignal + ENUM_EXTENSION + ",");
-		eventClasses.append(EventTemplates.eventClass(EventTemplates.InitSignal, Collections.emptyList(), "",
-				Collections.emptyList()));
-		eventClasses.append(EventTemplates.eventClass(EventTemplates.DestroySignal, Collections.emptyList(), "",
-				Collections.emptyList()));
-
 		for (Signal signal : signalList) {
 			List<Pair<String, String>> currentParams = getSignalParams(signal);
 			String ctrBody = CppExporterUtils.signalCtrBody(signal, modelRoot);

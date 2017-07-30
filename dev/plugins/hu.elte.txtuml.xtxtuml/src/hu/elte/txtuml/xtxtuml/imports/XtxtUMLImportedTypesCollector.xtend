@@ -7,6 +7,7 @@ import hu.elte.txtuml.xtxtuml.xtxtUML.TUClassPropertyAccessExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUConnectorEnd
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUPortMember
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUReception
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUSignal
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUTransitionPort
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUTransitionTrigger
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUTransitionVertex
@@ -42,6 +43,9 @@ class XtxtUMLImportedTypesCollector extends ImportedTypesCollector {
 
 			// determine the grammar-level cross-referenced types inside XtxtUML expressions
 			switch (next : contents.next()) {
+				TUSignal:
+					references.add(next.superSignal?.getPrimaryJvmElement as JvmType ->
+						next.getFullTextRegion(XtxtUMLPackage::eINSTANCE.TUSignal_SuperSignal, 0))
 				TUClass:
 					references.add(next.superClass?.getPrimaryJvmElement as JvmType ->
 						next.getFullTextRegion(XtxtUMLPackage::eINSTANCE.TUClass_SuperClass, 0))
