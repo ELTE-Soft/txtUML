@@ -1,10 +1,13 @@
 cmake_minimum_required(VERSION 2.8.12)
 include(CMakeLists_base.txt)
 include_directories(fmu)
-add_library(libmodelfmu SHARED fmu/FMUEnvironment.cpp ${LIB_CONTENT_libsmrt} ${EXEC_CONTENT_main})
+# add_library(libmodelfmu SHARED fmu/FMUEnvironment.cpp ${LIB_CONTENT_libsmrt} ${EXEC_CONTENT_main})
+
 # set up the debug executable
-add_executable(fmudebug ${EXEC_CONTENT_main} fmu/fmudebug.cpp)
-target_link_libraries(fmudebug libmodelfmu)
+# add_executable(fmudebug ${EXEC_CONTENT_main} fmu/fmudebug.cpp)
+add_executable(fmudebug ${LIB_CONTENT_libsmrt} ${EXEC_CONTENT_main} fmu/FMUEnvironment.cpp fmu/fmudebug.cpp) # walkaround, the linked library doesn't seem to work
+# target_link_libraries(fmudebug libmodelfmu)
+
 if(MSVC)
   set_target_properties(fmudebug PROPERTIES LINK_FLAGS_RELEASE "/LTCG")
 else()

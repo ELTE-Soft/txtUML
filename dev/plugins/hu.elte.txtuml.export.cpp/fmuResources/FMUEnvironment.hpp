@@ -6,31 +6,30 @@
 #include "istatemachine.hpp"
 #include "associations.hpp"
 
-struct fmu_environment;
+namespace Model {
 
 class FMUEnvironment : public StateMachineBase, public IStateMachine {
   public:
-    bool process_event(EventBaseCRef) = 0;
+    bool process_event(ES::EventRef) = 0;
     void setInitialState() = 0;
 
-    AssociationEnd<$fmuclass> LanderWorld_lander = AssociationEnd< $fmuclass > (1, 1);
-    template<typename T, typename EndPointName>
-    void link(typename EndPointName::EdgeType*) {
-    }
-    template<typename T, typename EndPointName>
-    void unlink(typename EndPointName::EdgeType*) {
-    }
+    Model::AssociationEnd<$fmuclass> LanderWorld_lander = AssociationEnd< $fmuclass > (1, 1);
+    
+    template<typename EndPointName>
+    void link(typename EndPointName::EdgeType*);
+    
+    template<typename EndPointName>
+    void unlink(typename EndPointName::EdgeType*);
 
-    void processEventVirtual() {
-        IEvent* base = getNextMessage().get();
-        EventBase* realEvent = static_cast<EventBase*>(base);
-        process_event(*realEvent);
-        deleteNextMessage();
-    }
+	void processEventVirtual(ES::EventRef event_) {
+		process_event(event_);
+	}
 
     void processInitTransition() {}
 
     ~FMUEnvironment() {}
 };
+
+}
 
 #endif /* fmuenvironment_hpp */

@@ -2,18 +2,22 @@
 #include "fmi2FunctionTypes.h"
 #include "fmi2TypesPlatform.h"
 
-#include "FMUEnvironment.hpp"
 #include "$fmuclass.hpp"
 #include "event.hpp"
 #include "deployment.hpp"
 #include "init_maps.hpp"
 
 #include <iostream>
+#include "FMUEnvironment.hpp"
+
+namespace Model {
+
+class fmu_environment;
 
 struct FMU {
     fmu_environment *fmu_env;
-    $fmuclass *fmu_class;
-    Runtime *uml_rt;
+    Model::$fmuclass *fmu_class;
+    UsedRuntimePtr uml_rt;
 };
 
 struct fmu_variables {
@@ -25,9 +29,13 @@ public:
   const fmi2CallbackFunctions* callbacks;
   fmu_variables *vars = new fmu_variables;
 
-  bool process_event(EventBaseCRef event) {
-    if (event.t == $controlevent_EE) {
-      const $controlevent_EC *myevent = static_cast<const $controlevent_EC*>(&event);
+  bool process_event(ES::EventRef event) {
+    if (event->getType() == $controlevent_EE) {
+      ES::SharedPtr < $controlevent_EC > myevent
+        = ES::SharedPtr
+			< $controlevent_EC
+			> (new $controlevent_EC(
+					*static_cast<$controlevent_EC*>(event.get())));
       // set the environment variables by name-id pairs
       $setoutputvariables
       callbacks->stepFinished(NULL, fmi2OK);
@@ -41,11 +49,21 @@ public:
   }
   
   fmu_environment() {
-    Runtime::createRuntime()->setupObject(this);
   }
+  
   ~fmu_environment() {}
 
+   void processInitTransition(ES::EventRef) {
+   }
+   
+   void Initialize(ES::EventRef) {
+   }
+
 };
+
+}
+
+using namespace Model;
 
 size_t member_offsets[] = { $variableoffsets };
 
@@ -74,9 +92,7 @@ fmi2Component fmi2Instantiate( fmi2String /*instanceName*/,
   FMU* fmu = new FMU;
 
   // start the runtime
-  fmu->uml_rt = deployment::initRuntime();
-  StateMachine::initTransitionTables();
-  fmu->uml_rt->startRT();
+  fmu->uml_rt = UsedRuntimeType::getRuntimeInstance();
 
   fmu->fmu_env = new fmu_environment;
   fmu->fmu_env->callbacks = functions;
@@ -85,6 +101,17 @@ fmi2Component fmi2Instantiate( fmi2String /*instanceName*/,
   fmu->fmu_class->startSM();
   // TODO: check instance name, GUID
   return fmu;
+}
+
+fmi2Status fmi2DoStep( fmi2Component c,
+                       fmi2Real /*currentCommunicationPoint*/,
+                       fmi2Real /*communicationStepSize*/,
+                       fmi2Boolean /*noSetFMUStatePriorToCurrentPoint*/) {
+  FMU* fmu = static_cast<FMU*>(c);
+  $cyclesignal_EC* sig = new $cyclesignal_EC($setinputvariables);
+  fmu->fmu_class->send(std::shared_ptr<$cyclesignal_EC>(sig));
+  fmu->uml_rt->startRT();
+  return fmi2OK;
 }
 
 void fmi2FreeInstance(fmi2Component /*c*/) {
@@ -262,16 +289,6 @@ fmi2Status fmi2GetRealOutputDerivatives ( fmi2Component /*c*/,
                                           const fmi2Integer /*order*/[],
                                           fmi2Real /*value*/[] ) {
   return fmi2Error; // not supported
-}
-
-fmi2Status fmi2DoStep( fmi2Component c,
-                       fmi2Real /*currentCommunicationPoint*/,
-                       fmi2Real /*communicationStepSize*/,
-                       fmi2Boolean /*noSetFMUStatePriorToCurrentPoint*/) {
-  FMU* fmu = static_cast<FMU*>(c);
-  $cyclesignal_EC* sig = new $cyclesignal_EC($setinputvariables);
-  fmu->fmu_class->send(std::shared_ptr<$cyclesignal_EC>(sig));
-  return fmi2Pending;
 }
 
 fmi2Status fmi2CancelStep(fmi2Component /*c*/) {
