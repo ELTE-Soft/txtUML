@@ -4,6 +4,7 @@
 
 #include "$fmuclass.hpp"
 #include "event.hpp"
+#include "Env.hpp"
 #include "deployment.hpp"
 #include "init_maps.hpp"
 
@@ -95,9 +96,12 @@ fmi2Component fmi2Instantiate( fmi2String /*instanceName*/,
   fmu->uml_rt = UsedRuntimeType::getRuntimeInstance();
 
   fmu->fmu_env = new fmu_environment;
+  Env::initEnvironment();
   fmu->fmu_env->callbacks = functions;
+  fmu->uml_rt->setupObject(fmu->fmu_env);
   fmu->fmu_env->startSM();
   fmu->fmu_class = new $fmuclass(fmu->fmu_env);
+  fmu->uml_rt->setupObject(fmu->fmu_class);
   fmu->fmu_class->startSM();
   // TODO: check instance name, GUID
   return fmu;
