@@ -4,10 +4,10 @@
 
 namespace Action 
 {
-	void send(ES::StateMachineRef target, ES::EventRef signal)
+	/*void send(ES::StateMachineRef target, ES::EventRef signal)
 	{
 		target->send(signal);
-	}
+	}*/
 	
 	void start(ES::StateMachineRef sm)
 	{

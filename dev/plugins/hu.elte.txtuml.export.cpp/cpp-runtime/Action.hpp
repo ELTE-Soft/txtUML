@@ -2,17 +2,27 @@
 */
 #include "istatemachine.hpp"
 #include "ESRoot/Types.hpp"
+#include "PortUtils.hpp"
 
 namespace Action 
 {
 	
-void send(ES::StateMachineRef target, ES::EventRef signal);
+//void send(ES::StateMachineRef target, ES::EventRef signal);
 /**<
 Sends a message to a model object.
 @param target The target object where the signal has to be sent. 
 @param signal The signal to be sent.
 */
-
+	
+template <typename T, typename S>
+void send(T target, S signal);
+/**<
+Sends a message to a port.
+@param port The port object where the signal has to be sent. 
+@param signal The signal to be sent.
+*/
+	
+	
 void start(ES::StateMachineRef sm);
 /**<
 Starts the state machine of a model object.
@@ -62,6 +72,12 @@ void unlink(typename LeftEnd::EdgeType* e1, typename RightEnd::EdgeType* e2)
 {
 	e1->template unlink<RightEnd>(e2);
 	e2->template unlink<LeftEnd>(e1);
+}
+	
+template <typename T, typename S>
+void send(T target, S signal)
+{
+	target->send(signal);
 }
 
 }

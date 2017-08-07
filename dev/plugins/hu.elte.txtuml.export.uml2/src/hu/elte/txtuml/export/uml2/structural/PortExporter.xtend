@@ -9,7 +9,7 @@ import org.eclipse.uml2.uml.Port
 import hu.elte.txtuml.export.uml2.BaseExporter
 import java.util.Optional
 
-class PortExporter extends Exporter<TypeDeclaration, ITypeBinding, Port> {
+public class PortExporter extends Exporter<TypeDeclaration, ITypeBinding, Port> {
 
 	new(BaseExporter<?, ?, ?> parent) {
 		super(parent)
