@@ -20,10 +20,7 @@ import hu.elte.txtuml.utils.Pair;
 
 public class SubStateMachineExporter extends StateMachineExporterBase {
 
-	private String parentClassName;
 	private Map<String, Pair<String, Region>> submachineMap;// <stateName,<machinename,behavior>>
-
-	private SubStateMachineExporter subStateMachineExporter;
 
 	public SubStateMachineExporter() {
 		super();
@@ -34,23 +31,12 @@ public class SubStateMachineExporter extends StateMachineExporterBase {
 		createStateList();
 	}
 
-	public void setParentClass(String name) {
-		this.parentClassName = name;
-	}
-
 	public void createSubSmSource(String destination) throws FileNotFoundException, UnsupportedEncodingException {
 		super.createMachine();
 		String source = "";
 		submachineMap = getSubMachines();
-
-		for (Map.Entry<String, Pair<String, Region>> entry : submachineMap.entrySet()) {
-			subStateMachineExporter = new SubStateMachineExporter();
-			subStateMachineExporter.setRegion(entry.getValue().getSecond());
-			subStateMachineExporter.setName(entry.getValue().getFirst());
-			subStateMachineExporter.setParentClass(parentClassName);
-			subStateMachineExporter.createSubSmSource(destination);
-		}
-
+		createSubMachineSources(destination);
+		
 		source = createSubSmClassHeaderSource();
 		CppExporterUtils.writeOutSource(destination, GenerationTemplates.headerName(ownerClassName),
 				HeaderTemplates.headerGuard(source, ownerClassName));
@@ -87,8 +73,8 @@ public class SubStateMachineExporter extends StateMachineExporterBase {
 					parentClassName, publicParts.toString(), protectedParts, privateParts.toString()).toString();
 		} else {
 			source = HeaderTemplates
-					.hierarchicalSubStateMachineClassHeader(dependency.toString(), ownerClassName, parentClassName,
-							getSubMachineNameList(), publicParts.toString(), protectedParts, privateParts.toString())
+					.hierarchicalSubStateMachineClassHeader(dependency.toString(), ownerClassName, parentClassName, 
+							publicParts.toString(), protectedParts, privateParts.toString())
 					.toString();
 		}
 		return source;
@@ -102,7 +88,7 @@ public class SubStateMachineExporter extends StateMachineExporterBase {
 					stateMachineMap, getInitialStateName()));
 		} else {
 			source.append(ConstructorTemplates.hierarchicalSubStateMachineClassConstructor(ownerClassName,
-					parentClassName, stateMachineMap, getEventSubMachineNameMap(), null));
+					parentClassName, stateMachineMap, getInitialStateName(), getEventSubMachineNameMap()));
 		}
 		
 		StringBuilder subSmSpec = new StringBuilder(entryExitFunctionExporter.createEntryFunctionsDef());

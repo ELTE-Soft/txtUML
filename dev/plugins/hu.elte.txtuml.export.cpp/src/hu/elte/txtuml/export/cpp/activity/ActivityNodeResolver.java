@@ -46,6 +46,9 @@ class ActivityNodeResolver {
 	}
 	
 	public String getTargetFromActivityNode(ActivityNode node) {
+		if(node == null) {
+			Logger.user.error("Should not heppen this..");
+		}
 
 		String source = "UNHANDLED_ACTIVITYNODE";
 		if (node.eClass().equals(UMLPackage.Literals.FORK_NODE) || node.eClass().equals(UMLPackage.Literals.JOIN_NODE)
