@@ -53,7 +53,6 @@ public class StateMachineExporterBase {
 
 	public void createMachine() {
 		init();
-		searchInitialState();
 		for (Transition item : stateMachineRegion.getTransitions()) {
 			TransitionConditions transitionCondition = null;
 			for (Trigger tri : item.getTriggers()) {
@@ -134,12 +133,14 @@ public class StateMachineExporterBase {
 	}
 
 	protected void init() {
+		searchInitialState();
+		
 		allSubMachineName = new LinkedList<>();
 		stateMachineMap = HashMultimap.create();
 		submachineMap = getSubMachines();
 		subSubMachines = new ArrayList<String>();
 		guardExporter = new GuardExporter();
-		transitionExporter = new TransitionExporter(ownerClassName, stateMachineRegion.getTransitions(), guardExporter);
+		transitionExporter = new TransitionExporter(ownerClassName, stateMachineRegion.getTransitions(), getInitialStateName(), guardExporter);
 		entryExitFunctionExporter = new EntryExitFunctionExporter(ownerClassName, stateList);
 		entryExitFunctionExporter.createEntryFunctionTypeMap();
 		entryExitFunctionExporter.createExitFunctionTypeMap();

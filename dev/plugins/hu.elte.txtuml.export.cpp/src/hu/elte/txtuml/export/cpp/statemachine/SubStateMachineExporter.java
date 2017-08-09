@@ -9,6 +9,7 @@ import java.util.Map;
 import org.eclipse.uml2.uml.Region;
 
 import hu.elte.txtuml.export.cpp.CppExporterUtils;
+import hu.elte.txtuml.export.cpp.structural.DependencyExporter;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationTemplates;
 import hu.elte.txtuml.export.cpp.templates.PrivateFunctionalTemplates;
@@ -41,11 +42,16 @@ public class SubStateMachineExporter extends StateMachineExporterBase {
 		CppExporterUtils.writeOutSource(destination, GenerationTemplates.headerName(ownerClassName),
 				HeaderTemplates.headerGuard(source, ownerClassName));
 
-		source = GenerationTemplates.putNamespace(createSubSmClassCppSource().toString(), GenerationNames.Namespaces.ModelNamespace);
-		String dependencyIncludes = PrivateFunctionalTemplates.include(ownerClassName)
-				+ PrivateFunctionalTemplates.include(EventTemplates.EventHeaderName) + PrivateFunctionalTemplates.include(GenerationNames.FileNames.ActionPath);
-		dependencyIncludes = GenerationTemplates.debugOnlyCodeBlock(GenerationTemplates.StandardIOinclude)
-				+ dependencyIncludes + PrivateFunctionalTemplates.include(ownerClassName);
+		source = GenerationTemplates.putNamespace(createSubSmClassCppSource(), GenerationNames.Namespaces.ModelNamespace);
+		StringBuilder dependencyIncludes = new StringBuilder(PrivateFunctionalTemplates.include(ownerClassName)
+				+ PrivateFunctionalTemplates.include(EventTemplates.EventHeaderName) + 
+				PrivateFunctionalTemplates.include(GenerationNames.FileNames.ActionPath) + 
+				GenerationTemplates.debugOnlyCodeBlock(GenerationTemplates.StandardIOinclude));
+		
+		DependencyExporter dependecyExporter = new DependencyExporter();
+		dependecyExporter.addDependencies(getOwnSubmahcineNames());
+		dependencyIncludes.append(dependecyExporter.createDependencyCppIncludeCode(ownerClassName));
+		
 		CppExporterUtils.writeOutSource(destination, GenerationTemplates.sourceName(ownerClassName),
 				CppExporterUtils.format(dependencyIncludes + "\n" + source));
 	}
@@ -104,6 +110,14 @@ public class SubStateMachineExporter extends StateMachineExporterBase {
 		source.append(GenerationTemplates.formatSubSmFunctions(subSmSpec.toString()));
 
 		return source.toString();
+	}
+	
+	private List<String> getOwnSubmahcineNames() {
+		List<String> ownSubMachines = new ArrayList<String>();
+		for (Map.Entry<String, Pair<String, Region>> entry : submachineMap.entrySet()) {
+			ownSubMachines.add(entry.getValue().getFirst());
+		}
+		return ownSubMachines;
 	}
 
 }
