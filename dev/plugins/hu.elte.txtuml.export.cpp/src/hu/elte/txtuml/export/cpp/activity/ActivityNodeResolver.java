@@ -47,7 +47,7 @@ class ActivityNodeResolver {
 	
 	public String getTargetFromActivityNode(ActivityNode node) {
 		if(node == null) {
-			Logger.user.error("Should not heppen this..");
+			Logger.user.error("This should not happen..");
 		}
 
 		String source = "UNHANDLED_ACTIVITYNODE";

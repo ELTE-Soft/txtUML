@@ -49,7 +49,7 @@ public class SubStateMachineExporter extends StateMachineExporterBase {
 				GenerationTemplates.debugOnlyCodeBlock(GenerationTemplates.StandardIOinclude));
 		
 		DependencyExporter dependecyExporter = new DependencyExporter();
-		dependecyExporter.addDependencies(getOwnSubmahcineNames());
+		dependecyExporter.addDependencies(getOwnSubmachineNames());
 		dependencyIncludes.append(dependecyExporter.createDependencyCppIncludeCode(ownerClassName));
 		
 		CppExporterUtils.writeOutSource(destination, GenerationTemplates.sourceName(ownerClassName),
@@ -112,7 +112,7 @@ public class SubStateMachineExporter extends StateMachineExporterBase {
 		return source.toString();
 	}
 	
-	private List<String> getOwnSubmahcineNames() {
+	private List<String> getOwnSubmachineNames() {
 		List<String> ownSubMachines = new ArrayList<String>();
 		for (Map.Entry<String, Pair<String, Region>> entry : submachineMap.entrySet()) {
 			ownSubMachines.add(entry.getValue().getFirst());
