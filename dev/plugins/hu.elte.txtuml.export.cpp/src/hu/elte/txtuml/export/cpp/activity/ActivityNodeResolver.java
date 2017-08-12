@@ -47,7 +47,7 @@ class ActivityNodeResolver {
 	
 	public String getTargetFromActivityNode(ActivityNode node) {
 		if(node == null) {
-			Logger.user.error("This should not happen..");
+			Logger.sys.error("This should not happen..");
 		}
 
 		String source = "UNHANDLED_ACTIVITYNODE";
@@ -98,7 +98,7 @@ class ActivityNodeResolver {
 			CallOperationAction callAction = (CallOperationAction) node;
 			source = tempVariableExporter.getRealVariableName(returnOutputsToCallActions.get(callAction));
 		} else {
-			Logger.user.error("Unhandled activity node: " + node.getName());
+			Logger.sys.error("Unhandled activity node: " + node.getName());
 		}
 		return source;
 	}

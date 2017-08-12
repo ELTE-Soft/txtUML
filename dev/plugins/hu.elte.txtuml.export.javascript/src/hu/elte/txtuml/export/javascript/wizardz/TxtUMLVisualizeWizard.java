@@ -88,7 +88,7 @@ public class TxtUMLVisualizeWizard extends Wizard {
 						.map(innerClass -> WizardUtils.getModelByAnnotations(innerClass)).filter(Optional::isPresent)
 						.map(Optional::get).findFirst();
 			} catch (JavaModelException e) {
-				Logger.user.error(e.getMessage());
+				Logger.sys.error(e.getMessage());
 				return false;
 			}
 
@@ -214,7 +214,7 @@ public class TxtUMLVisualizeWizard extends Wizard {
 					}
 				}, ResourcesPlugin.getWorkspace().getRoot());
 			} catch (InvocationTargetException | InterruptedException e) {
-				Logger.user.error(e.getMessage());
+				Logger.sys.error(e.getMessage());
 				return false;
 			}
 		}
