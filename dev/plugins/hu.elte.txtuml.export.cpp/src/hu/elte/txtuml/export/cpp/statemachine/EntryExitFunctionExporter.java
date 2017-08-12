@@ -179,7 +179,7 @@ public class EntryExitFunctionExporter {
 			break;
 		default:
 			functionList = null;
-			Logger.user.error("The FunctionTypeEnum should be Entry or Exit");
+			Logger.sys.error("The FunctionTypeEnum should be Entry or Exit");
 			break;
 		}
 
