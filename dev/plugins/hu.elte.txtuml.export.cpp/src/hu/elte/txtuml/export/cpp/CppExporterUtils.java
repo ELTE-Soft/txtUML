@@ -250,4 +250,12 @@ public class CppExporterUtils {
 	public static boolean isStateMachineOwner(Class cls) {
 		return CppExporterUtils.getStateMachine(cls) != null;
 	}
+	
+	public static String cutOffTheLastCharcter(String originalString) {
+		int originalLeght = originalString.length();
+		if(originalLeght == 0) {
+			return "";
+		}
+		return originalString.substring(0, originalLeght - 1);
+	}
 }
