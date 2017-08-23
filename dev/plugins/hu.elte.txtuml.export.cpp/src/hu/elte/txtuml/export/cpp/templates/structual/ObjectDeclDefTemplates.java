@@ -1,6 +1,7 @@
 package hu.elte.txtuml.export.cpp.templates.structual;
 
 import java.util.List;
+import java.util.Optional;
 
 import hu.elte.txtuml.export.cpp.CppExporterUtils;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames;
@@ -51,7 +52,7 @@ public class ObjectDeclDefTemplates {
 		return variableDecl(typeName, variableName, "", varType);
 	}
 
-	public static String propertyDecl(String typeName, String variableName, String defaultValue, List<String> templateParameters, VariableType varType) {
+	public static String propertyDecl(String typeName, String variableName, String defaultValue, Optional<List<String>> templateParameters, VariableType varType) {
 		return variableDecl(typeName + 
 				CppExporterUtils.createTemplateParametersCode(templateParameters), 
 				variableName, defaultValue, varType);
@@ -65,12 +66,12 @@ public class ObjectDeclDefTemplates {
 		return ObjectDeclDefTemplates.createObject(typeName, objName, null, null, sharedObject);
 	}
 
-	public static String createObject(String typeName, String objName, List<String> params, boolean sharedObject) {
+	public static String createObject(String typeName, String objName, Optional<List<String>> params, boolean sharedObject) {
 		return ObjectDeclDefTemplates.createObject(typeName, objName, null, params, sharedObject);
 	}
 
-	public static String createObject(String typeName, String objName, List<String> templateParams,
-			List<String> params, boolean sharedObject) {
+	public static String createObject(String typeName, String objName, Optional<List<String>> templateParams,
+			Optional<List<String>> params, boolean sharedObject) {
 		String templateList = CppExporterUtils.createTemplateParametersCode(templateParams);
 		if(!sharedObject) {
 			return GenerationNames.sharedPtrType(typeName + templateList) + " " + 
@@ -84,32 +85,15 @@ public class ObjectDeclDefTemplates {
 	}
 	
 	public static String setAllocatedObjectToObjectVariable(String typeName, 
-			List<String> templateParams, String objName, List<String> params, Boolean sharedObject) {
+			Optional<List<String>> templateParams, String objName, Optional<List<String>> params, Boolean sharedObject) {
 		return objName  + " = " + allocateObject(typeName, templateParams, params, sharedObject) + ";\n";
 	}
 
-	public static String allocateObject(String typeName, List<String> templateParams, List<String> params, boolean sharedObject) {
-	
-		String parameters = "(";
-		if (params != null && params.size() > 0) {
-	
-			for (int i = 0; i < params.size() - 1; i++) {
-				parameters = parameters + params.get(i) + ",";
-			}
-			parameters = parameters + params.get(params.size() - 1);
-		}
-		parameters = parameters + ")";
-	
-		String templateParameters = "";
-		if (templateParams != null) {
-			templateParameters = "<";
-			for (int i = 0; i < templateParams.size() - 1; i++) {
-				templateParameters = templateParameters + templateParams.get(i) + ",";
-			}
-			templateParameters = templateParameters + templateParams.get(templateParams.size() - 1) + ">";
-		}
-		
-		String allocatedObject = PointerAndMemoryNames.MemoryAllocator + " " + typeName + templateParameters + parameters;
+	public static String allocateObject(String typeName, Optional<List<String>> templateParams, Optional<List<String>> params, boolean sharedObject) {
+		String templateParameters = CppExporterUtils.createTemplateParametersCode(templateParams);
+		String allocatedObject = PointerAndMemoryNames.MemoryAllocator + " " + typeName + 
+				templateParameters + 
+				CppExporterUtils.createParametersCode(params);
 		if(!sharedObject) {
 			return allocatedObject;
 		} else {
@@ -118,12 +102,12 @@ public class ObjectDeclDefTemplates {
 	
 	}
 
-	public static String allocateObject(String typeName, List<String> params, boolean sharedObject) {
-		return allocateObject(typeName, null, params, sharedObject);
+	public static String allocateObject(String typeName, Optional<List<String>> params, boolean sharedObject) {
+		return allocateObject(typeName, Optional.empty(), params, sharedObject);
 	}
 
 	public static String allocateObject(String typeName) {
-		return allocateObject(typeName, null, null, false);
+		return allocateObject(typeName, Optional.empty(), Optional.empty(), false);
 	}
 
 }

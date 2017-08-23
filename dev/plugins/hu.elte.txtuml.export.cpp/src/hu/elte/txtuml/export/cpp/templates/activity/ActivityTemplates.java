@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 import hu.elte.txtuml.export.cpp.templates.GenerationNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.ActionNames;
@@ -198,8 +199,8 @@ public class ActivityTemplates {
 					+ operationCallParamList(parameters) + "))";
 		} else {
 			if (ownerName != PointerAndMemoryNames.Self) {
-				return ObjectDeclDefTemplates.setAllocatedObjectToObjectVariable(typeName, Collections.emptyList(),
-						ownerName, parameters, false);
+				return ObjectDeclDefTemplates.setAllocatedObjectToObjectVariable(typeName, Optional.empty(),
+						ownerName, Optional.of(parameters), false);
 			} else {
 				return ownerName + PointerAndMemoryNames.PointerAccess + GenerationNames.initFunctionName(typeName)
 						+ "(" + operationCallParamList(parameters) + ")";

@@ -9,6 +9,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Set;
 
 import hu.elte.txtuml.api.deployment.RuntimeType;
@@ -125,7 +126,7 @@ public class ThreadHandlingManager {
 			parameters.add(new Integer(pool.getMaxThread()).toString());
 
 			source.append(insertToConfiguration(pool.getId(),
-					ObjectDeclDefTemplates.allocateObject(ConfigurationStructName, parameters, true)));
+					ObjectDeclDefTemplates.allocateObject(ConfigurationStructName, Optional.of(parameters), true)));
 		}
 
 		return source.toString();
@@ -143,12 +144,12 @@ public class ThreadHandlingManager {
 		params.add(new Integer(function.getConstant()).toString());
 		params.add(new Double(function.getGradient()).toString());
 
-		return ObjectDeclDefTemplates.allocateObject(FunctionName, params, true);
+		return ObjectDeclDefTemplates.allocateObject(FunctionName, Optional.of(params), true);
 	}
 
 	private String allocatePoolObject(ThreadPoolConfiguration pool) {
 		List<String> params = new ArrayList<String>();
-		return ObjectDeclDefTemplates.allocateObject(ThreadPoolClassName, params, true);
+		return ObjectDeclDefTemplates.allocateObject(ThreadPoolClassName, Optional.of(params), true);
 	}
 	
 	private String getRuntimeTypeName(RuntimeType runtimeType) {

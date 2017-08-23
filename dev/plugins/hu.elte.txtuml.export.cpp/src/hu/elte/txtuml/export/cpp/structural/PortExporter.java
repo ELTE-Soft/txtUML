@@ -91,13 +91,15 @@ public class PortExporter {
 			parameters.add(GenerationNames.PointerAndMemoryNames.Self);
 		}
 		return ObjectDeclDefTemplates.setAllocatedObjectToObjectVariable(portTypeName, 
-				Arrays.asList(interfaces.getFirst(),interfaces.getSecond()), port.getName(), parameters, true);
+				Optional.of(Arrays.asList(interfaces.getFirst(),interfaces.getSecond())), 
+				port.getName(), Optional.of(parameters), true);
 	}
 	private String createinterfacePortCode(Port port) {
 		assert(port != null && isInterfacePort(port));
 		String portTypeName = getPortTypeName(port, false);
 		Pair<String,String> interfaces = getPortActualInterfaceTypes(port);		
-		return ObjectDeclDefTemplates.propertyDecl(portTypeName,port.getName(),"",Arrays.asList(interfaces.getFirst(),interfaces.getSecond()), ObjectDeclDefTemplates.VariableType.SharedPtr);
+		return ObjectDeclDefTemplates.propertyDecl(portTypeName,port.getName(),"",
+				Optional.of(Arrays.asList(interfaces.getFirst(),interfaces.getSecond())), ObjectDeclDefTemplates.VariableType.SharedPtr);
 	}
 	
 	private Pair<String,String> getPortActualInterfaceTypes(Port port) {

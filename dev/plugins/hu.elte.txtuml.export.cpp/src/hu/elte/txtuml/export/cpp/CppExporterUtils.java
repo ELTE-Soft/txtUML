@@ -261,18 +261,39 @@ public class CppExporterUtils {
 		}
 	}
 	
-	public static String createTemplateParametersCode(List<String> templateParamList) {
-		StringBuilder source = new StringBuilder("");
-		if (templateParamList != null) {
-			source.append("<");
-			for (int i = 0; i < templateParamList.size() - 1; i++) {
-				source.append(templateParamList.get(i) + ",");
-			}
-			source.append(templateParamList.get(templateParamList.size() - 1) + ">");
+	public static String createTemplateParametersCode(Optional<List<String>> templateParamOptionalList) {
+		String source = "";
+		if (templateParamOptionalList.isPresent()) {
+			List<String> templateParameters = templateParamOptionalList.get();
+			if (!templateParameters.isEmpty()) {
+				source = "<" + enumerateListElementsCode(templateParameters) + ">";
+			}			
 		}
 		
 		return source.toString();
 	}
+	
+	public static String createParametersCode(Optional<List<String>> optionalParams) {
+		String source = "";
+		if (optionalParams.isPresent()) {
+			List<String> params = optionalParams.get();
+			if (!params.isEmpty()) {
+				source = "<" + enumerateListElementsCode(params) + ">";
+			}			
+		}
+		
+		return source.toString();
+	}
+	
+	public static String enumerateListElementsCode(List<String> list) {
+		assert(list != null);
+		StringBuilder source = new StringBuilder("");
+		for (String elem : list) {
+			source.append(elem + ",");
+		}
+		return cutOffTheLastCharcter(source.toString());
+	}
+	
 	private static boolean isSignalFactoryClass(Class cls, List<Element> elements) {
 		List<Signal> signals = new ArrayList<Signal>();
 		getTypedElements(signals, UMLPackage.Literals.SIGNAL, elements);
