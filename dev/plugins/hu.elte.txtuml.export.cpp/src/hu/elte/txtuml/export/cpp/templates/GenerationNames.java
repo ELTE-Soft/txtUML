@@ -203,6 +203,7 @@ public class GenerationNames {
 				+ EventTemplates.EventFParamName + ")\n" + simpleProcessEventDefBody();
 	}
 
+	
 	public static String simpleProcessEventDef(String className) {
 		return "bool " + className + "::" + StateMachineMethodNames.ProcessEventFName + "("
 				+ EventTemplates.EventPointerType + " " + EventTemplates.EventFParamName + ")\n"
