@@ -10,7 +10,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -292,16 +291,16 @@ public class Uml2ToCppExporter {
 			typeDefinitions.append(EventTemplates.eventPtrTypeDef(signal.getName()));
 			events.append(signal.getName() + ENUM_EXTENSION + ",");
 		}
-		events = new StringBuilder(events.substring(0, events.length() - 1));
 
 		DependencyExporter dependencyEporter = new DependencyExporter();
 		for (Pair<String, String> param : allParam) {
 			dependencyEporter.addDependency(param.getSecond());
 		}
 
+
 		source.append(dependencyEporter.createDependencyHeaderIncludeCode());
 		source.append(RuntimeTemplates.eventHeaderInclude());
-		source.append("enum Events {" + events + "};\n");
+		source.append("enum Events {" + CppExporterUtils.cutOffTheLastCharcter(events.toString()) + "};\n");
 		source.append(eventClasses);
 		source.append(typeDefinitions);
 		CppExporterUtils.writeOutSource(outputDirectory, (EventTemplates.EventHeader),

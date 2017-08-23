@@ -1,5 +1,7 @@
 package hu.elte.txtuml.export.cpp.statemachine;
 
+import java.io.FileNotFoundException;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -30,7 +32,7 @@ import hu.elte.txtuml.utils.Pair;
 
 public class StateMachineExporterBase {
 
-	private List<String> subSubMachines;
+	protected List<String> subSubMachines;
 
 	protected String ownerClassName;
 	protected Pseudostate initialState;
@@ -41,13 +43,16 @@ public class StateMachineExporterBase {
 	protected GuardExporter guardExporter;
 	protected TransitionExporter transitionExporter;
 	protected EntryExitFunctionExporter entryExitFunctionExporter;
+	protected SubStateMachineExporter subStateMachineExporter;
+	protected String parentClassName;
+
+	private List<String> allSubMachineName;
 
 	public StateMachineExporterBase() {
 	}
 
 	public void createMachine() {
 		init();
-		searchInitialState();
 		for (Transition item : stateMachineRegion.getTransitions()) {
 			TransitionConditions transitionCondition = null;
 			for (Trigger tri : item.getTriggers()) {
@@ -80,22 +85,30 @@ public class StateMachineExporterBase {
 			}
 		}
 	}
+	
+	public void createSubMachineSources(String detiniation) throws FileNotFoundException, UnsupportedEncodingException {
+		for (Map.Entry<String, Pair<String, Region>> entry : submachineMap.entrySet()) {
+			subStateMachineExporter = new SubStateMachineExporter();
+			subStateMachineExporter.setRegion(entry.getValue().getSecond());
+			subStateMachineExporter.setName(entry.getValue().getFirst());
+			subStateMachineExporter.setParentClassName(parentClassName);
+			subStateMachineExporter.createSubSmSource(detiniation);
+			allSubMachineName.add(entry.getValue().getFirst());
+			allSubMachineName.addAll(subStateMachineExporter.getAllSubmachineName());
+		}
+	}
+	
+	public List<String> getAllSubmachineName() {
+		return allSubMachineName;
+	}
 
 	public void setName(String name) {
 		this.ownerClassName = name;
 	}
 
-	public List<String> getSubMachineNameList() {
-		List<String> ret = new LinkedList<String>();
-		if (submachineMap != null) {
-			for (Map.Entry<String, Pair<String, Region>> entry : submachineMap.entrySet()) {
-				ret.add(entry.getValue().getFirst());
-			}
-			ret.addAll(subSubMachines);
-		}
-		return ret;
+	public void setParentClassName(String name) {
+		this.parentClassName = name;
 	}
-
 	protected Multimap<TransitionConditions, Pair<String, String>> getStateMachine() {
 		return stateMachineMap;
 	}
@@ -121,11 +134,14 @@ public class StateMachineExporterBase {
 	}
 
 	protected void init() {
+		searchInitialState();
+		
+		allSubMachineName = new LinkedList<>();
 		stateMachineMap = HashMultimap.create();
 		submachineMap = getSubMachines();
 		subSubMachines = new ArrayList<String>();
 		guardExporter = new GuardExporter();
-		transitionExporter = new TransitionExporter(ownerClassName, stateMachineRegion.getTransitions(), guardExporter);
+		transitionExporter = new TransitionExporter(ownerClassName, stateMachineRegion.getTransitions(), getInitialStateName(), guardExporter);
 		entryExitFunctionExporter = new EntryExitFunctionExporter(ownerClassName, stateList);
 		entryExitFunctionExporter.createEntryFunctionTypeMap();
 		entryExitFunctionExporter.createExitFunctionTypeMap();

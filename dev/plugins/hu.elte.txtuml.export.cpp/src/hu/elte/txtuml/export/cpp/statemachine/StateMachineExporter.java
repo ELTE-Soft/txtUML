@@ -1,5 +1,6 @@
 package hu.elte.txtuml.export.cpp.statemachine;
 
+
 import java.util.Map;
 
 import org.eclipse.uml2.uml.Region;
@@ -81,5 +82,6 @@ public class StateMachineExporter extends StateMachineExporterBase {
 	public Map<String, Pair<String, Region>> getSubMachineMap() {
 		return submachineMap;
 	}
+
 
 }

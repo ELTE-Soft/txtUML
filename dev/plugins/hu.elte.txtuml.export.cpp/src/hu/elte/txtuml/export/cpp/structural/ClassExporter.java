@@ -3,7 +3,7 @@ package hu.elte.txtuml.export.cpp.structural;
 import java.io.FileNotFoundException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.LinkedList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -16,7 +16,6 @@ import org.eclipse.uml2.uml.Usage;
 
 import hu.elte.txtuml.export.cpp.CppExporterUtils;
 import hu.elte.txtuml.export.cpp.statemachine.StateMachineExporter;
-import hu.elte.txtuml.export.cpp.statemachine.SubStateMachineExporter;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationTemplates;
 import hu.elte.txtuml.export.cpp.templates.PrivateFunctionalTemplates;
@@ -37,7 +36,6 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 
 	private StateMachineExporter stateMachineExporter;
 	private PortExporter portExporter;
-	private SubStateMachineExporter subStateMachineExporter;
 
 	private int poolId;
 	private List<Usage> usages;
@@ -60,6 +58,7 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 		if (classOptionalSM.isPresent()) {
 			stateMachineExporter = new StateMachineExporter(classOptionalSM.get());
 			stateMachineExporter.setName(name);
+			stateMachineExporter.setParentClassName(name);
 			stateMachineExporter.setStateMachineThreadPoolId(poolId);
 		}
 
@@ -76,11 +75,13 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 	}
 
 	public List<String> getSubmachines() {
-		if(CppExporterUtils.isStateMachineOwner(structuredElement)) {
-			return stateMachineExporter.getSubMachineNameList();
+		assert(stateMachineExporter != null);
+		if(stateMachineExporter != null) {
+			return stateMachineExporter.getAllSubmachineName();
 		} else {
-			return null;
+			return Collections.emptyList();
 		}
+		
 	}
 
 	private void createSource(String dest) throws FileNotFoundException, UnsupportedEncodingException {
@@ -89,15 +90,7 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 		if (CppExporterUtils.isStateMachineOwner(structuredElement)) {
 			stateMachineExporter.createStateMachineRegion(structuredElement);
 			stateMachineExporter.createMachine();
-			List<String> subMachines = new LinkedList<String>();
-			for (Map.Entry<String, Pair<String, Region>> entry : stateMachineExporter.getSubMachineMap().entrySet()) {
-				subStateMachineExporter = new SubStateMachineExporter();
-				subStateMachineExporter.setRegion(entry.getValue().getSecond());
-				subStateMachineExporter.setName(entry.getValue().getFirst());
-				subStateMachineExporter.setParentClass(name);
-				subStateMachineExporter.createSubSmSource(dest);
-				subMachines.addAll(subStateMachineExporter.getSubMachineNameList());
-			}
+			stateMachineExporter.createSubMachineSources(dest);
 		}
 
 		source = createClassHeaderSource();
