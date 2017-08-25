@@ -22,7 +22,7 @@ public class FMUResourceHandler {
 		Files.move(path.resolve("CMakeLists.txt"), path.resolve("CMakeLists_base.txt"),
 				StandardCopyOption.REPLACE_EXISTING);
 		for (String copiedFileName : Arrays.asList("CMakeLists.txt", "fmu/fmi2Functions.h", "fmu/fmi2FunctionTypes.h",
-				"fmu/fmi2TypesPlatform.h", "fmu/fmudebug.cpp")) {
+				"fmu/fmi2TypesPlatform.h")) {
 			copyResource(copiedFileName, path);
 		}
 

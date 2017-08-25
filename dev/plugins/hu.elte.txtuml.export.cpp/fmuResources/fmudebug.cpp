@@ -10,7 +10,7 @@ void stepFinishNotify(fmi2ComponentEnvironment, fmi2Status) {
 fmi2CallbackFunctions *callbacks = new fmi2CallbackFunctions{ NULL, NULL, NULL, stepFinishNotify, NULL };
 
 int main(int, char *argv[]) {
-  std::cout << "Starting simulation" << std::endl;
+  std::cout << "Starting simulation" << std::endl << std::endl;
 
   std::ifstream infile(argv[1]);
 
@@ -19,32 +19,24 @@ int main(int, char *argv[]) {
   std::string line;
   while (std::getline(infile, line))
   {
+    $declarebuffers
+    fmi2ValueReference vars[] = { 0 };
+
     // set input variables
     std::istringstream iss(line);
-    fmi2ValueReference i = 0;
-    fmi2Real temp[1];
     std::cout << std::flush << "inputs: ";
-    while(iss >> temp[0]) {
-      fmi2ValueReference vars[] = { i++ };
-      fmi2SetReal(comp, vars, 1, temp);
-      std::cout << temp[0] << " ";
-    }
+
+    $setinputvariables
     std::cout << std::endl;
     
     // perform stepping
     fmi2DoStep(comp, 0.0, 0.0, true);
 
-    // write output variables
-    fmi2Status res;
+    // get output variables
     std::cout << std::flush << "outputs: ";
-    do {
-      fmi2ValueReference vars[] = { i++ };
-      res = fmi2GetReal(comp, vars, 1, temp);
-      if (res != fmi2Error) {
-        std::cout << temp[0] << " ";
-      }
-    } while (res != fmi2Error);
-    std::cout << std::endl;
+
+    $getoutputvariables
+    std::cout << std::endl << std::endl;
   }
 
   return 0;
