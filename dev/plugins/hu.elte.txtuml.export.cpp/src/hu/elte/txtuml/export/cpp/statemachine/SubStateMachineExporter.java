@@ -72,7 +72,7 @@ public class SubStateMachineExporter extends StateMachineExporterBase {
 		List<String> params = new ArrayList<String>();
 		params.add(parentClassName);
 		publicParts.append(ConstructorTemplates.constructorDecl(ownerClassName, params));
-		publicParts.append(StateMachineTemplates.stateEnum(stateList, getInitialStateName()));
+		publicParts.append(StateMachineTemplates.stateEnum(stateList, getInitialState(stateMachineRegion).getName()));
 
 		if (submachineMap.isEmpty()) {
 			source = HeaderTemplates.simpleSubStateMachineClassHeader(dependency.toString(), ownerClassName,
@@ -89,12 +89,13 @@ public class SubStateMachineExporter extends StateMachineExporterBase {
 	private String createSubSmClassCppSource() {
 		StringBuilder source = new StringBuilder("");
 		source.append(createTransitionTableInitRelatedCodes());
+		String initialStateName =  getInitialState(stateMachineRegion).getName();
 		if (submachineMap.isEmpty()) {
 			source.append(ConstructorTemplates.simpleSubStateMachineClassConstructor(ownerClassName, parentClassName,
-					stateMachineMap, getInitialStateName()));
+					stateMachineMap, initialStateName));
 		} else {
 			source.append(ConstructorTemplates.hierarchicalSubStateMachineClassConstructor(ownerClassName,
-					parentClassName, stateMachineMap, getInitialStateName(), getEventSubMachineNameMap()));
+					parentClassName, stateMachineMap, initialStateName, getEventSubMachineNameMap()));
 		}
 		
 		StringBuilder subSmSpec = new StringBuilder(entryExitFunctionExporter.createEntryFunctionsDef());
@@ -102,11 +103,12 @@ public class SubStateMachineExporter extends StateMachineExporterBase {
 		subSmSpec.append(guardExporter.defnieGuardFunctions(ownerClassName));
 		subSmSpec.append(transitionExporter.createTransitionFunctionsDef());
 		subSmSpec.append(StateMachineTemplates.entry(ownerClassName,
-				createStateActionMap(entryExitFunctionExporter.getEntryMap())) + "\n");
+				createStateActionMap(entryExitFunctionExporter.getEntryMap()), !submachineMap.isEmpty()) + "\n");
 		subSmSpec.append(
-				StateMachineTemplates.exit(ownerClassName, createStateActionMap(entryExitFunctionExporter.getExitMap()))
+				StateMachineTemplates.exit(ownerClassName, createStateActionMap(entryExitFunctionExporter.getExitMap()), !submachineMap.isEmpty())
 						+ "\n");
-
+		subSmSpec.append(StateMachineTemplates.finalizeFunctionDef(ownerClassName));
+		subSmSpec.append(StateMachineTemplates.initializeFunctionDef(ownerClassName, getInitialStransition(stateMachineRegion).getName()));
 		source.append(GenerationTemplates.formatSubSmFunctions(subSmSpec.toString()));
 
 		return source.toString();

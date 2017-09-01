@@ -12,7 +12,6 @@ import org.eclipse.uml2.uml.UMLPackage;
 import org.eclipse.uml2.uml.Vertex;
 
 import hu.elte.txtuml.export.cpp.activity.ActivityExporter;
-import hu.elte.txtuml.export.cpp.templates.GenerationNames;
 import hu.elte.txtuml.export.cpp.templates.activity.ActivityTemplates;
 import hu.elte.txtuml.export.cpp.templates.statemachine.EventTemplates;
 import hu.elte.txtuml.export.cpp.templates.statemachine.StateMachineTemplates;
@@ -23,22 +22,20 @@ public class TransitionExporter {
 	private GuardExporter guardExporter;
 
 	String className;
-	String initialStateName;
 	List<Transition> transitions;
 
-	TransitionExporter(String className, List<Transition> transitions, String initialStateName, GuardExporter guardExporter) {
+	TransitionExporter(String className, List<Transition> transitions, GuardExporter guardExporter) {
 		activityExporter = new ActivityExporter();
 
 		this.className = className;
 		this.transitions = transitions;
-		this.initialStateName = initialStateName;
 		this.guardExporter = guardExporter;
 	}
 
 	String createTransitionFunctionDecl() {
 		StringBuilder source = new StringBuilder("");
-		for (Transition item : transitions) {
-			source.append(StateMachineTemplates.transitionActionDecl(transitionName(item)));
+		for (Transition transition : transitions) {
+			source.append(StateMachineTemplates.transitionActionDecl(transition.getName()));
 		}
 		source.append("\n");
 		return source.toString();
@@ -54,8 +51,8 @@ public class TransitionExporter {
 				body = activityExporter.createFunctionBody((Activity) b);
 
 			}
-			source.append(StateMachineTemplates.transitionActionDef(className, transitionName(transition), 
-					transition.getName(), body + setState + "\n" + GenerationNames.EntryInvoke, true));
+			source.append(StateMachineTemplates.transitionActionDef(className, transition.getName(), 
+					transition.getName(), body + setState, true));
 		}
 		source.append("\n");
 		return source.toString();
@@ -93,12 +90,5 @@ public class TransitionExporter {
 			source = StateMachineTemplates.setState("UNKNOWN_TRANSITION_TARGET");
 		}
 		return source;
-	}
-	
-	private String transitionName(Transition transition) {
-		String sourceName = transition.getSource().getName();
-		return sourceName == initialStateName ? 
-				 GenerationNames.StateMachineMethodNames.InitTansitionFunctionName : 
-				 transition.getName();
 	}
 }
