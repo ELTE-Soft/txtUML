@@ -1,10 +1,10 @@
 package hu.elte.txtuml.export.diagrams.tests.model;
 
 
-signal S1;
-signal S2;
-signal S3;
-signal S4;
-signal S5;
-signal S6;
-signal S7;
+signal Signal1;
+signal Signal2;
+signal Signal3;
+signal Signal4;
+signal Signal5;
+signal Signal6;
+signal Signal7;

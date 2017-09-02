@@ -30,13 +30,13 @@ class HierarchicalStateMachine{
 			transition StateBCAToStateBCB{
 				from StateBCA;
 				to StateBCB;
-				trigger S7;
+				trigger Signal7;
 			}
 			
 			transition StateBCBToStateBCC{
 				from StateBCB;
 				to StateBCC;
-				trigger S6;
+				trigger Signal6;
 			}
 		}
 		
@@ -48,13 +48,13 @@ class HierarchicalStateMachine{
 		transition StateBAToStateBB{
 			from StateBA;
 			to StateBB;
-			trigger S5;
+			trigger Signal5;
 		}
 		
 		transition StateBBToStateBC{
 			from StateBB;
 			to CStateBC;
-			trigger S4;
+			trigger Signal4;
 		}
 	}
 	
@@ -68,12 +68,12 @@ class HierarchicalStateMachine{
 	transition StateAToStateB{
 		from StateA;
 		to CStateB;
-		trigger S3;
+		trigger Signal3;
 	}
 	
 	transition StateBToStateC{
 		from CStateB;
 		to StateC;
-		trigger S2;
+		trigger Signal2;
 	}
 }
