@@ -2,9 +2,9 @@ package hu.eltesoft.moonlander.model;
 
 import hu.elte.txtuml.api.model.Signal;
 
-public class ControlCycleSignal extends Signal {
+public class InputSignal extends Signal {
 	
-	public ControlCycleSignal(double h, double v) {
+	public InputSignal(double h, double v) {
 		this.h = h;
 		this.v = v;
 	}
