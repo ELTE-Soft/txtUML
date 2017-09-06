@@ -147,12 +147,6 @@ public class StateMachineTemplates {
 		if (states != null && !states.isEmpty()) {
 			List<String> eventParameter = new LinkedList<String>();
 			eventParameter.add(EventTemplates.EventFParamName);
-			if(hierachicalMachine && type == EntryExit.Exit) {
-				source.append(ActivityTemplates.simpleIf(GenerationNames.CurrentMachineName,
-						ActivityTemplates.operationCallOnPointerVariable(GenerationNames.CurrentMachineName,
-						StateMachineMethodNames.FinalizeFunctionName,
-						Arrays.asList(EventTemplates.EventFParamName))));
-			}
 			source.append("switch(" + GenerationNames.CurrentStateName + ")\n{\n");
 			for (Map.Entry<String, String> entry : states.entrySet()) {
 				source.append("case(" + GenerationNames.stateEnumName(entry.getKey()) + "):{");
@@ -161,12 +155,6 @@ public class StateMachineTemplates {
 				source.append("break;}\n");
 			}
 			source.append("}\n");
-		}
-		if(hierachicalMachine && type == EntryExit.Entry) {		
-			source.append(ActivityTemplates.simpleIf(GenerationNames.CurrentMachineName, 
-					ActivityTemplates.operationCallOnPointerVariable(GenerationNames.CurrentMachineName,
-					StateMachineMethodNames.InitializeFunctionName,
-					Arrays.asList(EventTemplates.EventFParamName))));
 		}
 		source.append("}\n");
 		return source.toString();
