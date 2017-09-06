@@ -52,7 +52,7 @@ public class TransitionExporter {
 
 			}
 			source.append(StateMachineTemplates.transitionActionDef(className, transition.getName(), 
-					transition.getName(), body + setState, true));
+					transition.getName(), body + setState, activityExporter.isContainsSignalAccess()));
 		}
 		source.append("\n");
 		return source.toString();

@@ -156,7 +156,7 @@ public class EntryExitFunctionExporter {
 			if (source != "") {
 					name = item.getName() + "_" + unknownName;
 					functionList.add(new EntryExitFunctionDescription(item.getName(), name, source,
-							item.isComposite() || (behavior != null && activityExporter.isContainsSignalAccess()))); //TODO Should be static function
+							item.isComposite() || activityExporter.isContainsSignalAccess()));
 				
 			}
 		}

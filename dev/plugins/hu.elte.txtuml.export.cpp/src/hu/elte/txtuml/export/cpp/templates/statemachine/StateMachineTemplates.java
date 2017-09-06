@@ -1,6 +1,5 @@
 package hu.elte.txtuml.export.cpp.templates.statemachine;
 
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;

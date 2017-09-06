@@ -98,9 +98,9 @@ public class ActivityExporter {
 		}
 		return reducedSource;
 	}
-
+	//TODO should be static function..
 	public boolean isContainsSignalAccess() {
-		return callOperationExporter.isUsedSignalParameter();
+		return callOperationExporter != null ? callOperationExporter.isUsedSignalParameter() : false;
 	}
 
 	public boolean isContainsTimerOperation() {
