@@ -1,5 +1,6 @@
 package hu.elte.txtuml.export.cpp.templates.structual;
 
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -96,11 +97,11 @@ public class HeaderTemplates {
 	}
 
 	public static String hierarchicalSubStateMachineClassHeader(String dependency, String className,
-			String parentClass, List<String> subMachines, String publicPart, String protectedPart, String privatePart) {
+			String parentClass, String publicPart, String protectedPart, String privatePart) {
 		List<String> parentParam = new LinkedList<String>();
 		parentParam.add(parentClass);
 
-		return HeaderTemplates.hierarchicalStateMachineClassHeader(dependency, className, null, publicPart,
+		return HeaderTemplates.hierarchicalStateMachineClassHeader(dependency, className, Collections.emptyList(), publicPart,
 				protectedPart,
 				VariableTemplates.variableDecl(parentClass, GenerationNames.ParentSmMemberName, null, false)
 						+ (privatePart),

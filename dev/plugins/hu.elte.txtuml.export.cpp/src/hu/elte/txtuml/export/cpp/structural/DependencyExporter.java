@@ -20,9 +20,7 @@ public class DependencyExporter {
 
 	public String createDependencyCppIncludeCode(String className) {
 		StringBuilder includes = new StringBuilder("");
-		if (!dependecies.contains(className)) {
-			includes.append(PrivateFunctionalTemplates.include(className));
-		}
+		includes.append(PrivateFunctionalTemplates.include(className));		
 		dependecies.forEach(type -> {
 			includes.append(PrivateFunctionalTemplates.include(type));
 		});

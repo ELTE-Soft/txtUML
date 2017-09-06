@@ -192,27 +192,17 @@ public class StateMachineTemplates {
 	 * 
 	 * Map<String,String> <event,SubmachineName>
 	 */
-	public static String hierarchicalStateMachineClassConstructorSharedBody(Map<String, String> subMachines, Boolean rt, Integer poolId) {
+	public static String hierarchicalStateMachineClassConstructorSharedBody(Map<String, String> subMachines, Boolean topMachine, Integer poolId) {
 		StringBuilder source = new StringBuilder("");
-		source.append(stateMachineInitializationSharedBody(rt,poolId));
+		source.append(stateMachineInitializationSharedBody(topMachine,poolId));
+		String parent = topMachine ? PointerAndMemoryNames.Self : GenerationNames.ParentSmMemberName;
 		for (Map.Entry<String, String> entry : subMachines.entrySet()) {
 			source.append(
 					GenerationNames.CompositeStateMapName + ".emplace(" + GenerationNames.stateEnumName(entry.getKey())
 							+ "," + GenerationNames.CompositeStateMapSmType + "(" + PointerAndMemoryNames.MemoryAllocator
-							+ " " + entry.getValue() + "(" + PointerAndMemoryNames.Self + ")" + "));\n");
+							+ " " + entry.getValue() + "(" + parent + ")" + "));\n");
 		}
 		return source.toString();
-	}
-
-	public static String simpleStateMachineClassConstructorSharedBody(String className,
-			Multimap<TransitionConditions, Pair<String, String>> machine, String intialState, Boolean simpleMachine) {
-		String source = "";
-		if (simpleMachine) {
-			source += RuntimeTemplates.rtFunctionDef(className);
-		}
-
-		return source + GenerationNames.simpleProcessEventDef(className) + "\n"
-				+ GenerationNames.simpleSetStateDef(className) + "\n" + setInitialState(className, intialState) + "\n";
 	}
 
 	public static String setState(String state) {

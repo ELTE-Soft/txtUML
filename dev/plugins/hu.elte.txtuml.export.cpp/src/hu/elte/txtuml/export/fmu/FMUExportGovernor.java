@@ -1,10 +1,10 @@
 package hu.elte.txtuml.export.fmu;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
 
@@ -24,12 +24,17 @@ import org.eclipse.jdt.core.dom.TypeLiteral;
 import hu.elte.txtuml.api.deployment.fmi.FMU;
 import hu.elte.txtuml.api.deployment.fmi.FMUInput;
 import hu.elte.txtuml.api.deployment.fmi.FMUOutput;
+import hu.elte.txtuml.api.deployment.fmi.InitialBooleanValue;
+import hu.elte.txtuml.api.deployment.fmi.InitialIntegerValue;
 import hu.elte.txtuml.api.deployment.fmi.InitialRealValue;
 import hu.elte.txtuml.utils.eclipse.NotFoundException;
 import hu.elte.txtuml.utils.eclipse.ProjectUtils;
 import hu.elte.txtuml.utils.jdt.SharedUtils;
 
 public class FMUExportGovernor {
+
+	private static final List<String> INITIAL_ANNOT_NAMES = Arrays.asList(InitialBooleanValue.class.getCanonicalName(),
+				InitialIntegerValue.class.getCanonicalName(), InitialRealValue.class.getCanonicalName());
 
 	public FMUConfig extractFMUConfig(String projectName, String fmuDescription) throws NotFoundException, JavaModelException, IOException {
 		
@@ -43,7 +48,7 @@ public class FMUExportGovernor {
 		CompilationUnit compUnit = SharedUtils.parseJavaSource(path.toFile(), javaProject);
 		config.inputSignalConfig = Optional.empty();
 		config.outputSignalConfig = Optional.empty();
-		Map<String, Object> outputSignalVals = new HashMap<>();
+		config.initialValues = new HashMap<>();
 		
 		for (Object object : compUnit.types()) {
 			TypeDeclaration cls = (TypeDeclaration) object;
@@ -61,12 +66,11 @@ public class FMUExportGovernor {
 					} else if (bind.getQualifiedName().equals(FMUOutput.class.getCanonicalName())) {
 						config.outputSignalConfig = Optional.of(getAnnotValue(annotMod, "outputSignal"));
 						config.outputVariables = loadClassMembers(javaProject, config.outputSignalConfig.get());
-					} else if (bind.getQualifiedName().equals(InitialRealValue.class.getCanonicalName())) {
-						outputSignalVals.put(getAnnotValue(annotMod, "variableName"), getAnnotValue(annotMod, "value"));
+					} else if (INITIAL_ANNOT_NAMES.contains(bind.getQualifiedName())) {
+						config.initialValues.put(getAnnotValue(annotMod, "variableName"), getAnnotValue(annotMod, "value"));
 					}
 				}
 			}
-			config.initialValues = outputSignalVals;
 		}
 
 		return config;

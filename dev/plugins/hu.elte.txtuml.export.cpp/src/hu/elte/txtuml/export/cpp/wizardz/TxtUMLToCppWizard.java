@@ -8,6 +8,7 @@ import org.eclipse.jdt.core.IType;
 import org.eclipse.jface.wizard.Wizard;
 
 import hu.elte.txtuml.export.cpp.Uml2ToCppExporter;
+import hu.elte.txtuml.export.fmu.DebuggerExporter;
 import hu.elte.txtuml.export.fmu.EnvironmentExporter;
 import hu.elte.txtuml.export.fmu.FMUConfig;
 import hu.elte.txtuml.export.fmu.FMUExportGovernor;
@@ -71,12 +72,14 @@ public class TxtUMLToCppWizard extends Wizard {
 				FMUConfig fmuConfig = fmuGovernor.extractFMUConfig(txtUMLProject, fmuDescription);
 				ModelDescriptionExporter descriptionExporter = new ModelDescriptionExporter();
 				EnvironmentExporter environmentExporter = new EnvironmentExporter();
+				DebuggerExporter debuggerExporter = new DebuggerExporter();
 				FMUResourceHandler resourceHandler = new FMUResourceHandler();
 				IProject proj = ProjectUtils.getProject(txtUMLProject);
 				Path genPath = Paths.get(proj.getLocation().toOSString(), Uml2ToCppExporter.GENERATED_CPP_FOLDER_NAME, txtUMLModel);
 				descriptionExporter.export(Paths.get(proj.getLocation().toOSString(), Uml2ToCppExporter.GENERATED_CPP_FOLDER_NAME), fmuConfig);
 				environmentExporter.export(genPath, fmuConfig);
 				environmentExporter.exportHeader(genPath, fmuConfig);
+				debuggerExporter.export(genPath, fmuConfig);
 				resourceHandler.copyResources(genPath);
 			}
 			
