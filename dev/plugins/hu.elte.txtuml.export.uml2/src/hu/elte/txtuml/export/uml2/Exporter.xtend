@@ -124,7 +124,8 @@ import org.eclipse.uml2.uml.Type
 import org.eclipse.uml2.uml.VisibilityKind
 import hu.elte.txtuml.export.uml2.activity.expression.PortReferenceExporter
 import hu.elte.txtuml.export.uml2.activity.apicalls.SendToPortActionExporter
-import hu.elte.txtuml.export.uml2.activity.apicalls.ConnectExporter
+import hu.elte.txtuml.export.uml2.activity.apicalls.AssemblyConnectExporter
+import hu.elte.txtuml.export.uml2.activity.apicalls.DelegationConnectExporter
 
 /** An exporter is able to fully or partially export a given element. 
  * Partial export only creates the UML object itself, while full export also creates its contents.
@@ -252,7 +253,8 @@ abstract class Exporter<S, A, R extends Element> extends BaseExporter<S, A, R> {
 					new CountExporter(this),
 					new GetSignalExporter(this),
 					new PortReferenceExporter(this),
-					new ConnectExporter(this),
+					new AssemblyConnectExporter(this),
+					new DelegationConnectExporter(this),
 					new IgnoredAPICallExporter(this)
 				]
 			ConstructorInvocation:
