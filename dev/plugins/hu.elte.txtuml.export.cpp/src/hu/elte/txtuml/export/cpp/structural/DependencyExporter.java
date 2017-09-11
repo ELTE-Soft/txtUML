@@ -1,26 +1,27 @@
 package hu.elte.txtuml.export.cpp.structural;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+import hu.elte.txtuml.export.cpp.templates.GenerationNames.UMLStdLibNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationTemplates;
 import hu.elte.txtuml.export.cpp.templates.PrivateFunctionalTemplates;
 
 public class DependencyExporter {
+	private static Set<String> standardDependencies = new HashSet<>(Arrays.asList(UMLStdLibNames.ModelClassName,
+			UMLStdLibNames.UMLInteger, UMLStdLibNames.UMLBoolean, UMLStdLibNames.UMLReal, UMLStdLibNames.UMLString));
 
 	private Set<String> dependecies;
 
 	public DependencyExporter() {
-		if(!simpleDependenciesRegistered) {
-			registerSimpleDependencies();
-		}
 		dependecies = new HashSet<String>();
 	}
 
 	public String createDependencyCppIncludeCode(String className) {
 		StringBuilder includes = new StringBuilder("");
-		includes.append(PrivateFunctionalTemplates.include(className));		
+		includes.append(PrivateFunctionalTemplates.include(className));
 		dependecies.forEach(type -> {
 			includes.append(PrivateFunctionalTemplates.include(type));
 		});
@@ -41,7 +42,7 @@ public class DependencyExporter {
 		if (!isSimpleDependency(dependency)) {
 			dependecies.add(dependency);
 		}
-		
+
 	}
 
 	public void addDependencies(Collection<String> dependecies) {
@@ -49,21 +50,9 @@ public class DependencyExporter {
 			addDependency(dependency);
 		}
 	}
-	
+
 	private boolean isSimpleDependency(String typename) {
-		return simpleDependencyNames.contains(typename);
-	}
-	
-	private static Set<String> simpleDependencyNames;
-	private boolean simpleDependenciesRegistered = false;
-	private void registerSimpleDependencies() {
-		simpleDependencyNames = new HashSet<String>();
-		simpleDependencyNames.add("Integer");
-		simpleDependencyNames.add("Real");
-		simpleDependencyNames.add("Boolean");
-		simpleDependencyNames.add("String");
-		
-		simpleDependenciesRegistered = true;
+		return standardDependencies.contains(typename);
 	}
 
 }

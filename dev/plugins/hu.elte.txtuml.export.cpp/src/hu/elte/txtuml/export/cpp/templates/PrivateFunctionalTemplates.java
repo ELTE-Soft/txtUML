@@ -3,11 +3,14 @@ package hu.elte.txtuml.export.cpp.templates;
 import java.util.List;
 
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.BasicTypeNames;
+import hu.elte.txtuml.export.cpp.templates.GenerationNames.ClassUtilsNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.FileNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.ModifierNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.PointerAndMemoryNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.TimerNames;
+import hu.elte.txtuml.export.cpp.templates.GenerationNames.UMLStdLibNames;
 import hu.elte.txtuml.export.cpp.templates.statemachine.EventTemplates;
+import hu.elte.txtuml.export.cpp.templates.structual.HeaderTemplates.HeaderType;
 import hu.elte.txtuml.utils.Pair;
 
 public class PrivateFunctionalTemplates {
@@ -16,13 +19,19 @@ public class PrivateFunctionalTemplates {
 		return type + GenerationNames.EventClassTypeId;
 	}
 
-	public static String classHeaderIncludes(Boolean rt) {
-		String source = include(GenerationNames.StatemachineBaseHeaderName);
-
-		if (rt) {
-			source += "\n" + include(RuntimeTemplates.RTPath + RuntimeTemplates.SMIHeaderName);
+	public static String classHeaderIncludes(HeaderType headerType) {
+		//TODO Separate includes
+		switch (headerType) {
+		case NotStateMachineOwnerClass:
+			return include(RuntimeTemplates.RTPath + RuntimeTemplates.SMIHeaderName);
+		case StateMachineOwnerClass:
+			return include(RuntimeTemplates.RTPath + RuntimeTemplates.SMIHeaderName);
+		case SubStateMachine:
+			return include(RuntimeTemplates.RTPath + RuntimeTemplates.SMIHeaderName);
+		default:
+			return "";
+		
 		}
-		return source + "\n";
 	}
 
 	public static String include(String className) {
@@ -104,6 +113,9 @@ public class PrivateFunctionalTemplates {
 					break;
 				case "String":
 					cppType = BasicTypeNames.StringTypeName;
+					break;
+				case UMLStdLibNames.ModelClassName:
+					cppType = GenerationNames.pointerType(ClassUtilsNames.BaseClassName);
 					break;
 				case TimerNames.TimerClassName:
 					cppType = TimerNames.TimerPtrName;

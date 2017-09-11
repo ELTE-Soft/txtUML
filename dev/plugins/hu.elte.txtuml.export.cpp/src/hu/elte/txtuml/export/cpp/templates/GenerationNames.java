@@ -105,6 +105,21 @@ public class GenerationNames {
 		public static final String ProcessEventFName = "process_event";
 		public static final String InitTansitionFunctionName = "Initialize";
 	}
+	
+	public static class ClassUtilsNames {
+		public static final String BaseClassName = Namespaces.RootNamespace + "::" + "ModelObject";
+		public static final String StateMachineOwnerBaseName = "StateMachineOwner";
+		public static final String NotStateMachineOwnerBaseName = "NotStateMachineOwner";
+		public static final String SubStateMachineBase = "SubStateMachine";
+	}
+	
+	public static class UMLStdLibNames {
+		public static final String ModelClassName = "hu.elte.txtuml.api.model.ModelClass";
+		public static final String UMLInteger = "Integer";
+		public static final String UMLString = "String";
+		public static final String UMLReal = "Real";
+		public static final String UMLBoolean = "Boolean";
+	}
 
 	public static final String ClassType = "struct";
 	public static final String DataType = "struct";

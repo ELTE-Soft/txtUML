@@ -6,14 +6,14 @@
 namespace Action 
 {
 	
-void send(ES::StateMachineRef target, ES::EventRef signal);
+void send(ES::ModelObject* target, ES::EventRef signal);
 /**<
 Sends a message to a model object.
 @param target The target object where the signal has to be sent. 
 @param signal The signal to be sent.
 */
 
-void start(ES::StateMachineRef sm);
+void start(ES::ModelObject* sm);
 /**<
 Starts the state machine of a model object.
 @param sm The state machine to be started. 

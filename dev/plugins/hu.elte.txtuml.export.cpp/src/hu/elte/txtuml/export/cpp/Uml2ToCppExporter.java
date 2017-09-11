@@ -181,10 +181,6 @@ public class Uml2ToCppExporter {
 			file.mkdirs();
 		}
 
-		Files.copy(Paths.get(cppFilesLocation + StateMachineTemplates.StateMachineBaseHeader),
-				Paths.get(destination + File.separator + StateMachineTemplates.StateMachineBaseHeader),
-				StandardCopyOption.REPLACE_EXISTING);
-
 		Files.copy(
 				Paths.get(cppFilesLocation + DEFAULT_ENVIRONMENT_INITIALIZER + "."
 						+ GenerationNames.FileNames.HeaderExtension),

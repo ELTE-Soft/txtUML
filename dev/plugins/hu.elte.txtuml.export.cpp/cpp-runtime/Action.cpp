@@ -4,14 +4,14 @@
 
 namespace Action 
 {
-	void send(ES::StateMachineRef target, ES::EventRef signal)
+	void send(ES::ModelObject* target, ES::EventRef signal)
 	{
 		target->send(signal);
 	}
 	
-	void start(ES::StateMachineRef sm)
+	void start(ES::ModelObject* sm)
 	{
-		sm->startSM();
+		sm->start();
 	}
 	
 	void log(ES::String message)

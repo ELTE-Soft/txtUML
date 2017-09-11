@@ -6,7 +6,8 @@
 #include <atomic>
 #include <string>
 
-#include "ESRoot/Types.hpp"
+#include "ModelObject.hpp"
+#include "statemachinebase.hpp"
 #include "ESRoot/Containers/ThreadSafeQueue.hpp"
 #include "ESRoot/AtomicCounter.hpp"
 
@@ -17,16 +18,17 @@ class StateMachineThreadPool;
 namespace Model
 {
 
-class IStateMachine
+class StateMachineOwner : public ES::ModelObject, public Model::StateMachineBase
 {
 public:
-	virtual ~IStateMachine();
-	bool processNextEvent();
+	virtual ~StateMachineOwner();
+	virtual void start() override;
+	virtual void deleteObject() override;
+	virtual void send(const ES::EventRef e) override;
 
-	void startSM();
-	void deleteSM();
-	void send(const ES::EventRef e);
-	
+public:
+	// for runtime
+	bool processNextEvent();
 	void setPool(ES::SharedPtr<Execution::StateMachineThreadPool> pool);
 	void setPooled(bool value = true);
 	void setMessageQueue(ES::SharedPtr<ES::MessageQueueType> messageQueue);
@@ -37,7 +39,7 @@ public:
 	bool emptyMessageQueue() const;
 
 protected:
-	IStateMachine();
+	StateMachineOwner();
 
 	virtual void processEventVirtual(ES::EventRef event) = 0;
 	virtual void processInitTransition(ES::EventRef event) = 0;
@@ -62,6 +64,20 @@ private:
 
 
 
+};
+
+class NotStateMachineOwner : public ES::ModelObject
+{
+public:
+	virtual ~NotStateMachineOwner();
+	virtual void start() override;
+	virtual void deleteObject() override;
+	virtual void send(const ES::EventRef e) override;
+
+};
+
+class SubStateMachine : public Model::StateMachineBase
+{
 };
 
 }

@@ -16,6 +16,7 @@ import hu.elte.txtuml.export.cpp.templates.PrivateFunctionalTemplates;
 import hu.elte.txtuml.export.cpp.templates.RuntimeTemplates;
 import hu.elte.txtuml.export.cpp.templates.activity.ActivityTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.FunctionTemplates;
+import hu.elte.txtuml.export.cpp.templates.structual.HeaderTemplates.HeaderType;
 import hu.elte.txtuml.utils.Pair;
 
 public class StateMachineTemplates {
@@ -158,11 +159,11 @@ public class StateMachineTemplates {
 		return source.toString();
 	}
 
-	public static String stateMachineClassFixPublicParts(String className, Boolean ownStateMachine) {
+	public static String stateMachineClassFixPublicParts(HeaderType headerType) {
 		StringBuilder source = new StringBuilder("");
 		source.append(ModifierNames.StaticModifier + " " + FunctionTemplates.functionDecl(InitTransitionTable));
 		source.append(GenerationNames.ProcessEventDecl + GenerationNames.SetInitialStateDecl + "\n");
-		if (ownStateMachine) {
+		if (headerType.hasExecutionInterface()) {
 			source.append("//RuntimeFunctions\n" + 
 					RuntimeTemplates.processEventVirtualDecl() + RuntimeTemplates.processInitTransitionDecl() + "\n");
 		}
