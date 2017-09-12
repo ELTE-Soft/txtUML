@@ -166,9 +166,9 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 			}
 
 		}
-
-		if (getBaseClass() != null) {
-			source.append(PrivateFunctionalTemplates.include(getBaseClass()));
+		String baseClass = getBaseClass();
+		if (baseClass != null) {
+			dependencyExporter.addDependency(baseClass);
 		}
 
 		if (!isHeader) {

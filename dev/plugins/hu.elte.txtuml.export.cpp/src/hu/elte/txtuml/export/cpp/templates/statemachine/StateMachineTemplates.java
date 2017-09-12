@@ -10,6 +10,7 @@ import com.google.common.collect.Multimap;
 import hu.elte.txtuml.export.cpp.statemachine.TransitionConditions;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.FileNames;
+import hu.elte.txtuml.export.cpp.templates.GenerationNames.HiearchicalStateMachineNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.ModifierNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.PointerAndMemoryNames;
 import hu.elte.txtuml.export.cpp.templates.PrivateFunctionalTemplates;
@@ -171,8 +172,8 @@ public class StateMachineTemplates {
 	}
 
 	public static String hierarchicalStateMachineClassFixPrivateParts(String className, List<String> subMachines) {
-		return "//Hierarchical Machine Parts\n" + GenerationNames.ActionCallerDecl + GenerationNames.CurrentMachine
-				+ GenerationNames.CompositeStateMap + SubStateMachineTemplates.subMachineFriendDecls(subMachines)
+		return "//Hierarchical Machine Parts\n" + HiearchicalStateMachineNames.ActionCallerDecl + HiearchicalStateMachineNames.CurrentMachine
+				+ HiearchicalStateMachineNames.CompositeStateMap + SubStateMachineTemplates.subMachineFriendDecls(subMachines)
 				+ "//Simple Machine Parts\n" + StateMachineTemplates.simpleStateMachineClassFixPrivateParts(className);
 	}
 
@@ -196,11 +197,11 @@ public class StateMachineTemplates {
 	public static String hierarchicalStateMachineClassConstructorSharedBody(Map<String, String> subMachines, Boolean topMachine, Integer poolId) {
 		StringBuilder source = new StringBuilder("");
 		source.append(stateMachineInitializationSharedBody(topMachine,poolId));
-		String parent = topMachine ? PointerAndMemoryNames.Self : GenerationNames.ParentSmMemberName;
+		String parent = topMachine ? PointerAndMemoryNames.Self : HiearchicalStateMachineNames.ParentSmMemberName;
 		for (Map.Entry<String, String> entry : subMachines.entrySet()) {
 			source.append(
-					GenerationNames.CompositeStateMapName + ".emplace(" + GenerationNames.stateEnumName(entry.getKey())
-							+ "," + GenerationNames.CompositeStateMapSmType + "(" + PointerAndMemoryNames.MemoryAllocator
+					HiearchicalStateMachineNames.CompositeStateMapName + ".emplace(" + GenerationNames.stateEnumName(entry.getKey())
+							+ "," + HiearchicalStateMachineNames.CompositeStateMapSmType + "(" + PointerAndMemoryNames.MemoryAllocator
 							+ " " + entry.getValue() + "(" + parent + ")" + "));\n");
 		}
 		return source.toString();
@@ -219,7 +220,7 @@ public class StateMachineTemplates {
 			Integer poolId,
 			Map<String, String> subMachines) {
 		StringBuilder body = new StringBuilder("");
-		body.append(GenerationNames.CurrentMachineName + " = " + PointerAndMemoryNames.NullPtr + ";\n");
+		body.append(HiearchicalStateMachineNames.CurrentMachineName + " = " + PointerAndMemoryNames.NullPtr + ";\n");
 		body.append(hierarchicalStateMachineClassConstructorSharedBody(subMachines, rt, poolId));
 		return FunctionTemplates.functionDef(className, GenerationNames.InitStateMachine, body.toString());
 	}

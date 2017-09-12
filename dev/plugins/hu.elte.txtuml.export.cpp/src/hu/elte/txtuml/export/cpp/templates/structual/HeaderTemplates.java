@@ -8,6 +8,8 @@ import hu.elte.txtuml.export.cpp.templates.GenerationNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationTemplates;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.ClassUtilsNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.FileNames;
+import hu.elte.txtuml.export.cpp.templates.GenerationNames.HiearchicalStateMachineNames;
+import hu.elte.txtuml.export.cpp.templates.GenerationNames.UMLStdLibNames;
 import hu.elte.txtuml.export.cpp.templates.PrivateFunctionalTemplates;
 import hu.elte.txtuml.export.cpp.templates.statemachine.StateMachineTemplates;
 
@@ -42,55 +44,59 @@ public class HeaderTemplates {
 	}
 
 	public static String hierarchicalStateMachineClassHeader(String dependency, String className, String baseClassName,
-			List<String> subMachines, String publicPart, String protectedPart, String privatePart, HeaderType herderType) {
-		return HeaderTemplates.classHeader(dependency, className,
-				baseClassName, StateMachineTemplates.stateMachineClassFixPublicParts(herderType) + publicPart,
-				protectedPart, StateMachineTemplates.hierarchicalStateMachineClassFixPrivateParts(className, subMachines) + privatePart, herderType);
+			List<String> subMachines, String publicPart, String protectedPart, String privatePart,
+			HeaderType herderType) {
+		return HeaderTemplates.classHeader(dependency, className, baseClassName,
+				StateMachineTemplates.stateMachineClassFixPublicParts(herderType) + publicPart, protectedPart,
+				StateMachineTemplates.hierarchicalStateMachineClassFixPrivateParts(className, subMachines)
+						+ privatePart,
+				herderType);
 	}
 
 	public static String simpleSubStateMachineClassHeader(String dependency, String className, String parentClass,
 			String publicPart, String protectedPart, String privatePart) {
 
 		return HeaderTemplates.simpleStateMachineClassHeader(dependency, className, null, parentClass, publicPart,
-				protectedPart,
-				VariableTemplates.variableDecl(parentClass, GenerationNames.ParentSmMemberName, null, false)
-						+ (privatePart),
+				protectedPart, VariableTemplates.variableDecl(parentClass,
+						HiearchicalStateMachineNames.ParentSmMemberName, null, false) + (privatePart),
 				HeaderType.SubStateMachine);
 	}
 
 	public static String simpleStateMachineClassHeader(String dependency, String className, String baseClassName,
 			String parentClass, String publicPart, String protectedPart, String privatePart, HeaderType headerType) {
-		return HeaderTemplates.classHeader(dependency,
-				className, baseClassName,
+		return HeaderTemplates.classHeader(dependency, className, baseClassName,
 				StateMachineTemplates.stateMachineClassFixPublicParts(headerType) + publicPart, protectedPart,
 				StateMachineTemplates.simpleStateMachineClassFixPrivateParts(className) + privatePart, headerType);
 	}
 
 	public static String classHeader(String dependency, String className, String baseClassName, String publicPart,
 			String protectedPart, String privatePart, HeaderType headerType) {
-		StringBuilder source = new StringBuilder(dependency + PrivateFunctionalTemplates.classHeaderIncludes(headerType));
+		StringBuilder source = new StringBuilder(
+				dependency + PrivateFunctionalTemplates.classHeaderIncludes(headerType));
 		StringBuilder classDecleration = new StringBuilder("");
 		classDecleration.append(GenerationNames.ClassType + " " + className);
-		if (baseClassName != null) {
-			classDecleration.append(": public " + baseClassName);
-		} else {
-			String generalModelObjectBase = "";
+		String objectBase = "";
+		if (baseClassName != null && baseClassName.equals(UMLStdLibNames.ModelClassName)) {
 			switch (headerType) {
 			case NotStateMachineOwnerClass:
-				generalModelObjectBase = ClassUtilsNames.NotStateMachineOwnerBaseName;
+				objectBase = ClassUtilsNames.NotStateMachineOwnerBaseName;
 				break;
 			case StateMachineOwnerClass:
-				generalModelObjectBase = ClassUtilsNames.StateMachineOwnerBaseName;
-				break;
-			case SubStateMachine:
-				generalModelObjectBase = ClassUtilsNames.SubStateMachineBase;
+				objectBase = ClassUtilsNames.StateMachineOwnerBaseName;
 				break;
 			default:
 				break;
-
 			}
-			classDecleration.append(":public " + generalModelObjectBase);
 
+		} else if (baseClassName != null) {
+			objectBase = baseClassName;
+			
+		} else if(headerType == HeaderType.SubStateMachine) {
+			objectBase = ClassUtilsNames.SubStateMachineBase;
+			
+		}
+		if (!objectBase.isEmpty()) {
+			classDecleration.append(":public " + objectBase);
 		}
 		classDecleration.append("\n{\n");
 
@@ -119,13 +125,15 @@ public class HeaderTemplates {
 		parentParam.add(parentClass);
 
 		return HeaderTemplates.hierarchicalStateMachineClassHeader(dependency, className, Collections.emptyList(),
-				publicPart, protectedPart, 
-				VariableTemplates.variableDecl(parentClass, GenerationNames.ParentSmMemberName, null, false)+ privatePart, 
+				publicPart,
+				protectedPart, VariableTemplates.variableDecl(parentClass,
+						HiearchicalStateMachineNames.ParentSmMemberName, null, false) + privatePart,
 				HeaderType.SubStateMachine);
 	}
 
 	public static String hierarchicalStateMachineClassHeader(String dependency, String className,
-			List<String> subMachines, String publicPart, String protectedPart, String privatePart, HeaderType herderType) {
+			List<String> subMachines, String publicPart, String protectedPart, String privatePart,
+			HeaderType herderType) {
 		return hierarchicalStateMachineClassHeader(dependency, className, null, subMachines, publicPart, protectedPart,
 				privatePart, herderType);
 	}

@@ -7,6 +7,7 @@ import com.google.common.collect.Multimap;
 
 import hu.elte.txtuml.export.cpp.statemachine.TransitionConditions;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames;
+import hu.elte.txtuml.export.cpp.templates.GenerationNames.HiearchicalStateMachineNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.ModifierNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.PointerAndMemoryNames;
 import hu.elte.txtuml.export.cpp.templates.PrivateFunctionalTemplates;
@@ -93,16 +94,16 @@ public class ConstructorTemplates {
 	public static String hierarchicalSubStateMachineClassConstructor(String className, String parentClassName,
 			Multimap<TransitionConditions, Pair<String, String>> machine, String initialState, Map<String, String> subMachines) {
 		String constructor = subStateMachineSharedConstructor(className, parentClassName, machine,
-				ActivityTemplates.simpleSetValue(GenerationNames.CurrentMachineName, PointerAndMemoryNames.NullPtr) + 
+				ActivityTemplates.simpleSetValue(HiearchicalStateMachineNames.CurrentMachineName, PointerAndMemoryNames.NullPtr) + 
 				StateMachineTemplates.hierarchicalStateMachineClassConstructorSharedBody(subMachines, false, null));
 		return  constructor + StateMachineTemplates.hiearchialStateMachineFixFunctionDefinitions(className, initialState, true);
 	}
 	
 	private static String subStateMachineSharedConstructor(String className, String parentClassName, 
 			Multimap<TransitionConditions, Pair<String, String>> machine, String body) {
-		String parentParamName = GenerationNames.formatIncomingParamName(GenerationNames.ParentSmName);
+		String parentParamName = GenerationNames.formatIncomingParamName(HiearchicalStateMachineNames.ParentSmName);
 		return className + "::" + className + "(" + PrivateFunctionalTemplates.cppType(parentClassName)
-		+ " " + parentParamName + "):" + GenerationNames.ParentSmMemberName + "(" + parentParamName + ")"
+		+ " " + parentParamName + "):" + HiearchicalStateMachineNames.ParentSmMemberName + "(" + parentParamName + ")"
 		+ "\n{\n" + body
 		+ "}\n\n";
 	}
