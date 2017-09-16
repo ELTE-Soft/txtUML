@@ -103,12 +103,12 @@ public class SubStateMachineExporter extends StateMachineExporterBase {
 		subSmSpec.append(guardExporter.defnieGuardFunctions(ownerClassName));
 		subSmSpec.append(transitionExporter.createTransitionFunctionsDef());
 		subSmSpec.append(StateMachineTemplates.entry(ownerClassName,
-				createStateActionMap(entryExitFunctionExporter.getEntryMap()), !submachineMap.isEmpty()) + "\n");
+				createStateActionMap(entryExitFunctionExporter.getEntryMap())) + "\n");
 		subSmSpec.append(
-				StateMachineTemplates.exit(ownerClassName, createStateActionMap(entryExitFunctionExporter.getExitMap()), !submachineMap.isEmpty())
+				StateMachineTemplates.exit(ownerClassName, createStateActionMap(entryExitFunctionExporter.getExitMap()))
 						+ "\n");
 		subSmSpec.append(StateMachineTemplates.finalizeFunctionDef(ownerClassName));
-		subSmSpec.append(StateMachineTemplates.initializeFunctionDef(ownerClassName, getInitialStransition(stateMachineRegion).getName()));
+		subSmSpec.append(StateMachineTemplates.initializeFunctionDef(ownerClassName, getInitialTransition(stateMachineRegion).getName()));
 		source.append(GenerationTemplates.formatSubSmFunctions(subSmSpec.toString()));
 
 		return source.toString();

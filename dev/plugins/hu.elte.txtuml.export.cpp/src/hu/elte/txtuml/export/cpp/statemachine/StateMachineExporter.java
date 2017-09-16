@@ -65,14 +65,14 @@ public class StateMachineExporter extends StateMachineExporterBase {
 		source.append(transitionExporter.createTransitionFunctionsDef());
 
 		source.append(StateMachineTemplates.entry(ownerClassName,
-				createStateActionMap(entryExitFunctionExporter.getEntryMap()), !submachineMap.isEmpty()) + "\n");
+				createStateActionMap(entryExitFunctionExporter.getEntryMap())) + "\n");
 		source.append(
 				StateMachineTemplates.exit(ownerClassName, 
-						createStateActionMap(entryExitFunctionExporter.getExitMap()), !submachineMap.isEmpty())
+						createStateActionMap(entryExitFunctionExporter.getExitMap()))
 						+ "\n");
 		
 		source.append(StateMachineTemplates.finalizeFunctionDef(ownerClassName));
-		source.append(StateMachineTemplates.initializeFunctionDef(ownerClassName, getInitialStransition(stateMachineRegion).getName()));
+		source.append(StateMachineTemplates.initializeFunctionDef(ownerClassName, getInitialTransition(stateMachineRegion).getName()));
 
 
 		return source.toString();

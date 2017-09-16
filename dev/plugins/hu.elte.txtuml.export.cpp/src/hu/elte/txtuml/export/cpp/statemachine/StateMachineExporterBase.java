@@ -207,7 +207,7 @@ public class StateMachineExporterBase {
 		return null;
 	}
 	
-	protected static Transition getInitialStransition(Region stateMachineRegion) {
+	protected static Transition getInitialTransition(Region stateMachineRegion) {
 		Pseudostate initialState = getInitialState(stateMachineRegion);
 		if (initialState != null) {
 			for (Transition transition : stateMachineRegion.getTransitions()) {

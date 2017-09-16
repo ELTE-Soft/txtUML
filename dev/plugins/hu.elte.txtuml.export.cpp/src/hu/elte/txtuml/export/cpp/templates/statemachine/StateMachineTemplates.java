@@ -77,15 +77,15 @@ public class StateMachineTemplates {
 	/*
 	 * Map<String,String> state ,actionName
 	 */
-	public static String entry(String className, Map<String, String> states, Boolean hiearchicalStateMachine) {
-		return StateMachineTemplates.entryExitTemplate(EntryExit.Entry, className, states, hiearchicalStateMachine);
+	public static String entry(String className, Map<String, String> states) {
+		return StateMachineTemplates.entryExitTemplate(EntryExit.Entry, className, states);
 	}
 
 	/*
 	 * Map<String,String> state ,action
 	 */
-	public static String exit(String className, Map<String, String> states,Boolean hiearchicalStateMachine) {
-		return StateMachineTemplates.entryExitTemplate(EntryExit.Exit, className, states, hiearchicalStateMachine);
+	public static String exit(String className, Map<String, String> states) {
+		return StateMachineTemplates.entryExitTemplate(EntryExit.Exit, className, states);
 	}
 
 	public static String stateEnum(Iterable<State> states, String initialState) {
@@ -120,7 +120,7 @@ public class StateMachineTemplates {
 
 	}
 	
-	public static String entryExitTemplate(EntryExit type, String className, Map<String, String> states, Boolean hierachicalMachine) {
+	public static String entryExitTemplate(EntryExit type, String className, Map<String, String> states) {
 
 		String parameter;
 		if (states == null || states.isEmpty()) {
