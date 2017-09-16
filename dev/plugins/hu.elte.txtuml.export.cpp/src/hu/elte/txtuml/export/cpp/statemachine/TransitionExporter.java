@@ -12,7 +12,6 @@ import org.eclipse.uml2.uml.UMLPackage;
 import org.eclipse.uml2.uml.Vertex;
 
 import hu.elte.txtuml.export.cpp.ActivityExportResult;
-import hu.elte.txtuml.export.cpp.CppExporterUtils;
 import hu.elte.txtuml.export.cpp.activity.ActivityExporter;
 import hu.elte.txtuml.export.cpp.templates.activity.ActivityTemplates;
 import hu.elte.txtuml.export.cpp.templates.statemachine.EventTemplates;
@@ -49,23 +48,22 @@ public class TransitionExporter {
 			ActivityExportResult activityResult = new ActivityExportResult();
 			Behavior b = transition.getEffect();
 			String setState = createSetState(transition);
-			if (b != null && b.eClass().equals(UMLPackage.Literals.ACTIVITY)) {
-				activityResult = activityExporter.createFunctionBody((Activity) b);
+			activityResult = activityExporter.createFunctionBody((Activity) b);
 
-			}
-			source.append(StateMachineTemplates.transitionActionDef(className, transition.getName(), 
-					transition.getName(), activityResult.getActivitySource() + setState, hasChoiceTarget(transition) || 
-					activityResult.sourceHasSignalReference()));
+			
+			source.append(StateMachineTemplates.transitionActionDef(className, transition.getName(),
+					transition.getName(), activityResult.getActivitySource() + setState,
+					hasChoiceTarget(transition) || activityResult.sourceHasSignalReference()));
 		}
 		source.append("\n");
 		return source.toString();
 	}
-	
+
 	private Boolean hasChoiceTarget(Transition transition) {
 		return transition.getTarget() != null && transition.getTarget().eClass().equals(UMLPackage.Literals.PSEUDOSTATE)
 				&& ((Pseudostate) transition.getTarget()).getKind().equals(PseudostateKind.CHOICE_LITERAL);
 	}
-	
+
 	private String createSetState(Transition transition) {
 		String source = "";
 		Vertex targetState = transition.getTarget();

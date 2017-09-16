@@ -3,10 +3,8 @@ package hu.elte.txtuml.export.cpp.statemachine;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.Behavior;
 import org.eclipse.uml2.uml.State;
-import org.eclipse.uml2.uml.UMLPackage;
 
 import hu.elte.txtuml.export.cpp.ActivityExportResult;
 import hu.elte.txtuml.export.cpp.activity.ActivityExporter;
@@ -107,10 +105,9 @@ public class EntryExitFunctionExporter {
 
 	private void createFuncTypeMap(FuncTypeEnum funcType) {
 		List<EntryExitFunctionDescription> functionList = new LinkedList<EntryExitFunctionDescription>();
-		String source = "";
-		String compositeRelatedCode = "";
-		String name = "";
 		for (State item : stateList) {
+			String source = "";
+			String name = "";
 			Behavior behavior = null;
 			String unknownName = null;
 			switch (funcType) {
@@ -126,19 +123,18 @@ public class EntryExitFunctionExporter {
 			}
 			}
 			ActivityExportResult activityResult = new ActivityExportResult();
-			if (behavior != null && behavior.eClass().equals(UMLPackage.Literals.ACTIVITY)) {
-				activityResult = activityExporter.createFunctionBody((Activity) behavior);
-			}
-			
-			if(item.isComposite()) {
+			activityResult = activityExporter.createFunctionBody(behavior);
+
+			if (item.isComposite()) {
+				String compositeRelatedCode = "";
 				switch (funcType) {
 				case Entry:
-					compositeRelatedCode = ActivityTemplates.simpleIf(GenerationNames.CurrentMachineName, 
+					compositeRelatedCode = ActivityTemplates.simpleIf(GenerationNames.CurrentMachineName,
 							ActivityTemplates.operationCallOnPointerVariable(GenerationNames.CurrentMachineName,
 									StateMachineMethodNames.InitializeFunctionName,
 									Arrays.asList(EventTemplates.EventFParamName)));
 					source = activityResult.getActivitySource() + compositeRelatedCode;
-					
+
 					break;
 				case Exit:
 					compositeRelatedCode = ActivityTemplates.simpleIf(GenerationNames.CurrentMachineName,
@@ -150,15 +146,15 @@ public class EntryExitFunctionExporter {
 				default:
 					break;
 				}
-				
+
 			} else {
 				source = activityResult.getActivitySource();
 			}
 			if (source != "") {
-					name = item.getName() + "_" + unknownName;
-					functionList.add(new EntryExitFunctionDescription(item.getName(), name, source,
-							item.isComposite() || activityResult.sourceHasSignalReference()));
-				
+				name = item.getName() + "_" + unknownName;
+				functionList.add(new EntryExitFunctionDescription(item.getName(), name, source,
+						item.isComposite() || activityResult.sourceHasSignalReference()));
+
 			}
 		}
 

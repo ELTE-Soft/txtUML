@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.Constraint;
 import org.eclipse.uml2.uml.OpaqueExpression;
 import org.eclipse.uml2.uml.Pseudostate;
@@ -78,9 +77,7 @@ public class GuardExporter extends ActivityExporter {
 			if (guard != null) {
 				if (guard.eClass().equals(UMLPackage.Literals.OPAQUE_EXPRESSION)) {
 					OpaqueExpression expression = (OpaqueExpression) guard;
-					if (expression.getBehavior() != null
-							&& expression.getBehavior().eClass().equals(UMLPackage.Literals.ACTIVITY))
-						activityResult = createFunctionBody((Activity) expression.getBehavior());
+					activityResult = createFunctionBody(expression.getBehavior());
 					source.append(StateMachineTemplates.guardDefinition(guardEntry.getValue(), activityResult.getActivitySource(), className,
 							activityResult.sourceHasSignalReference()));
 					

@@ -12,6 +12,7 @@ import org.eclipse.uml2.uml.ActivityEdge;
 import org.eclipse.uml2.uml.ActivityNode;
 import org.eclipse.uml2.uml.AddStructuralFeatureValueAction;
 import org.eclipse.uml2.uml.AddVariableValueAction;
+import org.eclipse.uml2.uml.Behavior;
 import org.eclipse.uml2.uml.CallOperationAction;
 import org.eclipse.uml2.uml.ConditionalNode;
 import org.eclipse.uml2.uml.CreateLinkAction;
@@ -77,14 +78,17 @@ public class ActivityExporter {
 				returnNodeExporter);
 
 	}
-
-	public ActivityExportResult createFunctionBody(Activity activity){
-		
-		activityExportResult = new ActivityExportResult();
-		if(activity == null) {
-			return activityExportResult;
+	public ActivityExportResult createFunctionBody(Behavior behavior) {
+		if(behavior != null && behavior.eClass().equals(UMLPackage.Literals.ACTIVITY)) {
+			return createFunctionBody((Activity) behavior);
+		} else {
+			return ActivityExportResult.emptyResult();
 		}
-		
+	}
+	
+	private ActivityExportResult createFunctionBody(Activity activity){	
+		assert(activity != null);
+		activityExportResult = new ActivityExportResult();	
 		init();
 		ActivityNode startNode = null;
 		for (ActivityNode node : activity.getOwnedNodes()) {

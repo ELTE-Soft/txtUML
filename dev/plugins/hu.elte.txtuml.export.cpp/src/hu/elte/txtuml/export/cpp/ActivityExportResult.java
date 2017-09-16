@@ -1,6 +1,11 @@
 package hu.elte.txtuml.export.cpp;
 
 public class ActivityExportResult {
+	
+	public static ActivityExportResult emptyResult() {
+		return new ActivityExportResult();
+	}
+	
 	public ActivityExportResult() {
 		activitySource = new StringBuilder("");
 		containsSignalAccess = false;
