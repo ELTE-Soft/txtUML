@@ -11,6 +11,8 @@ import org.eclipse.uml2.uml.Transition;
 import org.eclipse.uml2.uml.UMLPackage;
 import org.eclipse.uml2.uml.Vertex;
 
+import hu.elte.txtuml.export.cpp.ActivityExportResult;
+import hu.elte.txtuml.export.cpp.CppExporterUtils;
 import hu.elte.txtuml.export.cpp.activity.ActivityExporter;
 import hu.elte.txtuml.export.cpp.templates.activity.ActivityTemplates;
 import hu.elte.txtuml.export.cpp.templates.statemachine.EventTemplates;
@@ -44,27 +46,32 @@ public class TransitionExporter {
 	String createTransitionFunctionsDef() {
 		StringBuilder source = new StringBuilder("");
 		for (Transition transition : transitions) {
-			String body = "";
+			ActivityExportResult activityResult = new ActivityExportResult();
 			Behavior b = transition.getEffect();
 			String setState = createSetState(transition);
 			if (b != null && b.eClass().equals(UMLPackage.Literals.ACTIVITY)) {
-				body = activityExporter.createFunctionBody((Activity) b);
+				activityResult = activityExporter.createFunctionBody((Activity) b);
 
 			}
 			source.append(StateMachineTemplates.transitionActionDef(className, transition.getName(), 
-					transition.getName(), body + setState, activityExporter.isContainsSignalAccess()));
+					transition.getName(), activityResult.getActivitySource() + setState, hasChoiceTarget(transition) || 
+					activityResult.sourceHasSignalReference()));
 		}
 		source.append("\n");
 		return source.toString();
 	}
-
+	
+	private Boolean hasChoiceTarget(Transition transition) {
+		return transition.getTarget() != null && transition.getTarget().eClass().equals(UMLPackage.Literals.PSEUDOSTATE)
+				&& ((Pseudostate) transition.getTarget()).getKind().equals(PseudostateKind.CHOICE_LITERAL);
+	}
+	
 	private String createSetState(Transition transition) {
 		String source = "";
 		Vertex targetState = transition.getTarget();
 
 		// choice handling
-		if (targetState.eClass().equals(UMLPackage.Literals.PSEUDOSTATE)
-				&& ((Pseudostate) targetState).getKind().equals(PseudostateKind.CHOICE_LITERAL)) {
+		if (hasChoiceTarget(transition)) {
 			List<Pair<String, String>> branches = new LinkedList<Pair<String, String>>();
 			Pair<String, String> elseBranch = null;
 			for (Transition trans : targetState.getOutgoings()) {

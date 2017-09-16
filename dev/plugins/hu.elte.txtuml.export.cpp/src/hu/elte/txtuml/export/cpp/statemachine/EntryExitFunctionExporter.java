@@ -8,6 +8,8 @@ import org.eclipse.uml2.uml.Behavior;
 import org.eclipse.uml2.uml.State;
 import org.eclipse.uml2.uml.UMLPackage;
 
+import hu.elte.txtuml.export.cpp.ActivityExportResult;
+import hu.elte.txtuml.export.cpp.CppExporterUtils;
 import hu.elte.txtuml.export.cpp.activity.ActivityExporter;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.StateMachineMethodNames;
@@ -107,7 +109,6 @@ public class EntryExitFunctionExporter {
 	private void createFuncTypeMap(FuncTypeEnum funcType) {
 		List<EntryExitFunctionDescription> functionList = new LinkedList<EntryExitFunctionDescription>();
 		String source = "";
-		String bevaiorCode = "";
 		String compositeRelatedCode = "";
 		String name = "";
 		for (State item : stateList) {
@@ -125,8 +126,9 @@ public class EntryExitFunctionExporter {
 				break;
 			}
 			}
+			ActivityExportResult activityResult = new ActivityExportResult();
 			if (behavior != null && behavior.eClass().equals(UMLPackage.Literals.ACTIVITY)) {
-				bevaiorCode = activityExporter.createFunctionBody((Activity) behavior).toString();
+				activityResult = activityExporter.createFunctionBody((Activity) behavior);
 			}
 			
 			if(item.isComposite()) {
@@ -136,7 +138,7 @@ public class EntryExitFunctionExporter {
 							ActivityTemplates.operationCallOnPointerVariable(GenerationNames.CurrentMachineName,
 									StateMachineMethodNames.InitializeFunctionName,
 									Arrays.asList(EventTemplates.EventFParamName)));
-					source = bevaiorCode + compositeRelatedCode;
+					source = activityResult.getActivitySource() + compositeRelatedCode;
 					
 					break;
 				case Exit:
@@ -144,19 +146,19 @@ public class EntryExitFunctionExporter {
 							ActivityTemplates.operationCallOnPointerVariable(GenerationNames.CurrentMachineName,
 									StateMachineMethodNames.FinalizeFunctionName,
 									Arrays.asList(EventTemplates.EventFParamName)));
-					source = compositeRelatedCode + bevaiorCode;
+					source = compositeRelatedCode + activityResult.getActivitySource();
 					break;
 				default:
 					break;
 				}
 				
 			} else {
-				source = bevaiorCode;
+				source = activityResult.getActivitySource();
 			}
 			if (source != "") {
 					name = item.getName() + "_" + unknownName;
 					functionList.add(new EntryExitFunctionDescription(item.getName(), name, source,
-							item.isComposite() || activityExporter.isContainsSignalAccess()));
+							item.isComposite() || activityResult.sourceHasSignalReference()));
 				
 			}
 		}

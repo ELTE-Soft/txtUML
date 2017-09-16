@@ -18,6 +18,7 @@ import org.eclipse.uml2.uml.CreateLinkAction;
 import org.eclipse.uml2.uml.CreateObjectAction;
 import org.eclipse.uml2.uml.DestroyLinkAction;
 import org.eclipse.uml2.uml.DestroyObjectAction;
+import org.eclipse.uml2.uml.ExpansionRegion;
 import org.eclipse.uml2.uml.LoopNode;
 import org.eclipse.uml2.uml.OutputPin;
 import org.eclipse.uml2.uml.ReadLinkAction;
@@ -27,12 +28,13 @@ import org.eclipse.uml2.uml.StartClassifierBehaviorAction;
 import org.eclipse.uml2.uml.StartObjectBehaviorAction;
 import org.eclipse.uml2.uml.TestIdentityAction;
 import org.eclipse.uml2.uml.UMLPackage;
-import org.eclipse.uml2.uml.ExpansionRegion;
 
+import hu.elte.txtuml.export.cpp.ActivityExportResult;
 import hu.elte.txtuml.export.cpp.CppExporterUtils;
 import hu.elte.txtuml.export.cpp.templates.activity.ActivityTemplates;
 
 //import hu.elte.txtuml.utils.Logger;
+
 
 public class ActivityExporter {
 
@@ -49,6 +51,8 @@ public class ActivityExporter {
 	private ReturnNodeExporter returnNodeExporter;
 
 	private List<String> createdClassDependencies;
+	
+	private ActivityExportResult activityExportResult;
 
 	public ActivityExporter() {
 	}
@@ -74,10 +78,15 @@ public class ActivityExporter {
 
 	}
 
-	public String createFunctionBody(Activity activity) {
+	public ActivityExportResult createFunctionBody(Activity activity){
+		
+		activityExportResult = new ActivityExportResult();
+		if(activity == null) {
+			return activityExportResult;
+		}
+		
 		init();
 		ActivityNode startNode = null;
-		StringBuilder source = new StringBuilder("");
 		for (ActivityNode node : activity.getOwnedNodes()) {
 			if (node.eClass().equals(UMLPackage.Literals.INITIAL_NODE)) {
 				startNode = node;
@@ -85,22 +94,17 @@ public class ActivityExporter {
 			}
 		}
 
-		source.append(controlNodeExporter.createStructuredActivityNodeVariables(activity.getVariables()));
-		source.append(createActivityPartCode(startNode));
-		source.append(returnNodeExporter.createReturnParamaterCode());
+		activityExportResult.appendToSource(controlNodeExporter.createStructuredActivityNodeVariables(activity.getVariables()));
+		activityExportResult.appendToSource(createActivityPartCode(startNode));
+		activityExportResult.appendToSource(returnNodeExporter.createReturnParamaterCode());
 
-		String reducedSource = source.toString();
 		for (VariableInfo varInfo : userVariableExporter.getElements()) {
 			if (!varInfo.isUsed()) {
-				reducedSource = reducedSource.replaceAll(ActivityTemplates.declareRegex(varInfo.getName()), "");
-				reducedSource = reducedSource.replaceAll(ActivityTemplates.setRegex(varInfo.getName()), "");
+				activityExportResult.reduceSource(ActivityTemplates.declareRegex(varInfo.getName()));
+				activityExportResult.reduceSource(ActivityTemplates.setRegex(varInfo.getName()));
 			}
 		}
-		return reducedSource;
-	}
-	//TODO should be static function..
-	public boolean isContainsSignalAccess() {
-		return callOperationExporter != null ? callOperationExporter.isUsedSignalParameter() : false;
+		return activityExportResult;
 	}
 
 	public boolean isContainsTimerOperation() {
@@ -196,7 +200,11 @@ public class ActivityExporter {
 		} else if (node.eClass().equals(UMLPackage.Literals.START_OBJECT_BEHAVIOR_ACTION)) {
 			source.append(objectActionExporter.createStartObjectActionCode((StartObjectBehaviorAction) node));
 		} else if (node.eClass().equals(UMLPackage.Literals.CALL_OPERATION_ACTION)) {
-			source.append(callOperationExporter.createCallOperationActionCode((CallOperationAction) node));
+			CallOperationAction callAction = (CallOperationAction) node;
+			if (callAction.getOperation().getName().equals(ActivityTemplates.GetSignalFunctionName)) {
+				activityExportResult.setSignalReferenceContainment();
+			}
+			source.append(callOperationExporter.createCallOperationActionCode(callAction));
 
 		} else if (node.eClass().equals(UMLPackage.Literals.ADD_VARIABLE_VALUE_ACTION)) {
 			AddVariableValueAction avva = (AddVariableValueAction) node;
