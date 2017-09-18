@@ -86,15 +86,11 @@ void StateMachineOwner::start()
 { 
 	_started = true;
 	send(ES::EventRef(new InitSpecialSignal()));
-	
 }
 
 void StateMachineOwner::deleteObject()
 {
 	send(ES::EventRef(new DestorySpecialSignal()));
-	if (!_started) {
-		handlePool();
-	}
 	
 }
 
@@ -103,7 +99,8 @@ void StateMachineOwner::send(const ES::EventRef e)
 	messageCounter->incrementCounter();
 	e->setTargetSM(this);
 	_messageQueue->enqueue(e);
-	if (_started)
+	if (_started || 
+		e->getSpecialType() == SpecialSignalType::DestorySignal)
 	{
 		handlePool();
 	}

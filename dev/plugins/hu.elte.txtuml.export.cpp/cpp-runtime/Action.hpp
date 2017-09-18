@@ -18,6 +18,12 @@ void start(ES::ModelObject* sm);
 Starts the state machine of a model object.
 @param sm The state machine to be started. 
 */
+
+void deleteObject(ES::ModelObject* modelObject);
+/**<
+Dispose an model object reference.
+@param modelObject The object to be deleted.
+*/
 	
 void log(ES::String message);
 /**<

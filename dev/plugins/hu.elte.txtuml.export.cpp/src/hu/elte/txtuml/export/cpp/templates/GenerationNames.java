@@ -38,6 +38,7 @@ public class GenerationNames {
 		public static final String ActionFunctionsNamespace = "Action";
 		public static final String SendSignal = ActionFunctionsNamespace + "::" + "send";
 		public static final String ActionStart = ActionFunctionsNamespace + "::" + "start";
+		public static final String ActionDelete = ActionFunctionsNamespace + "::" + "deleteObject";
 		public static final String LinkActionName = ActionFunctionsNamespace + "::" + "link";
 		public static final String UnLinkActionName = ActionFunctionsNamespace + "::" + "unlink";
 		public static final String Log = ActionFunctionsNamespace + "::" + "log";
@@ -55,7 +56,6 @@ public class GenerationNames {
 	public static class PointerAndMemoryNames {
 
 		public static final String MemoryAllocator = "new";
-		public static final String DeleteObject = "delete";
 		public static final String SimpleAccess = ".";
 		public static final String PointerAccess = "->";
 		public static final String NullPtr = "nullptr";
@@ -100,7 +100,6 @@ public class GenerationNames {
 	}
 
 	public static class StateMachineMethodNames {
-		public static final String DeleteStatemachine = "deleteSM";
 		public static final String InitFunctionName = "init";
 		public static final String ProcessEventFName = "process_event";
 		public static final String InitTansitionFunctionName = "Initialize";

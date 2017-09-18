@@ -13,6 +13,11 @@ namespace Action
 	{
 		sm->start();
 	}
+
+	void deleteObject(ES::ModelObject * modelObject)
+	{
+		modelObject->deleteObject();
+	}
 	
 	void log(ES::String message)
 	{
