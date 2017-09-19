@@ -20,7 +20,9 @@ import org.eclipse.uml2.uml.DestroyLinkAction;
 import org.eclipse.uml2.uml.DestroyObjectAction;
 import org.eclipse.uml2.uml.LoopNode;
 import org.eclipse.uml2.uml.OutputPin;
+import org.eclipse.uml2.uml.Port;
 import org.eclipse.uml2.uml.ReadLinkAction;
+import org.eclipse.uml2.uml.ReadStructuralFeatureAction;
 import org.eclipse.uml2.uml.SendObjectAction;
 import org.eclipse.uml2.uml.SequenceNode;
 import org.eclipse.uml2.uml.StartClassifierBehaviorAction;
@@ -28,9 +30,11 @@ import org.eclipse.uml2.uml.StartObjectBehaviorAction;
 import org.eclipse.uml2.uml.TestIdentityAction;
 import org.eclipse.uml2.uml.UMLPackage;
 import org.eclipse.uml2.uml.ExpansionRegion;
+import org.eclipse.uml2.uml.Class;
 
 import hu.elte.txtuml.export.cpp.CppExporterUtils;
 import hu.elte.txtuml.export.cpp.templates.activity.ActivityTemplates;
+import hu.elte.txtuml.export.cpp.templates.structual.PortTemplates;
 
 //import hu.elte.txtuml.utils.Logger;
 
@@ -178,9 +182,7 @@ public class ActivityExporter {
 			source.append(controlNodeExporter.createSequenceNodeCode((SequenceNode) node));
 		} else if (node.eClass().equals(UMLPackage.Literals.ADD_STRUCTURAL_FEATURE_VALUE_ACTION)) {
 			AddStructuralFeatureValueAction asfva = (AddStructuralFeatureValueAction) node;
-			source.append(ActivityTemplates.generalSetValue(activityExportResolver.getTargetFromASFVA(asfva),
-					activityExportResolver.getTargetFromInputPin(asfva.getValue(), false), ActivityTemplates
-							.getOperationFromType(asfva.getStructuralFeature().isMultivalued(), asfva.isReplaceAll())));
+			source.append(createAddStructuralFeatureActionCode(asfva));
 		} else if (node.eClass().equals(UMLPackage.Literals.CREATE_OBJECT_ACTION)) {
 			source.append(objectActionExporter.createCreateObjectActionCode((CreateObjectAction) node));
 		} else if (node.eClass().equals(UMLPackage.Literals.CREATE_LINK_ACTION)) {
@@ -220,5 +222,76 @@ public class ActivityExporter {
 
 		return source.toString();
 	}
+	
+	private String createAddStructuralFeatureActionCode(AddStructuralFeatureValueAction asfva) {
+		String source = "";
+		String target = activityExportResolver.getTargetFromASFVA(asfva);
+		String value = activityExportResolver.getTargetFromInputPin(asfva.getValue(), false);
+		if(isPortConnection(asfva)) {
+			Port targetPort = (Port) asfva.getStructuralFeature();
+			Port valuePort =  (Port) 
+					((ReadStructuralFeatureAction) 
+							((OutputPin) asfva.getValue().getIncomings().get(0).getSource()).getOwner()).getStructuralFeature();
+			String connectOperation = "";
+			switch(getRelation(targetPort, valuePort)) {
+			case Child:
+				connectOperation = PortTemplates.InnerConnectionSetter;
+				break;
+			case Parent:
+				connectOperation = PortTemplates.DelegationConnectionSetter;
+				break;
+			case Sublings:
+				connectOperation = PortTemplates.AssemblyConnectionSetter;
+				break;
+			default:
+				break;
+			
+			}
+			source = ActivityTemplates.blockStatement(ActivityTemplates.operationCallOnPointerVariable(target, connectOperation, Arrays.asList(value)));
+			
+		}
+		else {
+			source = ActivityTemplates.generalSetValue(activityExportResolver.getTargetFromASFVA(asfva),
+					activityExportResolver.getTargetFromInputPin(asfva.getValue(), false), ActivityTemplates
+							.getOperationFromType(asfva.getStructuralFeature().isMultivalued(), asfva.isReplaceAll()));
+		}
+
+		return source;
+	}
+	
+	private Boolean isPortConnection(AddStructuralFeatureValueAction asfva) {
+		return asfva.getStructuralFeature().eClass().equals(UMLPackage.Literals.PORT);
+	}
+	
+	enum Relation {
+		Parent,
+		Child,
+		Sublings
+	}
+	
+	/*private List<Association> filterClassAssocations(Class cls) {
+		Model m = cls.getModel();
+		List<Association> associationList = new ArrayList<Association>();
+		CppExporterUtils.getTypedElements(associationList, UMLPackage.Literals.ASSOCIATION, m.allOwnedElements());
+		return associationList.stream().filter(
+				a -> a.getMemberEnds().stream().anyMatch(e -> e.getType().equals(cls))).collect(Collectors.toList());
+	}*/
+	
+	private Relation getRelation(Port p1, Port p2) {
+		Class p1Class = p1.getClass_();
+		Class p2Class = p2.getClass_();
+		//Model m = p1Class.getModel();
+		if(p1Class.getOwnedAttributes().stream().anyMatch(p -> p.getType().equals(p2Class))) {
+			return Relation.Child;
+		} else if(p2Class.getOwnedAttributes().stream().anyMatch(p -> p.getType().equals(p1Class))) {
+			return Relation.Parent;
+		} else {
+			return Relation.Sublings;
+		}
+		/*List<Association> p1ClassAssociations = filterClassAssocations(p1Class);
+		List<Association> p2ClassAssociations = filterClassAssocations(p2Class);*/
+		
+	}
+	
 
 }
