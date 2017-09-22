@@ -23,13 +23,15 @@ public class TransitionExporter {
 	private GuardExporter guardExporter;
 
 	String className;
+	String initialStateName;
 	List<Transition> transitions;
 
-	TransitionExporter(String className, List<Transition> transitions, GuardExporter guardExporter) {
+	TransitionExporter(String className, List<Transition> transitions, String initialStateName, GuardExporter guardExporter) {
 		activityExporter = new ActivityExporter();
 
 		this.className = className;
 		this.transitions = transitions;
+		this.initialStateName = initialStateName;
 		this.guardExporter = guardExporter;
 	}
 
@@ -94,7 +96,8 @@ public class TransitionExporter {
 	}
 	
 	private String transitionName(Transition transition) {
-		return transition.getTriggers().isEmpty() ? 
+		String sourceName = transition.getSource().getName();
+		return sourceName == initialStateName ? 
 				 GenerationNames.StateMachineMethodNames.InitTansitionFunctionName : 
 				 transition.getName();
 	}

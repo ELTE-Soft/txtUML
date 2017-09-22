@@ -46,6 +46,9 @@ class ActivityNodeResolver {
 	}
 	
 	public String getTargetFromActivityNode(ActivityNode node) {
+		if(node == null) {
+			Logger.sys.error("This should not happen..");
+		}
 
 		String source = "UNHANDLED_ACTIVITYNODE";
 		if (node.eClass().equals(UMLPackage.Literals.FORK_NODE) || node.eClass().equals(UMLPackage.Literals.JOIN_NODE)
@@ -95,7 +98,7 @@ class ActivityNodeResolver {
 			CallOperationAction callAction = (CallOperationAction) node;
 			source = tempVariableExporter.getRealVariableName(returnOutputsToCallActions.get(callAction));
 		} else {
-			Logger.user.error("Unhandled activity node: " + node.getName());
+			Logger.sys.error("Unhandled activity node: " + node.getName());
 		}
 		return source;
 	}
