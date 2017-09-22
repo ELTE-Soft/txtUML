@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.eclipse.uml2.uml.Class;
 import org.eclipse.uml2.uml.Region;
@@ -21,6 +22,7 @@ import hu.elte.txtuml.export.cpp.templates.RuntimeTemplates;
 import hu.elte.txtuml.export.cpp.templates.statemachine.EventTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.ConstructorTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.HeaderTemplates;
+import hu.elte.txtuml.export.cpp.templates.structual.HeaderTemplates.HeaderInfo;
 import hu.elte.txtuml.export.cpp.templates.structual.HeaderTemplates.HeaderType;
 import hu.elte.txtuml.export.cpp.templates.structual.LinkTemplates;
 import hu.elte.txtuml.utils.Pair;
@@ -123,17 +125,26 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 
 			if (!stateMachineExporter.ownSubMachine()) {
 				source = HeaderTemplates
-						.simpleStateMachineClassHeader(getAllDependencies(true), name, getBaseClass(), null,
-								publicParts.toString(), protectedParts.toString(), privateParts.toString(), HeaderType.StateMachineOwnerClass)
-						.toString();
+						.classHeader(getAllDependencies(true), getBaseClass(),
+								publicParts.toString(), protectedParts.toString(), privateParts.toString(), 
+								new HeaderInfo(name,
+										new HeaderTemplates.StateMachineClassHeaderType(Collections.emptyList()),
+										Optional.of(new HeaderInfo.StateMachineInfo(false))));
 			} else {
-				source = HeaderTemplates.hierarchicalStateMachineClassHeader(getAllDependencies(true), name,
-						getBaseClass(), getSubmachines(), publicParts.toString(), protectedParts.toString(),
-						privateParts.toString(), HeaderType.StateMachineOwnerClass);
+				source = HeaderTemplates
+						.classHeader(getAllDependencies(true), getBaseClass(),
+								publicParts.toString(), protectedParts.toString(), privateParts.toString(), 
+								new HeaderInfo(name,
+										new HeaderTemplates.StateMachineClassHeaderType(getSubmachines()),
+										Optional.of(new HeaderInfo.StateMachineInfo(true))));
 			}
 		} else {
-			source = HeaderTemplates.classHeader(getAllDependencies(true), name, getBaseClass(), publicParts.toString(),
-					protectedParts.toString(), privateParts.toString(), HeaderType.NotStateMachineOwnerClass);
+			source = HeaderTemplates
+					.classHeader(getAllDependencies(true), getBaseClass(), publicParts.toString(),
+					protectedParts.toString(), privateParts.toString(), 
+					new HeaderInfo(name,
+							new HeaderTemplates.SimpleClassHeaderType(),
+							Optional.empty()));
 		}
 		return source;
 	}

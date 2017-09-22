@@ -17,7 +17,6 @@ import hu.elte.txtuml.export.cpp.templates.PrivateFunctionalTemplates;
 import hu.elte.txtuml.export.cpp.templates.RuntimeTemplates;
 import hu.elte.txtuml.export.cpp.templates.activity.ActivityTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.FunctionTemplates;
-import hu.elte.txtuml.export.cpp.templates.structual.HeaderTemplates.HeaderType;
 import hu.elte.txtuml.utils.Pair;
 
 public class StateMachineTemplates {
@@ -160,33 +159,6 @@ public class StateMachineTemplates {
 		return source.toString();
 	}
 
-	public static String stateMachineClassFixPublicParts(HeaderType headerType) {
-		StringBuilder source = new StringBuilder("");
-		source.append(ModifierNames.StaticModifier + " " + FunctionTemplates.functionDecl(InitTransitionTable));
-		source.append(GenerationNames.ProcessEventDecl + GenerationNames.SetInitialStateDecl + "\n");
-		if (headerType.hasExecutionInterface()) {
-			source.append("//RuntimeFunctions\n" + 
-					RuntimeTemplates.processEventVirtualDecl() + RuntimeTemplates.processInitTransitionDecl() + "\n");
-		}
-		return source.toString();
-	}
-
-	public static String hierarchicalStateMachineClassFixPrivateParts(String className, List<String> subMachines) {
-		return "//Hierarchical Machine Parts\n" + HiearchicalStateMachineNames.ActionCallerDecl + HiearchicalStateMachineNames.CurrentMachine
-				+ HiearchicalStateMachineNames.CompositeStateMap + SubStateMachineTemplates.subMachineFriendDecls(subMachines)
-				+ "//Simple Machine Parts\n" + StateMachineTemplates.simpleStateMachineClassFixPrivateParts(className);
-	}
-
-	public static String simpleStateMachineClassFixPrivateParts(String className) {
-		return  FunctionTemplates.functionDecl(GenerationNames.InitStateMachine) + "\n" + 
-				GenerationNames.SetStateDecl + GenerationNames.EntryDecl + GenerationNames.ExitDecl + 
-				"\n" + "int " + GenerationNames.CurrentStateName + ";\n";
-	}
-	
-	public static String simpleStateMachineClassFixProtectedParts(String className) {
-		return  PrivateFunctionalTemplates.typedefs(className) + 
-				PrivateFunctionalTemplates.transitionTableDecl(className);
-	}
 
 	/*
 	 * Map<Pair<String, String>,<String,String> <event,

@@ -10,28 +10,12 @@ import hu.elte.txtuml.export.cpp.templates.GenerationNames.PointerAndMemoryNames
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.TimerNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.UMLStdLibNames;
 import hu.elte.txtuml.export.cpp.templates.statemachine.EventTemplates;
-import hu.elte.txtuml.export.cpp.templates.structual.HeaderTemplates.HeaderType;
 import hu.elte.txtuml.utils.Pair;
 
 public class PrivateFunctionalTemplates {
 
 	public static String signalType(String type) {
 		return type + GenerationNames.EventClassTypeId;
-	}
-
-	public static String classHeaderIncludes(HeaderType headerType) {
-		//TODO Separate includes
-		switch (headerType) {
-		case NotStateMachineOwnerClass:
-			return include(RuntimeTemplates.RTPath + RuntimeTemplates.SMIHeaderName);
-		case StateMachineOwnerClass:
-			return include(RuntimeTemplates.RTPath + RuntimeTemplates.SMIHeaderName);
-		case SubStateMachine:
-			return include(RuntimeTemplates.RTPath + RuntimeTemplates.SMIHeaderName);
-		default:
-			return "";
-		
-		}
 	}
 
 	public static String include(String className) {

@@ -11,7 +11,7 @@ public class SubStateMachineTemplates {
 		return GenerationNames.pointerType(parentClass) + " " + HiearchicalStateMachineNames.ParentSmMemberName + ";\n";
 	}
 
-	static String subMachineFriendDecls(List<String> subMachines) {
+	public static String subMachineFriendDecls(List<String> subMachines) {
 		StringBuilder source = new StringBuilder("");
 		for (String subMachine : subMachines) {
 			source.append(GenerationNames.friendClassDecl(subMachine));

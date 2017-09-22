@@ -186,7 +186,12 @@ public class StateMachineExporterBase {
 	}
 
 	protected String getInitialStateName() {
-		return initialState.getName();
+		if(initialState != null) {
+			return initialState.getName();
+		} else {
+			return "";
+		}
+		
 	}
 
 	protected void createStateList() {
