@@ -3,10 +3,13 @@ package hu.elte.txtuml.export.cpp.templates.statemachine;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+
 import org.eclipse.uml2.uml.State;
 
 import com.google.common.collect.Multimap;
 
+import hu.elte.txtuml.export.cpp.CppExporterUtils;
 import hu.elte.txtuml.export.cpp.statemachine.TransitionConditions;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.FileNames;
@@ -83,20 +86,26 @@ public class StateMachineTemplates {
 		return StateMachineTemplates.entryExitTemplate(GenerationNames.ExitName, className, states);
 	}
 
-	public static String stateEnum(Iterable<State> states, String initialState) {
-		StringBuilder StateList = new StringBuilder("enum States {");
-
-		StateList.append(GenerationNames.stateEnumName(initialState) + ",");
-		for (State item : states) {
-			StateList.append(GenerationNames.stateEnumName(item.getName()) + ",");
+	public static String stateEnum(Iterable<State> states, Optional<String> initialState) {
+		String stateType = "enum States : int";
+		String finalStateList = "";
+		StringBuilder statesDecl = new StringBuilder("");
+		if(initialState.isPresent()) {
+			statesDecl.append(GenerationNames.stateEnumName(initialState.get()) + ",");
 		}
-		return StateList.substring(0, StateList.length() - 1) + "};\n";
+		for (State item : states) {
+			statesDecl.append(GenerationNames.stateEnumName(item.getName()) + ",");
+		}
+		String cuttedStateList = CppExporterUtils.cutOffTheLastCharcter(statesDecl.toString());
+		if(!cuttedStateList.isEmpty()) {
+			finalStateList = "{" + cuttedStateList + "}";
+		}
+		return stateType.toString() +  finalStateList + ";\n";
 	}
 
-	public static String setInitialState(String className, String initialState) {
-
-		return ModifierNames.NoReturn + " " + className + "::" + GenerationNames.SetInitialStateName + "(){"
-				+ GenerationNames.SetStateFuncName + "(" + GenerationNames.stateEnumName(initialState) + ");}\n";
+	public static String setInitialState(String className, Optional<String> initialState) {
+		String body = initialState.isPresent() ? GenerationNames.SetStateFuncName + "(" + GenerationNames.stateEnumName(initialState.get()) + ");" : "";
+		return ModifierNames.NoReturn + " " + className + "::" + GenerationNames.SetInitialStateName + "(){" + body + "}\n";
 	}
 
 	public static String entryExitTemplate(String typeName, String className, Map<String, String> states) {
@@ -182,22 +191,27 @@ public class StateMachineTemplates {
 	public static String setState(String state) {
 		return GenerationNames.SetStateFuncName + "(" + GenerationNames.stateEnumName(state) + ");\n";
 	}
-
-	public static String simpleStateMachineInitializationDefinition(String className, String intialState, Boolean rt,
-			Integer poolId) {
-		return FunctionTemplates.functionDef(className, GenerationNames.InitStateMachine, stateMachineInitializationSharedBody(rt, poolId));
+	public static String stateMachineInitializationDefinition(String className, Integer poolId, Optional<Map<String, String>> optionalSubMachines) {
+		if(!optionalSubMachines.isPresent()) {
+			return FunctionTemplates.functionDef(className, GenerationNames.InitStateMachine, stateMachineInitializationSharedBody(true, poolId));
+		} else {
+			Map<String, String> subMachines = optionalSubMachines.get();
+			StringBuilder body = new StringBuilder("");
+			body.append(HiearchicalStateMachineNames.CurrentMachineName + " = " + PointerAndMemoryNames.NullPtr + ";\n");
+			body.append(hierarchicalStateMachineClassConstructorSharedBody(subMachines, true, poolId));
+			return FunctionTemplates.functionDef(className, GenerationNames.InitStateMachine, body.toString());
+		}
 	}
-
-	public static String hierachialStateMachineInitialization(String className, String intialState, Boolean rt,
-			Integer poolId,
-			Map<String, String> subMachines) {
-		StringBuilder body = new StringBuilder("");
-		body.append(HiearchicalStateMachineNames.CurrentMachineName + " = " + PointerAndMemoryNames.NullPtr + ";\n");
-		body.append(hierarchicalStateMachineClassConstructorSharedBody(subMachines, rt, poolId));
-		return FunctionTemplates.functionDef(className, GenerationNames.InitStateMachine, body.toString());
+	
+	public static String stateMachineFixFunctionDefitions(String className, Optional<String> initialState, Boolean subSM, Boolean simple) {
+		if(simple) {
+			return simpleStateMachineFixFunctionDefinitions (className, initialState, subSM);
+		} else {
+			return hiearchialStateMachineFixFunctionDefinitions (className, initialState, subSM);
+		}
 	}
-
-	public static String hiearchialStateMachineFixFunctionDefinitions(String className, String intialState,
+	
+	private static String hiearchialStateMachineFixFunctionDefinitions(String className, Optional<String> intialState,
 			Boolean subM) {
 
 		StringBuilder source = new StringBuilder("");
@@ -213,7 +227,7 @@ public class StateMachineTemplates {
 		return source.toString();
 	}
 
-	public static String simpleStateMachineFixFunctionDefinitions(String className, String initialState, Boolean subM) {
+	private static String simpleStateMachineFixFunctionDefinitions(String className, Optional<String> initialState, Boolean subM) {
 		StringBuilder source = new StringBuilder("");
 
 		source.append(GenerationNames.simpleProcessEventDef(className));

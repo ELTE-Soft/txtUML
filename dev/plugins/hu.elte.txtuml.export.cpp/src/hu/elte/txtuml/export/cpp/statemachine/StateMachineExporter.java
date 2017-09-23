@@ -2,6 +2,7 @@ package hu.elte.txtuml.export.cpp.statemachine;
 
 
 import java.util.Map;
+import java.util.Optional;
 
 import org.eclipse.uml2.uml.Region;
 import org.eclipse.uml2.uml.StateMachine;
@@ -44,19 +45,9 @@ public class StateMachineExporter extends StateMachineExporterBase {
 	public String createStateMachineRelatedCppSourceCodes() {
 		StringBuilder source = new StringBuilder("");
 		source.append(createTransitionTableInitRelatedCodes());
-		if (submachineMap.isEmpty()) {
-			source.append(StateMachineTemplates.simpleStateMachineInitializationDefinition(ownerClassName,
-					getInitialStateName(), true, poolId));
-			source.append(StateMachineTemplates.simpleStateMachineFixFunctionDefinitions(ownerClassName,
-					getInitialStateName(), false));
-
-		} else {
-			source.append(StateMachineTemplates.hierachialStateMachineInitialization(ownerClassName,
-					getInitialStateName(), true, poolId, getEventSubMachineNameMap()));
-			source.append(StateMachineTemplates.hiearchialStateMachineFixFunctionDefinitions(ownerClassName,
-					getInitialStateName(), false));
-
-		}
+		source.append(StateMachineTemplates.stateMachineInitializationDefinition(ownerClassName, poolId, 
+				submachineMap.isEmpty() ? Optional.empty() : Optional.of(getEventSubMachineNameMap())));
+		source.append(StateMachineTemplates.stateMachineFixFunctionDefitions(ownerClassName, getInitialStateName(), false, submachineMap.isEmpty()));
 		source.append(guardExporter.defnieGuardFunctions(ownerClassName));
 		source.append(entryExitFunctionExporter.createEntryFunctionsDef());
 		source.append(entryExitFunctionExporter.createExitFunctionsDef());

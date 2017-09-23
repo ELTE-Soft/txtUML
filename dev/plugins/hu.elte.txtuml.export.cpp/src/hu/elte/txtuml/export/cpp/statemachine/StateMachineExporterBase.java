@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.eclipse.uml2.uml.Event;
 import org.eclipse.uml2.uml.Port;
@@ -185,11 +186,11 @@ public class StateMachineExporterBase {
 		return eventSubMachineMap;
 	}
 
-	protected String getInitialStateName() {
+	protected Optional<String> getInitialStateName() {
 		if(initialState != null) {
-			return initialState.getName();
+			return Optional.of(initialState.getName());
 		} else {
-			return "";
+			return Optional.empty();
 		}
 		
 	}

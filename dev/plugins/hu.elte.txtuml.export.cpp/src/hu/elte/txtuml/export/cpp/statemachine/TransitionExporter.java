@@ -2,6 +2,7 @@ package hu.elte.txtuml.export.cpp.statemachine;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.Behavior;
@@ -23,10 +24,10 @@ public class TransitionExporter {
 	private GuardExporter guardExporter;
 
 	String className;
-	String initialStateName;
+	Optional<String> initialStateName;
 	List<Transition> transitions;
 
-	TransitionExporter(String className, List<Transition> transitions, String initialStateName, GuardExporter guardExporter) {
+	TransitionExporter(String className, List<Transition> transitions, Optional<String> initialStateName, GuardExporter guardExporter) {
 		activityExporter = new ActivityExporter();
 
 		this.className = className;
@@ -97,7 +98,7 @@ public class TransitionExporter {
 	
 	private String transitionName(Transition transition) {
 		String sourceName = transition.getSource().getName();
-		return sourceName == initialStateName ? 
+		return initialStateName.isPresent() &&  sourceName == initialStateName.get() ? 
 				 GenerationNames.StateMachineMethodNames.InitTansitionFunctionName : 
 				 transition.getName();
 	}
