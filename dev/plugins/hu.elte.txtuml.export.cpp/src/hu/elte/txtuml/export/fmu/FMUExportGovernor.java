@@ -7,6 +7,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
+import java.util.stream.Stream;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.jdt.core.IField;
@@ -22,6 +23,7 @@ import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.jdt.core.dom.TypeLiteral;
 
 import hu.elte.txtuml.api.deployment.fmi.FMU;
+import hu.elte.txtuml.api.deployment.fmi.FMUAssociationEnd;
 import hu.elte.txtuml.api.deployment.fmi.FMUInput;
 import hu.elte.txtuml.api.deployment.fmi.FMUOutput;
 import hu.elte.txtuml.api.deployment.fmi.InitialBooleanValue;
@@ -34,7 +36,7 @@ import hu.elte.txtuml.utils.jdt.SharedUtils;
 public class FMUExportGovernor {
 
 	private static final List<String> INITIAL_ANNOT_NAMES = Arrays.asList(InitialBooleanValue.class.getCanonicalName(),
-				InitialIntegerValue.class.getCanonicalName(), InitialRealValue.class.getCanonicalName());
+			InitialIntegerValue.class.getCanonicalName(), InitialRealValue.class.getCanonicalName());
 
 	public FMUConfig extractFMUConfig(String projectName, String fmuDescription) throws NotFoundException, JavaModelException, IOException {
 		
@@ -58,16 +60,19 @@ public class FMUExportGovernor {
 					NormalAnnotation annotMod = (NormalAnnotation) mod;
 					ITypeBinding bind = annotMod.resolveTypeBinding();
 					if (bind.getQualifiedName().equals(FMU.class.getCanonicalName())) {
-						config.umlClassName = getAnnotValue(annotMod, "fmuClass");
+						config.umlClassName = getAnnotValueAsString(annotMod, "fmuClass");
+					} else if (bind.getQualifiedName().equals(FMUAssociationEnd.class.getCanonicalName())) {
+						config.fmuAssociationEndName = getFMUAssociationEndName(annotMod);
 					} else if (bind.getQualifiedName().equals(FMUInput.class.getCanonicalName())) {
-						String inputSignalName = getAnnotValue(annotMod, "inputSignal");
+						String inputSignalName = getAnnotValueAsString(annotMod, "inputSignal");
 						config.inputSignalConfig = Optional.of(inputSignalName);
 						config.inputVariables = loadClassMembers(javaProject, inputSignalName);
 					} else if (bind.getQualifiedName().equals(FMUOutput.class.getCanonicalName())) {
-						config.outputSignalConfig = Optional.of(getAnnotValue(annotMod, "outputSignal"));
+						config.outputSignalConfig = Optional.of(getAnnotValueAsString(annotMod, "outputSignal"));
 						config.outputVariables = loadClassMembers(javaProject, config.outputSignalConfig.get());
 					} else if (INITIAL_ANNOT_NAMES.contains(bind.getQualifiedName())) {
-						config.initialValues.put(getAnnotValue(annotMod, "variableName"), getAnnotValue(annotMod, "value"));
+						config.initialValues.put(getAnnotValueAsString(annotMod, "variableName"),
+								getAnnotValueAsString(annotMod, "value"));
 					}
 				}
 			}
@@ -76,22 +81,35 @@ public class FMUExportGovernor {
 		return config;
 	}
 	
-	public String getAnnotValue(NormalAnnotation annotMod, String valueName) {
-		for (Object annotValue : annotMod.values()) {
-			MemberValuePair pair = (MemberValuePair) annotValue;
-			if (pair.getName().getIdentifier().equals(valueName)) {
-				if (pair.getValue() instanceof TypeLiteral) {
-					return ((TypeLiteral) pair.getValue()).getType().resolveBinding().getQualifiedName();
-				} else if (pair.getValue() instanceof StringLiteral) {
-					return ((StringLiteral) pair.getValue()).getLiteralValue();
-				} else {
-					return pair.getValue().toString();
-				}
-			}
-		}
-		return null;
+	public String getAnnotValueAsString(NormalAnnotation annotMod, String valueName) {
+		return annotValueAsString(getAnnotValue(annotMod, valueName));
 	}
-	
+
+	public Object getAnnotValue(NormalAnnotation annotMod, String valueName) {
+		@SuppressWarnings("unchecked")
+		Optional<Object> maybePair = ((Stream<Object>) annotMod.values().stream())
+				.filter(pair -> ((MemberValuePair) pair).getName().getIdentifier().equals(valueName))
+				.findFirst();
+
+		return ((MemberValuePair) maybePair.get()).getValue();
+	}
+
+	public String annotValueAsString(Object annotValue) {
+		if (annotValue instanceof TypeLiteral) {
+			return ((TypeLiteral) annotValue).getType().resolveBinding().getQualifiedName();
+		} else if (annotValue instanceof StringLiteral) {
+			return ((StringLiteral) annotValue).getLiteralValue();
+		} else {
+			return annotValue.toString();
+		}
+	}
+
+	private String getFMUAssociationEndName(NormalAnnotation annotMod) {
+		Object assocEndAnnotValue = getAnnotValue(annotMod, "fmuAssociationEnd");
+		ITypeBinding assocEndBinding = ((TypeLiteral) assocEndAnnotValue).getType().resolveBinding();
+		ITypeBinding assocBinding = assocEndBinding.getDeclaringClass();
+		return assocBinding.getName() + "_" + assocEndBinding.getName();
+	}
 
 	private List<VariableDefinition> loadClassMembers(IJavaProject javaProject, String typeName) throws JavaModelException {
 		IType signalType = javaProject.findType(typeName);

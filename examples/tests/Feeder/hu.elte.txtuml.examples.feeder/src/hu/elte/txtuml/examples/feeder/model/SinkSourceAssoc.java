@@ -5,10 +5,10 @@ import hu.elte.txtuml.api.model.ModelClass;
 
 public class SinkSourceAssoc extends Association {
 
-	class sink extends One<ModelClass> {
+	public class sink extends One<ModelClass> {
 	}
 
-	class source extends One<ModelClass> {
+	public class source extends One<ModelClass> {
 	}
 
 }

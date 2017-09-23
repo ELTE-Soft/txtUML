@@ -76,6 +76,8 @@ public class EnvironmentExporter {
 		while (matcher.find()) {
 			if (matcher.group().equals("$fmuclass")) {
 				matcher.appendReplacement(sb, unqualify(fmuConfig.umlClassName));
+			} else if (matcher.group().equals("$fmuassociationend")) {
+				matcher.appendReplacement(sb, fmuConfig.fmuAssociationEndName);
 			}
 		}
 		matcher.appendTail(sb);

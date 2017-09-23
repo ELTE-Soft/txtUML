@@ -7,6 +7,7 @@ import java.util.Optional;
 public class FMUConfig {
 
 	String umlClassName;
+	String fmuAssociationEndName;
 	Optional<String> outputSignalConfig;
 	List<VariableDefinition> outputVariables;
 	
