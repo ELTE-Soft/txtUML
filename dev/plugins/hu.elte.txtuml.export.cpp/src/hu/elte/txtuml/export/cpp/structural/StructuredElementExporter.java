@@ -13,6 +13,7 @@ import org.eclipse.uml2.uml.Parameter;
 import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.VisibilityKind;
 
+import hu.elte.txtuml.export.cpp.ActivityExportResult;
 import hu.elte.txtuml.export.cpp.CppExporterUtils;
 import hu.elte.txtuml.export.cpp.activity.ActivityExporter;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames;
@@ -94,24 +95,21 @@ public abstract class StructuredElementExporter<StructuredElement extends Operat
 	protected String createOperationDefinitions() {
 		StringBuilder source = new StringBuilder("");
 		for (Operation operation : structuredElement.getOwnedOperations()) {
-
-			String funcBody = "";
-			if (!operation.isAbstract()) {
-				funcBody = activityExporter.createFunctionBody(CppExporterUtils.getOperationActivity(operation));
-				dependencyExporter.addDependencies(activityExporter.getAdditionalClassDependencies());
-			}
-
 			if (!CppExporterUtils.isConstructor(operation)) {
 				String returnType = getReturnType(operation.getReturnResult());
 				if (!operation.isAbstract()) {
+					ActivityExportResult activityResult = activityExporter.createFunctionBody(CppExporterUtils.getOperationActivity(operation));				
+					dependencyExporter.addDependencies(activityExporter.getAdditionalClassDependencies());
 					source.append(FunctionTemplates.functionDef(name, returnType, operation.getName(),
-							CppExporterUtils.getOperationParams(operation), funcBody));
+							CppExporterUtils.getOperationParams(operation), activityResult.getActivitySource()));
+					
 				} else {
 					assert(testing != null);
 					source.append(FunctionTemplates.abstractFunctionDef(name, returnType, operation.getName(),
 							CppExporterUtils.getOperationParams(operation),testing));
 
 				}
+
 			}
 
 		}

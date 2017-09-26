@@ -45,21 +45,21 @@ public:
 	}
 
 public:
-	static void invalidatesEvent(ES::EventRef& event) {
+	static void invalidatesEvent(ES::SharedPtr<IEvent<DerivedBase>>& event) {
 		event->setTargetSM(nullptr);
 	}
 
-	static bool eventIsValid(const ES::EventRef& event) {
+	static bool eventIsValid(const ES::SharedPtr<IEvent<DerivedBase>>& event) {
 		return event->getTargetSM() != nullptr;
 	}
 
 };
 
 
-template<typename Derived>
+template<typename DerivedBase>
 class SpecialEventChecker {
 public:
-	bool operator() (const ES::EventRef& e) {
+	bool operator() (const ES::SharedPtr<const IEvent<DerivedBase>>& e) {
 		return e->getSpecialType() != SpecialSignalType::NoSpecial;
 	}
 };
