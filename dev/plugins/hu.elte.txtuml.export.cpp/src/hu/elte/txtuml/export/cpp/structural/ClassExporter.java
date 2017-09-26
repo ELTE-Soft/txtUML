@@ -23,7 +23,6 @@ import hu.elte.txtuml.export.cpp.templates.statemachine.EventTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.ConstructorTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.HeaderTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.HeaderTemplates.HeaderInfo;
-import hu.elte.txtuml.export.cpp.templates.structual.HeaderTemplates.HeaderType;
 import hu.elte.txtuml.export.cpp.templates.structual.LinkTemplates;
 import hu.elte.txtuml.utils.Pair;
 

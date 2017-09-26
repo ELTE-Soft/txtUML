@@ -6,6 +6,7 @@ import java.util.Optional;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationTemplates;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.ClassUtilsNames;
+import hu.elte.txtuml.export.cpp.templates.GenerationNames.EntryExitNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.FileNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.HiearchicalStateMachineNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.ModifierNames;
@@ -161,11 +162,6 @@ public class HeaderTemplates {
 			return ownerClassName;
 		}
 		
-
-		public Boolean hasExecutionInterface() {
-			return headerType.hasExecutionInterface();
-		}
-		
 		public String getFixPublicParts() {
 			StringBuilder fixPublicParts = new StringBuilder("");
 			if (stateMachineInfo.isPresent()) {
@@ -174,7 +170,7 @@ public class HeaderTemplates {
 				fixPublicParts.append(GenerationNames.ProcessEventDecl + GenerationNames.SetInitialStateDecl + "\n");
 
 			}
-			if (hasExecutionInterface()) {
+			if (headerType.hasExecutionInterface()) {
 				fixPublicParts.append("//RuntimeFunctions\n" + RuntimeTemplates.processEventVirtualDecl()
 						+ RuntimeTemplates.processInitTransitionDecl() + "\n");
 			}
@@ -197,7 +193,7 @@ public class HeaderTemplates {
 			if(stateMachineInfo.isPresent()) {
 				StateMachineInfo machineInfo = stateMachineInfo.get();
 				fixPrivateParts.append("//Simple Machine Parts\n" + FunctionTemplates.functionDecl(GenerationNames.InitStateMachine) + "\n" + 
-						GenerationNames.SetStateDecl + GenerationNames.EntryDecl + GenerationNames.ExitDecl + 
+						GenerationNames.SetStateDecl + EntryExitNames.EntryDecl + EntryExitNames.ExitDecl + 
 						"\n" + "int " + GenerationNames.CurrentStateName + ";\n");
 				
 				if(machineInfo.isHierhicalStateMachine()) {

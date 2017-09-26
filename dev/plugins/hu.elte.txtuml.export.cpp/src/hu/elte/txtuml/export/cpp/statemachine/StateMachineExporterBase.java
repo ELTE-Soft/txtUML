@@ -141,7 +141,7 @@ public class StateMachineExporterBase {
 		submachineMap = getSubMachines();
 		subSubMachines = new ArrayList<String>();
 		guardExporter = new GuardExporter();
-		transitionExporter = new TransitionExporter(ownerClassName, stateMachineRegion.getTransitions(), getInitialStateName(), guardExporter);
+		transitionExporter = new TransitionExporter(ownerClassName, stateMachineRegion.getTransitions(), guardExporter);
 		entryExitFunctionExporter = new EntryExitFunctionExporter(ownerClassName, stateList);
 		entryExitFunctionExporter.createEntryFunctionTypeMap();
 		entryExitFunctionExporter.createExitFunctionTypeMap();
@@ -185,16 +185,7 @@ public class StateMachineExporterBase {
 		}
 		return eventSubMachineMap;
 	}
-
-	protected Optional<String> getInitialStateName() {
-		if(initialState != null) {
-			return Optional.of(initialState.getName());
-		} else {
-			return Optional.empty();
-		}
-		
-	}
-
+	
 	protected void createStateList() {
 		stateList = new ArrayList<State>();
 		for (Vertex item : stateMachineRegion.getSubvertices()) {
@@ -202,5 +193,30 @@ public class StateMachineExporterBase {
 				stateList.add((State) item);
 			}
 		}
+	}
+	
+	protected static Optional<Pseudostate> getInitialState(Region stateMachineRegion) {
+		for (Vertex item : stateMachineRegion.getSubvertices()) {
+			if (item.eClass().equals(UMLPackage.Literals.PSEUDOSTATE)) {
+				Pseudostate pseduoState = (Pseudostate) item;
+				if (pseduoState.getKind().equals(PseudostateKind.INITIAL_LITERAL)) {
+					return Optional.of((Pseudostate) item);
+				}
+
+			}
+		}		
+		return Optional.empty();
+	}
+	
+	protected static Optional<Transition> getInitialTransition(Region stateMachineRegion) {
+		Optional<Pseudostate> initialState = getInitialState(stateMachineRegion);
+		if (initialState != null) {
+			for (Transition transition : stateMachineRegion.getTransitions()) {
+				if(transition.getSource().equals(initialState)) {
+					return Optional.of(transition);
+				}
+			}
+		}		
+		return Optional.empty();
 	}
 }

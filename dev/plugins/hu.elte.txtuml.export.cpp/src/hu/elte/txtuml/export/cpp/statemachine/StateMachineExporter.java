@@ -47,7 +47,8 @@ public class StateMachineExporter extends StateMachineExporterBase {
 		source.append(createTransitionTableInitRelatedCodes());
 		source.append(StateMachineTemplates.stateMachineInitializationDefinition(ownerClassName, poolId, 
 				submachineMap.isEmpty() ? Optional.empty() : Optional.of(getEventSubMachineNameMap())));
-		source.append(StateMachineTemplates.stateMachineFixFunctionDefitions(ownerClassName, getInitialStateName(), false, submachineMap.isEmpty()));
+		source.append(StateMachineTemplates.stateMachineFixFunctionDefitions(ownerClassName, 
+				getInitialState(stateMachineRegion) ,false, submachineMap.isEmpty()));
 		source.append(guardExporter.defnieGuardFunctions(ownerClassName));
 		source.append(entryExitFunctionExporter.createEntryFunctionsDef());
 		source.append(entryExitFunctionExporter.createExitFunctionsDef());
@@ -56,14 +57,19 @@ public class StateMachineExporter extends StateMachineExporterBase {
 		source.append(StateMachineTemplates.entry(ownerClassName,
 				createStateActionMap(entryExitFunctionExporter.getEntryMap())) + "\n");
 		source.append(
-				StateMachineTemplates.exit(ownerClassName, createStateActionMap(entryExitFunctionExporter.getExitMap()))
+				StateMachineTemplates.exit(ownerClassName, 
+						createStateActionMap(entryExitFunctionExporter.getExitMap()))
 						+ "\n");
+		
+		source.append(StateMachineTemplates.finalizeFunctionDef(ownerClassName));
+		source.append(StateMachineTemplates.initializeFunctionDef(ownerClassName, getInitialTransition(stateMachineRegion)));
+
 
 		return source.toString();
 	}
 
-	public String createStateEnumCode() {
-		return StateMachineTemplates.stateEnum(stateList, getInitialStateName());
+	public String createStateEnumCode() {		
+		return StateMachineTemplates.stateEnum(stateList, getInitialState(stateMachineRegion));
 	}
 
 	public boolean ownSubMachine() {

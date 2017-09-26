@@ -103,7 +103,7 @@ public class ActivityTemplates {
 	}
 
 	public static String operationCallOnPointerVariable(String ownerName, String operationName, List<String> params) {
-		return operationCall(ownerName, PointerAndMemoryNames.PointerAccess, operationName, params);
+		return blockStatement(operationCall(ownerName, PointerAndMemoryNames.PointerAccess, operationName, params));
 	}
 
 	public static String blockStatement(String statement) {
