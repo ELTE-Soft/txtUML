@@ -13,7 +13,7 @@ class FMUEnvironment : public StateMachineBase, public IStateMachine {
     bool process_event(ES::EventRef) = 0;
     void setInitialState() = 0;
 
-    Model::AssociationEnd<$fmuclass> LanderWorld_lander = AssociationEnd< $fmuclass > (1, 1);
+    Model::AssociationEnd<$fmuclass> $fmuassociationend = AssociationEnd< $fmuclass > (1, 1);
     
     template<typename EndPointName>
     void link(typename EndPointName::EdgeType*);
