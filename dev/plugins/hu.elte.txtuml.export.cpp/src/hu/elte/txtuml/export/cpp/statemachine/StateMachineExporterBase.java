@@ -210,9 +210,9 @@ public class StateMachineExporterBase {
 	
 	protected static Optional<Transition> getInitialTransition(Region stateMachineRegion) {
 		Optional<Pseudostate> initialState = getInitialState(stateMachineRegion);
-		if (initialState != null) {
+		if (initialState.isPresent()) {
 			for (Transition transition : stateMachineRegion.getTransitions()) {
-				if(transition.getSource().equals(initialState)) {
+				if(transition.getSource().equals(initialState.get())) {
 					return Optional.of(transition);
 				}
 			}

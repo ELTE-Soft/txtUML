@@ -204,6 +204,9 @@ public class HeaderTemplates {
 				fixPublicParts.append(ModifierNames.StaticModifier + " "
 						+ FunctionTemplates.functionDecl(StateMachineTemplates.InitTransitionTable));
 				fixPublicParts.append(GenerationNames.ProcessEventDecl + GenerationNames.SetInitialStateDecl + "\n");
+				fixPublicParts.append(StateMachineTemplates.initializeFunctionDecl());
+				fixPublicParts.append(StateMachineTemplates.finalizeFunctionDecl()); 
+
 
 			}
 			if (headerType.hasExecutionInterface()) {
