@@ -115,35 +115,25 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 
 		publicParts.append(LinkTemplates.templateLinkFunctionGeneralDef(LinkTemplates.LinkFunctionType.Link));
 		publicParts.append(LinkTemplates.templateLinkFunctionGeneralDef(LinkTemplates.LinkFunctionType.Unlink));
+		
+		publicParts.append(portExporter.createPortEnumCode(structuredElement.getOwnedPorts()));
 
 		if (CppExporterUtils.isStateMachineOwner(structuredElement)) {
 
 			publicParts.append(stateMachineExporter.createStateEnumCode());
-			publicParts.append(portExporter.createPortEnumCode(structuredElement.getOwnedPorts()));
 			privateParts.append(stateMachineExporter.createStateMachineRelatedHeadedDeclarationCodes());
-
-			if (!stateMachineExporter.ownSubMachine()) {
-				source = HeaderTemplates
+			source = HeaderTemplates
 						.classHeader(getAllDependencies(true), getBaseClass(),
 								publicParts.toString(), protectedParts.toString(), privateParts.toString(), 
 								new HeaderInfo(name,
-										new HeaderTemplates.StateMachineClassHeaderType(Collections.emptyList()),
-										Optional.of(new HeaderInfo.StateMachineInfo(false))));
-			} else {
-				source = HeaderTemplates
-						.classHeader(getAllDependencies(true), getBaseClass(),
-								publicParts.toString(), protectedParts.toString(), privateParts.toString(), 
-								new HeaderInfo(name,
-										new HeaderTemplates.StateMachineClassHeaderType(getSubmachines()),
-										Optional.of(new HeaderInfo.StateMachineInfo(true))));
-			}
+										new HeaderTemplates.StateMachineClassHeaderType(stateMachineExporter.ownSubMachine() ? 
+												Optional.of(getSubmachines()) : Optional.empty()))
+							);
 		} else {
 			source = HeaderTemplates
 					.classHeader(getAllDependencies(true), getBaseClass(), publicParts.toString(),
 					protectedParts.toString(), privateParts.toString(), 
-					new HeaderInfo(name,
-							new HeaderTemplates.SimpleClassHeaderType(),
-							Optional.empty()));
+					new HeaderInfo(name,new HeaderTemplates.SimpleClassHeaderType())	);
 		}
 		return source;
 	}

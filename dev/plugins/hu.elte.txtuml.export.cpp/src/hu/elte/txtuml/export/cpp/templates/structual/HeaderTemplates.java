@@ -1,5 +1,6 @@
 package hu.elte.txtuml.export.cpp.templates.structual;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,6 +23,8 @@ public class HeaderTemplates {
 		String getSpecificBaseClass();
 		String getSpecificPrivatePart();
 		String getSpecificInlude();
+		Boolean hasStateMachine();
+		Boolean hasHierhicalStateMachine();
 		Boolean hasExecutionInterface();
 		
 	}
@@ -47,18 +50,33 @@ public class HeaderTemplates {
 		public Boolean hasExecutionInterface() {
 			return false;
 		}
+
+		@Override
+		public Boolean hasStateMachine() {
+			return false;
+		}
+
+		@Override
+		public Boolean hasHierhicalStateMachine() {
+			// TODO Auto-generated method stub
+			return false;
+		}
 		
 	}
 	
 	public static class StateMachineClassHeaderType implements HeaderType {
-		private List<String> subMachines;
+		private Optional<List<String>> optionalSubMachines;
 		
-		public StateMachineClassHeaderType(List<String> subMachines) {
-			this.subMachines = subMachines;
+		public StateMachineClassHeaderType(Optional<List<String>> optionalSubMachines) {
+			this.optionalSubMachines = optionalSubMachines;
 		}
 		@Override
 		public String getSpecificPrivatePart() {
-			return SubStateMachineTemplates.subMachineFriendDecls(subMachines);
+			if(optionalSubMachines.isPresent()) {
+				return SubStateMachineTemplates.subMachineFriendDecls(optionalSubMachines.get());
+ 
+			}
+			return "";
 		}
 		@Override
 		public String getSpecificBaseClass() {
@@ -72,13 +90,23 @@ public class HeaderTemplates {
 		public Boolean hasExecutionInterface() {
 			return true;
 		}
+		@Override
+		public Boolean hasStateMachine() {
+			return true;
+		}
+		@Override
+		public Boolean hasHierhicalStateMachine() {
+			return optionalSubMachines.isPresent();
+		}
 	}
 	
 	public static class SubMachineHeaderType implements HeaderType {
 		private String parentClassName;
+		private Boolean hiearhical;
 		
-		public SubMachineHeaderType(String parentClassName) {
+		public SubMachineHeaderType(String parentClassName, Boolean hiearhical) {
 			this.parentClassName = parentClassName;
+			this.hiearhical = hiearhical;
 		}
 
 		@Override
@@ -100,6 +128,16 @@ public class HeaderTemplates {
 		@Override
 		public Boolean hasExecutionInterface() {
 			return false;
+		}
+
+		@Override
+		public Boolean hasStateMachine() {
+			return true;
+		}
+
+		@Override
+		public Boolean hasHierhicalStateMachine() {
+			return hiearhical;
 		}
 	}
 	
@@ -140,13 +178,11 @@ public class HeaderTemplates {
 			private Boolean hiearhical;
 		}
 		private String ownerClassName;
-		private Optional<StateMachineInfo> stateMachineInfo;
 		private HeaderType headerType;
 
-		public HeaderInfo(String ownerClassName, HeaderType headerType, Optional<StateMachineInfo> stateMachineInfo) {
+		public HeaderInfo(String ownerClassName, HeaderType headerType) {
 			this.ownerClassName = ownerClassName;
 			this.headerType = headerType;
-			this.stateMachineInfo = stateMachineInfo;
 		}
 
 		public String getRleatedBaseClass() {
@@ -164,7 +200,7 @@ public class HeaderTemplates {
 		
 		public String getFixPublicParts() {
 			StringBuilder fixPublicParts = new StringBuilder("");
-			if (stateMachineInfo.isPresent()) {
+			if (headerType.hasStateMachine()) {
 				fixPublicParts.append(ModifierNames.StaticModifier + " "
 						+ FunctionTemplates.functionDecl(StateMachineTemplates.InitTransitionTable));
 				fixPublicParts.append(GenerationNames.ProcessEventDecl + GenerationNames.SetInitialStateDecl + "\n");
@@ -178,9 +214,9 @@ public class HeaderTemplates {
 			return fixPublicParts.toString();
 		}
 		
-		public String getFixPrtectedParts() {
+		public String getFixProtectedParts() {
 			StringBuilder fixProtectedParts = new StringBuilder("");
-			if(stateMachineInfo.isPresent()) {
+			if(headerType.hasStateMachine()) {
 				fixProtectedParts.append(PrivateFunctionalTemplates.typedefs(ownerClassName));
 				fixProtectedParts.append(PrivateFunctionalTemplates.transitionTableDecl(ownerClassName));
 			}
@@ -190,13 +226,12 @@ public class HeaderTemplates {
 		
 		public String getFixPrivateParts() {
 			StringBuilder fixPrivateParts = new StringBuilder("");
-			if(stateMachineInfo.isPresent()) {
-				StateMachineInfo machineInfo = stateMachineInfo.get();
+			if(headerType.hasStateMachine()) {
 				fixPrivateParts.append("//Simple Machine Parts\n" + FunctionTemplates.functionDecl(GenerationNames.InitStateMachine) + "\n" + 
 						GenerationNames.SetStateDecl + EntryExitNames.EntryDecl + EntryExitNames.ExitDecl + 
 						"\n" + "int " + GenerationNames.CurrentStateName + ";\n");
 				
-				if(machineInfo.isHierhicalStateMachine()) {
+				if(headerType.hasHierhicalStateMachine()) {
 					fixPrivateParts.append("//Hierarchical Machine Parts\n" 
 							+ HiearchicalStateMachineNames.ActionCallerDecl 
 							+ HiearchicalStateMachineNames.CurrentMachine
@@ -242,7 +277,7 @@ public class HeaderTemplates {
 		classDecleration.append("\n{\n");
 		
 		classDecleration.append("\npublic:\n" + headerInfo.getFixPublicParts() + publicPart);
-		classDecleration.append("\nprotected:\n" + headerInfo.getFixPrtectedParts() + protectedPart);		
+		classDecleration.append("\nprotected:\n" + headerInfo.getFixProtectedParts() + protectedPart);		
 		classDecleration.append("\nprivate:\n" + headerInfo.getFixPrivateParts() + privatePart);
 
 		classDecleration.append("\n};\n\n");

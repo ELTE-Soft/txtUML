@@ -82,8 +82,7 @@ public class SubStateMachineExporter extends StateMachineExporterBase {
 					.classHeader(dependency.toString(), null,
 							publicParts.toString(), protectedParts.toString(), privateParts.toString(), 
 							new HeaderInfo(ownerClassName, 
-									new HeaderTemplates.SubMachineHeaderType(parentClassName), 
-									Optional.of(new HeaderInfo.StateMachineInfo(!submachineMap.isEmpty()))));
+									new HeaderTemplates.SubMachineHeaderType(parentClassName, !submachineMap.isEmpty())));
 				
 			
 		return source;
