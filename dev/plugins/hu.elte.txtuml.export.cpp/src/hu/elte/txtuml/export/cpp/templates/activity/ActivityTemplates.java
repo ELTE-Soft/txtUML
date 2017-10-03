@@ -127,7 +127,7 @@ public class ActivityTemplates {
 	}
 
 	public static String deleteObject(String objectVariable) {
-		return blockStatement(operationCall(objectVariable, Arrays.asList(objectVariable)));
+		return blockStatement(operationCall(ActionNames.ActionDelete, Arrays.asList(objectVariable)));
 		
 	}
 
