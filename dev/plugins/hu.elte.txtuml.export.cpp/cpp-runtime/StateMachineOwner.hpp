@@ -1,5 +1,5 @@
-#ifndef ISTATEMACHINE_HPP_INCLUDED
-#define ISTATEMACHINE_HPP_INCLUDED
+#ifndef STATE_MACHINE_OWNER_HPP_INCLUDED
+#define STATE_MACHINE_OWNER_HPP_INCLUDED
 
 #include <memory>
 #include <mutex>
@@ -7,7 +7,7 @@
 #include <string>
 
 #include "ModelObject.hpp"
-#include "statemachinebase.hpp"
+#include "StateMachineBase.hpp"
 #include "ESRoot/Containers/ThreadSafeQueue.hpp"
 #include "ESRoot/AtomicCounter.hpp"
 
@@ -66,21 +66,7 @@ private:
 
 };
 
-class NotStateMachineOwner : public ES::ModelObject
-{
-public:
-	virtual ~NotStateMachineOwner();
-	virtual void start() override;
-	virtual void deleteObject() override;
-	virtual void send(const ES::EventRef e) override;
-
-};
-
-class SubStateMachine : public Model::StateMachineBase
-{
-};
 
 }
 
-
-#endif // ISTATEMACHINE_HPP_INCLUDED
+#endif // STATE_MACHINE_OWNER

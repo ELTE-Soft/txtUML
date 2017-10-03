@@ -1,6 +1,5 @@
 package hu.elte.txtuml.export.cpp.templates.structual;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -43,7 +42,7 @@ public class HeaderTemplates {
 
 		@Override
 		public String getSpecificInlude() {
-			return PrivateFunctionalTemplates.include(RuntimeTemplates.RTPath + RuntimeTemplates.SMIHeaderName);
+			return PrivateFunctionalTemplates.include(RuntimeTemplates.RTPath + ClassUtilsNames.NotStateMachineOwnerBaseName);
 		}
 
 		@Override
@@ -58,7 +57,6 @@ public class HeaderTemplates {
 
 		@Override
 		public Boolean hasHierhicalStateMachine() {
-			// TODO Auto-generated method stub
 			return false;
 		}
 		
@@ -84,7 +82,13 @@ public class HeaderTemplates {
 		}
 		@Override
 		public String getSpecificInlude() {
-			return PrivateFunctionalTemplates.include(RuntimeTemplates.RTPath + RuntimeTemplates.SMIHeaderName);
+			StringBuilder includes = new StringBuilder("");
+			if(hasHierhicalStateMachine()) {
+				includes.append(PrivateFunctionalTemplates.include(RuntimeTemplates.RTPath + ClassUtilsNames.SubStateMachineBase));
+			}
+			includes.append(PrivateFunctionalTemplates.include(RuntimeTemplates.RTPath + ClassUtilsNames.StateMachineOwnerBaseName));
+			
+			return includes.toString();
 		}
 		@Override
 		public Boolean hasExecutionInterface() {
@@ -122,7 +126,7 @@ public class HeaderTemplates {
 
 		@Override
 		public String getSpecificInlude() {
-			return PrivateFunctionalTemplates.include(RuntimeTemplates.RTPath + RuntimeTemplates.SMIHeaderName);
+			return PrivateFunctionalTemplates.include(RuntimeTemplates.RTPath + ClassUtilsNames.SubStateMachineBase);
 		}
 
 		@Override
@@ -142,28 +146,6 @@ public class HeaderTemplates {
 	}
 	
 	public static class HeaderInfo {
-		
-		/*public static HeaderInfo createSimpleMachineOwnerHeaderInfo(String ownerClassName) {
-			return new HeaderInfo(ownerClassName, Optional.empty(), Optional.empty(), HeaderType.ModelClassHeader, Optional.of(new StateMachineInfo(false)));
-		}
-		
-		public static HeaderInfo createHiearhicalMachineOwnerHeaderInfo(String ownerClassName, List<String> subMachines) {
-			return new HeaderInfo(ownerClassName, Optional.empty(), Optional.of(subMachines), HeaderType.ModelClassHeader, Optional.of(new StateMachineInfo(true)));
-		}
-		
-		public static HeaderInfo createSimpleClassHeaderInfo(String ownerClassName) {
-			return new HeaderInfo(ownerClassName, Optional.empty(), Optional.empty(), HeaderType.ModelClassHeader, Optional.empty());
-		}
-		
-		public static HeaderInfo createSimpleSubMachineHeaderInfo(String ownerClassName, String parentClassName) {
-			return new HeaderInfo(ownerClassName, Optional.of(parentClassName), Optional.empty(), HeaderType.CompositeStateHeader, Optional.of(new StateMachineInfo(false)));
-
-		}
-		
-		public static HeaderInfo crateHierhicalSubMachineHeaderInfo(String ownerClassName, String parentClassName) {
-			return new HeaderInfo(ownerClassName, Optional.of(parentClassName), Optional.empty(), HeaderType.CompositeStateHeader, Optional.of(new StateMachineInfo(true)));
-
-		}*/
 		
 		public static class StateMachineInfo {
 
@@ -190,7 +172,6 @@ public class HeaderTemplates {
 		}
 
 		public String getRelatedBaseClassInclude() {
-			// TODO Separate includes
 			return headerType.getSpecificInlude();
 		}
 		

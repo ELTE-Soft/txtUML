@@ -1,4 +1,4 @@
-#include "istatemachine.hpp"
+#include "StateMachineOwner.hpp"
 #include "threadpool.hpp"
 #include "runtime.hpp"
 #include "ievent.hpp"
@@ -135,27 +135,6 @@ void StateMachineOwner::setMessageCounter(ES::SharedPtr<ES::AtomicCounter> count
 std::string StateMachineOwner::toString() const
 { 
 	return ""; 
-}
-
-
-// NotStateMachineOwner
-NotStateMachineOwner::~NotStateMachineOwner()
-{
-}
-
-void NotStateMachineOwner::start()
-{
-	//empty statement
-}
-
-void NotStateMachineOwner::deleteObject()
-{
-	delete this;
-}
-
-void NotStateMachineOwner::send(const ES::EventRef e)
-{
-	//empty statement
 }
 
 }

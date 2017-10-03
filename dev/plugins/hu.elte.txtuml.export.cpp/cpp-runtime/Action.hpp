@@ -1,8 +1,11 @@
 /** @file Action.hpp
 */
-#include "istatemachine.hpp"
-#include "ESRoot/Types.hpp"
 
+#include "ESRoot/Types.hpp"
+namespace ES
+{
+class ModelObject;
+}
 namespace Action 
 {
 	
