@@ -26,6 +26,10 @@ public class EventTemplates {
 	public static final String EventBaseName = "EventBase";
 	public static final String EventsEnumName = "Events";
 	public static final String EventPointerType = GenerationNames.PointerAndMemoryNames.EventPtr;
+	
+	public static final List<String> EventParamVarList = Arrays.asList(EventFParamName);
+	public static final List<String> EventParamDeclList = Arrays.asList(EventPointerType);
+	public static final List<Pair<String,String>> EventParamDefList = Arrays.asList(new Pair<>(EventPointerType, EventParamName)); 
 
 	public static String eventClass(String className, List<Pair<String, String>> params, String constructorBody,
 			List<Property> properites) {

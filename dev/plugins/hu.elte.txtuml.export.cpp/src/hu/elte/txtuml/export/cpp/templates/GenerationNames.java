@@ -96,6 +96,7 @@ public class GenerationNames {
 	public static class GeneralFunctionNames {
 		public static final String GeneralLinkFunction = "link";
 		public static final String GeneralUnlinkFunction = "unlink";
+		public static final String InitFunctionName = "init";
 	}
 
 	public static class Containers {
@@ -106,9 +107,9 @@ public class GenerationNames {
 	public static class StateMachineMethodNames {
 		public static final String DestroyStatemachineMethod = "destroy";		
 		public static final String DeleteStatemachine = "deleteSM";
-		public static final String InitFunctionName = "init";
 		public static final String ProcessEventFName = "process_event";
-		public static final String InitTansitionFunctionName = "Initialize";
+		public static final String InitializeFunctionName = "initialize";
+		public static final String FinalizeFunctionName = "finalize";
 	}	
 	
 	public static class TypeDelcreationKeywords {
@@ -136,6 +137,19 @@ public class GenerationNames {
 	public static class InitiliazetFixFunctionNames {
 		public static final String InitPorts = "initPorts";
 		public static final String InitStateMachine = "initStateMachine";
+
+	}
+	
+	public static class EntryExitNames {
+
+		public static final String EntryName = "entry";
+		public static final String ExitName = "exit";
+		public static final String EntryDecl = GenerationNames.ModifierNames.NoReturn + " " + EntryName + "("
+		+ EventTemplates.EventPointerType + " " + EventTemplates.EventFParamName + ");\n";
+		public static final String ExitDecl = GenerationNames.ModifierNames.NoReturn + " " + ExitName + "("
+		+ EventTemplates.EventPointerType + " " + EventTemplates.EventFParamName + ");\n";
+		public static final String EntryInvoke = EntryName + "(" + EventTemplates.EventFParamName + ");";
+		public static final String ExitInvoke = ExitName + "(" + EventTemplates.EventFParamName + ");";
 	}
 
 
@@ -154,14 +168,6 @@ public class GenerationNames {
 	public static final String EventClassTypeId = "_EC";
 	public static final String EventEnumTypeId = "_EE";
 	public static final String StateEnumTypeId = "_ST";
-	public static final String EntryName = "entry";
-	public static final String ExitName = "exit";
-	public static final String EntryDecl = ModifierNames.NoReturn + " " + EntryName + "("
-			+ EventTemplates.EventPointerType + " " + EventTemplates.EventFParamName + ");\n";
-	public static final String ExitDecl = ModifierNames.NoReturn + " " + ExitName + "("
-			+ EventTemplates.EventPointerType + " " + EventTemplates.EventFParamName + ");\n";
-	public static final String EntryInvoke = EntryName + "(" + EventTemplates.EventFParamName + ");";
-	public static final String ExitInvoke = ExitName + "(" + EventTemplates.EventFParamName + ");";
 	public static final String StateParamName = "s_";
 	public static final String TransitionTableName = "_mM";
 	public static final String SetStateFuncName = "setState";
@@ -220,7 +226,7 @@ public class GenerationNames {
 			+ GenerationNames.ParentSmPointerName + ")";
 
 	public static String initFunctionName(String className) {
-		return StateMachineMethodNames.InitFunctionName + className;
+		return GeneralFunctionNames.InitFunctionName + className;
 	}
 
 	public static String friendClassDecl(String className) {
@@ -236,7 +242,6 @@ public class GenerationNames {
 				+ EventTemplates.EventFParamName + ")\n" + simpleProcessEventDefBody();
 	}
 
-	
 	public static String simpleProcessEventDef(String className) {
 		return "bool " + className + "::" + StateMachineMethodNames.ProcessEventFName + "("
 				+ EventTemplates.EventPointerType + " " + EventTemplates.EventFParamName + ")\n"
@@ -260,25 +265,30 @@ public class GenerationNames {
 				+ GenerationNames.PointerAndMemoryNames.PointerAccess + "getPortType()));\n" + "if(range.first!="
 				+ TransitionTableName + ".end())\n" + "{\n" + "for(auto it=range.first;it!=range.second;++it)\n" + "{\n"
 				+ "if((it->second).first(*this," + EventTemplates.EventFParamName + "))//Guard call\n" + "{\n"
-				+ ExitInvoke + "(it->second).second(*this," + EventTemplates.EventFParamName + ");//Action Call\n"
-				+ "handled=true;\n" + "break;\n" + "}\n" + "}\n" + "}\n" + "return handled;\n" + "}\n";
+				+ EntryExitNames.ExitInvoke + "(it->second).second(*this," + EventTemplates.EventFParamName + ");//Action Call\n"
+				+ EntryExitNames.EntryInvoke + "handled=true;\n" + "break;\n" + "}\n" + "}\n" + "}\n" + "return handled;\n" + "}\n";
+	}
+
+	private static final String setStateFunctionDefSharedHeaderPart(String className) {
+		return ModifierNames.NoReturn + " " + className + "::" + SetStateFuncName + "(int "
+				+ GenerationNames.StateParamName + ")";
+	}
+
+	private static final String setStateFunctionDefSharedStatementPart() {
+		return CurrentStateName + "=" + GenerationNames.StateParamName + ";";
 	}
 
 	public static String simpleSetStateDef(String className) {
-		return ModifierNames.NoReturn + " " + className + "::" + SetStateFuncName + "(int "
-				+ GenerationNames.StateParamName + "){" + CurrentStateName + "=" + GenerationNames.StateParamName
-				+ ";}\n";
+		return setStateFunctionDefSharedHeaderPart(className) + "{" + setStateFunctionDefSharedStatementPart() + "}\n";
 	}
 
 	public static String hierachicalSetStateDef(String className) {
-		return ModifierNames.NoReturn + " " + className + "::" + SetStateFuncName + "(int "
-				+ GenerationNames.StateParamName + ")\n" + "{\n" + "auto it=" + CompositeStateMapName + ".find("
-				+ GenerationNames.StateParamName + ");\n" + "if(it!=" + CompositeStateMapName + ".end())\n" + "{\n"
-				+ CurrentMachineName + "=(it->second).get();\n" + CurrentMachineName + "->" + SetInitialStateName
-				+ "();//restarting from initial state\n" + CurrentMachineName + "->"
-				+ StateMachineMethodNames.InitTansitionFunctionName + "(" + PointerAndMemoryNames.NullPtr + ");\n"
-				+ "}\n" + "else\n" + "{\n" + CurrentMachineName + "=" + PointerAndMemoryNames.NullPtr + ";\n" + "}\n"
-				+ CurrentStateName + "=" + GenerationNames.StateParamName + ";\n" + "}\n";
+		return setStateFunctionDefSharedHeaderPart(className) + "\n" + "{\n" + "auto it=" + CompositeStateMapName
+				+ ".find(" + GenerationNames.StateParamName + ");\n" + "if(it!=" + CompositeStateMapName + ".end())\n"
+				+ "{\n" + CurrentMachineName + "=(it->second).get();\n" + CurrentMachineName + "->"
+				+ SetInitialStateName + "();//restarting from initial state\n" + "}\n" + "else\n" + "{\n"
+				+ CurrentMachineName + "=" + PointerAndMemoryNames.NullPtr + ";\n" + "}\n" + CurrentStateName + "="
+				+ GenerationNames.StateParamName + ";\n" + "}\n";
 	}
 
 	public static String eventClassName(String eventName) {

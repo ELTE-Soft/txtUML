@@ -22,7 +22,6 @@ import hu.elte.txtuml.export.cpp.templates.structual.ObjectDeclDefTemplates;
 
 class CallOperationExporter {
 
-	private boolean containsSignalAcces;
 	private boolean containsTimerOperator;
 
 	private OutVariableExporter tempVariableExporter;
@@ -33,17 +32,12 @@ class CallOperationExporter {
 	public CallOperationExporter(OutVariableExporter tempVariableExporter,
 			Map<CallOperationAction, OutputPin> returnOutputsToCallActions,
 			ActivityNodeResolver activityExportResolver) {
-		containsSignalAcces = false;
 		containsTimerOperator = false;
 		declaredTempVariables = new HashSet<String>();
 
 		this.tempVariableExporter = tempVariableExporter;
 		this.returnOutputsToCallActions = returnOutputsToCallActions;
 		this.activityExportResolver = activityExportResolver;
-	}
-
-	public boolean isUsedSignalParameter() {
-		return containsSignalAcces;
 	}
 
 	public boolean isInvokedTimerOperation() {
@@ -82,7 +76,6 @@ class CallOperationExporter {
 		}
 
 		if (node.getOperation().getName().equals(ActivityTemplates.GetSignalFunctionName)) {
-			containsSignalAcces = true;
 			return ActivityTemplates.getRealSignal(returnPin.getType().getName(),
 					tempVariableExporter.getRealVariableName(returnPin));
 		}

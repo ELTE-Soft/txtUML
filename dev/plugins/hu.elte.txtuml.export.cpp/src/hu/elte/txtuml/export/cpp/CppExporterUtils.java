@@ -193,7 +193,7 @@ public class CppExporterUtils {
 		String body = "";
 		for (Operation operation : factoryClass.getOperations()) {
 			if (isConstructor(operation)) {
-				body = activityExporter.createFunctionBody(getOperationActivity(operation)).toString();
+				body = activityExporter.createFunctionBody(getOperationActivity(operation)).getActivitySource();
 
 			}
 		}

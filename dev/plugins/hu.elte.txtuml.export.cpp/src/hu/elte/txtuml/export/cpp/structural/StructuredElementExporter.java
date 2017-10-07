@@ -12,6 +12,7 @@ import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.UMLPackage;
 import org.eclipse.uml2.uml.VisibilityKind;
 
+import hu.elte.txtuml.export.cpp.ActivityExportResult;
 import hu.elte.txtuml.export.cpp.CppExporterUtils;
 import hu.elte.txtuml.export.cpp.activity.ActivityExporter;
 import hu.elte.txtuml.export.cpp.templates.structual.FunctionTemplates;
@@ -73,14 +74,14 @@ public abstract class StructuredElementExporter<StructuredElement extends Operat
 	protected String createOperationDefinitions() {
 		StringBuilder source = new StringBuilder("");
 		for (Operation operation : structuredElement.getOwnedOperations()) {
-			String funcBody = activityExporter.createFunctionBody(CppExporterUtils.getOperationActivity(operation));
+			ActivityExportResult activityResult = activityExporter.createFunctionBody(CppExporterUtils.getOperationActivity(operation));
 			dependencyExporter.addDependencies(activityExporter.getAdditionalClassDependencies());
 
 			if (!CppExporterUtils.isConstructor(operation)) {
 
 				String returnType = getReturnType(operation.getReturnResult());
 				source.append(FunctionTemplates.functionDef(name, returnType, operation.getName(),
-						CppExporterUtils.getOperationParams(operation), funcBody));
+						CppExporterUtils.getOperationParams(operation), activityResult.getActivitySource()));
 			}
 
 		}
