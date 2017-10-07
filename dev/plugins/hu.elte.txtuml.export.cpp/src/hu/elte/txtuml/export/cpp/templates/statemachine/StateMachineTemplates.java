@@ -216,7 +216,7 @@ public class StateMachineTemplates {
 	public static String stateMachineClassFixPrivateParts(String className) {
 		return  FunctionTemplates.functionDecl(GenerationNames.InitiliazetFixFunctionNames.InitStateMachine) + "\n" + 
 				GenerationNames.SetStateDecl + EntryExitNames.EntryDecl + EntryExitNames.ExitDecl + 
-				"\n" + "int " + GenerationNames.CurrentStateName + ";\n";
+				"\n" + "int " + GenerationNames.CurrentStateName + ";\n" + initializeFunctionDecl() + finalizeFunctionDecl();
 
 	}
 

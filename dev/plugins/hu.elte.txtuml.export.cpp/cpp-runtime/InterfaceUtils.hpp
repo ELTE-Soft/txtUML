@@ -1,6 +1,8 @@
 #ifndef INTERFACE_UTILS_HPP
 #define INTERFACE_UTILS_HPP
 
+#include "ESRoot/Types.hpp"
+
 template <typename SendInf, typename ReciveInf>
 class IntegratedInf
 {
@@ -10,9 +12,9 @@ public:
 };
 
 class EmptyReqInf {
-
-	template <typename RequiredInf, typename ProvidedInf>
-	friend struct DelegationConnection;
+/*protected:
+	template <typename, typename>
+	friend class DelegationConnection;*/
 
 protected:
 	virtual void sendAny(ES::EventRef s) = 0;

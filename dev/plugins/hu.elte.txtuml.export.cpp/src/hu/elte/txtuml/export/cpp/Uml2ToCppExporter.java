@@ -297,14 +297,12 @@ public class Uml2ToCppExporter {
 			dependencyEporter.addDependency(param.getSecond());
 		}
 
-
-		source.append(dependencyEporter.createDependencyHeaderIncludeCode());
-		source.append(RuntimeTemplates.eventHeaderInclude());
+		String includes = dependencyEporter.createDependencyHeaderIncludeCode() + RuntimeTemplates.eventHeaderInclude();
 		source.append("enum Events {" + CppExporterUtils.cutOffTheLastCharcter(events.toString()) + "};\n");
 		source.append(eventClasses);
 		source.append(typeDefinitions);
 		CppExporterUtils.writeOutSource(outputDirectory, (EventTemplates.EventHeader),
-				CppExporterUtils.format(EventTemplates.eventHeaderGuard(GenerationTemplates
+				CppExporterUtils.format(EventTemplates.eventHeaderGuard(includes + GenerationTemplates
 						.putNamespace(source.toString(), GenerationNames.Namespaces.ModelNamespace))));
 
 	}

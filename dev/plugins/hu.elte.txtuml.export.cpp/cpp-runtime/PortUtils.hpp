@@ -1,6 +1,7 @@
 #include "istatemachine.hpp"
 #include "ievent.hpp"
 #include "ESRoot/Types.hpp"
+#include "InterfaceUtils.hpp"
 #include <iostream>
 #ifndef PORT_HPP
 #define PORT_HPP
@@ -17,7 +18,7 @@ template <typename ProvidedInf, typename RequiredInf>
 class PortImpl;
 
 template <typename ProvidedInf, typename RequiredInf>
-struct DelegationConnection;
+class DelegationConnection;
 
 template <typename ProvidedInf, typename RequiredInf>
 struct AssemblyConnection;
@@ -37,8 +38,8 @@ public:
 	template <typename RequiredInf1, typename ProvidedInf1>
 	friend struct AssemblyConnection;
 
-	void setAssemblyConnectedPort (IPort<RequiredInf,ProvidedInf> * connectedPort_);
-	void setDelgationConnectedPort (Port<ProvidedInf,RequiredInf> * connectedPort_);
+	void setAssemblyConnectedPort (ES::SharedPtr<IPort<RequiredInf,ProvidedInf>> connectedPort_);
+	void setDelgationConnectedPort (ES::SharedPtr<Port<ProvidedInf,RequiredInf>> connectedPort_);
 
 protected:
 	IConnection * connectedPort;
@@ -48,12 +49,15 @@ template <typename ProvidedInf, typename RequiredInf>
 class Port : public IPort<ProvidedInf, RequiredInf>
 {
 public:
-	Port () : connectionToInnerPort(nullptr) {}
+	Port () {}
 	virtual ~Port() {}
-	void setInnerConnection(IPort<RequiredInf, ProvidedInf> * innerPort) { connectionToInnerPort = innerPort; }
+	void setInnerConnection(ES::SharedPtr<IPort<ProvidedInf, RequiredInf>> innerPort) { connectionToInnerPort = innerPort; }
+
+	template <typename, typename>
+	friend class DelegationConnection;
 protected:
 	
-	IPort<RequiredInf, ProvidedInf> * connectionToInnerPort;
+	ES::SharedPtr<IPort<ProvidedInf, RequiredInf>> connectionToInnerPort;
 
 
 };
@@ -80,21 +84,22 @@ struct IConnection
 template <typename ProvidedInf, typename RequiredInf>
 struct AssemblyConnection : public IConnection
 {
-	AssemblyConnection (IPort<ProvidedInf, RequiredInf> * port_) : port(port_) {}
+	AssemblyConnection (ES::SharedPtr<IPort<ProvidedInf, RequiredInf>> port_) : port(port_) {}
 	virtual void fowardSendedMessageToConnectedPort (ES::EventRef signal)
 	{
 		port->reciveAny(signal);
 	}
 	
 private:
-	IPort<ProvidedInf,RequiredInf> * port;
+	ES::SharedPtr<IPort<ProvidedInf,RequiredInf>> port;
 };
 
 template <typename ProvidedInf, typename RequiredInf>
-struct DelegationConnection : public IConnection
+class DelegationConnection : public IConnection
 {
+public:
 
-	DelegationConnection (Port<ProvidedInf, RequiredInf> * port_) : port(port_) {}
+	DelegationConnection (ES::SharedPtr<Port<ProvidedInf, RequiredInf>> port_) : port(port_) {}
 
 	virtual void fowardSendedMessageToConnectedPort (ES::EventRef signal)
 	{
@@ -102,7 +107,7 @@ struct DelegationConnection : public IConnection
 	}
 	
 private:
-	Port<ProvidedInf , RequiredInf> * port;
+	ES::SharedPtr<Port<ProvidedInf , RequiredInf>> port;
 };
 
 template<typename Inf1, typename Inf2>
@@ -124,19 +129,19 @@ template <typename ProvidedInf, typename RequiredInf>
 class BehaviorPortImpl : public BehaviorPort <ProvidedInf, RequiredInf>
 {
     public:
-		BehaviorPortImpl (int type_, ES::StateMachineRef parent_) : BehaviorPort <RequiredInf, ProvidedInf> (type_,parent_) {}
+		BehaviorPortImpl (int type_, ES::StateMachineRef parent_) : BehaviorPort <ProvidedInf, RequiredInf> (type_,parent_) {}
 		virtual ~BehaviorPortImpl() {}
     protected:
         virtual void sendAny (ES::EventRef signal)
         {
-			BehaviorPort <RequiredInf, ProvidedInf>::connectedPort->fowardSendedMessageToConnectedPort(signal);
+			BehaviorPort <ProvidedInf, RequiredInf>::connectedPort->fowardSendedMessageToConnectedPort(signal);
         }
 
         virtual void reciveAny (ES::EventRef signal)
         {
 			Model::EventBase* realEvent = static_cast<Model::EventBase*>(signal.get());
-			realEvent->p = BehaviorPort <RequiredInf, ProvidedInf>::type;
-			BehaviorPort <RequiredInf, ProvidedInf>::owner->send(signal);
+			realEvent->p = BehaviorPort <ProvidedInf, RequiredInf>::type;
+			BehaviorPort <ProvidedInf, RequiredInf>::owner->send(signal);
         }
 
 
@@ -146,33 +151,33 @@ template <typename ProvidedInf, typename RequiredInf>
 class PortImpl : public Port <ProvidedInf, RequiredInf>
 {
 public:
-	PortImpl() : Port <RequiredInf, ProvidedInf>() {}
+	PortImpl() : Port <ProvidedInf, RequiredInf>() {}
 	virtual ~PortImpl() {}
 
 
 protected:
 	virtual void sendAny(ES::EventRef signal)
 	{
-		Port <RequiredInf, ProvidedInf>::connectedPort->fowardSendedMessageToConnectedPort(signal);
+		Port <ProvidedInf, RequiredInf>::connectedPort->fowardSendedMessageToConnectedPort(signal);
 	}
 
 	virtual void reciveAny(ES::EventRef signal)
 	{
-		if (Port <RequiredInf, ProvidedInf>::connectionToInnerPort != nullptr)
+		if (Port <ProvidedInf, RequiredInf>::connectionToInnerPort != nullptr)
 		{
-			Port <RequiredInf, ProvidedInf>::connectionToInnerPort->reciveAny(signal);
+			Port <ProvidedInf, RequiredInf>::connectionToInnerPort->reciveAny(signal);
 		}
 	}
 
 };
 
 template <typename ProvidedInf, typename RequiredInf>
-void IPort<ProvidedInf,RequiredInf>::setAssemblyConnectedPort (IPort<RequiredInf,ProvidedInf> * connectedPort_) {
+void IPort<ProvidedInf,RequiredInf>::setAssemblyConnectedPort (ES::SharedPtr<IPort<RequiredInf,ProvidedInf> > connectedPort_) {
 	connectedPort = new AssemblyConnection<RequiredInf,ProvidedInf>(connectedPort_);
 }
 
 template <typename ProvidedInf, typename RequiredInf>
-void IPort<ProvidedInf,RequiredInf>::setDelgationConnectedPort (Port<ProvidedInf,RequiredInf> * connectedPort_) {
+void IPort<ProvidedInf,RequiredInf>::setDelgationConnectedPort (ES::SharedPtr<Port<ProvidedInf,RequiredInf> > connectedPort_) {
 		connectedPort = new DelegationConnection<ProvidedInf,RequiredInf>(connectedPort_);
 }
 }

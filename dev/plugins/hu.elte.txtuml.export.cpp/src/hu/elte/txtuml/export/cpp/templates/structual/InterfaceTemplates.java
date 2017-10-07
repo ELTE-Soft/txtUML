@@ -45,7 +45,7 @@ public class InterfaceTemplates {
 
 	private static String infPartDecl(String partName, String receptions, String anyReception) {
 		return TypeDelcreationKeywords.InterfacType + " " + partName + "\n" + "{\n"
-				+ GenerationNames.TypeDelcreationKeywords.ProtectedPartSign + "\n" + receptions
+				+ GenerationNames.TypeDelcreationKeywords.PublicPartSign + "\n" + receptions
 				+ GenerationNames.TypeDelcreationKeywords.ProtectedPartSign + "\n" + anyReception + "\n};\n";
 	}
 

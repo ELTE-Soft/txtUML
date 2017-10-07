@@ -280,14 +280,6 @@ public class ActivityExporter {
 		Sublings
 	}
 	
-	/*private List<Association> filterClassAssocations(Class cls) {
-		Model m = cls.getModel();
-		List<Association> associationList = new ArrayList<Association>();
-		CppExporterUtils.getTypedElements(associationList, UMLPackage.Literals.ASSOCIATION, m.allOwnedElements());
-		return associationList.stream().filter(
-				a -> a.getMemberEnds().stream().anyMatch(e -> e.getType().equals(cls))).collect(Collectors.toList());
-	}*/
-	
 	private Relation getRelation(Port p1, Port p2) {
 		Class p1Class = p1.getClass_();
 		Class p2Class = p2.getClass_();
@@ -299,8 +291,6 @@ public class ActivityExporter {
 		} else {
 			return Relation.Sublings;
 		}
-		/*List<Association> p1ClassAssociations = filterClassAssocations(p1Class);
-		List<Association> p2ClassAssociations = filterClassAssocations(p2Class);*/
 		
 	}
 	
