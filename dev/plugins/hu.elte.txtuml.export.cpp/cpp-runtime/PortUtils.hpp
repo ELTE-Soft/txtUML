@@ -7,19 +7,19 @@
 
 namespace Model
 {
-template <typename RequiredInf, typename ProvidedInf>
+template <typename ProvidedInf, typename RequiredInf>
 class IPort;
 
-template <typename RequiredInf, typename ProvidedInf>
+template <typename ProvidedInf, typename RequiredInf>
 class Port;
 
-template <typename RequiredInf, typename ProvidedInf>
+template <typename ProvidedInf, typename RequiredInf>
 class PortImpl;
 
-template <typename RequiredInf, typename ProvidedInf>
+template <typename ProvidedInf, typename RequiredInf>
 struct DelegationConnection;
 
-template <typename RequiredInf, typename ProvidedInf>
+template <typename ProvidedInf, typename RequiredInf>
 struct AssemblyConnection;
 
 
@@ -27,7 +27,7 @@ struct IConnection;
 
 
 
-template <typename RequiredInf, typename ProvidedInf>
+template <typename ProvidedInf, typename RequiredInf>
 class IPort : public RequiredInf::RequiredInfType , public ProvidedInf::ProvidedInfType
 {
 public:
@@ -37,15 +37,15 @@ public:
 	template <typename RequiredInf1, typename ProvidedInf1>
 	friend struct AssemblyConnection;
 
-	void setAssemblyConnectedPort (IPort<ProvidedInf,RequiredInf> * connectedPort_);
-	void setDelgationConnectedPort (Port<RequiredInf,ProvidedInf> * connectedPort_);
+	void setAssemblyConnectedPort (IPort<RequiredInf,ProvidedInf> * connectedPort_);
+	void setDelgationConnectedPort (Port<ProvidedInf,RequiredInf> * connectedPort_);
 
 protected:
 	IConnection * connectedPort;
 };
 
-template <typename RequiredInf, typename ProvidedInf>
-class Port : public IPort<RequiredInf, ProvidedInf>
+template <typename ProvidedInf, typename RequiredInf>
+class Port : public IPort<ProvidedInf, RequiredInf>
 {
 public:
 	Port () : connectionToInnerPort(nullptr) {}
@@ -58,8 +58,8 @@ protected:
 
 };
 
-template <typename RequiredInf, typename ProvidedInf>
-class BehaviorPort : public IPort<RequiredInf, ProvidedInf>
+template <typename ProvidedInf, typename RequiredInf>
+class BehaviorPort : public IPort<ProvidedInf, RequiredInf>
 {
 public:
 	BehaviorPort(int type_, ES::StateMachineRef owner_) : type(type_), owner(owner_) {}
@@ -77,24 +77,24 @@ struct IConnection
 
 };
 
-template <typename RequiredInf, typename ProvidedInf>
+template <typename ProvidedInf, typename RequiredInf>
 struct AssemblyConnection : public IConnection
 {
-	AssemblyConnection (IPort<RequiredInf, ProvidedInf> * port_) : port(port_) {}
+	AssemblyConnection (IPort<ProvidedInf, RequiredInf> * port_) : port(port_) {}
 	virtual void fowardSendedMessageToConnectedPort (ES::EventRef signal)
 	{
 		port->reciveAny(signal);
 	}
 	
 private:
-	IPort<RequiredInf,ProvidedInf> * port;
+	IPort<ProvidedInf,RequiredInf> * port;
 };
 
-template <typename RequiredInf, typename ProvidedInf>
+template <typename ProvidedInf, typename RequiredInf>
 struct DelegationConnection : public IConnection
 {
 
-	DelegationConnection (Port<RequiredInf, ProvidedInf> * port_) : port(port_) {}
+	DelegationConnection (Port<ProvidedInf, RequiredInf> * port_) : port(port_) {}
 
 	virtual void fowardSendedMessageToConnectedPort (ES::EventRef signal)
 	{
@@ -102,7 +102,7 @@ struct DelegationConnection : public IConnection
 	}
 	
 private:
-	Port<RequiredInf , ProvidedInf> * port;
+	Port<ProvidedInf , RequiredInf> * port;
 };
 
 template<typename Inf1, typename Inf2>
@@ -120,8 +120,8 @@ void connect(IPort<Inf1, Inf2> * p1, Port <Inf1, Inf2> * p2)
 }
 
 
-template <typename RequiredInf, typename ProvidedInf>
-class BehaviorPortImpl : public BehaviorPort <RequiredInf, ProvidedInf>
+template <typename ProvidedInf, typename RequiredInf>
+class BehaviorPortImpl : public BehaviorPort <ProvidedInf, RequiredInf>
 {
     public:
 		BehaviorPortImpl (int type_, ES::StateMachineRef parent_) : BehaviorPort <RequiredInf, ProvidedInf> (type_,parent_) {}
@@ -142,8 +142,8 @@ class BehaviorPortImpl : public BehaviorPort <RequiredInf, ProvidedInf>
 
 };
 
-template <typename RequiredInf, typename ProvidedInf>
-class PortImpl : public Port <RequiredInf, ProvidedInf>
+template <typename ProvidedInf, typename RequiredInf>
+class PortImpl : public Port <ProvidedInf, RequiredInf>
 {
 public:
 	PortImpl() : Port <RequiredInf, ProvidedInf>() {}
@@ -166,14 +166,14 @@ protected:
 
 };
 
-template <typename RequiredInf, typename ProvidedInf>
-void IPort<RequiredInf,ProvidedInf>::setAssemblyConnectedPort (IPort<ProvidedInf,RequiredInf> * connectedPort_) {
-	connectedPort = new AssemblyConnection<ProvidedInf,RequiredInf>(connectedPort_);
+template <typename ProvidedInf, typename RequiredInf>
+void IPort<ProvidedInf,RequiredInf>::setAssemblyConnectedPort (IPort<RequiredInf,ProvidedInf> * connectedPort_) {
+	connectedPort = new AssemblyConnection<RequiredInf,ProvidedInf>(connectedPort_);
 }
 
-template <typename RequiredInf, typename ProvidedInf>
-void IPort<RequiredInf,ProvidedInf>::setDelgationConnectedPort (Port<RequiredInf,ProvidedInf> * connectedPort_) {
-		connectedPort = new DelegationConnection<RequiredInf,ProvidedInf>(connectedPort_);
+template <typename ProvidedInf, typename RequiredInf>
+void IPort<ProvidedInf,RequiredInf>::setDelgationConnectedPort (Port<ProvidedInf,RequiredInf> * connectedPort_) {
+		connectedPort = new DelegationConnection<ProvidedInf,RequiredInf>(connectedPort_);
 }
 }
 

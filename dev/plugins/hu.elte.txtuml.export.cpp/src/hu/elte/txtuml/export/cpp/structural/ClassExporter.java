@@ -199,7 +199,7 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 			source.append(PrivateFunctionalTemplates.include(GenerationNames.FileNames.PortUtilsPath));
 		} else {
 			for (String interfaceDependency : portExporter.getUsedInterfaces()) {
-				source.append(PrivateFunctionalTemplates.include(interfaceDependency));
+				source.append(PrivateFunctionalTemplates.interfaceIndlude(interfaceDependency));
 			}
 			source.append(PrivateFunctionalTemplates.include(GenerationNames.FileNames.TypesFilePath));
 			if (associationExporter.ownAssociation()) {

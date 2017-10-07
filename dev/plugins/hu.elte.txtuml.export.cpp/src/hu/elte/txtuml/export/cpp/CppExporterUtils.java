@@ -278,7 +278,7 @@ public class CppExporterUtils {
 		if (optionalParams.isPresent()) {
 			List<String> params = optionalParams.get();
 			if (!params.isEmpty()) {
-				source = "<" + enumerateListElementsCode(params) + ">";
+				source = "(" + enumerateListElementsCode(params) + ")";
 			}			
 		}
 		

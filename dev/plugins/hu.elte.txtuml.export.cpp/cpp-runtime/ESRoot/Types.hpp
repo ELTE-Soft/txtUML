@@ -42,10 +42,10 @@ class SpecialPriorityQueue;
 
 namespace Model
 {
-template <typename RequiredInf, typename ProvidedInf>
+template <typename ProvidedInf, typename RequiredInf>
 class Port;
 
-template <typename RequiredInf, typename ProvidedInf>
+template <typename ProvidedInf, typename RequiredInf>
 class BehaviorPort;
 }
 

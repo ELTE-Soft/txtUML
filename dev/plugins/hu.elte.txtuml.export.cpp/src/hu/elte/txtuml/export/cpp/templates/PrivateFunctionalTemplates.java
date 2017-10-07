@@ -4,6 +4,7 @@ import java.util.List;
 
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.BasicTypeNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.FileNames;
+import hu.elte.txtuml.export.cpp.templates.GenerationNames.InterfaceNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.ModifierNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.PointerAndMemoryNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.TimerNames;
@@ -24,7 +25,9 @@ public class PrivateFunctionalTemplates {
 	public static String include(String className) {
 		return "#include \"" + className + "." + FileNames.HeaderExtension + "\"\n";
 	}
-
+	public static String interfaceIndlude(String infName) {
+		return include(infName.equals(InterfaceNames.EmptyInfName) ? FileNames.InterfaceUtilsPath : infName);
+	}
 	public static String typedefs(String className) {
 		return "typedef std::function<" + ModifierNames.NoReturn + "(" + className + "&,"
 				+ EventTemplates.EventPointerType + ")> " + GenerationNames.FunctionPtrTypeName + ";\n"

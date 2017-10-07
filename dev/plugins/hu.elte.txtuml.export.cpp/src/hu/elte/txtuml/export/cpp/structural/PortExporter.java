@@ -4,8 +4,10 @@ import java.io.FileNotFoundException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import org.eclipse.uml2.uml.Interface;
 import org.eclipse.uml2.uml.Port;
@@ -34,8 +36,8 @@ public class PortExporter {
 				CppExporterUtils.format(PortTemplates.portHeaderGuard("")));
 	}
 
-	public List<String> getUsedInterfaces() {
-		List<String> usedInterfaces = new ArrayList<>();
+	public Set<String> getUsedInterfaces() {
+		Set<String> usedInterfaces = new HashSet<>();
 		for (Port port : ports) {
 			Pair<String,String> interaces = getPortActualInterfaceTypes(port);
 			usedInterfaces.add(interaces.getFirst());
