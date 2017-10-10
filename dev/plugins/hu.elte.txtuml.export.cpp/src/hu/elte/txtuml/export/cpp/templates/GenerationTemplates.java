@@ -3,7 +3,7 @@ package hu.elte.txtuml.export.cpp.templates;
 import java.util.List;
 
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.FileNames;
-import hu.elte.txtuml.export.cpp.templates.GenerationNames.HiearchicalStateMachineNames;
+import hu.elte.txtuml.export.cpp.templates.GenerationNames.HierarchicalStateMachineNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.PointerAndMemoryNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.TimerNames;
 
@@ -33,7 +33,7 @@ public class GenerationTemplates {
 
 	public static String forwardDeclaration(String className) {
 		
-		return GenerationNames.ClassType + " " + className + ";\n";
+		return GenerationNames.ClassType + " " + PrivateFunctionalTemplates.mapUMLClassToCppClass(className) + ";\n";
 	}
 
 	public static String putNamespace(String source, String namespace) {
@@ -41,7 +41,7 @@ public class GenerationTemplates {
 	}
 
 	public static String formatSubSmFunctions(String source) {
-		return source.replaceAll(PointerAndMemoryNames.Self, HiearchicalStateMachineNames.ParentSmMemberName);
+		return source.replaceAll(PointerAndMemoryNames.Self, HierarchicalStateMachineNames.ParentSmMemberName);
 	}
 
 	public static String createObject(String typeName, String objName, boolean sharedObject) {

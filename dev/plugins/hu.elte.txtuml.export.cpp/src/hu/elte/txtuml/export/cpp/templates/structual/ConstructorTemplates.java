@@ -8,7 +8,7 @@ import com.google.common.collect.Multimap;
 
 import hu.elte.txtuml.export.cpp.statemachine.TransitionConditions;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames;
-import hu.elte.txtuml.export.cpp.templates.GenerationNames.HiearchicalStateMachineNames;
+import hu.elte.txtuml.export.cpp.templates.GenerationNames.HierarchicalStateMachineNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.ModifierNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.PointerAndMemoryNames;
 import hu.elte.txtuml.export.cpp.templates.PrivateFunctionalTemplates;
@@ -92,16 +92,16 @@ public class ConstructorTemplates {
 		} else {
 			Map<String, String> subMachines = optionalSubMachine.get();
 			return subStateMachineSharedConstructor(className, parentClassName, machine,
-					ActivityTemplates.simpleSetValue(HiearchicalStateMachineNames.CurrentMachineName, PointerAndMemoryNames.NullPtr) + 
+					ActivityTemplates.simpleSetValue(HierarchicalStateMachineNames.CurrentMachineName, PointerAndMemoryNames.NullPtr) + 
 					StateMachineTemplates.hierarchicalStateMachineClassConstructorSharedBody(subMachines, false, null));
 		}
 	}
 	
 	private static String subStateMachineSharedConstructor(String className, String parentClassName, 
 			Multimap<TransitionConditions, Pair<String, String>> machine, String body) {
-		String parentParamName = GenerationNames.formatIncomingParamName(HiearchicalStateMachineNames.ParentSmName);
+		String parentParamName = GenerationNames.formatIncomingParamName(HierarchicalStateMachineNames.ParentSmName);
 		return className + "::" + className + "(" + PrivateFunctionalTemplates.cppType(parentClassName)
-		+ " " + parentParamName + "):" + HiearchicalStateMachineNames.ParentSmMemberName + "(" + parentParamName + ")"
+		+ " " + parentParamName + "):" + HierarchicalStateMachineNames.ParentSmMemberName + "(" + parentParamName + ")"
 		+ "\n{\n" + body
 		+ "}\n\n";
 	}

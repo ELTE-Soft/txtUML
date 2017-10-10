@@ -8,7 +8,7 @@ import hu.elte.txtuml.export.cpp.templates.GenerationTemplates;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.ClassUtilsNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.EntryExitNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.FileNames;
-import hu.elte.txtuml.export.cpp.templates.GenerationNames.HiearchicalStateMachineNames;
+import hu.elte.txtuml.export.cpp.templates.GenerationNames.HierarchicalStateMachineNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.ModifierNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.UMLStdLibNames;
 import hu.elte.txtuml.export.cpp.templates.PrivateFunctionalTemplates;
@@ -21,9 +21,9 @@ public class HeaderTemplates {
 	public static interface HeaderType {
 		String getSpecificBaseClass();
 		String getSpecificPrivatePart();
-		String getSpecificInlude();
+		String getSpecificInclude();
 		Boolean hasStateMachine();
-		Boolean hasHierhicalStateMachine();
+		Boolean hasHierarchicalStateMachine();
 		Boolean hasExecutionInterface();
 		
 	}
@@ -41,7 +41,7 @@ public class HeaderTemplates {
 		}
 
 		@Override
-		public String getSpecificInlude() {
+		public String getSpecificInclude() {
 			return PrivateFunctionalTemplates.include(RuntimeTemplates.RTPath + ClassUtilsNames.NotStateMachineOwnerBaseName);
 		}
 
@@ -56,7 +56,7 @@ public class HeaderTemplates {
 		}
 
 		@Override
-		public Boolean hasHierhicalStateMachine() {
+		public Boolean hasHierarchicalStateMachine() {
 			return false;
 		}
 		
@@ -81,9 +81,9 @@ public class HeaderTemplates {
 			return ClassUtilsNames.StateMachineOwnerBaseName;
 		}
 		@Override
-		public String getSpecificInlude() {
+		public String getSpecificInclude() {
 			StringBuilder includes = new StringBuilder("");
-			if(hasHierhicalStateMachine()) {
+			if(hasHierarchicalStateMachine()) {
 				includes.append(PrivateFunctionalTemplates.include(RuntimeTemplates.RTPath + ClassUtilsNames.SubStateMachineBase));
 			}
 			includes.append(PrivateFunctionalTemplates.include(RuntimeTemplates.RTPath + ClassUtilsNames.StateMachineOwnerBaseName));
@@ -99,24 +99,24 @@ public class HeaderTemplates {
 			return true;
 		}
 		@Override
-		public Boolean hasHierhicalStateMachine() {
+		public Boolean hasHierarchicalStateMachine() {
 			return optionalSubMachines.isPresent();
 		}
 	}
 	
 	public static class SubMachineHeaderType implements HeaderType {
 		private String parentClassName;
-		private Boolean hiearhical;
+		private Boolean hierarchical;
 		
-		public SubMachineHeaderType(String parentClassName, Boolean hiearhical) {
+		public SubMachineHeaderType(String parentClassName, Boolean hierarchical) {
 			this.parentClassName = parentClassName;
-			this.hiearhical = hiearhical;
+			this.hierarchical = hierarchical;
 		}
 
 		@Override
 		public String getSpecificPrivatePart() {
 			return VariableTemplates.variableDecl(parentClassName,
-					HiearchicalStateMachineNames.ParentSmMemberName, null, false);
+					HierarchicalStateMachineNames.ParentSmMemberName, null, false);
 		}
 
 		@Override
@@ -125,7 +125,7 @@ public class HeaderTemplates {
 		}
 
 		@Override
-		public String getSpecificInlude() {
+		public String getSpecificInclude() {
 			return PrivateFunctionalTemplates.include(RuntimeTemplates.RTPath + ClassUtilsNames.SubStateMachineBase);
 		}
 
@@ -140,8 +140,8 @@ public class HeaderTemplates {
 		}
 
 		@Override
-		public Boolean hasHierhicalStateMachine() {
-			return hiearhical;
+		public Boolean hasHierarchicalStateMachine() {
+			return hierarchical;
 		}
 	}
 	
@@ -149,15 +149,15 @@ public class HeaderTemplates {
 		
 		public static class StateMachineInfo {
 
-			public StateMachineInfo(Boolean hiearhical) {
-				this.hiearhical = hiearhical;
+			public StateMachineInfo(Boolean hierarchical) {
+				this.hierarchical = hierarchical;
 			}
 
 			Boolean isHierhicalStateMachine() {
-				return hiearhical;
+				return hierarchical;
 			}
 			
-			private Boolean hiearhical;
+			private Boolean hierarchical;
 		}
 		private String ownerClassName;
 		private HeaderType headerType;
@@ -172,7 +172,7 @@ public class HeaderTemplates {
 		}
 
 		public String getRelatedBaseClassInclude() {
-			return headerType.getSpecificInlude();
+			return headerType.getSpecificInclude();
 		}
 		
 		public String getOwnerClassName() {
@@ -215,11 +215,11 @@ public class HeaderTemplates {
 						GenerationNames.SetStateDecl + EntryExitNames.EntryDecl + EntryExitNames.ExitDecl + 
 						"\n" + "int " + GenerationNames.CurrentStateName + ";\n");
 				
-				if(headerType.hasHierhicalStateMachine()) {
+				if(headerType.hasHierarchicalStateMachine()) {
 					fixPrivateParts.append("//Hierarchical Machine Parts\n" 
-							+ HiearchicalStateMachineNames.ActionCallerDecl 
-							+ HiearchicalStateMachineNames.CurrentMachine
-							+ HiearchicalStateMachineNames.CompositeStateMap); 	
+							+ HierarchicalStateMachineNames.ActionCallerDecl 
+							+ HierarchicalStateMachineNames.CurrentMachine
+							+ HierarchicalStateMachineNames.CompositeStateMap); 	
 				
 					
 				}

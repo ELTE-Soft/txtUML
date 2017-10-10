@@ -19,7 +19,7 @@ public class PrivateFunctionalTemplates {
 	}
 
 	public static String include(String className) {
-		return "#include \"" + className + "." + FileNames.HeaderExtension + "\"\n";
+		return "#include \"" + mapUMLClassToCppClass(className) + "." + FileNames.HeaderExtension + "\"\n";
 	}
 
 	public static String typedefs(String className) {
@@ -80,7 +80,16 @@ public class PrivateFunctionalTemplates {
 		}
 		return source.substring(0, source.length() - 1);
 	}
-
+	
+	public static String mapUMLClassToCppClass(String className) {
+		switch(className) {
+			case UMLStdLibNames.ModelClassName:
+				return ClassUtilsNames.BaseClassName;				
+			default:
+				return className;
+		}
+	}
+	
 	public static String cppType(String typeName) {
 		String cppType = typeName;
 		if (typeName != EventTemplates.EventPointerType && typeName != ModifierNames.NoReturn) {
@@ -98,9 +107,6 @@ public class PrivateFunctionalTemplates {
 				case "String":
 					cppType = BasicTypeNames.StringTypeName;
 					break;
-				case UMLStdLibNames.ModelClassName:
-					cppType = GenerationNames.pointerType(ClassUtilsNames.BaseClassName);
-					break;
 				case TimerNames.TimerClassName:
 					cppType = TimerNames.TimerPtrName;
 					break;
@@ -110,7 +116,7 @@ public class PrivateFunctionalTemplates {
 					cppType = typeName;
 					break;
 				default:
-					cppType = GenerationNames.pointerType(typeName);
+					cppType = GenerationNames.pointerType(mapUMLClassToCppClass(typeName));
 					break;
 				}
 			} else {

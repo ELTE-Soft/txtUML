@@ -16,7 +16,7 @@ import hu.elte.txtuml.export.cpp.statemachine.TransitionConditions;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.EntryExitNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.FileNames;
-import hu.elte.txtuml.export.cpp.templates.GenerationNames.HiearchicalStateMachineNames;
+import hu.elte.txtuml.export.cpp.templates.GenerationNames.HierarchicalStateMachineNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.ModifierNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.PointerAndMemoryNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.StateMachineMethodNames;
@@ -220,11 +220,11 @@ public class StateMachineTemplates {
 			Boolean topMachine, Integer poolId) {
 		StringBuilder source = new StringBuilder("");
 		source.append(stateMachineInitializationSharedBody(topMachine,poolId));
-		String parent = topMachine ? PointerAndMemoryNames.Self : HiearchicalStateMachineNames.ParentSmMemberName;
+		String parent = topMachine ? PointerAndMemoryNames.Self : HierarchicalStateMachineNames.ParentSmMemberName;
 		for (Map.Entry<String, String> entry : subMachines.entrySet()) {
 			source.append(
-					HiearchicalStateMachineNames.CompositeStateMapName + ".emplace(" + GenerationNames.stateEnumName(entry.getKey())
-							+ "," + HiearchicalStateMachineNames.CompositeStateMapSmType + "(" + PointerAndMemoryNames.MemoryAllocator
+					HierarchicalStateMachineNames.CompositeStateMapName + ".emplace(" + GenerationNames.stateEnumName(entry.getKey())
+							+ "," + HierarchicalStateMachineNames.CompositeStateMapSmType + "(" + PointerAndMemoryNames.MemoryAllocator
 							+ " " + entry.getValue() + "(" + parent + ")" + "));\n");
 		}
 		return source.toString();
@@ -239,7 +239,7 @@ public class StateMachineTemplates {
 		} else {
 			Map<String, String> subMachines = optionalSubMachines.get();
 			StringBuilder body = new StringBuilder("");
-			body.append(HiearchicalStateMachineNames.CurrentMachineName + " = " + PointerAndMemoryNames.NullPtr + ";\n");
+			body.append(HierarchicalStateMachineNames.CurrentMachineName + " = " + PointerAndMemoryNames.NullPtr + ";\n");
 			body.append(hierarchicalStateMachineClassConstructorSharedBody(subMachines, true, poolId));
 			return FunctionTemplates.functionDef(className, GenerationNames.InitStateMachine, body.toString());
 		}

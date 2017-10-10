@@ -8,7 +8,7 @@ import org.eclipse.uml2.uml.State;
 
 import hu.elte.txtuml.export.cpp.ActivityExportResult;
 import hu.elte.txtuml.export.cpp.activity.ActivityExporter;
-import hu.elte.txtuml.export.cpp.templates.GenerationNames.HiearchicalStateMachineNames;
+import hu.elte.txtuml.export.cpp.templates.GenerationNames.HierarchicalStateMachineNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.StateMachineMethodNames;
 import hu.elte.txtuml.export.cpp.templates.activity.ActivityTemplates;
 import hu.elte.txtuml.export.cpp.templates.statemachine.EventTemplates;
@@ -129,16 +129,16 @@ public class EntryExitFunctionExporter {
 				String compositeRelatedCode = "";
 				switch (funcType) {
 				case Entry:
-					compositeRelatedCode = ActivityTemplates.simpleIf(HiearchicalStateMachineNames.CurrentMachineName,
-							ActivityTemplates.operationCallOnPointerVariable(HiearchicalStateMachineNames.CurrentMachineName,
+					compositeRelatedCode = ActivityTemplates.simpleIf(HierarchicalStateMachineNames.CurrentMachineName,
+							ActivityTemplates.operationCallOnPointerVariable(HierarchicalStateMachineNames.CurrentMachineName,
 									StateMachineMethodNames.InitializeFunctionName,
 									Arrays.asList(EventTemplates.EventFParamName)));
 					source = activityResult.getActivitySource() + compositeRelatedCode;
 
 					break;
 				case Exit:
-					compositeRelatedCode = ActivityTemplates.simpleIf(HiearchicalStateMachineNames.CurrentMachineName,
-							ActivityTemplates.operationCallOnPointerVariable(HiearchicalStateMachineNames.CurrentMachineName,
+					compositeRelatedCode = ActivityTemplates.simpleIf(HierarchicalStateMachineNames.CurrentMachineName,
+							ActivityTemplates.operationCallOnPointerVariable(HierarchicalStateMachineNames.CurrentMachineName,
 									StateMachineMethodNames.FinalizeFunctionName,
 									Arrays.asList(EventTemplates.EventFParamName)));
 					source = compositeRelatedCode + activityResult.getActivitySource();

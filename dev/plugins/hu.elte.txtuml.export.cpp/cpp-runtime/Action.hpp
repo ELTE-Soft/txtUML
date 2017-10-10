@@ -24,7 +24,7 @@ Starts the state machine of a model object.
 
 void deleteObject(ES::ModelObject* modelObject);
 /**<
-Dispose an model object reference.
+Dispose a model object reference.
 @param modelObject The object to be deleted.
 */
 	

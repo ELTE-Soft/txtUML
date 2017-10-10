@@ -3,12 +3,12 @@ package hu.elte.txtuml.export.cpp.templates.statemachine;
 import java.util.List;
 
 import hu.elte.txtuml.export.cpp.templates.GenerationNames;
-import hu.elte.txtuml.export.cpp.templates.GenerationNames.HiearchicalStateMachineNames;
+import hu.elte.txtuml.export.cpp.templates.GenerationNames.HierarchicalStateMachineNames;
 
 public class SubStateMachineTemplates {
 
 	public static String subStateMachineClassFixPrivateParts(String parentClass) {
-		return GenerationNames.pointerType(parentClass) + " " + HiearchicalStateMachineNames.ParentSmMemberName + ";\n";
+		return GenerationNames.pointerType(parentClass) + " " + HierarchicalStateMachineNames.ParentSmMemberName + ";\n";
 	}
 
 	public static String subMachineFriendDecls(List<String> subMachines) {

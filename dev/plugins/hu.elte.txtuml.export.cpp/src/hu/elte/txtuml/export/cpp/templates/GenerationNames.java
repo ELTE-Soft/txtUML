@@ -135,7 +135,7 @@ public class GenerationNames {
 		public static final String UMLBoolean = "Boolean";
 	}
 
-	public static class HiearchicalStateMachineNames {
+	public static class HierarchicalStateMachineNames {
 		public static final String ParentSmName = "pSm";
 		public static final String CompositeStateMapName = "_compSates";
 		public static final String CurrentMachineName = "_cM";
@@ -214,7 +214,7 @@ public class GenerationNames {
 	}
 
 	public static String actionCallerDef(String className) {
-		return "bool " + className + "::" + HiearchicalStateMachineNames.ActionCallerFName + "("
+		return "bool " + className + "::" + HierarchicalStateMachineNames.ActionCallerFName + "("
 				+ EventTemplates.EventPointerType + " " + EventTemplates.EventFParamName + ")\n"
 				+ simpleProcessEventDefBody();
 	}
@@ -228,11 +228,11 @@ public class GenerationNames {
 	public static String hierachicalProcessEventDef(String className) {
 		return "bool " + className + "::" + StateMachineMethodNames.ProcessEventFName + "("
 				+ EventTemplates.EventPointerType + " " + EventTemplates.EventFParamName + ")\n" + "{\n"
-				+ "bool handled=false;\n" + "if(" + HiearchicalStateMachineNames.CurrentMachineName + ")\n" + "{\n"
-				+ "if(" + HiearchicalStateMachineNames.CurrentMachineName + "->"
+				+ "bool handled=false;\n" + "if(" + HierarchicalStateMachineNames.CurrentMachineName + ")\n" + "{\n"
+				+ "if(" + HierarchicalStateMachineNames.CurrentMachineName + "->"
 				+ StateMachineMethodNames.ProcessEventFName + "(" + EventTemplates.EventFParamName + "))\n" + "{\n"
 				+ "handled=true;\n" + "}\n" + "}\n" + "if(!handled)\n" + "{\n" + "handled=handled || "
-				+ HiearchicalStateMachineNames.ActionCallerFName + "(" + EventTemplates.EventFParamName + ");\n"
+				+ HierarchicalStateMachineNames.ActionCallerFName + "(" + EventTemplates.EventFParamName + ");\n"
 				+ "}\n//else unhandled event in this state\n" + "return handled;\n" + "}\n";
 	}
 
@@ -262,11 +262,11 @@ public class GenerationNames {
 
 	public static String hierachicalSetStateDef(String className) {
 
-		return setStateFunctionDefSharedHeaderPart(className) + "\n" + "{\n" + "auto it=" + HiearchicalStateMachineNames.CompositeStateMapName
-				+ ".find(" + GenerationNames.StateParamName + ");\n" + "if(it!=" + HiearchicalStateMachineNames.CompositeStateMapName + ".end())\n"
-				+ "{\n" + HiearchicalStateMachineNames.CurrentMachineName + "=(it->second).get();\n" + HiearchicalStateMachineNames.CurrentMachineName + "->"
+		return setStateFunctionDefSharedHeaderPart(className) + "\n" + "{\n" + "auto it=" + HierarchicalStateMachineNames.CompositeStateMapName
+				+ ".find(" + GenerationNames.StateParamName + ");\n" + "if(it!=" + HierarchicalStateMachineNames.CompositeStateMapName + ".end())\n"
+				+ "{\n" + HierarchicalStateMachineNames.CurrentMachineName + "=(it->second).get();\n" + HierarchicalStateMachineNames.CurrentMachineName + "->"
 				+ SetInitialStateName + "();//restarting from initial state\n" + "}\n" + "else\n" + "{\n"
-				+ HiearchicalStateMachineNames.CurrentMachineName + "=" + PointerAndMemoryNames.NullPtr + ";\n" + "}\n" + CurrentStateName + "="
+				+ HierarchicalStateMachineNames.CurrentMachineName + "=" + PointerAndMemoryNames.NullPtr + ";\n" + "}\n" + CurrentStateName + "="
 				+ GenerationNames.StateParamName + ";\n" + "}\n";
 	}
 
