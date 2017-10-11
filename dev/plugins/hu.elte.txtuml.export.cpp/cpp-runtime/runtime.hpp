@@ -1,3 +1,6 @@
+/** @file runtime.hpp
+*/
+
 #ifndef RUNTIME_HPP_INCLUDED
 #define RUNTIME_HPP_INCLUDED
 
@@ -5,109 +8,140 @@
 #include <atomic>
 #include <mutex>
 #include <condition_variable>
-#include <vector>
 
-#include "runtimetypes.hpp"
 #include "istatemachine.hpp"
 #include "threadpool.hpp"
 #include "ievent.hpp"
 #include "threadpoolmanager.hpp"
-#include "runtimetypes.hpp"
+#include "ESRoot/Types.hpp"
+#include "ESRoot/Containers/FixedArray.hpp"
+#include "ESRoot/AtomicCounter.hpp"
+
+namespace Execution 
+{
 
 template<typename RuntimeType>
-class RuntimeI
+class IRuntime
 {
 public:
 
-  static RuntimeI<RuntimeType>* createRuntime()
-  {
-      return RuntimeType::createRuntime();
-  }
+	/*!
+	Returns the runtime instance during the model execution.
+	*/
+	static ES::RuntimePtr<RuntimeType> getRuntimeInstance()
+	{
+		if (instance == nullptr)
+		{
+			instance = RuntimeType::createRuntime();
+		}
+		return instance;
+	}
 
-  void setupObject(IStateMachine* sm_)
-  {
-      static_cast<RuntimeType*>(this)->setupObjectSpecificRuntime(sm_);
-  }
-  
-  void enqueueObject(IStateMachine* sm)
-  {
-      static_cast<RuntimeType*>(this)->enqueueObject(sm);
-  }
-  
-  void configure(ThreadConfiguration* configuration)
-  {
-	  if(!(static_cast<RuntimeType*>(this)->isConfigurated()))
-	  {
-		  static_cast<RuntimeType*>(this)->setConfiguration(configuration);
-	  }
-
-  }
-  
-  void startRT()
-  {
-        static_cast<RuntimeType*>(this)->start();
-  }
-
-  void removeObject(IStateMachine* sm)
-  {
-      static_cast<RuntimeType*>(this)->removeObject(sm);
-  }
+	/*!
+	Registers a state machine in the runtime instance so
+	the threaded runtime can record the number of object instances during the model execution.
+	Called by the state machine constructor.
+	*/
+	void setupObject(ES::StateMachineRef sm)
+	{
+		static_cast<RuntimeType*>(this)->setupObjectSpecificRuntime(sm);
+	}
 
 
-  void stopUponCompletion()
-  {
-        static_cast<RuntimeType*>(this)->stopUponCompletion();
-  }
+	/*!
+	Removes a state machine from the runtime instance when
+	the threaded runtime can record the number of object instances during the model execution.
+	Called by the state machine destructor.
+	*/
+	void removeObject(ES::StateMachineRef sm)
+	{
+		static_cast<RuntimeType*>(this)->removeObject(sm);
+	}
+
+
+	/*!
+	Sets the deployment configuration for the threaded runtime instance.
+	*/
+	void configure(ESContainer::FixedArray<ES::SharedPtr<Configuration>> configuration)
+	{
+		if (!(static_cast<RuntimeType*>(this)->isConfigurated()))
+		{
+			static_cast<RuntimeType*>(this)->setConfiguration(configuration);
+		}
+
+	}
+
+	/*!
+	Starts the model execution.
+	*/
+	void startRT()
+	{
+		static_cast<RuntimeType*>(this)->start();
+	}
+
+
+	/*!
+	Stops the runtime instance when there are no more messages to process and under processing.
+	*/
+	void stopUponCompletion()
+	{
+		static_cast<RuntimeType*>(this)->stopUponCompletion();
+	}
+
 
 protected:
-  RuntimeI() {}
+	static ES::RuntimePtr<RuntimeType> instance;
+	IRuntime() {}
 };
 
-
-class SingleThreadRT:public RuntimeI<SingleThreadRT>
+class SingleThreadRT : public IRuntime<SingleThreadRT>
 {
 public:
+	virtual ~SingleThreadRT();
 
-  static SingleThreadRT* createRuntime();
-  void start();
-  void setupObjectSpecificRuntime(IStateMachine*);
-  void setConfiguration(ThreadConfiguration*);
-  void enqueueObject(IStateMachine*);
-  void stopUponCompletion();
-  void removeObject(IStateMachine*);
-  bool isConfigurated();
-private:
-  SingleThreadRT();
-  static SingleThreadRT* instance;  
-  std::shared_ptr<PoolQueueType> _messageQueue;
+	/*!
+	Processes the events while the message queue is not empty.
+	*/
+	void start();
 
-};
-
-class ConfiguratedThreadedRT: public RuntimeI<ConfiguratedThreadedRT>
-{
-public:
-	
-    static ConfiguratedThreadedRT* createRuntime();
-	
-    void start();
-	void removeObject(IStateMachine*);
-	void stopUponCompletion();
-	void setConfiguration(ThreadConfiguration*);
-	void enqueueObject(IStateMachine*);
+	void setupObjectSpecificRuntime(ES::StateMachineRef);
+	void removeObject(ES::StateMachineRef);
+	void setConfiguration(ESContainer::FixedArray<ES::SharedPtr<Configuration>>);
 	bool isConfigurated();
-	void setupObjectSpecificRuntime(IStateMachine*);
-   ~ConfiguratedThreadedRT();
+	void stopUponCompletion();
+	static ES::RuntimePtr<SingleThreadRT> createRuntime() { return ES::RuntimePtr<SingleThreadRT>(new SingleThreadRT()); }
 private:
-    ConfiguratedThreadedRT();
-    static ConfiguratedThreadedRT* instance;
-	ThreadPoolManager* poolManager;
-	std::vector<int> numberOfObjects;
-	std::atomic_int worker;
-	std::atomic_int messages;
+	SingleThreadRT();
+	ES::SharedPtr<ES::MessageQueueType> _messageQueue;
+
+};
+
+class ConfiguredThreadedRT : public IRuntime<ConfiguredThreadedRT>
+{
+public:
+	virtual ~ConfiguredThreadedRT();
+	/*!
+	Starts the thread pools.
+	*/
+	void start();
+
+	void setupObjectSpecificRuntime(ES::StateMachineRef);
+	void removeObject(ES::StateMachineRef);
+	void setConfiguration(ESContainer::FixedArray<ES::SharedPtr<Configuration>>);
+	bool isConfigurated();
+	void stopUponCompletion();
+	static ES::RuntimePtr<ConfiguredThreadedRT> createRuntime() { return ES::RuntimePtr<ConfiguredThreadedRT>(new ConfiguredThreadedRT()); }
+private:
+	ConfiguredThreadedRT();
+	ES::SharedPtr<ThreadPoolManager> poolManager;
+	ESContainer::FixedArray<int> numberOfObjects;
+
+	ES::SharedPtr<ES::AtomicCounter> worker;
+	ES::SharedPtr<ES::AtomicCounter> messages;
 	std::condition_variable stop_request_cond;
 };
 
-
+}
 
 
 #endif // RUNTIME_HPP_INCLUDED

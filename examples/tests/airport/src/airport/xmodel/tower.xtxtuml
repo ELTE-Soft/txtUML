@@ -373,7 +373,7 @@ class Tower {
 				// Warn the planes
 				Collection<Plane> allPlane = Tower.this->(PlaneTowerUsage.thePlane);
 			
-				for(Plane a in allPlane) {
+				for(Plane a : allPlane) {
 					send new SignalDenyTakingOff() to a;	
 				}
 			
@@ -401,7 +401,7 @@ class Tower {
 			
 			Collection<Plane> allPlane = Tower.this->(PlaneTowerUsage.thePlane);
 			
-			for(Plane a in allPlane) {
+			for(Plane a : allPlane) {
 				if(a.getId() == id) {
 					ret = a;
 				}
@@ -418,7 +418,7 @@ class Tower {
 			Runway ret = null;
 			
 			Collection<Runway> allRunWay = Tower.this->(TowerRunwayUsage.theRunway);
-			for (Runway runway in allRunWay) {
+			for (Runway runway : allRunWay) {
 				if(runway.getIsFree()) {
 					ret = runway;	
 				}
@@ -432,7 +432,7 @@ class Tower {
 			Runway ret = null;
 			
 			Collection<Runway> allRunWay = Tower.this->(TowerRunwayUsage.theRunway);
-			for (Runway runway in allRunWay) {
+			for (Runway runway : allRunWay) {
 				if(runway.getPlaneId() == planeId) {
 					ret = runway;	
 				}

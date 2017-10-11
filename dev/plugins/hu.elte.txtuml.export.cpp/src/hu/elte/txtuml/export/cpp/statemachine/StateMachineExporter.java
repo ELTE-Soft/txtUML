@@ -1,28 +1,24 @@
 package hu.elte.txtuml.export.cpp.statemachine;
 
-import java.util.ArrayList;
-import java.util.List;
+
 import java.util.Map;
 
 import org.eclipse.uml2.uml.Region;
 import org.eclipse.uml2.uml.StateMachine;
-import org.eclipse.uml2.uml.UMLPackage;
 
-
-import hu.elte.txtuml.export.cpp.Shared;
 import hu.elte.txtuml.export.cpp.templates.statemachine.StateMachineTemplates;
 import hu.elte.txtuml.utils.Pair;
 import org.eclipse.uml2.uml.Element;
+import org.eclipse.uml2.uml.Pseudostate;
 
 public class StateMachineExporter extends StateMachineExporterBase {
 
-	private boolean ownStateMachine;
 	private int poolId;
-	
-	private Shared shared;
+	private StateMachine sm;
 
-	public StateMachineExporter() {
-		shared = new Shared();
+	public StateMachineExporter(StateMachine sm) {
+		super();
+		this.sm = sm;
 	}
 
 	public void setStateMachineThreadPoolId(int id) {
@@ -30,20 +26,10 @@ public class StateMachineExporter extends StateMachineExporterBase {
 	}
 
 	public <E extends Element> void createStateMachineRegion(E element) {
-		List<StateMachine> smList = new ArrayList<StateMachine>();
-		shared.setModelElements(element.allOwnedElements());
-		shared.getTypedElements(smList, UMLPackage.Literals.STATE_MACHINE);
-		if (!smList.isEmpty()) {
-			stateMachineRegion = smList.get(0).getRegions().get(0);
-			createStateList();
-			ownStateMachine = !stateList.isEmpty();
+		stateMachineRegion = sm.getRegions().get(0);
+		createStateList();
 
-		} else {
-			ownStateMachine = false;
-		}
 	}
-
-
 
 	public String createStateMachineRelatedHeadedDeclarationCodes() {
 		StringBuilder source = new StringBuilder("");
@@ -59,17 +45,18 @@ public class StateMachineExporter extends StateMachineExporterBase {
 	public String createStateMachineRelatedCppSourceCodes() {
 		StringBuilder source = new StringBuilder("");
 		source.append(createTransitionTableInitRelatedCodes());
+		Pseudostate initialStateName = getInitialState(stateMachineRegion);
 		if (submachineMap.isEmpty()) {
-			source.append(StateMachineTemplates.simpleStateMachineInitializationDefinition(ownerClassName, getInitialStateName(), true,
-					poolId));
-			source.append(StateMachineTemplates.simpleStateMachineFixFunctionDefinitions(ownerClassName, getInitialStateName(),
-					false));
+			source.append(StateMachineTemplates.simpleStateMachineInitializationDefinition(ownerClassName,
+					initialStateName.getName(), true, poolId));
+			source.append(StateMachineTemplates.simpleStateMachineFixFunctionDefinitions(ownerClassName,
+					initialStateName.getName(), false));
 
 		} else {
-			source.append(StateMachineTemplates.hierachialStateMachineInitialization(ownerClassName, getInitialStateName(),
-					true, poolId, getEventSubMachineNameMap()));
+			source.append(StateMachineTemplates.hierachialStateMachineInitialization(ownerClassName,
+					initialStateName.getName(), true, poolId, getEventSubMachineNameMap()));
 			source.append(StateMachineTemplates.hiearchialStateMachineFixFunctionDefinitions(ownerClassName,
-					getInitialStateName(), false));
+					initialStateName.getName(), false));
 
 		}
 		source.append(guardExporter.defnieGuardFunctions(ownerClassName));
@@ -77,30 +64,31 @@ public class StateMachineExporter extends StateMachineExporterBase {
 		source.append(entryExitFunctionExporter.createExitFunctionsDef());
 		source.append(transitionExporter.createTransitionFunctionsDef());
 
+		source.append(StateMachineTemplates.entry(ownerClassName,
+				createStateActionMap(entryExitFunctionExporter.getEntryMap())) + "\n");
 		source.append(
-				StateMachineTemplates.entry(ownerClassName, createStateActionMap(entryExitFunctionExporter.getEntryMap()))
+				StateMachineTemplates.exit(ownerClassName, 
+						createStateActionMap(entryExitFunctionExporter.getExitMap()))
 						+ "\n");
-		source.append(StateMachineTemplates.exit(ownerClassName, createStateActionMap(entryExitFunctionExporter.getExitMap()))
-				+ "\n");
+		
+		source.append(StateMachineTemplates.finalizeFunctionDef(ownerClassName));
+		source.append(StateMachineTemplates.initializeFunctionDef(ownerClassName, getInitialTransition(stateMachineRegion).getName()));
+
 
 		return source.toString();
 	}
 
 	public String createStateEnumCode() {
-		return StateMachineTemplates.stateEnum(stateList, getInitialStateName());
+		return StateMachineTemplates.stateEnum(stateList, getInitialState(stateMachineRegion).getName());
 	}
-
-	public boolean ownStateMachine() {
-		return ownStateMachine;
-	}
-
 
 	public boolean ownSubMachine() {
-		return submachineMap.isEmpty();
+		return !submachineMap.isEmpty();
 	}
 
 	public Map<String, Pair<String, Region>> getSubMachineMap() {
 		return submachineMap;
 	}
+
 
 }

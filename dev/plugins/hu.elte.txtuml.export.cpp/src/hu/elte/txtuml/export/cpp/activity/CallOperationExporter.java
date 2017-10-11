@@ -15,14 +15,13 @@ import org.eclipse.uml2.uml.ParameterDirectionKind;
 import org.eclipse.uml2.uml.TestIdentityAction;
 import org.eclipse.uml2.uml.UMLPackage;
 
-import hu.elte.txtuml.export.cpp.Shared;
+import hu.elte.txtuml.export.cpp.CppExporterUtils;
 import hu.elte.txtuml.export.cpp.templates.activity.ActivityTemplates;
 import hu.elte.txtuml.export.cpp.templates.activity.OperatorTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.VariableTemplates;
 
 class CallOperationExporter {
 
-	private boolean containsSignalAcces;
 	private boolean containsTimerOperator;
 
 	private OutVariableExporter tempVariableExporter;
@@ -33,17 +32,12 @@ class CallOperationExporter {
 	public CallOperationExporter(OutVariableExporter tempVariableExporter,
 			Map<CallOperationAction, OutputPin> returnOutputsToCallActions,
 			ActivityNodeResolver activityExportResolver) {
-		containsSignalAcces = false;
 		containsTimerOperator = false;
 		declaredTempVariables = new HashSet<String>();
 
 		this.tempVariableExporter = tempVariableExporter;
 		this.returnOutputsToCallActions = returnOutputsToCallActions;
 		this.activityExportResolver = activityExportResolver;
-	}
-
-	public boolean isUsedSignalParameter() {
-		return containsSignalAcces;
 	}
 
 	public boolean isInvokedTimerOperation() {
@@ -69,7 +63,7 @@ class CallOperationExporter {
 		if (returnPin != null)
 			returnOutputsToCallActions.put(node, returnPin);
 
-		if (Shared.isConstructor(node.getOperation())) {
+		if (CppExporterUtils.isConstructor(node.getOperation())) {
 
 			/*
 			 * In case of signal factory's constructor the first parameter is
@@ -82,7 +76,6 @@ class CallOperationExporter {
 		}
 
 		if (node.getOperation().getName().equals(ActivityTemplates.GetSignalFunctionName)) {
-			containsSignalAcces = true;
 			return ActivityTemplates.getRealSignal(returnPin.getType().getName(),
 					tempVariableExporter.getRealVariableName(returnPin));
 		}

@@ -106,6 +106,8 @@ class XtxtUMLReferenceProposalCreator extends XbaseReferenceProposalCreator {
 				scope.selectOwnedStates(model)
 			case XtxtUMLPackage::eINSTANCE.TUClassPropertyAccessExpression_Right:
 				scope.selectNavigableClassProperties(model)
+			case XtxtUMLPackage::eINSTANCE.TUSignal_SuperSignal:
+				scope.selectExtendableSignals(model)
 			case XtxtUMLPackage::eINSTANCE.TUClass_SuperClass:
 				scope.selectExtendableClasses(model)
 			case XbasePackage::eINSTANCE.XAbstractFeatureCall_Feature:
@@ -200,6 +202,15 @@ class XtxtUMLReferenceProposalCreator extends XbaseReferenceProposalCreator {
 		}
 	}
 
+	def private selectExtendableSignals(IScope scope, EObject model) {
+		if (model instanceof TUSignal) {
+			val selfName = model.fullyQualifiedName;
+			return scope.allElements.filter [
+				qualifiedName != selfName
+			]
+		}
+	}
+
 	def private selectExtendableClasses(IScope scope, EObject model) {
 		if (model instanceof TUClass) {
 			val selfName = model.fullyQualifiedName;
@@ -246,12 +257,11 @@ class XtxtUMLReferenceProposalCreator extends XbaseReferenceProposalCreator {
 		}
 
 		return if (isClassAllowed != null) {
-			val isSignalAllowed = EcoreUtil2.getContainerOfType(model, XBlockExpression) != null;
-			scope.allElements.filter[isAllowedType(isClassAllowed, isSignalAllowed)]
+			scope.allElements.filter[isAllowedType(isClassAllowed)]
 		}
 	}
 
-	def private isAllowedType(IEObjectDescription desc, boolean isClassAllowed, boolean isSignalAllowed) {
+	def private isAllowedType(IEObjectDescription desc, boolean isClassAllowed) {
 		// primitives are handled as keywords on this level, nothing to do with them
 		allowedJavaClassTypes.contains(desc.qualifiedName.toString) || {
 			val proposedObj = desc.EObjectOrProxy;
@@ -265,7 +275,7 @@ class XtxtUMLReferenceProposalCreator extends XbaseReferenceProposalCreator {
 			proposedObj instanceof JvmDeclaredType && (proposedObj as JvmDeclaredType).superTypes.exists [
 				val typeRef = toLightweightTypeReference;
 				typeRef.isSubtypeOf(DataType) || typeRef.isInterface && typeRef.isSubtypeOf(ExternalType) || typeRef.isSubtypeOf(ModelEnum) ||
-					isClassAllowed && typeRef.isSubtypeOf(ModelClass) || isSignalAllowed && typeRef.isSubtypeOf(Signal)
+					isClassAllowed && (typeRef.isSubtypeOf(ModelClass) || typeRef.isSubtypeOf(Signal))
 			]
 		}
 	}

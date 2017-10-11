@@ -1,0 +1,30 @@
+package vending_machine.model;
+
+// Drink signals
+signal Request;
+
+signal Refill {
+	int quantity;
+}
+
+signal Empty;
+
+// CashRegister signals
+signal InsertCoin {
+	int coin;
+}
+
+signal GiveBackCash {
+	int paidAmount;
+}
+
+// VendingMachine signals
+signal DrinkChosen {
+	String name;
+}
+
+// universal signals
+signal Done;
+
+signal Error;
+

@@ -79,6 +79,7 @@ class XtxtUMLFormatter extends XbaseFormatter {
 
 	def dispatch void format(TUSignal it, extension IFormattableDocument document) {
 		formatBlockElement(it, document, regionFor.keyword('signal'), attributes, false);
+		regionFor.keyword('extends').surround[oneSpace];
 	}
 
 	def dispatch void format(TUClass it, extension IFormattableDocument document) {
@@ -281,7 +282,7 @@ class XtxtUMLFormatter extends XbaseFormatter {
 
 		formatBlockElement(it, document, typeKeyword, members, isSpacious, [
 			append[newLines = if(isSpacious) 2 else 1];
-			format(document);
+			format(it, document); // don't omit 'it'
 		])
 	}
 

@@ -3,31 +3,39 @@
 #include <complex> 
 
 #include "threadpool.hpp"
+namespace Execution 
+{
+StateMachineThreadPool::StateMachineThreadPool() : 
+_sharedConditionVar(new std::condition_variable()), 
+_stateMachines(_sharedConditionVar),
+_stop(true) {}
 
-StateMachineThreadPool::StateMachineThreadPool():stop (true) {}
-	
 void StateMachineThreadPool::stopPool()
 {
-	stop = true;
-	stateMachines.stopQueue ();
-	
+	_stop = true;
+	_stateMachines.stopQueue();
+
 }
 
 void StateMachineThreadPool::startPool(int n)
 {
-	stateMachines.startQueue ();
-	stop = false;
-	modifiedThreads(n);
-        
+	_stateMachines.startQueue();
+	_stop = false;
+	modifyThreads(n);
+	for(int i = 0; i < n; ++i)
+	{
+		workers.addThread(new std::thread(&StateMachineThreadPool::task, this));
+	}
+
 }
 
-void StateMachineThreadPool::stopUponCompletion(std::atomic_int* messages)
+void StateMachineThreadPool::stopUponCompletion()
 {
 	std::unique_lock<std::mutex> lock(stop_request_mu);
-	
-	if (!( (*messages) == 0 && (*worker_threads) == 0))
+
+	if (!(nOfAllMessages->isZeroCounter () && nOfWorkerThreads->isZeroCounter ()))
 	{
-		stop_request_cond->wait(lock, [this,messages] {return (*messages) == 0 && *(this->worker_threads) == 0; });
+		stop_request_cond->wait(lock, [this] {return nOfAllMessages->isZeroCounter() && nOfWorkerThreads->isZeroCounter(); });
 	}
 
 	stopPool();
@@ -35,93 +43,96 @@ void StateMachineThreadPool::stopUponCompletion(std::atomic_int* messages)
 }
 
 void StateMachineThreadPool::task()
-{	
-	while (!this->stop && !workers.isReadyToStop(std::this_thread::get_id()))
-    	{
-		
-
-		
-		IStateMachine* sm = nullptr;
-		while(!sm && !this->stop)
+{
+	while (!this->_stop && !workers.isReadyToStop(std::this_thread::get_id()))
+	{
+		if (modifie_mutex.try_lock()) 
 		{
-			
-			
-							
+			if (workers.isTooManyWorkers())
+			{
+				workers.gettingThreadsReadyToStop(_sharedConditionVar);
+			}
+			while (workers.isTooFewWorkers())
+			{
+				workers.addThread(new std::thread(&StateMachineThreadPool::task, this));
+			}
+			modifie_mutex.unlock();
+		}
+
+		ES::StateMachineRef sm = nullptr;
+		while (sm == nullptr && !this->_stop)
+		{
+
 			if (workers.isReadyToStop(std::this_thread::get_id()))
 			{
 				return;
 			}
 
-			stateMachines.pop_front(sm);
-			incrementWorkers();
-		}
-		
-	
-		if (sm)
-		{
+			_stateMachines.dequeue(sm);
 			
-			if (!sm->isInitialized()) sm->init();
+		}
+
+
+		if (sm != nullptr)
+		{
+			incrementWorkers();
+			bool validSM = true;
 			for (int i = 0; i < 5 && !sm->emptyMessageQueue(); ++i)
 			{
-				sm->processEventVirtual();
+				validSM = sm->processNextEvent();
+				if (!validSM) {
+					break;
+				}
 			}
-					
-			
-			if (!sm->emptyMessageQueue())
-			{
-				stateMachines.push_back(sm);
+
+			if (validSM) {
+				if (!sm->emptyMessageQueue()) 
+				{
+					_stateMachines.enqueue(sm);
+				}
+				else 
+				{
+					sm->setPooled(false);
+				}
 			}
-			else
-			{
-				sm->setPooled (false);
-			}
-			
-			reduceWorkers ();
-			stop_request_cond->notify_one ();			
+
+			reduceWorkers();
+			stop_request_cond->notify_one();
 		}
-					
-    }
-	
+
+	}
+
 }
 
-void StateMachineThreadPool::modifiedThreads (int n)
+void StateMachineThreadPool::modifyThreads(int n)
 {
-	if (!stop) 
+	if (!_stop)
 	{
-		std::unique_lock<std::mutex> mlock(modifie_mutex);
-		
-		workers.setExpectedThreads (n);
-		if (workers.isTooManyWorkers())
-		{
-			workers.gettingThreadsReadyToStop(cond);
-		}
-		while (workers.isTooFewWorkers ())
-		{
-			workers.addThread (new std::thread(&StateMachineThreadPool::task,this));
-		}
+		workers.setExpectedThreads(n);
 	}
-	
 }
 
 
 void StateMachineThreadPool::incrementWorkers()
-{	
-	(*worker_threads)++;
+{
+	nOfWorkerThreads->incrementCounter();
 
 }
 
 void StateMachineThreadPool::reduceWorkers()
 {
-	(*worker_threads)--;
+	nOfWorkerThreads->decrementCounter();
 }
 
-void StateMachineThreadPool::enqueueObject(IStateMachine* sm)
+void StateMachineThreadPool::enqueueObject(ES::StateMachineRef sm)
 {
-        stateMachines.push_back(sm);
+	_stateMachines.enqueue(sm);
 }
 
 StateMachineThreadPool::~StateMachineThreadPool()
 {
-    	stopPool();
-	workers.removeAll();
+	stopPool();
+	workers.removeAll(); // wait to all threads
 }
+}
+

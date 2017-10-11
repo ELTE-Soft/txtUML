@@ -10,7 +10,7 @@ import org.eclipse.uml2.uml.Model;
 import org.eclipse.uml2.uml.UMLPackage;
 
 import hu.elte.txtuml.api.deployment.Configuration;
-import hu.elte.txtuml.export.cpp.Shared;
+import hu.elte.txtuml.export.cpp.CppExporterUtils;
 import hu.elte.txtuml.export.cpp.Uml2ToCppExporter;
 import hu.elte.txtuml.export.cpp.thread.ThreadDescriptionExporter;
 import hu.elte.txtuml.export.uml2.ExportMode;
@@ -29,11 +29,10 @@ class TxtUMLToCppGovernor {
 		this.testing = testing;
 	}
 
-
 	void uml2ToCpp(String txtUMLProject, String txtUMLModel, String deploymentDescription,
 			String deploymentDescriptionProjectName, boolean addRuntimeOption, boolean overWriteMainFileOption)
 			throws Exception {
-		
+
 		String projectFolder = ResourcesPlugin.getWorkspace().getRoot().getProject(txtUMLProject).getLocation().toFile()
 				.getAbsolutePath();
 		String umlFilesFolder = txtUMLProject + File.separator + GeneratedCPPFolderName + File.separator + txtUMLModel
@@ -63,12 +62,11 @@ class TxtUMLToCppGovernor {
 			throw e;
 		}
 
-		Shared shared = new Shared(model.allOwnedElements());
-
 		Set<org.eclipse.uml2.uml.Class> allClass = new HashSet<org.eclipse.uml2.uml.Class>();
-		shared.getTypedElements(allClass, UMLPackage.Literals.CLASS);
+		CppExporterUtils.getTypedElements(allClass, UMLPackage.Literals.CLASS, model.allOwnedElements());
 
-		ThreadDescriptionExporter exporter = new ThreadDescriptionExporter(shared.getAllModelClassNames());
+		ThreadDescriptionExporter exporter = new ThreadDescriptionExporter(
+				CppExporterUtils.getAllModelClassNames(model.allOwnedElements()));
 		exporter.exportDescription((Class<? extends Configuration>) txtUMLThreadDescription);
 
 		if (!exporter.warningListIsEmpty()) {
@@ -82,8 +80,8 @@ class TxtUMLToCppGovernor {
 			}
 		}
 
-		Uml2ToCppExporter cppExporter = new Uml2ToCppExporter(shared, exporter.getConfigMap(), addRuntimeOption,
-				overWriteMainFileOption);
+		Uml2ToCppExporter cppExporter = new Uml2ToCppExporter(model.allOwnedElements(), exporter.getExportedConfiguration(),
+				addRuntimeOption, overWriteMainFileOption);
 		try {
 			cppExporter.buildCppCode(
 					projectFolder + File.separator + GeneratedCPPFolderName + File.separator + txtUMLModel);
@@ -96,8 +94,8 @@ class TxtUMLToCppGovernor {
 	}
 
 	@SuppressWarnings("unchecked")
-	private Class<? extends Configuration> loadConfigurationClass(String deploymentDescriptionProjectName, String deploymentDescription)
-			throws ClassNotFoundException, NotCofigurationClassException {
+	private Class<? extends Configuration> loadConfigurationClass(String deploymentDescriptionProjectName,
+			String deploymentDescription) throws ClassNotFoundException, NotCofigurationClassException {
 		URLClassLoader loader = ClassLoaderProvider.getClassLoaderForProject(deploymentDescriptionProjectName,
 				ThreadDescriptionExporter.class.getClassLoader());
 		Class<? extends Configuration> txtUMLThreadDescription;
@@ -118,7 +116,7 @@ class NotCofigurationClassException extends Exception {
 	public NotCofigurationClassException() {
 		super();
 	}
-	
+
 	public NotCofigurationClassException(String message) {
 		super(message);
 	}

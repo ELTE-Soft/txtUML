@@ -6,52 +6,65 @@
 #include <atomic>
 #include <string>
 
-#include "runtimetypes.hpp"
+#include "ESRoot/Types.hpp"
+#include "ESRoot/Containers/ThreadSafeQueue.hpp"
+#include "ESRoot/AtomicCounter.hpp"
 
+namespace Execution {
 class StateMachineThreadPool;
+}
+
+namespace Model
+{
 
 class IStateMachine
 {
 public:
-  virtual void processEventVirtual () = 0;
-  virtual void processInitTransition () = 0;
+	virtual ~IStateMachine();
+	bool processNextEvent();
 
-  void startSM() { _started = true; handlePool(); }
-  void runSM();
-  void send (EventPtr e_);
-  void init ();
-  EventPtr getNextMessage () {return _messageQueue->front();}
-  void deleteNextMessage  () {_messageQueue->pop_front();(*message_counter)--; }
-  bool emptyMessageQueue  () {return _messageQueue->empty();}
-  void setPool (StateMachineThreadPool* pool_){_pool=pool_;}
-  void setMessageQueue (std::shared_ptr<MessageQueueType> messageQueue_) {_messageQueue=messageQueue_;}
-  void setPooled (bool);
-  bool isInPool() {return _inPool;}
-  bool isStarted() {return _started;}
-  bool isInitialized() {return _initialized; }
-  int getPoolId() {return poolId;}
-  void setMessageCounter (std::atomic_int* counter) { message_counter = counter; }
-  
-  virtual std::string toString() {return "";}
-  virtual ~IStateMachine();
+	void startSM();
+	void deleteSM();
+	void send(const ES::EventRef e);
+	
+	void setPool(ES::SharedPtr<Execution::StateMachineThreadPool> pool);
+	void setPooled(bool value = true);
+	void setMessageQueue(ES::SharedPtr<ES::MessageQueueType> messageQueue);
+	void setMessageCounter(ES::SharedPtr<ES::AtomicCounter> counter);
+
+	int getPoolId() const;
+	virtual std::string toString() const;
+	bool emptyMessageQueue() const;
+
 protected:
-  IStateMachine  (std::shared_ptr<MessageQueueType> messageQueue_=std::shared_ptr<MessageQueueType>(new MessageQueueType()));
-  void setPoolId (int id) {poolId = id;}
+	IStateMachine();
+
+	virtual void processEventVirtual(ES::EventRef event) = 0;
+	virtual void processInitTransition(ES::EventRef event) = 0;
+
+	ES::EventRef getNextMessage();
+	void setPoolId(int id);
+
 private:
-  void handlePool ();
-  
-  std::shared_ptr<MessageQueueType> _messageQueue;
-  StateMachineThreadPool* _pool;//safe because: controlled by the runtime, but we can not set it in the constructor
-  std::mutex _mutex;
-  std::condition_variable _cond;
-  std::atomic_bool _inPool;
-  std::atomic_bool _started;
-  std::atomic_bool _initialized;
-  std::atomic_int* message_counter;
-  int poolId;
-  
-  
-  
+	void handlePool();
+	void destroy();
+
+	ES::SharedPtr<ES::MessageQueueType> _messageQueue;
+	ES::SharedPtr<Execution::StateMachineThreadPool> _pool;
+	std::mutex _mutex;
+	std::condition_variable _cond;
+	std::atomic_bool _inPool;
+	std::atomic_bool _started;
+	ES::SharedPtr<ES::AtomicCounter> messageCounter;
+	
+
+	int poolId;
+
+
+
 };
+
+}
+
 
 #endif // ISTATEMACHINE_HPP_INCLUDED

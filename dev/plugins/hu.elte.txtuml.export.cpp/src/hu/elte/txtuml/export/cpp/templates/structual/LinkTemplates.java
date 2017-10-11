@@ -1,6 +1,11 @@
 package hu.elte.txtuml.export.cpp.templates.structual;
 
 import hu.elte.txtuml.export.cpp.templates.GenerationNames;
+import hu.elte.txtuml.export.cpp.templates.GenerationNames.CollectionNames;
+import hu.elte.txtuml.export.cpp.templates.GenerationNames.FileNames;
+import hu.elte.txtuml.export.cpp.templates.GenerationNames.GeneralFunctionNames;
+import hu.elte.txtuml.export.cpp.templates.GenerationNames.ModifierNames;
+import hu.elte.txtuml.export.cpp.templates.GenerationNames.PointerAndMemoryNames;
 import hu.elte.txtuml.export.cpp.templates.PrivateFunctionalTemplates;
 
 public class LinkTemplates {
@@ -8,19 +13,19 @@ public class LinkTemplates {
 	public static final String AssocationHeader = GenerationNames.AssocationHeaderName;
 	public static final String AssociationsStructuresHreaderName = GenerationNames.AssociationsHeaderName;
 	public static final String AssociationStructuresHeader = GenerationNames.AssociationsHeaderName + "."
-			+ GenerationNames.HeaderExtension;
+			+ FileNames.HeaderExtension;
 	public static final String AssociationStructuresSource = GenerationNames.AssociationsHeaderName + "."
-			+ GenerationNames.SourceExtension;
+			+ FileNames.SourceExtension;
 
 	public enum LinkFunctionType {
 		Link, Unlink
 	};
 
 	public static String linkSourceName(String className) {
-		return className + "-" + GenerationNames.LinkAddition + "." + GenerationNames.SourceExtension;
+		return className + "-" + GenerationNames.LinkAddition + "." + FileNames.SourceExtension;
 	}
 
-	public static String assocationDecl(String className, String roleName, Integer lower, Integer upper) {
+	public static String assocationEndPointDecl(String className, String roleName, Integer lower, Integer upper) {
 		return GenerationNames.AssocMultiplicityDataStruct + "<" + className + ">" + " " + roleName + " "
 				+ GenerationNames.AssigmentOperator + " " + GenerationNames.AssocMultiplicityDataStruct + "<"
 				+ className + ">" + "(" + lower + "," + upper + ");\n";
@@ -30,9 +35,8 @@ public class LinkTemplates {
 
 		StringBuilder source = new StringBuilder("");
 		source.append(GenerationNames.TemplateDecl + "<" + GenerationNames.TemplateType + " "
-				+ GenerationNames.TemplateParameterName + "," + GenerationNames.TemplateType + " "
 				+ GenerationNames.EndPointName + ">\n");
-		source.append(GenerationNames.NoReturn + " " + getLinkFunctionName(linkFunction));
+		source.append(ModifierNames.NoReturn + " " + getLinkFunctionName(linkFunction));
 		source.append("(" + GenerationNames.TemplateType + " "
 				+ PrivateFunctionalTemplates.cppType(GenerationNames.EndPointName + "::" + GenerationNames.EdgeType)
 				+ " " + ") {}\n");
@@ -44,8 +48,8 @@ public class LinkTemplates {
 			String otherEndPointName, String assocName, LinkFunctionType linkFunction) {
 		StringBuilder source = new StringBuilder("");
 		source.append(GenerationNames.TemplateDecl + "<>\n");
-		source.append(GenerationNames.NoReturn + " " + className + "::" + getLinkFunctionName(linkFunction));
-		source.append("<" + assocName + "," + GenerationNames.TemplateType + " " + assocName + "::" + otherEndPointName
+		source.append(ModifierNames.NoReturn + " " + className + "::" + getLinkFunctionName(linkFunction));
+		source.append("<" + GenerationNames.TemplateType + " " + assocName + "::" + otherEndPointName
 				+ ">");
 		source.append("(" + PrivateFunctionalTemplates.cppType(otherClassName) + ");\n");
 
@@ -57,12 +61,12 @@ public class LinkTemplates {
 		StringBuilder source = new StringBuilder("");
 		if (isNavigable) {
 			source.append(GenerationNames.TemplateDecl + "<>\n");
-			source.append(GenerationNames.NoReturn + " " + className + "::" + getLinkFunctionName(linkFunction));
+			source.append(ModifierNames.NoReturn + " " + className + "::" + getLinkFunctionName(linkFunction));
 			source.append(
-					"<" + assocName + "," + GenerationNames.TemplateType + " " + assocName + "::" + roleName + ">");
+					"<" + GenerationNames.TemplateType + " " + assocName + "::" + roleName + ">");
 			source.append("(" + PrivateFunctionalTemplates.cppType(otherClassName) + " "
 					+ GenerationNames.AssocParameterName + ")\n");
-			source.append("{\n" + formatAssociationRoleName(assocName, roleName) + GenerationNames.SimpleAccess
+			source.append("{\n" + formatAssociationRoleName(assocName, roleName) + PointerAndMemoryNames.SimpleAccess
 					+ getAddOrRemoveAssoc(linkFunction) + "(" + GenerationNames.AssocParameterName + ");\n}\n");
 		}
 
@@ -70,12 +74,18 @@ public class LinkTemplates {
 	}
 
 	public static String getLinkFunctionName(LinkFunctionType linkFunction) {
-		if (linkFunction == LinkFunctionType.Link)
-			return GenerationNames.LinkActionName;
-		else if (linkFunction == LinkFunctionType.Unlink)
-			return GenerationNames.UnLinkActionName;
+		
+		if (linkFunction == LinkFunctionType.Link) {
+			return GeneralFunctionNames.GeneralLinkFunction;
+		}
+		else if (linkFunction == LinkFunctionType.Unlink) {
+			return GeneralFunctionNames.GeneralUnlinkFunction;
+		}
+		else {
+			return "";
 
-		return "";
+		}
+
 	}
 
 	public static String getAddOrRemoveAssoc(LinkFunctionType linkFunction) {
@@ -91,8 +101,7 @@ public class LinkTemplates {
 			String endPoint2) {
 		StringBuilder source = new StringBuilder("");
 		source.append(GenerationNames.ClassType + " " + associationName);
-		source.append(" : public " + GenerationNames.AssociationClassName);
-		source.append("<" + E1 + "," + E2 + ">{\n");
+		source.append("{\n");
 		source.append(createEndPointClass(E1, endPoint1));
 		source.append(createEndPointClass(E2, endPoint2));
 		source.append("};\n");
@@ -109,7 +118,7 @@ public class LinkTemplates {
 	}
 
 	public static String manyMultiplicityDependency() {
-		return PrivateFunctionalTemplates.outerInclude(GenerationNames.Collection);
+		return PrivateFunctionalTemplates.include(CollectionNames.Collection);
 	}
 
 }

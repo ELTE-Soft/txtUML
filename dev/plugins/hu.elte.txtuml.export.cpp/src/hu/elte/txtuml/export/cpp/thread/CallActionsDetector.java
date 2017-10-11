@@ -17,7 +17,6 @@ import org.eclipse.uml2.uml.Type;
 import org.eclipse.uml2.uml.UMLPackage;
 import org.eclipse.uml2.uml.Vertex;
 
-import hu.elte.txtuml.export.cpp.Shared;
 import hu.elte.txtuml.export.cpp.thread.ThreadPoolConfiguration;
 import hu.elte.txtuml.utils.Logger;
 
@@ -27,9 +26,9 @@ public class CallActionsDetector {
 	private List<Class> classList;
 	private List<String> syncronousWarnings;
 
-	public CallActionsDetector(Shared shared, Map<String, ThreadPoolConfiguration> threadDescription) {
+	public CallActionsDetector(List<Class> classList, Map<String, ThreadPoolConfiguration> threadDescription) {
 		this.threadDescription = threadDescription;
-		shared.getTypedElements(classList, UMLPackage.Literals.CLASS);
+		this.classList = classList;
 		syncronousWarnings = new ArrayList<String>();
 	}
 

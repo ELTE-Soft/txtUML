@@ -4,7 +4,7 @@
 
 	<groupId>hu.elte.txtuml</groupId>
 	<artifactId>hu.elte.txtuml.parent</artifactId>
-	<version>0.5.1-SNAPSHOT</version>
+	<version>0.6.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>txtUML Main Maven Project</name>
@@ -28,6 +28,7 @@
 		<module>../../plugins/hu.elte.txtuml.api.stdlib</module>
 		<module>../../plugins/hu.elte.txtuml.diagnostics</module>
 		<module>../../plugins/hu.elte.txtuml.export.cpp</module>
+		<module>../../plugins/hu.elte.txtuml.export.javascript</module>
 		<module>../../plugins/hu.elte.txtuml.export.papyrus</module>
 		<module>../../plugins/hu.elte.txtuml.export.plantuml</module>
 		<module>../../plugins/hu.elte.txtuml.export.uml2</module>
@@ -45,6 +46,7 @@
 		<module>../../tests/hu.elte.txtuml.api.model.execution.tests</module>
 		<module>../../tests/hu.elte.txtuml.diagnostics.tests</module>
 		<module>../../tests/hu.elte.txtuml.export.cpp.tests</module>
+		<module>../../tests/hu.elte.txtuml.export.javascript.tests</module>
 		<module>../../tests/hu.elte.txtuml.export.papyrus.tests</module>
 		<module>../../tests/hu.elte.txtuml.export.plantuml.tests</module>
 		<module>../../tests/hu.elte.txtuml.export.uml2.tests</module>
@@ -130,7 +132,7 @@
 						<artifact>
 							<groupId>hu.elte.txtuml</groupId>
 							<artifactId>hu.elte.txtuml.target</artifactId>
-							<version>0.5.1-SNAPSHOT</version>
+							<version>0.6.0-SNAPSHOT</version>
 							<classifier>mirrors</classifier>
 						</artifact>
 					</target>
@@ -347,7 +349,7 @@
 								<artifact>
 									<groupId>hu.elte.txtuml</groupId>
 									<artifactId>hu.elte.txtuml.target</artifactId>
-									<version>0.5.1-SNAPSHOT</version>
+									<version>0.6.0-SNAPSHOT</version>
 									<classifier>release</classifier>
 								</artifact>
 							</target>

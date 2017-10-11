@@ -2,11 +2,11 @@
 <feature
       id="hu.elte.txtuml.feature"
       label="txtUML"
-      version="0.5.1.qualifier"
+      version="0.6.0.qualifier"
       provider-name="ELTE">
 
    <description url="http://txtuml.inf.elte.hu">
-      Textual, executable, translatable UML.(Java 8 Required)
+      Textual, executable, translatable UML. (Java 8 Required)
    </description>
 
    <copyright>
@@ -105,19 +105,21 @@ This Agreement is governed by the laws of the State of New York and the intellec
 
    <url>
       <update label="txtUML Update Site" url="http://txtuml.inf.elte.hu/releases/latest/"/>
-      <discovery label="Papyrus Extras Update Site" url="http://download.eclipse.org/modeling/mdt/papyrus/updates/releases/mars/extra"/>
+      <discovery label="Papyrus Extras Update Site" url="http://download.eclipse.org/modeling/mdt/papyrus/updates/releases/neon/extra"/>
+      <discovery label="EclipseLink Update Site" url="http://download.eclipse.org/rt/eclipselink/updates/"/>
    </url>
 
    <requires>
-      <import feature="org.eclipse.emf.sdk" version="2.11.2.v20160208-0841" match="perfect"/>
-      <import feature="org.eclipse.papyrus.sdk.feature" version="1.1.4.201602101200" match="perfect"/>
-      <import feature="org.eclipse.xtext.runtime" version="2.9.1.v201512180746" match="perfect"/>
-      <import feature="org.eclipse.xtext.xbase" version="2.9.1.v201512180746" match="perfect"/>
-      <import feature="org.eclipse.xtext.xbase.lib" version="2.9.1.v201512180746" match="perfect"/>
-      <import feature="org.eclipse.xtext.ui" version="2.9.1.v201512180746" match="perfect"/>
-      <import feature="org.eclipse.xtext.xtext.ui" version="2.9.1.v201512180746" match="perfect"/>
-      <import feature="net.sourceforge.plantuml.feature" version="1.1.8.8047" match="equivalent"/>
-      <import feature="org.eclipse.cdt" version="8.8.1.201602051005" match="equivalent"/>
+      <import feature="org.eclipse.emf.sdk" version="2.12.0.v20160526-0356" match="perfect"/>
+      <import feature="org.eclipse.papyrus.sdk.feature" version="2.0.2.201612071107" match="perfect"/>
+      <import feature="org.eclipse.xtext.runtime" version="2.10.0.v201605250459" match="perfect"/>
+      <import feature="org.eclipse.xtext.xbase" version="2.10.0.v201605250459" match="perfect"/>
+      <import feature="org.eclipse.xtext.xbase.lib" version="2.10.0.v201605250459" match="perfect"/>
+      <import feature="org.eclipse.xtext.ui" version="2.10.0.v201605250459" match="perfect"/>
+      <import feature="org.eclipse.xtext.xtext.ui" version="2.10.0.v201605250459" match="perfect"/>
+      <import feature="net.sourceforge.plantuml.feature" version="1.1.8.8047" match="equivalent"/>     
+      <import feature="org.eclipse.cdt" version="9.2.0.201612061315" match="equivalent"/>
+      <import feature="org.eclipse.persistence.moxy" version="2.6.4.v20160829-44060b6" match="perfect"/>
    </requires>
 
    <plugin
@@ -254,6 +256,13 @@ This Agreement is governed by the laws of the State of New York and the intellec
          unpack="false"/>
 
    <plugin
+         id="hu.elte.txtuml.export.javascript"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
          id="hu.elte.txtuml.export.plantuml"
          download-size="0"
          install-size="0"
@@ -261,3 +270,4 @@ This Agreement is governed by the laws of the State of New York and the intellec
          unpack="false"/>
 
 </feature>
+

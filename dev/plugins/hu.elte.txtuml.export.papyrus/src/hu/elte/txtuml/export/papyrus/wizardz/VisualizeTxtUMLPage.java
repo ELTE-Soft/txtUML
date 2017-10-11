@@ -301,7 +301,7 @@ public class VisualizeTxtUMLPage extends WizardPage {
 			types.stream().filter(type -> type.getFullyQualifiedName().equals(qualifiedName))
 					.forEach(type -> txtUMLLayout.add(type));
 		} catch (NotFoundException | JavaModelException ex) {
-			Logger.user.error(ex.getMessage());
+			Logger.sys.error(ex.getMessage());
 		}
 	}
 

@@ -1,28 +1,97 @@
 #ifndef EVENTI_HPP_INCLUDED
 #define EVENTI_HPP_INCLUDED
 
-#include "runtimetypes.hpp"
+#include "ESRoot/Types.hpp"
 
-class StateMachineI;
-
-struct IEvent
+namespace Model
 {
-  IEvent () {}
-  virtual ~IEvent () {}
-  
-  int t;
-  int p; 
-  
+
+
+enum class SpecialSignalType {
+	NoSpecial,
+	InitSignal,
+	DestorySignal
 };
 
-struct EventBase : public IEvent
+
+template<typename DerivedBase>
+class IEvent
 {
-  EventBase (int t_) : t (t_), p (NoPort_PE) {}
-	
-  int t;
-  int p;
+public:
+	IEvent() {}
+	virtual ~IEvent() {}
+	void setTargetSM(const ES::StateMachineRef sm)
+	{
+		static_cast<DerivedBase*>(this)->targetSM = sm;
+	}
+	ES::StateMachineRef getTargetSM() const
+	{
+		return static_cast<const DerivedBase*>(this)->targetSM;
+	}
+
+	int getType() const
+	{
+		return static_cast<const DerivedBase*>(this)->t;
+	}
+
+	int getPortType() const
+	{
+		return static_cast<const DerivedBase*>(this)->p;
+	}
+
+	SpecialSignalType getSpecialType() const
+	{
+		return static_cast<const DerivedBase*>(this)->specialType;
+	}
+
+public:
+	static void invalidatesEvent(ES::SharedPtr<IEvent<DerivedBase>>& event) {
+		event->setTargetSM(nullptr);
+	}
+
+	static bool eventIsValid(const ES::SharedPtr<IEvent<DerivedBase>>& event) {
+		return event->getTargetSM() != nullptr;
+	}
+
 };
 
-typedef const EventBase& EventBaseCRef;
+
+template<typename DerivedBase>
+class SpecialEventChecker {
+public:
+	bool operator() (const ES::SharedPtr<const IEvent<DerivedBase>>& e) {
+		return e->getSpecialType() != SpecialSignalType::NoSpecial;
+	}
+};
+
+class EventBase : public IEvent<EventBase>
+{
+public:
+	EventBase(int t_, SpecialSignalType extermalType_ = SpecialSignalType::NoSpecial) :
+		t(t_),
+		specialType(extermalType_),
+		p(1) {}
+
+	ES::StateMachineRef targetSM;
+	int t;
+	SpecialSignalType specialType;
+	int p;
+
+};
+
+class InitSpecialSignal : public EventBase
+{
+public:
+	InitSpecialSignal() : EventBase(0, SpecialSignalType::InitSignal) {}
+};
+
+class DestorySpecialSignal : public EventBase
+{
+public:
+	DestorySpecialSignal() : EventBase(0, SpecialSignalType::DestorySignal) {}
+};
+
+}
+
 
 #endif // EVENTI_HPP_INCLUDED

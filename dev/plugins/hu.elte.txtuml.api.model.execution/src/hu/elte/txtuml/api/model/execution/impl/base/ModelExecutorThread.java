@@ -122,7 +122,7 @@ public abstract class ModelExecutorThread extends Thread implements RuntimeConte
 	}
 
 	private boolean shouldContinue() {
-		if (executor.shouldShutDownImmediately() || (isEmpty() && executor.shouldShutDownWhenNothingToDo())
+		if (executor.shouldShutDownImmediately() || (executor.shouldShutDownWhenNothingToDo() && isEmpty())
 				|| earlyStop()) {
 			if (executor.unregisterThread(this)) {
 				return false;

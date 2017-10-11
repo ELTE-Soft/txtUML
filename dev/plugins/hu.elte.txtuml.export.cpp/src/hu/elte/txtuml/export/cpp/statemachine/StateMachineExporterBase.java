@@ -1,5 +1,7 @@
 package hu.elte.txtuml.export.cpp.statemachine;
 
+import java.io.FileNotFoundException;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -23,16 +25,15 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 
 import hu.elte.txtuml.export.cpp.templates.PrivateFunctionalTemplates;
-import hu.elte.txtuml.export.cpp.templates.statemachine.EventTemplates;
 import hu.elte.txtuml.export.cpp.templates.statemachine.StateMachineTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.FunctionTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.PortTemplates;
 import hu.elte.txtuml.utils.Pair;
 
 public class StateMachineExporterBase {
-	
-	private List<String> subSubMachines;
-	
+
+	protected List<String> subSubMachines;
+
 	protected String ownerClassName;
 	protected Pseudostate initialState;
 	protected Multimap<TransitionConditions, Pair<String, String>> stateMachineMap;
@@ -42,26 +43,27 @@ public class StateMachineExporterBase {
 	protected GuardExporter guardExporter;
 	protected TransitionExporter transitionExporter;
 	protected EntryExitFunctionExporter entryExitFunctionExporter;
-	
+	protected SubStateMachineExporter subStateMachineExporter;
+	protected String parentClassName;
+
+	private List<String> allSubMachineName;
+
+	public StateMachineExporterBase() {
+	}
+
 	public void createMachine() {
 		init();
-		searchInitialState();
 		for (Transition item : stateMachineRegion.getTransitions()) {
 			TransitionConditions transitionCondition = null;
-
-			if (item.getSource().getName().equals(getInitialStateName())) {
-				transitionCondition = new TransitionConditions(EventTemplates.InitSignal, item.getSource().getName(), PortTemplates.NO_PORT);
-			}
-			
 			for (Trigger tri : item.getTriggers()) {
 				Event e = tri.getEvent();
-				
+
 				if (e != null && e.eClass().equals(UMLPackage.Literals.SIGNAL_EVENT)) {
 					SignalEvent se = (SignalEvent) e;
 					if (se != null) {
 						List<Port> ports = tri.getPorts();
 						assert (ports.size() == 0 || ports.size() == 1);
-						String port = ports.size() == 0 ? PortTemplates.NO_PORT : ports.get(0).getName();						
+						String port = ports.size() == 0 ? PortTemplates.NO_PORT : ports.get(0).getName();
 						transitionCondition = new TransitionConditions(se.getSignal().getName(),
 								item.getSource().getName(), port);
 
@@ -83,25 +85,33 @@ public class StateMachineExporterBase {
 		}
 	}
 	
+	public void createSubMachineSources(String detiniation) throws FileNotFoundException, UnsupportedEncodingException {
+		for (Map.Entry<String, Pair<String, Region>> entry : submachineMap.entrySet()) {
+			subStateMachineExporter = new SubStateMachineExporter();
+			subStateMachineExporter.setRegion(entry.getValue().getSecond());
+			subStateMachineExporter.setName(entry.getValue().getFirst());
+			subStateMachineExporter.setParentClassName(parentClassName);
+			subStateMachineExporter.createSubSmSource(detiniation);
+			allSubMachineName.add(entry.getValue().getFirst());
+			allSubMachineName.addAll(subStateMachineExporter.getAllSubmachineName());
+		}
+	}
+	
+	public List<String> getAllSubmachineName() {
+		return allSubMachineName;
+	}
+
 	public void setName(String name) {
 		this.ownerClassName = name;
 	}
-	
-	public List<String> getSubMachineNameList() {
-		List<String> ret = new LinkedList<String>();
-		if (submachineMap != null) {
-			for (Map.Entry<String, Pair<String, Region>> entry : submachineMap.entrySet()) {
-				ret.add(entry.getValue().getFirst());
-			}
-			ret.addAll(subSubMachines);
-		}
-		return ret;
+
+	public void setParentClassName(String name) {
+		this.parentClassName = name;
 	}
-	
 	protected Multimap<TransitionConditions, Pair<String, String>> getStateMachine() {
 		return stateMachineMap;
 	}
-	
+
 	protected Map<String, Pair<String, Region>> getSubMachines() {
 		Map<String, Pair<String, Region>> submachineMap = new HashMap<String, Pair<String, Region>>();
 		for (State state : stateList) {
@@ -121,8 +131,11 @@ public class StateMachineExporterBase {
 		}
 		return submachineMap;
 	}
-	
+
 	protected void init() {
+		searchInitialState();
+		
+		allSubMachineName = new LinkedList<>();
 		stateMachineMap = HashMultimap.create();
 		submachineMap = getSubMachines();
 		subSubMachines = new ArrayList<String>();
@@ -133,7 +146,7 @@ public class StateMachineExporterBase {
 		entryExitFunctionExporter.createExitFunctionTypeMap();
 
 	}
-	
+
 	protected void searchInitialState() {
 		for (Vertex item : stateMachineRegion.getSubvertices()) {
 			if (item.eClass().equals(UMLPackage.Literals.PSEUDOSTATE)) {
@@ -146,16 +159,16 @@ public class StateMachineExporterBase {
 			}
 		}
 	}
-	
+
 	protected String createTransitionTableInitRelatedCodes() {
 		StringBuilder source = new StringBuilder("");
 		source.append(PrivateFunctionalTemplates.transitionTableDef(ownerClassName));
 		source.append(FunctionTemplates.functionDef(ownerClassName, StateMachineTemplates.InitTransitionTable,
 				StateMachineTemplates.transitionTableInitilizationBody(ownerClassName, getStateMachine())));
-		
+
 		return source.toString();
 	}
-	
+
 	protected Map<String, String> createStateActionMap(List<EntryExitFunctionDescription> functionList) {
 		Map<String, String> stateActionMap = new HashMap<String, String>();
 		for (EntryExitFunctionDescription entry : functionList) {
@@ -171,10 +184,6 @@ public class StateMachineExporterBase {
 		}
 		return eventSubMachineMap;
 	}
-	
-	protected String getInitialStateName() {
-		return initialState.getName();
-	}
 
 	protected void createStateList() {
 		stateList = new ArrayList<State>();
@@ -183,5 +192,30 @@ public class StateMachineExporterBase {
 				stateList.add((State) item);
 			}
 		}
+	}
+	
+	protected static Pseudostate getInitialState(Region stateMachineRegion) {
+		for (Vertex item : stateMachineRegion.getSubvertices()) {
+			if (item.eClass().equals(UMLPackage.Literals.PSEUDOSTATE)) {
+				Pseudostate pseduoState = (Pseudostate) item;
+				if (pseduoState.getKind().equals(PseudostateKind.INITIAL_LITERAL)) {
+					return (Pseudostate) item;
+				}
+
+			}
+		}		
+		return null;
+	}
+	
+	protected static Transition getInitialTransition(Region stateMachineRegion) {
+		Pseudostate initialState = getInitialState(stateMachineRegion);
+		if (initialState != null) {
+			for (Transition transition : stateMachineRegion.getTransitions()) {
+				if(transition.getSource().equals(initialState)) {
+					return transition;
+				}
+			}
+		}		
+		return null;
 	}
 }
