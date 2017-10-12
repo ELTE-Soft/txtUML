@@ -3,10 +3,11 @@ package hu.elte.txtuml.examples.feeder.model;
 import hu.elte.txtuml.api.deployment.fmi.FMUEnvironment;
 import hu.elte.txtuml.api.model.Action;
 import hu.elte.txtuml.api.model.From;
+import hu.elte.txtuml.api.model.ModelClass;
 import hu.elte.txtuml.api.model.To;
 import hu.elte.txtuml.api.model.Trigger;
 
-public class Sink extends FMUEnvironment {
+public class Sink extends ModelClass {
 
 	int requested = 0;
 	int remaining = 0;
@@ -15,7 +16,7 @@ public class Sink extends FMUEnvironment {
 	}
 
 	public Sink(FMUEnvironment source) {
-		Action.link(SinkSourceAssoc.sink.class, this, SinkSourceAssoc.source.class, source);
+		Action.link(SinkEnvAssoc.sink.class, this, SinkEnvAssoc.source.class, source);
 	}
 
 	class Init extends Initial {
@@ -46,7 +47,7 @@ public class Sink extends FMUEnvironment {
 			Action.log("RECEIVED " + requested + " MESSAGES");
 			++requested;
 			remaining = requested;
-			Action.send(new RequestSignal(requested), assoc(SinkSourceAssoc.source.class).selectAny());
+			Action.send(new RequestSignal(requested), assoc(SinkEnvAssoc.source.class).selectAny());
 		}
 	}
 
@@ -71,7 +72,7 @@ public class Sink extends FMUEnvironment {
 	public void start() {
 		++requested;
 		remaining = requested;
-		Action.send(new RequestSignal(requested), assoc(SinkSourceAssoc.source.class).selectAny());
+		Action.send(new RequestSignal(requested), assoc(SinkEnvAssoc.source.class).selectAny());
 	}
 
 }

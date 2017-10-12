@@ -3,16 +3,17 @@ package hu.elte.txtuml.examples.feeder.model;
 import hu.elte.txtuml.api.deployment.fmi.FMUEnvironment;
 import hu.elte.txtuml.api.model.Action;
 import hu.elte.txtuml.api.model.From;
+import hu.elte.txtuml.api.model.ModelClass;
 import hu.elte.txtuml.api.model.To;
 import hu.elte.txtuml.api.model.Trigger;
 
-public class Source extends FMUEnvironment {
+public class Source extends ModelClass {
 	
 	public Source() {
 	}
 	
 	public Source(FMUEnvironment sink) {
-		Action.link(SinkSourceAssoc.source.class, this, SinkSourceAssoc.sink.class, sink);
+		Action.link(SourceEnvAssoc.source.class, this, SourceEnvAssoc.sink.class, sink);
 	}
 	
 	class Init extends Initial {
@@ -34,7 +35,7 @@ public class Source extends FMUEnvironment {
 		public void effect() {
 			RequestSignal trigger = getTrigger(RequestSignal.class);
 			for (int i = 0; i < trigger.amount; i++) {
-				Action.send(new ResponseSignal(3), assoc(SinkSourceAssoc.sink.class).selectAny());
+				Action.send(new ResponseSignal(3), assoc(SourceEnvAssoc.sink.class).selectAny());
 			}
 		}
 	}
