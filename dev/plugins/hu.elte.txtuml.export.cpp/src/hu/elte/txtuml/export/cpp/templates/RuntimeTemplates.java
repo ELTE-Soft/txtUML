@@ -65,7 +65,7 @@ public class RuntimeTemplates {
 		params.add(new Pair<String,String>(GenerationNames.PointerAndMemoryNames.EventPtr, eventName));
 		return FunctionTemplates.functionDef(className, 
 				StateMachineTemplates.ProcessInitTransitionFunctionName, 
-				params, StateMachineMethodNames.InitTansitionFunctionName + "(" + GenerationNames.formatIncomingParamName(eventName) + ");");
+				params, StateMachineMethodNames.InitializeFunctionName + "(" + GenerationNames.formatIncomingParamName(eventName) + ");");
 
 	}
 	

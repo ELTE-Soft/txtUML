@@ -45,7 +45,7 @@ public class HeaderTemplates {
 			String parentClass, String publicPart, String protectedPart, String privatePart, Boolean rt) {
 		return HeaderTemplates.classHeader(PrivateFunctionalTemplates.classHeaderIncludes(rt) + dependency, className,
 				baseClassName, StateMachineTemplates.stateMachineClassFixPublicParts(className, rt) + publicPart,
-				 protectedPart, StateMachineTemplates.simpleStateMachineClassFixPrivateParts(className) + privatePart,
+				 protectedPart, StateMachineTemplates.stateMachineClassFixPrivateParts(className) + privatePart,
 				true, rt);
 	}
 

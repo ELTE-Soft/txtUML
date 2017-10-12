@@ -57,7 +57,10 @@ public:
    void processInitTransition(ES::EventRef) {
    }
    
-   void Initialize(ES::EventRef) {
+   void initialize(ES::EventRef) {
+   }
+
+   void finalize(ES::EventRef) {
    }
 
 };
