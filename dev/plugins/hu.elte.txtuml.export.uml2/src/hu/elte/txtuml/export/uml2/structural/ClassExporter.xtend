@@ -44,7 +44,8 @@ class ClassExporter extends Exporter<TypeDeclaration, ITypeBinding, Class> {
 			typeDecl.methods.forEach[exportActivity[result.ownedBehaviors += it]]
 		}
 		// superclasses
-		if (typeDecl.superclassType != null) {
+		if (typeDecl.superclassType != null &&
+			typeDecl.superclassType.resolveBinding.qualifiedName != ModelClass.canonicalName) {
 			result.createGeneralization(fetchType(typeDecl.superclassType.resolveBinding) as Classifier)
 		}
 		typeDecl.types.filter[ElementTypeTeller.isPort(it)].forEach [

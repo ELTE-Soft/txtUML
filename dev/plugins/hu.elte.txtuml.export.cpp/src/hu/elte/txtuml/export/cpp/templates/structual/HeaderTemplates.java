@@ -10,7 +10,6 @@ import hu.elte.txtuml.export.cpp.templates.GenerationNames.EntryExitNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.FileNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.HierarchicalStateMachineNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.ModifierNames;
-import hu.elte.txtuml.export.cpp.templates.GenerationNames.UMLStdLibNames;
 import hu.elte.txtuml.export.cpp.templates.PrivateFunctionalTemplates;
 import hu.elte.txtuml.export.cpp.templates.RuntimeTemplates;
 import hu.elte.txtuml.export.cpp.templates.statemachine.StateMachineTemplates;
@@ -247,7 +246,7 @@ public class HeaderTemplates {
 		StringBuilder classDecleration = new StringBuilder("");
 		classDecleration.append(GenerationNames.ClassType + " " + headerInfo.getOwnerClassName());
 		String objectBase = "";
-		if (baseClassName != null && !baseClassName.equals(UMLStdLibNames.ModelClassName)) {
+		if (baseClassName != null) {
 			objectBase = baseClassName;
 
 		} else {
