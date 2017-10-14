@@ -94,6 +94,8 @@ public class TxtUMLVisualizeWizard extends Wizard {
 				maybeModel = Stream.of(layout.getTypes())
 						.map(innerClass -> WizardUtils.getModelByAnnotations(innerClass)).filter(Optional::isPresent)
 						.map(Optional::get).findFirst();
+				if (!maybeModel.isPresent())
+					maybeModel = WizardUtils.getModelByFields(layout);
 			} catch (JavaModelException e) {
 				Logger.sys.error(e.getMessage());
 				return false;
