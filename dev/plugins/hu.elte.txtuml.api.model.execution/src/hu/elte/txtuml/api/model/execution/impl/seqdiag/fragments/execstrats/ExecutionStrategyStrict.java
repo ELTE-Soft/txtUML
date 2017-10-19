@@ -10,7 +10,7 @@ import hu.elte.txtuml.api.model.seqdiag.BaseMessageWrapper;
 public class ExecutionStrategyStrict implements ExecutionStrategy {
 
 	@Override
-	public boolean containsMessage(Queue<BaseFragmentWrapper> containedFragments,BaseMessageWrapper message) {
+	public boolean containsMessage(Queue<BaseFragmentWrapper> containedFragments, BaseMessageWrapper message) {
 		BaseFragmentWrapper wrapper = containedFragments.peek();
 		if (wrapper instanceof BaseCombinedFragmentWrapper) {
 			return ((BaseCombinedFragmentWrapper) wrapper).containsMessage(message);
@@ -20,7 +20,8 @@ public class ExecutionStrategyStrict implements ExecutionStrategy {
 	}
 
 	@Override
-	public boolean checkMessageSendToPattern(Queue<BaseFragmentWrapper> containedFragments,BaseMessageWrapper message) {
+	public boolean checkMessageSendToPattern(Queue<BaseFragmentWrapper> containedFragments,
+			BaseMessageWrapper message) {
 		BaseFragmentWrapper fragment = containedFragments.peek();
 
 		if (fragment instanceof BaseCombinedFragmentWrapper) {

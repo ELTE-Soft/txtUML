@@ -15,6 +15,7 @@ public class PendingReceiveError implements ValidationError {
 	public ModelClass sourceClass() {
 		return this.source;
 	}
+
 	@Override
 	public String errorMsg() {
 		return this.message;
