@@ -179,7 +179,7 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 		StringBuilder source = new StringBuilder("");
 		dependencyExporter.addDependencies(associationExporter.getAssociatedPropertyTypes());
 		for (String baseClassName : baseClasses) {
-			dependencyExporter.addDependency(baseClassName);
+			source.append(PrivateFunctionalTemplates.include(baseClassName));
 		}
 
 		if (CppExporterUtils.isStateMachineOwner(structuredElement)) {
