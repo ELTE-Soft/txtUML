@@ -202,10 +202,6 @@ public class Uml2ToCppExporter {
 			file.mkdirs();
 		}
 
-		Files.copy(Paths.get(cppFilesLocation + StateMachineTemplates.StateMachineBaseHeader),
-				Paths.get(destination + File.separator + StateMachineTemplates.StateMachineBaseHeader),
-				StandardCopyOption.REPLACE_EXISTING);
-
 		Files.copy(
 				Paths.get(cppFilesLocation + DEFAULT_ENVIRONMENT_INITIALIZER + "."
 						+ GenerationNames.FileNames.HeaderExtension),
@@ -270,7 +266,8 @@ public class Uml2ToCppExporter {
 				RUNTIME_DIR_PREFIX.substring(0, RUNTIME_DIR_PREFIX.indexOf(org.eclipse.core.runtime.Path.SEPARATOR)));
 		List<String> librarySourceClasses = new ArrayList<String>();
 		librarySourceClasses.add("runtime");
-		librarySourceClasses.add("istatemachine");
+		librarySourceClasses.add("StateMachineOwner");
+		librarySourceClasses.add("NotStateMachineOwner");
 		librarySourceClasses.add("threadpool");
 		librarySourceClasses.add("threadpoolmanager");
 		librarySourceClasses.add("threadcontainer");

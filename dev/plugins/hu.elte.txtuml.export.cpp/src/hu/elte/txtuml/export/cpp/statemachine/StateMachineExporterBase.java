@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.eclipse.uml2.uml.Event;
 import org.eclipse.uml2.uml.Port;
@@ -184,7 +185,7 @@ public class StateMachineExporterBase {
 		}
 		return eventSubMachineMap;
 	}
-
+	
 	protected void createStateList() {
 		stateList = new ArrayList<State>();
 		for (Vertex item : stateMachineRegion.getSubvertices()) {
@@ -194,28 +195,28 @@ public class StateMachineExporterBase {
 		}
 	}
 	
-	protected static Pseudostate getInitialState(Region stateMachineRegion) {
+	protected static Optional<Pseudostate> getInitialState(Region stateMachineRegion) {
 		for (Vertex item : stateMachineRegion.getSubvertices()) {
 			if (item.eClass().equals(UMLPackage.Literals.PSEUDOSTATE)) {
 				Pseudostate pseduoState = (Pseudostate) item;
 				if (pseduoState.getKind().equals(PseudostateKind.INITIAL_LITERAL)) {
-					return (Pseudostate) item;
+					return Optional.of((Pseudostate) item);
 				}
 
 			}
 		}		
-		return null;
+		return Optional.empty();
 	}
 	
-	protected static Transition getInitialTransition(Region stateMachineRegion) {
-		Pseudostate initialState = getInitialState(stateMachineRegion);
-		if (initialState != null) {
+	protected static Optional<Transition> getInitialTransition(Region stateMachineRegion) {
+		Optional<Pseudostate> initialState = getInitialState(stateMachineRegion);
+		if (initialState.isPresent()) {
 			for (Transition transition : stateMachineRegion.getTransitions()) {
-				if(transition.getSource().equals(initialState)) {
-					return transition;
+				if(transition.getSource().equals(initialState.get())) {
+					return Optional.of(transition);
 				}
 			}
 		}		
-		return null;
+		return Optional.empty();
 	}
 }

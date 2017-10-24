@@ -3,8 +3,10 @@ package hu.elte.txtuml.export.cpp.statemachine;
 import java.io.FileNotFoundException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.eclipse.uml2.uml.Region;
 
@@ -17,6 +19,7 @@ import hu.elte.txtuml.export.cpp.templates.statemachine.EventTemplates;
 import hu.elte.txtuml.export.cpp.templates.statemachine.StateMachineTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.ConstructorTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.HeaderTemplates;
+import hu.elte.txtuml.export.cpp.templates.structual.HeaderTemplates.HeaderInfo;
 import hu.elte.txtuml.utils.Pair;
 
 public class SubStateMachineExporter extends StateMachineExporterBase {
@@ -61,42 +64,37 @@ public class SubStateMachineExporter extends StateMachineExporterBase {
 		StringBuilder dependency = new StringBuilder(PrivateFunctionalTemplates.include(parentClassName));
 		dependency.append(PrivateFunctionalTemplates.include(GenerationNames.FileNames.StringUtilsPath));
 		dependency.append(PrivateFunctionalTemplates.include(GenerationNames.FileNames.CollectionUtilsPath));
-		StringBuilder privateParts = new StringBuilder(entryExitFunctionExporter.createEntryFunctionsDecl());
+		
+		StringBuilder publicParts = new StringBuilder("");	
+		StringBuilder protectedParts = new StringBuilder("");
+		StringBuilder privateParts = new StringBuilder("");
+
+		publicParts.append(ConstructorTemplates.constructorDecl(ownerClassName, Arrays.asList(parentClassName)));					
+		publicParts.append(StateMachineTemplates.stateEnum(stateList, getInitialState(stateMachineRegion)));
+			
+		privateParts.append(entryExitFunctionExporter.createEntryFunctionsDecl());
 		privateParts.append(entryExitFunctionExporter.createExitFunctionsDecl());
 		privateParts.append(GenerationTemplates
-				.formatSubSmFunctions(guardExporter.declareGuardFunctions(stateMachineRegion).toString()));
+					.formatSubSmFunctions(guardExporter.declareGuardFunctions(stateMachineRegion)));
 		privateParts.append(transitionExporter.createTransitionFunctionDecl());
-		String protectedParts = "";
-
-		StringBuilder publicParts = new StringBuilder("");
-		List<String> params = new ArrayList<String>();
-		params.add(parentClassName);
-		publicParts.append(ConstructorTemplates.constructorDecl(ownerClassName, params));
-		publicParts.append(StateMachineTemplates.stateEnum(stateList, getInitialState(stateMachineRegion).getName()));
-
-		if (submachineMap.isEmpty()) {
-			source = HeaderTemplates.simpleSubStateMachineClassHeader(dependency.toString(), ownerClassName,
-					parentClassName, publicParts.toString(), protectedParts, privateParts.toString()).toString();
-		} else {
-			source = HeaderTemplates
-					.hierarchicalSubStateMachineClassHeader(dependency.toString(), ownerClassName, parentClassName, 
-							publicParts.toString(), protectedParts, privateParts.toString())
-					.toString();
-		}
+			
+		source = HeaderTemplates
+					.classHeader(dependency.toString(), null,
+							publicParts.toString(), protectedParts.toString(), privateParts.toString(), 
+							new HeaderInfo(ownerClassName, 
+									new HeaderTemplates.SubMachineHeaderType(parentClassName, !submachineMap.isEmpty())));
+				
+			
 		return source;
 	}
 
 	private String createSubSmClassCppSource() {
 		StringBuilder source = new StringBuilder("");
 		source.append(createTransitionTableInitRelatedCodes());
-		String initialStateName =  getInitialState(stateMachineRegion).getName();
-		if (submachineMap.isEmpty()) {
-			source.append(ConstructorTemplates.simpleSubStateMachineClassConstructor(ownerClassName, parentClassName,
-					stateMachineMap, initialStateName));
-		} else {
-			source.append(ConstructorTemplates.hierarchicalSubStateMachineClassConstructor(ownerClassName,
-					parentClassName, stateMachineMap, initialStateName, getEventSubMachineNameMap()));
-		}
+		source.append(ConstructorTemplates.subStateMachineClassConstructor(ownerClassName, parentClassName, stateMachineMap, 
+								 submachineMap.isEmpty() ? Optional.empty() : Optional.of(getEventSubMachineNameMap())));
+		source.append(StateMachineTemplates.stateMachineFixFunctionDefitions(ownerClassName, getInitialState(stateMachineRegion), true, submachineMap.isEmpty()));
+
 		
 		StringBuilder subSmSpec = new StringBuilder(entryExitFunctionExporter.createEntryFunctionsDef());
 		subSmSpec.append(entryExitFunctionExporter.createExitFunctionsDef());
@@ -108,7 +106,7 @@ public class SubStateMachineExporter extends StateMachineExporterBase {
 				StateMachineTemplates.exit(ownerClassName, createStateActionMap(entryExitFunctionExporter.getExitMap()))
 						+ "\n");
 		subSmSpec.append(StateMachineTemplates.finalizeFunctionDef(ownerClassName));
-		subSmSpec.append(StateMachineTemplates.initializeFunctionDef(ownerClassName, getInitialTransition(stateMachineRegion).getName()));
+		subSmSpec.append(StateMachineTemplates.initializeFunctionDef(ownerClassName, getInitialTransition(stateMachineRegion)));
 		source.append(GenerationTemplates.formatSubSmFunctions(subSmSpec.toString()));
 
 		return source.toString();

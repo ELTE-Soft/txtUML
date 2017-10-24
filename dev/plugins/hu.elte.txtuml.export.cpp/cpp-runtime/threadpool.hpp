@@ -10,7 +10,7 @@
 #include <atomic>
 
 #include "threadcontainer.hpp"
-#include "istatemachine.hpp"
+#include "StateMachineOwner.hpp"
 #include "ESRoot/AtomicCounter.hpp"
 
 namespace Execution

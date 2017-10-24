@@ -8,7 +8,7 @@
 
 namespace Model
 {
-class IStateMachine;
+class StateMachineOwner;
 
 }
 
@@ -53,8 +53,8 @@ namespace ES
 	using EventRef = SharedPtr<Model::IEvent<Model::EventBase>>;
 	using EventConstRef = SharedPtr<const Model::IEvent<Model::EventBase>>;
 
-	using StateMachineRef = Model::IStateMachine*;
-	using StateMachineConstRef = Model::IStateMachine const *;
+	using StateMachineRef = Model::StateMachineOwner*;
+	using StateMachineConstRef = Model::StateMachineOwner const *;
 
 	template<typename RuntimeType>
 	using RuntimePtr = SharedPtr<Execution::IRuntime<RuntimeType>>;
