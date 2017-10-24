@@ -1,6 +1,7 @@
 #include "runtime.hpp"
-#include "istatemachine.hpp"
+#include "StateMachineOwner.hpp"
 #include "ESRoot/Types.hpp"
+#include "ievent.hpp"
 
 #include <assert.h>
 #include <stdlib.h>
@@ -17,6 +18,7 @@ SingleThreadRT::SingleThreadRT() :_messageQueue(new ES::MessageQueueType()) {}
 
 void SingleThreadRT::setupObjectSpecificRuntime(ES::StateMachineRef sm)
 {
+	sm->setMessageQueue(_messageQueue);
 	sm->setMessageCounter(ES::SharedPtr<ES::AtomicCounter>(new ES::AtomicCounter()));
 }
 
@@ -35,11 +37,15 @@ void SingleThreadRT::start()
 	while (!_messageQueue->isEmpty())
 	{
 		ES::EventRef e = _messageQueue->next();
-		const ES::StateMachineRef sm = e->getTargetSM();
-		if (sm->isStarted())
-		{
-			sm->processEventVirtual();
+		if (Model::IEvent<Model::EventBase>::eventIsValid(e)) {
+			const ES::StateMachineRef sm = e->getTargetSM();
+			sm->processNextEvent();
 		}
+		else {
+			_messageQueue->dequeue(e); // drop event
+		}
+
+
 	}
 
 }
