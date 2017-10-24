@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.eclipse.uml2.uml.Class;
 import org.eclipse.uml2.uml.Region;
@@ -21,6 +22,7 @@ import hu.elte.txtuml.export.cpp.templates.RuntimeTemplates;
 import hu.elte.txtuml.export.cpp.templates.statemachine.EventTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.ConstructorTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.HeaderTemplates;
+import hu.elte.txtuml.export.cpp.templates.structual.HeaderTemplates.HeaderInfo;
 import hu.elte.txtuml.export.cpp.templates.structual.LinkTemplates;
 import hu.elte.txtuml.utils.Pair;
 
@@ -113,26 +115,25 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 
 		publicParts.append(LinkTemplates.templateLinkFunctionGeneralDef(LinkTemplates.LinkFunctionType.Link));
 		publicParts.append(LinkTemplates.templateLinkFunctionGeneralDef(LinkTemplates.LinkFunctionType.Unlink));
+		
+		publicParts.append(portExporter.createPortEnumCode(structuredElement.getOwnedPorts()));
 
 		if (CppExporterUtils.isStateMachineOwner(structuredElement)) {
 
 			publicParts.append(stateMachineExporter.createStateEnumCode());
-			publicParts.append(portExporter.createPortEnumCode(structuredElement.getOwnedPorts()));
 			privateParts.append(stateMachineExporter.createStateMachineRelatedHeadedDeclarationCodes());
-
-			if (!stateMachineExporter.ownSubMachine()) {
-				source = HeaderTemplates
-						.simpleStateMachineClassHeader(getAllDependencies(true), name, getBaseClass(), null,
-								publicParts.toString(), protectedParts.toString(), privateParts.toString(), true)
-						.toString();
-			} else {
-				source = HeaderTemplates.hierarchicalStateMachineClassHeader(getAllDependencies(true), name,
-						getBaseClass(), getSubmachines(), publicParts.toString(), protectedParts.toString(),
-						privateParts.toString(), true);
-			}
+			source = HeaderTemplates
+						.classHeader(getAllDependencies(true), getBaseClass(),
+								publicParts.toString(), protectedParts.toString(), privateParts.toString(), 
+								new HeaderInfo(name,
+										new HeaderTemplates.StateMachineClassHeaderType(stateMachineExporter.ownSubMachine() ? 
+												Optional.of(getSubmachines()) : Optional.empty()))
+							);
 		} else {
-			source = HeaderTemplates.classHeader(getAllDependencies(true), name, getBaseClass(), publicParts.toString(),
-					protectedParts.toString(), privateParts.toString(), true);
+			source = HeaderTemplates
+					.classHeader(getAllDependencies(true), getBaseClass(), publicParts.toString(),
+					protectedParts.toString(), privateParts.toString(), 
+					new HeaderInfo(name,new HeaderTemplates.SimpleClassHeaderType())	);
 		}
 		return source;
 	}
@@ -165,9 +166,9 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 			}
 
 		}
-
-		if (getBaseClass() != null) {
-			source.append(PrivateFunctionalTemplates.include(getBaseClass()));
+		String baseClass = getBaseClass();
+		if (baseClass != null) {
+			dependencyExporter.addDependency(baseClass);
 		}
 
 		if (!isHeader) {

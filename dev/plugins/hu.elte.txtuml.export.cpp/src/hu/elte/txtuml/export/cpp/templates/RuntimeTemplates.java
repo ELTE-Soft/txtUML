@@ -19,7 +19,6 @@ public class RuntimeTemplates {
 	public static final String EventIName = "IEvent";
 	public static final String EventIHeaderName = "ievent";
 	public static final String STMIName = "IStateMachine";
-	public static final String SMIHeaderName = "istatemachine";
 	public static final String SMRefName = "dest";
 	public static final String SMParam = STMIName + "& " + GenerationNames.formatIncomingParamName(SMRefName);
 	public static final String RuntimeInterfaceName = GenerationNames.Namespaces.ExecutionNamesapce + "::" + "IRuntime";

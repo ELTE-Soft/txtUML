@@ -2,11 +2,13 @@ package hu.elte.txtuml.export.cpp.templates.structual;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import com.google.common.collect.Multimap;
 
 import hu.elte.txtuml.export.cpp.statemachine.TransitionConditions;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames;
+import hu.elte.txtuml.export.cpp.templates.GenerationNames.HierarchicalStateMachineNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.ModifierNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.PointerAndMemoryNames;
 import hu.elte.txtuml.export.cpp.templates.PrivateFunctionalTemplates;
@@ -77,32 +79,29 @@ public class ConstructorTemplates {
 				+ PrivateFunctionalTemplates.paramNameList(paramNames) + ");}\n";
 
 	}
-
 	/*
 	 * Map<Pair<String, String>,<String,String> <event,
 	 * state>,<guard,handlerName>
 	 */
-	public static String simpleSubStateMachineClassConstructor (String className, String parentStateMachine,
-			Multimap<TransitionConditions, Pair<String, String>> machine, String initialState) {
-		String constructor = subStateMachineSharedConstructor (className, parentStateMachine, machine,
-						StateMachineTemplates.stateMachineInitializationSharedBody(false, null));
-		return constructor + StateMachineTemplates.simpleStateMachineFixFunctionDefinitions(className,
-						initialState, true);
-	}
-
-	public static String hierarchicalSubStateMachineClassConstructor(String className, String parentClassName,
-			Multimap<TransitionConditions, Pair<String, String>> machine, String initialState, Map<String, String> subMachines) {
-		String constructor = subStateMachineSharedConstructor(className, parentClassName, machine,
-				ActivityTemplates.simpleSetValue(GenerationNames.CurrentMachineName, PointerAndMemoryNames.NullPtr) + 
-				StateMachineTemplates.hierarchicalStateMachineClassConstructorSharedBody(subMachines, false, null));
-		return  constructor + StateMachineTemplates.hiearchialStateMachineFixFunctionDefinitions(className, initialState, true);
+	
+	public static String subStateMachineClassConstructor(String className, String parentClassName, 
+			Multimap<TransitionConditions, Pair<String, String>> machine, Optional<Map<String, String>> optionalSubMachine) {
+		if(!optionalSubMachine.isPresent()) {
+			return subStateMachineSharedConstructor (className, parentClassName, machine,
+					StateMachineTemplates.stateMachineInitializationSharedBody(false, null));
+		} else {
+			Map<String, String> subMachines = optionalSubMachine.get();
+			return subStateMachineSharedConstructor(className, parentClassName, machine,
+					ActivityTemplates.simpleSetValue(HierarchicalStateMachineNames.CurrentMachineName, PointerAndMemoryNames.NullPtr) + 
+					StateMachineTemplates.hierarchicalStateMachineClassConstructorSharedBody(subMachines, false, null));
+		}
 	}
 	
 	private static String subStateMachineSharedConstructor(String className, String parentClassName, 
 			Multimap<TransitionConditions, Pair<String, String>> machine, String body) {
-		String parentParamName = GenerationNames.formatIncomingParamName(GenerationNames.ParentSmName);
+		String parentParamName = GenerationNames.formatIncomingParamName(HierarchicalStateMachineNames.ParentSmName);
 		return className + "::" + className + "(" + PrivateFunctionalTemplates.cppType(parentClassName)
-		+ " " + parentParamName + "):" + GenerationNames.ParentSmMemberName + "(" + parentParamName + ")"
+		+ " " + parentParamName + "):" + HierarchicalStateMachineNames.ParentSmMemberName + "(" + parentParamName + ")"
 		+ "\n{\n" + body
 		+ "}\n\n";
 	}

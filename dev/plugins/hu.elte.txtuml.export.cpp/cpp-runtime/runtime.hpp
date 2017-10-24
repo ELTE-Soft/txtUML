@@ -9,7 +9,7 @@
 #include <mutex>
 #include <condition_variable>
 
-#include "istatemachine.hpp"
+#include "StateMachineOwner.hpp"
 #include "threadpool.hpp"
 #include "ievent.hpp"
 #include "threadpoolmanager.hpp"

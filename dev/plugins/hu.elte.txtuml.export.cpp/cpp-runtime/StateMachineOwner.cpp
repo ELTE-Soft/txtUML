@@ -1,4 +1,4 @@
-#include "istatemachine.hpp"
+#include "StateMachineOwner.hpp"
 #include "threadpool.hpp"
 #include "runtime.hpp"
 #include "ievent.hpp"
@@ -8,18 +8,28 @@
 namespace Model
 {
 
-IStateMachine::IStateMachine()
+StateMachineOwner::StateMachineOwner()
 	:_messageQueue(new ES::MessageQueueType()),
 	_pool(nullptr), 
 	_inPool(false), 
 	_started(false) {}
 
-void IStateMachine::setPoolId(int id) 
+StateMachineOwner::~StateMachineOwner()
+{
+	std::unique_lock<std::mutex> mlock(_mutex);
+	while (_inPool)
+	{
+		_cond.wait(mlock);
+	}
+
+}
+
+void StateMachineOwner::setPoolId(int id) 
 { 
 	poolId = id; 
 }
 
-void IStateMachine::destroy()
+void StateMachineOwner::destroy()
 {
 	setPooled(false);
 	messageCounter->decrementCounter((unsigned)_messageQueue->size());
@@ -29,12 +39,12 @@ void IStateMachine::destroy()
 	delete this;
 }
 
-bool IStateMachine::emptyMessageQueue() const
+bool StateMachineOwner::emptyMessageQueue() const
 {
 	return _messageQueue->isEmpty();
 }
 
-ES::EventRef IStateMachine::getNextMessage()
+ES::EventRef StateMachineOwner::getNextMessage()
 {
 	ES::EventRef event;
 	_messageQueue->dequeue(event);
@@ -42,17 +52,17 @@ ES::EventRef IStateMachine::getNextMessage()
 	return event;
 }
 
-void IStateMachine::setPool(ES::SharedPtr<Execution::StateMachineThreadPool> pool) 
+void StateMachineOwner::setPool(ES::SharedPtr<Execution::StateMachineThreadPool> pool) 
 { 
 	_pool = pool; 
 }
 
-void IStateMachine::setMessageQueue(ES::SharedPtr<ES::MessageQueueType> messageQueue) 
+void StateMachineOwner::setMessageQueue(ES::SharedPtr<ES::MessageQueueType> messageQueue) 
 { 
 	_messageQueue = messageQueue; 
 }
 
-bool IStateMachine::processNextEvent()
+bool StateMachineOwner::processNextEvent()
 {
 	ES::EventRef nextEvent = getNextMessage();
 	switch (nextEvent->getSpecialType()) {
@@ -72,35 +82,32 @@ bool IStateMachine::processNextEvent()
 
 }
 
-void IStateMachine::startSM()
+void StateMachineOwner::start()
 { 
 	_started = true;
 	send(ES::EventRef(new InitSpecialSignal()));
-	
 }
 
-void IStateMachine::deleteSM()
+void StateMachineOwner::deleteObject()
 {
 	send(ES::EventRef(new DestorySpecialSignal()));
-	if (!_started) {
-		handlePool();
-	}
 	
 }
 
-void IStateMachine::send(const ES::EventRef e)
+void StateMachineOwner::send(const ES::EventRef e)
 {
 	messageCounter->incrementCounter();
 	e->setTargetSM(this);
 	_messageQueue->enqueue(e);
-	if (_started)
+	if (_started || 
+		e->getSpecialType() == SpecialSignalType::DestorySignal)
 	{
 		handlePool();
 	}
 
 }
 
-void IStateMachine::handlePool()
+void StateMachineOwner::handlePool()
 {
 	if (!_inPool && _pool != nullptr)
 	{
@@ -109,35 +116,25 @@ void IStateMachine::handlePool()
 	}
 }
 
-void IStateMachine::setPooled(bool value)
+void StateMachineOwner::setPooled(bool value)
 {
 	_inPool = value;
 	_cond.notify_one();
 }
 
-int IStateMachine::getPoolId() const 
+int StateMachineOwner::getPoolId() const 
 { 
 	return poolId; 
 }
 
-void IStateMachine::setMessageCounter(ES::SharedPtr<ES::AtomicCounter> counter)
+void StateMachineOwner::setMessageCounter(ES::SharedPtr<ES::AtomicCounter> counter)
 { 
 	messageCounter = counter; 
 }
 
-std::string IStateMachine::toString() const
+std::string StateMachineOwner::toString() const
 { 
 	return ""; 
-}
-
-IStateMachine::~IStateMachine()
-{
-	std::unique_lock<std::mutex> mlock(_mutex);
-	while (_inPool)
-	{
-		_cond.wait(mlock);
-	}
-
 }
 
 }
