@@ -8,7 +8,7 @@ public class SourceEnvAssoc extends Association {
 	class sink extends One<FMUEnvironment> {
 	}
 
-	class source extends One<Source> {
+	public class source extends One<Source> {
 	}
 
 }

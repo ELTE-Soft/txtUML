@@ -9,10 +9,10 @@ import hu.elte.txtuml.api.deployment.fmi.InitialRealValue;
 import hu.elte.txtuml.examples.feeder.model.RequestSignal;
 import hu.elte.txtuml.examples.feeder.model.ResponseSignal;
 import hu.elte.txtuml.examples.feeder.model.Sink;
-import hu.elte.txtuml.examples.feeder.model.SinkSourceAssoc;
+import hu.elte.txtuml.examples.feeder.model.SinkEnvAssoc;
 
 @FMU(fmuClass = Sink.class)
-@FMUAssociationEnd(fmuAssociationEnd = SinkSourceAssoc.sink.class)
+@FMUAssociationEnd(fmuAssociationEnd = SinkEnvAssoc.sink.class)
 @FMUInput(inputSignal = ResponseSignal.class)
 @FMUOutput(outputSignal = RequestSignal.class)
 @InitialRealValue(variableName = "data", value = 0)

@@ -5,7 +5,7 @@ import hu.elte.txtuml.api.model.Association;
 
 public class SinkEnvAssoc extends Association {
 
-	class sink extends One<Sink> {
+	public class sink extends One<Sink> {
 	}
 
 	class source extends One<FMUEnvironment> {
