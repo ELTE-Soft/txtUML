@@ -1,0 +1,73 @@
+package hu.elte.txtuml.api.stdlib.world;
+
+import hu.elte.txtuml.api.model.Signal;
+
+/**
+ * Represents an active entity outside the model that can accept certain signals.
+ * Belongs to a {@link World}, more precisely, to the only existing {@link World} instance in
+ * the 
+ * Each world object is identified by a {@code String} identifier which is unique
+ * in a model execution.
+ * <p>
+ * A world object is automatically started upon creation. Do <b>not</b> delete them. They are
+ * not deleted by the <i>txtUML World</i> model either, they exist until the end of
+ * the current model execution even if the represented outside entity does not exist anymore.
+ * <p>
+ * See the documentation of the {@link hu.elte.txtuml.api.stdlib.world}
+ * package or further details and examples about the services provided by
+ * the <i>txtUML World</i> model.
+ * <p>
+ * See the documentation of {@link hu.elte.txtuml.api.model.Model} for an
+ * overview on modeling in JtxtUML.
+ */
+class WorldObject {
+
+	external WorldObjectHelper helper;
+
+	/**
+	 * This class cannot be instantiated directly.
+	 */
+	private external-body WorldObject() {}
+
+	external WorldObject(World world, WorldObjectHelper helper) {
+		this.helper = helper;
+		link(WorldOwnsObject.world, world, WorldOwnsObject.objects, this);
+		start(this);
+	}
+
+	// STATE MACHINE
+	initial init;
+
+	transition initialize {
+		from init;
+		to waiting;
+	}
+
+	state waiting;
+
+	transition acceptSignal {
+		from waiting;
+		to waiting;
+		trigger SignalToWorld;
+		effect {
+			accept(trigger);
+		}
+	}
+
+	// METHODS
+	/**
+	 * Returns the identifier of this world object which is unique in a model execution. 
+	 */
+	public external-body String getIdentifier() {
+		return helper.getIdentifier();
+	}
+
+	/**
+	 * Handles the specified signal. 
+	 */
+	private external-body void accept(SignalToWorld sig) {
+		helper.accept(sig);
+	}
+
+}
+
