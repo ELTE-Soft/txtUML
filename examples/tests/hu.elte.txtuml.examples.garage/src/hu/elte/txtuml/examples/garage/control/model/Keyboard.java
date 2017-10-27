@@ -56,7 +56,7 @@ public class Keyboard extends ModelClass {
 		public void effect() {
 			keyboardTimerCount += 0;
 			if (!assoc(KeyboardUsesTimer.timer.class).isEmpty()) {
-				Timer timer = assoc(KeyboardUsesTimer.timer.class).selectAny();
+				Timer timer = assoc(KeyboardUsesTimer.timer.class).one();
 				Action.unlink(KeyboardUsesTimer.timer.class, timer, KeyboardUsesTimer.keyboard.class, Keyboard.this);				
 			}
 			Timer timer = Timer.start(new KeyboardTimerExpired(), Keyboard.this, 50);
@@ -77,7 +77,7 @@ public class Keyboard extends ModelClass {
 		public void effect() {
 			keyboardTimerCount += 1;
 			Action.send(new Progress(keyboardTimerCount), World.get(View.id()));
-			assoc(KeyboardUsesTimer.timer.class).selectAny().reset(50);
+			assoc(KeyboardUsesTimer.timer.class).one().reset(50);
 		}
 	}
 
