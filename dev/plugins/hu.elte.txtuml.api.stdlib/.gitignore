@@ -1,4 +1,3 @@
 bin/
 target/
-src-gen/*
 !src-gen/.gitkeep
