@@ -10,14 +10,14 @@ import hu.elte.txtuml.examples.garage.control.model.Motor;
 import hu.elte.txtuml.examples.garage.control.model.associations.DoorSwitchesOnAlarm;
 import hu.elte.txtuml.examples.garage.control.model.associations.KeyboardProvidesCode;
 import hu.elte.txtuml.examples.garage.control.model.associations.MotorMovesDoor;
-import hu.elte.txtuml.examples.garage.control.model.signals.external.AlarmSensorActivated;
-import hu.elte.txtuml.examples.garage.control.model.signals.external.DoorReachedBottom;
-import hu.elte.txtuml.examples.garage.control.model.signals.external.DoorReachedTop;
-import hu.elte.txtuml.examples.garage.control.model.signals.external.HashPressed;
-import hu.elte.txtuml.examples.garage.control.model.signals.external.KeyPress;
-import hu.elte.txtuml.examples.garage.control.model.signals.external.MotionSensorActivated;
-import hu.elte.txtuml.examples.garage.control.model.signals.external.RemoteControlButtonPressed;
-import hu.elte.txtuml.examples.garage.control.model.signals.external.StarPressed;
+import hu.elte.txtuml.examples.garage.control.model.signals.external.in.AlarmSensorActivated;
+import hu.elte.txtuml.examples.garage.control.model.signals.external.in.DoorReachedBottom;
+import hu.elte.txtuml.examples.garage.control.model.signals.external.in.DoorReachedTop;
+import hu.elte.txtuml.examples.garage.control.model.signals.external.in.HashPressed;
+import hu.elte.txtuml.examples.garage.control.model.signals.external.in.KeyPress;
+import hu.elte.txtuml.examples.garage.control.model.signals.external.in.MotionSensorActivated;
+import hu.elte.txtuml.examples.garage.control.model.signals.external.in.RemoteControlButtonPressed;
+import hu.elte.txtuml.examples.garage.control.model.signals.external.in.StarPressed;
 import hu.elte.txtuml.examples.garage.interfaces.Control;
 
 public class Model implements Control {
@@ -26,8 +26,8 @@ public class Model implements Control {
 	private Alarm alarm;
 	private Keyboard keyboard;
 
-	public Model() {
-		ModelExecutor.create().launch(() -> {
+	public ModelExecutor start() {
+		return ModelExecutor.create().launch(() -> {
 			door = Action.create(Door.class);
 			motor = Action.create(Motor.class);
 			alarm = Action.create(Alarm.class);

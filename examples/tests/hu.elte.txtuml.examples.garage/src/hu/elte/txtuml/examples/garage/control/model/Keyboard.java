@@ -6,9 +6,11 @@ import hu.elte.txtuml.api.model.ModelClass;
 import hu.elte.txtuml.api.model.To;
 import hu.elte.txtuml.api.model.Trigger;
 import hu.elte.txtuml.api.stdlib.timers.Timer;
+import hu.elte.txtuml.api.stdlib.world.World;
 import hu.elte.txtuml.examples.garage.control.model.associations.KeyboardProvidesCode;
 import hu.elte.txtuml.examples.garage.control.model.associations.KeyboardUsesTimer;
-import hu.elte.txtuml.examples.garage.control.model.signals.external.KeyPress;
+import hu.elte.txtuml.examples.garage.control.model.signals.external.in.KeyPress;
+import hu.elte.txtuml.examples.garage.control.model.signals.external.out.Progress;
 import hu.elte.txtuml.examples.garage.control.model.signals.internal.KeyboardTimeout;
 import hu.elte.txtuml.examples.garage.control.model.signals.internal.KeyboardTimerExpired;
 import hu.elte.txtuml.examples.garage.control.model.signals.internal.WaitForCode;
@@ -74,7 +76,7 @@ public class Keyboard extends ModelClass {
 		@Override
 		public void effect() {
 			keyboardTimerCount += 1;
-			View.getInstance().progress(keyboardTimerCount);
+			Action.send(new Progress(keyboardTimerCount), World.get(View.id()));
 			assoc(KeyboardUsesTimer.timer.class).selectAny().reset(50);
 		}
 	}

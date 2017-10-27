@@ -6,13 +6,18 @@ import hu.elte.txtuml.api.model.ModelClass;
 import hu.elte.txtuml.api.model.To;
 import hu.elte.txtuml.api.model.Trigger;
 import hu.elte.txtuml.api.stdlib.timers.Timer;
+import hu.elte.txtuml.api.stdlib.world.SignalToWorld;
+import hu.elte.txtuml.api.stdlib.world.World;
 import hu.elte.txtuml.examples.garage.control.model.associations.DoorUsesTimer;
 import hu.elte.txtuml.examples.garage.control.model.associations.MotorMovesDoor;
-import hu.elte.txtuml.examples.garage.control.model.signals.external.MotionSensorActivated;
-import hu.elte.txtuml.examples.garage.control.model.signals.external.RemoteControlButtonPressed;
+import hu.elte.txtuml.examples.garage.control.model.signals.external.in.MotionSensorActivated;
+import hu.elte.txtuml.examples.garage.control.model.signals.external.in.RemoteControlButtonPressed;
+import hu.elte.txtuml.examples.garage.control.model.signals.external.out.StopDoor;
 import hu.elte.txtuml.examples.garage.control.model.signals.internal.ChangeMotorMode;
 import hu.elte.txtuml.examples.garage.control.model.signals.internal.DoorTimerExpired;
 import hu.elte.txtuml.examples.garage.control.model.signals.internal.ReenableMotor;
+
+class S extends SignalToWorld {}
 
 public class Door extends ModelClass {
 
@@ -30,13 +35,17 @@ public class Door extends ModelClass {
 	public class Disabled extends State {
 		@Override
 		public void entry() {
-			View.getInstance().stopDoor();
+			Action.send(new StopDoor(), World.get(View.id()));
 		}
 	}
 
 	@From(InitDoor.class)
 	@To(Enabled.class)
 	public class TInitDoor extends Transition {
+		@Override
+		public void effect() {
+			Action.send(new S(), World.get(View.id()));
+		}
 	}
 
 	@From(Enabled.class)
