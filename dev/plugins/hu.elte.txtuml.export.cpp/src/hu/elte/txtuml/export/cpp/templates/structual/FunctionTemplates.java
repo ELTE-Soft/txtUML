@@ -3,6 +3,8 @@ package hu.elte.txtuml.export.cpp.templates.structual;
 import java.util.List;
 
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.ModifierNames;
+import hu.elte.txtuml.export.cpp.templates.GenerationTemplates;
+import hu.elte.txtuml.export.cpp.templates.GenerationNames;
 import hu.elte.txtuml.export.cpp.templates.PrivateFunctionalTemplates;
 import hu.elte.txtuml.export.cpp.templates.activity.ActivityTemplates;
 import hu.elte.txtuml.utils.Pair;
@@ -21,7 +23,6 @@ public class FunctionTemplates {
 		return PrivateFunctionalTemplates.cppType(returnType) + " " + functionName + "()";
 	}
 
-	// TODO modifiers (static, etc) - not supported yet
 	public static String functionDecl(String returnTypeName, String functionName, List<String> params, String modifier,
 			boolean isPureVirtual) {
 		String mainDecl = PrivateFunctionalTemplates.cppType(returnTypeName) + " " + functionName + "("
@@ -43,25 +44,30 @@ public class FunctionTemplates {
 	}
 
 	public static String functionDef(String className, String returnTypeName, String functionName, String body) {
-		return FunctionTemplates.functionDef(className, returnTypeName, functionName, null, body, false);
+		return FunctionTemplates.functionDef(className, returnTypeName, functionName, null, body);
 	}
 
 	public static String functionDef(String className, String functionName, List<Pair<String, String>> params,
 			String body) {
-		return FunctionTemplates.functionDef(className, ModifierNames.NoReturn, functionName, params, body, false);
+		return FunctionTemplates.functionDef(className, ModifierNames.NoReturn, functionName, params, body);
 	}
 
-	// TODO modifiers (static, etc..) - not supported yet
 	public static String functionDef(String className, String returnTypeName, String functionName,
-			List<Pair<String, String>> params, String body, boolean hasModifier) {
+			List<Pair<String, String>> params, String body) {
 		String mainDef = PrivateFunctionalTemplates.cppType(returnTypeName) + " " + className + "::" + functionName
 				+ "(" + PrivateFunctionalTemplates.paramList(params) + ")\n{\n";
-		if (!hasModifier) {
-			return mainDef + body + "}\n\n";
+		return mainDef + body + "}\n\n";
 
-		} else {
-			return mainDef + "//TODO\n" + "}\n\n";
+	}
+
+	public static String abstractFunctionDef(String className, String returnTypeName, String functionName,
+			List<Pair<String, String>> params, Boolean testing) {
+		StringBuilder body = new StringBuilder("");
+		body.append(GenerationNames.Comments.ToDoMessage);
+		if(!testing) {
+			body.append(GenerationNames.Macros.ErrorMacro + GenerationTemplates.generatedErrorMessage(functionName));
 		}
+		return functionDef(className, returnTypeName, functionName, params, body.toString());
 	}
 
 	public static String simpleFunctionDef(String returnType, String functionName, String body, String returnVariable) {

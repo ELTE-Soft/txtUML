@@ -281,7 +281,7 @@ public final class ElementTypeTeller {
 	public static boolean isInterface(ITypeBinding bnd) {
 		return SharedUtils.typeIsAssignableFrom(bnd, Interface.class);
 	}
-		
+
 	public static boolean isConnector(TypeDeclaration typeDeclaration) {
 		return SharedUtils.typeIsAssignableFrom(typeDeclaration, ConnectorBase.class);
 	}

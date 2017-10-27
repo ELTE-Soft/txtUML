@@ -12,6 +12,7 @@ import hu.elte.txtuml.export.cpp.templates.GenerationTemplates;
 import hu.elte.txtuml.export.cpp.templates.PrivateFunctionalTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.FunctionTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.HeaderTemplates;
+import hu.elte.txtuml.export.cpp.templates.structual.HeaderTemplates.HeaderInfo;
 
 public class OnlyAbstractOperationExporter extends StructuredElementExporter<Class> {
 	public OnlyAbstractOperationExporter() {
@@ -30,8 +31,9 @@ public class OnlyAbstractOperationExporter extends StructuredElementExporter<Cla
 		String dependency = dependencyExporter.createDependencyHeaderIncludeCode()
 				+ PrivateFunctionalTemplates.include(GenerationNames.FileNames.TypesFilePath);
 
-		String source = HeaderTemplates.classHeader(dependency, name, null, publicAbstractOperationDecl,
-				protectedAbstractOperationDecl, privateAbstractOperationDecl);
+		String source = HeaderTemplates.classHeader(dependency, null, publicAbstractOperationDecl,
+				protectedAbstractOperationDecl, privateAbstractOperationDecl,
+				new HeaderInfo(name, new HeaderTemplates.RawClassHeaderType()));
 
 		CppExporterUtils.writeOutSource(sourceDestination, GenerationTemplates.headerName(name),
 				HeaderTemplates.headerGuard(source, name));

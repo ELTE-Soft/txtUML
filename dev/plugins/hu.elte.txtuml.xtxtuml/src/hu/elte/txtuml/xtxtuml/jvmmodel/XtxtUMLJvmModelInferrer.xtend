@@ -355,6 +355,8 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 				case EXTERNAL: annotations += External.annotationRef
 				default: {}
 			}
+
+			initializer = attr.initExpression
 		]
 	}
 

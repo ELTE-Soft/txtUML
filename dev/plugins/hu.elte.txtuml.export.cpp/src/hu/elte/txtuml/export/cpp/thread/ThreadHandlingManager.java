@@ -4,11 +4,14 @@ import java.io.FileNotFoundException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
+import hu.elte.txtuml.api.deployment.RuntimeType;
 import hu.elte.txtuml.export.cpp.CppExporterUtils;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationTemplates;
@@ -18,10 +21,12 @@ import hu.elte.txtuml.export.cpp.templates.activity.ActivityTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.FunctionTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.HeaderTemplates;
 import hu.elte.txtuml.export.cpp.thread.ThreadPoolConfiguration.LinearFunction;
+import hu.elte.txtuml.utils.Pair;
 
 public class ThreadHandlingManager {
 
-	private Map<String, ThreadPoolConfiguration> threadDescription;
+	private Map<String, Integer> threadDescription;
+	private String runtimeTypeName;
 	private Set<ThreadPoolConfiguration> pools;
 	
 	private static final String ConfigurationStructName = GenerationNames.Namespaces.ExecutionNamesapce + "::" + "Configuration";
@@ -32,23 +37,28 @@ public class ThreadHandlingManager {
 	private static final String FunctionName = GenerationNames.Namespaces.ExecutionNamesapce + "::" + "LinearFunction";
 	private static final String NamespaceName = "deployment";
 	private static final String ConfiguratedThreadedRuntimeName = GenerationNames.Namespaces.ExecutionNamesapce + "::" + "ConfiguredThreadedRT";
+	private static final String SingleRuntimeName = GenerationNames.Namespaces.ExecutionNamesapce + "::" + "SingleThreadRT";
 	private static final String SetConfigurationMethod = "configure";
 	private static final String CreatorFunction = "initRuntime";
 
 	int numberOfThreads;
 
-	public ThreadHandlingManager(Map<String, ThreadPoolConfiguration> description) {
-
-		this.threadDescription = description;
+	public ThreadHandlingManager(Pair<RuntimeType, Map<String, ThreadPoolConfiguration>> config) {
+		threadDescription = new HashMap<>();
+		for (Entry<String, ThreadPoolConfiguration> conf : config.getSecond().entrySet()) {
+			threadDescription.put(conf.getKey(), conf.getValue().getId());
+		}
+		
 		numberOfThreads = threadDescription.size();
 
-		Collection<ThreadPoolConfiguration> poolsCollection = threadDescription.values();
+		Collection<ThreadPoolConfiguration> poolsCollection = config.getSecond().values();
 		pools = new LinkedHashSet<ThreadPoolConfiguration>();
 		pools.addAll(poolsCollection);
+		runtimeTypeName = getRuntimeTypeName(config.getFirst());
 	}
 
-	public Map<String, ThreadPoolConfiguration> getDescription() {
-		return threadDescription;
+	public Integer getConfiguratedPoolId(String className) {
+		return threadDescription.get(className);
 	}
 
 	public void createConfigurationSource(String dest) throws FileNotFoundException, UnsupportedEncodingException {
@@ -59,7 +69,7 @@ public class ThreadHandlingManager {
 		source.append("\n\n");
 
 		List<String> templateParams = new ArrayList<String>();
-		templateParams.add(ConfiguratedThreadedRuntimeName);
+		templateParams.add(runtimeTypeName);
 		source.append(GenerationTemplates.usingTemplateType(RuntimeTemplates.UsingRuntimePtr,
 				RuntimeTemplates.RuntimePtrType, templateParams));
 		source.append(GenerationTemplates.usingTemplateType(RuntimeTemplates.UsingRuntimeType,
@@ -138,6 +148,24 @@ public class ThreadHandlingManager {
 	private String allocatePoolObject(ThreadPoolConfiguration pool) {
 		List<String> params = new ArrayList<String>();
 		return GenerationTemplates.allocateObject(ThreadPoolClassName, params, true);
+	}
+	
+	private String getRuntimeTypeName(RuntimeType runtimeType) {
+		String runtimeTypeName = "MISSING RUNTIME TYPE";
+		switch (runtimeType) {
+		case SINGLE:
+			runtimeTypeName = SingleRuntimeName;
+			break;
+		case THREADED:
+			runtimeTypeName = ConfiguratedThreadedRuntimeName;
+			break;
+		default:
+			assert(false);
+			break;
+		
+		}
+		
+		return runtimeTypeName;
 	}
 
 }

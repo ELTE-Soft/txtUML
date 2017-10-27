@@ -9,8 +9,8 @@
 #include <unordered_map>
 #include <memory>
 
-#include "runtime/ievent.hpp"
-#include "runtime/ESRoot/Types.hpp"
+#include "ievent.hpp"
+#include "ESRoot/Types.hpp"
 namespace Model
 {
 	
@@ -53,6 +53,8 @@ class StateMachineBase
 public:
  virtual bool process_event(ES::EventRef)=0;
  virtual void setInitialState()=0;
+ virtual void initialize(ES::EventRef) = 0;
+ virtual void finalize(ES::EventRef) = 0;
  virtual ~StateMachineBase(){}
 protected:
   bool defaultGuard(ES::EventRef){return true;}

@@ -6,6 +6,7 @@ import hu.elte.txtuml.api.model.Signal
 import hu.elte.txtuml.xtxtuml.common.XtxtUMLUtils
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAssociation
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAssociationEnd
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUAttribute
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUClass
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUClassPropertyAccessExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUDeleteObjectExpression
@@ -18,6 +19,7 @@ import hu.elte.txtuml.xtxtuml.xtxtUML.TUSignalAccessExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUState
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUStateType
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUTransition
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUTransitionGuard
 import java.util.HashSet
 import java.util.List
 import org.eclipse.emf.ecore.EObject
@@ -258,8 +260,10 @@ class XtxtUMLExpressionValidator extends XtxtUMLTypeValidator {
 	override protected isValueExpectedRecursive(XExpression expr) {
 		val container = expr.eContainer;
 		return switch (container) {
+			TUAttribute,
+			TUDeleteObjectExpression,
 			TUSendSignalExpression,
-			TUDeleteObjectExpression: true
+			TUTransitionGuard: true
 			XBlockExpression: false
 			default: super.isValueExpectedRecursive(expr)
 		}

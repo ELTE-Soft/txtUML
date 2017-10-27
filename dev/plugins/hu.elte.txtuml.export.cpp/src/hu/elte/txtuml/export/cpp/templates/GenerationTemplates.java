@@ -3,6 +3,7 @@ package hu.elte.txtuml.export.cpp.templates;
 import java.util.List;
 
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.FileNames;
+import hu.elte.txtuml.export.cpp.templates.GenerationNames.HierarchicalStateMachineNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.PointerAndMemoryNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.TimerNames;
 
@@ -28,6 +29,10 @@ public class GenerationTemplates {
 	public static String generatedAbstractClassName(String className) {
 		return "Abstract" + className;
 	}
+	
+	public static String generatedErrorMessage(String functionName) {
+		return " Not implemented external method: " + functionName + "\n";
+	}
 
 	public static String paramName(String paramName) {
 
@@ -36,7 +41,7 @@ public class GenerationTemplates {
 
 	public static String forwardDeclaration(String className) {
 
-		return GenerationNames.ClassType + " " + className + ";\n";
+		return GenerationNames.ClassType + " " + PrivateFunctionalTemplates.mapUMLClassToCppClass(className) + ";\n";
 	}
 
 	public static String putNamespace(String source, String namespace) {
@@ -44,7 +49,7 @@ public class GenerationTemplates {
 	}
 
 	public static String formatSubSmFunctions(String source) {
-		return source.replaceAll(PointerAndMemoryNames.Self, GenerationNames.ParentSmMemberName);
+		return source.replaceAll(PointerAndMemoryNames.Self, HierarchicalStateMachineNames.ParentSmMemberName);
 	}
 
 	public static String createObject(String typeName, String objName, boolean sharedObject) {

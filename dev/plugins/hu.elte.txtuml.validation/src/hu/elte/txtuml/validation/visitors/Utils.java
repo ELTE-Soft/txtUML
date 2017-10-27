@@ -13,14 +13,14 @@ import org.eclipse.jdt.core.dom.TypeParameter;
 import hu.elte.txtuml.utils.jdt.ElementTypeTeller;
 import hu.elte.txtuml.validation.ProblemCollector;
 import hu.elte.txtuml.validation.problems.general.InvalidModifier;
-import hu.elte.txtuml.validation.problems.general.InvalidTemplate;
+import hu.elte.txtuml.validation.problems.general.InvalidTypeParameter;
 
 public class Utils {
 
-	public static void checkTemplate(ProblemCollector collector, TypeDeclaration elem) {
+	public static void checkTypeParameter(ProblemCollector collector, TypeDeclaration elem) {
 		if (elem.typeParameters().size() > 0) {
 			collector.report(
-					new InvalidTemplate(collector.getSourceInfo(), (TypeParameter) (elem.typeParameters().get(0))));
+					new InvalidTypeParameter(collector.getSourceInfo(), (TypeParameter) (elem.typeParameters().get(0))));
 		}
 	}
 

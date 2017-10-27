@@ -1,7 +1,7 @@
 package hu.elte.txtuml.export.cpp.templates.activity;
 
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -103,7 +103,7 @@ public class ActivityTemplates {
 	}
 
 	public static String operationCallOnPointerVariable(String ownerName, String operationName, List<String> params) {
-		return operationCall(ownerName, PointerAndMemoryNames.PointerAccess, operationName, params);
+		return blockStatement(operationCall(ownerName, PointerAndMemoryNames.PointerAccess, operationName, params));
 	}
 
 	public static String blockStatement(String statement) {
@@ -126,23 +126,9 @@ public class ActivityTemplates {
 		return ActionNames.ActionStart + "(" + objectVariable + ");\n";
 	}
 
-	public static String deleteObject(String objectVariable, Boolean isStateMachineOwner) {
-		StringBuilder source = new StringBuilder("");
-		if (!isStateMachineOwner) {
-			source.append(PointerAndMemoryNames.DeleteObject + " " + objectVariable + ";\n");
-
-		} else {
-			source.append(blockStatement(operationCallOnPointerVariable(objectVariable, 
-					GenerationNames.StateMachineMethodNames.DestroyStatemachineMethod, Collections.emptyList())));
-			source.append(signalSend(
-					objectVariable,
-					GenerationNames.signalPointerType(GenerationNames.FixEventNames.DestroyEventName) + "("
-							+ PointerAndMemoryNames.MemoryAllocator 
-							+ " " + PrivateFunctionalTemplates
-							.signalType(GenerationNames.FixEventNames.DestroyEventName) + "())"));
-		}
+	public static String deleteObject(String objectVariable) {
+		return blockStatement(operationCall(ActionNames.ActionDelete, Arrays.asList(objectVariable)));
 		
-		return source.toString();
 	}
 
 	public static String simpleCondControlStruct(String control, String cond, String body) {

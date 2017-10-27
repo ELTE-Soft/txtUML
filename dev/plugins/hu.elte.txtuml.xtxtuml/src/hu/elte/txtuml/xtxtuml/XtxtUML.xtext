@@ -96,7 +96,7 @@ TUSignalAttribute :
 TUClassMember
 	: TUConstructor
 	| TUAttributeOrOperationDeclarationPrefix (
-		{TUAttribute.prefix=current} name=ValidID ';' |
+		{TUAttribute.prefix=current} name=ValidID ('=' initExpression=XExpression)? ';' |
 		{TUOperation.prefix=current} name=ValidID '(' (parameters+=FullJvmFormalParameter (',' parameters+=FullJvmFormalParameter)*)? ')'
 			body=XBlockExpression ';'?
 	  )

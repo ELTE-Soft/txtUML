@@ -90,7 +90,7 @@ public class ResourceHandler {
 				
 				Files.copy(istream, Paths.get(targetDirectory, file), StandardCopyOption.REPLACE_EXISTING);
 			} catch (IOException e) {
-				Logger.user.error("IOException during file copy", e);
+				Logger.sys.error("IOException during file copy", e);
 			}
 		}
 	}
