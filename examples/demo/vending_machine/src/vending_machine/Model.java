@@ -26,8 +26,8 @@ public class Model {
 	private Drink phantom;
 	private Drink stripe;
 
-	public Model() {
-		ModelExecutor.create().launch(() -> {
+	public ModelExecutor start() {
+		return ModelExecutor.create().launch(() -> {
 			machine = Action.create(VendingMachine.class);
 			register = Action.create(CashRegister.class);
 			cola = Action.create(Drink.class, 260, 5, COLA_NAME);
