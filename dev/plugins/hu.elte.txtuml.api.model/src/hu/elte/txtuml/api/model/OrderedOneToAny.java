@@ -1,12 +1,13 @@
 package hu.elte.txtuml.api.model;
 
 /**
- * 1..1 txtUML API collection and as such, an immutable class. For detailed
- * information about the txtUML API collections, see the documentation of
- * {@link GeneralCollection}.
+ * Ordered, non-unique, 1..* txtUML API collection and as such, an immutable
+ * class. For detailed information about the txtUML API collections, see the
+ * documentation of {@link GeneralCollection}.
  * 
  * <p>
- * <b>Represents:</b> 1..1 collection of a primitive or an object
+ * <b>Represents:</b> ordered, non-unique, 1..* collection of primitives or
+ * objects
  * <p>
  * <b>Usage:</b>
  * <p>
@@ -28,17 +29,19 @@ package hu.elte.txtuml.api.model;
  * See the documentation of {@link Model} for an overview on modeling in
  * JtxtUML.
  * 
+ * @param <E>
+ *            the type of the elements contained in this collection
+ * 
  * @see Action#collection(Class, Object...)
  */
 @Min(1)
-@Max(1)
-public final class One<E> extends Collection<E, One<E>> {
+public final class OrderedOneToAny<E> extends OrderedCollection<E, OrderedOneToAny<E>> {
 
 	/**
 	 * As this class should only be instantiated by the txtUML API, its sole
 	 * constructor is package private.
 	 */
-	One() {
+	OrderedOneToAny() {
 	}
 
 	@Override
@@ -48,7 +51,7 @@ public final class One<E> extends Collection<E, One<E>> {
 
 	@Override
 	final int getUpperBoundPackagePrivate() {
-		return 1;
+		return GeneralCollection.INFINITE_BOUND;
 	}
 
 }
