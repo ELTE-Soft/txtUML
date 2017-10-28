@@ -77,7 +77,7 @@ class One_Hidden_A_Many_B extends Association {
 }
 
 class Container_Many extends Composition {
-	class Cont_End extends Container<A> {
+	class Cont_End extends ContainerEnd<A> {
 	}
 
 	class Contained_End_1 extends Many<B> {

@@ -17,7 +17,7 @@ public abstract class AssociationEnd<T> {
 	 * 
 	 * @see hu.elte.txtuml.api.model.Composition
 	 */
-	public interface ContainerEnd extends ContainmentKind<ContainerEnd> {
+	public interface Container extends ContainmentKind<Container> {
 	}
 
 	/**
@@ -26,7 +26,7 @@ public abstract class AssociationEnd<T> {
 	 * See the documentation of {@link hu.elte.txtuml.api.model.Model} for an
 	 * overview on modeling in JtxtUML.
 	 */
-	public interface NonContainerEnd extends ContainmentKind<NonContainerEnd> {
+	public interface NonContainer extends ContainmentKind<NonContainer> {
 	}
 
 	/**
@@ -61,8 +61,8 @@ public abstract class AssociationEnd<T> {
 
 	/**
 	 * A base interface to represent whether a certain association end is a
-	 * container end or not. An association end is either a {@link ContainerEnd}
-	 * or a {@link NonContainerEnd}.
+	 * container end or not. An association end is either a {@link Container}
+	 * or a {@link NonContainer}.
 	 */
 	private interface ContainmentKind<T extends ContainmentKind<T>> {
 	}

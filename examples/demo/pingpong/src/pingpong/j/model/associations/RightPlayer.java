@@ -6,7 +6,7 @@ import pingpong.j.model.Game;
 import pingpong.j.model.Player;
 
 public class RightPlayer extends Composition {
-	public class inGame extends HiddenContainer<Game> {
+	public class inGame extends HiddenContainerEnd<Game> {
 	}
 
 	public class player extends End<One<Player>> {

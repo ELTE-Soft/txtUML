@@ -4,8 +4,6 @@ import com.google.inject.Inject
 import hu.elte.txtuml.api.model.Association
 import hu.elte.txtuml.api.model.BehaviorPort
 import hu.elte.txtuml.api.model.Composition
-import hu.elte.txtuml.api.model.Composition.Container
-import hu.elte.txtuml.api.model.Composition.HiddenContainer
 import hu.elte.txtuml.api.model.Connector
 import hu.elte.txtuml.api.model.ConnectorBase.One
 import hu.elte.txtuml.api.model.Delegation
@@ -63,6 +61,8 @@ import org.eclipse.xtext.naming.IQualifiedNameProvider
 import org.eclipse.xtext.xbase.jvmmodel.AbstractModelInferrer
 import org.eclipse.xtext.xbase.jvmmodel.IJvmDeclaredTypeAcceptor
 import org.eclipse.xtext.xbase.jvmmodel.IJvmModelAssociations
+import hu.elte.txtuml.api.model.Composition.HiddenContainerEnd
+import hu.elte.txtuml.api.model.Composition.ContainerEnd
 
 /**
  * Infers a JVM model equivalent from an XtxtUML resource. If not stated otherwise,
@@ -511,9 +511,9 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 			// The inferred type will be Class<? extend MaybeOneBase>, which is invalid,
 			// as MaybeOneBase is a package private class in its own package.
 			if (notNavigable) {
-				return HiddenContainer.typeRef(endClassTypeParam)
+				return HiddenContainerEnd.typeRef(endClassTypeParam)
 			} else {
-				return Container.typeRef(endClassTypeParam)
+				return ContainerEnd.typeRef(endClassTypeParam)
 			}
 		}
 

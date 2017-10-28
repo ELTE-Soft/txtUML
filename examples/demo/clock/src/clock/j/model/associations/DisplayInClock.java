@@ -6,6 +6,6 @@ import hu.elte.txtuml.api.model.Composition;
 import hu.elte.txtuml.api.model.One;
 
 public class DisplayInClock extends Composition {
-	public class clock extends HiddenContainer<Clock> {}
+	public class clock extends HiddenContainerEnd<Clock> {}
 	public class face extends End<One<Display>> {}
 }

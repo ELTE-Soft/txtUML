@@ -27,7 +27,7 @@ import org.eclipse.jdt.core.dom.TypeDeclaration;
 
 import hu.elte.txtuml.api.model.Association;
 import hu.elte.txtuml.api.model.AssociationEnd;
-import hu.elte.txtuml.api.model.AssociationEnd.ContainerEnd;
+import hu.elte.txtuml.api.model.AssociationEnd.Container;
 import hu.elte.txtuml.api.model.BehaviorPort;
 import hu.elte.txtuml.api.model.Composition;
 import hu.elte.txtuml.api.model.ConnectorBase;
@@ -238,11 +238,11 @@ public final class ElementTypeTeller {
 	}
 
 	public static boolean isContainer(TypeDeclaration typeDeclaration) {
-		return SharedUtils.typeIsAssignableFrom(typeDeclaration, ContainerEnd.class);
+		return SharedUtils.typeIsAssignableFrom(typeDeclaration, Container.class);
 	}
 	
 	public static boolean isContainer(ITypeBinding typeBinding) {
-		return SharedUtils.typeIsAssignableFrom(typeBinding, ContainerEnd.class);
+		return SharedUtils.typeIsAssignableFrom(typeBinding, Container.class);
 	}
 
 	@SuppressWarnings("unchecked")

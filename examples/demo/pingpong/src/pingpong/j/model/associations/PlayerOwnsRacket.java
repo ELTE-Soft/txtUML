@@ -6,7 +6,7 @@ import pingpong.j.model.Player;
 import pingpong.j.model.Racket;
 
 public class PlayerOwnsRacket extends Composition {
-	public class player extends HiddenContainer<Player> {
+	public class player extends HiddenContainerEnd<Player> {
 	}
 
 	public class racket extends End<One<Racket>> {

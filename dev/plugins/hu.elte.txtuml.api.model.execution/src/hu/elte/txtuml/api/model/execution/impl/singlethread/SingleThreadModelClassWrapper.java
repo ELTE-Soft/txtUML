@@ -7,7 +7,7 @@ import com.google.common.collect.ClassToInstanceMap;
 import com.google.common.collect.MutableClassToInstanceMap;
 
 import hu.elte.txtuml.api.model.AssociationEnd;
-import hu.elte.txtuml.api.model.AssociationEnd.ContainerEnd;
+import hu.elte.txtuml.api.model.AssociationEnd.Container;
 import hu.elte.txtuml.api.model.BehaviorPort;
 import hu.elte.txtuml.api.model.Collection;
 import hu.elte.txtuml.api.model.GeneralCollection;
@@ -165,10 +165,10 @@ public class SingleThreadModelClassWrapper extends AbstractModelClassWrapper {
 
 	private <T extends ModelClass, C extends GeneralCollection<T>, AE extends AssociationEnd<C>> void containerCheck(
 			Class<AE> otherEnd) throws MultipleContainerException {
-		if (ContainerEnd.class.isAssignableFrom(otherEnd)) {
+		if (Container.class.isAssignableFrom(otherEnd)) {
 			for (Entry<Class<? extends AssociationEnd<?>>, AssociationEndWrapper<?, ?>> entry : associations
 					.entrySet()) {
-				if (ContainerEnd.class.isAssignableFrom(entry.getKey())
+				if (Container.class.isAssignableFrom(entry.getKey())
 						&& !entry.getValue().isEmpty()) {
 					throw new MultipleContainerException();
 				}
