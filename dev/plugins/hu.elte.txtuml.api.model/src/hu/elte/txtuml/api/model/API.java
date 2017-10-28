@@ -11,7 +11,7 @@ package hu.elte.txtuml.api.model;
  * <p>
  * 
  * Cannot be used in a model, call its static methods from any outside code (it
- * is always safe).
+ * is always thread-safe).
  * 
  * <p>
  * See the documentation of {@link Model} for an overview on modeling in

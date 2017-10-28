@@ -7,7 +7,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * A runtime annotation to define the lower bound of a collection.
+ * A runtime annotation to define the lower bound of a custom collection.
  * 
  * <p>
  * <b>Represents:</b> lower bound of a collection
