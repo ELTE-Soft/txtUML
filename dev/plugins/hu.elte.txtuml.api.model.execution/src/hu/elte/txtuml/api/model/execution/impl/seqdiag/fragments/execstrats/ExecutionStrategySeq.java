@@ -23,7 +23,13 @@ public class ExecutionStrategySeq implements ExecutionStrategy {
 			BaseMessageWrapper message) {
 		BaseFragmentWrapper fragment = containedFragments.peek();
 		if (fragment instanceof BaseCombinedFragmentWrapper) {
-			return ((BaseCombinedFragmentWrapper) fragment).checkMessageSendToPattern(message);
+			boolean result = ((BaseCombinedFragmentWrapper) fragment).checkMessageSendToPattern(message);
+			
+			if (result && fragment.size() == 0) {
+				containedFragments.remove();
+			}
+			
+			return result;
 		} else {
 			BaseMessageWrapper required = (BaseMessageWrapper) fragment;
 			if (!required.equals(message)) {
