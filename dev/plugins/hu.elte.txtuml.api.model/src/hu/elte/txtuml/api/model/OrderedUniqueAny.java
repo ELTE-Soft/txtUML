@@ -11,7 +11,7 @@ package hu.elte.txtuml.api.model;
  * <b>Usage:</b>
  * <p>
  * 
- * Use the {@link Action#collection(Class, Object...) } method to instantiate
+ * Use the {@link Action#collectIn(Class, Object...) } method to instantiate
  * this class and fill the new collection with elements. After that, the methods
  * of this class can be used to manage it.
  * 
@@ -31,7 +31,7 @@ package hu.elte.txtuml.api.model;
  * @param <E>
  *            the type of the elements contained in this collection
  * 
- * @see Action#collection(Class, Object...)
+ * @see Action#collectIn(Class, Object...)
  */
 public final class OrderedUniqueAny<E> extends OrderedUniqueCollection<E, OrderedUniqueAny<E>> {
 

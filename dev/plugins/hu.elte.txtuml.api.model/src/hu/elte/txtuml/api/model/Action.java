@@ -294,22 +294,44 @@ public interface Action {
 		Logger.user.error(message);
 	}
 
-	// TODO document
+	/**
+	 * Collects the given elements to a new txtUML API collection. This method
+	 * creates the most general collection type, the unordered non-unique 0..*
+	 * collection, {@link Any}.
+	 * 
+	 * @param elements
+	 *            the elements to collect
+	 * @return the newly created collection that contains the specified elements
+	 */
 	@SafeVarargs
-	static <E> Any<E> collection(E... elements) {
+	static <E> Any<E> collect(E... elements) {
 		return AbstractGeneralCollection.createAnyOf(Builder.createConsumerFor(elements));
 	}
 
-	/*
-	 * This method is declared as it is because of similar reasons why the "as"
-	 * method of the GeneralCollection class is declared as that is. For
-	 * details, read the comments at the "as" method.
+	/**
+	 * Collects the given elements to a new txtUML API collection of the given
+	 * type. If the specified collection type is ordered, it will contain the
+	 * elements in the provided order. If it is unique and multiple equal
+	 * elements are given, only the first will be contained in the collection.
+	 * 
+	 * @param collectionType
+	 *            the type of the collection to create; must be a txtUML API
+	 *            collection
+	 * @param elements
+	 *            the elements to collect
+	 * @return the newly created collection that contains the specified
+	 *         elementss
 	 */
-	// TODO document
 	@SafeVarargs
 	@SuppressWarnings("unchecked")
-	static <E, C extends GeneralCollection<E>, C2 extends GeneralCollection<?>> C collection(
-			Class<C2> collectionType, E... elements) {
+	static <E, C extends GeneralCollection<E>, C2 extends GeneralCollection<?>> C collectIn(Class<C2> collectionType,
+			E... elements) {
+		/*
+		 * This method is declared as it is because of similar reasons why the
+		 * "as" method of the GeneralCollection class is declared as that is.
+		 * For details, read the comments at the "as" method.
+		 */
+
 		return (C) AbstractGeneralCollection.create(collectionType, Builder.createConsumerFor(elements));
 	}
 

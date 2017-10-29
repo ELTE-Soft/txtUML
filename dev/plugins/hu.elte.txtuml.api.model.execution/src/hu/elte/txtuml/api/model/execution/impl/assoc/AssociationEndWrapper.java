@@ -44,7 +44,7 @@ public interface AssociationEndWrapper<T extends ModelClass, C extends GeneralCo
 
 		return new AssociationEndWrapper<T, C>() {
 
-			private GeneralCollection<T> collection = Action.collection(type);
+			private GeneralCollection<T> collection = Action.collectIn(type);
 			private boolean valid = true;
 
 			@Override
