@@ -533,7 +533,7 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 				else if (multiplicity.lower == 0 && multiplicity.upperInf)
 					"Any"
 				else if (multiplicity.lower == 1 && multiplicity.upperInf)
-					"ZeroToAny"
+					"OneToAny"
 			}
 
 		val endClassImpl = "hu.elte.txtuml.api.model.Association$" + optionalHidden + "End"
