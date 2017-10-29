@@ -18,7 +18,7 @@ class CashRegister {
 	}
 
 	private void updateMessage(String msg) {
-		this->(WorkTogether.theMachine).selectAny().updateMessage(msg);		
+		this->(WorkTogether.theMachine).one().updateMessage(msg);		
 	}
 
 	// state machine states
