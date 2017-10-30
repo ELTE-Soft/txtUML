@@ -1,6 +1,5 @@
 package hu.elte.txtuml.export.cpp.templates.structual;
 
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -272,21 +271,26 @@ public class HeaderTemplates {
 				+ "_";
 	}
 
-	public static String classHeader(String dependency, List<String> baseClassNames, String publicPart,
+	public static String classHeader(String dependency, List<String> baseClassNames, List<String> pureInfBasaNames, String publicPart,
 			String protectedPart, String privatePart, HeaderInfo headerInfo) {
 		StringBuilder source = new StringBuilder(dependency + headerInfo.getRelatedBaseClassInclude());
 		StringBuilder classDecleration = new StringBuilder("");
 		classDecleration.append(GenerationNames.ClassType + " " + headerInfo.getOwnerClassName());
 
 		List<String> objectBase = new LinkedList<>();
-		if (baseClassNames != null) {
+		if(pureInfBasaNames != null) {
+			objectBase.addAll(pureInfBasaNames);
+		}
+		if (baseClassNames != null && !baseClassNames.isEmpty()) {
 			objectBase.addAll(baseClassNames);
+		} else {
+			String relatedBaseClass = headerInfo.getRelatedBaseClass();
+			if (relatedBaseClass != null && !relatedBaseClass.isEmpty()) {
+				objectBase.add(relatedBaseClass);
+			}
 		}
 
-		String relatedBaseClass = headerInfo.getRelatedBaseClass();
-		if (relatedBaseClass != null && !relatedBaseClass.isEmpty()) {
-			objectBase.add(relatedBaseClass);
-		}
+
 
 		classDecleration.append(PrivateFunctionalTemplates.baseClassList(objectBase));
 

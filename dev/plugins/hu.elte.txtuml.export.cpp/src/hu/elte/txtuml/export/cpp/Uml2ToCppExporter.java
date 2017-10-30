@@ -48,7 +48,6 @@ import hu.elte.txtuml.export.cpp.templates.structual.FunctionTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.HeaderTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.LinkTemplates;
 import hu.elte.txtuml.export.cpp.thread.ThreadHandlingManager;
-import hu.elte.txtuml.export.cpp.thread.ThreadPoolConfiguration;
 import hu.elte.txtuml.utils.Pair;
 
 public class Uml2ToCppExporter {

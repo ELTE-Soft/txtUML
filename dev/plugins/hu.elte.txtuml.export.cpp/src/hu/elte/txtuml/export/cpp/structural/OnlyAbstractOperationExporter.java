@@ -31,7 +31,7 @@ public class OnlyAbstractOperationExporter extends StructuredElementExporter<Cla
 		String dependency = dependencyExporter.createDependencyHeaderIncludeCode()
 				+ PrivateFunctionalTemplates.include(GenerationNames.FileNames.TypesFilePath);
 
-		String source = HeaderTemplates.classHeader(dependency, null, publicAbstractOperationDecl,
+		String source = HeaderTemplates.classHeader(dependency, null, null, publicAbstractOperationDecl,
 				protectedAbstractOperationDecl, privateAbstractOperationDecl,
 				new HeaderInfo(name, new HeaderTemplates.RawClassHeaderType()));
 
