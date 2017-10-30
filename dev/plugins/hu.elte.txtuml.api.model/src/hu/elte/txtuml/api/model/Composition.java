@@ -91,10 +91,12 @@ public abstract class Composition extends Association {
 	 * <p>
 	 * Container ends have an implicit 0..1 multiplicity. They also have a
 	 * <b>global restriction</b>: any model object at any time might be
-	 * connected through its compositions to at most one container object.
+	 * connected through its compositions to at most one container object. Apart
+	 * from this, container ends should be used like any other
+	 * {@link AssociationEnd}.
 	 * <p>
-	 * Apart from this, container ends should be used like any other association
-	 * end. See the documentation of {@link AssociationEnd} for details.
+	 * See the documentation of {@link Association} for details on defining and
+	 * using associations.
 	 * 
 	 * <p>
 	 * <b>Java restrictions:</b>
@@ -124,10 +126,6 @@ public abstract class Composition extends Association {
 	 * <li><i>Inherit from the defined subtype:</i> disallowed</li>
 	 * </ul>
 	 * 
-	 * <p>
-	 * See the documentation of {@link Association} for details on defining and
-	 * using associations and {@link Composition} for associations structurally
-	 * containing the associated values.
 	 * <p>
 	 * See the documentation of {@link Model} for an overview on modeling in
 	 * JtxtUML.
@@ -150,7 +148,17 @@ public abstract class Composition extends Association {
 	 * <b>Usage:</b>
 	 * <p>
 	 * 
-	 * See the documentation of {@link ContainerEnd}.
+	 * The container end should be defined as inner class of a composition (a
+	 * subclass of {@link Composition}).
+	 * <p>
+	 * Container ends have an implicit 0..1 multiplicity. They also have a
+	 * <b>global restriction</b>: any model object at any time might be
+	 * connected through its compositions to at most one container object. Apart
+	 * from this, container ends should be used like any other
+	 * {@link AssociationEnd}.
+	 * <p>
+	 * See the documentation of {@link Association} for details on defining and
+	 * using associations.
 	 * 
 	 * <p>
 	 * <b>Java restrictions:</b>
@@ -180,10 +188,6 @@ public abstract class Composition extends Association {
 	 * <li><i>Inherit from the defined subtype:</i> disallowed</li>
 	 * </ul>
 	 * 
-	 * <p>
-	 * See the documentation of {@link Association} for details on defining and
-	 * using associations and {@link Composition} for associations structurally
-	 * containing the associated values.
 	 * <p>
 	 * See the documentation of {@link Model} for an overview on modeling in
 	 * JtxtUML.

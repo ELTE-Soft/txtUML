@@ -15,13 +15,15 @@ import hu.elte.txtuml.api.model.error.UpperBoundError;
 import hu.elte.txtuml.utils.InstanceCreator;
 import hu.elte.txtuml.utils.RuntimeInvocationTargetException;
 
-//TODO document
+//TODO document and review
 abstract class AbstractGeneralCollection<E, C extends AbstractGeneralCollection<E, C>> extends GeneralCollection<E>
 		implements Cloneable {
 
+	// TODO document
 	static final Object UNINITIALIZED_BACKEND;
 
 	static {
+		// TODO explain
 		ClassLoader loader = AbstractGeneralCollection.class.getClassLoader();
 
 		Class<?>[] interfaces = new Class[] { java.util.Collection.class };
@@ -33,6 +35,9 @@ abstract class AbstractGeneralCollection<E, C extends AbstractGeneralCollection<
 		UNINITIALIZED_BACKEND = (Collection<?>) Proxy.newProxyInstance(loader, interfaces, handler);
 	}
 
+	/**
+	 * The Java collection that contains the elements of this collection.
+	 */
 	@SuppressWarnings("unchecked")
 	private java.util.Collection<E> backend = (Collection<E>) UNINITIALIZED_BACKEND;
 
@@ -148,6 +153,10 @@ abstract class AbstractGeneralCollection<E, C extends AbstractGeneralCollection<
 		return fillUninitialized(new Any<>(), backendBuilder);
 	}
 
+	/**
+	 * Same as the {@link #as} method, but this does not check whether this
+	 * collection can be safely converted to the given type.
+	 */
 	@SuppressWarnings("unchecked")
 	final <C2 extends GeneralCollection<?>> C2 asUnsafe(Class<C2> collectionType)
 			throws CollectionCreationError, MultiplicityError {
@@ -156,30 +165,43 @@ abstract class AbstractGeneralCollection<E, C extends AbstractGeneralCollection<
 		return result;
 	}
 
-	final Any<E> asAnyUnsafe() {
+	final Any<E> asAny() {
 		Any<E> result = new Any<>();
 		((AbstractGeneralCollection<E, ?>) result).setBackend(backend);
 		return result;
 	}
 
+	/**
+	 * Should only be called on an ordered collection.
+	 */
 	final OrderedAny<E> asOrderedAnyUnsafe() {
 		OrderedAny<E> result = new OrderedAny<>();
 		((AbstractGeneralCollection<E, ?>) result).setBackend(backend);
 		return result;
 	}
 
+	/**
+	 * Should only be called on a unique collection.
+	 */
 	final UniqueAny<E> asUniqueAnyUnsafe() {
 		UniqueAny<E> result = new UniqueAny<>();
 		((AbstractGeneralCollection<E, ?>) result).setBackend(backend);
 		return result;
 	}
 
+	/**
+	 * Should only be called on an ordered unique collection.
+	 */
 	final OrderedUniqueAny<E> asOrderedUniqueAnyUnsafe() {
 		OrderedUniqueAny<E> result = new OrderedUniqueAny<>();
 		((AbstractGeneralCollection<E, ?>) result).setBackend(backend);
 		return result;
 	}
 
+	/**
+	 * Creates a new collection with the same dynamic type as this collection
+	 * but with the specified elements.
+	 */
 	final C createSameTyped(Consumer<Builder<E>> backendBuilder) throws MultiplicityError {
 		C other = clone();
 		((AbstractGeneralCollection<E, C>) other).setBackend(backendBuilder);
@@ -190,11 +212,19 @@ abstract class AbstractGeneralCollection<E, C extends AbstractGeneralCollection<
 		return backend;
 	}
 
+	/**
+	 * A non-final version of {@link #getLowerBound()} that enables optimization
+	 * in the default collections defined in this package.
+	 */
 	int getLowerBoundPackagePrivate() {
 		Min min = getClass().getAnnotation(Min.class);
 		return (min == null) ? 0 : min.value();
 	}
 
+	/**
+	 * A non-final version of {@link #getUpperBound()} that enables optimization
+	 * in the default collections defined in this package.
+	 */
 	int getUpperBoundPackagePrivate() {
 		Max max = getClass().getAnnotation(Max.class);
 		return (max == null) ? GeneralCollection.INFINITE_BOUND : max.value();
@@ -204,6 +234,9 @@ abstract class AbstractGeneralCollection<E, C extends AbstractGeneralCollection<
 
 	// PRIVATE HELPER METHODS
 
+	/**
+	 * Creates an uninitialized instance of the given collection type.
+	 */
 	private static <C extends GeneralCollection<?>> C createUninitialized(Class<C> collectionType)
 			throws CollectionCreationError {
 		try {
@@ -214,8 +247,12 @@ abstract class AbstractGeneralCollection<E, C extends AbstractGeneralCollection<
 		}
 	}
 
+	/**
+	 * Fills an uninitialized collection instance with the specified elements
+	 * after checking its lower and upper bound.
+	 */
 	private static <C extends GeneralCollection<?>, E> C fillUninitialized(C collection,
-			Consumer<Builder<E>> backendBuilder) throws CollectionCreationError, MultiplicityError {
+			Consumer<Builder<E>> backendBuilder) throws MultiplicityError {
 		try {
 			@SuppressWarnings("unchecked")
 			AbstractGeneralCollection<E, ?> casted = ((AbstractGeneralCollection<E, ?>) collection);
@@ -228,6 +265,10 @@ abstract class AbstractGeneralCollection<E, C extends AbstractGeneralCollection<
 		return collection;
 	}
 
+	/**
+	 * Sets the backend of this collection after checking its lower and upper
+	 * bound.
+	 */
 	private void setBackend(java.util.Collection<E> backend) throws MultiplicityError {
 		int size = backend.size();
 		if (size < getLowerBoundPackagePrivate()) {
@@ -242,6 +283,10 @@ abstract class AbstractGeneralCollection<E, C extends AbstractGeneralCollection<
 		this.backend = backend;
 	}
 
+	/**
+	 * Sets the backend of this collection after checking its lower and upper
+	 * bound.
+	 */
 	private void setBackend(Consumer<Builder<E>> backendBuilder) throws MultiplicityError {
 		java.util.Collection<E> backend = createBackend(backendBuilder);
 		setBackend(backend);
@@ -249,6 +294,9 @@ abstract class AbstractGeneralCollection<E, C extends AbstractGeneralCollection<
 
 	// BUILDER
 
+	/**
+	 * General builder interface for mutable collections (backends).
+	 */
 	@FunctionalInterface
 	interface Builder<E> {
 
@@ -257,6 +305,9 @@ abstract class AbstractGeneralCollection<E, C extends AbstractGeneralCollection<
 			return builder -> builder.add(elements);
 		}
 
+		/**
+		 * The method to override in implementors.
+		 */
 		void addNoReturn(E element);
 
 		default Builder<E> add(E element) {
