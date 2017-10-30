@@ -23,7 +23,7 @@ class AssociationEndExporter extends Exporter<TypeDeclaration, ITypeBinding, Pro
 
 	override exportContents(TypeDeclaration decl) {
 		result.name = decl.name.identifier
-		val collectionType = decl.resolveBinding.superclass.typeArguments.get(0)
+		val collectionType = decl.resolveBinding.superclass.superclass.typeArguments.get(0)
 		result.type = fetchType(collectionType.typeArguments.get(0))
 		result.lower = MultiplicityProvider.getLowerBound(collectionType);
 		result.upper = MultiplicityProvider.getUpperBound(collectionType);

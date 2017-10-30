@@ -22,7 +22,12 @@ class AssociationExporter extends Exporter<TypeDeclaration, ITypeBinding, Associ
 
 	override exportContents(TypeDeclaration decl) {
 		result.name = decl.name.identifier
-		val classes = decl.types.map[fetchType(resolveBinding.superclass.typeArguments.get(0)) as Class]
+
+		val classes = decl.types.map [
+			fetchType(
+				resolveBinding.superclass.superclass.typeArguments.get(0).typeArguments.get(0)
+			) as Class
+		]
 
 		decl.types.forEach [ td, i |
 			exportAssociationEnd(td) [

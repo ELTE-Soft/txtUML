@@ -36,6 +36,7 @@ import hu.elte.txtuml.api.model.DataType;
 import hu.elte.txtuml.api.model.Delegation;
 import hu.elte.txtuml.api.model.External;
 import hu.elte.txtuml.api.model.ExternalBody;
+import hu.elte.txtuml.api.model.GeneralCollection;
 import hu.elte.txtuml.api.model.Interface;
 import hu.elte.txtuml.api.model.Model;
 import hu.elte.txtuml.api.model.ModelClass;
@@ -424,6 +425,10 @@ public final class ElementTypeTeller {
 
 	public static boolean isDelegation(ITypeBinding binding) {
 		return SharedUtils.typeIsAssignableFrom(binding, Delegation.class);
+	}
+
+	public static boolean isCollection(TypeDeclaration binding) {
+		return SharedUtils.typeIsAssignableFrom(binding, GeneralCollection.class);
 	}
 
 }
