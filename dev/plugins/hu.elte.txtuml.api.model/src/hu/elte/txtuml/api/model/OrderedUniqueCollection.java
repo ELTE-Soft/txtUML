@@ -11,11 +11,13 @@ import hu.elte.txtuml.api.model.GeneralCollection.Unique;
 
 //TODO document
 public abstract class OrderedUniqueCollection<E, C extends OrderedUniqueCollection<E, C>> extends AbstractOrderedCollection<E, C>
-		implements Ordered<E>, Unique<E> {
+		implements @External Ordered<E>, @External Unique<E> {
 
+	@ExternalBody
 	protected OrderedUniqueCollection() {
 	}
 
+	@ExternalBody
 	@Override
 	@SuppressWarnings("unchecked")
 	public final <C2 extends GeneralCollection<? super E>,
@@ -23,6 +25,7 @@ public abstract class OrderedUniqueCollection<E, C extends OrderedUniqueCollecti
 		return (C2) asUnsafe(collectionType);
 	}
 
+	@ExternalBody
 	@Override
 	public final OrderedUniqueAny<E> unbound() {
 		return asOrderedUniqueAnyUnsafe();
@@ -41,9 +44,10 @@ public abstract class OrderedUniqueCollection<E, C extends OrderedUniqueCollecti
 		return builder.build();
 	}
 
+	@ExternalBody
 	@Override
-	public String toString() {
-		return "<" + getElementsListed() + ">";
+	public final String toString() {
+		return "<" + super.toString() + ">";
 	}
 
 }

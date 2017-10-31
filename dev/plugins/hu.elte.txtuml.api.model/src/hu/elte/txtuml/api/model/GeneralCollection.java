@@ -5,7 +5,7 @@ import java.util.Spliterator;
 import java.util.function.Consumer;
 
 //TODO document
-public abstract class GeneralCollection<E> implements Iterable<E>, GeneralCollectionProperties {
+public abstract class GeneralCollection<E> implements @External Iterable<E>, @External GeneralCollectionProperties {
 
 	/*
 	 * GeneralCollection is a class and not an interface to ensure that it
@@ -56,28 +56,36 @@ public abstract class GeneralCollection<E> implements Iterable<E>, GeneralCollec
 	 * Note: a perfect declaration of "as" cannot be written due to the
 	 * properties of Java.
 	 */
+	@ExternalBody
 	public abstract <C2 extends GeneralCollection<? super E>, C3 extends GeneralCollection<?>> C2 as(
 			Class<C3> collectionType);
 
+	@ExternalBody
 	public abstract boolean isEmpty();
 
+	@ExternalBody
 	public abstract int size();
 
+	@ExternalBody
 	public abstract E one();
 
+	@ExternalBody
 	public abstract boolean contains(Object element);
 
+	@ExternalBody
 	public abstract GeneralCollection<E> add(E element);
 
+	@ExternalBody
 	public abstract GeneralCollection<E> remove(Object element);
 
+	@ExternalBody
 	public abstract GeneralCollection<E> unbound();
 
-	public abstract String getElementsListed();
-
+	@ExternalBody
 	@Override
 	public abstract Iterator<E> iterator();
 
+	@External
 	@Override
 	public final void forEach(Consumer<? super E> action) {
 		Iterable.super.forEach(action);
@@ -89,6 +97,7 @@ public abstract class GeneralCollection<E> implements Iterable<E>, GeneralCollec
 	 * @throws UnsupportedOperationException
 	 *             always
 	 */
+	@External
 	@Override
 	public final Spliterator<E> spliterator() throws UnsupportedOperationException {
 		throw new UnsupportedOperationException();
@@ -97,6 +106,7 @@ public abstract class GeneralCollection<E> implements Iterable<E>, GeneralCollec
 	/**
 	 * This method <b>must not be used in the model</b>.
 	 */
+	@External
 	@Override
 	protected final void finalize() throws Throwable {
 		// Nothing to do.
@@ -104,6 +114,7 @@ public abstract class GeneralCollection<E> implements Iterable<E>, GeneralCollec
 
 	// ORDERING AND UNIQUENESS
 
+	@External
 	public interface Ordered<E> extends Ordering<Ordered<E>> {
 		Ordered<E> add(int index, E element);
 
@@ -117,6 +128,7 @@ public abstract class GeneralCollection<E> implements Iterable<E>, GeneralCollec
 		}
 	}
 
+	@External
 	public interface Unordered<E> extends Ordering<Unordered<E>> {
 		@Override
 		default boolean isOrdered() {
@@ -124,6 +136,7 @@ public abstract class GeneralCollection<E> implements Iterable<E>, GeneralCollec
 		}
 	}
 
+	@External
 	public interface Unique<E> extends Uniqueness<Unique<E>> {
 		@Override
 		default boolean isUnique() {
@@ -131,6 +144,7 @@ public abstract class GeneralCollection<E> implements Iterable<E>, GeneralCollec
 		}
 	}
 
+	@External
 	public interface NonUnique<E> extends Uniqueness<NonUnique<E>> {
 		int countOf(E element);
 

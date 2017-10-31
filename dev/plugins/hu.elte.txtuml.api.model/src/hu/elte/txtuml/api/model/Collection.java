@@ -10,11 +10,13 @@ import hu.elte.txtuml.api.model.GeneralCollection.Unordered;
 
 // TODO document
 public abstract class Collection<E, C extends Collection<E, C>>
-		extends AbstractGeneralCollection<E, C> implements Unordered<E>, NonUnique<E> {
+		extends AbstractGeneralCollection<E, C> implements @External Unordered<E>, @External NonUnique<E> {
 
+	@ExternalBody
 	protected Collection() {
 	}
 
+	@ExternalBody
 	@Override
 	@SuppressWarnings("unchecked")
 	public final <C2 extends GeneralCollection<? super E>, C3 extends GeneralCollection<?>> C2 as(
@@ -27,6 +29,7 @@ public abstract class Collection<E, C extends Collection<E, C>>
 		}
 	}
 
+	@ExternalBody
 	@Override
 	public final int countOf(E element) {
 		java.util.Collection<E> backend = getBackend();
@@ -42,6 +45,7 @@ public abstract class Collection<E, C extends Collection<E, C>>
 		return count;
 	}
 
+	@ExternalBody
 	@Override
 	public final Any<E> unbound() {
 		return asAny();
@@ -54,9 +58,10 @@ public abstract class Collection<E, C extends Collection<E, C>>
 		return builder.build();
 	}
 
+	@ExternalBody
 	@Override
-	public String toString() {
-		return "[" + getElementsListed() + "]";
+	public final String toString() {
+		return "[" + super.toString() + "]";
 	}
 
 }

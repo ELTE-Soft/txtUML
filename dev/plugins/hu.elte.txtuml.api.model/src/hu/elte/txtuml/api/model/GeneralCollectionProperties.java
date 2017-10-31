@@ -18,6 +18,7 @@ package hu.elte.txtuml.api.model;
  * @see GeneralCollection.Unique
  * @see GeneralCollection.NonUnique
  */
+@External
 interface GeneralCollectionProperties {
 	/**
 	 * Tells whether this txtUML API collection is ordered or not.

@@ -5,15 +5,17 @@ import hu.elte.txtuml.api.model.GeneralCollection.Ordered;
 
 //TODO document
 public abstract class OrderedCollection<E, C extends OrderedCollection<E, C>> extends AbstractOrderedCollection<E, C>
-		implements Ordered<E>, NonUnique<E> {
+		implements @External Ordered<E>, @External NonUnique<E> {
 
+	@ExternalBody
 	protected OrderedCollection() {
 	}
 
+	@ExternalBody
 	@Override
 	@SuppressWarnings("unchecked")
-	public final <C2 extends GeneralCollection<? super E>,
-		C3 extends GeneralCollection<?>> C2 as(Class<C3> collectionType) {
+	public final <C2 extends GeneralCollection<? super E>, C3 extends GeneralCollection<?>> C2 as(
+			Class<C3> collectionType) {
 		if (NonUnique.class.isAssignableFrom(collectionType)) {
 			return (C2) asUnsafe(collectionType);
 		} else {
@@ -22,6 +24,7 @@ public abstract class OrderedCollection<E, C extends OrderedCollection<E, C>> ex
 		}
 	}
 
+	@ExternalBody
 	@Override
 	public final int countOf(E element) {
 		int count = 0;
@@ -33,14 +36,16 @@ public abstract class OrderedCollection<E, C extends OrderedCollection<E, C>> ex
 		return count;
 	}
 
+	@ExternalBody
 	@Override
 	public final OrderedAny<E> unbound() {
 		return asOrderedAnyUnsafe();
 	}
 
+	@ExternalBody
 	@Override
-	public String toString() {
-		return "(" + getElementsListed() + ")";
+	public final String toString() {
+		return "(" + super.toString() + ")";
 	}
-	
+
 }

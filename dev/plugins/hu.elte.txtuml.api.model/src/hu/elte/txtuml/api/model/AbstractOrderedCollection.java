@@ -8,11 +8,13 @@ import hu.elte.txtuml.api.model.GeneralCollection.Ordered;
 
 //TODO document
 abstract class AbstractOrderedCollection<E, C extends AbstractOrderedCollection<E, C>>
-		extends AbstractGeneralCollection<E, C> implements Ordered<E> {
+		extends AbstractGeneralCollection<E, C> implements @External Ordered<E> {
 
+	@ExternalBody
 	protected AbstractOrderedCollection() {
 	}
 
+	@ExternalBody
 	@Override
 	public final C add(int index, E element) {
 		return createSameTyped(builder -> {
@@ -27,6 +29,7 @@ abstract class AbstractOrderedCollection<E, C extends AbstractOrderedCollection<
 		});
 	}
 
+	@ExternalBody
 	@Override
 	public final E get(int index) {
 		// TODO review exception handling
@@ -44,6 +47,7 @@ abstract class AbstractOrderedCollection<E, C extends AbstractOrderedCollection<
 		throw new IndexOutOfBoundsException("Size: " + backend.size() + " Index: " + index);
 	}
 
+	@ExternalBody
 	@Override
 	public final C remove(int index) {
 		return createSameTyped(builder -> {

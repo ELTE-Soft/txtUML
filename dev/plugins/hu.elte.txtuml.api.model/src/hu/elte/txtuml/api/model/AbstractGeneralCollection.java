@@ -17,7 +17,7 @@ import hu.elte.txtuml.utils.RuntimeInvocationTargetException;
 
 //TODO document and review
 abstract class AbstractGeneralCollection<E, C extends AbstractGeneralCollection<E, C>> extends GeneralCollection<E>
-		implements Cloneable {
+		implements @External Cloneable {
 
 	// TODO document
 	static final Object UNINITIALIZED_BACKEND;
@@ -46,27 +46,32 @@ abstract class AbstractGeneralCollection<E, C extends AbstractGeneralCollection<
 
 	// ACCESSIBLE METHODS
 
+	@ExternalBody
 	@Override
 	public final boolean isEmpty() {
 		return backend.isEmpty();
 	}
 
+	@ExternalBody
 	@Override
 	public final int size() {
 		return backend.size();
 	}
 
+	@ExternalBody
 	@Override
 	public final E one() {
 		// FIXME NoSuchElementException
 		return backend.iterator().next();
 	}
 
+	@ExternalBody
 	@Override
 	public final boolean contains(Object element) {
 		return backend.contains(element);
 	}
 
+	@ExternalBody
 	@Override
 	public final C add(E element) {
 		return createSameTyped(builder -> {
@@ -75,6 +80,7 @@ abstract class AbstractGeneralCollection<E, C extends AbstractGeneralCollection<
 		});
 	}
 
+	@ExternalBody
 	@Override
 	public final C remove(Object element) {
 		return createSameTyped(builder -> {
@@ -91,21 +97,25 @@ abstract class AbstractGeneralCollection<E, C extends AbstractGeneralCollection<
 		});
 	}
 
+	@ExternalBody
 	@Override
 	public final int getLowerBound() {
 		return getLowerBoundPackagePrivate();
 	}
 
+	@ExternalBody
 	@Override
 	public final int getUpperBound() {
 		return getUpperBoundPackagePrivate();
 	}
 
+	@ExternalBody
 	@Override
 	public final Iterator<E> iterator() {
 		return backend.iterator();
 	}
 
+	@ExternalBody
 	@Override
 	@SuppressWarnings("unchecked")
 	protected final C clone() {
@@ -118,25 +128,23 @@ abstract class AbstractGeneralCollection<E, C extends AbstractGeneralCollection<
 		}
 	}
 
+	@External
 	@Override
 	public final int hashCode() {
 		// TODO collection hashCode
 		return super.hashCode();
 	}
 
+	@External
 	@Override
 	public final boolean equals(Object obj) {
 		// TODO collection equals
 		return super.equals(obj);
 	}
 
+	@ExternalBody
 	@Override
 	public String toString() {
-		return getElementsListed();
-	}
-
-	@Override
-	public final String getElementsListed() {
 		StringJoiner joiner = new StringJoiner(", ");
 		backend.forEach(e -> joiner.add(e.toString()));
 		return joiner.toString();

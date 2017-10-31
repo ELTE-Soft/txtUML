@@ -9,11 +9,13 @@ import hu.elte.txtuml.api.model.GeneralCollection.Unordered;
 
 // TODO document
 public abstract class UniqueCollection<E, C extends UniqueCollection<E, C>>
-		extends AbstractGeneralCollection<E, C> implements Unordered<E>, Unique<E> {
+		extends AbstractGeneralCollection<E, C> implements @External Unordered<E>, @External Unique<E> {
 
+	@ExternalBody
 	protected UniqueCollection() {
 	}
 
+	@ExternalBody
 	@Override
 	@SuppressWarnings("unchecked")
 	public final <C2 extends GeneralCollection<? super E>, C3 extends GeneralCollection<?>> C2 as(
@@ -26,6 +28,7 @@ public abstract class UniqueCollection<E, C extends UniqueCollection<E, C>>
 		}
 	}
 
+	@ExternalBody
 	@Override
 	public final UniqueAny<E> unbound() {
 		return asUniqueAnyUnsafe();
@@ -38,9 +41,10 @@ public abstract class UniqueCollection<E, C extends UniqueCollection<E, C>>
 		return builder.build();
 	}
 
+	@ExternalBody
 	@Override
-	public String toString() {
-		return "{" + getElementsListed() + "}";
+	public final String toString() {
+		return "{" + super.toString() + "}";
 	}
 
 }
