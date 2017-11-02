@@ -1,8 +1,5 @@
 package hu.elte.txtuml.api.model;
 
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Proxy;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.StringJoiner;
 import java.util.function.Consumer;
@@ -16,32 +13,25 @@ import hu.elte.txtuml.utils.InstanceCreator;
 import hu.elte.txtuml.utils.RuntimeInvocationTargetException;
 
 //TODO document and review
-abstract class AbstractGeneralCollection<E, C extends AbstractGeneralCollection<E, C>> extends GeneralCollection<E>
-		implements @External Cloneable {
+abstract class AbstractGeneralCollection<E, B extends java.util.Collection<E>, C extends AbstractGeneralCollection<E, B, C>>
+		extends GeneralCollection<E> implements @External Cloneable {
 
-	// TODO document
-	static final Object UNINITIALIZED_BACKEND;
+	/**
+	 * The Java collection that contains the elements of this collection. Should
+	 * only be accessed through {@link #getBackend()} because that method checks
+	 * whether this backend is {@code null}.
+	 */
+	private B backend = null;
 
-	static {
-		// TODO explain
-		ClassLoader loader = AbstractGeneralCollection.class.getClassLoader();
-
-		Class<?>[] interfaces = new Class[] { java.util.Collection.class };
-
-		InvocationHandler handler = (proxy, method, args) -> {
-			throw new UninitializedCollectionError();
-		};
-
-		UNINITIALIZED_BACKEND = (Collection<?>) Proxy.newProxyInstance(loader, interfaces, handler);
+	AbstractGeneralCollection() {
 	}
 
 	/**
-	 * The Java collection that contains the elements of this collection.
+	 * Must be used with extreme care as this constructor sets the backend of
+	 * this collection without any multiplicity checks.
 	 */
-	@SuppressWarnings("unchecked")
-	private java.util.Collection<E> backend = (Collection<E>) UNINITIALIZED_BACKEND;
-
-	AbstractGeneralCollection() {
+	AbstractGeneralCollection(B backend) {
+		this.backend = backend;
 	}
 
 	// ACCESSIBLE METHODS
@@ -49,33 +39,33 @@ abstract class AbstractGeneralCollection<E, C extends AbstractGeneralCollection<
 	@ExternalBody
 	@Override
 	public final boolean isEmpty() {
-		return backend.isEmpty();
+		return getBackend().isEmpty();
 	}
 
 	@ExternalBody
 	@Override
 	public final int size() {
-		return backend.size();
+		return getBackend().size();
 	}
 
 	@ExternalBody
 	@Override
 	public final E one() {
 		// FIXME NoSuchElementException
-		return backend.iterator().next();
+		return getBackend().iterator().next();
 	}
 
 	@ExternalBody
 	@Override
 	public final boolean contains(Object element) {
-		return backend.contains(element);
+		return getBackend().contains(element);
 	}
 
 	@ExternalBody
 	@Override
 	public final C add(E element) {
 		return createSameTyped(builder -> {
-			builder.addAll(backend);
+			builder.addAll(getBackend());
 			builder.add(element);
 		});
 	}
@@ -84,7 +74,7 @@ abstract class AbstractGeneralCollection<E, C extends AbstractGeneralCollection<
 	@Override
 	public final C remove(Object element) {
 		return createSameTyped(builder -> {
-			Iterator<E> it = backend.iterator();
+			Iterator<E> it = getBackend().iterator();
 			while (it.hasNext()) {
 				E e = it.next();
 				if (e.equals(element)) {
@@ -112,7 +102,7 @@ abstract class AbstractGeneralCollection<E, C extends AbstractGeneralCollection<
 	@ExternalBody
 	@Override
 	public final Iterator<E> iterator() {
-		return backend.iterator();
+		return getBackend().iterator();
 	}
 
 	@ExternalBody
@@ -131,22 +121,30 @@ abstract class AbstractGeneralCollection<E, C extends AbstractGeneralCollection<
 	@External
 	@Override
 	public final int hashCode() {
-		// TODO collection hashCode
-		return super.hashCode();
+		return getBackend().hashCode();
 	}
 
-	@External
+	@ExternalBody
 	@Override
 	public final boolean equals(Object obj) {
-		// TODO collection equals
-		return super.equals(obj);
+		if (obj == null) {
+			return false;
+		}
+		if (obj == this) {
+			return true;
+		}
+		if (obj.getClass() != this.getClass()) {
+			return false;
+		}
+		AbstractGeneralCollection<?, ?, ?> other = (AbstractGeneralCollection<?, ?, ?>) obj;
+		return this.getBackend().equals(other.getBackend());
 	}
 
 	@ExternalBody
 	@Override
 	public String toString() {
 		StringJoiner joiner = new StringJoiner(", ");
-		backend.forEach(e -> joiner.add(e.toString()));
+		getBackend().forEach(e -> joiner.add(e.toString()));
 		return joiner.toString();
 	}
 
@@ -169,40 +167,7 @@ abstract class AbstractGeneralCollection<E, C extends AbstractGeneralCollection<
 	final <C2 extends GeneralCollection<?>> C2 asUnsafe(Class<C2> collectionType)
 			throws CollectionCreationError, MultiplicityError {
 		C2 result = createUninitialized(collectionType);
-		((AbstractGeneralCollection<E, ?>) result).setBackend(backend);
-		return result;
-	}
-
-	final Any<E> asAny() {
-		Any<E> result = new Any<>();
-		((AbstractGeneralCollection<E, ?>) result).setBackend(backend);
-		return result;
-	}
-
-	/**
-	 * Should only be called on an ordered collection.
-	 */
-	final OrderedAny<E> asOrderedAnyUnsafe() {
-		OrderedAny<E> result = new OrderedAny<>();
-		((AbstractGeneralCollection<E, ?>) result).setBackend(backend);
-		return result;
-	}
-
-	/**
-	 * Should only be called on a unique collection.
-	 */
-	final UniqueAny<E> asUniqueAnyUnsafe() {
-		UniqueAny<E> result = new UniqueAny<>();
-		((AbstractGeneralCollection<E, ?>) result).setBackend(backend);
-		return result;
-	}
-
-	/**
-	 * Should only be called on an ordered unique collection.
-	 */
-	final OrderedUniqueAny<E> asOrderedUniqueAnyUnsafe() {
-		OrderedUniqueAny<E> result = new OrderedUniqueAny<>();
-		((AbstractGeneralCollection<E, ?>) result).setBackend(backend);
+		((AbstractGeneralCollection<E, ?, ?>) result).createAndSetBackend(builder -> builder.addAll(this));
 		return result;
 	}
 
@@ -212,11 +177,14 @@ abstract class AbstractGeneralCollection<E, C extends AbstractGeneralCollection<
 	 */
 	final C createSameTyped(Consumer<Builder<E>> backendBuilder) throws MultiplicityError {
 		C other = clone();
-		((AbstractGeneralCollection<E, C>) other).setBackend(backendBuilder);
+		((AbstractGeneralCollection<E, ?, C>) other).createAndSetBackend(backendBuilder);
 		return other;
 	}
 
-	final java.util.Collection<E> getBackend() {
+	final B getBackend() {
+		if (backend == null) {
+			throw new UninitializedCollectionError();
+		}
 		return backend;
 	}
 
@@ -238,7 +206,7 @@ abstract class AbstractGeneralCollection<E, C extends AbstractGeneralCollection<
 		return (max == null) ? GeneralCollection.INFINITE_BOUND : max.value();
 	}
 
-	abstract java.util.Collection<E> createBackend(Consumer<Builder<E>> backendBuilder);
+	abstract B createBackend(Consumer<Builder<E>> backendBuilder);
 
 	// PRIVATE HELPER METHODS
 
@@ -263,8 +231,8 @@ abstract class AbstractGeneralCollection<E, C extends AbstractGeneralCollection<
 			Consumer<Builder<E>> backendBuilder) throws MultiplicityError {
 		try {
 			@SuppressWarnings("unchecked")
-			AbstractGeneralCollection<E, ?> casted = ((AbstractGeneralCollection<E, ?>) collection);
-			casted.setBackend(backendBuilder);
+			AbstractGeneralCollection<E, ?, ?> casted = ((AbstractGeneralCollection<E, ?, ?>) collection);
+			casted.createAndSetBackend(backendBuilder);
 		} catch (ClassCastException e) {
 			// TODO exception handling
 			throw new Error();
@@ -277,7 +245,7 @@ abstract class AbstractGeneralCollection<E, C extends AbstractGeneralCollection<
 	 * Sets the backend of this collection after checking its lower and upper
 	 * bound.
 	 */
-	private void setBackend(java.util.Collection<E> backend) throws MultiplicityError {
+	private void setBackend(B backend) throws MultiplicityError {
 		int size = backend.size();
 		if (size < getLowerBoundPackagePrivate()) {
 			throw new LowerBoundError();
@@ -295,8 +263,8 @@ abstract class AbstractGeneralCollection<E, C extends AbstractGeneralCollection<
 	 * Sets the backend of this collection after checking its lower and upper
 	 * bound.
 	 */
-	private void setBackend(Consumer<Builder<E>> backendBuilder) throws MultiplicityError {
-		java.util.Collection<E> backend = createBackend(backendBuilder);
+	private void createAndSetBackend(Consumer<Builder<E>> backendBuilder) throws MultiplicityError {
+		B backend = createBackend(backendBuilder);
 		setBackend(backend);
 	}
 

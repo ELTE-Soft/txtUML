@@ -1,5 +1,7 @@
 package hu.elte.txtuml.api.model;
 
+import com.google.common.collect.ImmutableList;
+
 /**
  * Ordered, non-unique, 0..* txtUML API collection and as such, an immutable
  * class. For detailed information about the txtUML API collections, see the
@@ -37,10 +39,18 @@ package hu.elte.txtuml.api.model;
 public final class OrderedAny<E> extends OrderedCollection<E, OrderedAny<E>> {
 
 	/**
-	 * As this class should only be instantiated by the txtUML API, its sole
-	 * constructor is package private.
+	 * As this class should only be instantiated by the txtUML API, its
+	 * constructors are package private.
 	 */
 	OrderedAny() {
+	}
+
+	/**
+	 * Must be used with extreme care as this constructor sets the backend of
+	 * this collection without any multiplicity checks.
+	 */
+	OrderedAny(ImmutableList<E> backend) {
+		super(backend);
 	}
 
 	@Override

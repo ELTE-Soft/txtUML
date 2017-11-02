@@ -1,5 +1,7 @@
 package hu.elte.txtuml.api.model;
 
+import com.google.common.collect.ImmutableList;
+
 import hu.elte.txtuml.api.model.GeneralCollection.NonUnique;
 import hu.elte.txtuml.api.model.GeneralCollection.Ordered;
 
@@ -9,6 +11,14 @@ public abstract class OrderedCollection<E, C extends OrderedCollection<E, C>> ex
 
 	@ExternalBody
 	protected OrderedCollection() {
+	}
+
+	/**
+	 * Must be used with extreme care as this constructor sets the backend of
+	 * this collection without any multiplicity checks.
+	 */
+	OrderedCollection(ImmutableList<E> backend) {
+		super(backend);
 	}
 
 	@ExternalBody
@@ -39,7 +49,7 @@ public abstract class OrderedCollection<E, C extends OrderedCollection<E, C>> ex
 	@ExternalBody
 	@Override
 	public final OrderedAny<E> unbound() {
-		return asOrderedAnyUnsafe();
+		return new OrderedAny<>(getBackend());
 	}
 
 	@ExternalBody

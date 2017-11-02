@@ -8,10 +8,18 @@ import hu.elte.txtuml.api.model.GeneralCollection.Ordered;
 
 //TODO document
 abstract class AbstractOrderedCollection<E, C extends AbstractOrderedCollection<E, C>>
-		extends AbstractGeneralCollection<E, C> implements @External Ordered<E> {
+		extends AbstractGeneralCollection<E, ImmutableList<E>, C> implements @External Ordered<E> {
 
 	@ExternalBody
 	protected AbstractOrderedCollection() {
+	}
+	
+	/**
+	 * Must be used with extreme care as this constructor sets the backend of
+	 * this collection without any multiplicity checks.
+	 */
+	AbstractOrderedCollection(ImmutableList<E> backend) {
+		super(backend);
 	}
 
 	@ExternalBody
@@ -33,18 +41,7 @@ abstract class AbstractOrderedCollection<E, C extends AbstractOrderedCollection<
 	@Override
 	public final E get(int index) {
 		// TODO review exception handling
-		java.util.Collection<E> backend = getBackend();
-		if (backend instanceof java.util.List) {
-			return ((java.util.List<E>) backend).get(index);
-		}
-		int i = 0;
-		for (E e : backend) {
-			if (index != i) {
-				return e;
-			}
-			++i;
-		}
-		throw new IndexOutOfBoundsException("Size: " + backend.size() + " Index: " + index);
+		return getBackend().get(index);
 	}
 
 	@ExternalBody
@@ -62,7 +59,7 @@ abstract class AbstractOrderedCollection<E, C extends AbstractOrderedCollection<
 	}
 
 	@Override
-	java.util.List<E> createBackend(Consumer<Builder<E>> backendBuilder) {
+	ImmutableList<E> createBackend(Consumer<Builder<E>> backendBuilder) {
 		ImmutableList.Builder<E> builder = ImmutableList.builder();
 		backendBuilder.accept(builder::add);
 		return builder.build();

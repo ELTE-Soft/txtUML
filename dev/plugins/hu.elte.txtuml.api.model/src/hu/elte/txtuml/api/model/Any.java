@@ -1,5 +1,7 @@
 package hu.elte.txtuml.api.model;
 
+import com.google.common.collect.ImmutableMultiset;
+
 /**
  * Unordered, non-unique, 0..* txtUML API collection and as such, an immutable
  * class. For detailed information about the txtUML API collections, see the
@@ -37,10 +39,18 @@ package hu.elte.txtuml.api.model;
 public final class Any<E> extends Collection<E, Any<E>> {
 
 	/**
-	 * As this class should only be instantiated by the txtUML API, its sole
-	 * constructor is package private.
+	 * As this class should only be instantiated by the txtUML API, its
+	 * constructors are package private.
 	 */
 	Any() {
+	}
+
+	/**
+	 * Must be used with extreme care as this constructor sets the backend of
+	 * this collection without any multiplicity checks.
+	 */
+	Any(ImmutableMultiset<E> backend) {
+		super(backend);
 	}
 
 	@Override

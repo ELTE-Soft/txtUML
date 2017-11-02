@@ -8,11 +8,19 @@ import hu.elte.txtuml.api.model.GeneralCollection.Unique;
 import hu.elte.txtuml.api.model.GeneralCollection.Unordered;
 
 // TODO document
-public abstract class UniqueCollection<E, C extends UniqueCollection<E, C>>
-		extends AbstractGeneralCollection<E, C> implements @External Unordered<E>, @External Unique<E> {
+public abstract class UniqueCollection<E, C extends UniqueCollection<E, C>> extends
+		AbstractGeneralCollection<E, ImmutableSet<E>, C> implements @External Unordered<E>, @External Unique<E> {
 
 	@ExternalBody
 	protected UniqueCollection() {
+	}
+
+	/**
+	 * Must be used with extreme care as this constructor sets the backend of
+	 * this collection without any multiplicity checks.
+	 */
+	UniqueCollection(ImmutableSet<E> backend) {
+		super(backend);
 	}
 
 	@ExternalBody
@@ -31,11 +39,11 @@ public abstract class UniqueCollection<E, C extends UniqueCollection<E, C>>
 	@ExternalBody
 	@Override
 	public final UniqueAny<E> unbound() {
-		return asUniqueAnyUnsafe();
+		return new UniqueAny<>(getBackend());
 	}
 
 	@Override
-	java.util.Set<E> createBackend(Consumer<Builder<E>> backendBuilder) {
+	ImmutableSet<E> createBackend(Consumer<Builder<E>> backendBuilder) {
 		ImmutableSet.Builder<E> builder = ImmutableSet.builder();
 		backendBuilder.accept(builder::add);
 		return builder.build();

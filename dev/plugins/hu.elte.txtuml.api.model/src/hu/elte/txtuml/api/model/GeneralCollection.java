@@ -112,6 +112,14 @@ public abstract class GeneralCollection<E> implements @External Iterable<E>, @Ex
 		// Nothing to do.
 	}
 
+	@External
+	@Override
+	public abstract int hashCode();
+
+	@ExternalBody
+	@Override
+	public abstract boolean equals(Object obj);
+
 	// ORDERING AND UNIQUENESS
 
 	@External
