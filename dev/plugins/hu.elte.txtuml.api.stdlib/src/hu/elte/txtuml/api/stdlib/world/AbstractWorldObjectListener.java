@@ -7,7 +7,7 @@ import hu.elte.txtuml.api.model.External;
  * {@link #acceptAny} method with the use of the {@link #invokeHandler} method.
  * <p>
  * Intended for complex use cases. Use the simpler {@code WorldObjectListener}
- * versions is possible.
+ * versions if possible.
  * <p>
  * See the documentation of the {@link hu.elte.txtuml.api.stdlib.world} package
  * or further details and examples about the services provided by the <i>txtUML

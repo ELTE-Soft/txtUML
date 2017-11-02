@@ -33,8 +33,8 @@ import hu.elte.txtuml.utils.Logger;
  * handlers can be applied, the {@link #notHandledSignal} method is called which
  * shows a warning message by default.
  * <p>
- * <i>Note:</i> Instead of this class, create a subclass of its predefined
- * subclasses in the <i>txtUML World</i> model.
+ * <i>Note:</i> Instead of extending this class, create a subclass of its
+ * predefined subclasses in the <i>txtUML World</i> model.
  * <p>
  * See the documentation of the {@link hu.elte.txtuml.api.stdlib.world} package
  * or further details and examples about the services provided by the <i>txtUML
@@ -52,8 +52,8 @@ import hu.elte.txtuml.utils.Logger;
 public abstract class WorldObjectListener {
 
 	/**
-	 * Instead of {@link WorldObjectListener}, create a subclass of its
-	 * predefined subclasses.
+	 * Instead of extending {@link WorldObjectListener}, create a subclass of
+	 * its predefined subclasses.
 	 * 
 	 * @see AbstractWorldObjectListener
 	 * @see SwingWorldObjectListener
@@ -160,9 +160,9 @@ public abstract class WorldObjectListener {
 	}
 
 	/**
-	 * If any listener is registered for world object that belongs to the given
-	 * model executor and has the specified identifier, this method deletes that
-	 * registration. Does nothing otherwise.
+	 * If any listener is registered for the world object that belongs to the
+	 * given model executor and has the specified identifier, this method
+	 * deletes that registration. Does nothing otherwise.
 	 */
 	public static void unregister(BaseModelExecutor forExecutor, String identifier) {
 		WorldHelper.getOrCreateHelperInstance(forExecutor).getOrCreateObjectHelper(identifier).setListener(null);

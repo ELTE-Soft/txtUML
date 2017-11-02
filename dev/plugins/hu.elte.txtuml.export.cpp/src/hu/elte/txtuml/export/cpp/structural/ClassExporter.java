@@ -32,6 +32,7 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 
 	private List<String> additionalSourcesNames;
 	private List<String> baseClasses;
+	private List<String> interfacesToImplement;
 	private AssociationExporter associationExporter;
 	private ConstructorExporter constructorExporter;
 
@@ -43,6 +44,7 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 
 	public ClassExporter() {
 		baseClasses = new LinkedList<String>();
+		interfacesToImplement = new LinkedList<String>();
 	}
 
 	public List<String> getAdditionalSources() {
@@ -58,6 +60,7 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 		associationExporter = new AssociationExporter();
 		additionalSourcesNames = new ArrayList<String>();
 		baseClasses.clear();
+		interfacesToImplement.clear();
 		portExporter = new PortExporter();
 
 		StateMachine classSM = CppExporterUtils.getStateMachine(structuredElement);
@@ -142,7 +145,7 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 			publicParts.append(stateMachineExporter.createStateEnumCode());
 			privateParts.append(stateMachineExporter.createStateMachineRelatedHeadedDeclarationCodes());
 			source = HeaderTemplates
-						.classHeader(getAllDependencies(true), baseClasses,
+						.classHeader(getAllDependencies(true), baseClasses, interfacesToImplement,
 								publicParts.toString(), protectedParts.toString(), privateParts.toString(), 
 								new HeaderInfo(name,
 										new HeaderTemplates.StateMachineClassHeaderType(stateMachineExporter.ownSubMachine() ? 
@@ -150,7 +153,7 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 							);
 		} else {
 			source = HeaderTemplates
-					.classHeader(getAllDependencies(true), baseClasses, publicParts.toString(),
+					.classHeader(getAllDependencies(true), baseClasses, interfacesToImplement, publicParts.toString(),
 					protectedParts.toString(), privateParts.toString(), 
 					new HeaderInfo(name,new HeaderTemplates.SimpleClassHeaderType())	);
 		}
@@ -180,6 +183,10 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 		dependencyExporter.addDependencies(associationExporter.getAssociatedPropertyTypes());
 		for (String baseClassName : baseClasses) {
 			source.append(PrivateFunctionalTemplates.include(baseClassName));
+		}
+		
+		for (String pureInterfaceName : interfacesToImplement) {
+			source.append(PrivateFunctionalTemplates.include(pureInterfaceName));
 		}
 
 		if (CppExporterUtils.isStateMachineOwner(structuredElement)) {
@@ -229,7 +236,7 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 		}
 
 		if (abstractInterface != null && !baseClasses.contains(abstractInterface)) {
-			baseClasses.add(abstractInterface);
+			interfacesToImplement.add(abstractInterface);
 		}
 
 	}

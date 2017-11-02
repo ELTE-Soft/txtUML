@@ -79,7 +79,7 @@ public class SubStateMachineExporter extends StateMachineExporterBase {
 		privateParts.append(transitionExporter.createTransitionFunctionDecl());
 			
 		source = HeaderTemplates
-					.classHeader(dependency.toString(), null,
+					.classHeader(dependency.toString(), null, null,
 							publicParts.toString(), protectedParts.toString(), privateParts.toString(), 
 							new HeaderInfo(ownerClassName, 
 									new HeaderTemplates.SubMachineHeaderType(parentClassName, !submachineMap.isEmpty())));

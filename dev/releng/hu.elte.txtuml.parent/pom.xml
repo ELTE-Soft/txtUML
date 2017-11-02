@@ -25,7 +25,6 @@
 		<module>../../plugins/hu.elte.txtuml.api.layout</module>
 		<module>../../plugins/hu.elte.txtuml.api.model</module>
 		<module>../../plugins/hu.elte.txtuml.api.model.execution</module>
-		<module>../../plugins/hu.elte.txtuml.api.stdlib</module>
 		<module>../../plugins/hu.elte.txtuml.diagnostics</module>
 		<module>../../plugins/hu.elte.txtuml.export.cpp</module>
 		<module>../../plugins/hu.elte.txtuml.export.javascript</module>
