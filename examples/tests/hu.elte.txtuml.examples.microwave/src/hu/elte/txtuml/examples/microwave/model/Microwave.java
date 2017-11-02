@@ -165,7 +165,7 @@ public class Microwave extends ModelClass {
 				--time;
 				Action.log("Microwave: remaining time: " + time + " second(s).");
 
-				Timer.start(Microwave.this, new TimedOut(), 1000);
+				Timer.start(new TimedOut(), Microwave.this, 1000);
 			}
 		}
 

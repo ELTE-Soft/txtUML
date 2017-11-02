@@ -8,9 +8,10 @@ import machine1.x.model.Usage;
 import machine1.x.model.User;
 
 public class Tester {
+	static Machine m;
 
 	static void init() {
-		Machine m = Action.create(Machine.class);
+		m = Action.create(Machine.class);
 		User u1 = Action.create(User.class);
 		User u2 = Action.create(User.class);
 
@@ -27,6 +28,7 @@ public class Tester {
 
 	public static void main(String[] args) {
 		ModelExecutor.create().setTraceLogging(true).run(Tester::init);
+		m.printSwitchOnLog();
 	}
 
 }

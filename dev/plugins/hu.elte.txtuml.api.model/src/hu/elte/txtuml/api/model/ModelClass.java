@@ -45,17 +45,17 @@ import hu.elte.txtuml.api.model.runtime.PortWrapper;
  * <li><i>Be abstract:</i> disallowed</li>
  * <li><i>Generic parameters:</i> disallowed</li>
  * <li><i>Constructors:</i> allowed, only with parameters of types which are
- * subclasses of <code>ModelClass</code>, signals, data types, model enums,
- * external classes or primitives (including {@code String})</li>
+ * subclasses of <code>ModelClass</code>, signals, data types, model enums or
+ * primitives (including {@code String})</li>
  * <li><i>Initialization blocks:</i> allowed, containing only simple assignments
  * to set the default values of its fields</li>
  * <li><i>Fields:</i> allowed, only with parameters of types which are data
- * types, model enums, external classes or primitives (including {@code String}
- * ); they represent attributes of the model class</li>
+ * types, model enums or primitives (including {@code String} ); they represent
+ * attributes of the model class</li>
  * <li><i>Methods:</i> allowed, only with parameters and return values of types
  * which are subclasses of <code>ModelClass</code>, signals, data types, model
- * enums, external classes or primitives (including {@code String}); they
- * represent operations of the model class</li>
+ * enums or primitives (including {@code String}); they represent operations of
+ * the model class</li>
  * <li><i>Nested interfaces:</i> disallowed</li>
  * <li><i>Nested classes:</i> allowed, only non-static and extending either
  * {@link StateMachine.Vertex} or {@link StateMachine.Transition}</li>
@@ -107,6 +107,7 @@ public abstract class ModelClass extends StateMachine {
 	 * @see Status#FINALIZED
 	 * @see Status#DELETED
 	 */
+	@External
 	public enum Status {
 		/**
 		 * This status of a <code>ModelClass</code> object indicates that the
@@ -172,10 +173,12 @@ public abstract class ModelClass extends StateMachine {
 	 * depending on whether it has any state machine or not (any initial
 	 * pseudostate or not).
 	 */
+	@ExternalBody
 	protected ModelClass() {
 	}
 
 	@Override
+	@External
 	ModelClassWrapper createRuntimeInfo() {
 		return Runtime.currentRuntime().createModelClassWrapper(this);
 	}
@@ -195,6 +198,7 @@ public abstract class ModelClass extends StateMachine {
 	 * @return collection containing the objects in association with this object
 	 *         and being on <code>otherEnd</code>
 	 */
+	@ExternalBody
 	public final <T extends ModelClass, C extends Collection<T>, AE extends AssociationEnd<T, C> & Navigability.Navigable> C assoc(
 			Class<AE> otherEnd) {
 		return runtimeInfo().navigateThroughAssociation(otherEnd);
@@ -208,6 +212,7 @@ public abstract class ModelClass extends StateMachine {
 	 *            class
 	 * @return the instance of the specified port type
 	 */
+	@ExternalBody
 	public final <P extends Port<?, ?>> P port(Class<P> portType) {
 		return runtimeInfo().getPortInstance(portType);
 	}
@@ -274,7 +279,7 @@ public abstract class ModelClass extends StateMachine {
 	 * @param <R>
 	 *            the required interface
 	 */
-	public class Port<P extends Interface, R extends Interface> extends Described<PortWrapper> {
+	public class Port<P extends Interface, R extends Interface> extends @External Described<PortWrapper> {
 
 		/**
 		 * The required interface of this port.
@@ -287,11 +292,13 @@ public abstract class ModelClass extends StateMachine {
 		 */
 		public final R required;
 
+		@ExternalBody
 		protected Port() {
 			this(1);
 		}
 
 		@Override
+		@External
 		PortWrapper createRuntimeInfo() {
 			return ModelClass.this.getRuntime().createPortWrapper(this, ModelClass.this);
 		}
@@ -302,6 +309,7 @@ public abstract class ModelClass extends StateMachine {
 		 *            arguments
 		 */
 		@SuppressWarnings("unchecked")
+		@External
 		Port(int indexOfRequiredInterface) {
 			Class<?> type = getClass();
 
@@ -316,10 +324,12 @@ public abstract class ModelClass extends StateMachine {
 			}
 		}
 
+		@External
 		Port(R required) {
 			this.required = required;
 		}
 
+		@External
 		private InvocationHandler createReceptionHandler() {
 			return (Object proxy, Method method, Object[] args) -> {
 				runtimeInfo().send((Signal) args[0]);
@@ -396,6 +406,7 @@ public abstract class ModelClass extends StateMachine {
 	 */
 	public abstract class InPort<P extends Interface> extends Port<P, Interface.Empty> {
 
+		@ExternalBody
 		protected InPort() {
 			super(new Interface.Empty() {
 			});
@@ -469,6 +480,7 @@ public abstract class ModelClass extends StateMachine {
 	 */
 	public abstract class OutPort<R extends Interface> extends Port<Interface.Empty, R> {
 
+		@ExternalBody
 		protected OutPort() {
 			super(0);
 		}

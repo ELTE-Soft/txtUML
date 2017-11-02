@@ -41,17 +41,16 @@ import java.util.Objects;
  * <li><i>Be abstract:</i> disallowed</li>
  * <li><i>Generic parameters:</i> disallowed</li>
  * <li><i>Constructors:</i> allowed, only with parameters of types which are
- * data types, model enums, external classes or primitives (including
- * {@code String})</li>
+ * data types, model enums or primitives (including {@code String})</li>
  * <li><i>Initialization blocks:</i> allowed, containing only simple assignments
  * to set the default values of its fields</li>
  * <li><i>Fields:</i> allowed, only with parameters of types which are data
- * types, model enums, external classes or primitives (including {@code String}
- * ); they represent attributes of the data type</li>
+ * types, model enums or primitives (including {@code String} ); they represent
+ * attributes of the data type</li>
  * <li><i>Methods:</i> allowed, only with parameters and return values of types
  * which are subclasses of <code>ModelClass</code>, signals, data types, model
- * enums, external classes or primitives (including {@code String}); they
- * represent operations of the data type</li>
+ * enums or primitives (including {@code String}); they represent operations of
+ * the data type</li>
  * <li><i>Nested interfaces:</i> disallowed</li>
  * <li><i>Nested classes:</i> disallowed</li>
  * <li><i>Nested enums:</i> disallowed</li>
@@ -89,6 +88,7 @@ import java.util.Objects;
 public abstract class DataType {
 
 	@Override
+	@ExternalBody
 	public final boolean equals(Object obj) {
 		if (this == obj) {
 			return true;
@@ -115,6 +115,7 @@ public abstract class DataType {
 	}
 
 	@Override
+	@External
 	public final int hashCode() {
 		final int prime = 1873;
 		int result = 1;
@@ -138,6 +139,7 @@ public abstract class DataType {
 		return "data_type:" + getClass().getSimpleName();
 	}
 
+	@External
 	private final List<Field[]> getAllFields() {
 		List<Field[]> fields = new ArrayList<>();
 		for (Class<?> cls = getClass(); cls != DataType.class; cls = cls.getSuperclass()) {

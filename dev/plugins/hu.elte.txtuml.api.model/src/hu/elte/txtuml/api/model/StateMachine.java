@@ -180,7 +180,7 @@ import hu.elte.txtuml.api.model.runtime.ModelClassWrapper;
  * @see State
  * @see CompositeState
  */
-public abstract class StateMachine extends Described<ModelClassWrapper> {
+public abstract class StateMachine extends @External Described<ModelClassWrapper> {
 
 	/**
 	 * Base type for vertices in the model.
@@ -236,7 +236,8 @@ public abstract class StateMachine extends Described<ModelClassWrapper> {
 		}
 
 		@Override
-		public String toString() {
+		@External
+		public final String toString() {
 			return getVertexTypeName() + ":" + getClass().getSimpleName();
 		}
 
@@ -244,10 +245,12 @@ public abstract class StateMachine extends Described<ModelClassWrapper> {
 		 * Returns a long string representation of the vertex represented by
 		 * this object's dynamic type.
 		 */
+		@External
 		public String getStringRepresentation() {
 			return getVertexTypeName() + ":" + getClass().getName();
 		}
 
+		@External
 		String getVertexTypeName() {
 			return "vertex";
 		}
@@ -307,6 +310,7 @@ public abstract class StateMachine extends Described<ModelClassWrapper> {
 		}
 
 		@Override
+		@External
 		String getVertexTypeName() {
 			return "pseudostate";
 		}
@@ -378,6 +382,7 @@ public abstract class StateMachine extends Described<ModelClassWrapper> {
 	public abstract class Initial extends Pseudostate {
 
 		@Override
+		@External
 		String getVertexTypeName() {
 			return "initial";
 		}
@@ -448,6 +453,7 @@ public abstract class StateMachine extends Described<ModelClassWrapper> {
 	public abstract class Choice extends Pseudostate {
 
 		@Override
+		@External
 		String getVertexTypeName() {
 			return "choice";
 		}
@@ -563,6 +569,7 @@ public abstract class StateMachine extends Described<ModelClassWrapper> {
 		 *             if the cast might not be performed
 		 */
 		@SuppressWarnings("unchecked")
+		@ExternalBody
 		protected final <T extends Signal> T getTrigger(Class<T> signalClass) throws ClassCastException {
 			return (T) runtimeInfo().getCurrentTrigger();
 		}
@@ -576,6 +583,7 @@ public abstract class StateMachine extends Described<ModelClassWrapper> {
 		}
 
 		@Override
+		@External
 		public String getVertexTypeName() {
 			return "state";
 		}
@@ -646,12 +654,14 @@ public abstract class StateMachine extends Described<ModelClassWrapper> {
 	public abstract class CompositeState extends State {
 
 		@Override
+		@External
 		public String getVertexTypeName() {
 			return "composite_state";
 		}
 
 	}
 
+	@External
 	static abstract class TransitionBase {
 
 		private TransitionBase() {
@@ -690,7 +700,8 @@ public abstract class StateMachine extends Described<ModelClassWrapper> {
 		 *             caught</b> by user code
 		 * @see Transition#guard
 		 */
-		protected static boolean Else() throws ElseException {
+		@ExternalBody
+		protected static boolean Else() throws @External ElseException {
 			throw new ElseException();
 		}
 
@@ -760,7 +771,7 @@ public abstract class StateMachine extends Described<ModelClassWrapper> {
 	 * See the documentation of {@link Model} for an overview on modeling in
 	 * JtxtUML.
 	 */
-	public abstract class Transition extends TransitionBase {
+	public abstract class Transition extends @External TransitionBase {
 
 		/**
 		 * Overridable method to implement the effect of this transition.
@@ -868,11 +879,13 @@ public abstract class StateMachine extends Described<ModelClassWrapper> {
 		 *             if the cast might not be performed
 		 */
 		@SuppressWarnings("unchecked")
+		@ExternalBody
 		protected final <T extends Signal> T getTrigger(Class<T> signalClass) throws ClassCastException {
 			return (T) runtimeInfo().getCurrentTrigger();
 		}
 
 		@Override
+		@External
 		public String toString() {
 			return "transition:" + getClass().getSimpleName();
 		}

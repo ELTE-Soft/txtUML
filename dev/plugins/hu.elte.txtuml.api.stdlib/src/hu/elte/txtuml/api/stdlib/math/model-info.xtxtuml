@@ -1,0 +1,4 @@
+/**
+ * Provides access to some mathematical functions in txtUML models.
+ */
+model-package hu.elte.txtuml.api.stdlib.math as "txtUML Math";

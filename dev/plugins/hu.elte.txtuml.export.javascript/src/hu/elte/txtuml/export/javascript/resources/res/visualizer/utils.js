@@ -18,3 +18,17 @@ visualizer.Utils.MAPS = {
 		'private': '-'
 	}
 }
+
+// returns a space-separated list of modifier CSS classes for the given class member
+visualizer.Utils.getModifierClasses = function(classMember) {
+	var modifierList = [];
+
+	if (classMember.isAbstract) {
+		modifierList.push('abstract');
+	}
+	if (classMember.isStatic) {
+		modifierList.push('static');
+	}
+
+	return modifierList.join(' ');
+}

@@ -4,5 +4,6 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="src-gen"/>
 	<classpathentry kind="con" path="hu.elte.txtuml.project.runtimeClasspathInitializer"/>
+	<classpathentry kind="src" path="/hu.elte.txtuml.api.stdlib"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
