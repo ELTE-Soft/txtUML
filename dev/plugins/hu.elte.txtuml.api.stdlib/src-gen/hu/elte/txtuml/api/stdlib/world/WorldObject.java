@@ -16,7 +16,7 @@ import hu.elte.txtuml.api.stdlib.world.WorldOwnsObject;
 /**
  * Represents an active entity outside the model that can accept certain signals.
  * Belongs to a {@link World}, more precisely, to the only existing {@link World} instance in
- * the
+ * the current model execution.
  * Each world object is identified by a {@code String} identifier which is unique
  * in a model execution.
  * <p>

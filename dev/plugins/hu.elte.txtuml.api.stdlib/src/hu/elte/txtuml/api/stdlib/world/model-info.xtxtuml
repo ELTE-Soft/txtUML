@@ -20,7 +20,7 @@
  * 
  * There are only two things that need to be shared between the model and the outside world.
  * <ul>
- * <li>The strings that identify the outside entities and their the world objects that represent them.<br/>
+ * <li>The strings that identify the outside entities and also identify the world objects that represent them.<br/>
  * For this, static fields or methods are recommended to ensure thread safety.</li>
  * <li>The signal types to be sent.<br/>
  * These signal types have to be part of the model and <b>must extend
@@ -33,7 +33,7 @@
  * 
  * Simple as it can be. Just:
  * <ol>
- * <li>Create and instance of the required signal (that extends {@code SignalToWorld}).</li>
+ * <li>Create an instance of the required signal (that extends {@code SignalToWorld}).</li>
  * <li>Get the world object for the appropriate identifier. For this, simply call {@link 
  * hu.elte.txtuml.api.stdlib.world.World#get World.get}.</li>
  * <li>Call {@link hu.elte.txtuml.api.model.Action#send(Signal, ModelClass) Action.send} as always.</li>
@@ -47,12 +47,12 @@
  * This is the step that has to be done with some care as different situations require different
  * listeners to ensure thread safety. Take a look at the predefined versions or use
  * {@link hu.elte.txtuml.api.stdlib.world.AbstractWorldObjectListener AbstractWorldObjectListener} if
- * nothing other helps.</li>
+ * no other helps.</li>
  * <li>In the listener, create signal handler methods that will take the desired signal as parameter.
  * They also have to be {@code public} and have the
  * {@link hu.elte.txtuml.api.stdlib.world.WorldObjectListener.SignalHandler SignalHandler} annotation.</li>
  * <li>Call the {@link hu.elte.txtuml.api.stdlib.world.WorldObjectListener#register
- * WorldObjectListener.register} to register for signals of the world object that has the specified 
+ * WorldObjectListener.register} method to register for signals of the world object that has the specified 
  * identifier and belongs to the given model executor.</li>
  * <li>Wait for signals to arrive.</li>
  * </ol>
@@ -135,9 +135,9 @@
  * 		
  * 		Listener listener = new Listener(modelObj);
  * 		listener.register(executor, SampleClass.responderId());
- *	 	while (true) {
- *	 		listener.handleNext();
- *	 	}
+ *  	while (true) {
+ *  		listener.handleNext();
+ *  	}
  * 	}
  * 
  * }
