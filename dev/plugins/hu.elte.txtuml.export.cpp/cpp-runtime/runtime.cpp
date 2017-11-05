@@ -1,5 +1,5 @@
 #include "runtime.hpp"
-#include "istatemachine.hpp"
+#include "StateMachineOwner.hpp"
 #include "ESRoot/Types.hpp"
 #include "ievent.hpp"
 

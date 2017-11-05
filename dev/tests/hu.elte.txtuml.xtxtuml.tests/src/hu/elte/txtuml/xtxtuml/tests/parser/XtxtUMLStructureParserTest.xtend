@@ -9,6 +9,7 @@ import org.eclipse.xtext.junit4.util.ParseHelper
 import org.junit.Test
 import org.junit.runner.RunWith
 
+import static hu.elte.txtuml.xtxtuml.xtxtUML.TUExternality.*
 import static hu.elte.txtuml.xtxtuml.xtxtUML.TUStateType.*
 import static hu.elte.txtuml.xtxtuml.xtxtUML.TUVisibility.*
 
@@ -129,18 +130,22 @@ class XtxtUMLStructureParserTest {
 			class TestClass {
 				int a1;
 				protected int a2;
-
+				public static external int a3 = 0;
+				private external String a4;
 				public void o1() {}
-
 				private int o2() {
 					return 0;
 				}
-
 				package TestClass o3(int p) {
 					return null;
 				}
-
+				public static void o4() {}
+				public external void o5() {}
+				public external-body void o6() {}
+				public static external void o7() {}
 				public TestClass(int p1, TestClass p2) {}
+				external TestClass() {}
+				external-body TestClass(int p) {}
 			}
 		'''
 		.parse.
@@ -149,33 +154,41 @@ class XtxtUMLStructureParserTest {
 			null, #[
 				[class_(
 					"TestClass", null, #[
-						[attribute(PACKAGE, "int", "a1")],
-						[attribute(PROTECTED, "int", "a2")],
-						[operation(PUBLIC, "void", "o1", #[], #[])],
+						[attribute(PACKAGE, false, NON_EXTERNAL, "int", "a1", null)],
+						[attribute(PROTECTED, false, NON_EXTERNAL, "int", "a2", null)],
+						[attribute(PUBLIC, true, EXTERNAL, "int", "a3", [number(0)])],
+						[attribute(PRIVATE, false, EXTERNAL, "String", "a4", null)],
+						[operation(PUBLIC, false, NON_EXTERNAL, "void", "o1", #[], #[])],
 						[operation(
-							PRIVATE, "int", "o2", #[], #[
+							PRIVATE, false, NON_EXTERNAL, "int", "o2", #[], #[
 								[return_[number(0)]]
 							]
 						)],
 						[operation(
-							PACKAGE, "TestClass", "o3", #[
+							PACKAGE, false, NON_EXTERNAL, "TestClass", "o3", #[
 								[parameter("int", "p")]
 							], #[
 								[return_[null_]]
 							]
 						)],
+						[operation(PUBLIC, true, NON_EXTERNAL, "void", "o4", #[], #[])],
+						[operation(PUBLIC, false, EXTERNAL, "void", "o5", #[], #[])],
+						[operation(PUBLIC, false, EXTERNAL_BODY, "void", "o6", #[], #[])],
+						[operation(PUBLIC, true, EXTERNAL, "void", "o7", #[], #[])],
 						[constructor(
-							PUBLIC, "TestClass", #[
+							PUBLIC, NON_EXTERNAL, "TestClass", #[
 								[parameter("int", "p1")],
 								[parameter("TestClass", "p2")]
 							], #[]
-						)]
+						)],
+						[constructor(PACKAGE, EXTERNAL, "TestClass", #[], #[])],
+						[constructor(PACKAGE, EXTERNAL_BODY, "TestClass", #[[parameter("int", "p")]], #[])]
 					]
 				)]
 			]
 		)
 	}
-	
+
 	@Test
 	def parseEmptyEnum() {
 		'''

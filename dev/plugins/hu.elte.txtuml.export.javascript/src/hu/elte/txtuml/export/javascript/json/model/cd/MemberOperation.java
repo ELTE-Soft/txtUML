@@ -14,6 +14,8 @@ import org.eclipse.uml2.uml.ParameterDirectionKind;
  *
  */
 public class MemberOperation extends ClassMember {
+	@XmlAccessMethods(getMethodName = "isAbstract")
+	protected boolean isAbstract;
 	@XmlAccessMethods(getMethodName = "getArgs")
 	private List<Argument> args;
 	@XmlAccessMethods(getMethodName = "getReturnType")
@@ -34,6 +36,9 @@ public class MemberOperation extends ClassMember {
 	 */
 	public MemberOperation(Operation op) {
 		super(op.getName(), op.getVisibility());
+		isAbstract = op.isAbstract();
+		isStatic = op.isStatic();
+
 		returnType = null;
 		args = new ArrayList<Argument>();
 		for (Parameter arg : op.getOwnedParameters()) {
@@ -44,6 +49,14 @@ public class MemberOperation extends ClassMember {
 				args.add(new Argument(arg));
 			}
 		}
+	}
+
+	/**
+	 *
+	 * @return whether this operation is abstract
+	 */
+	public boolean isAbstract() {
+		return isAbstract;
 	}
 
 	/**

@@ -5,19 +5,19 @@ import hu.elte.txtuml.examples.validation.helpers.A;
 
 class CompositionNoContainer extends Composition {
 
-	public class a extends Container<A> {
+	public class a extends Many<A> {
 	}
 	
-	public class b extends Container<A> {
+	public class b extends Many<A> {
 	}
 }
 
 class CompositionBothContainer extends Composition {
 
-	public class a extends Many<A> {
+	public class a extends Container<A> {
 	}
 	
-	public class b extends Many<A> {
+	public class b extends Container<A> {
 	}
 	
 }

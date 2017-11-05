@@ -1,5 +1,7 @@
 package vending_machine.model;
 
+import hu.elte.txtuml.api.stdlib.world.SignalToWorld;
+
 // Drink signals
 signal Request;
 
@@ -28,3 +30,8 @@ signal Done;
 
 signal Error;
 
+// signals to world
+
+signal ShowMessage extends SignalToWorld {
+	public String message;
+}

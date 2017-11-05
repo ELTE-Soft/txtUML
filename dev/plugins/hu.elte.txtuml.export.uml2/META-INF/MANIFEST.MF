@@ -21,7 +21,6 @@ Require-Bundle: hu.elte.txtuml.api.model,
  org.eclipse.xtend.lib.macro,
  org.eclipse.core.filesystem,
  org.eclipse.ui.workbench,
- org.eclipse.ui.ide,
- hu.elte.txtuml.api.stdlib
+ org.eclipse.ui.ide
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 

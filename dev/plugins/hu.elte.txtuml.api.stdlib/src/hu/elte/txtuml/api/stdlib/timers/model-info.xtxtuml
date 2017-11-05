@@ -1,0 +1,4 @@
+/**
+ * Enhances txtUML models with timers.
+ */
+model-package hu.elte.txtuml.api.stdlib.timers as "txtUML Timers";

@@ -47,6 +47,7 @@ public interface Collection<T> extends Iterable<T> {
 	 * @return <code>true</code> if this collection is empty; <code>false</code>
 	 *         otherwise
 	 */
+	@ExternalBody
 	default boolean isEmpty() {
 		return count() == 0;
 	}
@@ -56,6 +57,7 @@ public interface Collection<T> extends Iterable<T> {
 	 * 
 	 * @return the size of this collection
 	 */
+	@ExternalBody
 	int count();
 
 	/**
@@ -66,6 +68,7 @@ public interface Collection<T> extends Iterable<T> {
 	 * @return <code>true</code> if this collection contains the specified
 	 *         <code>object</code>; <code>false</code> otherwise
 	 */
+	@ExternalBody
 	boolean contains(Object element);
 
 	/**
@@ -76,6 +79,7 @@ public interface Collection<T> extends Iterable<T> {
 	 * @return an element of this collection, <code>null</code> if the
 	 *         collection is empty
 	 */
+	@ExternalBody
 	T selectAny();
 
 	/**
@@ -88,6 +92,7 @@ public interface Collection<T> extends Iterable<T> {
 	 * @throws NullPointerException
 	 *             if <code>pred</code> is <code>null</code>
 	 */
+	@ExternalBody
 	Collection<T> selectAll(Predicate<T> pred);
 
 	/**
@@ -98,6 +103,7 @@ public interface Collection<T> extends Iterable<T> {
 	 *            the object to be included in the result collection
 	 * @return a new collection containing the desired elements
 	 */
+	@ExternalBody
 	Collection<T> add(T element);
 
 	/**
@@ -111,6 +117,7 @@ public interface Collection<T> extends Iterable<T> {
 	 * @throws NullPointerException
 	 *             if <code>objects</code> is <code>null</code>
 	 */
+	@ExternalBody
 	Collection<T> addAll(Collection<T> elements);
 
 	/**
@@ -122,12 +129,14 @@ public interface Collection<T> extends Iterable<T> {
 	 *            the object <i>not</i> to be included in the result collection
 	 * @return a new collection containing the desired elements
 	 */
+	@ExternalBody
 	Collection<T> remove(Object element);
 
 	/**
 	 * This method <b>must not be used in the model</b>.
 	 */
 	@Override
+	@ExternalBody
 	default Spliterator<T> spliterator() {
 		return Iterable.super.spliterator();
 	}
@@ -153,6 +162,7 @@ public interface Collection<T> extends Iterable<T> {
 	 */
 	public static final class Empty<T> implements Collection<T> {
 		@Override
+		@ExternalBody
 		public Iterator<T> iterator() {
 			return new Iterator<T>() {
 				@Override
@@ -173,41 +183,49 @@ public interface Collection<T> extends Iterable<T> {
 		}
 
 		@Override
+		@ExternalBody
 		public boolean isEmpty() {
 			return true;
 		}
 
 		@Override
+		@ExternalBody
 		public int count() {
 			return 0;
 		}
 
 		@Override
+		@ExternalBody
 		public boolean contains(Object object) {
 			return false;
 		}
 
 		@Override
+		@ExternalBody
 		public T selectAny() {
 			return null;
 		}
 
 		@Override
+		@ExternalBody
 		public Collection<T> selectAll(Predicate<T> cond) {
 			return this;
 		}
 
 		@Override
+		@ExternalBody
 		public Collection<T> add(T object) {
 			return Maybe.of(object);
 		}
 
 		@Override
+		@ExternalBody
 		public Collection<T> addAll(Collection<T> objects) {
 			return Sequence.of(objects);
 		}
 
 		@Override
+		@ExternalBody
 		public Collection<T> remove(Object object) {
 			return this;
 		}

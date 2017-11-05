@@ -3,10 +3,12 @@ package hu.elte.txtuml.export.cpp.templates;
 import java.util.List;
 
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.BasicTypeNames;
+import hu.elte.txtuml.export.cpp.templates.GenerationNames.ClassUtilsNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.FileNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.ModifierNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.PointerAndMemoryNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.TimerNames;
+import hu.elte.txtuml.export.cpp.templates.GenerationNames.UMLStdLibNames;
 import hu.elte.txtuml.export.cpp.templates.statemachine.EventTemplates;
 import hu.elte.txtuml.utils.Pair;
 
@@ -16,17 +18,8 @@ public class PrivateFunctionalTemplates {
 		return type + GenerationNames.EventClassTypeId;
 	}
 
-	public static String classHeaderIncludes(Boolean rt) {
-		String source = include(GenerationNames.StatemachineBaseHeaderName);
-
-		if (rt) {
-			source += "\n" + include(RuntimeTemplates.RTPath + RuntimeTemplates.SMIHeaderName);
-		}
-		return source + "\n";
-	}
-
 	public static String include(String className) {
-		return "#include \"" + className + "." + FileNames.HeaderExtension + "\"\n";
+		return "#include \"" + mapUMLClassToCppClass(className) + "." + FileNames.HeaderExtension + "\"\n";
 	}
 
 	public static String typedefs(String className) {
@@ -67,6 +60,18 @@ public class PrivateFunctionalTemplates {
 		return source.substring(0, source.length() - 1);
 	}
 
+	public static String baseClassList(List<String> baseClasses) {
+		if (baseClasses == null || baseClasses.size() == 0) {
+			return "";
+		}
+		StringBuilder source = new StringBuilder(" :");
+		for (String baseClass : baseClasses) {
+			source.append(" " + GenerationNames.ModifierNames.PublicModifier + " " + baseClass + ",");
+		}
+		return source.substring(0, source.length() - 1);
+
+	}
+
 	public static String paramTypeList(List<String> params) {
 		if (params == null || params.size() == 0)
 			return "";
@@ -87,7 +92,16 @@ public class PrivateFunctionalTemplates {
 		}
 		return source.substring(0, source.length() - 1);
 	}
-
+	
+	public static String mapUMLClassToCppClass(String className) {
+		switch(className) {
+			case UMLStdLibNames.ModelClassName:
+				return ClassUtilsNames.BaseClassName;				
+			default:
+				return className;
+		}
+	}
+	
 	public static String cppType(String typeName) {
 		String cppType = typeName;
 		if (typeName != EventTemplates.EventPointerType && typeName != ModifierNames.NoReturn) {
@@ -114,7 +128,7 @@ public class PrivateFunctionalTemplates {
 					cppType = typeName;
 					break;
 				default:
-					cppType = GenerationNames.pointerType(typeName);
+					cppType = GenerationNames.pointerType(mapUMLClassToCppClass(typeName));
 					break;
 				}
 			} else {
