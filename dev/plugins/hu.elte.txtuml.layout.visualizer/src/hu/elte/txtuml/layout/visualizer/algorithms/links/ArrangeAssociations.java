@@ -530,7 +530,7 @@ public class ArrangeAssociations {
 			throw new CannotStartAssociationRouteException("Cannot get out of start, or cannot enter end!");
 		}
 
-		GraphSearch gs = new GraphSearch(STARTSET, ENDSET, occupied, bounds);
+		GraphSearch gs = new GraphSearch(STARTSET, ENDSET, occupied, bounds, link.isReflexive());
 
 		link.setRoute(convertFromNodes(gs.value(), STARTBOX.getPosition(), ENDBOX.getPosition()));
 		link.setExtends(gs.extendsNum());

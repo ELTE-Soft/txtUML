@@ -29,7 +29,8 @@ class GraphSearch {
 
 	// Constants
 
-	private final Double WEIGHT_LENGTH = 1.0; // 2.9
+	private Double WEIGHT_LENGTH = 0.0; // 2.9
+	private Double WEIGHT_REFLEXIVE_LENGTH = 0.0;
 	private final Double WEIGHT_TURNS = 3.2; // 2.7
 	private final Double WEIGHT_CROSSING = 2.0; // 2.0
 
@@ -81,6 +82,46 @@ class GraphSearch {
 	public GraphSearch(Set<Pair<Node, Double>> ss, Set<Pair<Node, Double>> es, Map<Point, Color> cols, Boundary bounds)
 			throws CannotFindAssociationRouteException, CannotStartAssociationRouteException, ConversionException,
 			InternalException {
+		this(ss, es, cols, bounds, false);
+	}
+	
+	/**
+	 * Creates a graph to find a route in it from start to end. If the link is not recursive, the route length is
+	 * minimal, otherwise the difference between the route length and the maximum distance between two endpoints is minimal. Route cornering is minimal.
+	 * 
+	 * @param ss
+	 *            Set of start Nodes.
+	 * @param es
+	 *            Set of end Nodes to reach.
+	 * @param cols
+	 *            Nodes we have to skip (already occupied).
+	 * @param bounds
+	 *            Bounds of the maximum width of the graph to search in.
+	 * @param isReflexive
+	 * 			  Indicates whether the link represented by this route is reflexive.
+	 * @throws CannotFindAssociationRouteException
+	 *             Throws if there is no route from start->end.
+	 * @throws CannotStartAssociationRouteException
+	 *             Throws if the algorithm cannot even start the route from
+	 *             start.
+	 * @throws ConversionException
+	 *             Throws if the algorithm cannot convert a {@link Point} to a
+	 *             {@link Direction} or vice versa.
+	 * @throws InternalException
+	 *             Throws if the algorithm encounters something which it should
+	 *             not have.
+	 */
+	public GraphSearch(Set<Pair<Node, Double>> ss, Set<Pair<Node, Double>> es, Map<Point, Color> cols, Boundary bounds, boolean isReflexive)
+			throws CannotFindAssociationRouteException, CannotStartAssociationRouteException, ConversionException,
+			InternalException {
+		
+		if(isReflexive){
+			WEIGHT_LENGTH = 0.0;
+			WEIGHT_REFLEXIVE_LENGTH = 1.0;
+		}else{
+			WEIGHT_LENGTH = 1.0;
+			WEIGHT_REFLEXIVE_LENGTH = 0.0;
+		}
 		// Initialize
 		G = new Graph<Node>(); // Graph
 		AvailableNodes = new PriorityQueue<Node>((x, y) -> nodeComparator(x, y)); // 'Open'
@@ -184,8 +225,9 @@ class GraphSearch {
 
 		Pair<Double, Node> distance = manhattanDistance(p);
 		Double remainingTurns = manhattanLeastTurns(p);
+		Double reflexiveLength = reflexiveLinkMinLength(p);
 		// manhattanLeastTurnsCheckingOccupied(p, distance.getSecond());
-		Double result = (WEIGHT_TURNS * remainingTurns + WEIGHT_LENGTH * distance.getFirst());
+		Double result = (WEIGHT_TURNS * remainingTurns + WEIGHT_LENGTH * distance.getFirst() + WEIGHT_REFLEXIVE_LENGTH * reflexiveLength);
 
 		_heuristic.put(p, result);
 
@@ -193,7 +235,30 @@ class GraphSearch {
 	}
 
 	// Metrics
-
+	
+	private Double reflexiveLinkMinLength(Node a){
+		int maxDistanceBetweenPossibleEndpoints = _endSet.stream().map(p1 -> {
+			return _endSet.stream().map(p2 -> {
+				return Math.max(Math.abs(p1.getTo().getX() - p2.getTo().getX()), Math.abs(p1.getTo().getY() - p2.getTo().getY()));
+			}).max((d1, d2) -> Integer.compare(d1, d2)).get();
+		}).max((d1, d2) -> Integer.compare(d1, d2)).get();
+		
+		return Math.abs(maxDistanceBetweenPossibleEndpoints - linkLengthUpTo(a));
+	}
+	
+	private Double linkLengthUpTo(Node a){
+		if(a == null)
+			return 0.0;
+		
+		double length = Math.pow(a.getFrom().getX() - a.getTo().getX(), 2.0) + Math.pow(a.getFrom().getY() - a.getTo().getY(), 2.0);
+		a = PI.get(a);
+		while(a != null){
+			length += Math.pow(a.getFrom().getX() - a.getTo().getX(), 2.0) + Math.pow(a.getFrom().getY() - a.getTo().getY(), 2.0);
+			a = PI.get(a);
+		}
+		return length;
+	}
+	
 	private Pair<Double, Node> manhattanDistance(Node a) {
 		Pair<Integer, Node> result = _endSet.stream().map(p -> {
 			Integer dx = Math.abs(a.getTo().getX() - p.getTo().getX());
