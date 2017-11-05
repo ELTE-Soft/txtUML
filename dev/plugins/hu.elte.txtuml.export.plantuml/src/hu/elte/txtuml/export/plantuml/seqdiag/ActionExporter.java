@@ -40,10 +40,7 @@ public class ActionExporter extends MethodInvocationExporter {
 		if (curElement.arguments().size() == 2) {
 			Expression target = (Expression) curElement.arguments().get(1);
 			String targetName = target.toString();
-
-			if (!compiler.lifelineIsActive(targetName)) {
-				compiler.activateLifeline(targetName);
-			}
+			compiler.activateLifeline(targetName);
 			return true;
 		}
 
@@ -56,9 +53,7 @@ public class ActionExporter extends MethodInvocationExporter {
 		Expression signal = (Expression) curElement.arguments().get(1);
 		String signalExpr = signal.resolveTypeBinding().getQualifiedName();
 
-		if (!compiler.lifelineIsActive(targetName)) {
-			compiler.activateLifeline(targetName);
-		}
+		compiler.activateLifeline(targetName);
 
 		compiler.println(senderName + "->" + targetName + " : " + signalExpr);
 

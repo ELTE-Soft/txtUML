@@ -226,7 +226,7 @@ public class PlantUmlCompiler extends ASTVisitor {
 
 	/**
 	 * 
-	 * checks if lifeline is active( used in exporting)
+	 * checks if lifeline is active (used in exporting)
 	 * 
 	 * @param lifeline
 	 * @return true if the lifeline is activated
@@ -240,18 +240,17 @@ public class PlantUmlCompiler extends ASTVisitor {
 	}
 
 	/**
-	 * activates lifeline and does the needed supplementary operations
+	 * activates lifeline if it currently is not active and does the needed
+	 * supplementary operations
 	 * 
 	 * @param lifeline
 	 *            lifeline to activate
 	 */
 	public void activateLifeline(String lifeline) {
-
 		if (!lifelineIsActive(lifeline)) {
 			compiledOutput += "activate " + lifeline + "\n";
+			activeLifelines.add(lifeline);
 		}
-
-		activeLifelines.add(lifeline);
 	}
 
 	/**

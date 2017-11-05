@@ -52,12 +52,8 @@ public class PlantUmlGenerator {
 		Type superClass = preCompiler.getSuperClass();
 		while (superClass != null) {
 			CompilationUnit cu = null;
-
-			if (superClass != null) {
-				cu = getSuperClassCU(superClass);
-			}
+			cu = getSuperClassCU(superClass);
 			cu.accept(preCompiler);
-
 			superClass = preCompiler.getSuperClass();
 		}
 
