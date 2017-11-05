@@ -267,6 +267,33 @@ public abstract class Action {
 	 */
 	@ExternalBody
 	public static void send(Signal signal, ModelClass target) {
+		Action.send(signal, target, null);
+	}
+	
+	/**
+	 * Asynchronously sends the specified signal to the specified target object.
+	 * <p>
+	 * Does not check whether the target object is deleted, it is only checked
+	 * when the signal arrives to the object.
+	 * 
+	 *
+	 * @param signal
+	 *            the signal object to send
+	 * @param target
+	 *            the model object which will receive the signal
+	 * @param sender
+	 *            the sender model object( optional )
+	 * 
+	 * @throws NullPointerException
+	 *             if <code>target</code> is <code>null</code>
+	 */
+	public static void send(Signal signal, ModelClass target, ModelClass sender)
+	{
+		if (sender != null)
+		{
+			sender.runtimeInfo().sent(signal);
+		}
+		
 		target.runtimeInfo().send(signal);
 	}
 
