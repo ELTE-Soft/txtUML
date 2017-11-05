@@ -232,11 +232,7 @@ public class PlantUmlCompiler extends ASTVisitor {
 	 * @return true if the lifeline is activated
 	 */
 	public boolean lifelineIsActive(String lifeline) {
-		if (activeLifelines.contains(lifeline)) {
-			return true;
-		}
-
-		return false;
+		return activeLifelines.contains(lifeline);
 	}
 
 	/**
@@ -263,10 +259,7 @@ public class PlantUmlCompiler extends ASTVisitor {
 	public void deactivateLifeline(String lifeline) {
 		if (lifelineIsActive(lifeline)) {
 			activeLifelines.remove(lifeline);
-
-			if (!lifelineIsActive(lifeline)) {
-				compiledOutput += "deactivate " + lifeline + System.lineSeparator();
-			}
+			compiledOutput += "deactivate " + lifeline + System.lineSeparator();
 		}
 	}
 
