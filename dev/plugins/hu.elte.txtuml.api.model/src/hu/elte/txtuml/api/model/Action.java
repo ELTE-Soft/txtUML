@@ -296,7 +296,7 @@ public interface Action {
 		{
 			sender.runtimeInfo().sent(signal);
 		}
-
+		
 		target.runtimeInfo().send(signal);
 	}
 
@@ -331,6 +331,7 @@ public interface Action {
 	 *            the elements to collect
 	 * @return the newly created collection that contains the specified elements
 	 */
+	@ExternalBody
 	@SafeVarargs
 	static <E> Any<E> collect(E... elements) {
 		return AbstractGeneralCollection.createAnyOf(Builder.createConsumerFor(elements));
@@ -350,6 +351,7 @@ public interface Action {
 	 * @return the newly created collection that contains the specified
 	 *         elementss
 	 */
+	@ExternalBody
 	@SafeVarargs
 	@SuppressWarnings("unchecked")
 	static <E, C extends GeneralCollection<E>, C2 extends GeneralCollection<?>> C collectIn(Class<C2> collectionType,
