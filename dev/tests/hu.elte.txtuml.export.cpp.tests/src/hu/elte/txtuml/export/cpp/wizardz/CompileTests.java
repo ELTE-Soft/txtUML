@@ -5,11 +5,16 @@ import static org.junit.Assert.assertThat;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
@@ -76,7 +81,8 @@ public class CompileTests {
 	public static void detectCPPEnvironment() {
 		try {
 			testWorkspace = ResourcesPlugin.getWorkspace().getRoot().getLocation().toFile().getCanonicalPath() + "/";
-		} catch (IOException e1) {
+		} catch (Exception e1) {
+			System.out.println(e1);
 		}
 		System.out.println("***************** CPP Compilation Test probing environment in workspace " + testWorkspace);
 
@@ -87,8 +93,8 @@ public class CompileTests {
 		int clangRet = -1;
 		int clangxxRet = -1;
 		try {
-			cmakeRet = executeCommand(testWorkspace, Arrays.asList("cmake", "--version"), null);
-			ninjaRet = executeCommand(testWorkspace, Arrays.asList("ninja", "--version"), null);
+			cmakeRet = executeCommand(testWorkspace, Arrays.asList("cmake", "--version"), null, null);
+			ninjaRet = executeCommand(testWorkspace, Arrays.asList("ninja", "--version"), null, null);
 		} catch (IOException | InterruptedException e) {
 		}
 		if (cmakeRet != 0 || ninjaRet != 0) {
@@ -98,10 +104,10 @@ public class CompileTests {
 		}
 
 		try {
-			gccRet = executeCommand(testWorkspace, Arrays.asList("gcc", "--version"), null);
-			gccxxRet = executeCommand(testWorkspace, Arrays.asList("g++", "--version"), null);
-			clangRet = executeCommand(testWorkspace, Arrays.asList("clang", "--version"), null);
-			clangxxRet = executeCommand(testWorkspace, Arrays.asList("clang++", "--version"), null);
+			gccRet = executeCommand(testWorkspace, Arrays.asList("gcc", "--version"), null, null);
+			gccxxRet = executeCommand(testWorkspace, Arrays.asList("g++", "--version"), null, null);
+			clangRet = executeCommand(testWorkspace, Arrays.asList("clang", "--version"), null, null);
+			clangxxRet = executeCommand(testWorkspace, Arrays.asList("clang++", "--version"), null, null);
 		} catch (IOException | InterruptedException e) {
 		}
 		if (gccRet == 0 && gccxxRet == 0) {
@@ -118,6 +124,7 @@ public class CompileTests {
 			return;
 		}
 		buildStuffPresent = true;
+		
 	}
 
 	@BeforeClass
@@ -174,14 +181,19 @@ public class CompileTests {
 		}
 	}
 
-	private static int executeCommand(String directory, List<String> strings, Map<String, String> environment)
+	private static int executeCommand(String directory, List<String> strings, Map<String, String> environment, String fileNameToRedirect)
 			throws IOException, InterruptedException {
 		ProcessBuilder processBuilder = new ProcessBuilder(strings);
 		if (environment != null) {
 			processBuilder.environment().putAll(environment);
 		}
+					
 		processBuilder.inheritIO();
 		processBuilder.directory(new File(directory));
+		
+		if(fileNameToRedirect != null){
+			processBuilder = processBuilder.redirectOutput(new File(directory + "/" + fileNameToRedirect));//Files.Files.createFile(Paths.get(directory + "/run.txt")));
+		}
 		Process process = processBuilder.start();
 		return process.waitFor();
 	}
@@ -265,15 +277,56 @@ public class CompileTests {
 				File buildDirFile = new File(buildDir);
 				boolean wasCreated = buildDirFile.mkdir();
 				assertThat(wasCreated, is(true));
+				
+				// Copy main.cpp for build
+				List<String> tmpDirList = new LinkedList<String>(Arrays.asList(buildDir.split("/"))); // getting actual path
+				if(tmpDirList.size() > 3){
+					tmpDirList.remove(tmpDirList.size() - 1); 
+					List<String> destinationDirList = new LinkedList<String>(tmpDirList);
+					for(int i = 0; i < 2; ++i){
+						tmpDirList.remove(tmpDirList.size() - 1); // go back for src 
+					}
+					String destinationDir = destinationDirList.stream().collect(Collectors.joining("/")); // destination path
+					tmpDirList.add("src");
+					String initDir = tmpDirList.stream().collect(Collectors.joining("/")); // search init path
+					File mainFile = searchFile(new File(initDir), "main.cpp"); // search main.cpp
+						
+					if(mainFile != null){
+						Files.copy(Paths.get(mainFile.getCanonicalPath()), Paths.get(destinationDir + "/main.cpp"), StandardCopyOption.REPLACE_EXISTING);
+					}
+				}
+				
 				int cmakeRetCode = executeCommand(buildDir,
-						Arrays.asList("cmake", "-G", "Ninja", "-DCMAKE_BUILD_TYPE=" + modeStr, ".."), compileEnv);
+						Arrays.asList("cmake", "-G", "Ninja", "-DCMAKE_BUILD_TYPE=" + modeStr, ".."), compileEnv, null);
 				assertThat(cmakeRetCode, is(0));
-				int ninjaRetCode = executeCommand(buildDir, Arrays.asList("ninja", "-v"), compileEnv);
+				int ninjaRetCode = executeCommand(buildDir, Arrays.asList("ninja", "-v"), compileEnv, null);
 				assertThat(ninjaRetCode, is(0));
+				
+				int mainRetCode = executeCommand(buildDir, Arrays.asList("cmd.exe", "/c", "main.exe"), compileEnv, "mainOutput.txt");
+				assertThat(mainRetCode, is(0));
+				
 				System.out.println("***************** CPP Compilation Test successful on " + testProjectName + " "
 						+ compileEnv.get("CC").split(" ")[0] + modeStr);
 			}
 		}
+	}
+	
+	
+	// Searches file recursively
+	private static File searchFile(File file, String search) {
+	    if (file.isDirectory()) {
+	        File[] arr = file.listFiles();
+	        for (File f : arr) {
+	            File found = searchFile(f, search);
+	            if (found != null)
+	                return found;
+	        }
+	    } else {
+	        if (file.getName().equals(search)) {
+	            return file;
+	        }
+	    }
+	    return null;
 	}
 
 }
