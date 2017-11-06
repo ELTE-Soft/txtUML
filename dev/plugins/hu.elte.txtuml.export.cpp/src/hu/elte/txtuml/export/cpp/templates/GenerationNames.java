@@ -87,9 +87,18 @@ public class GenerationNames {
 		public static final String NoReturn = "void";
 		// Modifies
 		public static final String StaticModifier = "static";
-
+		public static final String AbstractModifier = "virtual";
+		public static final String PublicModifier = "public";
+		
 	}
-
+	
+	public static class Macros {
+		public static final String ErrorMacro = "#error";
+	}
+	
+	public static class Comments {
+		public static final String ToDoMessage = comment("TODO: Add your source code here\n"); 
+	}
 	public static class GeneralFunctionNames {
 		public static final String GeneralLinkFunction = "link";
 		public static final String GeneralUnlinkFunction = "unlink";
@@ -205,6 +214,10 @@ public class GenerationNames {
 	public static final String AssociationsHeaderName = "associations";
 	public static final String EdgeType = "EdgeType";
 
+	public static String comment(String text){
+		return "//" + text;
+	}
+	
 	public static String initFunctionName(String className) {
 		return GeneralFunctionNames.InitFunctionName + className;
 	}

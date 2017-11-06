@@ -22,20 +22,27 @@ visualizer.nodeholders.Node.prototype.getNode = function () {
 	return this._node;
 }
 
+// adds modifier CSS classes to visualized nodes
+visualizer.nodeholders.Node.prototype.addModifierClasses = function(paper) {}
+
 // A nodeholder for classes
 visualizer.nodeholders.ClassNode = function (node) {
 	visualizer.nodeholders.Node.call(this, node);
 	var attributes = [];
 	var operations = [];
+	this._attrClasses = [];
+	this._opClasses = [];
 
-	// populate attributes
+	// populate attributes and compute their modifier CSS classes
 	_.each(node.attributes, function (attribute) {
 		attributes.push(this._memberToString(attribute, false));
+		this._attrClasses.push(visualizer.Utils.getModifierClasses(attribute));
 	}, this);
 
-	// populate operations
+	// populate operations and compute their modifier CSS classes
 	_.each(node.operations, function (operation) {
 		operations.push(this._memberToString(operation, true));
+		this._opClasses.push(visualizer.Utils.getModifierClasses(operation));
 	}, this)
 
 	// JointJS model data
@@ -66,6 +73,20 @@ visualizer.nodeholders.ClassNode = function (node) {
 visualizer.nodeholders.ClassNode.prototype = Object
 	.create(visualizer.nodeholders.Node.prototype);
 visualizer.nodeholders.ClassNode.prototype.constructor = visualizer.nodeholders.ClassNode;
+
+// adds modifier CSS classes to visualized class nodes
+visualizer.nodeholders.ClassNode.prototype.addModifierClasses = function(paper) {
+	var clazz = this;
+	var box = $(paper.findViewByModel(clazz._node).el);
+
+	box.find('.uml-class-attrs-text').find('.v-line').each(function(key, tspan) {
+		V(tspan).addClass(clazz._attrClasses[key]);
+	});
+
+	box.find('.uml-class-methods-text').find('.v-line').each(function(key, tspan) {
+		V(tspan).addClass(clazz._opClasses[key]);
+	});
+}
 
 // returns the textual representation of the class member passed
 // (if isOperation is true then member will be handled as an operation)

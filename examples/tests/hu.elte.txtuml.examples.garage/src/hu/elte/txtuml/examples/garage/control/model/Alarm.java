@@ -5,12 +5,20 @@ import hu.elte.txtuml.api.model.From;
 import hu.elte.txtuml.api.model.ModelClass;
 import hu.elte.txtuml.api.model.To;
 import hu.elte.txtuml.api.model.Trigger;
-import hu.elte.txtuml.examples.garage.control.glue.View;
+import hu.elte.txtuml.api.stdlib.world.World;
+import hu.elte.txtuml.api.stdlib.world.WorldObject;
 import hu.elte.txtuml.examples.garage.control.model.associations.KeyboardProvidesCode;
-import hu.elte.txtuml.examples.garage.control.model.signals.external.AlarmSensorActivated;
-import hu.elte.txtuml.examples.garage.control.model.signals.external.HashPressed;
-import hu.elte.txtuml.examples.garage.control.model.signals.external.KeyPress;
-import hu.elte.txtuml.examples.garage.control.model.signals.external.StarPressed;
+import hu.elte.txtuml.examples.garage.control.model.signals.external.in.AlarmSensorActivated;
+import hu.elte.txtuml.examples.garage.control.model.signals.external.in.HashPressed;
+import hu.elte.txtuml.examples.garage.control.model.signals.external.in.KeyPress;
+import hu.elte.txtuml.examples.garage.control.model.signals.external.in.StarPressed;
+import hu.elte.txtuml.examples.garage.control.model.signals.external.out.AlarmOff;
+import hu.elte.txtuml.examples.garage.control.model.signals.external.out.AlarmOn;
+import hu.elte.txtuml.examples.garage.control.model.signals.external.out.CodeExpected;
+import hu.elte.txtuml.examples.garage.control.model.signals.external.out.NewCodeExpected;
+import hu.elte.txtuml.examples.garage.control.model.signals.external.out.OldCodeExpected;
+import hu.elte.txtuml.examples.garage.control.model.signals.external.out.StartSiren;
+import hu.elte.txtuml.examples.garage.control.model.signals.external.out.StopSiren;
 import hu.elte.txtuml.examples.garage.control.model.signals.internal.KeyboardTimeout;
 import hu.elte.txtuml.examples.garage.control.model.signals.internal.WaitForCode;
 
@@ -28,22 +36,24 @@ public class Alarm extends ModelClass {
 	public class Off extends State {
 		@Override
 		public void entry() {
-			View.getInstance().stopSiren();
-			View.getInstance().alarmOff();
+			WorldObject view = World.get(View.id());
+
+			Action.send(new StopSiren(), view);
+			Action.send(new AlarmOff(), view);
 		}
 	}
 
 	public class On extends State {
 		@Override
 		public void entry() {
-			View.getInstance().alarmOn();
+			Action.send(new AlarmOn(), World.get(View.id()));
 		}
 	}
 
 	public class ExpectingCode extends State {
 		@Override
 		public void entry() {
-			View.getInstance().codeExpected();
+			Action.send(new CodeExpected(), World.get(View.id()));
 			Keyboard kb = Alarm.this.assoc(KeyboardProvidesCode.Provider.class).selectAny();
 			Action.send(new WaitForCode(), kb);
 		}
@@ -52,14 +62,14 @@ public class Alarm extends ModelClass {
 	public class InAlarm extends State {
 		@Override
 		public void entry() {
-			View.getInstance().startSiren();
+			Action.send(new StartSiren(), World.get(View.id()));
 		}
 	}
 
 	public class ExpectingOldCode extends State {
 		@Override
 		public void entry() {
-			View.getInstance().oldCodeExpected();
+			Action.send(new OldCodeExpected(), World.get(View.id()));
 			Keyboard kb = Alarm.this.assoc(KeyboardProvidesCode.Provider.class).selectAny();
 			Action.send(new WaitForCode(), kb);
 		}
@@ -68,7 +78,7 @@ public class Alarm extends ModelClass {
 	public class ExpectingNewCode extends State {
 		@Override
 		public void entry() {
-			View.getInstance().newCodeExpected();
+			Action.send(new NewCodeExpected(), World.get(View.id()));
 			Keyboard kb = Alarm.this.assoc(KeyboardProvidesCode.Provider.class).selectAny();
 			Action.send(new WaitForCode(), kb);
 		}

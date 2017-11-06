@@ -5,6 +5,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 import hu.elte.txtuml.api.model.Collection;
+import hu.elte.txtuml.api.model.External;
 
 /**
  * A mutable builder for an immutable collection.
@@ -17,6 +18,7 @@ import hu.elte.txtuml.api.model.Collection;
  * @param <C>
  *            the type of the immutable collection
  */
+@External
 interface Builder<T, C extends Collection<T>> {
 
 	Builder<T, C> add(T element);

@@ -63,6 +63,7 @@ public interface Interface {
 	 * <p>
 	 * See the documentation of {@link Interface} for more information.
 	 */
+	@External
 	public static final String RECEPTION_NAME = "reception";
 
 	/**

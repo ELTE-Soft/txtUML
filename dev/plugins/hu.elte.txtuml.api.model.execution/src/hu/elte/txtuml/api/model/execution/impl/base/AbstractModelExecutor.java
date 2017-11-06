@@ -7,7 +7,9 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
+import java.util.function.Function;
 
 import hu.elte.txtuml.api.model.execution.CastedModelExecutor;
 import hu.elte.txtuml.api.model.execution.ErrorListener;
@@ -47,6 +49,8 @@ public abstract class AbstractModelExecutor<S extends AbstractModelExecutor<S>> 
 
 	private final CountDownLatch isInitialized = new CountDownLatch(1);
 
+	private final ConcurrentHashMap<Object, Object> featureMap = new ConcurrentHashMap<>();
+	
 	private volatile Status status = Status.CREATED;
 	private volatile boolean shutdownImmediately = false;
 
@@ -277,6 +281,21 @@ public abstract class AbstractModelExecutor<S extends AbstractModelExecutor<S>> 
 		checkIfLocked();
 		warningListeners.remove(listener);
 		return self();
+	}
+
+	@Override
+	public void setFeature(Object key, Object feature) {
+		featureMap.put(key, feature);
+	}
+
+	@Override
+	public Object getFeature(Object key) {
+		return featureMap.get(key);
+	}
+
+	@Override
+	public Object getOrCreateFeature(Object key, Function<Object, Object> supplier) {
+		return featureMap.computeIfAbsent(key, supplier);		
 	}
 
 	@Override

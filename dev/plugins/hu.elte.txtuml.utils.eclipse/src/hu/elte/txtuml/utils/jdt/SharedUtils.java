@@ -20,6 +20,8 @@ import org.eclipse.jdt.core.dom.Annotation;
 import org.eclipse.jdt.core.dom.BodyDeclaration;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.Expression;
+import org.eclipse.jdt.core.dom.IAnnotationBinding;
+import org.eclipse.jdt.core.dom.IBinding;
 import org.eclipse.jdt.core.dom.IExtendedModifier;
 import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
@@ -76,13 +78,24 @@ public final class SharedUtils {
 	}
 
 	public static Expression obtainSingleMemberAnnotationValue(BodyDeclaration declaration, Class<?> annotationClass) {
+		Annotation annotation = obtainAnnotation(declaration, annotationClass);
+		if (annotation != null && annotation.isSingleMemberAnnotation()) {
+			SingleMemberAnnotation singleMemberAnnot = (SingleMemberAnnotation) annotation;
+			return singleMemberAnnot.getValue();
+		}
+		return null;
+	}
+
+	/**
+	 * @return the annotation node if it is present on the declaration or null
+	 */
+	public static Annotation obtainAnnotation(BodyDeclaration declaration, Class<?> annotationClass) {
 		for (Object mod : declaration.modifiers()) {
 			IExtendedModifier modifier = (IExtendedModifier) mod;
 			if (modifier.isAnnotation()) {
 				Annotation annotation = (Annotation) modifier;
-				if (annotation.isSingleMemberAnnotation() && identicalAnnotations(annotation, annotationClass)) {
-					SingleMemberAnnotation singleMemberAnnot = (SingleMemberAnnotation) annotation;
-					return singleMemberAnnot.getValue();
+				if (identicalAnnotations(annotation, annotationClass)) {
+					return annotation;
 				}
 			}
 		}
@@ -97,8 +110,24 @@ public final class SharedUtils {
 		return null;
 	}
 
+	/**
+	 * @return the annotation binding if it is present on the declaration or null
+	 */
+	public static IAnnotationBinding obtainAnnotation(IBinding binding, Class<?> annotationClass) {
+		for (IAnnotationBinding annotation : binding.getAnnotations()) {
+			if (identicalAnnotations(annotation, annotationClass)) {
+				return annotation;
+			}
+		}
+		return null;
+	}
+
 	private static boolean identicalAnnotations(Annotation annotation, Class<?> annotationClass) {
-		return annotation.resolveAnnotationBinding().getAnnotationType().getQualifiedName()
+		return identicalAnnotations(annotation.resolveAnnotationBinding(), annotationClass);
+	}
+	
+	private static boolean identicalAnnotations(IAnnotationBinding annotation, Class<?> annotationClass) {
+		return annotation.getAnnotationType().getQualifiedName()
 				.equals(annotationClass.getCanonicalName());
 	}
 
@@ -152,7 +181,7 @@ public final class SharedUtils {
 
 		parser.setSource(content);
 		parser.setProject(project);
-		
+
 		parser.setResolveBindings(true);
 		parser.setBindingsRecovery(true);
 		parser.setUnitName(sourceFile.getName());

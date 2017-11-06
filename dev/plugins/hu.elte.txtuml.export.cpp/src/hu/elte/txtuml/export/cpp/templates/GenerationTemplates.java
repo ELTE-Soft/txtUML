@@ -26,13 +26,21 @@ public class GenerationTemplates {
 		return GenerationNames.DataType + " " + datatTypeName + "\n" + "{\n" + attributes + "}";
 	}
 
+	public static String generatedAbstractClassName(String className) {
+		return "Abstract" + className;
+	}
+	
+	public static String generatedErrorMessage(String functionName) {
+		return " Not implemented external method: " + functionName + "\n";
+	}
+
 	public static String paramName(String paramName) {
-		
+
 		return GenerationNames.formatIncomingParamName(paramName);
 	}
 
 	public static String forwardDeclaration(String className) {
-		
+
 		return GenerationNames.ClassType + " " + PrivateFunctionalTemplates.mapUMLClassToCppClass(className) + ";\n";
 	}
 
@@ -52,8 +60,8 @@ public class GenerationTemplates {
 		return createObject(typeName, objName, null, params, sharedObject);
 	}
 
-	public static String createObject(String typeName, String objName, List<String> templateParams,
-			List<String> params, boolean sharedObject) {
+	public static String createObject(String typeName, String objName, List<String> templateParams, List<String> params,
+			boolean sharedObject) {
 		String templateParameters = "";
 		if (templateParams != null) {
 			templateParameters = "<";
@@ -62,18 +70,18 @@ public class GenerationTemplates {
 			}
 			templateParameters = templateParameters + templateParams.get(templateParams.size() - 1) + ">";
 		}
-		if(!sharedObject) {
-			return GenerationNames.pointerType(typeName + templateParameters) + " " + objName  + " = "
+		if (!sharedObject) {
+			return GenerationNames.pointerType(typeName + templateParameters) + " " + objName + " = "
 					+ allocateObject(typeName + templateParameters, templateParams, params, false) + ";\n";
 		} else {
-			return GenerationNames.sharedPtrType(typeName + templateParameters) + " " + objName  + " = "
+			return GenerationNames.sharedPtrType(typeName + templateParameters) + " " + objName + " = "
 					+ allocateObject(typeName + templateParameters, templateParams, params, true) + ";\n";
 		}
 
-
 	}
 
-	public static String allocateObject(String typeName, List<String> templateParams, List<String> params, boolean sharedObject) {
+	public static String allocateObject(String typeName, List<String> templateParams, List<String> params,
+			boolean sharedObject) {
 
 		String parameters = "(";
 		if (params != null && params.size() > 0) {
@@ -93,9 +101,10 @@ public class GenerationTemplates {
 			}
 			templateParameters = templateParameters + templateParams.get(templateParams.size() - 1) + ">";
 		}
-		
-		String allocatedObject = PointerAndMemoryNames.MemoryAllocator + " " + typeName + templateParameters + parameters;
-		if(!sharedObject) {
+
+		String allocatedObject = PointerAndMemoryNames.MemoryAllocator + " " + typeName + templateParameters
+				+ parameters;
+		if (!sharedObject) {
 			return allocatedObject;
 		} else {
 			return GenerationNames.PointerAndMemoryNames.SmartPtr + "<" + typeName + ">" + "(" + allocatedObject + ")";
@@ -112,9 +121,9 @@ public class GenerationTemplates {
 	}
 
 	public static String staticCreate(String typeName, String returnType, String objName, String creatorMethod) {
-		return returnType + " " + objName + " = " + staticMethodInvoke(typeName,creatorMethod) + ";\n";
+		return returnType + " " + objName + " = " + staticMethodInvoke(typeName, creatorMethod) + ";\n";
 	}
-	
+
 	public static String staticMethodInvoke(String className, String method) {
 		return className + "::" + method + "()";
 	}

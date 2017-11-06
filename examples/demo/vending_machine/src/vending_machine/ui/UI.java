@@ -27,16 +27,17 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
-import javax.swing.SwingUtilities;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.MutableAttributeSet;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 
-import vending_machine.glue.Model;
-import vending_machine.glue.ViewImpl;
+import hu.elte.txtuml.api.stdlib.world.SwingWorldObjectListener;
+import vending_machine.Model;
+import vending_machine.model.ShowMessage;
+import vending_machine.model.View;
 
-public class UI implements Runnable {
+public class UI extends SwingWorldObjectListener implements Runnable {
 
 	private static final String ASSETS_FOLDER = "src/vending_machine/ui";
 	private static final String PANEL_IMAGE = ASSETS_FOLDER + "/images/VendingMachine.png";
@@ -69,8 +70,10 @@ public class UI implements Runnable {
 	private final Model model;
 
 	private UI() {
-		ViewImpl.getInstance().setUI(this);
 		model = new Model();
+
+		register(model.start(), View.id());
+		
 		Color monitorBlue = new Color(0, 0, 100);
 		buttonPanel.setOpaque(false);
 		buttonPanel.setLayout(new GridBagLayout());
@@ -233,21 +236,21 @@ public class UI implements Runnable {
 		}
 	}
 
-	/**
-	 * Thread-safe.
-	 */
-	public void showMessage(String message) {
-		SwingUtilities.invokeLater(() -> {
-			try {
-				monitorText.getDocument().remove(0, monitorText.getDocument().getLength());
-				monitorText.getDocument().insertString(0, message, monitorStyleAttributes);
-				monitorText.setParagraphAttributes(monitorStyleAttributes, true);
-			} catch (BadLocationException e) {
-				e.printStackTrace();
-			}
-		});
+	// SIGNAL HANDLER
+
+	@SignalHandler
+	public void accept(ShowMessage sig) {
+		try {
+			monitorText.getDocument().remove(0, monitorText.getDocument().getLength());
+			monitorText.getDocument().insertString(0, sig.message, monitorStyleAttributes);
+			monitorText.setParagraphAttributes(monitorStyleAttributes, true);
+		} catch (BadLocationException e) {
+			e.printStackTrace();
+		}
 	}
 
+	// MAIN
+	
 	public static void main(String[] args) {
 		new UI().run();
 	}

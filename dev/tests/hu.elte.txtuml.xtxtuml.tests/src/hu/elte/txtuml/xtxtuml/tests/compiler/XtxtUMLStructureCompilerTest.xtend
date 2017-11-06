@@ -298,6 +298,8 @@ class XtxtUMLStructureCompilerTest {
 			class A {
 				int a1;
 				protected int a2;
+				public static external int a3 = 0;
+				private external String a4;
 				public void o1() {}
 				private int o2() {
 					return 0;
@@ -305,11 +307,19 @@ class XtxtUMLStructureCompilerTest {
 				package A o3(int p) {
 					return null;
 				}
+				public static void o4() {}
+				public external void o5() {}
+				public external-body void o6() {}
+				public static external void o7() {}
 				public A(int p1, A p2) {}
+				external A() {}
+				external-body A(int p) {}
 			}
 		'''.assertCompilesTo('''
 			package test.model;
 
+			import hu.elte.txtuml.api.model.External;
+			import hu.elte.txtuml.api.model.ExternalBody;
 			import hu.elte.txtuml.api.model.ModelClass;
 
 			@SuppressWarnings("all")
@@ -317,6 +327,12 @@ class XtxtUMLStructureCompilerTest {
 			  int a1;
 			  
 			  protected int a2;
+			  
+			  @External
+			  public static int a3 = 0;
+			  
+			  @External
+			  private String a4;
 			  
 			  public void o1() {
 			  }
@@ -329,7 +345,30 @@ class XtxtUMLStructureCompilerTest {
 			    return null;
 			  }
 			  
+			  public static void o4() {
+			  }
+			  
+			  @External
+			  public void o5() {
+			  }
+			  
+			  @ExternalBody
+			  public void o6() {
+			  }
+			  
+			  @External
+			  public static void o7() {
+			  }
+			  
 			  public A(final int p1, final A p2) {
+			  }
+			  
+			  @External
+			  A() {
+			  }
+			  
+			  @ExternalBody
+			  A(final int p) {
 			  }
 			}
 		''')

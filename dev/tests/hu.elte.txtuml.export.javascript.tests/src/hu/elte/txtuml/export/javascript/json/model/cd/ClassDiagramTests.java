@@ -98,11 +98,14 @@ public class ClassDiagramTests {
 				VisibilityKind.PROTECTED_LITERAL, VisibilityKind.PRIVATE_LITERAL, VisibilityKind.PACKAGE_LITERAL,
 				VisibilityKind.PUBLIC_LITERAL, VisibilityKind.PROTECTED_LITERAL);
 
+		List<Boolean> expectedStaticnesses = Arrays.asList(true, false, true, false, true, false);
+
 		// when
 		List<Attribute> instances = new ArrayList<>();
 		for (int i = 0; i < attrNames.size(); ++i) {
 			Property p = classA.createOwnedAttribute(attrNames.get(i), attrTypes.get(i));
 			p.setVisibility(expectedVisibilities.get(i));
+			p.setIsStatic(expectedStaticnesses.get(i));
 			instances.add(new Attribute(p));
 		}
 
@@ -113,6 +116,7 @@ public class ClassDiagramTests {
 			Assert.assertEquals(attrNames.get(i), instanceAttribute.getName());
 			Assert.assertEquals(attrTypeNames.get(i), instanceAttribute.getType());
 			Assert.assertEquals(expectedVisibilities.get(i), instanceAttribute.getVisibility());
+			Assert.assertEquals(expectedStaticnesses.get(i), instanceAttribute.isStatic());
 		});
 	}
 
@@ -289,6 +293,8 @@ public class ClassDiagramTests {
 		List<String> opNames = Arrays.asList("a", "b", "c", "d");
 		List<VisibilityKind> expectedVisibilities = Arrays.asList(VisibilityKind.PUBLIC_LITERAL,
 				VisibilityKind.PROTECTED_LITERAL, VisibilityKind.PRIVATE_LITERAL, VisibilityKind.PACKAGE_LITERAL);
+		List<Boolean> expectedAbstractnesses = Arrays.asList(true, false, true, false);
+		List<Boolean> expectedStaticnesses = Arrays.asList(true, true, false, false);
 		List<Type> returnTypes = Arrays.asList(null, classA, primitives.getSecond().get(0), null);
 		List<String> returnTypeNames = Arrays.asList(null, "A", primitives.getFirst().get(0), null);
 
@@ -305,6 +311,8 @@ public class ClassDiagramTests {
 
 			Operation op = classA.createOwnedOperation(opNames.get(i), new BasicEList<String>(argNames), argTypes);
 			op.setVisibility(expectedVisibilities.get(i));
+			op.setIsAbstract(expectedAbstractnesses.get(i));
+			op.setIsStatic(expectedStaticnesses.get(i));
 
 			if (returnTypes.get(i) != null) {
 				Parameter ret = op.createOwnedParameter("return", returnTypes.get(i));
@@ -332,6 +340,8 @@ public class ClassDiagramTests {
 
 			Assert.assertEquals(opNames.get(i), instanceMemberOperation.getName());
 			Assert.assertEquals(expectedVisibilities.get(i), instanceMemberOperation.getVisibility());
+			Assert.assertEquals(expectedAbstractnesses.get(i), instanceMemberOperation.isAbstract());
+			Assert.assertEquals(expectedStaticnesses.get(i), instanceMemberOperation.isStatic());
 			Assert.assertEquals(returnTypeNames.get(i), instanceMemberOperation.getReturnType());
 			Assert.assertArrayEquals(actualArgNames.toArray(), argNames.toArray());
 			Assert.assertArrayEquals(actualArgTypeNames.toArray(), argTypeNames.toArray());

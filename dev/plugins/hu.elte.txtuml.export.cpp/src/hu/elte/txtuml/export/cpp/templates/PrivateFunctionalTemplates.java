@@ -60,6 +60,18 @@ public class PrivateFunctionalTemplates {
 		return source.substring(0, source.length() - 1);
 	}
 
+	public static String baseClassList(List<String> baseClasses) {
+		if (baseClasses == null || baseClasses.size() == 0) {
+			return "";
+		}
+		StringBuilder source = new StringBuilder(" :");
+		for (String baseClass : baseClasses) {
+			source.append(" " + GenerationNames.ModifierNames.PublicModifier + " " + baseClass + ",");
+		}
+		return source.substring(0, source.length() - 1);
+
+	}
+
 	public static String paramTypeList(List<String> params) {
 		if (params == null || params.size() == 0)
 			return "";

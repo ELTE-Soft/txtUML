@@ -1,15 +1,16 @@
 package hu.elte.txtuml.export.cpp.templates.structual;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
 import hu.elte.txtuml.export.cpp.templates.GenerationNames;
-import hu.elte.txtuml.export.cpp.templates.GenerationTemplates;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.ClassUtilsNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.EntryExitNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.FileNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.HierarchicalStateMachineNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.ModifierNames;
+import hu.elte.txtuml.export.cpp.templates.GenerationTemplates;
 import hu.elte.txtuml.export.cpp.templates.PrivateFunctionalTemplates;
 import hu.elte.txtuml.export.cpp.templates.RuntimeTemplates;
 import hu.elte.txtuml.export.cpp.templates.statemachine.StateMachineTemplates;
@@ -26,7 +27,41 @@ public class HeaderTemplates {
 		Boolean hasExecutionInterface();
 		
 	}
-	
+
+	public static class RawClassHeaderType implements HeaderType {
+
+		@Override
+		public String getSpecificPrivatePart() {
+			return "";
+		}
+
+		@Override
+		public String getSpecificBaseClass() {
+			return null;
+		}
+
+		@Override
+		public String getSpecificInclude() {
+			return "";
+		}
+
+		@Override
+		public Boolean hasExecutionInterface() {
+			return false;
+		}
+
+		@Override
+		public Boolean hasStateMachine() {
+			return false;
+		}
+
+		@Override
+		public Boolean hasHierarchicalStateMachine() {
+			return false;
+		}
+		
+	}
+
 	public static class SimpleClassHeaderType implements HeaderType {
 
 		@Override
@@ -60,7 +95,7 @@ public class HeaderTemplates {
 		}
 		
 	}
-	
+
 	public static class StateMachineClassHeaderType implements HeaderType {
 		private Optional<List<String>> optionalSubMachines;
 		
@@ -147,17 +182,17 @@ public class HeaderTemplates {
 	public static class HeaderInfo {
 		
 		public static class StateMachineInfo {
-
 			public StateMachineInfo(Boolean hierarchical) {
 				this.hierarchical = hierarchical;
 			}
 
-			Boolean isHierhicalStateMachine() {
+			Boolean isHierarhicalStateMachine() {
 				return hierarchical;
 			}
 			
 			private Boolean hierarchical;
 		}
+
 		private String ownerClassName;
 		private HeaderType headerType;
 
@@ -166,7 +201,7 @@ public class HeaderTemplates {
 			this.headerType = headerType;
 		}
 
-		public String getRleatedBaseClass() {
+		public String getRelatedBaseClass() {
 			return headerType.getSpecificBaseClass();
 		}
 
@@ -177,7 +212,7 @@ public class HeaderTemplates {
 		public String getOwnerClassName() {
 			return ownerClassName;
 		}
-		
+
 		public String getFixPublicParts() {
 			StringBuilder fixPublicParts = new StringBuilder("");
 			if (headerType.hasStateMachine()) {
@@ -206,7 +241,7 @@ public class HeaderTemplates {
 			
 			return fixProtectedParts.toString();
 		}
-		
+
 		public String getFixPrivateParts() {
 			StringBuilder fixPrivateParts = new StringBuilder("");
 			if(headerType.hasStateMachine()) {
@@ -225,12 +260,8 @@ public class HeaderTemplates {
 				
 			}
 			fixPrivateParts.append(headerType.getSpecificPrivatePart());
-
-			
 			return fixPrivateParts.toString();
 		}
-		
-
 	}
 
 	public static String headerGuard(String source, String className) {
@@ -240,23 +271,29 @@ public class HeaderTemplates {
 				+ "_";
 	}
 
-	public static String classHeader(String dependency, String baseClassName, String publicPart,
+	public static String classHeader(String dependency, List<String> baseClassNames, List<String> pureInfBasaNames, String publicPart,
 			String protectedPart, String privatePart, HeaderInfo headerInfo) {
 		StringBuilder source = new StringBuilder(dependency + headerInfo.getRelatedBaseClassInclude());
 		StringBuilder classDecleration = new StringBuilder("");
 		classDecleration.append(GenerationNames.ClassType + " " + headerInfo.getOwnerClassName());
-		String objectBase = "";
-		if (baseClassName != null) {
-			objectBase = baseClassName;
 
+		List<String> objectBase = new LinkedList<>();
+		if(pureInfBasaNames != null) {
+			objectBase.addAll(pureInfBasaNames);
+		}
+		if (baseClassNames != null && !baseClassNames.isEmpty()) {
+			objectBase.addAll(baseClassNames);
 		} else {
-			objectBase = headerInfo.getRleatedBaseClass();
-
+			String relatedBaseClass = headerInfo.getRelatedBaseClass();
+			if (relatedBaseClass != null && !relatedBaseClass.isEmpty()) {
+				objectBase.add(relatedBaseClass);
+			}
 		}
 
-		if (!objectBase.isEmpty()) {
-			classDecleration.append(":public " + objectBase);
-		}
+
+
+		classDecleration.append(PrivateFunctionalTemplates.baseClassList(objectBase));
+
 		classDecleration.append("\n{\n");
 		
 		classDecleration.append("\npublic:\n" + headerInfo.getFixPublicParts() + publicPart);
@@ -268,7 +305,6 @@ public class HeaderTemplates {
 				GenerationNames.Namespaces.ModelNamespace));
 		return source.toString();
 	}
-
 
 
 }
