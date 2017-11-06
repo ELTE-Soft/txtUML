@@ -7,6 +7,8 @@ Bundle-Vendor: ELTE
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Export-Package: hu.elte.txtuml.api.model,
  hu.elte.txtuml.api.model.error,
- hu.elte.txtuml.api.model.runtime
+ hu.elte.txtuml.api.model.error.seqdiag,
+ hu.elte.txtuml.api.model.runtime,
+ hu.elte.txtuml.api.model.seqdiag
 Require-Bundle: hu.elte.txtuml.utils,
  com.google.guava

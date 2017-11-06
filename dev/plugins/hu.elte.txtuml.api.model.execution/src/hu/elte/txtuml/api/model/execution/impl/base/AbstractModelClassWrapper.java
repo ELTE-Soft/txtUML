@@ -111,6 +111,17 @@ public abstract class AbstractModelClassWrapper extends AbstractSignalTargetWrap
 	public void send(Signal signal) {
 		getThread().send(signal, this);
 	}
+	
+	@Override
+	public void sent(Signal signal)
+	{
+		getThread().sent(signal,this);
+	}
+	
+	public void traceSender(Signal signal, AbstractModelClassWrapper sender)
+	{
+		getRuntime().trace(x -> x.sendingSignal(sender.getWrapped(), signal));
+	}
 
 	@Override
 	public void send(Signal signal, AbstractPortWrapper sender) {
