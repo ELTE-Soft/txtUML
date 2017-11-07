@@ -6,6 +6,8 @@ import com.google.common.collect.ImmutableMultiset;
 
 import hu.elte.txtuml.api.model.GeneralCollection.NonUnique;
 import hu.elte.txtuml.api.model.GeneralCollection.Unordered;
+import hu.elte.txtuml.api.model.error.CollectionCopyError;
+import hu.elte.txtuml.api.model.utils.Collections;
 
 // TODO document
 public abstract class Collection<E, C extends Collection<E, C>>
@@ -29,11 +31,10 @@ public abstract class Collection<E, C extends Collection<E, C>>
 	@SuppressWarnings("unchecked")
 	public final <C2 extends GeneralCollection<? super E>, C3 extends GeneralCollection<?>> C2 as(
 			Class<C3> collectionType) {
-		if (Unordered.class.isAssignableFrom(collectionType) && NonUnique.class.isAssignableFrom(collectionType)) {
+		if (Collections.isUnordered(collectionType) && Collections.isNonUnique(collectionType)) {
 			return (C2) asUnsafe(collectionType);
 		} else {
-			// TODO exception handling
-			throw new Error();
+			throw new CollectionCopyError();
 		}
 	}
 
@@ -47,6 +48,18 @@ public abstract class Collection<E, C extends Collection<E, C>>
 	@Override
 	public final Any<E> unbound() {
 		return new Any<>(getBackend());
+	}
+
+	@External
+	@Override
+	public final boolean isOrdered() { // to become final
+		return Unordered.super.isOrdered();
+	}
+
+	@External
+	@Override
+	public final boolean isUnique() { // to become final
+		return NonUnique.super.isUnique();
 	}
 
 	@Override

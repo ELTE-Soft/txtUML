@@ -46,8 +46,8 @@ public final class OrderedAny<E> extends OrderedCollection<E, OrderedAny<E>> {
 	}
 
 	/**
-	 * Must be used with extreme care as this constructor sets the backend of
-	 * this collection without any multiplicity checks.
+	 * This constructor sets the backend of this collection without any
+	 * multiplicity checks.
 	 */
 	OrderedAny(ImmutableList<E> backend) {
 		super(backend);

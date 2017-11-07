@@ -85,6 +85,9 @@ public abstract class GeneralCollection<E> implements @External Iterable<E>, @Ex
 	@Override
 	public abstract Iterator<E> iterator();
 
+	/**
+	 * This method <b>must not be used in the model</b>.
+	 */
 	@External
 	@Override
 	public final void forEach(Consumer<? super E> action) {
@@ -112,6 +115,9 @@ public abstract class GeneralCollection<E> implements @External Iterable<E>, @Ex
 		// Nothing to do.
 	}
 
+	/**
+	 * This method <b>must not be used in the model</b>.
+	 */
 	@External
 	@Override
 	public abstract int hashCode();

@@ -9,6 +9,7 @@ Export-Package: hu.elte.txtuml.api.model,
  hu.elte.txtuml.api.model.error,
  hu.elte.txtuml.api.model.error.seqdiag,
  hu.elte.txtuml.api.model.runtime,
- hu.elte.txtuml.api.model.seqdiag
+ hu.elte.txtuml.api.model.seqdiag,
+ hu.elte.txtuml.api.model.utils
 Require-Bundle: hu.elte.txtuml.utils,
  com.google.guava

@@ -45,8 +45,8 @@ public final class OrderedUniqueAny<E> extends OrderedUniqueCollection<E, Ordere
 	}
 
 	/**
-	 * Must be used with extreme care as this constructor sets the backend of
-	 * this collection without any multiplicity checks.
+	 * This constructor sets the backend of this collection without any
+	 * multiplicity checks.
 	 */
 	OrderedUniqueAny(ImmutableList<E> backend) {
 		super(backend);

@@ -4,6 +4,8 @@ import com.google.common.collect.ImmutableList;
 
 import hu.elte.txtuml.api.model.GeneralCollection.NonUnique;
 import hu.elte.txtuml.api.model.GeneralCollection.Ordered;
+import hu.elte.txtuml.api.model.error.CollectionCopyError;
+import hu.elte.txtuml.api.model.utils.Collections;
 
 //TODO document
 public abstract class OrderedCollection<E, C extends OrderedCollection<E, C>> extends AbstractOrderedCollection<E, C>
@@ -26,11 +28,10 @@ public abstract class OrderedCollection<E, C extends OrderedCollection<E, C>> ex
 	@SuppressWarnings("unchecked")
 	public final <C2 extends GeneralCollection<? super E>, C3 extends GeneralCollection<?>> C2 as(
 			Class<C3> collectionType) {
-		if (NonUnique.class.isAssignableFrom(collectionType)) {
+		if (Collections.isNonUnique(collectionType)) {
 			return (C2) asUnsafe(collectionType);
 		} else {
-			// TODO exception handling
-			throw new Error();
+			throw new CollectionCopyError();
 		}
 	}
 
@@ -50,6 +51,18 @@ public abstract class OrderedCollection<E, C extends OrderedCollection<E, C>> ex
 	@Override
 	public final OrderedAny<E> unbound() {
 		return new OrderedAny<>(getBackend());
+	}
+
+	@External
+	@Override
+	public final boolean isOrdered() { // to become final
+		return Ordered.super.isOrdered();
+	}
+
+	@External
+	@Override
+	public final boolean isUnique() { // to become final
+		return NonUnique.super.isUnique();
 	}
 
 	@ExternalBody

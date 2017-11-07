@@ -46,8 +46,8 @@ public final class Any<E> extends Collection<E, Any<E>> {
 	}
 
 	/**
-	 * Must be used with extreme care as this constructor sets the backend of
-	 * this collection without any multiplicity checks.
+	 * This constructor sets the backend of this collection without any
+	 * multiplicity checks.
 	 */
 	Any(ImmutableMultiset<E> backend) {
 		super(backend);

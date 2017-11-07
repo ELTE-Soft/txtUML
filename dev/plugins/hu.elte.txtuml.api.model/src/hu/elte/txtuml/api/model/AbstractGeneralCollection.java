@@ -9,6 +9,7 @@ import hu.elte.txtuml.api.model.error.LowerBoundError;
 import hu.elte.txtuml.api.model.error.MultiplicityError;
 import hu.elte.txtuml.api.model.error.UninitializedCollectionError;
 import hu.elte.txtuml.api.model.error.UpperBoundError;
+import hu.elte.txtuml.api.model.utils.Collections;
 import hu.elte.txtuml.utils.InstanceCreator;
 import hu.elte.txtuml.utils.RuntimeInvocationTargetException;
 
@@ -193,8 +194,7 @@ abstract class AbstractGeneralCollection<E, B extends java.util.Collection<E>, C
 	 * in the default collections defined in this package.
 	 */
 	int getLowerBoundPackagePrivate() {
-		Min min = getClass().getAnnotation(Min.class);
-		return (min == null) ? 0 : min.value();
+		return Collections.getLowerBound(getClass());
 	}
 
 	/**
@@ -202,8 +202,7 @@ abstract class AbstractGeneralCollection<E, B extends java.util.Collection<E>, C
 	 * in the default collections defined in this package.
 	 */
 	int getUpperBoundPackagePrivate() {
-		Max max = getClass().getAnnotation(Max.class);
-		return (max == null) ? GeneralCollection.INFINITE_BOUND : max.value();
+		return Collections.getUpperBound(getClass());
 	}
 
 	abstract B createBackend(Consumer<Builder<E>> backendBuilder);

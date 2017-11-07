@@ -46,8 +46,8 @@ public final class UniqueAny<E> extends UniqueCollection<E, UniqueAny<E>> {
 	}
 
 	/**
-	 * Must be used with extreme care as this constructor sets the backend of
-	 * this collection without any multiplicity checks.
+	 * This constructor sets the backend of this collection without any
+	 * multiplicity checks.
 	 */
 	UniqueAny(ImmutableSet<E> backend) {
 		super(backend);

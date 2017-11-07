@@ -1,15 +1,14 @@
 package hu.elte.txtuml.api.model.execution.impl.assoc;
 
-import java.lang.reflect.ParameterizedType;
-
 import hu.elte.txtuml.api.model.Action;
 import hu.elte.txtuml.api.model.AssociationEnd;
 import hu.elte.txtuml.api.model.GeneralCollection;
 import hu.elte.txtuml.api.model.ModelClass;
 import hu.elte.txtuml.api.model.error.LowerBoundError;
-import hu.elte.txtuml.api.model.error.MultiplicityError;
 import hu.elte.txtuml.api.model.error.UpperBoundError;
 import hu.elte.txtuml.api.model.runtime.Wrapper;
+import hu.elte.txtuml.api.model.utils.Associations;
+import hu.elte.txtuml.api.model.utils.Collections;
 import hu.elte.txtuml.utils.InstanceCreator;
 
 public interface AssociationEndWrapper<T extends ModelClass, C extends GeneralCollection<T>>
@@ -37,15 +36,27 @@ public interface AssociationEndWrapper<T extends ModelClass, C extends GeneralCo
 	static <T extends ModelClass, C extends GeneralCollection<T>> AssociationEndWrapper<T, C> create(
 			AssociationEnd<C> wrapped) {
 
-		// TODO error handling
-		@SuppressWarnings("unchecked")
-		final Class<C> type = (Class<C>) ((ParameterizedType) wrapped.getClass().getAnnotatedSuperclass())
-				.getActualTypeArguments()[0];
+		final Class<C> type = Associations.getCollectionTypeOf(wrapped);		
 
 		return new AssociationEndWrapper<T, C>() {
 
-			private GeneralCollection<T> collection = Action.collectIn(type);
+			/**
+			 * Is of the proper type if {@link #valid} is true; is of its
+			 * unbounded version otherwise.
+			 */
+			private GeneralCollection<T> collection;
+
 			private boolean valid = true;
+
+			{
+				// initialize collection
+				try {
+					collection = Action.collectIn(type);
+				} catch (LowerBoundError e) {
+					valid = false;
+					collection = Action.collectIn(Collections.unbound(type));
+				}
+			}
 
 			@Override
 			public AssociationEnd<C> getWrapped() {
@@ -83,7 +94,7 @@ public interface AssociationEndWrapper<T extends ModelClass, C extends GeneralCo
 				try {
 					collection = collection.add(object);
 				} catch (UpperBoundError e) {
-					throw new MultiplicityError();
+					throw new MultiplicityException();
 				}
 				if (!valid) {
 					try {

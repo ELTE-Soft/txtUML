@@ -39,6 +39,18 @@ public abstract class OrderedUniqueCollection<E, C extends OrderedUniqueCollecti
 		return new OrderedUniqueAny<>(getBackend());
 	}
 
+	@External
+	@Override
+	public final boolean isOrdered() { // to become final
+		return Ordered.super.isOrdered();
+	}
+
+	@External
+	@Override
+	public final boolean isUnique() { // to become final
+		return Unique.super.isUnique();
+	}
+
 	@Override
 	ImmutableList<E> createBackend(Consumer<Builder<E>> backendBuilder) {
 		ImmutableList.Builder<E> builder = ImmutableList.builder();
