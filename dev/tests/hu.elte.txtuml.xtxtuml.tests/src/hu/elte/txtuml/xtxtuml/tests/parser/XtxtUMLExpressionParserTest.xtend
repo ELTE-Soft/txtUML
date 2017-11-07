@@ -162,34 +162,30 @@ class XtxtUMLExpressionParserTest {
 		'''
 			package test.model;
 
-			import hu.elte.txtuml.api.model.Collection;
-			import hu.elte.txtuml.api.model.runtime.collections.Sequence;
+			import hu.elte.txtuml.api.model.GeneralCollection;
 
 			class TestClass {
 				void testOperation() {
-					int a;
-					String b = "test";
-					Collection<TestClass> c;
-					Collection<TestClass> d = new Sequence<TestClass>();
+					int i;
+					String s = "test";
+					GeneralCollection<TestClass> c;
+					TestClass t = new TestClass();
 				}
 			}
 		'''
 		.parse.
 		file(
 			"test.model", #[
-				[importDeclaration(false, "hu.elte.txtuml.api.model.Collection", false)],
-				[importDeclaration(false, "hu.elte.txtuml.api.model.runtime.collections.Sequence", false)]
+				[importDeclaration(false, "hu.elte.txtuml.api.model.GeneralCollection", false)]
 			], #[
 				[class_(
 					"TestClass", null, #[
 						[operation(
 							PACKAGE, false, NON_EXTERNAL, "void", "testOperation", #[], #[
-								[variableDeclaration("int", null, "a", null)],
-								[variableDeclaration("String", null, "b", [string("test")])],
-								[variableDeclaration("Collection", "TestClass", "c", null)],
-								[variableDeclaration(
-									"Collection", "TestClass", "d",
-									[constructorCall("Sequence", "TestClass", #[])]
+								[variableDeclaration("int", null, "i", null)],
+								[variableDeclaration("String", null, "s", [string("test")])],
+								[variableDeclaration("GeneralCollection", "TestClass", "c", null)],
+								[variableDeclaration("TestClass", null, "t", [constructorCall("TestClass", null, #[])]
 								)]
 							]
 						)]
@@ -207,8 +203,8 @@ class XtxtUMLExpressionParserTest {
 			class A {
 				void foo() {
 					send new S() to this->(P);
-					send new S() to this->(AB.b).selectAny();
-					new B()->(AB.a).selectAny();
+					send new S() to this->(AB.b).one();
+					new B()->(AB.a).one();
 				}
 
 				port P {}
@@ -237,13 +233,13 @@ class XtxtUMLExpressionParserTest {
 									[constructorCall("S", null, #[])],
 									[featureCall(
 										[propertyAccess([this_], "b")],
-										"selectAny", #[]
+										"one", #[]
 									)]
 								)],
 								[featureCall(
 									[propertyAccess(
 										[constructorCall("B", null, #[])], "a"
-									)], "selectAny", #[]
+									)], "one", #[]
 								)]
 							]
 						)],
