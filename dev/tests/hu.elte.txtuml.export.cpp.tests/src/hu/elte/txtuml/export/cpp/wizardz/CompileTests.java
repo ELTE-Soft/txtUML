@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
@@ -47,28 +48,31 @@ public class CompileTests {
 		final String project;
 		final String model;
 		final String deployment;
+		final List<String> expectedLines;
 
-		Config(String project, String model, String deployment) {
+		Config(String project, String model, String deployment, List<String> expectedLines) {
 			this.project = project;
 			this.model = model;
 			this.deployment = deployment;
+			this.expectedLines = expectedLines;
 		}
 	}
 
 	private static final String PATH_TO_PROJECTS = "../../../examples/demo/";
 
 	private static final Config[] TEST_PROJECTS = {
-			new Config("machine", "machine1.j.model", "machine1.j.cpp.Machine1Configuration"),
-			new Config("monitoring", "monitoring.x.model", "monitoring.x.cpp.XMonitoringConfiguration"),
+			new Config("machine", "machine1.j.model", "machine1.j.cpp.Machine1Configuration", DemoExpectedLines.MACHINE.getLines()),
+			/*new Config("monitoring", "monitoring.x.model", "monitoring.x.cpp.XMonitoringConfiguration", DemoExpectedLines.MONITORING.getLines()),
 			new Config("producer_consumer", "producer_consumer.j.model",
-					"producer_consumer.j.cpp.ProducerConsumerConfiguration"),
-			new Config("train", "train.j.model", "train.j.cpp.TrainConfiguration"), };
+					"producer_consumer.j.cpp.ProducerConsumerConfiguration", DemoExpectedLines.PRODUCER_CONSUMER.getLines()),
+			new Config("train", "train.j.model", "train.j.cpp.TrainConfiguration", DemoExpectedLines.TRAIN.getLines()),*/ };
 
 	private static final String EXPORT_TEST_PROJECT_PREFIX = "exportTest_";
 	private static final String COMPILE_TEST_PROJECT_PREFIX = "compileTest_";
 	private static final String BUILD_DIR_PREFIX = "build_";
 
 	private static final String RELATIVE_PATH_TO_STDLIB = "../../../dev/plugins/hu.elte.txtuml.api.stdlib";
+	private static final String OPERATING_SYSTEM = System.getProperty("os.name");
 
 	private static String testWorkspace = "target/work/data/";
 	private static boolean buildStuffPresent = false;
@@ -106,8 +110,10 @@ public class CompileTests {
 		try {
 			gccRet = executeCommand(testWorkspace, Arrays.asList("gcc", "--version"), null, null);
 			gccxxRet = executeCommand(testWorkspace, Arrays.asList("g++", "--version"), null, null);
-			clangRet = executeCommand(testWorkspace, Arrays.asList("clang", "--version"), null, null);
-			clangxxRet = executeCommand(testWorkspace, Arrays.asList("clang++", "--version"), null, null);
+			if(!isWindowsOS()){
+				clangRet = executeCommand(testWorkspace, Arrays.asList("clang", "--version"), null, null);
+				clangxxRet = executeCommand(testWorkspace, Arrays.asList("clang++", "--version"), null, null);
+			}
 		} catch (IOException | InterruptedException e) {
 		}
 		if (gccRet == 0 && gccxxRet == 0) {
@@ -125,6 +131,10 @@ public class CompileTests {
 		}
 		buildStuffPresent = true;
 		
+	}
+	
+	private static Boolean isWindowsOS(){
+		return OPERATING_SYSTEM.toUpperCase().startsWith("WIN");
 	}
 
 	@BeforeClass
@@ -172,7 +182,7 @@ public class CompileTests {
 			try {
 				String projectName = generateCPP(config, COMPILE_TEST_PROJECT_PREFIX, true, true);
 				if (buildStuffPresent) {
-					compileCPP(projectName, config.model);
+					compileCPP(projectName, config.model, config.expectedLines);
 				}
 			} catch (Exception e) {
 				Logger.sys.error("", e);
@@ -245,7 +255,7 @@ public class CompileTests {
 		return testProject;
 	}
 
-	private static void compileCPP(String testProjectName, String modelName) throws Exception {
+	private static void compileCPP(String testProjectName, String modelName, List<String> expectedLines) throws Exception {
 		List<Map<String, String>> compileEnvironments = new ArrayList<Map<String, String>>();
 		if (compilerGCCPresent) {
 			Map<String, String> env = new TreeMap<String, String>();
@@ -253,7 +263,7 @@ public class CompileTests {
 			env.put("CXX", "g++");
 			compileEnvironments.add(env);
 		}
-		if (compilerClangPresent) {
+		if (compilerClangPresent && !isWindowsOS()) {
 			Map<String, String> env = new TreeMap<String, String>();
 			env.put("CC", "clang");
 			env.put("CXX", "clang++");
@@ -307,10 +317,36 @@ public class CompileTests {
 				
 				System.out.println("***************** CPP Compilation Test successful on " + testProjectName + " "
 						+ compileEnv.get("CC").split(" ")[0] + modeStr);
+				
+				File outputFile = new File(buildDir + File.separator + "mainOutput.txt");
+				if(modeStr.equals("Debug") && outputFile != null && outputFile.length() > 0){
+					assertFiles(outputFile, expectedLines);
+				}
 			}
 		}
 	}
 	
+	private static void assertFiles(File outputFile, List<String> expectedLines) {
+		System.out.println("***************** Asserting output files started");
+		
+		try (Stream<String> stream = Files.lines(Paths.get(outputFile.toURI()))) {
+			List<String> lines =  stream.collect(Collectors.toList());
+			for(int i = 0; i < lines.size(); ++i){
+				if(!lines.get(i).trim().equals(expectedLines.get(i).trim())){
+					System.out.println("***************** Asserting output files failed at line " + i + ".:");
+					System.out.println("CPP output: " + lines.get(i).trim());
+					System.out.println("Expected output: " + expectedLines.get(i).trim());
+				}
+				assertThat(lines.get(i).trim(), is(expectedLines.get(i).trim()));
+			}
+			
+			System.out.println("***************** Asserting output files successed");
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+	} 
 	
 	// Searches file recursively
 	private static File searchFile(File file, String search) {
@@ -328,5 +364,4 @@ public class CompileTests {
 	    }
 	    return null;
 	}
-
 }
