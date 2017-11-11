@@ -466,7 +466,7 @@
   <packagedElement xmi:type="uml:Class" xmi:id="_hsEYQFAxEearmvnotm2LMg" name="hu.elte.txtuml.api.model.OrderedAny">
     <generalization xmi:id="_w5u1QFAxEearmvnotm2LMg" general="_DJzhUNpoEeWuz-p1tuEm5Q"/>
   </packagedElement>
-  <packagedElement xmi:type="uml:Class" xmi:id="_3aG8kFAyEearmvnotm2LMg" name="hu.elte.txtuml.api.model.OneToAny">
+  <packagedElement xmi:type="uml:Class" xmi:id="_3aG8kFAyEearmvnotm2LMg" name="hu.elte.txtuml.api.model.ZeroToOne">
     <generalization xmi:id="_3aHjoFAyEearmvnotm2LMg" general="_DJzhUNpoEeWuz-p1tuEm5Q"/>
   </packagedElement>
   <packagedElement xmi:type="uml:Class" xmi:id="_nJLtYGg8EeaTWu89rekDRA" name="RealOperations">
