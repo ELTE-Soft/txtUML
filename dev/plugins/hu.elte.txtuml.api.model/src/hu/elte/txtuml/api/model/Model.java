@@ -90,11 +90,10 @@ import java.lang.annotation.Target;
  * </ul>
  * 
  * <p>
- * In the first case, when the model is accessed <b>from
- * another thread, only a small set of safe operations</b> can be done which are
- * listed in the {@link API} class. This class cannot be used from the model but
- * its static methods are the only ones which can be called from any other
- * thread.
+ * In the first case, when the model is accessed <b>from another thread, only a
+ * small set of safe operations</b> can be done which are listed in the
+ * {@link API} class. This class cannot be used from the model but its static
+ * methods are the only ones which can be called from any other thread.
  * 
  * <h2>Definitions</h2>
  * 
@@ -115,8 +114,8 @@ import java.lang.annotation.Target;
  * <li>Getting/setting fields of model objects (as UML attributes), calling
  * their methods (as UML operations).</li>
  * <li>Querying association ends with the {@link ModelClass#assoc(Class)
- * ModelClass.assoc} method, using the result through the {@link Collection}
- * interface.</li>
+ * ModelClass.assoc} method, using the result through the returned collection
+ * type.</li>
  * </ul>
  * 
  * <h3>Condition evaluation</h3>
@@ -138,9 +137,10 @@ import java.lang.annotation.Target;
  * <li>Querying association ends with the {@link ModelClass#assoc(Class)
  * ModelClass.assoc} method.</li>
  * <li>Using primitives (including <code>Sting</code>).</li>
- * <li>Creating {@link Collection} instances with methods of that type or its
- * subtypes. (As all such instances are immutable, this does not affect the
- * state of the model in any way.)</li>
+ * <li>Creating {@link GeneralCollection} instances with the
+ * {@link Action#collect}, {@link Action#collectIn} methods or methods of the
+ * collection types. (As all such instances are immutable, this does not affect
+ * the state of the model in any way.)</li>
  * <li>Calling methods of model objects as operations.</li>
  * </ul>
  * 

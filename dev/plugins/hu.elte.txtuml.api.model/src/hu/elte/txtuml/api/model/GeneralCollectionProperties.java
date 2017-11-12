@@ -25,9 +25,8 @@ interface GeneralCollectionProperties {
 	 * <p>
 	 * Ordered collections contain the elements in a fixed order, that is, their
 	 * elements can be referenced with an index. This order does not have to fit
-	 * the natural ordering or any other kind of ordering of the elements. In
-	 * most cases, it is based on the order in which the elements were put into
-	 * the collection.
+	 * the natural ordering or any other kind of ordering of the elements. It is
+	 * based on the order in which the elements were put into the collection.
 	 */
 	@External
 	boolean isOrdered();

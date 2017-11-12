@@ -15,7 +15,17 @@ import hu.elte.txtuml.api.model.utils.Collections;
 import hu.elte.txtuml.utils.InstanceCreator;
 import hu.elte.txtuml.utils.RuntimeInvocationTargetException;
 
-//TODO document and review
+/**
+ * Abstract base class for txtUML API collections which all txtUML API
+ * collections <b><i>must</i></b> extend. Provides implementation for many of
+ * their methods.
+ * <p>
+ * See the documentation of {@link GeneralCollection} for detailed information
+ * about the txtUML API collections.
+ * <p>
+ * See the documentation of {@link Model} for an overview on modeling in
+ * JtxtUML.
+ */
 abstract class AbstractGeneralCollection<E, B extends java.util.Collection<E>, C extends AbstractGeneralCollection<E, B, C>>
 		extends GeneralCollection<E> implements @External Cloneable {
 

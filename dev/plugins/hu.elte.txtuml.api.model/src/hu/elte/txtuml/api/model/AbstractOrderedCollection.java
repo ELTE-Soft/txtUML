@@ -7,7 +7,16 @@ import com.google.common.collect.ImmutableList;
 import hu.elte.txtuml.api.model.GeneralCollection.Ordered;
 import hu.elte.txtuml.api.model.error.InvalidIndexError;
 
-//TODO document
+/**
+ * Abstract base class for ordered (unique or non-non-unique) txtUML API
+ * collections. Provides implementation for some of their methods.
+ * <p>
+ * See the documentation of {@link GeneralCollection} for detailed information
+ * about the txtUML API collections.
+ * <p>
+ * See the documentation of {@link Model} for an overview on modeling in
+ * JtxtUML.
+ */
 abstract class AbstractOrderedCollection<E, C extends AbstractOrderedCollection<E, C>>
 		extends AbstractGeneralCollection<E, ImmutableList<E>, C> implements @External Ordered<E> {
 
