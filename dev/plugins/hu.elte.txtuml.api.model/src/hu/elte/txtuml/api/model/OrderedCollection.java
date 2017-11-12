@@ -31,7 +31,7 @@ public abstract class OrderedCollection<E, C extends OrderedCollection<E, C>> ex
 		if (Collections.isNonUnique(collectionType)) {
 			return (C2) asUnsafe(collectionType);
 		} else {
-			throw new CollectionCopyError();
+			throw new CollectionCopyError(getClass(), collectionType);
 		}
 	}
 

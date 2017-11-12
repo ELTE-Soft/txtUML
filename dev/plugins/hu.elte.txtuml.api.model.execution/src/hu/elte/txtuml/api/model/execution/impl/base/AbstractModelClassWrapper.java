@@ -8,6 +8,7 @@ import hu.elte.txtuml.api.model.ModelClass.Port;
 import hu.elte.txtuml.api.model.ModelClass.Status;
 import hu.elte.txtuml.api.model.Signal;
 import hu.elte.txtuml.api.model.StateMachine.Transition;
+import hu.elte.txtuml.api.model.error.LowerBoundError;
 import hu.elte.txtuml.api.model.execution.impl.assoc.AssociationEndWrapper;
 import hu.elte.txtuml.api.model.execution.impl.assoc.MultipleContainerException;
 import hu.elte.txtuml.api.model.execution.impl.assoc.MultiplicityException;
@@ -103,8 +104,8 @@ public abstract class AbstractModelClassWrapper extends AbstractSignalTargetWrap
 
 	@Override
 	public <T extends ModelClass, C extends GeneralCollection<T>, AE extends AssociationEnd<C> & Navigable> C navigateThroughAssociation(
-			Class<AE> otherEnd) {
-		return getAssoc(otherEnd).getCollection();
+			Class<AE> otherEnd) throws LowerBoundError {
+		return getAssoc(otherEnd).getCollectionOfTargetType();
 	}
 
 	@Override

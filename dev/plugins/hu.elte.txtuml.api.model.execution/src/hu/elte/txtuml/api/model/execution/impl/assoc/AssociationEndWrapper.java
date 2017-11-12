@@ -14,7 +14,9 @@ import hu.elte.txtuml.utils.InstanceCreator;
 public interface AssociationEndWrapper<T extends ModelClass, C extends GeneralCollection<T>>
 		extends Wrapper<AssociationEnd<C>> {
 
-	C getCollection();
+	GeneralCollection<T> getCollection();
+
+	C getCollectionOfTargetType() throws LowerBoundError;
 
 	void add(T object) throws MultiplicityException;
 
@@ -36,7 +38,7 @@ public interface AssociationEndWrapper<T extends ModelClass, C extends GeneralCo
 	static <T extends ModelClass, C extends GeneralCollection<T>> AssociationEndWrapper<T, C> create(
 			AssociationEnd<C> wrapped) {
 
-		final Class<C> type = Associations.getCollectionTypeOf(wrapped);		
+		final Class<C> type = Associations.getCollectionTypeOf(wrapped);
 
 		return new AssociationEndWrapper<T, C>() {
 
@@ -68,14 +70,18 @@ public interface AssociationEndWrapper<T extends ModelClass, C extends GeneralCo
 				return valid;
 			}
 
+			@Override
+			public GeneralCollection<T> getCollection() {
+				return collection;
+			}
+
 			@SuppressWarnings("unchecked")
 			@Override
-			public C getCollection() {
+			public C getCollectionOfTargetType() throws LowerBoundError {
 				if (valid) {
 					return (C) collection;
 				} else {
-					// TODO error handling
-					throw new Error();
+					throw new LowerBoundError(type);
 				}
 			}
 

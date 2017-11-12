@@ -1,21 +1,21 @@
 package hu.elte.txtuml.api.model.error;
 
 import hu.elte.txtuml.api.model.GeneralCollection;
+import hu.elte.txtuml.api.model.error.ModelError;
 
 /**
- * Thrown when the lower or upper bound of a txtUML API collection is offended.
+ * Thrown when an element is to be taken from a txtUML API collection but the
+ * collection is empty.
  * <p>
  * See the documentation of {@link GeneralCollection} for detailed information
  * about the txtUML API collections.
  * <p>
  * See the documentation of {@link hu.elte.txtuml.api.model.Model} for an
  * overview on modeling in JtxtUML.
+ * 
+ * @see GeneralCollection#one
  */
 @SuppressWarnings("serial")
-public class MultiplicityError extends ModelError {
-
-	public MultiplicityError(@SuppressWarnings("rawtypes") Class<? extends GeneralCollection> type, int size) {
-		super("Collection type " + type.getName() + " cannot be created with " + size + " elements.");
-	}
+public class EmptyCollectionError extends ModelError {
 
 }

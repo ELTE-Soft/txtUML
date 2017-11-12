@@ -33,7 +33,7 @@ public abstract class UniqueCollection<E, C extends UniqueCollection<E, C>> exte
 		if (Collections.isUnordered(collectionType)) {
 			return (C2) asUnsafe(collectionType);
 		} else {
-			throw new CollectionCopyError();
+			throw new CollectionCopyError(getClass(), collectionType);
 		}
 	}
 

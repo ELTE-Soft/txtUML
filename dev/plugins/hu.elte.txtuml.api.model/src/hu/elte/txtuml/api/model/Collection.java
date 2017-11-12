@@ -34,7 +34,7 @@ public abstract class Collection<E, C extends Collection<E, C>>
 		if (Collections.isUnordered(collectionType) && Collections.isNonUnique(collectionType)) {
 			return (C2) asUnsafe(collectionType);
 		} else {
-			throw new CollectionCopyError();
+			throw new CollectionCopyError(getClass(), collectionType);
 		}
 	}
 

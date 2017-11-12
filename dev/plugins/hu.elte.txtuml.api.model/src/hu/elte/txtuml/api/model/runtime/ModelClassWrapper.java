@@ -7,6 +7,7 @@ import hu.elte.txtuml.api.model.GeneralCollection;
 import hu.elte.txtuml.api.model.ModelClass;
 import hu.elte.txtuml.api.model.ModelClass.Port;
 import hu.elte.txtuml.api.model.ModelClass.Status;
+import hu.elte.txtuml.api.model.error.LowerBoundError;
 import hu.elte.txtuml.api.model.Signal;
 
 /**
@@ -50,7 +51,7 @@ public interface ModelClassWrapper
 	Status getStatus();
 
 	<T extends ModelClass, C extends GeneralCollection<T>, AE extends AssociationEnd<C> & Navigable> C navigateThroughAssociation(
-			Class<AE> otherEnd);
+			Class<AE> otherEnd) throws LowerBoundError;
 
 	<P extends Port<?, ?>> P getPortInstance(Class<P> portType);
 

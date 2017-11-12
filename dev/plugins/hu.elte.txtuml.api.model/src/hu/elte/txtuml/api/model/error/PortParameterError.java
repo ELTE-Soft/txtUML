@@ -8,7 +8,7 @@ package hu.elte.txtuml.api.model.error;
  * overview on modeling in JtxtUML.
  */
 @SuppressWarnings("serial")
-public class PortParameterError extends Error {
+public class PortParameterError extends ModelError {
 
 	public PortParameterError(Class<?> type) {
 		super("The type parameters of port " + type.getName() + " cannot be retrieved.");

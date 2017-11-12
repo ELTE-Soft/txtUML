@@ -9,7 +9,7 @@ package hu.elte.txtuml.api.model.error;
  * overview on modeling in JtxtUML.
  */
 @SuppressWarnings("serial")
-public class MissingRuntimeContextError extends Error {
+public class MissingRuntimeContextError extends ModelError {
 
 	public MissingRuntimeContextError() {
 		super("Missing runtime context. The current thread is not a RuntimeContext.");

@@ -5,6 +5,7 @@ import java.util.function.Consumer;
 import com.google.common.collect.ImmutableList;
 
 import hu.elte.txtuml.api.model.GeneralCollection.Ordered;
+import hu.elte.txtuml.api.model.error.InvalidIndexError;
 
 //TODO document
 abstract class AbstractOrderedCollection<E, C extends AbstractOrderedCollection<E, C>>
@@ -13,7 +14,7 @@ abstract class AbstractOrderedCollection<E, C extends AbstractOrderedCollection<
 	@ExternalBody
 	protected AbstractOrderedCollection() {
 	}
-	
+
 	/**
 	 * Must be used with extreme care as this constructor sets the backend of
 	 * this collection without any multiplicity checks.
@@ -25,6 +26,13 @@ abstract class AbstractOrderedCollection<E, C extends AbstractOrderedCollection<
 	@ExternalBody
 	@Override
 	public final C add(int index, E element) {
+		if (index < 0) {
+			throw new InvalidIndexError(index);
+		}
+		if (index > size()) { // index == size is allowed here
+			throw new InvalidIndexError(size(), index);
+		}
+
 		return createSameTyped(builder -> {
 			int i = 0;
 			for (E e : getBackend()) {
@@ -34,19 +42,35 @@ abstract class AbstractOrderedCollection<E, C extends AbstractOrderedCollection<
 				builder.add(e);
 				++i;
 			}
+			if (index == i) { // if index == size
+				builder.add(element);
+			}
 		});
 	}
 
 	@ExternalBody
 	@Override
 	public final E get(int index) {
-		// TODO review exception handling
+		if (index < 0) {
+			throw new InvalidIndexError(index);
+		}
+		if (index >= size()) {
+			throw new InvalidIndexError(size(), index);
+		}
+
 		return getBackend().get(index);
 	}
 
 	@ExternalBody
 	@Override
 	public final C remove(int index) {
+		if (index < 0) {
+			throw new InvalidIndexError(index);
+		}
+		if (index >= size()) {
+			throw new InvalidIndexError(size(), index);
+		}
+
 		return createSameTyped(builder -> {
 			int i = 0;
 			for (E e : getBackend()) {

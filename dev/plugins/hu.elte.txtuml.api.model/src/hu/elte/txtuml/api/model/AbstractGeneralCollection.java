@@ -1,10 +1,12 @@
 package hu.elte.txtuml.api.model;
 
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 import java.util.StringJoiner;
 import java.util.function.Consumer;
 
 import hu.elte.txtuml.api.model.error.CollectionCreationError;
+import hu.elte.txtuml.api.model.error.EmptyCollectionError;
 import hu.elte.txtuml.api.model.error.LowerBoundError;
 import hu.elte.txtuml.api.model.error.MultiplicityError;
 import hu.elte.txtuml.api.model.error.UninitializedCollectionError;
@@ -52,8 +54,11 @@ abstract class AbstractGeneralCollection<E, B extends java.util.Collection<E>, C
 	@ExternalBody
 	@Override
 	public final E one() {
-		// FIXME NoSuchElementException
-		return getBackend().iterator().next();
+		try {
+			return getBackend().iterator().next();
+		} catch (NoSuchElementException e) {
+			throw new EmptyCollectionError();
+		}
 	}
 
 	@ExternalBody
@@ -217,8 +222,7 @@ abstract class AbstractGeneralCollection<E, B extends java.util.Collection<E>, C
 		try {
 			return InstanceCreator.create(collectionType);
 		} catch (IllegalArgumentException | RuntimeInvocationTargetException e) {
-			e.printStackTrace();
-			throw new CollectionCreationError();
+			throw new CollectionCreationError(e);
 		}
 	}
 
@@ -233,8 +237,7 @@ abstract class AbstractGeneralCollection<E, B extends java.util.Collection<E>, C
 			AbstractGeneralCollection<E, ?, ?> casted = ((AbstractGeneralCollection<E, ?, ?>) collection);
 			casted.createAndSetBackend(backendBuilder);
 		} catch (ClassCastException e) {
-			// TODO exception handling
-			throw new Error();
+			throw new CollectionCreationError(e);
 		}
 
 		return collection;
@@ -247,12 +250,12 @@ abstract class AbstractGeneralCollection<E, B extends java.util.Collection<E>, C
 	private void setBackend(B backend) throws MultiplicityError {
 		int size = backend.size();
 		if (size < getLowerBoundPackagePrivate()) {
-			throw new LowerBoundError();
+			throw new LowerBoundError(this);
 		}
 
 		int upperBound = getUpperBoundPackagePrivate();
 		if (size > upperBound && upperBound >= 0) {
-			throw new UpperBoundError();
+			throw new UpperBoundError(this);
 		}
 
 		this.backend = backend;
