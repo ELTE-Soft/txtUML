@@ -21,7 +21,7 @@ import java.util.Set
 
 class GuardExporter extends Exporter<MethodDeclaration, IMethodBinding, Constraint> {
 	
-	private String guardCode
+	private String guardCode = ""
 	
 	new(BaseExporter<?, ?, ?> parent) {
 		super(parent)
@@ -40,12 +40,11 @@ class GuardExporter extends Exporter<MethodDeclaration, IMethodBinding, Constrai
 		}
 
 		opaqueExpr.languages += "JAVA"
-		guardCode = ""
 		createFaltGuardExpressionCode(source.body)
 		opaqueExpr.bodies += guardCode
 	}
 	
-	// TODO need a more elegant solution..
+	// TODO need a better solution, works only special cases.
 	def void createFaltGuardExpressionCode(Block block) {
 		
 		val localVariables = new HashMap<String,String>()
@@ -55,7 +54,7 @@ class GuardExporter extends Exporter<MethodDeclaration, IMethodBinding, Constrai
 				val varDecl = statement as VariableDeclarationStatement;
 				varDecl.fragments.forEach[
 					val decl = it as VariableDeclarationFragment
-					localVariables.put(decl.name.identifier, "")
+					localVariables.put(decl.name.identifier, decl.initializer.toString)
 				]
 			}
 			
@@ -82,7 +81,7 @@ class GuardExporter extends Exporter<MethodDeclaration, IMethodBinding, Constrai
 		
 		for(Object statement : blockStatements) {	
 			if(statement instanceof ReturnStatement) { 
-				guardCode = statement.toString
+				guardCode = statement.expression.toString
 				resolveExpressionCode(localVariables)
 			}
 		}
@@ -92,7 +91,7 @@ class GuardExporter extends Exporter<MethodDeclaration, IMethodBinding, Constrai
 	def void resolveExpressionCode(Map<String,String> varCodes) {
 		val varNames = varCodes.keySet
 		while(containsAnyOfThem(guardCode, varNames)) {
-			guardCode = replaceToVarExpressions(guardCode, varCodes)
+			 updateGuardCode(varCodes)
 		}
 		
 	}
@@ -107,15 +106,13 @@ class GuardExporter extends Exporter<MethodDeclaration, IMethodBinding, Constrai
 		return false;
 	}
 	
-	def String replaceToVarExpressions(String code, Map<String,String> varCodes) {
-		val res = code
+	def void updateGuardCode(Map<String,String> varCodes) {
 		for(String varName : varCodes.keySet) {
-			if(code.contains(varName)) {
-				res.replace(varName, varCodes.get(varName))
+			if(guardCode.contains(varName)) {
+				guardCode = guardCode.replace(varName, varCodes.get(varName))
 			}
 		}
 		
-		res
 	}
 	
 	def StateMachine getSM(Region reg) { reg.stateMachine ?: reg.state.container.getSM() }
