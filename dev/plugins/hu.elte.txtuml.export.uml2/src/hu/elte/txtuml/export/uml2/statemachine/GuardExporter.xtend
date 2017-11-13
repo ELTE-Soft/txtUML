@@ -8,6 +8,12 @@ import org.eclipse.uml2.uml.Constraint
 import org.eclipse.uml2.uml.Transition
 import org.eclipse.uml2.uml.Region
 import org.eclipse.uml2.uml.StateMachine
+import org.eclipse.jdt.core.dom.Block
+import java.util.HashMap
+import java.util.Map
+import org.eclipse.jdt.core.dom.Assignment
+import org.eclipse.jdt.core.dom.VariableDeclarationStatement
+import org.eclipse.jdt.core.dom.VariableDeclarationFragment
 
 class GuardExporter extends Exporter<MethodDeclaration, IMethodBinding, Constraint> {
 
@@ -21,9 +27,41 @@ class GuardExporter extends Exporter<MethodDeclaration, IMethodBinding, Constrai
 		val opaqueExpr = factory.createOpaqueExpression
 		result.specification = opaqueExpr
 		result.name = "guard_specification"
-		opaqueExpr.behavior = exportSMActivity(source) [
+		if(exportActions) {
+			opaqueExpr.behavior = exportSMActivity(source) [
 			(result.owner as Transition).container.getSM.ownedBehaviors += it
-		]
+			]
+		}
+
+		opaqueExpr.languages += "JAVA"
+		opaqueExpr.bodies += createFaltGuardExpressionCode(source.body)
+	}
+	//TODO create guard code
+	def String createFaltGuardExpressionCode(Block block) {
+		/*val resCode = ""
+		val varCodes = new HashMap<String,String>()
+		val blockStatements = block.statements
+		for(Object statement : blockStatements) {
+			if(statement instanceof VariableDeclarationStatement) {
+				val varDecl = statement as VariableDeclarationStatement;
+				varDecl.fragments.forEach[
+					val decl = it as VariableDeclarationFragment
+					varCodes.put(decl.name.identifier, "")
+				]
+			}
+			
+		}
+		
+		for(Object statement : blockStatements) {
+			if(statement instanceof Assignment) {
+				val varDecl = statement as Assignment;
+				val expr
+			}
+			
+		}
+				
+		
+		resCode*/
 	}
 	
 	def StateMachine getSM(Region reg) { reg.stateMachine ?: reg.state.container.getSM() }
