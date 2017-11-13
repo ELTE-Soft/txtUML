@@ -312,7 +312,10 @@ public class CompileTests {
 				int ninjaRetCode = executeCommand(buildDir, Arrays.asList("ninja", "-v"), compileEnv, null);
 				assertThat(ninjaRetCode, is(0));
 				
-				int mainRetCode = executeCommand(buildDir, Arrays.asList("cmd.exe", "/c", "main.exe"), compileEnv, "mainOutput.txt");
+				String bash = isWindowsOS() ? "cmd.exe" : "/bin/bash";
+				String mainBinary = isWindowsOS() ? "main.exe" : "./main";
+				String c = isWindowsOS() ? "/c" : "-c";
+				int mainRetCode = executeCommand(buildDir, Arrays.asList(bash, c, mainBinary), compileEnv, "mainOutput.txt");
 				assertThat(mainRetCode, is(0));
 				
 				System.out.println("***************** CPP Compilation Test successful on " + testProjectName + " "
