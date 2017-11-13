@@ -34,7 +34,7 @@ import hu.elte.txtuml.api.model.AssociationEnd.NonNavigable;
  * <li>must be a top level class (not a nested or local class)</li>
  * <li>must have two inner classes which are subclasses of
  * <code>AssociationEnd</code>, exactly one being a subclass of
- * <code>ContainerEnd</code></li>
+ * <code>ContainerEnd</code> or <code>HiddenContainerEnd</code></li>
  * </ul>
  * <p>
  * <b>Subtype restrictions:</b>
@@ -48,7 +48,7 @@ import hu.elte.txtuml.api.model.AssociationEnd.NonNavigable;
  * <li><i>Nested interfaces:</i> disallowed</li>
  * <li><i>Nested classes:</i> allowed at most two, both of which are non-static
  * and are subclasses of <code>AssociationEnd</code>. Exactly one of them must
- * be a subclass of <code>ContainerEnd</code>.</li>
+ * be a subclass of <code>ContainerEnd</code> or <code>HiddenContainerEnd</code>.</li>
  * <li><i>Nested enums:</i> disallowed</li>
  * </ul>
  * </li>
@@ -60,9 +60,9 @@ import hu.elte.txtuml.api.model.AssociationEnd.NonNavigable;
  * 
  * <pre>
  * <code>
- * class SampleAssociation extends Composition {
- * 	class ContainerEnd extends {@literal ContainerEnd<SampleClass2>} {}
- * 	class PartEnd extends {@literal Many<SampleClass1>} {}
+ * class A_B extends Composition {
+ * 	class ContainerEnd extends {@literal ContainerEnd<A>} {}
+ * 	class PartEnd extends {@literal End<Any<B>>} {}
  * }
  * </code>
  * </pre>
@@ -106,8 +106,8 @@ public abstract class Composition extends Association {
 	 * <p>
 	 * <b>Subtype requirements:</b>
 	 * <ul>
-	 * <li>must be the inner class of an association class (a subclass of
-	 * {@link Association})</li>
+	 * <li>must be the inner class of a composition class (a subclass of
+	 * {@link Composition})</li>
 	 * </ul>
 	 * <p>
 	 * <b>Subtype restrictions:</b>
@@ -131,7 +131,7 @@ public abstract class Composition extends Association {
 	 * JtxtUML.
 	 * 
 	 * @param <T>
-	 *            the type of model objects to be contained in this collection
+	 *            the type of model objects at this end of the composition
 	 */
 	public abstract class ContainerEnd<T extends ModelClass> extends AssociationEnd<ZeroToOne<T>>
 			implements Container, Navigable {
@@ -168,8 +168,8 @@ public abstract class Composition extends Association {
 	 * <p>
 	 * <b>Subtype requirements:</b>
 	 * <ul>
-	 * <li>must be the inner class of an association class (a subclass of
-	 * {@link Association})</li>
+	 * <li>must be the inner class of a composition class (a subclass of
+	 * {@link Composition})</li>
 	 * </ul>
 	 * <p>
 	 * <b>Subtype restrictions:</b>
@@ -193,7 +193,7 @@ public abstract class Composition extends Association {
 	 * JtxtUML.
 	 * 
 	 * @param <T>
-	 *            the type of model objects to be contained in this collection
+	 *            the type of model objects at this end of the composition
 	 */
 	public abstract class HiddenContainerEnd<T extends ModelClass> extends AssociationEnd<ZeroToOne<T>>
 			implements Container, NonNavigable {

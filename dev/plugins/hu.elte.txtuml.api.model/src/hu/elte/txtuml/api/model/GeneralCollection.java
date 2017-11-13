@@ -4,7 +4,66 @@ import java.util.Iterator;
 import java.util.Spliterator;
 import java.util.function.Consumer;
 
-//TODO document
+/**
+ * Abstract base class for JtxtUML API collections in the model. Should not be
+ * used in the model (only its subtypes) as this type does not specify the
+ * multiplicity, ordering or uniqueness of actual the collection instance.
+ * 
+ * <p>
+ * <b>Represents:</b> collection
+ * <p>
+ * <b>Usage:</b>
+ * <p>
+ * 
+ * Should not be used directly.
+ * <p>
+ * Use its first level subtypes ({@link Collection}, {@link OrderedCollection},
+ * {@link UniqueCollection}, or {@link OrderedUniqueCollection}) to define new
+ * collections. Use its second level subtypes (subclasses of the above listed
+ * four) inside the model to contain objects and primitives.
+ * <p>
+ * All JtxtUML API collections are immutable and therefore all their methods are
+ * thread-safe. However, they cannot be created by calling their constructors
+ * (not even the user-defined collections). The appropriate actions
+ * ({@link Action#collect} and {@link Action#collectIn}) should be used instead
+ * which also initialize the new collections properly (otherwise, a model error
+ * may occur when using the collection instance).
+ * <p>
+ * From outside the model, the methods of the
+ * {@link hu.elte.txtuml.api.model.utils.Collections} class can be used to
+ * analyze collection types.
+ * 
+ * <p>
+ * <b>Java restrictions:</b>
+ * <ul>
+ * <li><i>Instantiate:</i> disallowed</li>
+ * <li><i>Define subtype:</i> disallowed, use its subtypes {@link Collection},
+ * {@link OrderedCollection}, {@link UniqueCollection} or
+ * {@link OrderedUniqueCollection}</li>
+ * </ul>
+ * 
+ * <p>
+ * See the documentation of {@link Model} for an overview on modeling in
+ * JtxtUML.
+ * 
+ * @param <E>
+ *            the type of elements contained in this collection
+ * 
+ * @see Collection
+ * @see OrderedCollection
+ * @see UniqueCollection
+ * @see OrderedUniqueCollection
+ * @see Any
+ * @see OrderedAny
+ * @see UniqueAny
+ * @see OrderedUniqueAny
+ * @see OneToAny
+ * @see OrderedOneToAny
+ * @see UniqueOneToAny
+ * @see OrderedUniqueOneToAny
+ * @see One
+ * @see ZeroToOne
+ */
 public abstract class GeneralCollection<E> implements @External Iterable<E>, @External GeneralCollectionProperties {
 
 	/*
