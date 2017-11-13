@@ -18,10 +18,13 @@ import hu.elte.txtuml.utils.jdt.ElementTypeTeller
 import org.eclipse.jdt.core.dom.ReturnStatement
 import java.util.Map
 import java.util.Set
+import org.eclipse.jdt.core.dom.Expression
+import org.eclipse.jdt.core.dom.InfixExpression
+import org.eclipse.jdt.core.dom.SimpleName
 
 class GuardExporter extends Exporter<MethodDeclaration, IMethodBinding, Constraint> {
 	
-	private String guardCode = ""
+	private Expression guardExpression
 	
 	new(BaseExporter<?, ?, ?> parent) {
 		super(parent)
@@ -41,20 +44,20 @@ class GuardExporter extends Exporter<MethodDeclaration, IMethodBinding, Constrai
 
 		opaqueExpr.languages += "JAVA"
 		createFaltGuardExpressionCode(source.body)
-		opaqueExpr.bodies += guardCode
+		opaqueExpr.bodies += guardExpression.toString
 	}
 	
 	// TODO need a better solution, works only special cases.
 	def void createFaltGuardExpressionCode(Block block) {
 		
-		val localVariables = new HashMap<String,String>()
+		val localVariables = new HashMap<String,Expression>()
 		val blockStatements = block.statements
 		for(Object statement : blockStatements) {
 			if(statement instanceof VariableDeclarationStatement) {
 				val varDecl = statement as VariableDeclarationStatement;
 				varDecl.fragments.forEach[
 					val decl = it as VariableDeclarationFragment
-					localVariables.put(decl.name.identifier, decl.initializer.toString)
+					localVariables.put(decl.name.identifier, decl.initializer)
 				]
 			}
 			
@@ -68,10 +71,10 @@ class GuardExporter extends Exporter<MethodDeclaration, IMethodBinding, Constrai
 				val leftExpr = assignment.leftHandSide
 				val rigthExpr = assignment.rightHandSide
 				
-				if(leftExpr instanceof Name && ElementTypeTeller.isVariable(leftExpr)) {
-					val leftVarName = (leftExpr as Name).resolveBinding.name;
+				if(leftExpr instanceof SimpleName && ElementTypeTeller.isVariable(leftExpr)) {
+					val leftVarName = leftExpr as SimpleName;
 					if(localVariables.containsKey(leftVarName)) {
-						localVariables.put(leftVarName, rigthExpr.toString)
+						localVariables.put(leftVarName.identifier, rigthExpr)
 					}
 				}
 			}
@@ -81,39 +84,32 @@ class GuardExporter extends Exporter<MethodDeclaration, IMethodBinding, Constrai
 		
 		for(Object statement : blockStatements) {	
 			if(statement instanceof ReturnStatement) { 
-				guardCode = statement.expression.toString
-				resolveExpressionCode(localVariables)
+				guardExpression = statement.expression
+				//TODO update does not work properly, invalid child and parent..
+				guardExpression = updateExpression(guardExpression, localVariables)
+
 			}
 		}
 		
 	}
 	
-	def void resolveExpressionCode(Map<String,String> varCodes) {
-		val varNames = varCodes.keySet
-		while(containsAnyOfThem(guardCode, varNames)) {
-			 updateGuardCode(varCodes)
+	
+	def Expression updateExpression(Expression expr, Map<String,Expression> varCodes) {
+		var resultExpr = expr
+		if(resultExpr instanceof SimpleName && varCodes.containsKey((resultExpr as SimpleName).identifier)) {
+			resultExpr = varCodes.get((resultExpr as SimpleName).identifier)
+		} else if(resultExpr instanceof  InfixExpression) {
+			val updatedLeft =  updateExpression(resultExpr.leftOperand, varCodes)
+			val updadtedRigthright = updateExpression(resultExpr.rightOperand, varCodes)
+			resultExpr.leftOperand = updatedLeft
+			resultExpr.rightOperand = updadtedRigthright
 		}
+		
+		resultExpr
+		
 		
 	}
 	
-	def boolean containsAnyOfThem(String code, Set<String> strings) {
-		for(String  varName : strings) {
-			if(code.contains(varName)) {
-				return true;
-			}
-		}
-		
-		return false;
-	}
-	
-	def void updateGuardCode(Map<String,String> varCodes) {
-		for(String varName : varCodes.keySet) {
-			if(guardCode.contains(varName)) {
-				guardCode = guardCode.replace(varName, varCodes.get(varName))
-			}
-		}
-		
-	}
 	
 	def StateMachine getSM(Region reg) { reg.stateMachine ?: reg.state.container.getSM() }
 
