@@ -108,8 +108,8 @@ public abstract class AbstractModelClassWrapper extends AbstractSignalTargetWrap
 	}
 
 	@Override
-	public void send(Signal signal) {
-		getThread().send(signal, this);
+	public void send(Signal signal, Boolean isAPI) {
+		getThread().send(signal, this, isAPI);
 	}
 	
 	@Override
@@ -129,8 +129,8 @@ public abstract class AbstractModelClassWrapper extends AbstractSignalTargetWrap
 	}
 
 	@Override
-	public void receive(Signal signal) {
-		process(signal, null);
+	public void receive(Signal signal, Boolean isAPI) {
+		process(signal, null, isAPI);
 	}
 
 	/**
@@ -139,7 +139,7 @@ public abstract class AbstractModelClassWrapper extends AbstractSignalTargetWrap
 	 */
 	@Override
 	public void receive(Signal signal, AbstractPortWrapper sender) {
-		process(signal, sender.getWrapped());
+		process(signal, sender.getWrapped(), false);
 	}
 
 	/**
@@ -159,7 +159,7 @@ public abstract class AbstractModelClassWrapper extends AbstractSignalTargetWrap
 	 * @throws NullPointerException
 	 *             if {@code signal} is {@code null}
 	 */
-	protected void process(Signal signal, Port<?, ?> port) {
+	protected void process(Signal signal, Port<?, ?> port, Boolean isAPI) {
 		getThread().setCurrentTriggeringSignal(signal);
 
 		Status currentStatus = getStatus();
@@ -170,7 +170,7 @@ public abstract class AbstractModelClassWrapper extends AbstractSignalTargetWrap
 			}
 		} else {
 			if (signal != null) {
-				getRuntime().trace(x -> x.processingSignal(getWrapped(), signal));
+				getRuntime().trace(x -> x.processingSignal(getWrapped(), signal, isAPI));
 			}
 
 			if (findAndExecuteTransition(signal, port)) {
@@ -380,7 +380,7 @@ public abstract class AbstractModelClassWrapper extends AbstractSignalTargetWrap
 			// no entry action needs to be called: initial pseudostates have
 			// none
 
-			process(null, null); // step forward from initial pseudostate
+			process(null, null, false); // step forward from initial pseudostate
 		}
 	}
 

@@ -35,7 +35,7 @@ public class MessageWrapper implements BaseMessageWrapper, BaseFragmentWrapper {
 
 			MessageWrapper otherWrapper = (MessageWrapper) other;
 
-			if (otherWrapper.isAPI && !this.isAPI) {
+			if ((otherWrapper.isAPI && !this.isAPI) || (!otherWrapper.isAPI && this.isAPI)) {
 				return false;
 			} else if (!otherWrapper.isAPI && !this.isAPI) {
 				if (sender != null && otherWrapper.sender != null && !otherWrapper.sender.runtimeInfo().getIdentifier()

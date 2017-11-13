@@ -17,7 +17,7 @@ public abstract class AbstractPortWrapper extends AbstractSignalTargetWrapper<Po
 	}
 
 	@Override
-	public void send(Signal signal) {
+	public void send(Signal signal, Boolean isAPI) {
 		getThread().send(signal, this);
 	}
 
@@ -80,7 +80,7 @@ public abstract class AbstractPortWrapper extends AbstractSignalTargetWrapper<Po
 	public abstract void setInnerConnection(AbstractSignalTargetWrapper<?> other);
 
 	@Override
-	public abstract void receive(Signal signal);
+	public abstract void receive(Signal signal, Boolean isAPI);
 
 	@Override
 	public abstract void receive(Signal signal, AbstractPortWrapper sender);

@@ -28,23 +28,20 @@ public class ExecutionStrategyLenient implements ExecutionStrategy {
 	@Override
 	public boolean checkMessageSendToPattern(Queue<BaseFragmentWrapper> containedFragments,
 			BaseMessageWrapper message) {
-		boolean foundMessage = false;
 		boolean result = false;
-		Iterator<BaseFragmentWrapper> it = containedFragments.iterator();
-		while (!foundMessage && it.hasNext()) {
-			BaseFragmentWrapper fr = it.next();
-			if (fr instanceof BaseCombinedFragmentWrapper) {
-				result = ((BaseCombinedFragmentWrapper) fr).checkMessageSendToPattern(message);
-				foundMessage = true;
-			} else {
-				if (message.equals(fr)) {
-					it.remove();
-				}
-				result = true;
-				foundMessage = true;
+		BaseFragmentWrapper fragment = containedFragments.peek();
+		if (fragment instanceof BaseCombinedFragmentWrapper) {
+			result = ((BaseCombinedFragmentWrapper) fragment).checkMessageSendToPattern(message);				
+			if (result && fragment.size() == 0) {
+				containedFragments.remove();
+			}					
+		} else {
+			BaseMessageWrapper required = (BaseMessageWrapper) fragment;
+			if (required.equals(message)) {
+				containedFragments.remove();
 			}
+			result = true;
 		}
-
 		return result;
 	}
 

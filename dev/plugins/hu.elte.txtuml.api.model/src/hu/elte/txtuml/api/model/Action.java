@@ -289,12 +289,35 @@ public abstract class Action {
 	 */
 	public static void send(Signal signal, ModelClass target, ModelClass sender)
 	{
+		Action.send(signal, target, sender, false);
+	}
+	
+	/**
+	 * Asynchronously sends the specified signal to the specified target object.
+	 * <p>
+	 * Does not check whether the target object is deleted, it is only checked
+	 * when the signal arrives to the object.
+	 * 
+	 *
+	 * @param signal
+	 *            the signal object to send
+	 * @param target
+	 *            the model object which will receive the signal
+	 * @param sender
+	 *            the sender model object( optional )
+	 * @param isAPI
+	 *            tells if the signal was sent from outside of the model
+	 * 
+	 * @throws NullPointerException
+	 *             if <code>target</code> is <code>null</code>
+	 */
+	public static void send(Signal signal, ModelClass target, ModelClass sender, Boolean isAPI) {
 		if (sender != null)
 		{
 			sender.runtimeInfo().sent(signal);
 		}
 		
-		target.runtimeInfo().send(signal);
+		target.runtimeInfo().send(signal, isAPI);
 	}
 
 	/**

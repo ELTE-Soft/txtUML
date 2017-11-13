@@ -78,7 +78,7 @@ public class DiagnosticsService extends NotifierOfTermination implements TraceLi
 	}
 
 	@Override
-	public void processingSignal(ModelClass object, Signal signal) {
+	public void processingSignal(ModelClass object, Signal signal, Boolean isAPI) {
 		sendNewModelEvent(MessageType.PROCESSING_SIGNAL, object.getClass().getCanonicalName(),
 				object.runtimeInfo().getIdentifier(), signal.getClass().getCanonicalName());
 	}

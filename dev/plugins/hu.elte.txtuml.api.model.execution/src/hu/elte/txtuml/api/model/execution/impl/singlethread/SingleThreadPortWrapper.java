@@ -41,7 +41,7 @@ public class SingleThreadPortWrapper extends AbstractPortWrapper {
 	}
 
 	@Override
-	public void receive(Signal signal) {
+	public void receive(Signal signal, Boolean isApi) {
 		tryToSend(signal, outer);
 	}
 

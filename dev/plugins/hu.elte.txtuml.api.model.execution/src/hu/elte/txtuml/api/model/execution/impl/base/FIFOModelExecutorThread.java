@@ -39,12 +39,12 @@ public class FIFOModelExecutorThread extends ModelExecutorThread {
 
 	@Override
 	public void send(Signal signal, AbstractPortWrapper target) {
-		addEntry(() -> target.receive(signal));
+		addEntry(() -> target.receive(signal, false));
 	}
 
 	@Override
-	public void send(Signal signal, AbstractModelClassWrapper target) {
-		addEntry(() -> target.receive(signal));
+	public void send(Signal signal, AbstractModelClassWrapper target, Boolean isAPI) {
+		addEntry(() -> target.receive(signal, isAPI));
 	}
 
 	@Override
