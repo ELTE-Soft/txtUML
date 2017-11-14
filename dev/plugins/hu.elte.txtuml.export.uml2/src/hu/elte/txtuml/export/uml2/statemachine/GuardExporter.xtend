@@ -13,18 +13,18 @@ import java.util.HashMap
 import org.eclipse.jdt.core.dom.Assignment
 import org.eclipse.jdt.core.dom.VariableDeclarationStatement
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment
-import org.eclipse.jdt.core.dom.Name
 import hu.elte.txtuml.utils.jdt.ElementTypeTeller
 import org.eclipse.jdt.core.dom.ReturnStatement
 import java.util.Map
-import java.util.Set
 import org.eclipse.jdt.core.dom.Expression
 import org.eclipse.jdt.core.dom.InfixExpression
 import org.eclipse.jdt.core.dom.SimpleName
+import org.eclipse.jdt.core.dom.PrefixExpression
+import org.eclipse.jdt.core.dom.MethodInvocation
+import java.util.LinkedList
 
 class GuardExporter extends Exporter<MethodDeclaration, IMethodBinding, Constraint> {
 	
-	private Expression guardExpression
 	
 	new(BaseExporter<?, ?, ?> parent) {
 		super(parent)
@@ -42,32 +42,26 @@ class GuardExporter extends Exporter<MethodDeclaration, IMethodBinding, Constrai
 			]
 		}
 
-		opaqueExpr.languages += "JAVA"
-		createFaltGuardExpressionCode(source.body)
-		opaqueExpr.bodies += guardExpression.toString
+		opaqueExpr.languages += "JAVA"		
+		opaqueExpr.bodies += createFaltGuardExpressionCode(source.body)
 	}
 	
-	// TODO need a better solution, works only special cases.
-	def void createFaltGuardExpressionCode(Block block) {
+	def String createFaltGuardExpressionCode(Block block) {
+		var guardExpressionSource = ""
 		
 		val localVariables = new HashMap<String,Expression>()
 		val blockStatements = block.statements
-		for(Object statement : blockStatements) {
-			if(statement instanceof VariableDeclarationStatement) {
-				val varDecl = statement as VariableDeclarationStatement;
+		
+		blockStatements.stream.filter[s | s instanceof VariableDeclarationStatement].forEach[
+				val varDecl = it as VariableDeclarationStatement;
 				varDecl.fragments.forEach[
 					val decl = it as VariableDeclarationFragment
 					localVariables.put(decl.name.identifier, decl.initializer)
 				]
-			}
-			
-		}
+		]
 		
-		for(Object statement : blockStatements) {
-			
-			if(statement instanceof Assignment) {
-				
-				val assignment = statement as Assignment;
+		blockStatements.stream.filter[s | s instanceof Assignment].forEach[
+				val assignment = it as Assignment;
 				val leftExpr = assignment.leftHandSide
 				val rigthExpr = assignment.rightHandSide
 				
@@ -77,39 +71,63 @@ class GuardExporter extends Exporter<MethodDeclaration, IMethodBinding, Constrai
 						localVariables.put(leftVarName.identifier, rigthExpr)
 					}
 				}
-			}
-			
-		}
+		]
 		
 		
 		for(Object statement : blockStatements) {	
 			if(statement instanceof ReturnStatement) { 
-				guardExpression = statement.expression
-				guardExpression = updateExpression(guardExpression, localVariables)
+				guardExpressionSource = updateExpression(statement.expression, localVariables).toString
 
 			}
 		}
 		
+		guardExpressionSource
 	}
 	
 	
 	def Expression updateExpression(Expression expr, Map<String,Expression> varCodes) {
 		var resultExpr = expr
-		//TODO consider more possible expression type
 		if(resultExpr instanceof SimpleName && varCodes.containsKey((resultExpr as SimpleName).identifier)) {
 			resultExpr = updateExpression(varCodes.get((resultExpr as SimpleName).identifier), varCodes)
-		} else if(resultExpr instanceof  InfixExpression) {
+		} else if(resultExpr instanceof InfixExpression) {
 			val updatedLeft =  updateExpression(resultExpr.leftOperand, varCodes)
-			val updadtedRigthright = updateExpression(resultExpr.rightOperand, varCodes)
-			updatedLeft.delete
-			updadtedRigthright.delete
-			resultExpr.leftOperand = updatedLeft
-			resultExpr.rightOperand = updadtedRigthright
+			val updadtedRight = updateExpression(resultExpr.rightOperand, varCodes)
+			if(tryDelete(updatedLeft)) resultExpr.leftOperand = updatedLeft
+			if(tryDelete(updadtedRight)) tryDelete(updadtedRight) resultExpr.rightOperand = updadtedRight
+		} else if(resultExpr instanceof PrefixExpression) {
+			val updatedExpr = updateExpression(resultExpr.operand, varCodes)		
+			if(tryDelete(updatedExpr)) resultExpr.operand = updatedExpr			 
+			 
+		} else if(resultExpr instanceof MethodInvocation) {
+			val updatedExpr = updateExpression(resultExpr.expression, varCodes)
+			if(tryDelete(updatedExpr)) resultExpr.expression = updatedExpr
+			var updatedArguments = new LinkedList<Object> 
+			for(Object e : resultExpr.arguments) {
+				val updatedArgument = updateExpression(e as Expression,varCodes)
+				updatedArgument.delete
+				updatedArguments += updatedArgument	
+			}
+			resultExpr.arguments.clear
+			for(Object e : updatedArguments) {
+				resultExpr.arguments += e
+			}
+			
+			
 		}
 		
 		resultExpr
 		
 		
+	}
+	
+	
+	def boolean tryDelete(Expression expr) {
+		try {
+				expr?.delete
+				 true
+		} catch(Exception e) {
+				false
+		}
 	}
 	
 	
