@@ -85,7 +85,6 @@ class GuardExporter extends Exporter<MethodDeclaration, IMethodBinding, Constrai
 		for(Object statement : blockStatements) {	
 			if(statement instanceof ReturnStatement) { 
 				guardExpression = statement.expression
-				//TODO update does not work properly, invalid child and parent..
 				guardExpression = updateExpression(guardExpression, localVariables)
 
 			}
@@ -96,11 +95,14 @@ class GuardExporter extends Exporter<MethodDeclaration, IMethodBinding, Constrai
 	
 	def Expression updateExpression(Expression expr, Map<String,Expression> varCodes) {
 		var resultExpr = expr
+		//TODO consider more possible expression type
 		if(resultExpr instanceof SimpleName && varCodes.containsKey((resultExpr as SimpleName).identifier)) {
-			resultExpr = varCodes.get((resultExpr as SimpleName).identifier)
+			resultExpr = updateExpression(varCodes.get((resultExpr as SimpleName).identifier), varCodes)
 		} else if(resultExpr instanceof  InfixExpression) {
 			val updatedLeft =  updateExpression(resultExpr.leftOperand, varCodes)
 			val updadtedRigthright = updateExpression(resultExpr.rightOperand, varCodes)
+			updatedLeft.delete
+			updadtedRigthright.delete
 			resultExpr.leftOperand = updatedLeft
 			resultExpr.rightOperand = updadtedRigthright
 		}
