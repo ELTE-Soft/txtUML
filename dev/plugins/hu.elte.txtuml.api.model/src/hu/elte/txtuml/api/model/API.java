@@ -35,7 +35,7 @@ public abstract class API {
 	 */
 	@ExternalBody
 	public static void send(Signal signal, ModelClass target) {
-		Action.send(signal, target, null, true);
+		Action.send(signal, target);
 	}
 
 	/**

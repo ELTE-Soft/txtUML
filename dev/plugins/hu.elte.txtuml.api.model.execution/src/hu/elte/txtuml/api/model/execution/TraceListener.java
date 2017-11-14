@@ -17,7 +17,7 @@ public interface TraceListener {
 	default void executionStarted() {
 	}
 
-	default void processingSignal(ModelClass object, Signal signal, Boolean isAPI) {
+	default void processingSignal(ModelClass object, Signal signal) {
 	}
 
 	default void sendingSignal(ModelClass sender, Signal signal) {

@@ -16,5 +16,5 @@ public interface SignalTargetWrapper<W> extends Wrapper<W>, RuntimeInfo {
 	 * <p>
 	 * Thread-safe.
 	 */
-	void send(Signal signal, Boolean isAPI);
+	void send(Signal signal);
 }

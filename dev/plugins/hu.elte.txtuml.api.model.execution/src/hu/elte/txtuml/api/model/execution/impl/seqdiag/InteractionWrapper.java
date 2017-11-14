@@ -54,12 +54,12 @@ public class InteractionWrapper extends AbstractWrapper<Interaction> implements 
 		return null;
 	}
 
-	public void storeMessage(ModelClass from, Signal sig, ModelClass to, boolean isAPI) {
+	public void storeMessage(ModelClass from, Signal sig, ModelClass to) {
 		if (!(this.fragments instanceof BaseCombinedFragmentWrapper)) {
 			throw new ModelRuntimeException("Couldn't add fragment, uppermost fragment of the tree is invalid!");
 		}
 
-		BaseFragmentWrapper wrapper = new MessageWrapper(from, sig, to, isAPI);
+		BaseFragmentWrapper wrapper = new MessageWrapper(from, sig, to);
 		lastMessage = (BaseMessageWrapper) wrapper;
 		((BaseCombinedFragmentWrapper) this.fragments).add(wrapper);
 

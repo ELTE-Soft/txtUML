@@ -58,7 +58,7 @@ public class SingleThreadModelClassWrapper extends AbstractModelClassWrapper {
 
 		setStatus(Status.ACTIVE);
 
-		process(null, null, false);
+		process(null, null);
 	}
 
 	@Override

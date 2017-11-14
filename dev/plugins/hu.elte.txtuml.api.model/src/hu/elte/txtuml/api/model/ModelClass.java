@@ -332,7 +332,7 @@ public abstract class ModelClass extends StateMachine {
 		@External
 		private InvocationHandler createReceptionHandler() {
 			return (Object proxy, Method method, Object[] args) -> {
-				runtimeInfo().send((Signal) args[0], false);
+				runtimeInfo().send((Signal) args[0]);
 
 				return null; // the actual method has to be void
 			};

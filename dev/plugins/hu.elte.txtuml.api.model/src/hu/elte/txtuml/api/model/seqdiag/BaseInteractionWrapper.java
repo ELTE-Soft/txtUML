@@ -11,7 +11,7 @@ public interface BaseInteractionWrapper extends BaseWrapper<Interaction> {
 
 	List<BaseLifelineWrapper<?>> getLifelines();
 
-	void storeMessage(ModelClass from, Signal signal, ModelClass to, boolean isAPI);
+	void storeMessage(ModelClass from, Signal signal, ModelClass to);
 
 	void storeFragment(CombinedFragmentType type, String fragmentName);
 

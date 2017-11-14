@@ -38,7 +38,7 @@ public class CommunicationListener extends AbstractSequenceDiagramModelListener 
 	}
 
 	@Override
-	public void processingSignal(ModelClass object, Signal signal, Boolean isAPI) {
+	public void processingSignal(ModelClass object, Signal signal) {
 
 		if (suggestedMessagePattern == null) {
 			suggestedMessagePattern = this.executor.getThread().getRuntime().getCurrentInteraction().getFragments();
@@ -49,7 +49,7 @@ public class CommunicationListener extends AbstractSequenceDiagramModelListener 
 		if (sentSignal != null && currentSender != null && signal.equals(sentSignal)) {
 			sentWrapper = new MessageWrapper(currentSender, sentSignal, object);
 		} else {
-			sentWrapper = new MessageWrapper(null, signal, object, isAPI);
+			sentWrapper = new MessageWrapper(null, signal, object);
 		}
 
 		if (suggestedMessagePattern.size() > 0) {

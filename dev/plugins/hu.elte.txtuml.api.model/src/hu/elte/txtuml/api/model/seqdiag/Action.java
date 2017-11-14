@@ -45,7 +45,7 @@ public abstract class Action {
 	public static <S extends Signal> void send(ModelClass from, S signal, ModelClass target) {
 		RuntimeContext context = RuntimeContext.getCurrentExecutorThread();
 		BaseInteractionWrapper wrapper = context.getRuntime().getCurrentInteraction();
-		wrapper.storeMessage(from, signal, target, false);
+		wrapper.storeMessage(from, signal, target);
 	}
 
 	public static void log(String message) {

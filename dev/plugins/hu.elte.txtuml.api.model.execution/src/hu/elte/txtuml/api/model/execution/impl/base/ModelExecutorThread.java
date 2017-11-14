@@ -199,7 +199,7 @@ public abstract class ModelExecutorThread extends Thread implements RuntimeConte
 	 * <p>
 	 * Thread-safe.
 	 */
-	public abstract void send(Signal signal, AbstractModelClassWrapper target, Boolean isAPI);
+	public abstract void send(Signal signal, AbstractModelClassWrapper target);
 
 	/**
 	 * Adds a new entry to this thread's mailbox to send the given signal to the

@@ -22,7 +22,7 @@ public class TraceLogger extends LoggerBase implements TraceListener {
 	}
 
 	@Override
-	public void processingSignal(ModelClass object, Signal signal, Boolean isAPI) {
+	public void processingSignal(ModelClass object, Signal signal) {
 		trace(object + " processes " + signal);
 	}
 

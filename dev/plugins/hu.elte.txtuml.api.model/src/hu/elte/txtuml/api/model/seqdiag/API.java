@@ -8,6 +8,6 @@ public abstract class API {
 		hu.elte.txtuml.api.model.API.send(signal, target);
 		RuntimeContext context = RuntimeContext.getCurrentExecutorThread();
 		BaseInteractionWrapper wrapper = context.getRuntime().getCurrentInteraction();
-		wrapper.storeMessage(null, signal, target, true);
+		wrapper.storeMessage(null, signal, target);
 	}
 }

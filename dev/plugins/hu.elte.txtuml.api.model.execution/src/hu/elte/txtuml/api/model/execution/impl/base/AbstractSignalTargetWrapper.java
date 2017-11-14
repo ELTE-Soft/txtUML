@@ -31,7 +31,7 @@ public abstract class AbstractSignalTargetWrapper<W> extends BaseWrapper<W> impl
 	/**
 	 * This target receives the specified signal.
 	 */
-	public abstract void receive(Signal signal, Boolean isAPI);
+	public abstract void receive(Signal signal);
 
 	/**
 	 * This target receives the specified signal. If the signal goes through a
