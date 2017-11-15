@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.eclipse.debug.core.launchConfigurationTypes">
+      <launchConfigurationType
+            delegate="hu.elte.txtuml.diagnostics.DiagnosticsLaunchDelegate"
+            id="hu.elte.txtuml.diagnostics.launchConfigurationTypeDefault"
+            modes="run, debug"
+            name="txtUML Application">
+      </launchConfigurationType>
+   </extension>
+   <extension
+         point="org.eclipse.debug.ui.launchConfigurationTabGroups">
+      <launchConfigurationTabGroup
+            class="hu.elte.txtuml.diagnostics.DefaultLaunchConfigurationTabGroup"
+            id="hu.elte.txtuml.diagnostics.launchConfigurationTabGroupDefault"
+            type="hu.elte.txtuml.diagnostics.launchConfigurationTypeDefault">
+      </launchConfigurationTabGroup>
+   </extension>
+
+   <extension
+         point="org.eclipse.papyrus.infra.gmfdiag.css.markertopseudoselectormappingprovider">
+      <provider
+            class="hu.elte.txtuml.diagnostics.animation.AnimationMarkerToPseudoSelectorMappingProvider">
+      </provider>
+   </extension>
+   <extension
+         id="hu.elte.txtuml.diagnostics.animation.animatedmarker"
+         name="ANIMATED MARKER"
+         point="org.eclipse.core.resources.markers">
+      <super
+            type="org.eclipse.papyrus.modelmarker">
+      </super>
+      <persistent
+            value="false">
+      </persistent>
+   </extension>
+   <extension
+         point="org.eclipse.papyrus.infra.gmfdiag.css.theme">
+      <themeContribution
+            id="org.eclipse.papyrus.css.papyrus_theme">
+         <stylesheet
+               stylesheetPath="css/txtUMLAnimation.css">
+         </stylesheet>
+      </themeContribution>
+   </extension>
+
+</plugin>
