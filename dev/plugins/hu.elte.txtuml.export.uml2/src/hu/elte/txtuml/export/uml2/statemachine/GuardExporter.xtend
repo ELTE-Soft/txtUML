@@ -92,15 +92,15 @@ class GuardExporter extends Exporter<MethodDeclaration, IMethodBinding, Constrai
 		} else if(resultExpr instanceof InfixExpression) {
 			val updatedLeft =  updateExpression(resultExpr.leftOperand, varCodes)
 			val updadtedRight = updateExpression(resultExpr.rightOperand, varCodes)
-			if(tryDelete(updatedLeft)) resultExpr.leftOperand = updatedLeft
-			if(tryDelete(updadtedRight)) tryDelete(updadtedRight) resultExpr.rightOperand = updadtedRight
+			if(updatedLeft?.parent != resultExpr) resultExpr.leftOperand = updatedLeft
+			if(updadtedRight?.parent != resultExpr) resultExpr.rightOperand = updadtedRight
 		} else if(resultExpr instanceof PrefixExpression) {
 			val updatedExpr = updateExpression(resultExpr.operand, varCodes)		
-			if(tryDelete(updatedExpr)) resultExpr.operand = updatedExpr			 
+			if(updatedExpr?.parent != resultExpr) resultExpr.operand = updatedExpr			 
 			 
 		} else if(resultExpr instanceof MethodInvocation) {
 			val updatedExpr = updateExpression(resultExpr.expression, varCodes)
-			if(tryDelete(updatedExpr)) resultExpr.expression = updatedExpr
+			if(updatedExpr?.parent != resultExpr) resultExpr.expression = updatedExpr
 			var updatedArguments = new LinkedList<Object> 
 			for(Object e : resultExpr.arguments) {
 				val updatedArgument = updateExpression(e as Expression,varCodes)
@@ -119,16 +119,7 @@ class GuardExporter extends Exporter<MethodDeclaration, IMethodBinding, Constrai
 		
 		
 	}
-	
-	
-	def boolean tryDelete(Expression expr) {
-		try {
-				expr?.delete
-				 true
-		} catch(Exception e) {
-				false
-		}
-	}
+
 	
 	
 	def StateMachine getSM(Region reg) { reg.stateMachine ?: reg.state.container.getSM() }
