@@ -21,7 +21,6 @@ import org.eclipse.jdt.core.dom.InfixExpression
 import org.eclipse.jdt.core.dom.SimpleName
 import org.eclipse.jdt.core.dom.PrefixExpression
 import org.eclipse.jdt.core.dom.MethodInvocation
-import java.util.LinkedList
 
 class GuardExporter extends Exporter<MethodDeclaration, IMethodBinding, Constraint> {
 	
@@ -42,15 +41,22 @@ class GuardExporter extends Exporter<MethodDeclaration, IMethodBinding, Constrai
 			]
 		}
 
-		opaqueExpr.languages += "JAVA"		
-		opaqueExpr.bodies += createFaltGuardExpressionCode(source.body)
+		opaqueExpr.languages += "JAVA"
+		opaqueExpr.bodies += createFaltGuardExpressionCode(source.body)	
 	}
 	
 	def String createFaltGuardExpressionCode(Block block) {
-		var guardExpressionSource = ""
 		
 		val localVariables = new HashMap<String,Expression>()
 		val blockStatements = block.statements
+		
+		var guardExpressionSource = "error"
+		var c = blockStatements.stream.filter[s | !(s instanceof VariableDeclarationStatement) && 
+			 !(s instanceof Assignment) && 
+			 !(s instanceof ReturnStatement)].count	
+		if(c > 0) {
+			 	return guardExpressionSource
+			 }
 		
 		blockStatements.stream.filter[s | s instanceof VariableDeclarationStatement].forEach[
 				val varDecl = it as VariableDeclarationStatement;
@@ -73,15 +79,15 @@ class GuardExporter extends Exporter<MethodDeclaration, IMethodBinding, Constrai
 				}
 		]
 		
-		
 		for(Object statement : blockStatements) {	
 			if(statement instanceof ReturnStatement) { 
 				guardExpressionSource = updateExpression(statement.expression, localVariables).toString
+				
 
 			}
 		}
 		
-		guardExpressionSource
+		return guardExpressionSource
 	}
 	
 	
@@ -92,30 +98,39 @@ class GuardExporter extends Exporter<MethodDeclaration, IMethodBinding, Constrai
 		} else if(resultExpr instanceof InfixExpression) {
 			val updatedLeft =  updateExpression(resultExpr.leftOperand, varCodes)
 			val updadtedRight = updateExpression(resultExpr.rightOperand, varCodes)
-			if(updatedLeft?.parent != resultExpr) resultExpr.leftOperand = updatedLeft
-			if(updadtedRight?.parent != resultExpr) resultExpr.rightOperand = updadtedRight
+			if(updatedLeft?.parent != resultExpr) { 
+				updatedLeft?.delete
+				resultExpr.leftOperand = updatedLeft
+			}
+			if(updadtedRight?.parent != resultExpr) {
+				updadtedRight?.delete
+				resultExpr.rightOperand = updadtedRight
+				
+			} 
 		} else if(resultExpr instanceof PrefixExpression) {
 			val updatedExpr = updateExpression(resultExpr.operand, varCodes)		
-			if(updatedExpr?.parent != resultExpr) resultExpr.operand = updatedExpr			 
+			if(updatedExpr?.parent != resultExpr) {
+				updatedExpr?.delete
+				resultExpr.operand = updatedExpr
+			}			 
 			 
 		} else if(resultExpr instanceof MethodInvocation) {
 			val updatedExpr = updateExpression(resultExpr.expression, varCodes)
-			if(updatedExpr?.parent != resultExpr) resultExpr.expression = updatedExpr
-			var updatedArguments = new LinkedList<Object> 
-			for(Object e : resultExpr.arguments) {
-				val updatedArgument = updateExpression(e as Expression,varCodes)
-				updatedArgument.delete
-				updatedArguments += updatedArgument	
+			if(updatedExpr?.parent != resultExpr) {
+				updatedExpr?.delete
+				resultExpr.expression = updatedExpr
 			}
-			resultExpr.arguments.clear
-			for(Object e : updatedArguments) {
-				resultExpr.arguments += e
-			}
-			
+			for(var i = 0; i < resultExpr.arguments.size; i++) {
+				var updatedArgument = updateExpression(resultExpr.arguments.get(i) as Expression,varCodes)
+				if(updatedArgument?.parent != resultExpr) {
+					updatedArgument?.delete
+					resultExpr.arguments.set(i, updatedArgument)
+				}
+			}		
 			
 		}
 		
-		resultExpr
+		return resultExpr
 		
 		
 	}
