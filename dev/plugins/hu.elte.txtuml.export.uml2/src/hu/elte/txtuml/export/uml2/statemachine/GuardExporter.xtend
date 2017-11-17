@@ -50,7 +50,7 @@ class GuardExporter extends Exporter<MethodDeclaration, IMethodBinding, Constrai
 		val localVariables = new HashMap<String,Expression>()
 		val blockStatements = block.statements
 		
-		var guardExpressionSource = "error"
+		var guardExpressionSource = "?"
 		var c = blockStatements.stream.filter[s | !(s instanceof VariableDeclarationStatement) && 
 			 !(s instanceof Assignment) && 
 			 !(s instanceof ReturnStatement)].count	
