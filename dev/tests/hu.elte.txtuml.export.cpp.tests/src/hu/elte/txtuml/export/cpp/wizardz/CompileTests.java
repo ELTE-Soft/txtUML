@@ -10,9 +10,11 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -49,23 +51,25 @@ public class CompileTests {
 		final String model;
 		final String deployment;
 		final List<String> expectedLines;
+		final Boolean isDeterministic;
 
-		Config(String project, String model, String deployment, List<String> expectedLines) {
+		Config(String project, String model, String deployment, List<String> expectedLines, Boolean isDeterministic) {
 			this.project = project;
 			this.model = model;
 			this.deployment = deployment;
 			this.expectedLines = expectedLines;
+			this.isDeterministic = isDeterministic;
 		}
 	}
 
 	private static final String PATH_TO_PROJECTS = "../../../examples/demo/";
 
 	private static final Config[] TEST_PROJECTS = {
-			new Config("machine", "machine1.j.model", "machine1.j.cpp.Machine1Configuration", DemoExpectedLines.MACHINE.getLines()),
-			/*new Config("monitoring", "monitoring.x.model", "monitoring.x.cpp.XMonitoringConfiguration", DemoExpectedLines.MONITORING.getLines()),
+			new Config("machine", "machine1.j.model", "machine1.j.cpp.Machine1Configuration", DemoExpectedLines.MACHINE.getLines(), true),
+			//new Config("monitoring", "monitoring.x.model", "monitoring.x.cpp.XMonitoringConfiguration", DemoExpectedLines.MONITORING.getLines()),
 			new Config("producer_consumer", "producer_consumer.j.model",
-					"producer_consumer.j.cpp.ProducerConsumerConfiguration", DemoExpectedLines.PRODUCER_CONSUMER.getLines()),
-			new Config("train", "train.j.model", "train.j.cpp.TrainConfiguration", DemoExpectedLines.TRAIN.getLines()),*/ };
+					"producer_consumer.j.cpp.ProducerConsumerConfiguration", DemoExpectedLines.PRODUCER_CONSUMER.getLines(), false),
+			/*new Config("train", "train.j.model", "train.j.cpp.TrainConfiguration", DemoExpectedLines.TRAIN.getLines()),*/ };
 
 	private static final String EXPORT_TEST_PROJECT_PREFIX = "exportTest_";
 	private static final String COMPILE_TEST_PROJECT_PREFIX = "compileTest_";
@@ -182,7 +186,7 @@ public class CompileTests {
 			try {
 				String projectName = generateCPP(config, COMPILE_TEST_PROJECT_PREFIX, true, true);
 				if (buildStuffPresent) {
-					compileCPP(projectName, config.model, config.expectedLines);
+					compileCPP(projectName, config);
 				}
 			} catch (Exception e) {
 				Logger.sys.error("", e);
@@ -255,7 +259,7 @@ public class CompileTests {
 		return testProject;
 	}
 
-	private static void compileCPP(String testProjectName, String modelName, List<String> expectedLines) throws Exception {
+	private static void compileCPP(String testProjectName, Config config) throws Exception {
 		List<Map<String, String>> compileEnvironments = new ArrayList<Map<String, String>>();
 		if (compilerGCCPresent) {
 			Map<String, String> env = new TreeMap<String, String>();
@@ -282,7 +286,7 @@ public class CompileTests {
 				System.out.println("***************** CPP Compilation Test started on " + testProjectName + " "
 						+ compileEnv.get("CC").split(" ")[0] + modeStr);
 				String buildDir = testWorkspace + "/" + testProjectName + "/"
-						+ Uml2ToCppExporter.GENERATED_CPP_FOLDER_NAME + "/" + modelName + "/" + BUILD_DIR_PREFIX
+						+ Uml2ToCppExporter.GENERATED_CPP_FOLDER_NAME + "/" + config.model + "/" + BUILD_DIR_PREFIX
 						+ compileEnv.get("CC").split(" ")[0] + modeStr;
 				File buildDirFile = new File(buildDir);
 				boolean wasCreated = buildDirFile.mkdir();
@@ -323,33 +327,56 @@ public class CompileTests {
 				
 				File outputFile = new File(buildDir + File.separator + "mainOutput.txt");
 				if(modeStr.equals("Debug") && outputFile != null && outputFile.length() > 0){
-					assertFiles(outputFile, expectedLines);
+					assertFiles(outputFile, config.expectedLines, config.isDeterministic);
 				}
 			}
 		}
 	}
 	
-	private static void assertFiles(File outputFile, List<String> expectedLines) {
+	private static void assertFiles(File outputFile, List<String> expectedLines, Boolean isDeterministic) {
 		System.out.println("***************** Asserting output files started");
 		
 		try (Stream<String> stream = Files.lines(Paths.get(outputFile.toURI()))) {
 			List<String> lines =  stream.collect(Collectors.toList());
-			for(int i = 0; i < lines.size(); ++i){
-				if(!lines.get(i).trim().equals(expectedLines.get(i).trim())){
-					System.out.println("***************** Asserting output files failed at line " + i + ".:");
-					System.out.println("CPP output: " + lines.get(i).trim());
-					System.out.println("Expected output: " + expectedLines.get(i).trim());
+						
+			if(isDeterministic) {
+				if(lines.size() != expectedLines.size()) {
+					System.out.println("***************** Asserting output files failed, different sizes");
+					assertThat(lines.size(), is(expectedLines.size()));
 				}
-				assertThat(lines.get(i).trim(), is(expectedLines.get(i).trim()));
+				for(int i = 0; i < lines.size(); ++i) {
+					if(!lines.get(i).trim().equals(expectedLines.get(i).trim())) {
+						logAssertFilesFailed(i, lines.get(i).trim(), expectedLines.get(i).trim());
+					}
+					assertThat(lines.get(i).trim(), is(expectedLines.get(i).trim()));
+				}
 			}
-			
+			else{
+				Set<String> nonDeterministicSet = new HashSet<String>(expectedLines);
+				for(int i = 0; i < lines.size(); ++i) {
+					if(!nonDeterministicSet.contains(lines.get(i).trim())) {
+						logAssertFilesFailed(i, lines.get(i).trim(), null);
+						assertThat(true, is(false));
+					}
+				}
+			}
 			System.out.println("***************** Asserting output files successed");
-
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
-	} 
+	}
+	
+	private static void logAssertFilesFailed(Integer rowIndex, String cppOutput, String expectedOutput){
+		if(rowIndex != null){
+			System.out.println("***************** Asserting output files failed at line " + rowIndex + ".:");
+		}
+		if(cppOutput != null){
+			System.out.println("CPP output: " + cppOutput);
+		}
+		if(expectedOutput != null){
+			System.out.println("Expected output: " + expectedOutput);
+		}
+	}
 	
 	// Searches file recursively
 	private static File searchFile(File file, String search) {
