@@ -8,7 +8,7 @@ public enum DemoExpectedLines {
 			"Machine::Initialize",
 			"Machine: initializing...",
 			"Machine enters state: 'off'",
-			"ser::Initialize",
+			"User::Initialize",
 			"User: initializing...",
 			"User::Initialize",
 			"User: initializing...",
@@ -29,7 +29,17 @@ public enum DemoExpectedLines {
 			"Machine: switching on...",
 			"Machine enters state: 'on'")),
 	MONITORING(Arrays.asList("")),
-	PRODUCER_CONSUMER(Arrays.asList("producer_consumer")),
+	PRODUCER_CONSUMER(Arrays.asList("Consumer::Initialize",
+			"Consumer::DoRequest",
+			"Consumer::Stop",
+			"Producer::Initialize",
+			"Producer::DoOffer",
+			"Producer::Stop",
+			"Storage::Initialize",
+			"Storage::CanAccept",
+			"Storage::CannotAccept",
+			"Storage::CanServe",
+			"Storage::CannotServe")),
 	TRAIN(Arrays.asList("train"));
 	
 	private List<String> expectedLines;
