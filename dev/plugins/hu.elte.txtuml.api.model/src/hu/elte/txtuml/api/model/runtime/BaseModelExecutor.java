@@ -1,5 +1,7 @@
 package hu.elte.txtuml.api.model.runtime;
 
+import java.util.function.Function;
+
 import hu.elte.txtuml.api.model.Runtime;
 import hu.elte.txtuml.api.model.error.MissingRuntimeContextError;
 
@@ -92,5 +94,61 @@ public interface BaseModelExecutor {
 	 * @return this
 	 */
 	BaseModelExecutor removeTerminationBlocker(Object blocker);
+
+	/**
+	 * Stores a specific feature for this model executor identified by the given
+	 * key. The model executor does not use this feature for any purpose, the
+	 * only use of this method is to associate services with this executor which
+	 * can be later retrieved with the {@link #getFeature} method.
+	 * <p>
+	 * Must be <b>thread-safe</b>.
+	 * <p>
+	 * Note that although this method and the {@link #getFeature} method are
+	 * both thread-safe, a code that calls {@link &getFeature} and then
+	 * {@link #setFeature} (in order to initialize the feature if the
+	 * {@link #getFeature} returned {@code null}) is <i><b>not</b></i>
+	 * thread-safe. Use {@link #getOrCreateFeature} in such cases.
+	 * 
+	 * @param key
+	 *            the key associated with the given feature in this model
+	 *            executor
+	 * @param feature
+	 *            the feature to be stored
+	 */
+	void setFeature(Object key, Object feature);
+
+	/**
+	 * Returns a specific feature for this model executor identified by the
+	 * given key or {@code null} if no such feature has been found.
+	 * <p>
+	 * Must be <b>thread-safe</b>.
+	 * 
+	 * @param key
+	 *            the key associated with the required feature in this model
+	 *            executor
+	 * @returns the stored feature or {@code null}
+	 * 
+	 * @see #setFeature
+	 */
+	Object getFeature(Object key);
+
+	/**
+	 * Returns a specific feature for this model executor identified by the
+	 * given key or creates a new one with the provided supplier if no such
+	 * feature has been found.
+	 * <p>
+	 * Must be <b>thread-safe</b>.
+	 * 
+	 * @param key
+	 *            the key associated with the required feature in this model
+	 *            executor
+	 * @param creator
+	 *            a function that receives the key as a parameter and must
+	 *            return the new value (not {@code null})
+	 * @returns the stored feature or the newly created one
+	 * 
+	 * @see #setFeature
+	 */
+	Object getOrCreateFeature(Object key, Function<Object, Object> creator);
 
 }

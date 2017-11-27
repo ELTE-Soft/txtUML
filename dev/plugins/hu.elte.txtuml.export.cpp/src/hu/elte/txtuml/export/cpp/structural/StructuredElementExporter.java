@@ -4,6 +4,8 @@ import java.io.FileNotFoundException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
+
 import org.eclipse.uml2.uml.AttributeOwner;
 import org.eclipse.uml2.uml.Operation;
 import org.eclipse.uml2.uml.OperationOwner;
@@ -15,6 +17,7 @@ import org.eclipse.uml2.uml.VisibilityKind;
 import hu.elte.txtuml.export.cpp.ActivityExportResult;
 import hu.elte.txtuml.export.cpp.CppExporterUtils;
 import hu.elte.txtuml.export.cpp.activity.ActivityExporter;
+import hu.elte.txtuml.export.cpp.templates.GenerationNames;
 import hu.elte.txtuml.export.cpp.templates.structual.FunctionTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.ObjectDeclDefTemplates;
 
@@ -27,24 +30,43 @@ public abstract class StructuredElementExporter<StructuredElement extends Operat
 
 	protected ActivityExporter activityExporter;
 	protected DependencyExporter dependencyExporter;
-
-	protected StructuredElementExporter() {
-	}
+	private Predicate<Operation> pred;
+	private Boolean testing;
 
 	public void setName(String name) {
 		this.name = name;
+	}
+	
+	public void setTesting(Boolean testing) {
+		this.testing = testing;
 	}
 
 	abstract public void exportStructuredElement(StructuredElement structuredElement, String sourceDestination)
 			throws FileNotFoundException, UnsupportedEncodingException;
 
-	protected void setStructuredElement(StructuredElement structuredElement) {
-		this.structuredElement = structuredElement;
-	}
-
 	public void init() {
 		dependencyExporter = new DependencyExporter();
 		activityExporter = new ActivityExporter();
+	}
+
+	public boolean hasProperOperation() {
+		return structuredElement.getOwnedOperations().stream().anyMatch(pred);
+	}
+
+	public boolean hasProperOperation(StructuredElement structuredElement) {
+		return structuredElement.getOwnedOperations().stream().anyMatch(pred);
+	}
+
+	protected StructuredElementExporter() {
+		pred = o -> true;
+	}
+
+	protected StructuredElementExporter(Predicate<Operation> pred) {
+		this.pred = pred;
+	}
+
+	protected void setStructuredElement(StructuredElement structuredElement) {
+		this.structuredElement = structuredElement;
 	}
 
 	protected String createPublicAttributes() {
@@ -74,18 +96,56 @@ public abstract class StructuredElementExporter<StructuredElement extends Operat
 	protected String createOperationDefinitions() {
 		StringBuilder source = new StringBuilder("");
 		for (Operation operation : structuredElement.getOwnedOperations()) {
-			ActivityExportResult activityResult = activityExporter.createFunctionBody(CppExporterUtils.getOperationActivity(operation));
-			dependencyExporter.addDependencies(activityExporter.getAdditionalClassDependencies());
-
 			if (!CppExporterUtils.isConstructor(operation)) {
-
 				String returnType = getReturnType(operation.getReturnResult());
-				source.append(FunctionTemplates.functionDef(name, returnType, operation.getName(),
-						CppExporterUtils.getOperationParams(operation), activityResult.getActivitySource()));
+				if (!operation.isAbstract()) {
+					ActivityExportResult activityResult = activityExporter.createFunctionBody(CppExporterUtils.getOperationActivity(operation));				
+					dependencyExporter.addDependencies(activityExporter.getAdditionalClassDependencies());
+					source.append(FunctionTemplates.functionDef(name, returnType, operation.getName(),
+							CppExporterUtils.getOperationParams(operation), activityResult.getActivitySource()));
+					
+				} else {
+					assert(testing != null);
+					source.append(FunctionTemplates.abstractFunctionDef(name, returnType, operation.getName(),
+							CppExporterUtils.getOperationParams(operation),testing));
+
+				}
+
 			}
 
 		}
 		return source.toString();
+	}
+
+	protected String getReturnType(Parameter returnResult) {
+		String returnType = null;
+		if (returnResult != null) {
+			returnType = returnResult.getType().getName();
+		}
+		return returnType;
+	}
+
+	protected List<String> getOperationParamTypes(Operation operation) {
+		List<String> ret = new ArrayList<String>();
+		for (Parameter param : operation.getOwnedParameters()) {
+			if (param != operation.getReturnResult()) {
+				if (param.getType() != null) {
+					ret.add(param.getType().getName());
+				}
+			}
+		}
+		return ret;
+	}
+
+	protected String operationDecl(Operation op) {
+		String returnType = getReturnType(op.getReturnResult());
+		if (op.isAbstract()) {
+			return FunctionTemplates.functionDecl(returnType, op.getName(), getOperationParamTypes(op),
+					GenerationNames.ModifierNames.AbstractModifier, false);
+		} else {
+			return FunctionTemplates.functionDecl(returnType, op.getName(), getOperationParamTypes(op));
+		}
+
 	}
 
 	private String createAttributes(VisibilityKind modifyer) {
@@ -100,7 +160,6 @@ public abstract class StructuredElementExporter<StructuredElement extends Operat
 					type = attribute.getType().getName();
 				}
 
-				
 				if (isSimpleAttribute(attribute)) {
 
 					source.append(ObjectDeclDefTemplates.propertyDecl(type, attribute.getName(), attribute.getDefault()));
@@ -115,11 +174,10 @@ public abstract class StructuredElementExporter<StructuredElement extends Operat
 	private String createOperationDeclarations(VisibilityKind modifier) {
 		StringBuilder source = new StringBuilder("");
 		for (Operation operation : structuredElement.getOwnedOperations()) {
-			if (operation.getVisibility().equals(modifier)) {
+			if (operation.getVisibility().equals(modifier) && pred.test(operation)) {
 				String returnType = getReturnType(operation.getReturnResult());
 				if (!CppExporterUtils.isConstructor(operation)) {
-					source.append(FunctionTemplates.functionDecl(returnType, operation.getName(),
-							getOperationParamTypes(operation)));
+					source.append(operationDecl(operation));
 				}
 				if (returnType != null) {
 					dependencyExporter.addDependency(returnType);
@@ -129,26 +187,6 @@ public abstract class StructuredElementExporter<StructuredElement extends Operat
 		}
 
 		return source.toString();
-	}
-
-	private String getReturnType(Parameter returnResult) {
-		String returnType = null;
-		if (returnResult != null) {
-			returnType = returnResult.getType().getName();
-		}
-		return returnType;
-	}
-
-	private List<String> getOperationParamTypes(Operation operation) {
-		List<String> ret = new ArrayList<String>();
-		for (Parameter param : operation.getOwnedParameters()) {
-			if (param != operation.getReturnResult()) {
-				if (param.getType() != null) {
-					ret.add(param.getType().getName());
-				}
-			}
-		}
-		return ret;
 	}
 
 	private boolean isSimpleAttribute(Property property) {

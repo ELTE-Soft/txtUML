@@ -1,13 +1,22 @@
 /** @file Action.hpp
 */
+<<<<<<< HEAD
 #include "istatemachine.hpp"
 #include "ESRoot/Types.hpp"
 #include "PortUtils.hpp"
+=======
+>>>>>>> origin/master
 
+#include "ESRoot/Types.hpp"
+namespace ES
+{
+class ModelObject;
+}
 namespace Action 
 {
 	
-//void send(ES::StateMachineRef target, ES::EventRef signal);
+
+void send(ES::ModelObject* target, ES::EventRef signal);
 /**<
 Sends a message to a model object.
 @param target The target object where the signal has to be sent. 
@@ -24,9 +33,19 @@ Sends a message to a port.
 	
 	
 void start(ES::StateMachineRef sm);
+=======
+
+void start(ES::ModelObject* sm);
+>>>>>>> origin/master
 /**<
 Starts the state machine of a model object.
 @param sm The state machine to be started. 
+*/
+
+void deleteObject(ES::ModelObject* modelObject);
+/**<
+Dispose a model object reference.
+@param modelObject The object to be deleted.
 */
 	
 void log(ES::String message);

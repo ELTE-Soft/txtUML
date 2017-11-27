@@ -1,7 +1,9 @@
 package hu.elte.txtuml.xtxtuml.validation;
 
 import com.google.inject.Inject
+import hu.elte.txtuml.xtxtuml.common.XtxtUMLExternalityHelper
 import hu.elte.txtuml.xtxtuml.common.XtxtUMLUtils
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUAttribute
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUClass
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUClassMember
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUConstructor
@@ -29,6 +31,7 @@ import static hu.elte.txtuml.xtxtuml.xtxtUML.XtxtUMLPackage.Literals.*
 class XtxtUMLClassValidator extends XtxtUMLFileValidator {
 
 	@Inject extension IQualifiedNameProvider;
+	@Inject extension XtxtUMLExternalityHelper;
 	@Inject extension XtxtUMLUtils;
 
 	@Check
@@ -53,6 +56,15 @@ class XtxtUMLClassValidator extends XtxtUMLFileValidator {
 		if (name != enclosingClassName) {
 			error('''Constructor «name»(«ctor.parameters.typeNames.join(", ")») in class «enclosingClassName» must be named as its enclosing class''',
 				ctor, TU_CONSTRUCTOR__NAME, INVALID_CONSTRUCTOR_NAME);
+		}
+	}
+
+	@Check
+	def checkInitializerIsUsedOnlyOnExternalAttribute(TUAttribute attr) {
+		if (attr.initExpression != null && !attr.isExternal) {
+			error("Attribute " + attr.classQualifiedName + " cannot have an initializer expression" +
+				" – initializer expressions can be defined only for external attributes", attr,
+				TU_ATTRIBUTE__INIT_EXPRESSION, INITIALIZER_ON_NON_EXTERNAL_ATTRIBUTE);
 		}
 	}
 

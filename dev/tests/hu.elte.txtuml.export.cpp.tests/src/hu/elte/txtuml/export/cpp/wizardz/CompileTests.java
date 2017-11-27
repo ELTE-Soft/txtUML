@@ -18,10 +18,12 @@ import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import hu.elte.txtuml.export.cpp.Uml2ToCppExporter;
+import hu.elte.txtuml.utils.Logger;
 
 /**
  * These tests can also test the compilation of generated CPP sources if the
@@ -48,23 +50,28 @@ public class CompileTests {
 		}
 	}
 
-	private static final String pathToProjects = "../../../examples/demo/";
+	private static final String PATH_TO_PROJECTS = "../../../examples/demo/";
 
-	private static final Config[] testProjects = {
+	private static final Config[] TEST_PROJECTS = {
 			new Config("machine", "machine1.j.model", "machine1.j.cpp.Machine1Configuration"),
 			new Config("monitoring", "monitoring.x.model", "monitoring.x.cpp.XMonitoringConfiguration"),
-			new Config("producer_consumer", "producer_consumer.j.model", "producer_consumer.j.cpp.ProducerConsumerConfiguration"),
+			new Config("producer_consumer", "producer_consumer.j.model",
+					"producer_consumer.j.cpp.ProducerConsumerConfiguration"),
 			new Config("train", "train.j.model", "train.j.cpp.TrainConfiguration"), };
 
-	private static final String exportTestProjectPrefix = "exportTest_";
-	private static final String compileTestProjectPrefix = "compileTest_";
-	private static final String buildDirPrefix = "build_";
+	private static final String EXPORT_TEST_PROJECT_PREFIX = "exportTest_";
+	private static final String COMPILE_TEST_PROJECT_PREFIX = "compileTest_";
+	private static final String BUILD_DIR_PREFIX = "build_";
+
+	private static final String RELATIVE_PATH_TO_STDLIB = "../../../dev/plugins/hu.elte.txtuml.api.stdlib";
 
 	private static String testWorkspace = "target/work/data/";
 	private static boolean buildStuffPresent = false;
 	private static boolean compilerGCCPresent = false;
 	private static boolean compilerClangPresent = false;
 
+	private static IProject stdLibProject;
+	
 	@BeforeClass
 	public static void detectCPPEnvironment() {
 		try {
@@ -113,13 +120,40 @@ public class CompileTests {
 		buildStuffPresent = true;
 	}
 
+	@BeforeClass
+	public static void importStdLibIntoWorkspace() {
+		try {
+			String canonicalPath = new File(RELATIVE_PATH_TO_STDLIB).getCanonicalPath();
+			IProjectDescription desc = ResourcesPlugin.getWorkspace()
+					.loadProjectDescription(new Path(canonicalPath + "/.project"));
+			desc.setLocation(new Path(canonicalPath));
+			stdLibProject = ResourcesPlugin.getWorkspace().getRoot().getProject(desc.getName());
+			if (!stdLibProject.exists()) {
+				stdLibProject.create(desc, null);
+			}
+			stdLibProject.open(null);
+		} catch (Exception e) {
+			Logger.sys.error("Couldn't import stdlib project into workspace", e);
+		}
+	}
+	
+	@AfterClass
+	public static void removeStdLibFromWorkspace() {
+		try {
+			stdLibProject.close(null);
+			stdLibProject.delete(false, false, null);
+		} catch (Exception e) {
+			Logger.sys.error("Couldn't remove stdlib project from workspace", e);
+		}
+	}
+
 	@Test
 	public void exportTest() {
-		for (Config config : testProjects) {
+		for (Config config : TEST_PROJECTS) {
 			try {
-				generateCPP(config, exportTestProjectPrefix, false,true);
+				generateCPP(config, EXPORT_TEST_PROJECT_PREFIX, false, true);
 			} catch (Exception e) {
-				e.printStackTrace();
+				Logger.sys.error("", e);
 				assertThat(false, is(true));
 			}
 		}
@@ -127,14 +161,14 @@ public class CompileTests {
 
 	@Test
 	public void compileTest() {
-		for (Config config : testProjects) {
+		for (Config config : TEST_PROJECTS) {
 			try {
-				String projectName = generateCPP(config, compileTestProjectPrefix, true,true);
+				String projectName = generateCPP(config, COMPILE_TEST_PROJECT_PREFIX, true, true);
 				if (buildStuffPresent) {
 					compileCPP(projectName, config.model);
 				}
 			} catch (Exception e) {
-				e.printStackTrace();
+				Logger.sys.error("", e);
 				assertThat(false, is(true));
 			}
 		}
@@ -152,10 +186,11 @@ public class CompileTests {
 		return process.waitFor();
 	}
 
-	private static String generateCPP(Config config, String testPrefix, boolean addRuntime, boolean overWriteMainFile) throws Exception {
+	private static String generateCPP(Config config, String testPrefix, boolean addRuntime, boolean overWriteMainFile)
+			throws Exception {
 		TxtUMLToCppGovernor cppgen = new TxtUMLToCppGovernor(true);
 
-		String canPathToProjects = new File(pathToProjects).getCanonicalPath();
+		String canPathToProjects = new File(PATH_TO_PROJECTS).getCanonicalPath();
 		IProjectDescription desc = ResourcesPlugin.getWorkspace()
 				.loadProjectDescription(new Path(canPathToProjects + "/" + config.project + "/.project"));
 		desc.setLocation(new Path(new File(canPathToProjects + "/" + config.project).getCanonicalPath()));
@@ -191,7 +226,7 @@ public class CompileTests {
 			}
 		}
 
-		cppgen.uml2ToCpp(testProject, config.model, config.deployment, testProject, addRuntime,overWriteMainFile);
+		cppgen.uml2ToCpp(testProject, config.model, config.deployment, testProject, addRuntime, overWriteMainFile);
 
 		project.close(null);
 		project.delete(false, false, null);
@@ -225,7 +260,7 @@ public class CompileTests {
 				System.out.println("***************** CPP Compilation Test started on " + testProjectName + " "
 						+ compileEnv.get("CC").split(" ")[0] + modeStr);
 				String buildDir = testWorkspace + "/" + testProjectName + "/"
-						+ Uml2ToCppExporter.GENERATED_CPP_FOLDER_NAME + "/" + modelName + "/" + buildDirPrefix
+						+ Uml2ToCppExporter.GENERATED_CPP_FOLDER_NAME + "/" + modelName + "/" + BUILD_DIR_PREFIX
 						+ compileEnv.get("CC").split(" ")[0] + modeStr;
 				File buildDirFile = new File(buildDir);
 				boolean wasCreated = buildDirFile.mkdir();

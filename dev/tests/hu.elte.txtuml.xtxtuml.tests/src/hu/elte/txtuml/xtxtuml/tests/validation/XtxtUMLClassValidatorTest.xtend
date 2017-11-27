@@ -95,6 +95,25 @@ class XtxtUMLClassValidatorTest {
 	}
 
 	@Test
+	def checkInitializerIsUsedOnlyOnExternalAttribute() {
+		'''
+			class Foo {
+				external int bar = 0;
+				static external boolean baz = true;
+				int foobar;
+			}
+		'''.parse.assertNoError(INITIALIZER_ON_NON_EXTERNAL_ATTRIBUTE);
+
+		val rawFile = '''
+			class Foo {
+				int bar = 0;
+			}
+		'''
+
+		rawFile.parse.assertError(TU_ATTRIBUTE, INITIALIZER_ON_NON_EXTERNAL_ATTRIBUTE, rawFile.indexOf("0"), 1);
+	}
+
+	@Test
 	def checkInitialStateIsDefined() {
 		val noWarningFile = '''
 			class Foo;

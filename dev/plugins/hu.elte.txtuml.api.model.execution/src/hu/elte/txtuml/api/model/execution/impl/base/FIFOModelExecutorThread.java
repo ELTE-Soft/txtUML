@@ -65,5 +65,10 @@ public class FIFOModelExecutorThread extends ModelExecutorThread {
 	protected void addEntry(Runnable toPerform) {
 		mailbox.add(toPerform);
 	}
+	
+	public void sent(Signal signal, AbstractModelClassWrapper sender)
+	{
+		addEntry(() -> sender.traceSender(signal,sender));
+	}
 
 }

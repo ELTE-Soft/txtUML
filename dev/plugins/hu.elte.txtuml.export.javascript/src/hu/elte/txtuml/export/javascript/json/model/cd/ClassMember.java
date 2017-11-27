@@ -18,6 +18,8 @@ public abstract class ClassMember {
 	protected VisibilityKind visibility;
 	@XmlAccessMethods(getMethodName = "getName")
 	protected String name;
+	@XmlAccessMethods(getMethodName = "isStatic")
+	protected boolean isStatic;
 
 	/**
 	 * No-arg constructor required for serialization
@@ -52,6 +54,14 @@ public abstract class ClassMember {
 	 */
 	public String getName() {
 		return name;
+	}
+
+	/**
+	 *
+	 * @return whether this class member is static
+	 */
+	public boolean isStatic() {
+		return isStatic;
 	}
 
 }

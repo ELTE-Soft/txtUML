@@ -16,3 +16,11 @@
 #selector-container td ul{
 	padding-left: 15px;
 }
+
+.uml-class-attrs-text .v-line.static, .uml-class-methods-text .v-line.static {
+	text-decoration: underline;
+}
+
+.uml-class-attrs-text .v-line.abstract, .uml-class-methods-text .v-line.abstract {
+	font-style: italic;
+}

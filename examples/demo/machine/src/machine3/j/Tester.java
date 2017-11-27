@@ -35,7 +35,7 @@ public class Tester {
 		// association end is non-navigable in that model.
 		Action.send(new DoYourWork(), oneOfTheUsers);
 
-		Timer.start(oneOfTheUsers, new DoYourWork(), 5000);
+		Timer.start(new DoYourWork(), oneOfTheUsers, 5000);
 	}
 
 	public static void main(String[] args) {

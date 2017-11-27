@@ -39,6 +39,7 @@ class XtxtUMLTypeValidatorTest {
 				double a3;
 				String a4;
 				E a5;
+				external Class a6;
 				void o1(int p) {}
 				int o2(boolean p) {}
 				boolean o3(double p) {}
@@ -46,6 +47,7 @@ class XtxtUMLTypeValidatorTest {
 				Foo o5(Foo p) {}
 				E o6(E e) {}
 				Sig o7(Sig s) {}
+				external Class o8(Class p) {}
 			}
 		'''.parse.assertNoError(INVALID_TYPE);
 
@@ -66,6 +68,7 @@ class XtxtUMLTypeValidatorTest {
 				long o1() {}
 				Class o2(Class p) {}
 				void o3(void v) {}
+				external-body Class o4(Class p) {}
 			}
 		''';
 
@@ -86,6 +89,8 @@ class XtxtUMLTypeValidatorTest {
 		parsedFile.assertError(JVM_PARAMETERIZED_TYPE_REFERENCE, INVALID_TYPE, rawFile.indexOfNth("Class", 3), 5);
 		parsedFile.assertError(JVM_PARAMETERIZED_TYPE_REFERENCE, INVALID_TYPE, rawFile.indexOfNth("Sig", 2), 3);
 		parsedFile.assertError(JVM_PARAMETERIZED_TYPE_REFERENCE, INVALID_TYPE, rawFile.indexOfNth("void", 3), 4);
+		parsedFile.assertError(JVM_PARAMETERIZED_TYPE_REFERENCE, INVALID_TYPE, rawFile.indexOfNth("Class", 4), 5);
+		parsedFile.assertError(JVM_PARAMETERIZED_TYPE_REFERENCE, INVALID_TYPE, rawFile.indexOfNth("Class", 5), 5);
 	}
 
 	@Test

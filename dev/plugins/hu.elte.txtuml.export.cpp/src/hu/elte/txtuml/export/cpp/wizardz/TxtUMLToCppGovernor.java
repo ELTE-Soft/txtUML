@@ -80,8 +80,9 @@ class TxtUMLToCppGovernor {
 			}
 		}
 
+
 		Uml2ToCppExporter cppExporter = new Uml2ToCppExporter(model.allOwnedElements(), exporter.getExportedConfiguration(),
-				addRuntimeOption, overWriteMainFileOption);
+				addRuntimeOption, overWriteMainFileOption, testing);
 		try {
 			cppExporter.buildCppCode(
 					projectFolder + File.separator + GeneratedCPPFolderName + File.separator + txtUMLModel);
