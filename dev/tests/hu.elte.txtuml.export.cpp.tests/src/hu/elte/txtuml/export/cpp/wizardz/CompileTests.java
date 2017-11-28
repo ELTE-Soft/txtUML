@@ -52,24 +52,26 @@ public class CompileTests {
 		final String deployment;
 		final List<String> expectedLines;
 		final Boolean isDeterministic;
+		final String mainFileName;
 
-		Config(String project, String model, String deployment, List<String> expectedLines, Boolean isDeterministic) {
+		Config(String project, String model, String deployment, List<String> expectedLines, Boolean isDeterministic, String mainFileName) {
 			this.project = project;
 			this.model = model;
 			this.deployment = deployment;
 			this.expectedLines = expectedLines;
 			this.isDeterministic = isDeterministic;
+			this.mainFileName = mainFileName;
 		}
 	}
 
 	private static final String PATH_TO_PROJECTS = "../../../examples/demo/";
 
 	private static final Config[] TEST_PROJECTS = {
-			new Config("machine", "machine1.j.model", "machine1.j.cpp.Machine1Configuration", DemoExpectedLines.MACHINE.getLines(), true),
-			//new Config("monitoring", "monitoring.x.model", "monitoring.x.cpp.XMonitoringConfiguration", DemoExpectedLines.MONITORING.getLines()),
+			new Config("machine", "machine1.j.model", "machine1.j.cpp.Machine1Configuration", DemoExpectedLines.MACHINE.getLines(), true, "main.cpp"),
+			new Config("monitoring", "monitoring.x.model", "monitoring.x.cpp.XMonitoringConfiguration", DemoExpectedLines.MONITORING.getLines(), false, "mainTest.cpp"),
 			new Config("producer_consumer", "producer_consumer.j.model",
-					"producer_consumer.j.cpp.ProducerConsumerConfiguration", DemoExpectedLines.PRODUCER_CONSUMER.getLines(), false),
-			/*new Config("train", "train.j.model", "train.j.cpp.TrainConfiguration", DemoExpectedLines.TRAIN.getLines()),*/ };
+					"producer_consumer.j.cpp.ProducerConsumerConfiguration", DemoExpectedLines.PRODUCER_CONSUMER.getLines(), false, "main.cpp"),
+			new Config("train", "train.j.model", "train.j.cpp.TrainConfiguration", DemoExpectedLines.TRAIN.getLines(), false, "mainTest.cpp") };
 
 	private static final String EXPORT_TEST_PROJECT_PREFIX = "exportTest_";
 	private static final String COMPILE_TEST_PROJECT_PREFIX = "compileTest_";
@@ -303,7 +305,7 @@ public class CompileTests {
 					String destinationDir = destinationDirList.stream().collect(Collectors.joining("/")); // destination path
 					tmpDirList.add("src");
 					String initDir = tmpDirList.stream().collect(Collectors.joining("/")); // search init path
-					File mainFile = searchFile(new File(initDir), "main.cpp"); // search main.cpp
+					File mainFile = searchFile(new File(initDir), config.mainFileName); // search main.cpp
 						
 					if(mainFile != null){
 						Files.copy(Paths.get(mainFile.getCanonicalPath()), Paths.get(destinationDir + "/main.cpp"), StandardCopyOption.REPLACE_EXISTING);
