@@ -50,6 +50,8 @@ import hu.elte.txtuml.export.uml2.structural.OutPortExporter
 import hu.elte.txtuml.export.uml2.structural.InPortExporter
 import org.eclipse.uml2.uml.Reception
 import hu.elte.txtuml.export.uml2.structural.ReceptionExporter
+import hu.elte.txtuml.export.uml2.structural.ConnectorTypeEndExporter
+import hu.elte.txtuml.export.uml2.structural.ConnectorTypeExporter
 
 /**
  * Base class for exporters, methods to export different kinds of elements using specific exporters.
@@ -124,6 +126,14 @@ abstract class BaseExporter<S, A, R extends Element> {
 
 	def exportConnectorEnd(TypeDeclaration td, Consumer<ConnectorEnd> store) {
 		cache.export(new ConnectorEndExporter(this), td, td.resolveBinding, store)
+	}
+	
+	def exportConnectorType(TypeDeclaration td, Consumer<Association> store) {
+		cache.export(new ConnectorTypeExporter(this), td, td.resolveBinding, store)	
+	}
+	
+	def exportConnectorTypeEnd(TypeDeclaration td, Consumer<Property> store) {
+		cache.export(new ConnectorTypeEndExporter(this), td, td.resolveBinding, store)
 	}
 
 	def exportField(IVariableBinding td, Consumer<Property> store) {

@@ -70,7 +70,9 @@ abstract class AbstractPackageExporter<S, T extends Package> extends Exporter<S,
 
 				val owner = otherEnd.superclass.typeArguments.get(0)
 
-				exportConnector(decl)[(owner.fetchType as Class).ownedConnectors += it]
+				val connector = exportConnector(decl)[(owner.fetchType as Class).ownedConnectors += it]
+				val connectorType = exportConnectorType(decl)[result.packagedElements += it]
+				connector.type = connectorType
 			}
 			case ElementTypeTeller.isInterface(decl): {
 				exportInterface(decl)[result.packagedElements += it]
