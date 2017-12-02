@@ -63,18 +63,6 @@ public class CompileTests {
 			this.mainFileName = mainFileName;
 		}
 	}
-	
-	private static class RunConfig {
-		String buildDir;
-		List<String> list;
-		Map<String, String> compileEnv;
-		
-		RunConfig(String buildDir, List<String> list, Map<String, String> compileEnv){
-			this.buildDir = buildDir;
-			this.list = list;
-			this.compileEnv = compileEnv;
-		}
-	}
 
 	private static final String PATH_TO_PROJECTS = "../../../examples/demo/";
 
@@ -84,8 +72,6 @@ public class CompileTests {
 			new Config("producer_consumer", "producer_consumer.j.model",
 					"producer_consumer.j.cpp.ProducerConsumerConfiguration", DemoExpectedLines.PRODUCER_CONSUMER.getLines(), false, "main.cpp"),
 			new Config("train", "train.j.model", "train.j.cpp.TrainConfiguration", DemoExpectedLines.TRAIN.getLines(), false, "mainTest.cpp") };
-
-	private static RunConfig runConfig;
 	
 	private static final String EXPORT_TEST_PROJECT_PREFIX = "exportTest_";
 	private static final String COMPILE_TEST_PROJECT_PREFIX = "compileTest_";
@@ -197,7 +183,7 @@ public class CompileTests {
 		}
 	}
 
-	@Test
+	@Test(timeout=600000)
 	public void compileTest() {
 		for (Config config : TEST_PROJECTS) {
 			try {
@@ -337,10 +323,8 @@ public class CompileTests {
 				String mainBinary = isWindowsOS() ? "main.exe" : "./main";
 				String c = isWindowsOS() ? "/c" : "-c";
 				
-				CompileTests compileTest = new CompileTests();
-				runConfig = new RunConfig(buildDir, Arrays.asList(bash, c, mainBinary), compileEnv);
-				/*int mainRetCode = */compileTest.runMainTest();
-				//assertThat(mainRetCode, is(0));
+				int mainRetCode = executeCommand(buildDir, Arrays.asList(bash, c, mainBinary), compileEnv, MAIN_OUTPUT_FILE);
+				assertThat(mainRetCode, is(0));
 				
 				System.out.println("***************** CPP Compilation Test successful on " + testProjectName + " "
 						+ compileEnv.get("CC").split(" ")[0] + modeStr);
@@ -351,11 +335,6 @@ public class CompileTests {
 				}
 			}
 		}
-	}
-	
-	@Test(timeout=2000)
-	public void runMainTest() throws IOException, InterruptedException{
-		executeCommand(runConfig.buildDir, runConfig.list, runConfig.compileEnv, MAIN_OUTPUT_FILE);
 	}
 	
 	private static void assertFiles(File outputFile, List<String> expectedLines, Boolean isDeterministic) {
