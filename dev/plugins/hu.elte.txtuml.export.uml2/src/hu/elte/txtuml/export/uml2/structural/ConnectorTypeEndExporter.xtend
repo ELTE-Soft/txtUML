@@ -19,15 +19,21 @@ class ConnectorTypeEndExporter extends Exporter<TypeDeclaration, ITypeBinding, P
 	}
 	
 	override exportContents(TypeDeclaration source) {
+		result.name = source.name.identifier
+		//TODO export port interface properly
+		var superType = source.superclassType
+		
+		var portTypeBinging = source.resolveBinding.superclass.typeArguments.get(1)
+		var providedTypeArgument = portTypeBinging.typeArguments.get(0)
+		//val decl = portTypeBinging.parent
+		//val portElement = exportPort(source.resolveBinding.superclass.typeArguments.get(1))[]
+		//result.type = portElement.type
+		
 		result.lower = MultiplicityProvider.getLowerBound(source);
 		result.upper = MultiplicityProvider.getUpperBound(source);
 		result.association = (parent as ConnectorTypeExporter).result
 		result.isNavigable = true
 		
-		val port = fetchElement(source.resolveBinding.superclass.typeArguments.get(1)) as Port
-		result.name = port.name
-		result.type = port.type
-
 	}
 	
 }

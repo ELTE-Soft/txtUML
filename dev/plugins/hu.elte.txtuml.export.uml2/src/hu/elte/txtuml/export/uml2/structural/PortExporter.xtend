@@ -33,6 +33,7 @@ public class PortExporter extends Exporter<TypeDeclaration, ITypeBinding, Port> 
 
 	def exportWithInterfaces(Optional<Interface> provided, Optional<Interface> required, boolean isBehavior,
 		String portName) {
+		result.name = portName
 		result.isBehavior = isBehavior;
 		val dummyProvided = factory.createInterface
 		dummyProvided.name = '''provided interface for «portName»'''
@@ -49,7 +50,6 @@ public class PortExporter extends Exporter<TypeDeclaration, ITypeBinding, Port> 
 			providedRequired.suppliers += it
 			storePackaged(providedRequired)
 		]
-		result.name = portName
 	}
 
 }
