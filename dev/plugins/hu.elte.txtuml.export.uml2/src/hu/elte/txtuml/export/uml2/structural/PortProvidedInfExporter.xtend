@@ -33,7 +33,7 @@ class PortProvidedInfExporter extends Exporter<TypeDeclaration, ITypeBinding, In
 		if (iface.qualifiedName == hu.elte.txtuml.api.model.Interface.Empty.canonicalName) {
 			Optional.empty
 		} else {
-			Optional.of(fetchType(iface) as Interface)
+			Optional.of(fetchElement(iface, new InterfaceExporter(this)) as Interface)
 		}
 	}
 	

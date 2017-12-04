@@ -52,6 +52,7 @@ import org.eclipse.uml2.uml.Reception
 import hu.elte.txtuml.export.uml2.structural.ReceptionExporter
 import hu.elte.txtuml.export.uml2.structural.ConnectorTypeEndExporter
 import hu.elte.txtuml.export.uml2.structural.ConnectorTypeExporter
+import hu.elte.txtuml.export.uml2.structural.PortProvidedInfExporter
 
 /**
  * Base class for exporters, methods to export different kinds of elements using specific exporters.
