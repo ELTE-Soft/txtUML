@@ -141,8 +141,6 @@ public class PrivateFunctionalTemplates {
 	public static String debugLogMessage(String className, String functionName) {
 		return GenerationTemplates
 				.debugOnlyCodeBlock("\tstd::cout << \"" + className + "::" + functionName + "\\n" + '"' + ';' + "\n");
-		/*return GenerationTemplates
-				.debugOnlyCodeBlock("\tstd::cout << \"" + className + "::" + functionName + "\" << std::endl;\n");*/
 	}
 
 }
