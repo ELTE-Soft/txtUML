@@ -278,7 +278,7 @@ public class CompileTests {
 		}
 
 		for (Map<String, String> compileEnv : compileEnvironments) {
-			for (String modeStr : new String[] { "Debug", "Release" }) {
+			for (String modeStr : new String[] { "Debug"/*, "Release"*/ }) {
 
 				// TODO Remove this as soon as LLVM distributions put back
 				// LLVMgold.so (broken symbolic link in llvm-dev package)
@@ -350,16 +350,16 @@ public class CompileTests {
 				}
 				for(int i = 0; i < lines.size(); ++i) {
 					if(!lines.get(i).trim().equals(expectedLines.get(i).trim())) {
-						logAssertFilesFailed(i, lines.get(i).trim(), expectedLines.get(i).trim());
+						logAssertFilesFailed(i + 1, lines.get(i).trim(), expectedLines.get(i).trim());
 					}
 					assertThat(lines.get(i).trim(), is(expectedLines.get(i).trim()));
 				}
 			}
 			else{
-				Set<String> nonDeterministicSet = new HashSet<String>(expectedLines);
-				for(int i = 0; i < lines.size(); ++i) {
-					if(!nonDeterministicSet.contains(lines.get(i).trim())) {
-						logAssertFilesFailed(i, lines.get(i).trim(), null);
+				Set<String> nonDeterministicSet = new HashSet<String>(lines);
+				for(int i = 0; i < expectedLines.size(); ++i) {
+					if(!nonDeterministicSet.contains(expectedLines.get(i).trim())) {
+						logAssertFilesFailed(i + 1, null, expectedLines.get(i).trim());
 						assertThat(true, is(false));
 					}
 				}
