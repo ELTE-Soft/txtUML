@@ -278,61 +278,54 @@ public class CompileTests {
 		}
 
 		for (Map<String, String> compileEnv : compileEnvironments) {
-			for (String modeStr : new String[] { "Debug"/*, "Release"*/ }) {
-
-				// TODO Remove this as soon as LLVM distributions put back
-				// LLVMgold.so (broken symbolic link in llvm-dev package)
-				if (compileEnv.get("CC").equals("clang") && modeStr.equals("Release")) {
-					continue;
+			String modeStr = "Debug";
+			
+			System.out.println("***************** CPP Compilation Test started on " + testProjectName + " "
+					+ compileEnv.get("CC").split(" ")[0] + modeStr);
+			String buildDir = testWorkspace + "/" + testProjectName + "/"
+					+ Uml2ToCppExporter.GENERATED_CPP_FOLDER_NAME + "/" + config.model + "/" + BUILD_DIR_PREFIX
+					+ compileEnv.get("CC").split(" ")[0] + modeStr;
+			File buildDirFile = new File(buildDir);
+			boolean wasCreated = buildDirFile.mkdir();
+			assertThat(wasCreated, is(true));
+			
+			// Copy main.cpp for build
+			List<String> tmpDirList = new LinkedList<String>(Arrays.asList(buildDir.split("/"))); // getting actual path
+			if(tmpDirList.size() > 3){
+				tmpDirList.remove(tmpDirList.size() - 1); 
+				List<String> destinationDirList = new LinkedList<String>(tmpDirList);
+				for(int i = 0; i < 2; ++i){
+					tmpDirList.remove(tmpDirList.size() - 1); // go back for src 
 				}
-
-				System.out.println("***************** CPP Compilation Test started on " + testProjectName + " "
-						+ compileEnv.get("CC").split(" ")[0] + modeStr);
-				String buildDir = testWorkspace + "/" + testProjectName + "/"
-						+ Uml2ToCppExporter.GENERATED_CPP_FOLDER_NAME + "/" + config.model + "/" + BUILD_DIR_PREFIX
-						+ compileEnv.get("CC").split(" ")[0] + modeStr;
-				File buildDirFile = new File(buildDir);
-				boolean wasCreated = buildDirFile.mkdir();
-				assertThat(wasCreated, is(true));
-				
-				// Copy main.cpp for build
-				List<String> tmpDirList = new LinkedList<String>(Arrays.asList(buildDir.split("/"))); // getting actual path
-				if(tmpDirList.size() > 3){
-					tmpDirList.remove(tmpDirList.size() - 1); 
-					List<String> destinationDirList = new LinkedList<String>(tmpDirList);
-					for(int i = 0; i < 2; ++i){
-						tmpDirList.remove(tmpDirList.size() - 1); // go back for src 
-					}
-					String destinationDir = destinationDirList.stream().collect(Collectors.joining("/")); // destination path
-					tmpDirList.add("src");
-					String initDir = tmpDirList.stream().collect(Collectors.joining("/")); // search init path
-					File mainFile = searchFile(new File(initDir), config.mainFileName); // search main.cpp
-						
-					if(mainFile != null){
-						Files.copy(Paths.get(mainFile.getCanonicalPath()), Paths.get(destinationDir + "/main.cpp"), StandardCopyOption.REPLACE_EXISTING);
-					}
+				String destinationDir = destinationDirList.stream().collect(Collectors.joining("/")); // destination path
+				tmpDirList.add("src");
+				String initDir = tmpDirList.stream().collect(Collectors.joining("/")); // search init path
+				File mainFile = searchFile(new File(initDir), config.mainFileName); // search main.cpp
+					
+				if(mainFile != null){
+					Files.copy(Paths.get(mainFile.getCanonicalPath()), Paths.get(destinationDir + "/main.cpp"), StandardCopyOption.REPLACE_EXISTING);
 				}
+			}
+			
+			int cmakeRetCode = executeCommand(buildDir,
+					Arrays.asList("cmake", "-G", "Ninja", "-DCMAKE_BUILD_TYPE=" + modeStr, ".."), compileEnv, null);
+			assertThat(cmakeRetCode, is(0));
+			int ninjaRetCode = executeCommand(buildDir, Arrays.asList("ninja", "-v"), compileEnv, null);
+			assertThat(ninjaRetCode, is(0));
+			
+			String bash = isWindowsOS() ? "cmd.exe" : "/bin/bash";
+			String mainBinary = isWindowsOS() ? "main.exe" : "./main";
+			String c = isWindowsOS() ? "/c" : "-c";
+			
+			int mainRetCode = executeCommand(buildDir, Arrays.asList(bash, c, mainBinary), compileEnv, MAIN_OUTPUT_FILE);
+			assertThat(mainRetCode, is(0));
 				
-				int cmakeRetCode = executeCommand(buildDir,
-						Arrays.asList("cmake", "-G", "Ninja", "-DCMAKE_BUILD_TYPE=" + modeStr, ".."), compileEnv, null);
-				assertThat(cmakeRetCode, is(0));
-				int ninjaRetCode = executeCommand(buildDir, Arrays.asList("ninja", "-v"), compileEnv, null);
-				assertThat(ninjaRetCode, is(0));
-				
-				String bash = isWindowsOS() ? "cmd.exe" : "/bin/bash";
-				String mainBinary = isWindowsOS() ? "main.exe" : "./main";
-				String c = isWindowsOS() ? "/c" : "-c";
-				
-				int mainRetCode = executeCommand(buildDir, Arrays.asList(bash, c, mainBinary), compileEnv, MAIN_OUTPUT_FILE);
-				assertThat(mainRetCode, is(0));
-				
-				System.out.println("***************** CPP Compilation Test successful on " + testProjectName + " "
-						+ compileEnv.get("CC").split(" ")[0] + modeStr);
-				
-				File outputFile = new File(buildDir + File.separator + "mainOutput.txt");
-				if(modeStr.equals("Debug") && outputFile != null && outputFile.length() > 0){
-					assertFiles(outputFile, config.expectedLines, config.isDeterministic);
-				}
+			System.out.println("***************** CPP Compilation Test successful on " + testProjectName + " "
+					+ compileEnv.get("CC").split(" ")[0] + modeStr);
+			
+			File outputFile = new File(buildDir + File.separator + "mainOutput.txt");
+			if(modeStr.equals("Debug") && outputFile != null && outputFile.length() > 0){
+				assertFiles(outputFile, config.expectedLines, config.isDeterministic);
 			}
 		}
 	}
