@@ -49,8 +49,7 @@ public enum DemoExpectedLines {
 			"Producer::Stop",
 			"Storage::Initialize",
 			"Storage::CanAccept",
-			"Storage::CanServe",
-			"Storage::CannotServe")),
+			"Storage::CanServe")),
 	TRAIN(Arrays.asList("Engine::Init_Stopped",
 			"Engine::Stopped_Working",
 			"Engine::Working_Stopped",
@@ -60,7 +59,7 @@ public enum DemoExpectedLines {
 			"Lamp::Init_Dark",
 			"Lamp::Dark_Light",
 			"Lamp::Light_Dark",
-			"Lamp::Light_Dark2",
+			/*"Lamp::Light_Dark2", */ //it mostly true because of the sleep, but there is no guarantee for it
 			"Forwards_subSM::FInit_F1"));
 	
 	private List<String> expectedLines;
