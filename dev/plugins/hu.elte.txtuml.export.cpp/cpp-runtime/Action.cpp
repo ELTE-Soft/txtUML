@@ -1,6 +1,7 @@
 #include "Action.hpp"
 #include "ModelObject.hpp"
 #include <iostream>
+#include <sstream>
 
 namespace Action 
 {
@@ -21,6 +22,8 @@ namespace Action
 	
 	void log(ES::String message)
 	{
-		std::cout << message << std::endl;
+		std::stringstream stream;
+		stream << message << std::endl;
+		std::cout << stream.str();
 	}
 }
