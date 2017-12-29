@@ -39,6 +39,7 @@ import org.eclipse.xtext.xbase.typesystem.util.ExtendedEarlyExitComputer
 
 import static hu.elte.txtuml.xtxtuml.validation.XtxtUMLIssueCodes.*
 import static hu.elte.txtuml.xtxtuml.xtxtUML.XtxtUMLPackage.Literals.*
+import hu.elte.txtuml.xtxtuml.xtxtUML.TULinkExpression
 
 class XtxtUMLExpressionValidator extends XtxtUMLTypeValidator {
 
@@ -263,6 +264,7 @@ class XtxtUMLExpressionValidator extends XtxtUMLTypeValidator {
 			TUAttribute,
 			TUDeleteObjectExpression,
 			TUSendSignalExpression,
+			TULinkExpression,
 			TUTransitionGuard: true
 			XBlockExpression: false
 			default: super.isValueExpectedRecursive(expr)

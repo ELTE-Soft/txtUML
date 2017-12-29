@@ -34,6 +34,7 @@ import org.eclipse.xtext.xbase.typesystem.computation.ITypeComputationState
 import org.eclipse.xtext.xbase.typesystem.conformance.ConformanceFlags
 import org.eclipse.xtext.xbase.typesystem.references.LightweightTypeReference
 import org.eclipse.xtext.xbase.typesystem.references.ParameterizedTypeReference
+import hu.elte.txtuml.xtxtuml.xtxtUML.TULinkExpression
 
 class XtxtUMLTypeComputer extends XbaseWithAnnotationsTypeComputer {
 
@@ -217,6 +218,14 @@ class XtxtUMLTypeComputer extends XbaseWithAnnotationsTypeComputer {
 
 		childState.computeTypes(sendExpr.signal);
 		childState.computeTypes(sendExpr.target);
+	}
+	
+	def dispatch computeTypes(TULinkExpression linkExpr, ITypeComputationState state) {
+		state.acceptActualType(state.getPrimitiveVoid);
+		val childState = state.withoutRootExpectation;
+
+		childState.computeTypes(linkExpr.rightObject);
+		childState.computeTypes(linkExpr.leftObject);
 	}
 
 	/**
