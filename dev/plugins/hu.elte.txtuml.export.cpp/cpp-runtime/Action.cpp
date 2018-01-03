@@ -4,7 +4,6 @@
 
 namespace Action 
 {
-<<<<<<< HEAD
 
 	void send(ES::ModelObject* target, ES::EventRef signal)
 	{

@@ -17,13 +17,16 @@ class DelegationConnectExporter extends ConnectExporterBase {
 	}
 	
 	override exportContents(MethodInvocation source) {
-		val parentPortReference = source.arguments.get(0) as MethodInvocation
-		val parentTypeLit = source.arguments.get(1) as TypeLiteral
-		val parentTypeBinding = parentTypeLit.type.resolveBinding
-		
+		val parentPortReference = source.arguments.get(0) as MethodInvocation		
 		val childPortReference = source.arguments.get(2) as MethodInvocation
-		createAddToPortAction(parentPortReference,childPortReference);
-		createAddToPortAction(childPortReference,parentPortReference);
+		
+		val leftLit = source.arguments.get(0) as TypeLiteral
+		val rigthLit = source.arguments.get(2) as TypeLiteral
+		val leftEnd = createEnd(factory.createLinkEndCreationData, leftLit.type.resolveBinding, parentPortReference)
+		val rightEnd = createEnd(factory.createLinkEndCreationData, rigthLit.type.resolveBinding, childPortReference)
+		
+		result.endData += #[leftEnd, rightEnd]
+		result.name = '''link «leftEnd.value.name» to «rightEnd.value.name»'''
 	}
 	
 }

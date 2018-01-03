@@ -16,25 +16,6 @@ abstract class ConnectExporterBase extends ActionExporter<MethodInvocation, Crea
 		super(parent)
 	}
 	
-	def createAddToPortAction(MethodInvocation targetPortReference, MethodInvocation sourcePortReference) {
-		val targetRead = targetPortReference.exportExpression as ReadStructuralFeatureAction
-		val sourceRead = sourcePortReference.exportExpression as ReadStructuralFeatureAction
-		storeNode(targetRead)
-		storeNode(sourceRead)
-		
-		val write = factory.createAddStructuralFeatureValueAction
-		write.isReplaceAll = true
-		write.structuralFeature = targetRead.structuralFeature
-		write.name = '''«result.name».«write.structuralFeature.name»=«sourceRead.name»'''
-		storeNode(write)
-		val targetObj = exportExpression(targetPortReference.expression) ?: thisRef(targetRead.object.type)
-		if (targetObj != null) {
-			targetObj.result.objectFlow(write.createObject("targetObj", targetObj.result.type))
-			sourceRead.result.objectFlow(write.createValue("new_port_value", sourceRead.result.type))
-		
-		}
-	}
-	
 	protected def createEnd(LinkEndData end, ITypeBinding endType, MethodInvocation portReference) {
 		
 		end.end = fetchElement(endType, new ConnectorTypeEndExporter(this)) as Property

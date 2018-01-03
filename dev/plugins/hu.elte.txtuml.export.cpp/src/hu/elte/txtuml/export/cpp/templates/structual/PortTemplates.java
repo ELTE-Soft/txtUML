@@ -13,9 +13,8 @@ public class PortTemplates {
 	public static final String PORT_FILE_NAME = "ports";
 	public final static String PORT_HEADER = PORT_FILE_NAME + "." + FileNames.HeaderExtension;
 	public static final String PORTS_INITIALIZER_FUNCTION_NAME = GenerationNames.InitiliazetFixFunctionNames.InitPorts;
-	public static final String AssemblyConnectionSetter = "setAssemblyConnectedPort";
-	public static final String DelegationConnectionSetter = "setDelgationConnectedPort";
-	public static final String InnerConnectionSetter = "setInnerConnection";
+	public static final String AssemblyConnectionSetter = "assemblyCconnect";
+	public static final String DelegationConnectionSetter = "delegateConnect";
 	
 	public static String portHeaderGuard (String source) {
 		return HeaderTemplates.headerGuard(source, PORT_FILE_NAME);

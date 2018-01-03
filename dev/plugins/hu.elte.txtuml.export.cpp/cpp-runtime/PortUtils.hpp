@@ -110,15 +110,16 @@ private:
 	ES::SharedPtr<Port<ProvidedInf , RequiredInf>> port;
 };
 
+// TODO Handle create link actions uniformly
 template<typename Inf1, typename Inf2>
-void connect(IPort<Inf1, Inf2> * p1, IPort <Inf2, Inf1> * p2)
+void assemblyCconnect(IPort<Inf1, Inf2> * p1, IPort <Inf2, Inf1> * p2)
 {
 	p1->setAssemblyConnectedPort(p2);
 	p2->setAssemblyConnectedPort(p1);
 }
 
 template<typename Inf1, typename Inf2>
-void connect(IPort<Inf1, Inf2> * p1, Port <Inf1, Inf2> * p2)
+void delegateConnect(IPort<Inf1, Inf2> * p1, Port <Inf1, Inf2> * p2)
 {
 	p1->setDelgationConnectedPort(p2);
 	p2->setInnerConnection(p1);
