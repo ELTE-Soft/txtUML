@@ -78,14 +78,9 @@ class GuardExporter extends Exporter<MethodDeclaration, IMethodBinding, Constrai
 					}
 				}
 		]
-		
-		for(Object statement : blockStatements) {	
-			if(statement instanceof ReturnStatement) { 
-				guardExpressionSource = updateExpression(statement.expression, localVariables).toString
-				
-
-			}
-		}
+		val retExpr = blockStatements.findFirst[it instanceof ReturnStatement] as ReturnStatement
+		guardExpressionSource = updateExpression(retExpr.expression, localVariables).toString
+			
 		
 		return guardExpressionSource
 	}
