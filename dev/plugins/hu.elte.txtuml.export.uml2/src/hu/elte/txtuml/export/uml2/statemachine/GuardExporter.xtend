@@ -21,6 +21,7 @@ import org.eclipse.jdt.core.dom.InfixExpression
 import org.eclipse.jdt.core.dom.SimpleName
 import org.eclipse.jdt.core.dom.PrefixExpression
 import org.eclipse.jdt.core.dom.MethodInvocation
+import org.eclipse.jdt.core.dom.ParenthesizedExpression
 
 class GuardExporter extends Exporter<MethodDeclaration, IMethodBinding, Constraint> {
 	
@@ -90,7 +91,10 @@ class GuardExporter extends Exporter<MethodDeclaration, IMethodBinding, Constrai
 		var resultExpr = expr
 		if(resultExpr instanceof SimpleName && varCodes.containsKey((resultExpr as SimpleName).identifier)) {
 			resultExpr = updateExpression(varCodes.get((resultExpr as SimpleName).identifier), varCodes)
-		} else if(resultExpr instanceof InfixExpression) {
+		} else if(resultExpr instanceof ParenthesizedExpression) {
+			resultExpr = updateExpression(resultExpr.expression,varCodes)
+		}
+		else if(resultExpr instanceof InfixExpression) {
 			val updatedLeft =  updateExpression(resultExpr.leftOperand, varCodes)
 			val updadtedRight = updateExpression(resultExpr.rightOperand, varCodes)
 			if(updatedLeft?.parent != resultExpr) { 
