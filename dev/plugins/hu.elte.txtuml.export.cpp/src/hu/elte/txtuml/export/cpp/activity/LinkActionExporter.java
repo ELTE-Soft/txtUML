@@ -2,11 +2,11 @@ package hu.elte.txtuml.export.cpp.activity;
 
 import java.util.Arrays;
 
+import org.eclipse.uml2.uml.ActivityNode;
 import org.eclipse.uml2.uml.Class;
 import org.eclipse.uml2.uml.CreateLinkAction;
 import org.eclipse.uml2.uml.DestroyLinkAction;
 import org.eclipse.uml2.uml.LinkEndData;
-import org.eclipse.uml2.uml.OutputPin;
 import org.eclipse.uml2.uml.Port;
 import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.ReadLinkAction;
@@ -16,6 +16,7 @@ import org.eclipse.uml2.uml.UMLPackage;
 import hu.elte.txtuml.export.cpp.templates.activity.ActivityTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.LinkTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.PortTemplates;
+import hu.elte.txtuml.export.cpp.templates.structual.LinkTemplates.LinkFunctionType;
 
 class LinkActionExporter {
 
@@ -54,38 +55,33 @@ class LinkActionExporter {
 		String firstEndObject = activityExportResolver.getTargetFromInputPin(firstLinkEnd.getValue());
 		String secondEndObject = activityExportResolver.getTargetFromInputPin(secondLinkEnd.getValue());
 		
+		LinkFunctionType linkType = LinkTemplates.LinkFunctionType.Link;
 		
-		if(isPortConnect(node)) {
-			
-			Port p1 =  (Port) ((ReadStructuralFeatureAction) ((OutputPin) firstLinkEnd.getValue().getIncomings().get(0).getSource()).getOwner()).getStructuralFeature();
-			Port p2 =  (Port) ((ReadStructuralFeatureAction) ((OutputPin) firstLinkEnd.getValue().getIncomings().get(0).getSource()).getOwner()).getStructuralFeature();
-			String connectOperation = "";
-			String firstPort = firstEndObject;
-			String secodPort = secondEndObject;
+		if(isPortConnect(node)) {			
+			Port p1 =  (Port) ((ReadStructuralFeatureAction) (firstLinkEnd.getValue().getIncomings().get(0).getSource())).getStructuralFeature();
+			Port p2 =  (Port) ((ReadStructuralFeatureAction) (secondLinkEnd.getValue().getIncomings().get(0).getSource())).getStructuralFeature();
 			switch(getRelation(p1, p2)) {
 			case Child:
-				firstPort = secondEndObject;
-				secodPort = firstEndObject;
-				connectOperation = PortTemplates.DelegationConnectionSetter;
+				String firstTmp = firstEndObject;
+				firstEndObject = secondEndObject;
+				secondEndObject = firstTmp;
+				linkType = LinkTemplates.LinkFunctionType.DelegeateConnect;
 				break;
 			case Parent:
-				connectOperation = PortTemplates.DelegationConnectionSetter;
+				linkType = LinkTemplates.LinkFunctionType.DelegeateConnect;
 				break;
 			case Sublings:
-				connectOperation = PortTemplates.AssemblyConnectionSetter;
+				linkType = LinkTemplates.LinkFunctionType.AssemblyConnect;
 				break;
 			default:
 				break;
 			
 			}
 			
-			return ActivityTemplates.operationCall(connectOperation, Arrays.asList(firstPort,secodPort));
 		}
-		else {
-			return ActivityTemplates.linkObjects(firstEndObject, secondEndObject,
+		return ActivityTemplates.linkObjects(firstEndObject, secondEndObject,
 					firstLinkEnd.getEnd().getAssociation().getName(), firstLinkEnd.getEnd().getName(),
-					secondLinkEnd.getEnd().getName(), LinkTemplates.LinkFunctionType.Link);
-		}
+					secondLinkEnd.getEnd().getName(), linkType);
 
 		
 	}
@@ -111,10 +107,10 @@ class LinkActionExporter {
 	boolean isPortConnect(CreateLinkAction node) {
 		LinkEndData firstLinkEnd = node.getEndData().get(0);
 
-		OutputPin outPin = (OutputPin) firstLinkEnd.getValue().getIncomings().get(0).getSource();
-		if(outPin.getOwner().eClass().equals(UMLPackage.Literals.READ_STRUCTURAL_FEATURE_ACTION)) {
-			ReadStructuralFeatureAction readPort = (ReadStructuralFeatureAction) outPin.getOwner();
-			return readPort.getStructuralFeature().equals(UMLPackage.Literals.PORT);
+		ActivityNode readActivity =  firstLinkEnd.getValue().getIncomings().get(0).getSource();
+		if(readActivity.eClass().equals(UMLPackage.Literals.READ_STRUCTURAL_FEATURE_ACTION)) {
+			ReadStructuralFeatureAction readPort = (ReadStructuralFeatureAction) readActivity;
+			return readPort.getStructuralFeature().eClass().equals(UMLPackage.Literals.PORT);
 		}
 		
 		

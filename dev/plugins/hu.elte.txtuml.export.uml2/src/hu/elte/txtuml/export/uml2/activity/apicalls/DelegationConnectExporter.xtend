@@ -20,10 +20,13 @@ class DelegationConnectExporter extends ConnectExporterBase {
 		val parentPortReference = source.arguments.get(0) as MethodInvocation		
 		val childPortReference = source.arguments.get(2) as MethodInvocation
 		
-		val leftLit = source.arguments.get(0) as TypeLiteral
-		val rigthLit = source.arguments.get(2) as TypeLiteral
-		val leftEnd = createEnd(factory.createLinkEndCreationData, leftLit.type.resolveBinding, parentPortReference)
-		val rightEnd = createEnd(factory.createLinkEndCreationData, rigthLit.type.resolveBinding, childPortReference)
+		val childEndLit = source.arguments.get(1) as TypeLiteral
+		val childTypeBinding = childEndLit.type.resolveBinding
+		val declaring = childTypeBinding.declaringClass.declaredTypes
+		val parentTypeBinding = declaring.findFirst[it != childTypeBinding]
+		
+		val leftEnd = createEnd(factory.createLinkEndCreationData, childTypeBinding, parentPortReference)
+		val rightEnd = createEnd(factory.createLinkEndCreationData, parentTypeBinding, childPortReference)
 		
 		result.endData += #[leftEnd, rightEnd]
 		result.name = '''link «leftEnd.value.name» to «rightEnd.value.name»'''

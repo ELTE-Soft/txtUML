@@ -111,18 +111,22 @@ private:
 };
 
 // TODO Handle create link actions uniformly
-template<typename Inf1, typename Inf2>
-void assemblyCconnect(IPort<Inf1, Inf2> * p1, IPort <Inf2, Inf1> * p2)
+template<typename LeftEnd, typename RightEnd>
+void assemblyConnect(
+IPort<typename LeftEnd::EdgeType, typename RightEnd::EdgeType> * p1, 
+IPort <typename RightEnd::EdgeType, typename LeftEnd::EdgeType> * p2)
 {
 	p1->setAssemblyConnectedPort(p2);
 	p2->setAssemblyConnectedPort(p1);
 }
 
-template<typename Inf1, typename Inf2>
-void delegateConnect(IPort<Inf1, Inf2> * p1, Port <Inf1, Inf2> * p2)
+template<typename LeftEnd, typename RightEnd>
+void delegateConnect(
+IPort<typename LeftEnd::EdgeType, typename RightEnd::EdgeType> * childPort, 
+Port <typename LeftEnd::EdgeType, typename RightEnd::EdgeType> * parentPort)
 {
-	p1->setDelgationConnectedPort(p2);
-	p2->setInnerConnection(p1);
+	childPort->setDelgationConnectedPort(p2);
+	parentPort->setInnerConnection(p1);
 }
 
 

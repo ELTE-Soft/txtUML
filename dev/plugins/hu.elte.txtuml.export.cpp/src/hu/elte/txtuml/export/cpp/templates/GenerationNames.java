@@ -45,6 +45,8 @@ public class GenerationNames {
 		public static final String LinkActionName = ActionFunctionsNamespace + "::" + "link";
 		public static final String UnLinkActionName = ActionFunctionsNamespace + "::" + "unlink";
 		public static final String Log = ActionFunctionsNamespace + "::" + "log";
+		public static final String AssemblyConnect = "assemblyConnect";
+		public static final String DelegateConnect = "delegateConnect";
 
 	}
 
@@ -103,8 +105,6 @@ public class GenerationNames {
 		public static final String ToDoMessage = comment("TODO: Add your source code here\n"); 
 	}
 	public static class GeneralFunctionNames {
-		public static final String GeneralLinkFunction = "link";
-		public static final String GeneralUnlinkFunction = "unlink";
 		public static final String InitFunctionName = "init";
 	}
 

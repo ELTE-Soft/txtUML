@@ -36,7 +36,6 @@ void start(ES::StateMachineRef sm);
 =======
 
 void start(ES::ModelObject* sm);
->>>>>>> origin/master
 /**<
 Starts the state machine of a model object.
 @param sm The state machine to be started. 

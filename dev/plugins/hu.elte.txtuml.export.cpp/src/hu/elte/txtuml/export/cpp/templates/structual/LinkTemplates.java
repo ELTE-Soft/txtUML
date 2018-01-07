@@ -1,9 +1,9 @@
 package hu.elte.txtuml.export.cpp.templates.structual;
 
 import hu.elte.txtuml.export.cpp.templates.GenerationNames;
+import hu.elte.txtuml.export.cpp.templates.GenerationNames.ActionNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.CollectionNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.FileNames;
-import hu.elte.txtuml.export.cpp.templates.GenerationNames.GeneralFunctionNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.ModifierNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.PointerAndMemoryNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.TypeDelcreationKeywords;
@@ -19,7 +19,9 @@ public class LinkTemplates {
 			+ FileNames.SourceExtension;
 
 	public enum LinkFunctionType {
-		Link, Unlink
+		Link, Unlink,
+		AssemblyConnect, 
+		DelegeateConnect
 	};
 
 	public static String linkSourceName(String className) {
@@ -56,6 +58,15 @@ public class LinkTemplates {
 
 		return source.toString();
 	}
+	
+	private static String getAddOrRemoveAssoc(LinkFunctionType linkFunction) {
+		if (linkFunction == LinkFunctionType.Link)
+			return GenerationNames.AddAssocToAssocationFunctionName;
+		else if (linkFunction == LinkFunctionType.Unlink)
+			return GenerationNames.RemoveAssocToAssocationFunctionName;
+
+		return "";
+	}
 
 	public static String linkTemplateSpecializationDef(String className, String otherClassName, String assocName,
 			String roleName, boolean isNavigable, LinkFunctionType linkFunction) {
@@ -76,26 +87,21 @@ public class LinkTemplates {
 
 	public static String getLinkFunctionName(LinkFunctionType linkFunction) {
 		
-		if (linkFunction == LinkFunctionType.Link) {
-			return GeneralFunctionNames.GeneralLinkFunction;
-		}
-		else if (linkFunction == LinkFunctionType.Unlink) {
-			return GeneralFunctionNames.GeneralUnlinkFunction;
-		}
-		else {
-			return "";
+		switch (linkFunction) {
+		case AssemblyConnect:
+			return ActionNames.AssemblyConnect;
+		case DelegeateConnect:
+			return ActionNames.DelegateConnect;
+		case Link:
+			return ActionNames.LinkActionName;
+		case Unlink:
+			return ActionNames.UnLinkActionName;
+		default:
+			assert(false);
+			return "MISSING_LINK_OPTION";
+		
+		}	
 
-		}
-
-	}
-
-	public static String getAddOrRemoveAssoc(LinkFunctionType linkFunction) {
-		if (linkFunction == LinkFunctionType.Link)
-			return GenerationNames.AddAssocToAssocationFunctionName;
-		else if (linkFunction == LinkFunctionType.Unlink)
-			return GenerationNames.RemoveAssocToAssocationFunctionName;
-
-		return "";
 	}
 
 	public static String createAssociationStructure(String associationName, String E1, String E2, String endPoint1,
