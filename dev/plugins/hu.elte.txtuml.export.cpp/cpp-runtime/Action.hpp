@@ -1,11 +1,7 @@
 /** @file Action.hpp
 */
-<<<<<<< HEAD
-#include "istatemachine.hpp"
 #include "ESRoot/Types.hpp"
 #include "PortUtils.hpp"
-=======
->>>>>>> origin/master
 
 #include "ESRoot/Types.hpp"
 namespace ES
@@ -30,10 +26,6 @@ Sends a message to a port.
 @param port The port object where the signal has to be sent. 
 @param signal The signal to be sent.
 */
-	
-	
-void start(ES::StateMachineRef sm);
-=======
 
 void start(ES::ModelObject* sm);
 /**<

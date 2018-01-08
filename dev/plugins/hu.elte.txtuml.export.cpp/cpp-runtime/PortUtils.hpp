@@ -1,4 +1,3 @@
-#include "istatemachine.hpp"
 #include "ievent.hpp"
 #include "ESRoot/Types.hpp"
 #include "InterfaceUtils.hpp"
