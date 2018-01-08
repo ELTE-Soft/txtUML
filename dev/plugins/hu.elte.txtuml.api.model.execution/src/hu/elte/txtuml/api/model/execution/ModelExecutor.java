@@ -1,6 +1,6 @@
 package hu.elte.txtuml.api.model.execution;
 
-import java.util.List;
+import java.util.function.Consumer;
 
 import hu.elte.txtuml.api.model.Model;
 import hu.elte.txtuml.api.model.execution.impl.DefaultModelExecutor;
@@ -67,12 +67,12 @@ public interface ModelExecutor extends BaseModelExecutor, Runnable {
 	// manage
 
 	/**
-	 * Starts a model execution with the previously specified initialization and
-	 * sets the status of this executor to {@link Status#ACTIVE}.
+	 * Starts a model execution with the previously specified initialization,
+	 * sets the status of this executor to {@link Status#ACTIVE} and awaits its
+	 * initialization to complete.
 	 * <p>
-	 * <b>Note:</b> This method returns instantly, without waiting for the
-	 * initialization or the termination of this executor. Therefore in most
-	 * cases, {@link #launch} or {@link run} is more useful.
+	 * <i>Note:</i> A shorthand operation for {@link #startNoWait()}&#x2e;
+	 * {@link #awaitInitialization()}.
 	 * 
 	 * @return this
 	 * @throws LockedModelExecutorException
@@ -81,10 +81,13 @@ public interface ModelExecutor extends BaseModelExecutor, Runnable {
 	ModelExecutor start() throws LockedModelExecutorException;
 
 	/**
-	 * A shorthand operation for {@link #setInitialization(Runnable)}&#x2e;
-	 * {@link #start()} (optional operation).
+	 * Sets the initialization of this model executor then starts it and awaits
+	 * its initialization to complete (optional operation).
 	 * <p>
 	 * Supported iff {@link #setInitialization(Runnable)} is supported.
+	 * <p>
+	 * <i>Note:</i> A shorthand operation for
+	 * {@link #setInitialization(Runnable)}&#x2e;{@link #start()}.
 	 * 
 	 * @param initialization
 	 *            the initialization to run
@@ -166,11 +169,54 @@ public interface ModelExecutor extends BaseModelExecutor, Runnable {
 	ModelExecutor awaitInitializationNoCatch() throws InterruptedException;
 
 	/**
+	 * Starts a model execution with the previously specified initialization and
+	 * sets the status of this executor to {@link Status#ACTIVE}.
+	 * <p>
+	 * This method returns instantly, without waiting for the initialization or
+	 * the termination of this executor. Therefore in most cases, {@link #start}
+	 * or {@link run} should be used.
+	 * 
+	 * @return this
+	 * @throws LockedModelExecutorException
+	 *             if the model execution has already been started
+	 */
+	ModelExecutor startNoWait() throws LockedModelExecutorException;
+
+	/**
+	 * Sets the initialization of this model executor then starts it and awaits
+	 * its initialization to complete (optional operation).
+	 * <p>
+	 * Supported iff {@link #setInitialization(Runnable)} is supported.
+	 * <p>
+	 * This method returns instantly, without waiting for the initialization or
+	 * the termination of this executor. Therefore in most cases, {@link #start}
+	 * or {@link run} should be used.
+	 * <p>
+	 * <i>Note:</i> A shorthand operation for
+	 * {@link #setInitialization(Runnable)}&#x2e;{@link #startNoWait()}.
+	 * 
+	 * @param initialization
+	 *            the initialization to run
+	 * @return this
+	 * @throws LockedModelExecutorException
+	 *             if the model execution has already been started
+	 */
+	ModelExecutor startNoWait(Runnable initialization) throws LockedModelExecutorException;
+
+	/**
 	 * Awaits the model execution to terminate and only returns after; if the
 	 * current thread is interrupted, this method still keeps waiting. Use
 	 * {@link #awaitTerminationNoCatch()} if this is not the desired behavior.
 	 */
-	void awaitTermination();
+	default void awaitTermination() {
+		while (true) {
+			try {
+				awaitTerminationNoCatch();
+				return;
+			} catch (InterruptedException e) {
+			}
+		}
+	}
 
 	/**
 	 * Awaits the model execution to terminate and only returns after; throws an
@@ -183,55 +229,40 @@ public interface ModelExecutor extends BaseModelExecutor, Runnable {
 	void awaitTerminationNoCatch() throws InterruptedException;
 
 	/**
-	 * A shorthand operation for {@link #start()}&#x2e;
-	 * {@link #awaitInitialization()}.
-	 * 
-	 * @return this
-	 * @throws LockedModelExecutorException
-	 *             if the model execution has already been started
-	 */
-	ModelExecutor launch() throws LockedModelExecutorException;
-
-	/**
-	 * A shorthand operation for {@link #setInitialization(Runnable)}&#x2e;
-	 * {@link #start()}&#x2e;{@link #awaitInitialization()} (optional
-	 * operation).
+	 * Starts this model executor, calls its {@link #shutdown} method and awaits
+	 * its termination.
 	 * <p>
-	 * Supported iff {@link #setInitialization(Runnable)} is supported.
-	 * 
-	 * @param initialization
-	 *            the initialization to run
-	 * @return this
-	 * @throws LockedModelExecutorException
-	 *             if the model execution has already been started
-	 */
-	ModelExecutor launch(Runnable initialization) throws LockedModelExecutorException;
-
-	/**
-	 * A shorthand operation for {@link #start()}&#x2e;{@link #shutdown()}&#x2e;
+	 * <i>Note:</i> A shorthand operation for
+	 * {@link #startNoWait()}&#x2e;{@link #shutdown()}&#x2e;
 	 * {@link #awaitTermination()}.
 	 * 
 	 * @throws LockedModelExecutorException
 	 *             if the model execution has already been started
 	 */
 	@Override
-	void run() throws LockedModelExecutorException;
+	default void run() throws LockedModelExecutorException {
+		startNoWait().shutdown().awaitTermination();
+	}
 
 	/**
-	 * A shorthand operation for {@link #setInitialization(Runnable)}&#x2e;
-	 * {@link #start()}&#x2e;{@link #shutdown()}&#x2e;
-	 * {@link #awaitTermination()} (optional operation).
+	 * Sets the initialization of this model executor then starts it, calls its
+	 * {@link #shutdown} method and awaits its termination (optional operation).
 	 * <p>
 	 * Supported iff {@link #setInitialization(Runnable)} is supported.
+	 * <p>
+	 * <i>Note:</i> A shorthand operation for
+	 * {@link #setInitialization(Runnable)}&#x2e;{@link #run()}.
 	 * 
 	 * @param initialization
 	 *            the initialization to run
 	 * @throws LockedModelExecutorException
 	 *             if the model execution has already been started
 	 */
-	void run(Runnable initialization) throws LockedModelExecutorException;
+	default void run(Runnable initialization) throws LockedModelExecutorException {
+		setInitialization(initialization).run();
+	}
 
-	// inherited methods
+	// inherited methods with more specific return type
 
 	@Override
 	ModelExecutor addTerminationListener(Runnable listener);
@@ -319,20 +350,49 @@ public interface ModelExecutor extends BaseModelExecutor, Runnable {
 	// settings
 
 	/**
-	 * Sets whether optional dynamic checks should be performed during model
-	 * execution. These checks include checking lower bounds of multiplicities,
-	 * checking whether the guards of two transitions from the same vertex are
-	 * overlapping, etc.
+	 * Enables the modification of this model executor's settings. The settings
+	 * object received in the {@code consumer} represents the current state of
+	 * this model executor's settings and therefore only those fields have to be
+	 * set which should be modified.
 	 * <p>
-	 * These checks are performed by default.
+	 * Note that the object received in the {@code consumer} action will be
+	 * copied, that is, its modification after the execution of this method will
+	 * have no effect on this model executor.
 	 * 
-	 * @param newValue
-	 *            whether optional dynamic checks should be performed
+	 * @param consumer
+	 *            an action which modifies the settings of this model executor
 	 * @return this
 	 * @throws LockedModelExecutorException
 	 *             if the model execution has already been started
 	 */
-	ModelExecutor setDynamicChecks(boolean newValue) throws LockedModelExecutorException;
+	ModelExecutor set(Consumer<Execution.Settings> consumer) throws LockedModelExecutorException;
+
+	/**
+	 * Sets which level of model execution logs should be shown.
+	 * <p>
+	 * Log level is {@link LogLevel#WARNING} by default.
+	 * 
+	 * @param logLevel
+	 *            the new log level
+	 * @return this
+	 * @throws LockedModelExecutorException
+	 *             if the model execution has already been started
+	 */
+	ModelExecutor setLogLevel(LogLevel logLevel) throws LockedModelExecutorException;
+
+	/**
+	 * Sets which level of dynamic checks should be performed during the model
+	 * execution.
+	 * <p>
+	 * Check level is {@link CheckLevel#OPTIONAL} by default.
+	 * 
+	 * @param checkLevel
+	 *            the new check level
+	 * @return this
+	 * @throws LockedModelExecutorException
+	 *             if the model execution has already been started
+	 */
+	ModelExecutor setCheckLevel(CheckLevel checkLevel) throws LockedModelExecutorException;
 
 	/**
 	 * The model execution time helps testing txtUML models in the following
@@ -353,57 +413,40 @@ public interface ModelExecutor extends BaseModelExecutor, Runnable {
 	ModelExecutor setExecutionTimeMultiplier(double newMultiplier) throws LockedModelExecutorException;
 
 	/**
-	 * Sets whether executor's trace log has to be shown. By default, it is
-	 * switched off.
-	 * 
-	 * @param newValue
-	 *            whether executor's trace log has to be shown
-	 * @return this
-	 * @throws LockedModelExecutorException
-	 *             if the model execution has already been started
+	 * Returns the current settings of this model executor; the returned
+	 * settings object is a copy: its modification has no effect on this
+	 * executor.
 	 */
-	ModelExecutor setTraceLogging(boolean newValue) throws LockedModelExecutorException;
+	Execution.Settings getSettings();
 
 	/**
-	 * See {@link #addTraceListener}.
+	 * A shorthand operation for {@link #getSettings()}&#x2e;
+	 * {@link ExecutionSettings#logLevel logLevel}.
 	 * 
-	 * @return an unmodifiable view of the registered trace listeners
+	 * @return the current log level
 	 */
-	List<TraceListener> getTraceListeners();
+	default LogLevel getLogLevel() {
+		return getSettings().logLevel;
+	}
 
 	/**
-	 * See {@link #addErrorListener}.
+	 * A shorthand operation for {@link #getSettings()}&#x2e;
+	 * {@link ExecutionSettings#checkLevel checkLevel}.
 	 * 
-	 * @return an unmodifiable view of the registered error listeners
+	 * @return the current check level
 	 */
-	List<ErrorListener> getErrorListeners();
+	default CheckLevel getCheckLevel() {
+		return getSettings().checkLevel;
+	}
 
 	/**
-	 * See {@link #addWarningListener}.
-	 * 
-	 * @return an unmodifiable view of the registered warning listeners
-	 */
-	List<WarningListener> getWarningListeners();
-
-	/**
-	 * See {@link #setDynamicChecks}.
-	 * 
-	 * @return whether the optional dynamic checks are currently switched on
-	 */
-	boolean dynamicChecks();
-
-	/**
-	 * See {@link #setExecutionTimeMultiplier}.
+	 * A shorthand operation for {@link #getSettings()}&#x2e;
+	 * {@link ExecutionSettings#timeMultiplier timeMultiplier}.
 	 * 
 	 * @return the current execution time multiplier
 	 */
-	double getExecutionTimeMultiplier();
-
-	/**
-	 * See {@link #setTraceLogging}.
-	 * 
-	 * @return whether execution log is switched on
-	 */
-	boolean traceLogging();
+	default double getExecutionTimeMultiplier() {
+		return getSettings().timeMultiplier;
+	}
 
 }
