@@ -8,6 +8,7 @@ import hu.elte.txtuml.api.model.ModelClass;
 import hu.elte.txtuml.api.model.StateMachine.Transition;
 import hu.elte.txtuml.api.model.StateMachine.Vertex;
 import hu.elte.txtuml.api.model.To;
+import hu.elte.txtuml.api.model.execution.CheckLevel;
 import hu.elte.txtuml.api.model.execution.ModelExecutor;
 import hu.elte.txtuml.api.model.execution.TraceListener;
 import hu.elte.txtuml.api.model.execution.testmodel.A;
@@ -15,18 +16,17 @@ import hu.elte.txtuml.api.model.execution.testmodel.B;
 import hu.elte.txtuml.api.model.execution.util.ModelExecutionAsserter;
 import hu.elte.txtuml.utils.InstanceCreator;
 
-public class UnitTestsBase {
+public class UnitTestsBase extends ModelExecutionAsserter {
 
 	protected ModelExecutor executor;
-	protected ModelExecutionAsserter executionAsserter;
 
 	protected A a;
 	protected B b;
 
 	@Before
 	public void settings() {
-		executor = ModelExecutor.create().setDynamicChecks(true);
-		executionAsserter = new ModelExecutionAsserter(executor);
+		executor = ModelExecutor.create().setCheckLevel(CheckLevel.OPTIONAL);
+		configureFor(executor);
 	}
 
 	public static void transition(TraceListener x, ModelClass cls, Transition t) {

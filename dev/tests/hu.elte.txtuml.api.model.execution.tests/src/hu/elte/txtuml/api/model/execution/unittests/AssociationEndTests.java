@@ -28,6 +28,8 @@ public class AssociationEndTests extends UnitTestsBase {
 		});
 
 		Assert.assertFalse(exceptionThrown.value);
+		assertNoErrors();
+		assertNoWarnings();
 	}
 
 	private static void init() {

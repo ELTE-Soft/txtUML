@@ -24,6 +24,8 @@ public class OtherErrorTests extends UnitTestsBase {
 		});
 
 		Assert.assertTrue(bool.value);
+		assertNoErrors();
+		assertNoWarnings();
 	}
 
 	@Test
@@ -34,7 +36,8 @@ public class OtherErrorTests extends UnitTestsBase {
 			Action.unlink(A_B.a.class, a, A_B.b.class, b);
 		});
 
-		executionAsserter.assertWarnings(x -> x.unlinkingNonExistingAssociation(A_B.a.class, a, A_B.b.class, b));
+		assertNoErrors();
+		assertWarnings(x -> x.unlinkingNonExistingAssociation(A_B.a.class, a, A_B.b.class, b));
 	}
 
 }

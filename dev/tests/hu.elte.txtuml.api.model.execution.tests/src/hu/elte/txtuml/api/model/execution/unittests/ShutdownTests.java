@@ -31,7 +31,7 @@ public class ShutdownTests extends UnitTestsBase {
 
 		Assert.assertTrue(actionPerformed.value);
 
-		executionAsserter.assertEvents(x -> {
+		assertEvents(x -> {
 			x.executionStarted();
 			transition(x, a, a.new Initialize());
 			x.processingSignal(a, new Sig0());
@@ -56,6 +56,8 @@ public class ShutdownTests extends UnitTestsBase {
 			transition(x, a, a.new S2_S1());
 			x.executionTerminated();
 		});
+		assertNoErrors();
+		assertNoWarnings();
 	}
 
 }

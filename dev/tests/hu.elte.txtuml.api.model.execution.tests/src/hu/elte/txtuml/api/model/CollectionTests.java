@@ -238,6 +238,14 @@ public class CollectionTests {
 	}
 
 	@Test
+	public void testUpperBoundWithUnique() {
+		UniqueTwoToFour<String> s = API.collectIn(UniqueTwoToFour.class, "A", "B", "C", "B", "D");
+		s = s.add("A").add("B");
+
+		assertThatContains(s, "A", "B", "C", "D");
+	}
+
+	@Test
 	public void testOrdered() {
 		OrderedAny<String> s = API.collectIn(OrderedAny.class, "A", "B", "C", "C", "B");
 		s = s.add("A").add("B").add("A").add("D");

@@ -32,7 +32,7 @@ public class StateMachineTests extends UnitTestsBase {
 			Action.send(new Sig0(2), choice);
 		});
 
-		executionAsserter.assertEvents(x -> {
+		assertEvents(x -> {
 			x.executionStarted();
 			transition(x, choice, choice.new Initialize());
 			x.processingSignal(choice, new Sig0());
@@ -46,6 +46,8 @@ public class StateMachineTests extends UnitTestsBase {
 			transition(x, choice, choice.new T3());
 			x.executionTerminated();
 		});
+		assertNoErrors();
+		assertNoWarnings();
 
 	}
 
@@ -77,6 +79,9 @@ public class StateMachineTests extends UnitTestsBase {
 				Matchers.isA(ClassWithHierarchicalSM.CS1.CS2.class));
 		inOrder.verify(mock).leavingVertex(Matchers.isA(ClassWithHierarchicalSM.class),
 				Matchers.isA(ClassWithHierarchicalSM.CS1.class));
+
+		assertNoErrors();
+		assertNoWarnings();
 	}
 
 	@Test
@@ -92,7 +97,7 @@ public class StateMachineTests extends UnitTestsBase {
 		ClassWithHierarchicalSM.CS1 cs1 = hierarchical.new CS1();
 		ClassWithHierarchicalSM.CS1.CS2 cs2 = cs1.new CS2();
 
-		executionAsserter.assertEvents(x -> {
+		assertEvents(x -> {
 			x.executionStarted();
 			transition(x, hierarchical, hierarchical.new Initialize());
 			x.processingSignal(hierarchical, new Sig0());
@@ -109,6 +114,8 @@ public class StateMachineTests extends UnitTestsBase {
 			transition(x, hierarchical, hierarchical.new CS1_S1());
 			x.executionTerminated();
 		});
+		assertNoErrors();
+		assertNoWarnings();
 	}
 
 	@Test
@@ -134,6 +141,9 @@ public class StateMachineTests extends UnitTestsBase {
 		inOrder.verify(mock).leavingVertex(Matchers.isA(B.class), Matchers.isA(B.S.class));
 		inOrder.verify(mock).usingTransition(Matchers.isA(B.class), Matchers.isA(B.T2.class));
 		inOrder.verify(mock).enteringVertex(Matchers.isA(B.class), Matchers.isA(B.S.class));
+
+		assertNoErrors();
+		assertNoWarnings();
 	}
 
 	@Test
@@ -146,7 +156,7 @@ public class StateMachineTests extends UnitTestsBase {
 			Action.send(new Sig3(), b);
 		});
 
-		executionAsserter.assertEvents(x -> {
+		assertEvents(x -> {
 			x.executionStarted();
 			transition(x, b, b.new Initialize());
 			x.processingSignal(b, new Sig3());
@@ -159,6 +169,9 @@ public class StateMachineTests extends UnitTestsBase {
 			transition(x, b, b.new T4());
 			x.executionTerminated();
 		});
+
+		assertNoErrors();
+		assertNoWarnings();
 	}
 
 	@Test
@@ -173,7 +186,7 @@ public class StateMachineTests extends UnitTestsBase {
 			Action.send(new Sig2(), b);
 		});
 
-		executionAsserter.assertEvents(x -> {
+		assertEvents(x -> {
 			x.executionStarted();
 			transition(x, b, b.new Initialize());
 			x.processingSignal(b, new Sig1());
@@ -190,6 +203,9 @@ public class StateMachineTests extends UnitTestsBase {
 			transition(x, b, b.new T2());
 			x.executionTerminated();
 		});
+
+		assertNoErrors();
+		assertNoWarnings();
 	}
 
 }
