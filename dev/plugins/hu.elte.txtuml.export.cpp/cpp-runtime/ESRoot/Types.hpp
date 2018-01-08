@@ -42,6 +42,10 @@ class SpecialPriorityQueue;
 
 namespace Model
 {
+
+template<typename ProvidedInf, typename RequiredInf>
+class IPort
+
 template <typename ProvidedInf, typename RequiredInf>
 class Port;
 
@@ -64,6 +68,12 @@ namespace ES
 
 	using StateMachineRef = Model::StateMachineOwner*;
 	using StateMachineConstRef = Model::StateMachineOwner const *;
+
+    template<typename ProvidedInf, typename RequiredInf>
+    using IPortRef = ES::SharedPtr<IPort<ProvidedInf,RequiredInf>>;
+
+    template<typename ProvidedInf, typename RequiredInf>
+    using PortRef = ES::SharedPtr<Port<ProvidedInf,RequiredInf>>;
 
 	template<typename RuntimeType>
 	using RuntimePtr = SharedPtr<Execution::IRuntime<RuntimeType>>;

@@ -112,8 +112,8 @@ private:
 // TODO Handle create link actions uniformly
 template<typename LeftEnd, typename RightEnd>
 void assemblyConnect(
-IPort<typename LeftEnd::EdgeType, typename RightEnd::EdgeType> * p1, 
-IPort <typename RightEnd::EdgeType, typename LeftEnd::EdgeType> * p2)
+ES::IPortRef<typename LeftEnd::EdgeType, typename RightEnd::EdgeType> p1, 
+ES::IPortRef <typename RightEnd::EdgeType, typename LeftEnd::EdgeType> * p2)
 {
 	p1->setAssemblyConnectedPort(p2);
 	p2->setAssemblyConnectedPort(p1);
@@ -121,8 +121,8 @@ IPort <typename RightEnd::EdgeType, typename LeftEnd::EdgeType> * p2)
 
 template<typename LeftEnd, typename RightEnd>
 void delegateConnect(
-IPort<typename LeftEnd::EdgeType, typename RightEnd::EdgeType> * childPort, 
-Port <typename LeftEnd::EdgeType, typename RightEnd::EdgeType> * parentPort)
+ES::IPortRef<typename LeftEnd::EdgeType, typename RightEnd::EdgeType> childPort, 
+ES::PortRef <typename LeftEnd::EdgeType, typename RightEnd::EdgeType> parentPort)
 {
 	childPort->setDelgationConnectedPort(p2);
 	parentPort->setInnerConnection(p1);
