@@ -262,7 +262,6 @@ public abstract class Action {
 	 * reception.
 	 * <p>
 	 * <b>Example:</b>
-	 * </p>
 	 * 
 	 * <pre>
 	 * <code>
@@ -289,6 +288,9 @@ public abstract class Action {
 	 * <p>
 	 * Does not check whether the target object is deleted, it is only checked
 	 * when the signal arrives to the object.
+	 * <p>
+	 * Use {@link API#send(Signal, ModelClass)} instead of this method from
+	 * outside the model.
 	 * 
 	 * @param signal
 	 *            the signal object to send
@@ -335,6 +337,9 @@ public abstract class Action {
 
 	/**
 	 * Logs a message.
+	 * <p>
+	 * Use {@link API#log(String)} instead of this method from outside the
+	 * model.
 	 * 
 	 * @param message
 	 *            the message to be logged
@@ -348,6 +353,9 @@ public abstract class Action {
 
 	/**
 	 * Logs an error message.
+	 * <p>
+	 * Use {@link API#logError(String)} instead of this method from outside the
+	 * model.
 	 * 
 	 * @param message
 	 *            the error message to be logged
@@ -363,6 +371,9 @@ public abstract class Action {
 	 * Collects the given elements to a new txtUML API collection. This method
 	 * creates the most general collection type, the unordered non-unique 0..*
 	 * collection, {@link Any}.
+	 * <p>
+	 * Use {@link API#collect(Object...)} instead of this method from outside
+	 * the model.
 	 * 
 	 * @param elements
 	 *            the elements to collect
@@ -381,14 +392,16 @@ public abstract class Action {
 	 * type. If the specified collection type is ordered, it will contain the
 	 * elements in the provided order. If it is unique and multiple equal
 	 * elements are given, only the first will be contained in the collection.
+	 * <p>
+	 * Use {@link API#collectIn(Class, Object...)} instead of this method from
+	 * outside the model.
 	 * 
 	 * @param collectionType
 	 *            the type of the collection to create; must be a txtUML API
 	 *            collection
 	 * @param elements
 	 *            the elements to collect
-	 * @return the newly created collection that contains the specified
-	 *         elementss
+	 * @return the newly created collection that contains the specified elements
 	 */
 	@ExternalBody
 	@SafeVarargs

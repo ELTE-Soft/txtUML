@@ -13,13 +13,13 @@ import com.google.common.collect.Multiset;
 import hu.elte.txtuml.api.model.error.LowerBoundError;
 import hu.elte.txtuml.api.model.error.UpperBoundError;
 
-public class CollectionTest {
+public class CollectionTests {
 
 	@Test
 	public void testActionCollect() {
-		Any<Integer> a = Action.collect(1, 2, 3, 4);
-		Any<String> s = Action.collect("A", "B", "C", "C", "B");
-		Any<String> s2 = Action.collect("A", "B", "C", "B", "C");
+		Any<Integer> a = API.collect(1, 2, 3, 4);
+		Any<String> s = API.collect("A", "B", "C", "C", "B");
+		Any<String> s2 = API.collect("A", "B", "C", "B", "C");
 
 		assertThatContains(a, 1, 2, 3, 4);
 		assertThatContains(s, "A", "B", "B", "C", "C");
@@ -28,8 +28,8 @@ public class CollectionTest {
 
 	@Test
 	public void testActionCollectIn() {
-		Any<Integer> a = Action.collectIn(Any.class, 1, 2, 3, 3);
-		UniqueAny<String> s = Action.collectIn(UniqueAny.class, "A", "B", "C", "C", "B");
+		Any<Integer> a = API.collectIn(Any.class, 1, 2, 3, 3);
+		UniqueAny<String> s = API.collectIn(UniqueAny.class, "A", "B", "C", "C", "B");
 
 		assertThatContains(a, 1, 2, 3, 3);
 		assertThatContains(s, "A", "B", "C");
@@ -37,7 +37,7 @@ public class CollectionTest {
 
 	@Test
 	public void testAddAndRemove() {
-		Any<Integer> a = Action.collect(1);
+		Any<Integer> a = API.collect(1);
 
 		assertThatContains(a, 1);
 
@@ -52,7 +52,7 @@ public class CollectionTest {
 
 	@Test
 	public void testIsEmptyAndSize() {
-		Any<Integer> a = Action.collect();
+		Any<Integer> a = API.collect();
 
 		assertThatContains(a);
 		Assert.assertTrue(a.isEmpty());
@@ -74,7 +74,7 @@ public class CollectionTest {
 
 	@Test
 	public void testContains() {
-		Any<Integer> a = Action.collect(2, 2, 2, 3, 3);
+		Any<Integer> a = API.collect(2, 2, 2, 3, 3);
 		Assert.assertTrue(!a.contains(1));
 		Assert.assertTrue(a.contains(2));
 		Assert.assertTrue(a.contains(3));
@@ -82,8 +82,8 @@ public class CollectionTest {
 
 	@Test
 	public void testCountOf() {
-		Any<Integer> a = Action.collect(2, 2, 2, 3, 3);
-		OrderedAny<Integer> a2 = Action.collectIn(OrderedAny.class, 2, 2, 2, 3, 3);
+		Any<Integer> a = API.collect(2, 2, 2, 3, 3);
+		OrderedAny<Integer> a2 = API.collectIn(OrderedAny.class, 2, 2, 2, 3, 3);
 		// ordered collections use a different implementation
 
 		Assert.assertEquals(0, a.countOf(1));
@@ -97,11 +97,11 @@ public class CollectionTest {
 
 	@Test
 	public void testProperties() {
-		Any<Integer> a = Action.collect();
-		OrderedAny<Integer> oa = Action.collectIn(OrderedAny.class);
-		UniqueAny<Integer> ua = Action.collectIn(UniqueAny.class);
-		OrderedUniqueAny<Integer> oua = Action.collectIn(OrderedUniqueAny.class);
-		One<Integer> o = Action.collectIn(One.class, 0);
+		Any<Integer> a = API.collect();
+		OrderedAny<Integer> oa = API.collectIn(OrderedAny.class);
+		UniqueAny<Integer> ua = API.collectIn(UniqueAny.class);
+		OrderedUniqueAny<Integer> oua = API.collectIn(OrderedUniqueAny.class);
+		One<Integer> o = API.collectIn(One.class, 0);
 
 		Assert.assertTrue(!a.isOrdered());
 		Assert.assertTrue(!a.isUnique());
@@ -123,11 +123,11 @@ public class CollectionTest {
 
 	@Test
 	public void testCustomCollections() {
-		TwoToFour<Integer> t2f = Action.collectIn(TwoToFour.class, 2, 3, 4);
-		OrderedTwoToFour<Integer> ot2f = Action.collectIn(OrderedTwoToFour.class, 2, 3, 4);
-		UniqueTwoToFour<Integer> ut2f = Action.collectIn(UniqueTwoToFour.class, 2, 3, 4);
-		OrderedUniqueTwoToFour<Integer> out2f = Action.collectIn(OrderedUniqueTwoToFour.class, 2, 3, 4);
-		TwoToAny<Integer> t2a = Action.collectIn(TwoToAny.class, 2, 3, 4);
+		TwoToFour<Integer> t2f = API.collectIn(TwoToFour.class, 2, 3, 4);
+		OrderedTwoToFour<Integer> ot2f = API.collectIn(OrderedTwoToFour.class, 2, 3, 4);
+		UniqueTwoToFour<Integer> ut2f = API.collectIn(UniqueTwoToFour.class, 2, 3, 4);
+		OrderedUniqueTwoToFour<Integer> out2f = API.collectIn(OrderedUniqueTwoToFour.class, 2, 3, 4);
+		TwoToAny<Integer> t2a = API.collectIn(TwoToAny.class, 2, 3, 4);
 
 		assertThatContains(t2f, 2, 3, 4);
 		assertThatContains(ot2f, 2, 3, 4);
@@ -149,18 +149,18 @@ public class CollectionTest {
 
 	@Test
 	public void testOne() {
-		Any<Integer> a = Action.collect(1, 2, 3);
+		Any<Integer> a = API.collect(1, 2, 3);
 
 		Assert.assertTrue(Arrays.asList(1, 2, 3).contains(a.one()));
 	}
 
 	@Test
 	public void testUnbound() {
-		TwoToFour<Integer> t2f = Action.collectIn(TwoToFour.class, 2, 3, 4);
-		OrderedTwoToFour<Integer> ot2f = Action.collectIn(OrderedTwoToFour.class, 2, 3, 4);
-		UniqueTwoToFour<Integer> ut2f = Action.collectIn(UniqueTwoToFour.class, 2, 3, 4);
-		OrderedUniqueTwoToFour<Integer> out2f = Action.collectIn(OrderedUniqueTwoToFour.class, 2, 3, 4);
-		TwoToAny<Integer> t2a = Action.collectIn(TwoToAny.class, 2, 3, 4);
+		TwoToFour<Integer> t2f = API.collectIn(TwoToFour.class, 2, 3, 4);
+		OrderedTwoToFour<Integer> ot2f = API.collectIn(OrderedTwoToFour.class, 2, 3, 4);
+		UniqueTwoToFour<Integer> ut2f = API.collectIn(UniqueTwoToFour.class, 2, 3, 4);
+		OrderedUniqueTwoToFour<Integer> out2f = API.collectIn(OrderedUniqueTwoToFour.class, 2, 3, 4);
+		TwoToAny<Integer> t2a = API.collectIn(TwoToAny.class, 2, 3, 4);
 
 		Any<Integer> a = t2f.unbound();
 		OrderedAny<Integer> oa = ot2f.unbound();
@@ -177,7 +177,7 @@ public class CollectionTest {
 
 	@Test
 	public void testAs() {
-		OrderedUniqueAny<Integer> a = Action.collectIn(OrderedUniqueAny.class, 1, 2, 3, 4);
+		OrderedUniqueAny<Integer> a = API.collectIn(OrderedUniqueAny.class, 1, 2, 3, 4);
 		OrderedTwoToFour<Integer> t2a = a.as(OrderedTwoToFour.class);
 
 		assertThatContains(t2a, 1, 2, 3, 4);
@@ -189,45 +189,45 @@ public class CollectionTest {
 
 	@Test(expected = LowerBoundError.class)
 	public void testLowerBoundError() {
-		Action.collectIn(TwoToFour.class, 2);
+		API.collectIn(TwoToFour.class, 2);
 	}
 
 	@Test(expected = UpperBoundError.class)
 	public void testUpperBoundError() {
-		Action.collectIn(TwoToFour.class, 1, 2, 3, 4, 5);
+		API.collectIn(TwoToFour.class, 1, 2, 3, 4, 5);
 	}
 
 	@Test(expected = LowerBoundError.class)
 	public void testLowerBoundErrorWithRemove() {
-		TwoToFour<Integer> t2f = Action.collectIn(TwoToFour.class, 2, 3);
+		TwoToFour<Integer> t2f = API.collectIn(TwoToFour.class, 2, 3);
 
 		t2f.remove(3);
 	}
 
 	@Test(expected = UpperBoundError.class)
 	public void testUpperBoundErrorWithAdd() {
-		TwoToFour<Integer> t2f = Action.collectIn(TwoToFour.class, 1, 2, 3, 4);
+		TwoToFour<Integer> t2f = API.collectIn(TwoToFour.class, 1, 2, 3, 4);
 
 		t2f.add(5);
 	}
 
 	@Test(expected = LowerBoundError.class)
 	public void testLowerBoundErrorWithAs() {
-		Any<Integer> a = Action.collect(2);
+		Any<Integer> a = API.collect(2);
 
 		a.as(TwoToFour.class);
 	}
 
 	@Test(expected = UpperBoundError.class)
 	public void testUpperBoundErrorWithAs() {
-		Any<Integer> a = Action.collect(1, 2, 3, 4, 5);
+		Any<Integer> a = API.collect(1, 2, 3, 4, 5);
 
 		a.as(TwoToFour.class);
 	}
 
 	@Test
 	public void testUnique() {
-		UniqueAny<String> s = Action.collectIn(UniqueAny.class, "A", "B", "C", "C", "B");
+		UniqueAny<String> s = API.collectIn(UniqueAny.class, "A", "B", "C", "C", "B");
 		s = s.add("A").add("B").add("A").add("D");
 
 		assertThatContains(s, "A", "B", "C", "D");
@@ -239,7 +239,7 @@ public class CollectionTest {
 
 	@Test
 	public void testOrdered() {
-		OrderedAny<String> s = Action.collectIn(OrderedAny.class, "A", "B", "C", "C", "B");
+		OrderedAny<String> s = API.collectIn(OrderedAny.class, "A", "B", "C", "C", "B");
 		s = s.add("A").add("B").add("A").add("D");
 
 		assertThatContains(s, "A", "A", "A", "B", "B", "B", "C", "C", "D");
@@ -249,7 +249,7 @@ public class CollectionTest {
 
 		Assert.assertEquals(Arrays.asList("A", "B", "C", "C", "B", "A", "B", "A", "D"), tmp);
 
-		s = Action.collectIn(OrderedAny.class, "A", "B", "C");
+		s = API.collectIn(OrderedAny.class, "A", "B", "C");
 
 		OrderedTwoToFour<String> s2 = s.as(OrderedTwoToFour.class);
 
@@ -258,7 +258,7 @@ public class CollectionTest {
 
 	@Test
 	public void testOrderedUnique() {
-		OrderedUniqueAny<String> s = Action.collectIn(OrderedUniqueAny.class, "A", "B", "C", "C", "B");
+		OrderedUniqueAny<String> s = API.collectIn(OrderedUniqueAny.class, "A", "B", "C", "C", "B");
 		s = s.add("A").add("B").add("A").add("D");
 
 		assertThatContains(s, "A", "B", "C", "D");
@@ -270,7 +270,7 @@ public class CollectionTest {
 
 	@Test
 	public void testGet() {
-		OrderedAny<Integer> a = Action.collectIn(OrderedAny.class, 1, -5, -3, 2);
+		OrderedAny<Integer> a = API.collectIn(OrderedAny.class, 1, -5, -3, 2);
 
 		Assert.assertEquals(1, (int) a.get(0));
 		Assert.assertEquals(-5, (int) a.get(1));
@@ -280,7 +280,7 @@ public class CollectionTest {
 
 	@Test
 	public void testIndexedAdd() {
-		OrderedAny<Integer> a = Action.collectIn(OrderedAny.class, 1, -5, -3, 2);
+		OrderedAny<Integer> a = API.collectIn(OrderedAny.class, 1, -5, -3, 2);
 		a = a.add(2, 0);
 
 		Assert.assertEquals(1, (int) a.get(0));
@@ -292,7 +292,7 @@ public class CollectionTest {
 
 	@Test
 	public void testIndexedRemove() {
-		OrderedAny<Integer> a = Action.collectIn(OrderedAny.class, 1, -5, -3, 2);
+		OrderedAny<Integer> a = API.collectIn(OrderedAny.class, 1, -5, -3, 2);
 		a = a.remove(2);
 
 		Assert.assertEquals(1, (int) a.get(0));
@@ -302,11 +302,11 @@ public class CollectionTest {
 
 	@Test
 	public void testToString() {
-		Any<Integer> a = Action.collect(1, 2, 3);
-		OrderedAny<Integer> oa = Action.collectIn(OrderedAny.class, 1, 2, 3);
-		UniqueAny<Integer> ua = Action.collectIn(UniqueAny.class, 1, 2, 3);
-		OrderedUniqueAny<Integer> oua = Action.collectIn(OrderedUniqueAny.class, 1, 2, 3);
-		One<Integer> o = Action.collectIn(One.class, 0);
+		Any<Integer> a = API.collect(1, 2, 3);
+		OrderedAny<Integer> oa = API.collectIn(OrderedAny.class, 1, 2, 3);
+		UniqueAny<Integer> ua = API.collectIn(UniqueAny.class, 1, 2, 3);
+		OrderedUniqueAny<Integer> oua = API.collectIn(OrderedUniqueAny.class, 1, 2, 3);
+		One<Integer> o = API.collectIn(One.class, 0);
 
 		Assert.assertEquals("[1, 2, 3]", a.toString());
 		Assert.assertEquals("(1, 2, 3)", oa.toString());
