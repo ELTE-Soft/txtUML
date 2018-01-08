@@ -15,27 +15,28 @@ import hu.elte.txtuml.api.model.Model;
 import hu.elte.txtuml.api.model.ModelClass;
 import hu.elte.txtuml.api.model.ModelClass.Port;
 import hu.elte.txtuml.api.model.ModelClass.Status;
+import hu.elte.txtuml.api.model.execution.CheckLevel;
 import hu.elte.txtuml.api.model.execution.impl.assoc.AssociationEndWrapper;
 import hu.elte.txtuml.api.model.execution.impl.assoc.AssociationsMap;
 import hu.elte.txtuml.api.model.execution.impl.assoc.MultipleContainerException;
 import hu.elte.txtuml.api.model.execution.impl.assoc.MultiplicityException;
-import hu.elte.txtuml.api.model.execution.impl.base.AbstractModelClassWrapper;
-import hu.elte.txtuml.api.model.execution.impl.base.ModelExecutorThread;
+import hu.elte.txtuml.api.model.execution.impl.base.AbstractExecutorThread;
+import hu.elte.txtuml.api.model.execution.impl.base.AbstractModelClassRuntime;
 import hu.elte.txtuml.utils.InstanceCreator;
 
 /**
- * A {@link hu.elte.txtuml.api.model.runtime.ModelClassWrapper} implementation for model executors that use only
- * one model executor thread. This may not be used in a multi-thread executor as
- * it lacks the necessary synchronizations.
+ * A {@link hu.elte.txtuml.api.model.impl.ModelClassRuntime} implementation for
+ * model executors that use only one model executor thread. This may not be used
+ * in a multi-thread executor as it lacks the necessary synchronizations.
  */
-public class SingleThreadModelClassWrapper extends AbstractModelClassWrapper {
+public class SingleThreadModelClassRuntime extends AbstractModelClassRuntime {
 
 	private static final AtomicLong counter = new AtomicLong();
 
 	private final AssociationsMap associations = AssociationsMap.create();
 	private final ClassToInstanceMap<Port<?, ?>> ports = MutableClassToInstanceMap.create();
 
-	public SingleThreadModelClassWrapper(ModelClass wrapped, ModelExecutorThread thread) {
+	public SingleThreadModelClassRuntime(ModelClass wrapped, AbstractExecutorThread thread) {
 		super(wrapped, thread, "obj" + counter.getAndIncrement());
 	}
 
@@ -48,12 +49,12 @@ public class SingleThreadModelClassWrapper extends AbstractModelClassWrapper {
 	public void start() {
 		if (getStatus() != Status.READY) {
 			if (isDeleted()) {
-				getRuntime().error(x -> x.startingDeletedObject(getWrapped()));
+				getModelRuntime().error(x -> x.startingDeletedObject(getWrapped()));
 			}
 			return;
 		}
 
-		if (getRuntime().dynamicChecks()) {
+		if (getModelRuntime().getCheckLevel().isAtLeast(CheckLevel.OPTIONAL)) {
 			initializeAllDefinedAssociationEnds();
 		}
 
@@ -65,7 +66,7 @@ public class SingleThreadModelClassWrapper extends AbstractModelClassWrapper {
 	@Override
 	public void delete() {
 		if (!isDeletable()) {
-			getRuntime().error(x -> x.objectCannotBeDeleted(getWrapped()));
+			getModelRuntime().error(x -> x.objectCannotBeDeleted(getWrapped()));
 			return;
 		}
 
@@ -112,7 +113,7 @@ public class SingleThreadModelClassWrapper extends AbstractModelClassWrapper {
 	protected <P extends Port<?, ?>> P createNewPortInstance(Class<P> portType) {
 		P inst = InstanceCreator.create(portType, getWrapped());
 		if (portType.isAnnotationPresent(BehaviorPort.class)) {
-			getRuntime().connect(inst, this);
+			getModelRuntime().connect(inst, this);
 		}
 		ports.putInstance(portType, inst);
 		return inst;
@@ -153,10 +154,10 @@ public class SingleThreadModelClassWrapper extends AbstractModelClassWrapper {
 		AssociationEndWrapper<T, C> assocEnd = getAssoc(otherEnd);
 		assocEnd.remove(object);
 
-		if (getRuntime().dynamicChecks() && !assocEnd.checkLowerBound()) {
+		if (getModelRuntime().getCheckLevel().isAtLeast(CheckLevel.OPTIONAL) && !assocEnd.checkLowerBound()) {
 			getThread().addDelayedAction(() -> {
 				if (!assocEnd.checkLowerBound()) {
-					getRuntime().error(x -> x.lowerBoundOfMultiplicityOffended(getWrapped(), otherEnd));
+					getModelRuntime().error(x -> x.lowerBoundOfMultiplicityOffended(getWrapped(), otherEnd));
 				}
 			});
 		}
@@ -168,8 +169,7 @@ public class SingleThreadModelClassWrapper extends AbstractModelClassWrapper {
 		if (Container.class.isAssignableFrom(otherEnd)) {
 			for (Entry<Class<? extends AssociationEnd<?>>, AssociationEndWrapper<?, ?>> entry : associations
 					.entrySet()) {
-				if (Container.class.isAssignableFrom(entry.getKey())
-						&& !entry.getValue().isEmpty()) {
+				if (Container.class.isAssignableFrom(entry.getKey()) && !entry.getValue().isEmpty()) {
 					throw new MultipleContainerException();
 				}
 			}

@@ -1,9 +1,9 @@
 package hu.elte.txtuml.api.model.execution.impl;
 
 import hu.elte.txtuml.api.model.execution.ModelExecutor;
-import hu.elte.txtuml.api.model.execution.impl.base.AbstractRuntime;
+import hu.elte.txtuml.api.model.execution.impl.base.AbstractModelExecutor;
+import hu.elte.txtuml.api.model.execution.impl.base.AbstractModelRuntime;
 import hu.elte.txtuml.api.model.execution.impl.base.SwitchOnLogging;
-import hu.elte.txtuml.api.model.execution.impl.singlethread.SingleThreadModelExecutor;
 
 /**
  * The default model executor engine which uses a single FIFO model executor
@@ -11,7 +11,7 @@ import hu.elte.txtuml.api.model.execution.impl.singlethread.SingleThreadModelExe
  * (like sending signals) in the order in which they were raised. It supports
  * all optional methods of {@link ModelExecutor}.
  */
-public final class DefaultModelExecutor extends SingleThreadModelExecutor<DefaultModelExecutor> {
+public final class DefaultModelExecutor extends AbstractModelExecutor<DefaultModelExecutor> {
 
 	public DefaultModelExecutor() {
 		this("");
@@ -22,8 +22,8 @@ public final class DefaultModelExecutor extends SingleThreadModelExecutor<Defaul
 	}
 
 	@Override
-	protected AbstractRuntime<?, ?> createRuntime(Runnable initialization) {
-		return new DefaultRuntime(this, initialization);
+	protected AbstractModelRuntime<?, ?> createRuntime(Runnable initialization) {
+		return new DefaultModelRuntime(this, initialization);
 	}
 
 	@Override

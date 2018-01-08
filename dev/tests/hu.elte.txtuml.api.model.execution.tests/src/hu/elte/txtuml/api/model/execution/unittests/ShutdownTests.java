@@ -15,7 +15,7 @@ public class ShutdownTests extends UnitTestsBase {
 
 		executor.addTerminationListener(() -> actionPerformed.value = true);
 
-		executor.launch(() -> {
+		executor.start(() -> {
 			createAAndB();
 
 			Action.start(a);

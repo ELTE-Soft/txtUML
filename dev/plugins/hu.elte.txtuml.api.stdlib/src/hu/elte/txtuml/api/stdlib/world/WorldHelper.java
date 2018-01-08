@@ -36,7 +36,7 @@ class WorldHelper {
 	 * May only be called from a model executor thread.
 	 */
 	static World getOrCreateWorldInstance() {
-		BaseModelExecutor current = BaseModelExecutor.currentExecutor();
+		BaseModelExecutor current = BaseModelExecutor.current();
 
 		return getOrCreateHelperInstance(current).getOrCreateWorld();
 	}

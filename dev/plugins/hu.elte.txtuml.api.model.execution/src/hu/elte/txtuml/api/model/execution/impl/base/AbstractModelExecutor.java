@@ -1,5 +1,6 @@
 package hu.elte.txtuml.api.model.execution.impl.base;
 
+import static com.google.common.util.concurrent.Uninterruptibles.joinUninterruptibly;
 import static java.util.Objects.requireNonNull;
 
 import java.util.ArrayList;
@@ -9,14 +10,19 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 import hu.elte.txtuml.api.model.execution.CastedModelExecutor;
+import hu.elte.txtuml.api.model.execution.CheckLevel;
 import hu.elte.txtuml.api.model.execution.ErrorListener;
+import hu.elte.txtuml.api.model.execution.Execution;
 import hu.elte.txtuml.api.model.execution.LockedModelExecutorException;
+import hu.elte.txtuml.api.model.execution.LogLevel;
 import hu.elte.txtuml.api.model.execution.ModelExecutor;
 import hu.elte.txtuml.api.model.execution.TraceListener;
 import hu.elte.txtuml.api.model.execution.WarningListener;
+import hu.elte.txtuml.utils.Logger;
 import hu.elte.txtuml.utils.NotifierOfTermination.TerminationManager;
 
 /**
@@ -29,8 +35,8 @@ public abstract class AbstractModelExecutor<S extends AbstractModelExecutor<S>> 
 	 * information about settings (trace/error/warningListeners, dynamicChecks,
 	 * executionTimeMultiplier, etc.) are not protected by any synchronization
 	 * as they can only be accessed from the thread which created this executor.
-	 * The settings which are required at runtime are copied into the Runtime
-	 * instance upon its creation.
+	 * The settings which are required at runtime are copied into the
+	 * ModelRuntime instance upon its creation.
 	 */
 
 	private final String name;
@@ -42,7 +48,8 @@ public abstract class AbstractModelExecutor<S extends AbstractModelExecutor<S>> 
 	private final SwitchOnLogging switchOnLogging;
 
 	/**
-	 * May only be accessed while holding the monitor of this set instance.
+	 * May only be accessed while holding the monitor of this collection
+	 * instance.
 	 */
 	private final Set<Object> terminationBlockers = new HashSet<>();
 	private final Object defaultBlocker = createAndAddDefaultTerminationBlocker();
@@ -50,13 +57,18 @@ public abstract class AbstractModelExecutor<S extends AbstractModelExecutor<S>> 
 	private final CountDownLatch isInitialized = new CountDownLatch(1);
 
 	private final ConcurrentHashMap<Object, Object> featureMap = new ConcurrentHashMap<>();
-	
-	private volatile Status status = Status.CREATED;
-	private volatile boolean shutdownImmediately = false;
 
-	private boolean dynamicChecks = false;
-	private double executionTimeMultiplier = 1;
-	private boolean traceLogging = false;
+	/**
+	 * May only be accessed while holding the monitor of this collection
+	 * instance.
+	 */
+	private final List<AbstractExecutorThread> threads = new ArrayList<>(1);
+
+	private volatile boolean shouldShutDownImmediately = false;
+
+	private volatile Status status = Status.CREATED;
+
+	private Execution.Settings settings = new Execution.Settings();
 
 	private Runnable initialization = null;
 
@@ -87,7 +99,7 @@ public abstract class AbstractModelExecutor<S extends AbstractModelExecutor<S>> 
 	}
 
 	@Override
-	public S start() throws LockedModelExecutorException {
+	public S startNoWait() throws LockedModelExecutorException {
 		checkIfLocked();
 		switchOnLogging.switchOnFor(this);
 
@@ -102,11 +114,6 @@ public abstract class AbstractModelExecutor<S extends AbstractModelExecutor<S>> 
 		}).start();
 
 		return self();
-	}
-
-	@Override
-	public S start(Runnable initialization) throws LockedModelExecutorException {
-		return setInitialization(initialization).start();
 	}
 
 	@Override
@@ -125,7 +132,7 @@ public abstract class AbstractModelExecutor<S extends AbstractModelExecutor<S>> 
 
 	@Override
 	public S shutdownNow() {
-		shutdownImmediately = true;
+		shouldShutDownImmediately = true;
 		wakeAllThreads();
 		return self();
 	}
@@ -158,23 +165,15 @@ public abstract class AbstractModelExecutor<S extends AbstractModelExecutor<S>> 
 	@Override
 	public synchronized S removeTerminationBlocker(Object blocker) {
 		requireNonNull(blocker);
+		boolean isEmpty = false;
 		synchronized (terminationBlockers) {
 			terminationBlockers.remove(blocker);
-			if (terminationBlockers.isEmpty()) {
-				wakeAllThreads();
-			}
+			isEmpty = terminationBlockers.isEmpty();
+		}
+		if (isEmpty) {
+			wakeAllThreads();
 		}
 		return self();
-	}
-
-	@Override
-	public S awaitInitialization() {
-		while (true) {
-			try {
-				return awaitInitializationNoCatch();
-			} catch (InterruptedException e) {
-			}
-		}
 	}
 
 	@Override
@@ -184,54 +183,53 @@ public abstract class AbstractModelExecutor<S extends AbstractModelExecutor<S>> 
 	}
 
 	@Override
-	public void awaitTermination() {
+	public void awaitTerminationNoCatch() throws InterruptedException {
 		while (true) {
-			try {
-				awaitTerminationNoCatch();
-				return;
-			} catch (InterruptedException e) {
+			AbstractExecutorThread[] copy;
+			synchronized (threads) {
+				if (threads.isEmpty()) {
+					return;
+				}
+				copy = threads.toArray(new AbstractExecutorThread[threads.size()]);
+			}
+			Logger.sys.error("" + copy.length);
+			for (AbstractExecutorThread e : copy) {
+				joinUninterruptibly(e);
 			}
 		}
 	}
 
 	@Override
-	public S launch() throws LockedModelExecutorException {
-		return start().awaitInitialization();
+	public Execution.Settings getSettings() {
+		return settings.clone();
 	}
 
 	@Override
-	public S launch(Runnable initialization) throws LockedModelExecutorException {
-		return setInitialization(initialization).start().awaitInitialization();
-	}
-
-	@Override
-	public void run() throws LockedModelExecutorException {
-		start().shutdown().awaitTermination();
-	}
-
-	@Override
-	public void run(Runnable initialization) throws LockedModelExecutorException {
-		setInitialization(initialization).start().shutdown().awaitTermination();
-	}
-
-	@Override
-	public S setDynamicChecks(boolean newValue) throws LockedModelExecutorException {
+	public ModelExecutor set(Consumer<Execution.Settings> consumer) throws LockedModelExecutorException {
 		checkIfLocked();
-		dynamicChecks = newValue;
+		consumer.accept(settings);
+		settings = settings.clone();
+		return self();
+	}
+
+	@Override
+	public S setCheckLevel(CheckLevel checkLevel) throws LockedModelExecutorException {
+		checkIfLocked();
+		settings.checkLevel = checkLevel;
+		return self();
+	}
+
+	@Override
+	public S setLogLevel(LogLevel logLevel) throws LockedModelExecutorException {
+		checkIfLocked();
+		settings.logLevel = logLevel;
 		return self();
 	}
 
 	@Override
 	public S setExecutionTimeMultiplier(double newMultiplier) throws LockedModelExecutorException {
 		checkIfLocked();
-		executionTimeMultiplier = newMultiplier;
-		return self();
-	}
-
-	@Override
-	public S setTraceLogging(boolean newValue) throws LockedModelExecutorException {
-		checkIfLocked();
-		traceLogging = newValue;
+		settings.timeMultiplier = newMultiplier;
 		return self();
 	}
 
@@ -295,42 +293,12 @@ public abstract class AbstractModelExecutor<S extends AbstractModelExecutor<S>> 
 
 	@Override
 	public Object getOrCreateFeature(Object key, Function<Object, Object> supplier) {
-		return featureMap.computeIfAbsent(key, supplier);		
-	}
-
-	@Override
-	public List<TraceListener> getTraceListeners() {
-		return Collections.unmodifiableList(traceListeners);
-	}
-
-	@Override
-	public List<ErrorListener> getErrorListeners() {
-		return Collections.unmodifiableList(errorListeners);
-	}
-
-	@Override
-	public List<WarningListener> getWarningListeners() {
-		return Collections.unmodifiableList(warningListeners);
-	}
-
-	@Override
-	public boolean dynamicChecks() {
-		return dynamicChecks;
-	}
-
-	@Override
-	public double getExecutionTimeMultiplier() {
-		return executionTimeMultiplier;
-	}
-
-	@Override
-	public boolean traceLogging() {
-		return traceLogging;
+		return featureMap.computeIfAbsent(key, supplier);
 	}
 
 	/**
-	 * Runs all the registered termination listeners, and marks that this model
-	 * executor is terminated.
+	 * Runs all the registered termination listeners, and sets this model
+	 * executor terminated.
 	 * <p>
 	 * Thread-safe.
 	 */
@@ -341,8 +309,8 @@ public abstract class AbstractModelExecutor<S extends AbstractModelExecutor<S>> 
 	}
 
 	/**
-	 * Checks if {@link #status} is equal to {@link Status#CREATED}. Throws an
-	 * exception otherwise.
+	 * Checks if {@link #status} is equal to {@link Status#CREATED} and throws
+	 * an exception otherwise.
 	 * 
 	 * @throws LockedModelExecutorException
 	 *             if current status is not equal to Status.CREATED
@@ -359,7 +327,7 @@ public abstract class AbstractModelExecutor<S extends AbstractModelExecutor<S>> 
 	 * Thread-safe.
 	 */
 	protected boolean shouldShutDownImmediately() {
-		return shutdownImmediately;
+		return shouldShutDownImmediately;
 	}
 
 	/**
@@ -384,35 +352,68 @@ public abstract class AbstractModelExecutor<S extends AbstractModelExecutor<S>> 
 	 * call to this method is not protected by any synchronization and therefore
 	 * a concurrent action may freely change the state of this model executor.
 	 */
-	protected abstract void wakeAllThreads();
+	protected void wakeAllThreads() {
+		AbstractExecutorThread[] copy;
+		synchronized (threads) {
+			copy = threads.toArray(new AbstractExecutorThread[threads.size()]);
+		}
+		for (AbstractExecutorThread e : copy) {
+			e.wake();
+		}
+	}
+
+	/**
+	 * Tries to register a model executor thread which is part of this
+	 * executor's runtime; the thread can only be started if this method returns
+	 * true.
+	 * <p>
+	 * That naturally means that this method has to be called from the thread
+	 * that starts the given thread. This is because otherwise (if this method
+	 * would be called from the new thread) this model executor could terminate
+	 * before the new thread starts.
+	 */
+	protected boolean registerThread(AbstractExecutorThread t) {
+		if (shouldShutDownImmediately) {
+			return false;
+		}
+		synchronized (threads) {
+			return threads.add(t);
+		}
+	}
+
+	/**
+	 * Unregisters a model executor thread in this executor which is part of
+	 * this executor's runtime.
+	 * <p>
+	 * Called from the given thread.
+	 */
+	protected void unregisterThread(AbstractExecutorThread t) {
+		boolean isEmpty = false;
+		synchronized (threads) {
+			threads.remove(t);
+			isEmpty = threads.isEmpty();
+		}
+		if (isEmpty) {
+			performTermination();
+		}
+	}
+
+	public List<TraceListener> getTraceListeners() {
+		return Collections.unmodifiableList(traceListeners);
+	}
+
+	public List<WarningListener> getWarningListeners() {
+		return Collections.unmodifiableList(warningListeners);
+	}
+
+	public List<ErrorListener> getErrorListeners() {
+		return Collections.unmodifiableList(errorListeners);
+	}
 
 	/**
 	 * Creates a new runtime instance for this model executor.
 	 */
-	protected abstract AbstractRuntime<?, ?> createRuntime(Runnable initialization);
-
-	/**
-	 * Registers a newly created model executor thread which is part of this
-	 * executor's runtime.
-	 * <p>
-	 * Called from the creator thread of the given thread.
-	 */
-	protected abstract void registerThread(ModelExecutorThread thread);
-
-	/**
-	 * Tries to unregister a model executor thread in this executor which is
-	 * part of this executor's runtime. The thread may only terminate after this
-	 * method returned {@code true}. In case of {@code false}, it must continue
-	 * its loop and try unregistering later.
-	 * <p>
-	 * Called from the given thread.
-	 * 
-	 * @return whether the thread may terminate
-	 */
-	protected abstract boolean unregisterThread(ModelExecutorThread thread);
-
-	@Override
-	public abstract void awaitTerminationNoCatch() throws InterruptedException;
+	protected abstract AbstractModelRuntime<?, ?> createRuntime(Runnable initialization);
 
 	@Override
 	public abstract S self();

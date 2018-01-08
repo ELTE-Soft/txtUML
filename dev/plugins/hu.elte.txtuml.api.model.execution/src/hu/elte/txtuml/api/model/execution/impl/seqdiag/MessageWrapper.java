@@ -1,5 +1,7 @@
 package hu.elte.txtuml.api.model.execution.impl.seqdiag;
 
+import static hu.elte.txtuml.api.model.external.ModelClasses.getIdentifierOf;
+
 import java.lang.reflect.Field;
 
 import hu.elte.txtuml.api.model.ModelClass;
@@ -38,13 +40,12 @@ public class MessageWrapper implements BaseMessageWrapper, BaseFragmentWrapper {
 			if (otherWrapper.isAPI && !this.isAPI) {
 				return false;
 			} else if (!otherWrapper.isAPI && !this.isAPI) {
-				if (sender != null && otherWrapper.sender != null && !otherWrapper.sender.runtimeInfo().getIdentifier()
-						.equals(sender.runtimeInfo().getIdentifier())) {
+				if (sender != null && otherWrapper.sender != null
+						&& !getIdentifierOf(otherWrapper.sender).equals(getIdentifierOf(sender))) {
 					return false;
 				}
 
-				if (!otherWrapper.receiver.runtimeInfo().getIdentifier()
-						.equals(receiver.runtimeInfo().getIdentifier())) {
+				if (!getIdentifierOf(otherWrapper.receiver).equals(getIdentifierOf(receiver))) {
 					return false;
 				}
 
@@ -52,8 +53,7 @@ public class MessageWrapper implements BaseMessageWrapper, BaseFragmentWrapper {
 					return false;
 				}
 			} else {
-				if (!otherWrapper.receiver.runtimeInfo().getIdentifier()
-						.equals(receiver.runtimeInfo().getIdentifier())) {
+				if (!getIdentifierOf(otherWrapper.receiver).equals(getIdentifierOf(receiver))) {
 					return false;
 				}
 

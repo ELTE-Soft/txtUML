@@ -5,7 +5,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicLong;
 
 import hu.elte.txtuml.api.model.Signal;
-import hu.elte.txtuml.api.model.impl.RuntimeContext;
+import hu.elte.txtuml.api.model.impl.ExecutorThread;
 import hu.elte.txtuml.utils.Logger;
 
 /**
@@ -13,12 +13,13 @@ import hu.elte.txtuml.utils.Logger;
  * of a model (the executor may use multiple threads). Every
  * {@link hu.elte.txtuml.api.model.ModelClass} and
  * {@link hu.elte.txtuml.api.model.ModelClass.Port} instance is owned by one
- * model executor thread which runs and manages that instance. Whenever an
- * asynchronous event is raised (for example, a signal is sent to such an
- * instance), it is reported to the owner thread, which puts that event into its
- * mailbox and later processes it. The processing of one such event is called a
- * model execution step, which is also an iteration of the main loop of a model
- * executor thread. This thread stops if:
+ * model executor thread which runs and manages that instance.
+ * <p>
+ * Whenever an asynchronous event is raised (for example, a signal is sent to
+ * such an instance), it is reported to the owner thread, which puts that event
+ * into its mailbox and later processes it. The processing of one such event is
+ * called a model execution step, which is also an iteration of the main loop of
+ * a model executor thread. This thread stops if:
  * <ol>
  * <li>Either
  * <ul>
@@ -36,34 +37,34 @@ import hu.elte.txtuml.utils.Logger;
  * Otherwise, the loop tries to continue working, even if it has been
  * interrupted while waiting for new events.
  */
-public abstract class ModelExecutorThread extends Thread implements RuntimeContext {
+public abstract class AbstractExecutorThread extends Thread implements ExecutorThread, Runnable {
 
 	private static final AtomicLong count = new AtomicLong();
 
-	private final AbstractModelExecutor<?> executor;
-	private final AbstractRuntime<?, ?> runtime;
+	private final AbstractModelExecutor<?> modelExecutor;
+	private final AbstractModelRuntime<?, ?> runtime;
 	private final Runnable initialization;
 	private final long identifier;
 	private final ConcurrentLinkedQueue<Runnable> delayedActions = new ConcurrentLinkedQueue<>();
 
 	private Signal triggeringSignal;
 
-	public ModelExecutorThread(AbstractModelExecutor<?> executor, AbstractRuntime<?, ?> runtime,
+	public AbstractExecutorThread(AbstractModelExecutor<?> modelExecutor, AbstractModelRuntime<?, ?> runtime,
 			Runnable initialization) {
-		this(executor, runtime, initialization, count.getAndIncrement());
+		this(modelExecutor, runtime, initialization, count.getAndIncrement());
 	}
 
-	private ModelExecutorThread(AbstractModelExecutor<?> executor, AbstractRuntime<?, ?> runtime,
+	private AbstractExecutorThread(AbstractModelExecutor<?> modelExecutor, AbstractModelRuntime<?, ?> runtime,
 			Runnable initialization, long identifier) {
 		super("Model_thread-" + identifier);
-		this.executor = executor;
+		this.modelExecutor = modelExecutor;
 		this.runtime = runtime;
 		this.initialization = initialization;
 		this.identifier = identifier;
 	}
 
 	@Override
-	public AbstractRuntime<?, ?> getRuntime() {
+	public AbstractModelRuntime<?, ?> getModelRuntime() {
 		return runtime;
 	}
 
@@ -89,7 +90,7 @@ public abstract class ModelExecutorThread extends Thread implements RuntimeConte
 	}
 
 	/**
-	 * Gets the current triggering signal.
+	 * Sets the current triggering signal.
 	 * <p>
 	 * As this method is <i>not</i> thread-safe, it may only be called from this
 	 * thread.
@@ -100,14 +101,27 @@ public abstract class ModelExecutorThread extends Thread implements RuntimeConte
 
 	@Override
 	public synchronized void start() {
-		executor.registerThread(this);
-		super.start();
+		if (modelExecutor.registerThread(this)) {
+			super.start();
+		}
 	}
 
 	@Override
 	public void run() {
 		initialization.run();
+		runLoop();
+		modelExecutor.unregisterThread(this);
+	}
 
+	/**
+	 * Runs the main loop of this thread until {@link #shouldContinue()} returns
+	 * false. Called from {@link run()} after running the initialization of this
+	 * thread and before unregistering it.
+	 * <p>
+	 * As this method is <i>not</i> thread-safe, it may only be called from this
+	 * thread.
+	 */
+	public void runLoop() {
 		while (shouldContinue()) {
 			try {
 				processNext();
@@ -121,12 +135,22 @@ public abstract class ModelExecutorThread extends Thread implements RuntimeConte
 		}
 	}
 
-	private boolean shouldContinue() {
-		if (executor.shouldShutDownImmediately() || (executor.shouldShutDownWhenNothingToDo() && isEmpty())
-				|| earlyStop()) {
-			if (executor.unregisterThread(this)) {
-				return false;
-			}
+	/**
+	 * This method is responsible for deciding whether the main loop of this
+	 * thread should continue or not.
+	 * <p>
+	 * The default implementation depends only on the lifetime of the owner
+	 * model executor.
+	 * <p>
+	 * As this method is <i>not</i> thread-safe, it may only be called from this
+	 * thread.
+	 * 
+	 * @see AbstractModelExecutor#shouldShutDownImmediately()
+	 * @see AbstractModelExecutor#shouldShutDownWhenNothingToDo()
+	 */
+	public boolean shouldContinue() {
+		if (modelExecutor.shouldShutDownImmediately() || (modelExecutor.shouldShutDownWhenNothingToDo() && isEmpty())) {
+			return false;
 		}
 		return true;
 	}
@@ -142,23 +166,6 @@ public abstract class ModelExecutorThread extends Thread implements RuntimeConte
 	public void addDelayedAction(Runnable action) {
 		Objects.requireNonNull(action);
 		delayedActions.add(action);
-	}
-
-	/**
-	 * Overridable method to indicate that this model executor may stop even if
-	 * no shutdown process is initiated (for example, because all of the objects
-	 * that were run on this thread are deleted). Even if it does return true,
-	 * the thread only stops when the
-	 * {@link AbstractModelExecutor#unregisterThread} returns true on the owning
-	 * model executor.
-	 * <p>
-	 * As this method is <i>not</i> thread-safe, it may only be called from this
-	 * thread.
-	 * <p>
-	 * The default implementation always returns false.
-	 */
-	protected boolean earlyStop() {
-		return false;
 	}
 
 	/**
@@ -187,38 +194,24 @@ public abstract class ModelExecutorThread extends Thread implements RuntimeConte
 
 	/**
 	 * Adds a new entry to this thread's mailbox to send the given signal to the
-	 * given target port.
+	 * given target port. If the signal goes through a chain of ports,
+	 * {@code sender} is last port in that chain before this target; otherwise
+	 * it is {@code null}.
 	 * <p>
 	 * Thread-safe.
 	 */
-	public abstract void send(Signal signal, AbstractPortWrapper target);
+	public abstract void receiveLater(Signal signal, AbstractPortRuntime target, AbstractPortRuntime sender);
 
 	/**
 	 * Adds a new entry to this thread's mailbox to send the given signal to the
-	 * given target object.
+	 * given target object. If the signal goes through a chain of ports,
+	 * {@code sender} is last port in that chain before this target; otherwise
+	 * it is {@code null}.
 	 * <p>
 	 * Thread-safe.
 	 */
-	public abstract void send(Signal signal, AbstractModelClassWrapper target);
+	public abstract void receiveLater(Signal signal, AbstractModelClassRuntime target, AbstractPortRuntime sender);
 
-	/**
-	 * Adds a new entry to this thread's mailbox to send the given signal to the
-	 * given target port with the given sender as the last port which this
-	 * message came through.
-	 * <p>
-	 * Thread-safe.
-	 */
-	public abstract void send(Signal signal, AbstractPortWrapper sender, AbstractPortWrapper target);
-
-	/**
-	 * Adds a new entry to this thread's mailbox to send the given signal to the
-	 * given target object with the given sender as the last port which this
-	 * message came through.
-	 * <p>
-	 * Thread-safe.
-	 */
-	public abstract void send(Signal signal, AbstractPortWrapper sender, AbstractModelClassWrapper target);
-
-	public abstract void sent(Signal signal, AbstractModelClassWrapper sender);
+	public abstract void didSend(Signal signal, AbstractModelClassRuntime sender);
 
 }

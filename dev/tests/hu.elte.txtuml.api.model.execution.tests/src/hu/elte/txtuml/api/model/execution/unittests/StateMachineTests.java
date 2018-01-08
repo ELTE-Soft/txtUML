@@ -6,6 +6,7 @@ import org.mockito.Matchers;
 import org.mockito.Mockito;
 
 import hu.elte.txtuml.api.model.Action;
+import hu.elte.txtuml.api.model.execution.LogLevel;
 import hu.elte.txtuml.api.model.execution.ModelExecutor;
 import hu.elte.txtuml.api.model.execution.TraceListener;
 import hu.elte.txtuml.api.model.execution.testmodel.B;
@@ -162,7 +163,7 @@ public class StateMachineTests extends UnitTestsBase {
 
 	@Test
 	public void testTrigger() {
-		executor.setTraceLogging(true).run(() -> {
+		executor.setLogLevel(LogLevel.TRACE).run(() -> {
 			createAndStartB();
 			Action.send(new Sig1(), b);
 			Action.send(new Sig2(), b);

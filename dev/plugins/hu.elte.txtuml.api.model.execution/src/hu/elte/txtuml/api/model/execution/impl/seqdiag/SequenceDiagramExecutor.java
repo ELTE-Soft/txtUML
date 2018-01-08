@@ -111,7 +111,7 @@ public class SequenceDiagramExecutor implements Runnable, BaseSequenceDiagramExe
 			}
 		});
 
-		executor.launch();
+		executor.start();
 		executor.shutdown();
 		executor.awaitTermination();
 		state = ExecutorState.ENDED;

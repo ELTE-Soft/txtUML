@@ -9,6 +9,7 @@ import hu.elte.txtuml.api.model.ModelClass.Status;
 import hu.elte.txtuml.api.model.Signal;
 import hu.elte.txtuml.api.model.StateMachine.Transition;
 import hu.elte.txtuml.api.model.error.LowerBoundError;
+import hu.elte.txtuml.api.model.execution.CheckLevel;
 import hu.elte.txtuml.api.model.execution.impl.assoc.AssociationEndWrapper;
 import hu.elte.txtuml.api.model.execution.impl.assoc.MultipleContainerException;
 import hu.elte.txtuml.api.model.execution.impl.assoc.MultiplicityException;
@@ -16,15 +17,15 @@ import hu.elte.txtuml.api.model.execution.impl.sm.StateMachineParser;
 import hu.elte.txtuml.api.model.execution.impl.sm.TransitionWrapper;
 import hu.elte.txtuml.api.model.execution.impl.sm.VertexWrapper;
 import hu.elte.txtuml.api.model.impl.ElseException;
-import hu.elte.txtuml.api.model.impl.ModelClassWrapper;
+import hu.elte.txtuml.api.model.impl.ModelClassRuntime;
 
 /**
- * Abstract base class for {@link ModelClassWrapper} implementations.
+ * Abstract base class for {@link ModelClassRuntime} implementations.
  */
-public abstract class AbstractModelClassWrapper extends AbstractSignalTargetWrapper<ModelClass>
-		implements ModelClassWrapper {
+public abstract class AbstractModelClassRuntime extends AbstractSignalTargetRuntime<ModelClass>
+		implements ModelClassRuntime {
 
-	private final ModelExecutorThread thread;
+	private final AbstractExecutorThread thread;
 	private final String identifier;
 
 	private volatile String name;
@@ -39,7 +40,7 @@ public abstract class AbstractModelClassWrapper extends AbstractSignalTargetWrap
 	 */
 	private VertexWrapper currentVertex;
 
-	public AbstractModelClassWrapper(ModelClass wrapped, ModelExecutorThread thread, String identifier) {
+	public AbstractModelClassRuntime(ModelClass wrapped, AbstractExecutorThread thread, String identifier) {
 		super(wrapped);
 		this.thread = thread;
 		this.identifier = identifier;
@@ -77,7 +78,7 @@ public abstract class AbstractModelClassWrapper extends AbstractSignalTargetWrap
 	}
 
 	@Override
-	public ModelExecutorThread getThread() {
+	public AbstractExecutorThread getThread() {
 		return thread;
 	}
 
@@ -109,38 +110,22 @@ public abstract class AbstractModelClassWrapper extends AbstractSignalTargetWrap
 	}
 
 	@Override
-	public void send(Signal signal) {
-		getThread().send(signal, this);
-	}
-	
-	@Override
-	public void sent(Signal signal)
-	{
-		getThread().sent(signal,this);
-	}
-	
-	public void traceSender(Signal signal, AbstractModelClassWrapper sender)
-	{
-		getRuntime().trace(x -> x.sendingSignal(sender.getWrapped(), signal));
+	public void receive(Signal signal, AbstractPortRuntime sender) {
+		process(signal, sender == null ? null : sender.getWrapped());
 	}
 
 	@Override
-	public void send(Signal signal, AbstractPortWrapper sender) {
-		getThread().send(signal, sender, this);
+	public void receiveLater(Signal signal, AbstractPortRuntime sender) {
+		getThread().receiveLater(signal, this, sender);
 	}
 
 	@Override
-	public void receive(Signal signal) {
-		process(signal, null);
+	public void didSend(Signal signal) {
+		getThread().didSend(signal, this);
 	}
 
-	/**
-	 * This implementation is <b>not</b> thread-safe. Should only be called from
-	 * the owner thread.
-	 */
-	@Override
-	public void receive(Signal signal, AbstractPortWrapper sender) {
-		process(signal, sender.getWrapped());
+	public void traceSender(Signal signal, AbstractModelClassRuntime sender) {
+		getModelRuntime().trace(x -> x.sendingSignal(sender.getWrapped(), signal));
 	}
 
 	/**
@@ -166,12 +151,12 @@ public abstract class AbstractModelClassWrapper extends AbstractSignalTargetWrap
 		Status currentStatus = getStatus();
 		if (currentStatus != Status.ACTIVE) {
 			if (currentStatus == Status.DELETED) {
-				getRuntime().warning(x -> x.signalArrivedToDeletedObject(getWrapped(), signal));
+				getModelRuntime().warning(x -> x.signalArrivedToDeletedObject(getWrapped(), signal));
 				return;
 			}
 		} else {
 			if (signal != null) {
-				getRuntime().trace(x -> x.processingSignal(getWrapped(), signal));
+				getModelRuntime().trace(x -> x.processingSignal(getWrapped(), signal));
 			}
 
 			if (findAndExecuteTransition(signal, port)) {
@@ -181,9 +166,9 @@ public abstract class AbstractModelClassWrapper extends AbstractSignalTargetWrap
 		}
 
 		if (signal != null) {
-			getRuntime().warning(x -> x.lostSignalAtObject(signal, getWrapped()));
+			getModelRuntime().warning(x -> x.lostSignalAtObject(signal, getWrapped()));
 		} else {
-			getRuntime().error(x -> x.missingInitialTransition(currentVertex.getWrapped()));
+			getModelRuntime().error(x -> x.missingInitialTransition(currentVertex.getWrapped()));
 		}
 
 	}
@@ -219,7 +204,7 @@ public abstract class AbstractModelClassWrapper extends AbstractSignalTargetWrap
 						continue;
 					}
 				} catch (ElseException e) {
-					getRuntime().error(x -> x.elseGuardFromNonChoiceVertex(transition.getWrapped()));
+					getModelRuntime().error(x -> x.elseGuardFromNonChoiceVertex(transition.getWrapped()));
 					continue;
 				}
 
@@ -227,7 +212,7 @@ public abstract class AbstractModelClassWrapper extends AbstractSignalTargetWrap
 					// there was already an applicable transition
 
 					final Transition tmp = applicableTransition.getWrapped();
-					getRuntime().error(x -> x.guardsOfTransitionsAreOverlapping(tmp, transition.getWrapped(),
+					getModelRuntime().error(x -> x.guardsOfTransitionsAreOverlapping(tmp, transition.getWrapped(),
 							currentVertex.getWrapped()));
 					continue;
 				}
@@ -235,7 +220,7 @@ public abstract class AbstractModelClassWrapper extends AbstractSignalTargetWrap
 				fromState = examined;
 				applicableTransition = transition;
 
-				if (!getRuntime().dynamicChecks()) {
+				if (!getModelRuntime().getCheckLevel().isAtLeast(CheckLevel.OPTIONAL)) {
 					break;
 				}
 
@@ -250,7 +235,7 @@ public abstract class AbstractModelClassWrapper extends AbstractSignalTargetWrap
 		executeTransition(fromState, applicableTransition);
 
 		if (currentVertex.isChoice()) {
-			getRuntime().trace(x -> x.enteringVertex(getWrapped(), currentVertex.getWrapped()));
+			getModelRuntime().trace(x -> x.enteringVertex(getWrapped(), currentVertex.getWrapped()));
 			findAndExecuteTransitionFromChoice();
 		}
 
@@ -277,7 +262,7 @@ public abstract class AbstractModelClassWrapper extends AbstractSignalTargetWrap
 				if (elseTransition != null) {
 					// there was already a transition with an else condition
 
-					getRuntime().error(x -> x.moreThanOneElseTransitionsFromChoice(currentVertex.getWrapped()));
+					getModelRuntime().error(x -> x.moreThanOneElseTransitionsFromChoice(currentVertex.getWrapped()));
 					continue;
 				}
 
@@ -290,7 +275,7 @@ public abstract class AbstractModelClassWrapper extends AbstractSignalTargetWrap
 				// there was already an applicable transition
 
 				final Transition tmp = applicableTransition.getWrapped();
-				getRuntime().error(x -> x.guardsOfTransitionsAreOverlapping(tmp, transition.getWrapped(),
+				getModelRuntime().error(x -> x.guardsOfTransitionsAreOverlapping(tmp, transition.getWrapped(),
 						currentVertex.getWrapped()));
 
 				continue;
@@ -298,7 +283,7 @@ public abstract class AbstractModelClassWrapper extends AbstractSignalTargetWrap
 
 			applicableTransition = transition;
 
-			if (!getRuntime().dynamicChecks()) {
+			if (!getModelRuntime().getCheckLevel().isAtLeast(CheckLevel.OPTIONAL)) {
 				break;
 			}
 		}
@@ -316,7 +301,7 @@ public abstract class AbstractModelClassWrapper extends AbstractSignalTargetWrap
 			} else {
 				// no way to move from choice
 
-				getRuntime().error(x -> x.noTransitionFromChoice(currentVertex.getWrapped()));
+				getModelRuntime().error(x -> x.noTransitionFromChoice(currentVertex.getWrapped()));
 				return;
 			}
 		}
@@ -334,7 +319,7 @@ public abstract class AbstractModelClassWrapper extends AbstractSignalTargetWrap
 	 */
 	private void executeTransition(VertexWrapper fromVertex, TransitionWrapper transition) {
 		callExitAction(fromVertex);
-		getRuntime().trace(x -> x.usingTransition(getWrapped(), transition.getWrapped()));
+		getModelRuntime().trace(x -> x.usingTransition(getWrapped(), transition.getWrapped()));
 		transition.performEffect();
 		currentVertex = transition.getTarget();
 	}
@@ -354,7 +339,7 @@ public abstract class AbstractModelClassWrapper extends AbstractSignalTargetWrap
 	private void callExitAction(VertexWrapper vertex) {
 		while (true) {
 			currentVertex.performExit();
-			getRuntime().trace(x -> x.leavingVertex(getWrapped(), currentVertex.getWrapped()));
+			getModelRuntime().trace(x -> x.leavingVertex(getWrapped(), currentVertex.getWrapped()));
 
 			if (currentVertex == vertex) {
 				break;
@@ -373,11 +358,11 @@ public abstract class AbstractModelClassWrapper extends AbstractSignalTargetWrap
 	 * is neither a pseudostate, nor a composite state.
 	 */
 	private void callEntryAction() {
-		getRuntime().trace(x -> x.enteringVertex(getWrapped(), currentVertex.getWrapped()));
+		getModelRuntime().trace(x -> x.enteringVertex(getWrapped(), currentVertex.getWrapped()));
 		currentVertex.performEntry();
 		if (currentVertex.isComposite()) {
 			currentVertex = currentVertex.getInitialOfSubSM();
-			getRuntime().trace(x -> x.enteringVertex(getWrapped(), currentVertex.getWrapped()));
+			getModelRuntime().trace(x -> x.enteringVertex(getWrapped(), currentVertex.getWrapped()));
 			// no entry action needs to be called: initial pseudostates have
 			// none
 

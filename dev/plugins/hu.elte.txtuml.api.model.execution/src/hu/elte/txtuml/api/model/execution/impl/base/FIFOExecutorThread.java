@@ -12,11 +12,11 @@ import hu.elte.txtuml.api.model.Signal;
  * its mailbox with {@link Runnable} entries one of which is taken and run when
  * the {@link #processNext} method is called.
  */
-public class FIFOModelExecutorThread extends ModelExecutorThread {
+public class FIFOExecutorThread extends AbstractExecutorThread {
 
 	private final LinkedBlockingQueue<Runnable> mailbox = new LinkedBlockingQueue<>();
 
-	public FIFOModelExecutorThread(AbstractModelExecutor<?> executor, AbstractRuntime<?, ?> runtime,
+	public FIFOExecutorThread(AbstractModelExecutor<?> executor, AbstractModelRuntime<?, ?> runtime,
 			Runnable initialization) {
 		super(executor, runtime, initialization);
 	}
@@ -38,23 +38,18 @@ public class FIFOModelExecutorThread extends ModelExecutorThread {
 	}
 
 	@Override
-	public void send(Signal signal, AbstractPortWrapper target) {
-		addEntry(() -> target.receive(signal));
-	}
-
-	@Override
-	public void send(Signal signal, AbstractModelClassWrapper target) {
-		addEntry(() -> target.receive(signal));
-	}
-
-	@Override
-	public void send(Signal signal, AbstractPortWrapper sender, AbstractPortWrapper target) {
+	public void receiveLater(Signal signal, AbstractModelClassRuntime target, AbstractPortRuntime sender) {
 		addEntry(() -> target.receive(signal, sender));
 	}
 
 	@Override
-	public void send(Signal signal, AbstractPortWrapper sender, AbstractModelClassWrapper target) {
+	public void receiveLater(Signal signal, AbstractPortRuntime target, AbstractPortRuntime sender) {
 		addEntry(() -> target.receive(signal, sender));
+	}
+
+	@Override
+	public void didSend(Signal signal, AbstractModelClassRuntime sender) {
+		addEntry(() -> sender.traceSender(signal, sender));
 	}
 
 	/**
@@ -64,11 +59,6 @@ public class FIFOModelExecutorThread extends ModelExecutorThread {
 	 */
 	protected void addEntry(Runnable toPerform) {
 		mailbox.add(toPerform);
-	}
-	
-	public void sent(Signal signal, AbstractModelClassWrapper sender)
-	{
-		addEntry(() -> sender.traceSender(signal,sender));
 	}
 
 }

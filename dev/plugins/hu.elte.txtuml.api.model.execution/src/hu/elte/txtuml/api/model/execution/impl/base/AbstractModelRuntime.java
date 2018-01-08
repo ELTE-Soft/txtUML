@@ -14,17 +14,19 @@ import java.util.function.Consumer;
 
 import hu.elte.txtuml.api.model.ModelClass;
 import hu.elte.txtuml.api.model.ModelClass.Port;
-import hu.elte.txtuml.api.model.Runtime;
+import hu.elte.txtuml.api.model.execution.CheckLevel;
 import hu.elte.txtuml.api.model.execution.ErrorListener;
+import hu.elte.txtuml.api.model.execution.Execution;
 import hu.elte.txtuml.api.model.execution.TraceListener;
 import hu.elte.txtuml.api.model.execution.WarningListener;
-import hu.elte.txtuml.api.model.impl.ModelClassWrapper;
-import hu.elte.txtuml.api.model.impl.PortWrapper;
+import hu.elte.txtuml.api.model.impl.ModelClassRuntime;
+import hu.elte.txtuml.api.model.impl.ModelRuntime;
+import hu.elte.txtuml.api.model.impl.PortRuntime;
 
 /**
- * Abstract base class for {@link Runtime} implementations.
+ * Abstract base class for {@link ModelRuntime} implementations.
  */
-public abstract class AbstractRuntime<C extends ModelClassWrapper, P extends PortWrapper> extends Runtime {
+public abstract class AbstractModelRuntime<C extends ModelClassRuntime, P extends PortRuntime> implements ModelRuntime {
 
 	private final AbstractModelExecutor<?> executor;
 
@@ -32,13 +34,9 @@ public abstract class AbstractRuntime<C extends ModelClassWrapper, P extends Por
 	private final List<ErrorListener> errorListeners;
 	private final List<WarningListener> warningListeners;
 
-	private final boolean dynamicChecks;
-	private final double executionTimeMultiplier;
+	private final CheckLevel checkLevel;
+	private final double timeMultiplier;
 
-	/**
-	 * Is also used as a termination blocker in the executor while
-	 * scheduledCount > 0.
-	 */
 	private final Object LOCK_ON_SCHEDULER = new Object();
 
 	/**
@@ -51,22 +49,21 @@ public abstract class AbstractRuntime<C extends ModelClassWrapper, P extends Por
 	 * Must be called on the thread which manages the given
 	 * {@link AbstractModelExecutor} instance.
 	 */
-	protected AbstractRuntime(AbstractModelExecutor<?> executor) {
+	protected AbstractModelRuntime(AbstractModelExecutor<?> executor) {
 		this(executor, executor.getTraceListeners(), executor.getErrorListeners(), executor.getWarningListeners(),
-				executor.dynamicChecks(), executor.getExecutionTimeMultiplier());
+				executor.getSettings());
 	}
 
-	protected AbstractRuntime(AbstractModelExecutor<?> executor, List<TraceListener> traceListeners,
-			List<ErrorListener> errorListeners, List<WarningListener> warningListeners, boolean dynamicChecks,
-			double executionTimeMultiplier) {
+	protected AbstractModelRuntime(AbstractModelExecutor<?> executor, List<TraceListener> traceListeners,
+			List<ErrorListener> errorListeners, List<WarningListener> warningListeners, Execution.Settings settings) {
 		this.executor = executor;
 
 		this.traceListeners = new ArrayList<>(traceListeners);
 		this.errorListeners = new ArrayList<>(errorListeners);
 		this.warningListeners = new ArrayList<>(warningListeners);
 
-		this.dynamicChecks = dynamicChecks;
-		this.executionTimeMultiplier = executionTimeMultiplier;
+		this.checkLevel = settings.checkLevel;
+		this.timeMultiplier = settings.timeMultiplier;
 	}
 
 	@Override
@@ -74,14 +71,13 @@ public abstract class AbstractRuntime<C extends ModelClassWrapper, P extends Por
 		return executor;
 	}
 
-	@Override
-	public boolean dynamicChecks() {
-		return dynamicChecks;
+	public CheckLevel getCheckLevel() {
+		return checkLevel;
 	}
 
 	@Override
 	public double getExecutionTimeMultiplier() {
-		return executionTimeMultiplier;
+		return timeMultiplier;
 	}
 
 	@Override
@@ -97,7 +93,7 @@ public abstract class AbstractRuntime<C extends ModelClassWrapper, P extends Por
 
 		final Object blocker = new Object();
 		getExecutor().addTerminationBlocker(blocker);
-		
+
 		final ScheduledFuture<V> future = currentScheduler.schedule(() -> {
 			V result = callable.call();
 			getExecutor().removeTerminationBlocker(blocker);
@@ -166,13 +162,13 @@ public abstract class AbstractRuntime<C extends ModelClassWrapper, P extends Por
 	}
 
 	@SuppressWarnings("unchecked")
-	protected C getInfo(ModelClass about) {
-		return (C) about.runtimeInfo();
+	protected C getRuntimeOf(ModelClass cls) {
+		return (C) ModelRuntime.super.getRuntimeOf(cls);
 	}
 
 	@SuppressWarnings("unchecked")
-	protected P getInfo(Port<?, ?> about) {
-		return (P) about.runtimeInfo();
+	protected P getRuntimeOf(Port<?, ?> port) {
+		return (P) ModelRuntime.super.getRuntimeOf(port);
 	}
 
 	/**
@@ -187,7 +183,7 @@ public abstract class AbstractRuntime<C extends ModelClassWrapper, P extends Por
 	 * @throws NullPointerException
 	 *             if {@code object} is {@code null}
 	 */
-	protected boolean isLinkingDeleted(AbstractModelClassWrapper wrapper) {
+	protected boolean isLinkingDeleted(AbstractModelClassRuntime wrapper) {
 		if (wrapper.isDeleted()) {
 			error(x -> x.linkingDeletedObject(wrapper.getWrapped()));
 			return true;
@@ -207,7 +203,7 @@ public abstract class AbstractRuntime<C extends ModelClassWrapper, P extends Por
 	 * @throws NullPointerException
 	 *             if {@code object} is {@code null}
 	 */
-	protected boolean isUnlinkingDeleted(AbstractModelClassWrapper wrapper) {
+	protected boolean isUnlinkingDeleted(AbstractModelClassRuntime wrapper) {
 		if (wrapper.isDeleted()) {
 			error(x -> x.unlinkingDeletedObject(wrapper.getWrapped()));
 			return true;
@@ -235,12 +231,12 @@ public abstract class AbstractRuntime<C extends ModelClassWrapper, P extends Por
 	 * Connects a behavior port to the state machine of the given model class
 	 * instance.
 	 */
-	public abstract void connect(Port<?, ?> portInstance, AbstractModelClassWrapper object);
+	public abstract void connect(Port<?, ?> portInstance, AbstractModelClassRuntime object);
 
 	@Override
-	protected abstract C createModelClassWrapper(ModelClass object);
+	public abstract C createModelClassRuntime(ModelClass object);
 
 	@Override
-	protected abstract P createPortWrapper(Port<?, ?> portInstance, ModelClass owner);
+	public abstract P createPortRuntime(Port<?, ?> portInstance, ModelClass owner);
 
 }
