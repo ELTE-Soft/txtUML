@@ -122,8 +122,9 @@ public class GenerationNames {
 	}	
 	
 	public static class TypeDelcreationKeywords {
-		public static final String ClassType = "struct";
+		public static final String ClassType = "class";
 		public static final String DataType = "struct";
+		public static final String AssociationStructure = "struct";
 		public static final String EnumType = "enum";
 		public static final String InterfacType = "class";
 		public static final String PublicPartSign = "public:";
@@ -194,8 +195,6 @@ public class GenerationNames {
 
 	}
 
-	public static final String ClassType = "struct";
-	public static final String DataType = "struct";
 	public static final String EnumName = "enum";
 
 	// NDEBUG is the only thing guaranteed, DEBUG and _DEBUG is non-standard
@@ -236,6 +235,8 @@ public class GenerationNames {
 	public static final String AssigmentOperator = "=";
 	public static final String AddAssocToAssocationFunctionName = "addAssoc";
 	public static final String RemoveAssocToAssocationFunctionName = "removeAssoc";
+	public static final String LinkMemberFunctionName = "link";
+	public static final String UnlinkMemberFunctionName = "unlink";
 	public static final String AssocParameterName = "object";
 	public static final String LinkAddition = "link";
 	public static final String TemplateDecl = "template";

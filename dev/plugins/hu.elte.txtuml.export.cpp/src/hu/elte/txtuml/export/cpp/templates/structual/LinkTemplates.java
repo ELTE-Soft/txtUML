@@ -39,7 +39,7 @@ public class LinkTemplates {
 		StringBuilder source = new StringBuilder("");
 		source.append(GenerationNames.TemplateDecl + "<" + GenerationNames.TemplateType + " "
 				+ GenerationNames.EndPointName + ">\n");
-		source.append(ModifierNames.NoReturn + " " + getLinkFunctionName(linkFunction));
+		source.append(ModifierNames.NoReturn + " " + getMemberLinkUnlinkFunctionName(linkFunction));
 		source.append("(" + GenerationNames.TemplateType + " "
 				+ PrivateFunctionalTemplates.cppType(GenerationNames.EndPointName + "::" + GenerationNames.EdgeType)
 				+ " " + ") {}\n");
@@ -51,7 +51,7 @@ public class LinkTemplates {
 			String otherEndPointName, String assocName, LinkFunctionType linkFunction) {
 		StringBuilder source = new StringBuilder("");
 		source.append(GenerationNames.TemplateDecl + "<>\n");
-		source.append(ModifierNames.NoReturn + " " + className + "::" + getLinkFunctionName(linkFunction));
+		source.append(ModifierNames.NoReturn + " " + className + "::" + getMemberLinkUnlinkFunctionName(linkFunction));
 		source.append("<" + GenerationNames.TemplateType + " " + assocName + "::" + otherEndPointName
 				+ ">");
 		source.append("(" + PrivateFunctionalTemplates.cppType(otherClassName) + ");\n");
@@ -67,13 +67,30 @@ public class LinkTemplates {
 
 		return "";
 	}
+	
+	private static String getMemberLinkUnlinkFunctionName(LinkFunctionType linkFunction) {
+		switch(linkFunction) {
+		
+		case Link:
+			return GenerationNames.LinkMemberFunctionName;
+		case Unlink:
+			return GenerationNames.UnlinkMemberFunctionName;
+		case AssemblyConnect:
+		case DelegeateConnect:
+		default:
+			assert(false);
+			return "UNSUPPORTED_MEMBER_LINK";
+		
+		}
+		
+	}
 
 	public static String linkTemplateSpecializationDef(String className, String otherClassName, String assocName,
 			String roleName, boolean isNavigable, LinkFunctionType linkFunction) {
 		StringBuilder source = new StringBuilder("");
 		if (isNavigable) {
 			source.append(GenerationNames.TemplateDecl + "<>\n");
-			source.append(ModifierNames.NoReturn + " " + className + "::" + getLinkFunctionName(linkFunction));
+			source.append(ModifierNames.NoReturn + " " + className + "::" + getMemberLinkUnlinkFunctionName(linkFunction));
 			source.append(
 					"<" + GenerationNames.TemplateType + " " + assocName + "::" + roleName + ">");
 			source.append("(" + PrivateFunctionalTemplates.cppType(otherClassName) + " "
@@ -84,6 +101,7 @@ public class LinkTemplates {
 
 		return source.toString();
 	}
+
 
 	public static String getLinkFunctionName(LinkFunctionType linkFunction) {
 		
@@ -107,7 +125,7 @@ public class LinkTemplates {
 	public static String createAssociationStructure(String associationName, String E1, String E2, String endPoint1,
 			String endPoint2) {
 		StringBuilder source = new StringBuilder("");
-		source.append(TypeDelcreationKeywords.ClassType + " " + associationName);
+		source.append(TypeDelcreationKeywords.AssociationStructure + " " + associationName);
 		source.append("{\n");
 		source.append(createEndPointClass(E1, endPoint1));
 		source.append(createEndPointClass(E2, endPoint2));
@@ -117,7 +135,7 @@ public class LinkTemplates {
 
 	public static String createEndPointClass(String classType, String endPointName) {
 
-		return GenerationNames.ClassType + " " + endPointName + "{typedef " + PrivateFunctionalTemplates.mapUMLClassToCppClass(classType) + " " + GenerationNames.EdgeType
+		return GenerationNames.TypeDelcreationKeywords.ClassType + " " + endPointName + "{typedef " + PrivateFunctionalTemplates.mapUMLClassToCppClass(classType) + " " + GenerationNames.EdgeType
 				+ ";};\n";
 	}
 

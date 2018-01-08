@@ -278,7 +278,7 @@ public class HeaderTemplates {
 			String protectedPart, String privatePart, HeaderInfo headerInfo) {
 		StringBuilder source = new StringBuilder(dependency + headerInfo.getRelatedBaseClassInclude());
 		StringBuilder classDecleration = new StringBuilder("");
-		classDecleration.append(GenerationNames.ClassType + " " + headerInfo.getOwnerClassName());
+		classDecleration.append(GenerationNames.TypeDelcreationKeywords.ClassType + " " + headerInfo.getOwnerClassName());
 
 		List<String> objectBase = new LinkedList<>();
 		if(pureInfBasaNames != null) {

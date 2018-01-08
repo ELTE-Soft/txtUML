@@ -52,7 +52,7 @@ public class ActivityTemplates {
 
 	public static String linkObjects(String firstObjectName, String secondObjectName, String associationName,
 			String endPoint1, String endPoint2, LinkFunctionType linkType) {
-		return ActionNames.ActionFunctionsNamespace + "::" + LinkTemplates.getLinkFunctionName(linkType) + "<"
+		return  LinkTemplates.getLinkFunctionName(linkType) + "<"
 				+ "typename " + associationName + "::" + endPoint1 + ",typename " + associationName + "::" + endPoint2
 				+ ">" + "(" + firstObjectName + "," + secondObjectName + ");\n";
 	}

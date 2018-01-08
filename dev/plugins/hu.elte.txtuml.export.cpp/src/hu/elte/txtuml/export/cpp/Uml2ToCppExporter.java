@@ -330,8 +330,25 @@ public class Uml2ToCppExporter {
 
 	private void createAssociationsSources(String outputDirectory)
 			throws FileNotFoundException, UnsupportedEncodingException {
-
-		Set<String> associatedClasses = new HashSet<String>();
+		
+		class TypeDecriptor {
+			public TypeDecriptor(String name, Boolean isInterface) {
+				this.name = name;
+				this.isInterface = isInterface;
+			}
+			public String getName() {
+				return name;
+			}
+			public Boolean getIsInterface() {
+				return isInterface;
+			}
+			private String name;
+			private Boolean isInterface;
+			
+			
+		}
+		
+		Set<TypeDecriptor> associatedClasses = new HashSet<TypeDecriptor>();
 		StringBuilder includes = new StringBuilder(
 				PrivateFunctionalTemplates.include(LinkTemplates.AssociationsStructuresHreaderName));
 		StringBuilder preDeclerations = new StringBuilder("");
@@ -347,8 +364,8 @@ public class Uml2ToCppExporter {
 			String e1Name = e1End.getName();
 			String e2 = e2End.getType().getName();
 			String e2Name = e2End.getName();
-			associatedClasses.add(e1);
-			associatedClasses.add(e2);
+			associatedClasses.add(new TypeDecriptor(e1, e1End.getType().eClass().equals(UMLPackage.Literals.INTERFACE)));
+			associatedClasses.add(new TypeDecriptor(e2, e2End.getType().eClass().equals(UMLPackage.Literals.INTERFACE)));
 			structures.append(LinkTemplates.createAssociationStructure(assoc.getName(), e1, e2, e1Name, e2Name));
 
 			functions.append(LinkTemplates.linkTemplateSpecializationDef(e1, e2, assoc.getName(), e2Name,
@@ -363,9 +380,14 @@ public class Uml2ToCppExporter {
 
 		}
 
-		for (String className : associatedClasses) {
-			includes.append(PrivateFunctionalTemplates.include(className));
-			preDeclerations.append(GenerationTemplates.forwardDeclaration(className));
+		for (TypeDecriptor classDescriptor : associatedClasses) {
+			includes.append(PrivateFunctionalTemplates.include(classDescriptor.getName()));
+			if(!classDescriptor.getIsInterface()) {
+				preDeclerations.append(GenerationTemplates.forwardDeclaration(classDescriptor.getName()));
+
+			} else {
+				preDeclerations.append(PrivateFunctionalTemplates.include(classDescriptor.getName()));
+			}
 		}
 		String headerSource = HeaderTemplates.headerGuard(
 				PrivateFunctionalTemplates.include(RuntimeTemplates.RTPath + LinkTemplates.AssocationHeader)
