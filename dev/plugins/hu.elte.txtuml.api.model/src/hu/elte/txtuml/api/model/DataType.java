@@ -1,10 +1,14 @@
 package hu.elte.txtuml.api.model;
 
+import static java.util.Comparator.comparing;
+
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+
+import hu.elte.txtuml.utils.Logger;
 
 /**
  * Base class for data types in the model.
@@ -24,6 +28,11 @@ import java.util.Objects;
  * Data types are value types, their instances have no identity, therefore their
  * representing classes in Java must be immutable (all of their fields must be
  * {code final}).
+ * <p>
+ * The {@linkplain DataType} class provides an implementation for the
+ * {@link #equals} and {@link #hashCode} methods which use reflection to
+ * calculate their results based on the dynamic type and all the fields defined
+ * in the dynamic type and all its superclasses.
  * 
  * <p>
  * <b>Java restrictions:</b>
@@ -87,8 +96,8 @@ import java.util.Objects;
  */
 public abstract class DataType {
 
-	@Override
 	@ExternalBody
+	@Override
 	public final boolean equals(Object obj) {
 		if (this == obj) {
 			return true;
@@ -107,27 +116,27 @@ public abstract class DataType {
 						return false;
 					}
 				} catch (IllegalAccessException e) {
-					// cannot happen
+					Logger.sys.fatal("Data type field cannot be accessed", e);
 				}
 			}
 		}
 		return true;
 	}
 
-	@Override
 	@External
+	@Override
 	public final int hashCode() {
 		final int prime = 1873;
 		int result = 1;
 		for (Field[] array : getAllFields()) {
-			Arrays.sort(array, (f1, f2) -> f1.getName().compareTo(f2.getName()));
+			Arrays.sort(array, comparing(Field::getName));
 			for (Field f : array) {
 				f.setAccessible(true);
 				try {
 					Object obj = f.get(this);
-					result = result * prime + (obj == null ? 0 : obj.hashCode());
+					result = result * prime + Objects.hashCode(obj);
 				} catch (IllegalAccessException e) {
-					// cannot happen
+					Logger.sys.fatal("Data type field cannot be accessed", e);
 				}
 			}
 		}

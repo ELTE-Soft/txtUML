@@ -6,9 +6,10 @@ import org.junit.runners.Suite.SuiteClasses;
 
 import hu.elte.txtuml.api.model.CollectionTests;
 import hu.elte.txtuml.api.model.CompositionTest;
+import hu.elte.txtuml.api.model.DataTypeTests;
 import hu.elte.txtuml.api.model.ModelExecutorThreadTest;
 
 @RunWith(Suite.class)
-@SuiteClasses({ ModelExecutorThreadTest.class, CompositionTest.class, CollectionTests.class })
+@SuiteClasses({ ModelExecutorThreadTest.class, CompositionTest.class, CollectionTests.class, DataTypeTests.class })
 public class AllPackagePrivateTests {
 }
