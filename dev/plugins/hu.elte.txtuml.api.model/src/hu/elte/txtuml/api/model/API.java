@@ -1,5 +1,7 @@
 package hu.elte.txtuml.api.model;
 
+import hu.elte.txtuml.utils.Logger;
+
 /**
  * Provides methods to communicate with a txtUML model safely from the
  * <b>outside world</b>.
@@ -17,7 +19,7 @@ package hu.elte.txtuml.api.model;
  * See the documentation of {@link Model} for an overview on modeling in
  * JtxtUML.
  */
-public interface API {
+public abstract class API {
 
 	/**
 	 * Asynchronously sends the specified signal to the specified target object.
@@ -34,8 +36,8 @@ public interface API {
 	 *             if {@code target} is {@code null}
 	 */
 	@ExternalBody
-	static void send(Signal signal, ModelClass target) {
-		Action.send(signal, target);
+	public static void send(Signal signal, ModelClass target) {
+		target.runtime().receiveLater(signal);
 	}
 
 	/**
@@ -45,8 +47,8 @@ public interface API {
 	 *            the message to be logged
 	 */
 	@ExternalBody
-	static void log(String message) {
-		Action.log(message);
+	public static void log(String message) {
+		Logger.user.info(message);
 	}
 
 	/**
@@ -56,8 +58,8 @@ public interface API {
 	 *            the error message to be logged
 	 */
 	@ExternalBody
-	static void logError(String message) {
-		Action.logError(message);
+	public static void logError(String message) {
+		Logger.user.error(message);
 	}
 
 }

@@ -6,10 +6,12 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Proxy;
 
 import hu.elte.txtuml.api.model.AssociationEnd.Navigable;
-import hu.elte.txtuml.api.model.Runtime.Described;
+import hu.elte.txtuml.api.model.ImplRelated.RequiresRuntime;
 import hu.elte.txtuml.api.model.error.PortParameterError;
-import hu.elte.txtuml.api.model.runtime.ModelClassWrapper;
-import hu.elte.txtuml.api.model.runtime.PortWrapper;
+import hu.elte.txtuml.api.model.runtime.ExecutorThread;
+import hu.elte.txtuml.api.model.runtime.ModelClassRuntime;
+import hu.elte.txtuml.api.model.runtime.ModelRuntime;
+import hu.elte.txtuml.api.model.runtime.PortRuntime;
 
 /**
  * Base class for classes in the model.
@@ -179,8 +181,8 @@ public abstract class ModelClass extends StateMachine {
 
 	@Override
 	@External
-	ModelClassWrapper createRuntimeInfo() {
-		return Runtime.currentRuntime().createModelClassWrapper(this);
+	ModelClassRuntime createRuntime() {
+		return ModelRuntime.current().createModelClassRuntime(this);
 	}
 
 	/**
@@ -201,7 +203,9 @@ public abstract class ModelClass extends StateMachine {
 	@ExternalBody
 	public final <T extends ModelClass, C extends GeneralCollection<T>, AE extends AssociationEnd<C> & Navigable> C assoc(
 			Class<AE> otherEnd) {
-		return runtimeInfo().navigateThroughAssociation(otherEnd);
+		ExecutorThread.current().requireOwned(this);
+
+		return runtime().navigateThroughAssociation(otherEnd);
 	}
 
 	/**
@@ -214,7 +218,9 @@ public abstract class ModelClass extends StateMachine {
 	 */
 	@ExternalBody
 	public final <P extends Port<?, ?>> P port(Class<P> portType) {
-		return runtimeInfo().getPortInstance(portType);
+		ExecutorThread.current().requireOwned(this);
+
+		return runtime().getPortInstance(portType);
 	}
 
 	/**
@@ -279,7 +285,8 @@ public abstract class ModelClass extends StateMachine {
 	 * @param <R>
 	 *            the required interface
 	 */
-	public class Port<P extends Interface, R extends Interface> extends @External Described<PortWrapper> {
+	public class Port<P extends Interface, R extends Interface>
+			extends @External RequiresRuntime<PortRuntime> {
 
 		/**
 		 * The required interface of this port.
@@ -299,8 +306,8 @@ public abstract class ModelClass extends StateMachine {
 
 		@Override
 		@External
-		PortWrapper createRuntimeInfo() {
-			return ModelClass.this.getRuntime().createPortWrapper(this, ModelClass.this);
+		PortRuntime createRuntime() {
+			return ModelClass.this.runtime().getModelRuntime().createPortRuntime(this, ModelClass.this);
 		}
 
 		/**
@@ -332,7 +339,7 @@ public abstract class ModelClass extends StateMachine {
 		@External
 		private InvocationHandler createReceptionHandler() {
 			return (Object proxy, Method method, Object[] args) -> {
-				runtimeInfo().send((Signal) args[0]);
+				runtime().receiveLater((Signal) args[0]);
 
 				return null; // the actual method has to be void
 			};

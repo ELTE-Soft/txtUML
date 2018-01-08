@@ -9,16 +9,17 @@ import hu.elte.txtuml.api.model.ModelClass.Port;
 import hu.elte.txtuml.api.model.ModelClass.Status;
 import hu.elte.txtuml.api.model.error.LowerBoundError;
 import hu.elte.txtuml.api.model.Signal;
+import hu.elte.txtuml.api.model.ImplRelated;
 
 /**
  * Wraps a model class instance, providing additional runtime information and
  * management capabilities.
  * <p>
- * See the documentation of {@link hu.elte.txtuml.api.model.Model} for an
- * overview on modeling in JtxtUML.
+ * As a member of the {@linkplain hu.elte.txtuml.api.model.runtime} package, this
+ * type should <b>only be used to implement model executors</b>, not in the
+ * model or in external libraries.
  */
-public interface ModelClassWrapper
-		extends SignalSenderWrapper<ModelClass>, SignalTargetWrapper<ModelClass>, RuntimeInfo {
+public interface ModelClassRuntime extends SignalTargetRuntime<ModelClass>, ImplRelated {
 
 	/**
 	 * The unique identifier of the wrapped model class instance.
@@ -49,6 +50,13 @@ public interface ModelClassWrapper
 	 * The current status of the wrapped model class instance.
 	 */
 	Status getStatus();
+
+	/**
+	 * The object asynchronously sent a signal.
+	 * <p>
+	 * Thread-safe.
+	 */
+	void didSend(Signal signal);
 
 	<T extends ModelClass, C extends GeneralCollection<T>, AE extends AssociationEnd<C> & Navigable> C navigateThroughAssociation(
 			Class<AE> otherEnd) throws LowerBoundError;

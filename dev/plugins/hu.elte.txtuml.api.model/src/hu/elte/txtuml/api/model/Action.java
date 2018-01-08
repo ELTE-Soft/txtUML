@@ -4,8 +4,8 @@ import hu.elte.txtuml.api.model.AbstractGeneralCollection.Builder;
 import hu.elte.txtuml.api.model.ConnectorBase.ConnectorEnd;
 import hu.elte.txtuml.api.model.ModelClass.Port;
 import hu.elte.txtuml.api.model.error.ObjectCreationError;
+import hu.elte.txtuml.api.model.runtime.ExecutorThread;
 import hu.elte.txtuml.utils.InstanceCreator;
-import hu.elte.txtuml.utils.Logger;
 import hu.elte.txtuml.utils.RuntimeInvocationTargetException;
 
 /**
@@ -34,7 +34,14 @@ import hu.elte.txtuml.utils.RuntimeInvocationTargetException;
  * See the documentation of {@link Model} for an overview on modeling in
  * JtxtUML.
  */
-public interface Action {
+public abstract class Action {
+
+	/**
+	 * This class is not intended to be instantiated.
+	 */
+	@ExternalBody
+	protected Action() {
+	}
 
 	/**
 	 * Creates a new instance of the specified model class. Shows an error
@@ -52,7 +59,9 @@ public interface Action {
 	 *             if <code>classType</code> is <code>null</code>
 	 */
 	@ExternalBody
-	static <T extends ModelClass> T create(Class<T> classType, Object... parameters) throws ObjectCreationError {
+	public static <T extends ModelClass> T create(Class<T> classType, Object... parameters) throws ObjectCreationError {
+		ExecutorThread.requirePresence();
+
 		try {
 			return InstanceCreator.create(classType, parameters);
 		} catch (IllegalArgumentException | RuntimeInvocationTargetException e) {
@@ -83,10 +92,10 @@ public interface Action {
 	 *             if <code>classType</code> is <code>null</code>
 	 */
 	@ExternalBody
-	static <T extends ModelClass> T createWithName(Class<T> classType, String name, Object... parameters)
+	public static <T extends ModelClass> T createWithName(Class<T> classType, String name, Object... parameters)
 			throws ObjectCreationError {
-		T ret = create(classType, parameters);
-		ret.runtimeInfo().setName(name);
+		T ret = Action.create(classType, parameters);
+		ret.runtime().setName(name);
 		return ret;
 	}
 
@@ -104,8 +113,10 @@ public interface Action {
 	 *             if <code>obj</code> is <code>null</code>
 	 */
 	@ExternalBody
-	static void delete(ModelClass obj) {
-		obj.runtimeInfo().delete();
+	public static void delete(ModelClass obj) {
+		ExecutorThread.current().requireOwned(obj);
+
+		obj.runtime().delete();
 	}
 
 	/**
@@ -127,9 +138,13 @@ public interface Action {
 	 *             <code>null</code>
 	 */
 	@ExternalBody
-	static <C1 extends ConnectorEnd<?, P1>, P1 extends Port<I1, I2>, C2 extends ConnectorEnd<?, P2>, P2 extends Port<I2, I1>, I1 extends Interface, I2 extends Interface> void connect(
+	public static <C1 extends ConnectorEnd<?, P1>, P1 extends Port<I1, I2>, C2 extends ConnectorEnd<?, P2>, P2 extends Port<I2, I1>, I1 extends Interface, I2 extends Interface> void connect(
 			Class<C1> leftEnd, P1 leftPort, Class<C2> rightEnd, P2 rightPort) {
-		leftPort.getRuntime().connect(leftEnd, leftPort, rightEnd, rightPort);
+		ExecutorThread exec = ExecutorThread.current();
+		exec.requireOwned(leftPort);
+		exec.requireOwned(rightPort);
+
+		exec.getModelRuntime().connect(leftEnd, leftPort, rightEnd, rightPort);
 	}
 
 	/**
@@ -148,9 +163,13 @@ public interface Action {
 	 *             <code>null</code>
 	 */
 	@ExternalBody
-	static <P1 extends Port<I1, I2>, C extends ConnectorEnd<?, P2>, P2 extends Port<I1, I2>, I1 extends Interface, I2 extends Interface> void connect(
+	public static <P1 extends Port<I1, I2>, C extends ConnectorEnd<?, P2>, P2 extends Port<I1, I2>, I1 extends Interface, I2 extends Interface> void connect(
 			P1 parentPort, Class<C> childEnd, P2 childPort) {
-		parentPort.getRuntime().connect(parentPort, childEnd, childPort);
+		ExecutorThread exec = ExecutorThread.current();
+		exec.requireOwned(parentPort);
+		exec.requireOwned(childPort);
+
+		exec.getModelRuntime().connect(parentPort, childEnd, childPort);
 	}
 
 	/**
@@ -178,10 +197,14 @@ public interface Action {
 	 * @see ModelClass.Status#DELETED
 	 */
 	@ExternalBody
-	static <L extends ModelClass, R extends ModelClass, CL extends GeneralCollection<L>, CR extends GeneralCollection<R>> void link(
+	public static <L extends ModelClass, R extends ModelClass, CL extends GeneralCollection<L>, CR extends GeneralCollection<R>> void link(
 			Class<? extends AssociationEnd<CL>> leftEnd, L leftObj, Class<? extends AssociationEnd<CR>> rightEnd,
 			R rightObj) {
-		leftObj.getRuntime().link(leftEnd, leftObj, rightEnd, rightObj);
+		ExecutorThread exec = ExecutorThread.current();
+		exec.requireOwned(leftObj);
+		exec.requireOwned(rightObj);
+
+		exec.getModelRuntime().link(leftEnd, leftObj, rightEnd, rightObj);
 	}
 
 	/**
@@ -207,10 +230,14 @@ public interface Action {
 	 * @see AssociationEnd
 	 */
 	@ExternalBody
-	static <L extends ModelClass, R extends ModelClass, CL extends GeneralCollection<L>, CR extends GeneralCollection<R>> void unlink(
+	public static <L extends ModelClass, R extends ModelClass, CL extends GeneralCollection<L>, CR extends GeneralCollection<R>> void unlink(
 			Class<? extends AssociationEnd<CL>> leftEnd, L leftObj, Class<? extends AssociationEnd<CR>> rightEnd,
 			R rightObj) {
-		leftObj.getRuntime().unlink(leftEnd, leftObj, rightEnd, rightObj);
+		ExecutorThread exec = ExecutorThread.current();
+		exec.requireOwned(leftObj);
+		exec.requireOwned(rightObj);
+
+		exec.getModelRuntime().unlink(leftEnd, leftObj, rightEnd, rightObj);
 	}
 
 	/**
@@ -224,8 +251,10 @@ public interface Action {
 	 *             if <code>obj</code> is <code>null</code>
 	 */
 	@ExternalBody
-	static void start(ModelClass obj) {
-		obj.runtimeInfo().start();
+	public static void start(ModelClass obj) {
+		ExecutorThread.current().requireOwned(obj);
+
+		obj.runtime().start();
 	}
 
 	/**
@@ -249,7 +278,9 @@ public interface Action {
 	 *             if <code>reception</code> is <code>null</code>
 	 */
 	@ExternalBody
-	static <S extends Signal> void send(S signal, Reception<S> reception) {
+	public static <S extends Signal> void send(S signal, Reception<S> reception) {
+		ExecutorThread.requirePresence();
+
 		reception.accept(signal);
 	}
 
@@ -268,10 +299,12 @@ public interface Action {
 	 *             if <code>target</code> is <code>null</code>
 	 */
 	@ExternalBody
-	static void send(Signal signal, ModelClass target) {
-		Action.send(signal, target, null);
+	public static void send(Signal signal, ModelClass target) {
+		ExecutorThread.requirePresence();
+
+		API.send(signal, target);
 	}
-	
+
 	/**
 	 * Asynchronously sends the specified signal to the specified target object.
 	 * <p>
@@ -290,14 +323,14 @@ public interface Action {
 	 *             if <code>target</code> is <code>null</code>
 	 */
 	@ExternalBody
-	static void send(Signal signal, ModelClass target, ModelClass sender)
-	{
-		if (sender != null)
-		{
-			sender.runtimeInfo().sent(signal);
+	public static void send(Signal signal, ModelClass target, ModelClass sender) {
+		ExecutorThread.current().requireOwned(sender);
+
+		if (sender != null) {
+			sender.runtime().didSend(signal);
 		}
-		
-		target.runtimeInfo().send(signal);
+
+		API.send(signal, target);
 	}
 
 	/**
@@ -307,8 +340,10 @@ public interface Action {
 	 *            the message to be logged
 	 */
 	@ExternalBody
-	static void log(String message) {
-		Logger.user.info(message);
+	public static void log(String message) {
+		ExecutorThread.requirePresence();
+
+		API.log(message);
 	}
 
 	/**
@@ -318,8 +353,10 @@ public interface Action {
 	 *            the error message to be logged
 	 */
 	@ExternalBody
-	static void logError(String message) {
-		Logger.user.error(message);
+	public static void logError(String message) {
+		ExecutorThread.requirePresence();
+
+		API.logError(message);
 	}
 
 	/**
@@ -333,7 +370,9 @@ public interface Action {
 	 */
 	@ExternalBody
 	@SafeVarargs
-	static <E> Any<E> collect(E... elements) {
+	public static <E> Any<E> collect(E... elements) {
+		ExecutorThread.requirePresence();
+
 		return AbstractGeneralCollection.createAnyOf(Builder.createConsumerFor(elements));
 	}
 
@@ -354,13 +393,14 @@ public interface Action {
 	@ExternalBody
 	@SafeVarargs
 	@SuppressWarnings("unchecked")
-	static <E, C extends GeneralCollection<E>, C2 extends GeneralCollection<?>> C collectIn(Class<C2> collectionType,
-			E... elements) {
+	public static <E, C extends GeneralCollection<E>, C2 extends GeneralCollection<?>> C collectIn(
+			Class<C2> collectionType, E... elements) {
 		/*
 		 * This method is declared as it is because of similar reasons why the
 		 * "as" method of the GeneralCollection class is declared as that is.
 		 * For details, read the comments at the "as" method.
 		 */
+		ExecutorThread.requirePresence();
 
 		return (C) AbstractGeneralCollection.create(collectionType, Builder.createConsumerFor(elements));
 	}

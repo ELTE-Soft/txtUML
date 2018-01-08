@@ -1,15 +1,16 @@
 package hu.elte.txtuml.api.model.runtime;
 
 import hu.elte.txtuml.api.model.ImplRelated;
+import hu.elte.txtuml.api.model.ModelClass.Port;
 
 /**
- * Used by {@link hu.elte.txtuml.api.model.StateMachine.Transition#Else} to
- * represent the special boolean value of 'else'.
+ * Wraps a port instance, providing additional runtime information and
+ * management capabilities.
  * <p>
  * As a member of the {@linkplain hu.elte.txtuml.api.model.runtime} package, this
  * type should <b>only be used to implement model executors</b>, not in the
  * model or in external libraries.
  */
-@SuppressWarnings("serial")
-public class ElseException extends RuntimeException implements ImplRelated {
+public interface PortRuntime extends SignalTargetRuntime<Port<?, ?>>, ImplRelated {
+
 }

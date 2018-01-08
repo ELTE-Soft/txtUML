@@ -2,8 +2,7 @@ package hu.elte.txtuml.api.model.runtime;
 
 import java.util.function.Function;
 
-import hu.elte.txtuml.api.model.Runtime;
-import hu.elte.txtuml.api.model.error.MissingRuntimeContextError;
+import hu.elte.txtuml.api.model.error.NotModelExecutorThreadError;
 
 /**
  * Through this interface some management features of the currently operating
@@ -27,16 +26,15 @@ public interface BaseModelExecutor {
 	 * Gets the current model executor which is associated with the current
 	 * thread.
 	 * <p>
-	 * <b>Note:</b> calls {@link Runtime#currentRuntime()}.
-	 * {@link Runtime#getExecutor getExecutor()}.
+	 * <b>Note:</b> calls {@link ModelRuntime#current()}.
+	 * {@link ModelRuntime#getExecutor getExecutor()}.
 	 * 
 	 * @return the model executor which is associated with the current thread
-	 * @throws MissingRuntimeContextError
-	 *             if the caller thread does not implement
-	 *             {@link RuntimeContext}
+	 * @throws NotModelExecutorThreadError
+	 *             if the caller thread is not a model executor thread
 	 */
-	static BaseModelExecutor currentExecutor() throws MissingRuntimeContextError {
-		return Runtime.currentRuntime().getExecutor();
+	static BaseModelExecutor current() throws NotModelExecutorThreadError {
+		return ModelRuntime.current().getExecutor();
 	}
 
 	/**
@@ -82,10 +80,10 @@ public interface BaseModelExecutor {
 	BaseModelExecutor addTerminationBlocker(Object blocker);
 
 	/**
-	 * Removes a termination blocker from this model executor's set of blockers.
-	 * A model executor may only terminate gracefully if this set is empty, that
-	 * is, if all previously added blockers are removed. A forced termination
-	 * may omit this restriction.
+	 * Removes the specified termination blocker from this model executor's set
+	 * of blockers. A model executor may only terminate gracefully if this set
+	 * is empty, that is, if all previously added blockers are removed. A forced
+	 * termination may omit this restriction.
 	 * <p>
 	 * Must be <b>thread-safe</b>.
 	 * 

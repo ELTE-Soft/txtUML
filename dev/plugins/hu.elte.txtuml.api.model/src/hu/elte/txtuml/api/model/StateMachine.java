@@ -1,8 +1,9 @@
 package hu.elte.txtuml.api.model;
 
-import hu.elte.txtuml.api.model.Runtime.Described;
+import hu.elte.txtuml.api.model.ImplRelated.RequiresRuntime;
 import hu.elte.txtuml.api.model.runtime.ElseException;
-import hu.elte.txtuml.api.model.runtime.ModelClassWrapper;
+import hu.elte.txtuml.api.model.runtime.ExecutorThread;
+import hu.elte.txtuml.api.model.runtime.ModelClassRuntime;
 
 /**
  * Base class for state machines in the model.
@@ -180,7 +181,7 @@ import hu.elte.txtuml.api.model.runtime.ModelClassWrapper;
  * @see State
  * @see CompositeState
  */
-public abstract class StateMachine extends @External Described<ModelClassWrapper> {
+public abstract class StateMachine extends @External RequiresRuntime<ModelClassRuntime> {
 
 	/**
 	 * Base type for vertices in the model.
@@ -571,7 +572,9 @@ public abstract class StateMachine extends @External Described<ModelClassWrapper
 		@SuppressWarnings("unchecked")
 		@ExternalBody
 		protected final <T extends Signal> T getTrigger(Class<T> signalClass) throws ClassCastException {
-			return (T) runtimeInfo().getCurrentTrigger();
+			ExecutorThread.current().requireOwned(StateMachine.this);
+
+			return (T) runtime().getCurrentTrigger();
 		}
 
 		@Override
@@ -781,8 +784,8 @@ public abstract class StateMachine extends @External Described<ModelClassWrapper
 		 * actions.
 		 * <p>
 		 * If the actual transition has a trigger defined, the
-		 * {@code getTrigger} method can be used inside the
-		 * overriding methods to get the triggering signal.
+		 * {@code getTrigger} method can be used inside the overriding methods
+		 * to get the triggering signal.
 		 * <p>
 		 * Overriding methods may only contain action code. See the
 		 * documentation of {@link Model} for details about the action language.
@@ -830,8 +833,8 @@ public abstract class StateMachine extends @External Described<ModelClassWrapper
 		 * should always do so.
 		 * <p>
 		 * If the actual transition has a trigger defined, the
-		 * {@code getTrigger} method can be used inside the
-		 * overriding methods to get the triggering signal.
+		 * {@code getTrigger} method can be used inside the overriding methods
+		 * to get the triggering signal.
 		 * <p>
 		 * Overriding methods may only contain a condition evaluation. See the
 		 * documentation of {@link Model} for details about condition
@@ -881,7 +884,9 @@ public abstract class StateMachine extends @External Described<ModelClassWrapper
 		@SuppressWarnings("unchecked")
 		@ExternalBody
 		protected final <T extends Signal> T getTrigger(Class<T> signalClass) throws ClassCastException {
-			return (T) runtimeInfo().getCurrentTrigger();
+			ExecutorThread.current().requireOwned(StateMachine.this);
+
+			return (T) runtime().getCurrentTrigger();
 		}
 
 		@Override
