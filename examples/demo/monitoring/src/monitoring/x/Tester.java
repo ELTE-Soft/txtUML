@@ -33,7 +33,7 @@ public class Tester {
 	}
 
 	public static void main(String[] args) {
-		ModelExecutor executor = ModelExecutor.create().setTraceLogging(false).launch(Tester::init);
+		ModelExecutor executor = ModelExecutor.create().start(Tester::init);
 		
 		System.out.println("Testing monitoring example.");
 		System.out.println("\tq - quit");

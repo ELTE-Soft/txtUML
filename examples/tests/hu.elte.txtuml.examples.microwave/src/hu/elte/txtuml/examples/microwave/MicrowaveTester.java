@@ -2,6 +2,7 @@ package hu.elte.txtuml.examples.microwave;
 
 import hu.elte.txtuml.api.model.API;
 import hu.elte.txtuml.api.model.Action;
+import hu.elte.txtuml.api.model.execution.LogLevel;
 import hu.elte.txtuml.api.model.execution.ModelExecutor;
 import hu.elte.txtuml.examples.microwave.model.Human;
 import hu.elte.txtuml.examples.microwave.model.Microwave;
@@ -32,7 +33,7 @@ public class MicrowaveTester {
 	}
 
 	public static void main(String args) throws InterruptedException {
-		ModelExecutor executor = ModelExecutor.create().setTraceLogging(false).launch(MicrowaveTester::init);
+		ModelExecutor executor = ModelExecutor.create().setLogLevel(LogLevel.TRACE).start(MicrowaveTester::init);
 		
 		String inp = "";
 		do {

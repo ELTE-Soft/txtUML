@@ -1,6 +1,7 @@
 package pingpong.x;
 
 import hu.elte.txtuml.api.model.Action;
+import hu.elte.txtuml.api.model.execution.LogLevel;
 import hu.elte.txtuml.api.model.execution.ModelExecutor;
 import pingpong.x.model.Game;
 import pingpong.x.model.signals.Ball;
@@ -14,7 +15,7 @@ public class Tester {
 	}
 
 	public static void main(String[] args) {
-		ModelExecutor.create().setTraceLogging(true).run(Tester::init);
+		ModelExecutor.create().setLogLevel(LogLevel.TRACE).run(Tester::init);
 	}
 
 }

@@ -3,6 +3,7 @@ package train.j;
 import hu.elte.txtuml.api.model.API;
 import hu.elte.txtuml.api.model.Action;
 import hu.elte.txtuml.api.model.execution.ModelExecutor;
+import hu.elte.txtuml.api.model.execution.LogLevel;
 import train.j.model.Engine;
 import train.j.model.Gearbox;
 import train.j.model.Lamp;
@@ -15,7 +16,7 @@ import train.j.model.signals.SwitchLight;
 
 public class Tester {
 	Tester() {
-		ModelExecutor executor = ModelExecutor.create().setTraceLogging(true).launch(this::createInstances);
+		ModelExecutor executor = ModelExecutor.create().setLogLevel(LogLevel.TRACE).start(this::createInstances);
 		test();
 		executor.shutdown();
 	}

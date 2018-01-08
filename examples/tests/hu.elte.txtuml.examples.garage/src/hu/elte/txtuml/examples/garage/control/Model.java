@@ -27,7 +27,7 @@ public class Model implements Control {
 	private Keyboard keyboard;
 
 	public ModelExecutor start() {
-		return ModelExecutor.create().launch(() -> {
+		return ModelExecutor.create().start(() -> {
 			door = Action.create(Door.class);
 			motor = Action.create(Motor.class);
 			alarm = Action.create(Alarm.class);

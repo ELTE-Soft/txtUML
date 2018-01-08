@@ -2,6 +2,7 @@ package train.x;
 
 import hu.elte.txtuml.api.model.API;
 import hu.elte.txtuml.api.model.Action;
+import hu.elte.txtuml.api.model.execution.LogLevel;
 import hu.elte.txtuml.api.model.execution.ModelExecutor;
 import train.x.model.Backward;
 import train.x.model.Engine;
@@ -15,7 +16,7 @@ import train.x.model.SwitchLight;
 
 public class Tester {
 	Tester() {
-		ModelExecutor executor = ModelExecutor.create().setTraceLogging(true).launch(this::createInstances);
+		ModelExecutor executor = ModelExecutor.create().setLogLevel(LogLevel.TRACE).start(this::createInstances);
 		test();
 		executor.shutdown();
 	}

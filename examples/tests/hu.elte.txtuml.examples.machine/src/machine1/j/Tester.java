@@ -1,6 +1,7 @@
 package machine1.j;
 
 import hu.elte.txtuml.api.model.Action;
+import hu.elte.txtuml.api.model.execution.LogLevel;
 import hu.elte.txtuml.api.model.execution.ModelExecutor;
 import machine1.j.model.ModelTester;
 
@@ -12,7 +13,7 @@ public class Tester {
 	}
 
 	public static void main(String[] args) {
-		ModelExecutor.create().setTraceLogging(false).run(Tester::init);
+		ModelExecutor.create().setLogLevel(LogLevel.TRACE).run(Tester::init);
 	}
 
 }

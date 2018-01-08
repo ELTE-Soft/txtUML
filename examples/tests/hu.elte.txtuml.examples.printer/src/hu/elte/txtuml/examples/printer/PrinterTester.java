@@ -2,6 +2,7 @@ package hu.elte.txtuml.examples.printer;
 
 import hu.elte.txtuml.api.model.API;
 import hu.elte.txtuml.api.model.Action;
+import hu.elte.txtuml.api.model.execution.LogLevel;
 import hu.elte.txtuml.api.model.execution.ModelExecutor;
 import hu.elte.txtuml.examples.printer.model.Human;
 import hu.elte.txtuml.examples.printer.model.PrinterBackend;
@@ -47,7 +48,7 @@ public class PrinterTester {
 	}
 
 	public static void main(String[] args) throws InterruptedException {
-		ModelExecutor executor = ModelExecutor.create().setTraceLogging(false).launch(PrinterTester::init);
+		ModelExecutor executor = ModelExecutor.create().setLogLevel(LogLevel.TRACE).start(PrinterTester::init);
 
 		API.send(new WantToPrint(), h1); // 2
 		Thread.sleep(500);
