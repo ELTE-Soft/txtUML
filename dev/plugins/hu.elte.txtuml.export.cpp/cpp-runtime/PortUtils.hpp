@@ -144,8 +144,7 @@ class BehaviorPortImpl : public BehaviorPort <ProvidedInf, RequiredInf>
 
         virtual void reciveAny (ES::EventRef signal)
         {
-			Model::EventBase* realEvent = static_cast<Model::EventBase*>(signal.get());
-			realEvent->p = BehaviorPort <ProvidedInf, RequiredInf>::type;
+			signal->setPortType(BehaviorPort <ProvidedInf, RequiredInf>::type);
 			BehaviorPort <ProvidedInf, RequiredInf>::owner->send(signal);
         }
 

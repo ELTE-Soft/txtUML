@@ -38,6 +38,11 @@ public:
 	{
 		return static_cast<const DerivedBase*>(this)->p;
 	}
+	
+	void setPortType(int portType)
+	{
+		static_cast<DerivedBase*>(this)->p = portType;
+	}
 
 	SpecialSignalType getSpecialType() const
 	{
