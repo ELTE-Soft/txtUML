@@ -398,16 +398,20 @@ public class Uml2ToCppExporter {
 			associatedClasses.add(new TypeDecriptor(e1, e1End.getType().eClass().equals(UMLPackage.Literals.INTERFACE)));
 			associatedClasses.add(new TypeDecriptor(e2, e2End.getType().eClass().equals(UMLPackage.Literals.INTERFACE)));
 			structures.append(LinkTemplates.createAssociationStructure(assoc.getName(), e1, e2, e1Name, e2Name));
+			
+			// TODO temporally solution, this functions will be elinamented
+			if(!e1End.getType().eClass().equals(UMLPackage.Literals.INTERFACE) && !e2End.getType().eClass().equals(UMLPackage.Literals.INTERFACE)) {
+				functions.append(LinkTemplates.linkTemplateSpecializationDef(e1, e2, assoc.getName(), e2Name,
+						e2End.isNavigable(), LinkTemplates.LinkFunctionType.Link));
+				functions.append(LinkTemplates.linkTemplateSpecializationDef(e2, e1, assoc.getName(), e1Name,
+						e1End.isNavigable(), LinkTemplates.LinkFunctionType.Link));
 
-			functions.append(LinkTemplates.linkTemplateSpecializationDef(e1, e2, assoc.getName(), e2Name,
-					e2End.isNavigable(), LinkTemplates.LinkFunctionType.Link));
-			functions.append(LinkTemplates.linkTemplateSpecializationDef(e2, e1, assoc.getName(), e1Name,
-					e1End.isNavigable(), LinkTemplates.LinkFunctionType.Link));
+				functions.append(LinkTemplates.linkTemplateSpecializationDef(e2, e1, assoc.getName(), e1Name,
+						e1End.isNavigable(), LinkTemplates.LinkFunctionType.Unlink));
+				functions.append(LinkTemplates.linkTemplateSpecializationDef(e1, e2, assoc.getName(), e2Name,
+						e2End.isNavigable(), LinkTemplates.LinkFunctionType.Unlink));
+			}
 
-			functions.append(LinkTemplates.linkTemplateSpecializationDef(e2, e1, assoc.getName(), e1Name,
-					e1End.isNavigable(), LinkTemplates.LinkFunctionType.Unlink));
-			functions.append(LinkTemplates.linkTemplateSpecializationDef(e1, e2, assoc.getName(), e2Name,
-					e2End.isNavigable(), LinkTemplates.LinkFunctionType.Unlink));
 
 		}
 
@@ -431,6 +435,7 @@ public class Uml2ToCppExporter {
 
 		String cppSource = includes.toString()
 				+ GenerationTemplates.putNamespace(functions.toString(), GenerationNames.Namespaces.ModelNamespace);
+		
 		CppExporterUtils.writeOutSource(outputDirectory, (LinkTemplates.AssociationStructuresSource),
 				CppExporterUtils.format(cppSource));
 
