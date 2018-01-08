@@ -14,6 +14,7 @@ import java.util.Set;
 
 import org.eclipse.cdt.core.ToolFactory;
 import org.eclipse.cdt.core.formatter.CodeFormatter;
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.IDocument;
@@ -34,6 +35,7 @@ import org.eclipse.uml2.uml.UMLPackage;
 import org.eclipse.uml2.uml.Usage;
 
 import hu.elte.txtuml.export.cpp.activity.ActivityExporter;
+import hu.elte.txtuml.export.cpp.templates.GenerationNames;
 import hu.elte.txtuml.export.cpp.templates.activity.ActivityTemplates;
 import hu.elte.txtuml.utils.Pair;
 
@@ -239,25 +241,29 @@ public class CppExporterUtils {
 	}
 	
 	
-	public static Optional<String> getFirstGeneralClassName(Classifier cls) {
+	public static String getFirstGeneralClassName(Classifier cls) {
 		if (!cls.getGeneralizations().isEmpty()) {
-			return Optional.of(cls.getGeneralizations().get(0).getGeneral().getName());
+			return cls.getGeneralizations().get(0).getGeneral().getName();
 		} else {
-			return Optional.empty();
+			return GenerationNames.InterfaceNames.EmptyInfName;
 		}
 		
 	}
 	
-	public static Optional<String> getUsedInterfaceName(List<Usage> usages, Interface inf) {
+	public static String getUsedInterfaceName(Interface inf) {
+		EList<Element> modelRoot = inf.getModel().allOwnedElements();
+		List<Usage> usages = new ArrayList<>();
+		CppExporterUtils.getTypedElements(usages, UMLPackage.Literals.USAGE, modelRoot);
+		
 		Optional<Usage> infOptionalUsage = usages.stream().filter(u -> u.getClients().contains(inf)).findFirst();
 		if(infOptionalUsage.isPresent()) {
 			Usage infUsage = infOptionalUsage.get();
 			if (infUsage.getSuppliers().isEmpty()) {
-				return Optional.empty();
+				return GenerationNames.InterfaceNames.EmptyInfName;
 			}
-			return Optional.of(infUsage.getSuppliers().get(0).getName());
+			return infUsage.getSuppliers().get(0).getName();
 		} else {
-			return Optional.empty();
+			return GenerationNames.InterfaceNames.EmptyInfName;
 		}
 	}
 	

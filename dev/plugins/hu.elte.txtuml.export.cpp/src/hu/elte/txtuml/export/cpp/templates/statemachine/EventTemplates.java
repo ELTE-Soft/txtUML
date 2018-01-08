@@ -35,7 +35,8 @@ public class EventTemplates {
 			List<Property> properites) {
 		StringBuilder source = new StringBuilder(
 				TypeDelcreationKeywords.ClassType + " " + GenerationNames.eventClassName(className) + ":public "
-						+ EventTemplates.EventBaseName + "\n{\n" + GenerationNames.eventClassName(className) + "(");
+						+ EventTemplates.EventBaseName + "\n{\n" + GenerationNames.ModifierNames.PublicModifier + ":\n" + 
+						GenerationNames.eventClassName(className) + "(");
 		String paramList = PrivateFunctionalTemplates.paramList(params);
 		if (paramList != "") {
 			source.append(paramList);

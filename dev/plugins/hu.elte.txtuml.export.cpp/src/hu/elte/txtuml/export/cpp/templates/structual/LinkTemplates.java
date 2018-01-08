@@ -135,7 +135,7 @@ public class LinkTemplates {
 
 	public static String createEndPointClass(String classType, String endPointName) {
 
-		return GenerationNames.TypeDelcreationKeywords.ClassType + " " + endPointName + "{typedef " + PrivateFunctionalTemplates.mapUMLClassToCppClass(classType) + " " + GenerationNames.EdgeType
+		return GenerationNames.TypeDelcreationKeywords.AssociationStructure + " " + endPointName + "{typedef " + PrivateFunctionalTemplates.mapUMLClassToCppClass(classType) + " " + GenerationNames.EdgeType
 				+ ";};\n";
 	}
 

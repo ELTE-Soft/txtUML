@@ -65,13 +65,13 @@ template <typename ProvidedInf, typename RequiredInf>
 class BehaviorPort : public IPort<ProvidedInf, RequiredInf>
 {
 public:
-	BehaviorPort(int type_, ES::StateMachineRef owner_) : type(type_), owner(owner_) {}
+	BehaviorPort(int type_, ES::ModelObjectRef owner_) : type(type_), owner(owner_) {}
 	virtual ~BehaviorPort() {}
 	int getType() const { return type; }
 protected:
 
 	int type;
-	ES::StateMachineRef owner;
+	ES::ModelObjectRef owner;
 };
 
 struct IConnection
@@ -113,19 +113,19 @@ private:
 template<typename LeftEnd, typename RightEnd>
 void assemblyConnect(
 ES::IPortRef<typename LeftEnd::EdgeType, typename RightEnd::EdgeType> p1, 
-ES::IPortRef <typename RightEnd::EdgeType, typename LeftEnd::EdgeType> * p2)
+ES::IPortRef <typename RightEnd::EdgeType, typename LeftEnd::EdgeType> p2)
 {
 	p1->setAssemblyConnectedPort(p2);
 	p2->setAssemblyConnectedPort(p1);
 }
 
-template<typename LeftEnd, typename RightEnd>
+template<typename ChildEnd, typename ParentRequired>
 void delegateConnect(
-ES::IPortRef<typename LeftEnd::EdgeType, typename RightEnd::EdgeType> childPort, 
-ES::PortRef <typename LeftEnd::EdgeType, typename RightEnd::EdgeType> parentPort)
+ES::IPortRef<typename ChildEnd::EdgeType, ParentRequired> childPort,
+ES::PortRef <typename ChildEnd::EdgeType, ParentRequired> parentPort)
 {
-	childPort->setDelgationConnectedPort(p2);
-	parentPort->setInnerConnection(p1);
+	childPort->setDelgationConnectedPort(parentPort);
+	parentPort->setInnerConnection(childPort);
 }
 
 
@@ -133,7 +133,7 @@ template <typename ProvidedInf, typename RequiredInf>
 class BehaviorPortImpl : public BehaviorPort <ProvidedInf, RequiredInf>
 {
     public:
-		BehaviorPortImpl (int type_, ES::StateMachineRef parent_) : BehaviorPort <ProvidedInf, RequiredInf> (type_,parent_) {}
+		BehaviorPortImpl (int type_, ES::ModelObjectRef parent_) : BehaviorPort <ProvidedInf, RequiredInf> (type_,parent_) {}
 		virtual ~BehaviorPortImpl() {}
     protected:
         virtual void sendAny (ES::EventRef signal)

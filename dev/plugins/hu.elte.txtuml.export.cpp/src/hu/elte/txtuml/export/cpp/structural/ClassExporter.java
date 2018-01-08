@@ -14,7 +14,6 @@ import org.eclipse.uml2.uml.Generalization;
 import org.eclipse.uml2.uml.Region;
 import org.eclipse.uml2.uml.StateMachine;
 import org.eclipse.uml2.uml.UMLPackage;
-import org.eclipse.uml2.uml.Usage;
 
 import hu.elte.txtuml.export.cpp.CppExporterUtils;
 import hu.elte.txtuml.export.cpp.statemachine.StateMachineExporter;
@@ -44,7 +43,6 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 	private String abstractInterface;
 
 	private int poolId;
-	private List<Usage> usages;
 	
 
 	public ClassExporter() {
@@ -64,7 +62,7 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 		constructorExporter = new ConstructorExporter(structuredElement.getOwnedOperations());
 		associationExporter = new AssociationExporter();
 		additionalSourcesNames = new ArrayList<String>();
-		portExporter = new PortExporter(usages,structuredElement.getOwnedPorts());
+		portExporter = new PortExporter(structuredElement.getOwnedPorts());
 		baseClasses.clear();
 		interfacesToImplement.clear();
 
@@ -83,10 +81,7 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 	public void setPoolId(int poolId) {
 		this.poolId = poolId;
 	}
-	
-	public void setUsages(List<Usage> usages) {
-		this.usages = usages;
-	}
+
 
 	public List<String> getSubmachines() {
 		assert(stateMachineExporter != null);

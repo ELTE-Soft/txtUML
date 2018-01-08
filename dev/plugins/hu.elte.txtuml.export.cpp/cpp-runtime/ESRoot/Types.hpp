@@ -38,13 +38,15 @@ class ThreadSafeQueue;
 template<typename T, typename Compare>
 class SpecialPriorityQueue;
 
+class ModelObject;
+
 }
 
 namespace Model
 {
 
 template<typename ProvidedInf, typename RequiredInf>
-class IPort
+class IPort;
 
 template <typename ProvidedInf, typename RequiredInf>
 class Port;
@@ -68,12 +70,13 @@ namespace ES
 
 	using StateMachineRef = Model::StateMachineOwner*;
 	using StateMachineConstRef = Model::StateMachineOwner const *;
+	using ModelObjectRef = ES::ModelObject*;
 
     template<typename ProvidedInf, typename RequiredInf>
-    using IPortRef = ES::SharedPtr<IPort<ProvidedInf,RequiredInf>>;
+    using IPortRef = ES::SharedPtr<Model::IPort<ProvidedInf,RequiredInf>>;
 
     template<typename ProvidedInf, typename RequiredInf>
-    using PortRef = ES::SharedPtr<Port<ProvidedInf,RequiredInf>>;
+    using PortRef = ES::SharedPtr<Model::Port<ProvidedInf,RequiredInf>>;
 
 	template<typename RuntimeType>
 	using RuntimePtr = SharedPtr<Execution::IRuntime<RuntimeType>>;

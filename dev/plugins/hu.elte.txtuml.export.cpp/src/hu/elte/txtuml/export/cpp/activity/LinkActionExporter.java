@@ -1,11 +1,11 @@
 package hu.elte.txtuml.export.cpp.activity;
 
-import java.util.Arrays;
 
 import org.eclipse.uml2.uml.ActivityNode;
 import org.eclipse.uml2.uml.Class;
 import org.eclipse.uml2.uml.CreateLinkAction;
 import org.eclipse.uml2.uml.DestroyLinkAction;
+import org.eclipse.uml2.uml.Interface;
 import org.eclipse.uml2.uml.LinkEndData;
 import org.eclipse.uml2.uml.Port;
 import org.eclipse.uml2.uml.Property;
@@ -13,9 +13,9 @@ import org.eclipse.uml2.uml.ReadLinkAction;
 import org.eclipse.uml2.uml.ReadStructuralFeatureAction;
 import org.eclipse.uml2.uml.UMLPackage;
 
+import hu.elte.txtuml.export.cpp.CppExporterUtils;
 import hu.elte.txtuml.export.cpp.templates.activity.ActivityTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.LinkTemplates;
-import hu.elte.txtuml.export.cpp.templates.structual.PortTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.LinkTemplates.LinkFunctionType;
 
 class LinkActionExporter {
@@ -50,7 +50,7 @@ class LinkActionExporter {
 	public String createLinkActionCode(CreateLinkAction node) {
 		LinkEndData firstLinkEnd = node.getEndData().get(0);
 		LinkEndData secondLinkEnd = node.getEndData().get(1);
-		
+		String secindLinkEndName = secondLinkEnd.getEnd().getName();
 		
 		String firstEndObject = activityExportResolver.getTargetFromInputPin(firstLinkEnd.getValue());
 		String secondEndObject = activityExportResolver.getTargetFromInputPin(secondLinkEnd.getValue());
@@ -66,9 +66,11 @@ class LinkActionExporter {
 				firstEndObject = secondEndObject;
 				secondEndObject = firstTmp;
 				linkType = LinkTemplates.LinkFunctionType.DelegeateConnect;
+				secindLinkEndName = CppExporterUtils.getUsedInterfaceName((Interface) p1.getType());
 				break;
 			case Parent:
 				linkType = LinkTemplates.LinkFunctionType.DelegeateConnect;
+				secindLinkEndName = CppExporterUtils.getUsedInterfaceName((Interface) p1.getType());
 				break;
 			case Sublings:
 				linkType = LinkTemplates.LinkFunctionType.AssemblyConnect;
@@ -81,7 +83,7 @@ class LinkActionExporter {
 		}
 		return ActivityTemplates.linkObjects(firstEndObject, secondEndObject,
 					firstLinkEnd.getEnd().getAssociation().getName(), firstLinkEnd.getEnd().getName(),
-					secondLinkEnd.getEnd().getName(), linkType);
+					secindLinkEndName, linkType);
 
 		
 	}

@@ -28,7 +28,6 @@ import org.eclipse.uml2.uml.Parameter;
 import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.Signal;
 import org.eclipse.uml2.uml.UMLPackage;
-import org.eclipse.uml2.uml.Usage;
 import org.osgi.framework.Bundle;
 import hu.elte.txtuml.export.cpp.thread.ThreadPoolConfiguration;
 import hu.elte.txtuml.api.deployment.RuntimeType;
@@ -119,8 +118,7 @@ public class Uml2ToCppExporter {
 	}
 
 	private void createClassSources(String outputDirectory) throws IOException {
-		List<Usage> usages = new ArrayList<>();
-		CppExporterUtils.getTypedElements(usages, UMLPackage.Literals.USAGE, modelRoot);
+
 
 		for (Class cls : classes) {
 
@@ -131,7 +129,6 @@ public class Uml2ToCppExporter {
 			}
 			classExporter.setName(cls.getName());
 			classExporter.setPoolId(threadManager.getConfiguratedPoolId(cls.getName()));
-			classExporter.setUsages(usages);
 
 			classExporter.exportStructuredElement(cls, outputDirectory);
 			if (CppExporterUtils.isStateMachineOwner(cls)) {
@@ -414,20 +411,22 @@ public class Uml2ToCppExporter {
 
 
 		}
-
+		StringBuilder headerIncludes = new StringBuilder("");
+		headerIncludes.append(PrivateFunctionalTemplates.include(RuntimeTemplates.RTPath + LinkTemplates.AssocationHeader));
 		for (TypeDecriptor classDescriptor : associatedClasses) {
 			includes.append(PrivateFunctionalTemplates.include(classDescriptor.getName()));
 			if(!classDescriptor.getIsInterface()) {
 				preDeclerations.append(GenerationTemplates.forwardDeclaration(classDescriptor.getName()));
 
 			} else {
-				preDeclerations.append(PrivateFunctionalTemplates.include(classDescriptor.getName()));
+				headerIncludes.append(PrivateFunctionalTemplates.include(classDescriptor.getName()));
 			}
 		}
 		String headerSource = HeaderTemplates.headerGuard(
-				PrivateFunctionalTemplates.include(RuntimeTemplates.RTPath + LinkTemplates.AssocationHeader)
-						+ GenerationTemplates.putNamespace(preDeclerations.toString() + structures.toString(),
-								GenerationNames.Namespaces.ModelNamespace),
+				headerIncludes.toString() 
+				+ GenerationTemplates.putNamespace(preDeclerations.toString() 
+				+ structures.toString(),
+				GenerationNames.Namespaces.ModelNamespace),
 				LinkTemplates.AssociationsStructuresHreaderName);
 
 		CppExporterUtils.writeOutSource(outputDirectory, (LinkTemplates.AssociationStructuresHeader),

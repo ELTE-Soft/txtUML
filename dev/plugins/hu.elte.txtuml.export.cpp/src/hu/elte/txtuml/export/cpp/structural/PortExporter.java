@@ -12,12 +12,10 @@ import java.util.Set;
 import org.eclipse.uml2.uml.Interface;
 import org.eclipse.uml2.uml.Port;
 import org.eclipse.uml2.uml.UMLPackage;
-import org.eclipse.uml2.uml.Usage;
 
 import hu.elte.txtuml.export.cpp.CppExporterUtils;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.TypeDelcreationKeywords;
-import hu.elte.txtuml.export.cpp.templates.PrivateFunctionalTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.FunctionTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.PortTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.ObjectDeclDefTemplates;
@@ -25,11 +23,9 @@ import hu.elte.txtuml.utils.Pair;
 
 public class PortExporter {
 	
-	private List<Usage> usages;
 	private List<Port> 	ports;
 	
-	public PortExporter(List<Usage> usages, List<Port> 	ports) {
-		this.usages = usages;
+	public PortExporter(List<Port> ports) {
 		this.ports = ports;
 	}
 	public void createPortSource(String outputDirectory) throws FileNotFoundException, UnsupportedEncodingException {
@@ -107,12 +103,8 @@ public class PortExporter {
 	
 	private Pair<String,String> getPortActualInterfaceTypes(Port port) {
 		Interface portInf = (Interface) port.getType();
-		Optional<String> providedInfOptionalName = CppExporterUtils.getFirstGeneralClassName(portInf);
-		Optional<String> requiredInfOptionalName = CppExporterUtils.getUsedInterfaceName(usages,portInf);
-		String actualProvidedInfName = providedInfOptionalName.isPresent() ? 
-				PrivateFunctionalTemplates.mapUMLClassToCppClass(providedInfOptionalName.get()) : GenerationNames.InterfaceNames.EmptyInfName;
-		String actualRequiredInfName = requiredInfOptionalName.isPresent() ?
-				PrivateFunctionalTemplates.mapUMLClassToCppClass(requiredInfOptionalName.get()) : GenerationNames.InterfaceNames.EmptyInfName;
+		String actualProvidedInfName = CppExporterUtils.getFirstGeneralClassName(portInf);
+		String actualRequiredInfName = CppExporterUtils.getUsedInterfaceName(portInf);
 				
 		return new Pair<String,String>(actualProvidedInfName,actualRequiredInfName);
 		

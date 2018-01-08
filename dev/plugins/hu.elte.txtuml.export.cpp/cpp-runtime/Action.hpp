@@ -1,5 +1,9 @@
 /** @file Action.hpp
 */
+
+#ifndef __ACTION_HPP__
+#define __ACTION_HPP__
+
 #include "ESRoot/Types.hpp"
 #include "PortUtils.hpp"
 
@@ -91,3 +95,5 @@ void send(T target, S signal)
 }
 
 }
+
+#endif
