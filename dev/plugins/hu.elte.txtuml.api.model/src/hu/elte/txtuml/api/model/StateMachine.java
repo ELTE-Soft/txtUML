@@ -1,9 +1,9 @@
 package hu.elte.txtuml.api.model;
 
 import hu.elte.txtuml.api.model.ImplRelated.RequiresRuntime;
-import hu.elte.txtuml.api.model.runtime.ElseException;
-import hu.elte.txtuml.api.model.runtime.ExecutorThread;
-import hu.elte.txtuml.api.model.runtime.ModelClassRuntime;
+import hu.elte.txtuml.api.model.impl.ElseException;
+import hu.elte.txtuml.api.model.impl.ExecutorThread;
+import hu.elte.txtuml.api.model.impl.ModelClassRuntime;
 
 /**
  * Base class for state machines in the model.

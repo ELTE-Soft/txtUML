@@ -8,10 +8,10 @@ import java.lang.reflect.Proxy;
 import hu.elte.txtuml.api.model.AssociationEnd.Navigable;
 import hu.elte.txtuml.api.model.ImplRelated.RequiresRuntime;
 import hu.elte.txtuml.api.model.error.PortParameterError;
-import hu.elte.txtuml.api.model.runtime.ExecutorThread;
-import hu.elte.txtuml.api.model.runtime.ModelClassRuntime;
-import hu.elte.txtuml.api.model.runtime.ModelRuntime;
-import hu.elte.txtuml.api.model.runtime.PortRuntime;
+import hu.elte.txtuml.api.model.impl.ExecutorThread;
+import hu.elte.txtuml.api.model.impl.ModelClassRuntime;
+import hu.elte.txtuml.api.model.impl.ModelRuntime;
+import hu.elte.txtuml.api.model.impl.PortRuntime;
 
 /**
  * Base class for classes in the model.

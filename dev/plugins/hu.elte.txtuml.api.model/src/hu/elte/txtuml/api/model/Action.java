@@ -4,7 +4,7 @@ import hu.elte.txtuml.api.model.AbstractGeneralCollection.Builder;
 import hu.elte.txtuml.api.model.ConnectorBase.ConnectorEnd;
 import hu.elte.txtuml.api.model.ModelClass.Port;
 import hu.elte.txtuml.api.model.error.ObjectCreationError;
-import hu.elte.txtuml.api.model.runtime.ExecutorThread;
+import hu.elte.txtuml.api.model.impl.ExecutorThread;
 import hu.elte.txtuml.utils.InstanceCreator;
 import hu.elte.txtuml.utils.RuntimeInvocationTargetException;
 

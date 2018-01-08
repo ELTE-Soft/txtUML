@@ -15,8 +15,8 @@ import hu.elte.txtuml.api.model.execution.impl.assoc.MultiplicityException;
 import hu.elte.txtuml.api.model.execution.impl.sm.StateMachineParser;
 import hu.elte.txtuml.api.model.execution.impl.sm.TransitionWrapper;
 import hu.elte.txtuml.api.model.execution.impl.sm.VertexWrapper;
-import hu.elte.txtuml.api.model.runtime.ElseException;
-import hu.elte.txtuml.api.model.runtime.ModelClassWrapper;
+import hu.elte.txtuml.api.model.impl.ElseException;
+import hu.elte.txtuml.api.model.impl.ModelClassWrapper;
 
 /**
  * Abstract base class for {@link ModelClassWrapper} implementations.

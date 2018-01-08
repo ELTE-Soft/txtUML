@@ -5,8 +5,8 @@ import hu.elte.txtuml.api.model.Signal;
 import hu.elte.txtuml.api.model.StateMachine.Transition;
 import hu.elte.txtuml.api.model.Trigger;
 import hu.elte.txtuml.api.model.Trigger.AnyPort;
-import hu.elte.txtuml.api.model.runtime.ElseException;
-import hu.elte.txtuml.api.model.runtime.Wrapper;
+import hu.elte.txtuml.api.model.impl.ElseException;
+import hu.elte.txtuml.api.model.impl.Wrapper;
 
 public interface TransitionWrapper extends Wrapper<Transition> {
 

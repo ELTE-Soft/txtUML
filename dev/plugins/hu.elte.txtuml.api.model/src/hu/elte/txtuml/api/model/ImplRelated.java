@@ -1,6 +1,6 @@
 package hu.elte.txtuml.api.model;
 
-import hu.elte.txtuml.api.model.runtime.ModelElementRuntime;
+import hu.elte.txtuml.api.model.impl.ModelElementRuntime;
 
 /**
  * This interface and its subtypes should <b>only be used to implement model

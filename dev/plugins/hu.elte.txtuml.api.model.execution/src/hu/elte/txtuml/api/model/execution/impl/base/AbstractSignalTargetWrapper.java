@@ -1,7 +1,7 @@
 package hu.elte.txtuml.api.model.execution.impl.base;
 
 import hu.elte.txtuml.api.model.Signal;
-import hu.elte.txtuml.api.model.runtime.SignalTargetWrapper;
+import hu.elte.txtuml.api.model.impl.SignalTargetWrapper;
 
 /**
  * Abstract base class for {@link SignalTargetWrapper} implementations.

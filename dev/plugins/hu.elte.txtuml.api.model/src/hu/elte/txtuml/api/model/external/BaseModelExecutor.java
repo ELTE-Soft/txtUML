@@ -1,8 +1,9 @@
-package hu.elte.txtuml.api.model.runtime;
+package hu.elte.txtuml.api.model.external;
 
 import java.util.function.Function;
 
 import hu.elte.txtuml.api.model.error.NotModelExecutorThreadError;
+import hu.elte.txtuml.api.model.impl.ModelRuntime;
 
 /**
  * Through this interface some management features of the currently operating

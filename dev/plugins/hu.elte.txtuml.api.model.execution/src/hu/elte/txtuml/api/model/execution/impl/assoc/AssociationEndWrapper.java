@@ -6,9 +6,9 @@ import hu.elte.txtuml.api.model.GeneralCollection;
 import hu.elte.txtuml.api.model.ModelClass;
 import hu.elte.txtuml.api.model.error.LowerBoundError;
 import hu.elte.txtuml.api.model.error.UpperBoundError;
-import hu.elte.txtuml.api.model.runtime.Wrapper;
-import hu.elte.txtuml.api.model.utils.Associations;
-import hu.elte.txtuml.api.model.utils.Collections;
+import hu.elte.txtuml.api.model.external.Associations;
+import hu.elte.txtuml.api.model.external.Collections;
+import hu.elte.txtuml.api.model.impl.Wrapper;
 import hu.elte.txtuml.utils.InstanceCreator;
 
 public interface AssociationEndWrapper<T extends ModelClass, C extends GeneralCollection<T>>

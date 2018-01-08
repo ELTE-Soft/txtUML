@@ -30,7 +30,7 @@ import java.util.function.Consumer;
  * may occur when using the collection instance).
  * <p>
  * From outside the model, the methods of the
- * {@link hu.elte.txtuml.api.model.utils.Collections} class can be used to
+ * {@link hu.elte.txtuml.api.model.external.Collections} class can be used to
  * analyze collection types.
  * 
  * <p>

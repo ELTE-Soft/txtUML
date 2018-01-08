@@ -5,7 +5,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicLong;
 
 import hu.elte.txtuml.api.model.Signal;
-import hu.elte.txtuml.api.model.runtime.RuntimeContext;
+import hu.elte.txtuml.api.model.impl.RuntimeContext;
 import hu.elte.txtuml.utils.Logger;
 
 /**

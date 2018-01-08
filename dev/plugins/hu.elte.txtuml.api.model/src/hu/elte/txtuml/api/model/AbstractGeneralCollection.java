@@ -11,7 +11,7 @@ import hu.elte.txtuml.api.model.error.LowerBoundError;
 import hu.elte.txtuml.api.model.error.MultiplicityError;
 import hu.elte.txtuml.api.model.error.UninitializedCollectionError;
 import hu.elte.txtuml.api.model.error.UpperBoundError;
-import hu.elte.txtuml.api.model.utils.Collections;
+import hu.elte.txtuml.api.model.external.Collections;
 import hu.elte.txtuml.utils.InstanceCreator;
 import hu.elte.txtuml.utils.RuntimeInvocationTargetException;
 

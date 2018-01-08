@@ -18,8 +18,8 @@ import hu.elte.txtuml.api.model.Runtime;
 import hu.elte.txtuml.api.model.execution.ErrorListener;
 import hu.elte.txtuml.api.model.execution.TraceListener;
 import hu.elte.txtuml.api.model.execution.WarningListener;
-import hu.elte.txtuml.api.model.runtime.ModelClassWrapper;
-import hu.elte.txtuml.api.model.runtime.PortWrapper;
+import hu.elte.txtuml.api.model.impl.ModelClassWrapper;
+import hu.elte.txtuml.api.model.impl.PortWrapper;
 
 /**
  * Abstract base class for {@link Runtime} implementations.

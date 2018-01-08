@@ -1,7 +1,7 @@
 package hu.elte.txtuml.api.model.execution.impl.sm;
 
 import hu.elte.txtuml.api.model.execution.impl.base.BaseWrapper;
-import hu.elte.txtuml.api.model.runtime.Wrapper;
+import hu.elte.txtuml.api.model.impl.Wrapper;
 
 public abstract class WrapperBuilder<T extends Wrapper<W>, W> extends BaseWrapper<W> {
 

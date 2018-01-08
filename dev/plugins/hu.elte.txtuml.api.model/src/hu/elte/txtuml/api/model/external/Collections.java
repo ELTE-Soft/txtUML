@@ -1,4 +1,4 @@
-package hu.elte.txtuml.api.model.utils;
+package hu.elte.txtuml.api.model.external;
 
 import hu.elte.txtuml.api.model.Any;
 import hu.elte.txtuml.api.model.GeneralCollection;

@@ -1,6 +1,6 @@
 package hu.elte.txtuml.api.model.execution.impl.base;
 
-import hu.elte.txtuml.api.model.runtime.Wrapper;
+import hu.elte.txtuml.api.model.impl.Wrapper;
 
 /**
  * Base implementation for {@link Wrapper}.

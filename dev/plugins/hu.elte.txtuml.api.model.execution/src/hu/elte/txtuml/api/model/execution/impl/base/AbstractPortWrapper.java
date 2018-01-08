@@ -1,8 +1,8 @@
 package hu.elte.txtuml.api.model.execution.impl.base;
 
 import hu.elte.txtuml.api.model.ModelClass.Port;
+import hu.elte.txtuml.api.model.impl.PortWrapper;
 import hu.elte.txtuml.api.model.Signal;
-import hu.elte.txtuml.api.model.runtime.PortWrapper;
 
 /**
  * Abstract base class for {@link PortWrapper} implementations.

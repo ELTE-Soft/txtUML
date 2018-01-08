@@ -4,7 +4,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import hu.elte.txtuml.api.model.Action;
 import hu.elte.txtuml.api.model.External;
-import hu.elte.txtuml.api.model.runtime.BaseModelExecutor;
+import hu.elte.txtuml.api.model.external.BaseModelExecutor;
 
 /**
  * This is a helper class, only required for the implementation of the

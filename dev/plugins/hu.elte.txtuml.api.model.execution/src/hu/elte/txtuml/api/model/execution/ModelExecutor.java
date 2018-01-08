@@ -4,7 +4,7 @@ import java.util.List;
 
 import hu.elte.txtuml.api.model.Model;
 import hu.elte.txtuml.api.model.execution.impl.DefaultModelExecutor;
-import hu.elte.txtuml.api.model.runtime.BaseModelExecutor;
+import hu.elte.txtuml.api.model.external.BaseModelExecutor;
 
 /**
  * Used to configure and start a model execution through the txtUML modeling
