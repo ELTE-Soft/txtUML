@@ -19,9 +19,6 @@ import hu.elte.txtuml.api.model.Signal;
  * to define the behaviour of the model</li>
  * </ol>
  * </p>
- * 
- * 
- * @author Turi Zoltan(G4R8AJ)
  *
  */
 public abstract class Interaction implements Runnable {

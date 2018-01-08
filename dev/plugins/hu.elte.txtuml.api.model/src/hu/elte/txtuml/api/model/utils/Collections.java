@@ -16,8 +16,6 @@ import hu.elte.txtuml.api.model.UniqueAny;
  * A helper class that provides runtime utilities and information about JtxtUML
  * API collections.
  * <p>
- * Methods of this class cannot be used in the model.
- * <p>
  * See the documentation of {@link hu.elte.txtuml.api.model.Model} for an
  * overview on modeling in JtxtUML.
  */
