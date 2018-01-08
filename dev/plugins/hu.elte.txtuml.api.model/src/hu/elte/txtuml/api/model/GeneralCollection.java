@@ -265,6 +265,17 @@ public abstract class GeneralCollection<E> implements @External Iterable<E>, @Ex
 	@ExternalBody
 	public abstract GeneralCollection<E> unbound();
 
+	@ExternalBody
+	@Override
+	public abstract boolean equals(Object obj);
+
+	/**
+	 * This method <b>must not be used in the model</b>.
+	 */
+	@External
+	@Override
+	public abstract int hashCode();
+
 	/**
 	 * This method <b>must not be used <i>directly</i> in the model</b>, only
 	 * through the use of enhanced for-loops.
@@ -308,11 +319,9 @@ public abstract class GeneralCollection<E> implements @External Iterable<E>, @Ex
 	 */
 	@External
 	@Override
-	public abstract int hashCode();
-
-	@ExternalBody
-	@Override
-	public abstract boolean equals(Object obj);
+	protected Object clone() throws CloneNotSupportedException {
+		return super.clone();
+	}
 
 	// ORDERING AND UNIQUENESS
 

@@ -5,8 +5,13 @@ import hu.elte.txtuml.api.model.error.NotModelExecutorThreadError;
 import hu.elte.txtuml.api.model.error.WrongModelExecutorThreadError;
 
 /**
- * Base type for model executor threads. All model code has to run on a thread
- * that implements this interface.
+ * A model executor thread is used by a model executor to run a model or parts
+ * of a model (the executor may use multiple threads). Every
+ * {@link hu.elte.txtuml.api.model.ModelClass} and
+ * {@link hu.elte.txtuml.api.model.ModelClass.Port} instance is owned by one
+ * model executor thread which runs and manages that instance.
+ * <p>
+ * <b>All model code has to run on a thread that implements this interface.</b>
  * <p>
  * As a member of the {@linkplain hu.elte.txtuml.api.model.impl} package, this
  * type should <b>only be used to implement model executors</b>, not in the

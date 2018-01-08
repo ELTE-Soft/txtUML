@@ -180,7 +180,6 @@ public abstract class ModelClass extends StateMachine {
 	}
 
 	@Override
-	@External
 	ModelClassRuntime createRuntime() {
 		return ModelRuntime.current().createModelClassRuntime(this);
 	}
@@ -305,7 +304,6 @@ public abstract class ModelClass extends StateMachine {
 		}
 
 		@Override
-		@External
 		PortRuntime createRuntime() {
 			return ModelClass.this.runtime().getModelRuntime().createPortRuntime(this, ModelClass.this);
 		}
@@ -316,7 +314,6 @@ public abstract class ModelClass extends StateMachine {
 		 *            arguments
 		 */
 		@SuppressWarnings("unchecked")
-		@External
 		Port(int indexOfRequiredInterface) {
 			Class<?> type = getClass();
 
@@ -331,12 +328,10 @@ public abstract class ModelClass extends StateMachine {
 			}
 		}
 
-		@External
 		Port(R required) {
 			this.required = required;
 		}
 
-		@External
 		private InvocationHandler createReceptionHandler() {
 			return (Object proxy, Method method, Object[] args) -> {
 				runtime().receiveLater((Signal) args[0]);

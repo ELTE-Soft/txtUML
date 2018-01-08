@@ -236,8 +236,8 @@ public abstract class StateMachine extends @External RequiresRuntime<ModelClassR
 		public void exit() {
 		}
 
+		@ExternalBody
 		@Override
-		@External
 		public final String toString() {
 			return getVertexTypeName() + ":" + getClass().getSimpleName();
 		}
@@ -251,7 +251,6 @@ public abstract class StateMachine extends @External RequiresRuntime<ModelClassR
 			return getVertexTypeName() + ":" + getClass().getName();
 		}
 
-		@External
 		String getVertexTypeName() {
 			return "vertex";
 		}
@@ -311,7 +310,6 @@ public abstract class StateMachine extends @External RequiresRuntime<ModelClassR
 		}
 
 		@Override
-		@External
 		String getVertexTypeName() {
 			return "pseudostate";
 		}
@@ -383,7 +381,6 @@ public abstract class StateMachine extends @External RequiresRuntime<ModelClassR
 	public abstract class Initial extends Pseudostate {
 
 		@Override
-		@External
 		String getVertexTypeName() {
 			return "initial";
 		}
@@ -454,7 +451,6 @@ public abstract class StateMachine extends @External RequiresRuntime<ModelClassR
 	public abstract class Choice extends Pseudostate {
 
 		@Override
-		@External
 		String getVertexTypeName() {
 			return "choice";
 		}
@@ -569,8 +565,8 @@ public abstract class StateMachine extends @External RequiresRuntime<ModelClassR
 		 * @throws ClassCastException
 		 *             if the cast might not be performed
 		 */
-		@SuppressWarnings("unchecked")
 		@ExternalBody
+		@SuppressWarnings("unchecked")
 		protected final <T extends Signal> T getTrigger(Class<T> signalClass) throws ClassCastException {
 			ExecutorThread.current().requireOwned(StateMachine.this);
 
@@ -585,8 +581,8 @@ public abstract class StateMachine extends @External RequiresRuntime<ModelClassR
 		public void exit() {
 		}
 
-		@Override
 		@External
+		@Override
 		public String getVertexTypeName() {
 			return "state";
 		}
@@ -656,8 +652,8 @@ public abstract class StateMachine extends @External RequiresRuntime<ModelClassR
 	 */
 	public abstract class CompositeState extends State {
 
-		@Override
 		@External
+		@Override
 		public String getVertexTypeName() {
 			return "composite_state";
 		}
@@ -881,16 +877,16 @@ public abstract class StateMachine extends @External RequiresRuntime<ModelClassR
 		 * @throws ClassCastException
 		 *             if the cast might not be performed
 		 */
-		@SuppressWarnings("unchecked")
 		@ExternalBody
+		@SuppressWarnings("unchecked")
 		protected final <T extends Signal> T getTrigger(Class<T> signalClass) throws ClassCastException {
 			ExecutorThread.current().requireOwned(StateMachine.this);
 
 			return (T) runtime().getCurrentTrigger();
 		}
 
+		@ExternalBody
 		@Override
-		@External
 		public String toString() {
 			return "transition:" + getClass().getSimpleName();
 		}

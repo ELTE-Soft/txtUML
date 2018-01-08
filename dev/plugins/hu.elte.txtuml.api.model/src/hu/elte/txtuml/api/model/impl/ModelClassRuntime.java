@@ -48,6 +48,8 @@ public interface ModelClassRuntime extends SignalTargetRuntime<ModelClass>, Impl
 
 	/**
 	 * The current status of the wrapped model class instance.
+	 * <p>
+	 * Thread-safe.
 	 */
 	Status getStatus();
 

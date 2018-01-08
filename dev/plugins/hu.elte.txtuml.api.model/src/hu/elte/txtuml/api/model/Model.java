@@ -57,7 +57,7 @@ import java.lang.annotation.Target;
  * <ul>
  * <li>Using and extending visible classes, interfaces, enums and annotations of
  * this package (hu.elte.txtuml.api.model) with the exception of the
- * {@link ImplRelated} type which cannot be used.</li>
+ * {@link ImplRelated} and {@link API} types which cannot be used.</li>
  * <li>Using and extending types of other txtUML models.</li>
  * <li>Using Java primitive types and <code>String</code>s.</li>
  * </ul>
