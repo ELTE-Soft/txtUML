@@ -97,7 +97,9 @@ public class PrivateFunctionalTemplates {
 	public static String mapUMLClassToCppClass(String className) {
 		switch(className) {
 			case UMLStdLibNames.ModelClassName:
-				return ClassUtilsNames.BaseClassName;				
+				return ClassUtilsNames.BaseClassName;
+			case UMLStdLibNames.EmptyInfName :
+				return InterfaceNames.EmptyInfName;
 			default:
 				return className;
 		}

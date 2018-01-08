@@ -332,6 +332,7 @@ public class Uml2ToCppExporter {
 			throws FileNotFoundException, UnsupportedEncodingException {
 		
 		class TypeDecriptor {
+
 			public TypeDecriptor(String name, Boolean isInterface) {
 				this.name = name;
 				this.isInterface = isInterface;
@@ -344,6 +345,36 @@ public class Uml2ToCppExporter {
 			}
 			private String name;
 			private Boolean isInterface;
+			
+			@Override
+			public int hashCode() {
+				final int prime = 31;
+				int result = 1;
+				result = prime * result + ((isInterface == null) ? 0 : isInterface.hashCode());
+				result = prime * result + ((name == null) ? 0 : name.hashCode());
+				return result;
+			}
+			@Override
+			public boolean equals(Object obj) {
+				if (this == obj)
+					return true;
+				if (obj == null)
+					return false;
+				if (getClass() != obj.getClass())
+					return false;
+				TypeDecriptor other = (TypeDecriptor) obj;
+				if (isInterface == null) {
+					if (other.isInterface != null)
+						return false;
+				} else if (!isInterface.equals(other.isInterface))
+					return false;
+				if (name == null) {
+					if (other.name != null)
+						return false;
+				} else if (!name.equals(other.name))
+					return false;
+				return true;
+			}
 			
 			
 		}

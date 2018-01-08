@@ -17,6 +17,7 @@ import org.eclipse.uml2.uml.Usage;
 import hu.elte.txtuml.export.cpp.CppExporterUtils;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.TypeDelcreationKeywords;
+import hu.elte.txtuml.export.cpp.templates.PrivateFunctionalTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.FunctionTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.PortTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.ObjectDeclDefTemplates;
@@ -109,9 +110,9 @@ public class PortExporter {
 		Optional<String> providedInfOptionalName = CppExporterUtils.getFirstGeneralClassName(portInf);
 		Optional<String> requiredInfOptionalName = CppExporterUtils.getUsedInterfaceName(usages,portInf);
 		String actualProvidedInfName = providedInfOptionalName.isPresent() ? 
-				providedInfOptionalName.get() : GenerationNames.InterfaceNames.EmptyInfName;
+				PrivateFunctionalTemplates.mapUMLClassToCppClass(providedInfOptionalName.get()) : GenerationNames.InterfaceNames.EmptyInfName;
 		String actualRequiredInfName = requiredInfOptionalName.isPresent() ?
-				requiredInfOptionalName.get() : GenerationNames.InterfaceNames.EmptyInfName;
+				PrivateFunctionalTemplates.mapUMLClassToCppClass(requiredInfOptionalName.get()) : GenerationNames.InterfaceNames.EmptyInfName;
 				
 		return new Pair<String,String>(actualProvidedInfName,actualRequiredInfName);
 		

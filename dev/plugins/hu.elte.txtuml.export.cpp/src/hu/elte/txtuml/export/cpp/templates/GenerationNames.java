@@ -172,6 +172,7 @@ public class GenerationNames {
 
 	public static class UMLStdLibNames {
 		public static final String ModelClassName = "hu.elte.txtuml.api.model.ModelClass";
+		public static final String EmptyInfName = "hu.elte.txtuml.api.model.Interface.Empty";
 		public static final String UMLInteger = "Integer";
 		public static final String UMLString = "String";
 		public static final String UMLReal = "Real";
