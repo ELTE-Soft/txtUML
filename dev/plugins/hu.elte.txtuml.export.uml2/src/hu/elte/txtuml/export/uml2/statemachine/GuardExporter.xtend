@@ -22,6 +22,8 @@ import org.eclipse.jdt.core.dom.SimpleName
 import org.eclipse.jdt.core.dom.PrefixExpression
 import org.eclipse.jdt.core.dom.MethodInvocation
 import org.eclipse.jdt.core.dom.ParenthesizedExpression
+import java.util.List
+import java.util.ArrayList
 
 class GuardExporter extends Exporter<MethodDeclaration, IMethodBinding, Constraint> {
 	
@@ -63,21 +65,31 @@ class GuardExporter extends Exporter<MethodDeclaration, IMethodBinding, Constrai
 				val varDecl = it as VariableDeclarationStatement;
 				varDecl.fragments.forEach[
 					val decl = it as VariableDeclarationFragment
-					localVariables.put(decl.name.identifier, decl.initializer)
+					localVariables.put(decl.name.identifier, decl.initializer);
+					 if(decl.initializer instanceof Assignment) {
+						val assignment = decl.initializer as Assignment;		
+						var identifiers = new ArrayList<String>()
+						val assignChainResult = obtainAssigmentExpression(assignment, identifiers, localVariables);
+						identifiers.forEach[
+							if(localVariables.containsKey(it)) {
+								localVariables.put(it, assignChainResult)
+							}
+						]
+						localVariables.put(decl.name.identifier,assignChainResult)
+					}
+					
 				]
 		]
 		
 		blockStatements.stream.filter[s | s instanceof Assignment].forEach[
-				val assignment = it as Assignment;
-				val leftExpr = assignment.leftHandSide
-				val rigthExpr = assignment.rightHandSide
-				
-				if(leftExpr instanceof SimpleName && ElementTypeTeller.isVariable(leftExpr)) {
-					val leftVarName = leftExpr as SimpleName;
-					if(localVariables.containsKey(leftVarName)) {
-						localVariables.put(leftVarName.identifier, rigthExpr)
+				val assignment = it as Assignment;		
+				var identifiers = new ArrayList<String>()
+				val assignChainResult = obtainAssigmentExpression(assignment, identifiers, localVariables);
+				identifiers.forEach[
+					if(localVariables.containsKey(it)) {
+						localVariables.put(it, assignChainResult)
 					}
-				}
+				]
 		]
 		val retExpr = blockStatements.findFirst[it instanceof ReturnStatement] as ReturnStatement
 		guardExpressionSource = updateExpression(retExpr.expression, localVariables).toString
@@ -86,7 +98,24 @@ class GuardExporter extends Exporter<MethodDeclaration, IMethodBinding, Constrai
 		return guardExpressionSource
 	}
 	
-	
+	def Expression obtainAssigmentExpression(Assignment assignment, List<String> identifiers, Map<String,Expression> localVariables) {
+			
+			val leftExpr = assignment.leftHandSide
+			val rigthExpr = assignment.rightHandSide
+			if(leftExpr instanceof SimpleName && ElementTypeTeller.isVariable(leftExpr)) {
+					val leftVarName = leftExpr as SimpleName
+					if(localVariables.containsKey(leftVarName.identifier)) {
+						identifiers.add(leftVarName.identifier)			
+					}
+					if(!(rigthExpr instanceof Assignment)) {
+						return rigthExpr
+					} else {
+						return obtainAssigmentExpression(rigthExpr as Assignment, identifiers, localVariables);
+					}
+
+				}
+			assignment
+	}
 	def Expression updateExpression(Expression expr, Map<String,Expression> varCodes) {
 		var resultExpr = expr
 		if(resultExpr instanceof SimpleName && varCodes.containsKey((resultExpr as SimpleName).identifier)) {
@@ -96,13 +125,13 @@ class GuardExporter extends Exporter<MethodDeclaration, IMethodBinding, Constrai
 		}
 		else if(resultExpr instanceof InfixExpression) {
 			val updatedLeft =  updateExpression(resultExpr.leftOperand, varCodes)
-			val updadtedRight = updateExpression(resultExpr.rightOperand, varCodes)
-			if(updatedLeft?.parent != resultExpr) { 
-				updatedLeft?.delete
+			val updadtedRight = updateExpression(resultExpr.rightOperand, varCodes)			
+			if(updatedLeft != null && updatedLeft.parent != resultExpr) { 
+				updatedLeft.delete
 				resultExpr.leftOperand = updatedLeft
 			}
-			if(updadtedRight?.parent != resultExpr) {
-				updadtedRight?.delete
+			if(updadtedRight != null && updadtedRight.parent != resultExpr) {
+				updadtedRight.delete
 				resultExpr.rightOperand = updadtedRight
 				
 			} 
