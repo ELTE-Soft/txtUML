@@ -1,9 +1,8 @@
 package hu.elte.txtuml.api.model.seqdiag;
 
 /**
- * <p>
- * Masker class for Interaction For documentation see {@link Interaction} class
- * </p>
+ * Masker class for Interaction. For documentation, see the {@link Interaction}
+ * class.
  */
 public abstract class SequenceDiagram extends Interaction {
 

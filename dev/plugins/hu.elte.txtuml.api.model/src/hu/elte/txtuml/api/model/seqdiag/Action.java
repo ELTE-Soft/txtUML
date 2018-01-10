@@ -3,6 +3,8 @@ package hu.elte.txtuml.api.model.seqdiag;
 import hu.elte.txtuml.api.model.ExternalBody;
 import hu.elte.txtuml.api.model.ModelClass;
 import hu.elte.txtuml.api.model.Signal;
+import hu.elte.txtuml.api.model.impl.seqdiag.SeqDiagExecutorThread;
+import hu.elte.txtuml.api.model.impl.seqdiag.SeqDiagRuntime;
 
 public abstract class Action extends hu.elte.txtuml.api.model.Action {
 
@@ -14,37 +16,40 @@ public abstract class Action extends hu.elte.txtuml.api.model.Action {
 	}
 
 	@ExternalBody
-	public static <S extends Signal> void send(ModelClass from, S signal, ModelClass target) {
-		RuntimeContext context = RuntimeContext.getCurrentExecutorThread();
-		BaseInteractionWrapper wrapper = context.getRuntime().getCurrentInteraction();
-		wrapper.storeMessage(from, signal, target, false);
+	public static void send(Signal signal, ModelClass target, ModelClass sender) {
+		SeqDiagRuntime runtime = SeqDiagExecutorThread.current().getSeqDiagRuntime();
+		runtime.getCurrentInteraction().storeMessage(signal, target, sender);
 	}
 
 	/**
-	 * Manually deactivate a lifeline(Only used when generating plantUML output)
+	 * Manually deactivate a lifeline. Only used when generating plantUML
+	 * output.
 	 * 
 	 * @param lifeline
 	 *            the lifeline to deactivate
 	 */
 	@ExternalBody
 	public static void deactivate(ModelClass lifeline) {
+		SeqDiagExecutorThread.requirePresence();
 	}
 
 	/**
-	 * manually activate a lifeline(Only used when generating plantUML output)
+	 * Manually activate a lifeline. Only used when generating plantUML output.
 	 * 
 	 * @param lifeline
 	 *            the lifeline to activate
 	 */
 	@ExternalBody
 	public static void activate(ModelClass lifeline) {
+		SeqDiagExecutorThread.requirePresence();
 	}
 
 	/**
+	 * Method used to create unnamed in-line fragments like Seq, Strict, Pars.
 	 * 
 	 * @param type
 	 *            fragment's type
-	 * @see #Action.startFragment(CombinedFragmentType, String)
+	 * @see Action#startFragment(CombinedFragmentType, String)
 	 */
 	@ExternalBody
 	public static void startFragment(CombinedFragmentType type) {
@@ -52,7 +57,7 @@ public abstract class Action extends hu.elte.txtuml.api.model.Action {
 	}
 
 	/**
-	 * Method used to create in-line fragments like Seq,Strict,Pars
+	 * Method used to create in-line fragments like Seq, Strict, Pars.
 	 * 
 	 * @param type
 	 *            fragment's type
@@ -61,22 +66,22 @@ public abstract class Action extends hu.elte.txtuml.api.model.Action {
 	 */
 	@ExternalBody
 	public static void startFragment(CombinedFragmentType type, String fragmentName) {
-		RuntimeContext context = RuntimeContext.getCurrentExecutorThread();
-		context.getRuntime().setFragmentMode(type);
+		SeqDiagRuntime runtime = SeqDiagExecutorThread.current().getSeqDiagRuntime();
+		runtime.setFragmentMode(type);
 		if (fragmentName == null) {
 			fragmentName = "UnnamedFragment";
 		}
-		context.getRuntime().getCurrentInteraction().storeFragment(type, fragmentName);
+		runtime.getCurrentInteraction().storeFragment(type, fragmentName);
 	}
 
 	/**
-	 * Used to mark the end of in-line fragmentss
+	 * Used to mark the end of in-line fragments.
 	 */
 	@ExternalBody
-	public static void endFragment() {
-		RuntimeContext context = RuntimeContext.getCurrentExecutorThread();
-		context.getRuntime().fragmentModeEnded();
+	public static void endFragment() {		
+		SeqDiagRuntime runtime = SeqDiagExecutorThread.current().getSeqDiagRuntime();
+		runtime.fragmentModeEnded();
 
-		context.getRuntime().getCurrentInteraction().endFragment();
+		runtime.getCurrentInteraction().endFragment();
 	}
 }

@@ -22,8 +22,9 @@ public interface Wrapper<W> extends ImplRelated {
 	 * A shorthand operation for
 	 * {@link #getWrapped()}&#x2e;{@link Object#getClass() getClass()}.
 	 */
-	default Class<?> getTypeOfWrapped() {
-		return getWrapped().getClass();
+	@SuppressWarnings("unchecked")
+	default Class<W> getTypeOfWrapped() {
+		return (Class<W>) getWrapped().getClass();
 	}
 
 	/**
