@@ -4,12 +4,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.junit.Assert;
+import static org.junit.Assert.*;
 import org.junit.Test;
 
 import com.google.common.collect.ImmutableMultiset;
 import com.google.common.collect.Multiset;
 
+import hu.elte.txtuml.api.model.error.InvalidIndexError;
 import hu.elte.txtuml.api.model.error.LowerBoundError;
 import hu.elte.txtuml.api.model.error.UpperBoundError;
 
@@ -55,29 +56,29 @@ public class CollectionTests {
 		Any<Integer> a = API.collect();
 
 		assertThatContains(a);
-		Assert.assertTrue(a.isEmpty());
+		assertTrue(a.isEmpty());
 
 		a = a.add(1);
 
-		Assert.assertTrue(!a.isEmpty());
+		assertTrue(!a.isEmpty());
 
 		a = a.add(2).remove(3).remove(1).add(3);
 
 		assertThatContains(a, 2, 3);
-		Assert.assertEquals(2, a.size());
+		assertEquals(2, a.size());
 
 		a = a.add(2).add(2).add(3);
 
-		Assert.assertEquals(5, a.size());
+		assertEquals(5, a.size());
 
 	}
 
 	@Test
 	public void testContains() {
 		Any<Integer> a = API.collect(2, 2, 2, 3, 3);
-		Assert.assertTrue(!a.contains(1));
-		Assert.assertTrue(a.contains(2));
-		Assert.assertTrue(a.contains(3));
+		assertTrue(!a.contains(1));
+		assertTrue(a.contains(2));
+		assertTrue(a.contains(3));
 	}
 
 	@Test
@@ -86,13 +87,13 @@ public class CollectionTests {
 		OrderedAny<Integer> a2 = API.collectIn(OrderedAny.class, 2, 2, 2, 3, 3);
 		// ordered collections use a different implementation
 
-		Assert.assertEquals(0, a.countOf(1));
-		Assert.assertEquals(3, a.countOf(2));
-		Assert.assertEquals(2, a.countOf(3));
+		assertEquals(0, a.countOf(1));
+		assertEquals(3, a.countOf(2));
+		assertEquals(2, a.countOf(3));
 
-		Assert.assertEquals(0, a2.countOf(1));
-		Assert.assertEquals(3, a2.countOf(2));
-		Assert.assertEquals(2, a2.countOf(3));
+		assertEquals(0, a2.countOf(1));
+		assertEquals(3, a2.countOf(2));
+		assertEquals(2, a2.countOf(3));
 	}
 
 	@Test
@@ -103,22 +104,22 @@ public class CollectionTests {
 		OrderedUniqueAny<Integer> oua = API.collectIn(OrderedUniqueAny.class);
 		One<Integer> o = API.collectIn(One.class, 0);
 
-		Assert.assertTrue(!a.isOrdered());
-		Assert.assertTrue(!a.isUnique());
-		Assert.assertEquals(0, a.getLowerBound());
-		Assert.assertEquals(GeneralCollection.INFINITE_BOUND, a.getUpperBound());
+		assertTrue(!a.isOrdered());
+		assertTrue(!a.isUnique());
+		assertEquals(0, a.getLowerBound());
+		assertEquals(GeneralCollection.INFINITE_BOUND, a.getUpperBound());
 
-		Assert.assertTrue(oa.isOrdered());
-		Assert.assertTrue(!oa.isUnique());
+		assertTrue(oa.isOrdered());
+		assertTrue(!oa.isUnique());
 
-		Assert.assertTrue(!ua.isOrdered());
-		Assert.assertTrue(ua.isUnique());
+		assertTrue(!ua.isOrdered());
+		assertTrue(ua.isUnique());
 
-		Assert.assertTrue(oua.isOrdered());
-		Assert.assertTrue(oua.isUnique());
+		assertTrue(oua.isOrdered());
+		assertTrue(oua.isUnique());
 
-		Assert.assertEquals(1, o.getLowerBound());
-		Assert.assertEquals(1, o.getUpperBound());
+		assertEquals(1, o.getLowerBound());
+		assertEquals(1, o.getUpperBound());
 	}
 
 	@Test
@@ -135,23 +136,23 @@ public class CollectionTests {
 		assertThatContains(out2f, 2, 3, 4);
 		assertThatContains(t2a, 2, 3, 4);
 
-		Assert.assertEquals(2, t2f.getLowerBound());
-		Assert.assertEquals(4, t2f.getUpperBound());
-		Assert.assertEquals(2, ot2f.getLowerBound());
-		Assert.assertEquals(4, ot2f.getUpperBound());
-		Assert.assertEquals(2, ut2f.getLowerBound());
-		Assert.assertEquals(4, ut2f.getUpperBound());
-		Assert.assertEquals(2, out2f.getLowerBound());
-		Assert.assertEquals(4, out2f.getUpperBound());
-		Assert.assertEquals(2, t2a.getLowerBound());
-		Assert.assertEquals(GeneralCollection.INFINITE_BOUND, t2a.getUpperBound());
+		assertEquals(2, t2f.getLowerBound());
+		assertEquals(4, t2f.getUpperBound());
+		assertEquals(2, ot2f.getLowerBound());
+		assertEquals(4, ot2f.getUpperBound());
+		assertEquals(2, ut2f.getLowerBound());
+		assertEquals(4, ut2f.getUpperBound());
+		assertEquals(2, out2f.getLowerBound());
+		assertEquals(4, out2f.getUpperBound());
+		assertEquals(2, t2a.getLowerBound());
+		assertEquals(GeneralCollection.INFINITE_BOUND, t2a.getUpperBound());
 	}
 
 	@Test
 	public void testOne() {
 		Any<Integer> a = API.collect(1, 2, 3);
 
-		Assert.assertTrue(Arrays.asList(1, 2, 3).contains(a.one()));
+		assertTrue(Arrays.asList(1, 2, 3).contains(a.one()));
 	}
 
 	@Test
@@ -255,7 +256,7 @@ public class CollectionTests {
 		List<String> tmp = new ArrayList<>();
 		s.forEach(tmp::add);
 
-		Assert.assertEquals(Arrays.asList("A", "B", "C", "C", "B", "A", "B", "A", "D"), tmp);
+		assertEquals(Arrays.asList("A", "B", "C", "C", "B", "A", "B", "A", "D"), tmp);
 
 		s = API.collectIn(OrderedAny.class, "A", "B", "C");
 
@@ -280,22 +281,42 @@ public class CollectionTests {
 	public void testGet() {
 		OrderedAny<Integer> a = API.collectIn(OrderedAny.class, 1, -5, -3, 2);
 
-		Assert.assertEquals(1, (int) a.get(0));
-		Assert.assertEquals(-5, (int) a.get(1));
-		Assert.assertEquals(-3, (int) a.get(2));
-		Assert.assertEquals(2, (int) a.get(3));
+		assertEquals(1, (int) a.get(0));
+		assertEquals(-5, (int) a.get(1));
+		assertEquals(-3, (int) a.get(2));
+		assertEquals(2, (int) a.get(3));
 	}
 
+
+	@Test(expected = InvalidIndexError.class)
+	public void testGetWithInvalidIndex() {
+		OrderedAny<Integer> a = API.collectIn(OrderedAny.class, 1, -5, -3, 2);
+
+		assertEquals(1, (int) a.get(4));
+	}
+
+	
 	@Test
 	public void testIndexedAdd() {
 		OrderedAny<Integer> a = API.collectIn(OrderedAny.class, 1, -5, -3, 2);
 		a = a.add(2, 0);
 
-		Assert.assertEquals(1, (int) a.get(0));
-		Assert.assertEquals(-5, (int) a.get(1));
-		Assert.assertEquals(0, (int) a.get(2));
-		Assert.assertEquals(-3, (int) a.get(3));
-		Assert.assertEquals(2, (int) a.get(4));
+		assertEquals(1, (int) a.get(0));
+		assertEquals(-5, (int) a.get(1));
+		assertEquals(0, (int) a.get(2));
+		assertEquals(-3, (int) a.get(3));
+		assertEquals(2, (int) a.get(4));
+	}
+
+	@Test
+	public void testOrderedUniqueIndexedAdd() {
+		OrderedUniqueAny<String> s = API.collectIn(OrderedUniqueAny.class, "A", "B", "C", "C", "B");
+		s = s.add(2, "A");
+
+		assertEquals(3, s.size());
+		assertEquals("A", s.get(0));
+		assertEquals("B", s.get(1));
+		assertEquals("C", s.get(2));
 	}
 
 	@Test
@@ -303,9 +324,9 @@ public class CollectionTests {
 		OrderedAny<Integer> a = API.collectIn(OrderedAny.class, 1, -5, -3, 2);
 		a = a.remove(2);
 
-		Assert.assertEquals(1, (int) a.get(0));
-		Assert.assertEquals(-5, (int) a.get(1));
-		Assert.assertEquals(2, (int) a.get(2));
+		assertEquals(1, (int) a.get(0));
+		assertEquals(-5, (int) a.get(1));
+		assertEquals(2, (int) a.get(2));
 	}
 
 	@Test
@@ -316,11 +337,11 @@ public class CollectionTests {
 		OrderedUniqueAny<Integer> oua = API.collectIn(OrderedUniqueAny.class, 1, 2, 3);
 		One<Integer> o = API.collectIn(One.class, 0);
 
-		Assert.assertEquals("[1, 2, 3]", a.toString());
-		Assert.assertEquals("(1, 2, 3)", oa.toString());
-		Assert.assertEquals("{1, 2, 3}", ua.toString());
-		Assert.assertEquals("<1, 2, 3>", oua.toString());
-		Assert.assertEquals("[0]", o.toString());
+		assertEquals("[1, 2, 3]", a.toString());
+		assertEquals("(1, 2, 3)", oa.toString());
+		assertEquals("{1, 2, 3}", ua.toString());
+		assertEquals("<1, 2, 3>", oua.toString());
+		assertEquals("[0]", o.toString());
 	}
 
 	// custom collections
@@ -350,10 +371,10 @@ public class CollectionTests {
 	}
 
 	@SafeVarargs
-	private final <T> void assertThatContains(GeneralCollection<T> actual, T... expecteds) {
+	private static <T> void assertThatContains(GeneralCollection<T> actual, T... expecteds) {
 		Multiset<T> actualSet = ImmutableMultiset.copyOf(actual);
 		Multiset<T> expectedSet = ImmutableMultiset.copyOf(expecteds);
-		Assert.assertEquals(expectedSet, actualSet);
+		assertEquals(expectedSet, actualSet);
 	}
 
 }

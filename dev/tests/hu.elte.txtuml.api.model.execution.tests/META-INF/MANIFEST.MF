@@ -6,6 +6,4 @@ Bundle-Vendor: ELTE
 Bundle-Version: 0.6.0.qualifier
 Fragment-Host: hu.elte.txtuml.api.model.execution
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Require-Bundle: org.junit,
- org.mockito.mockito-core,
- org.objenesis
+Require-Bundle: org.junit

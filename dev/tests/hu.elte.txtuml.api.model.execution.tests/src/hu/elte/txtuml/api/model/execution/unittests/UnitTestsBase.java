@@ -1,5 +1,9 @@
 package hu.elte.txtuml.api.model.execution.unittests;
 
+import java.util.Iterator;
+import java.util.List;
+
+import org.junit.Assert;
 import org.junit.Before;
 
 import hu.elte.txtuml.api.model.Action;
@@ -40,6 +44,15 @@ public class UnitTestsBase extends ModelExecutionAsserter {
 		x.leavingVertex(cls, InstanceCreator.create(from, enclosing));
 		x.usingTransition(cls, t);
 		x.enteringVertex(cls, InstanceCreator.create(to, enclosing));
+	}
+
+	public static void assertListsEqual(List<?> expecteds, List<?> actuals) {
+		Assert.assertEquals(expecteds.size(), actuals.size());
+		Iterator<?> it1 = expecteds.iterator();
+		Iterator<?> it2 = actuals.iterator();
+		while (it1.hasNext()) {
+			Assert.assertEquals(it1.next(), it2.next());
+		}
 	}
 
 	protected void createAAndB() {
