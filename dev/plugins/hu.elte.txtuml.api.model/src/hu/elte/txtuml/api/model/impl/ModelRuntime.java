@@ -1,19 +1,16 @@
 package hu.elte.txtuml.api.model.impl;
 
-import java.util.concurrent.Callable;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
-
 import hu.elte.txtuml.api.model.Action;
 import hu.elte.txtuml.api.model.AssociationEnd;
 import hu.elte.txtuml.api.model.ConnectorBase.ConnectorEnd;
 import hu.elte.txtuml.api.model.GeneralCollection;
+import hu.elte.txtuml.api.model.ImplRelated;
 import hu.elte.txtuml.api.model.Interface;
 import hu.elte.txtuml.api.model.ModelClass;
-import hu.elte.txtuml.api.model.ImplRelated;
 import hu.elte.txtuml.api.model.ModelClass.Port;
 import hu.elte.txtuml.api.model.error.NotModelExecutorThreadError;
 import hu.elte.txtuml.api.model.external.BaseModelExecutor;
+import hu.elte.txtuml.api.model.external.BaseModelScheduler;
 
 /**
  * A txtUML model execution is associated with an implementor instance of this
@@ -45,45 +42,16 @@ public interface ModelRuntime extends ImplRelated {
 	/**
 	 * The model executor associated with this runtime instance.
 	 * <p>
-	 * Must be <b>thread-safe</b>.
+	 * Thread-safe.
 	 */
 	BaseModelExecutor getExecutor();
 
 	/**
-	 * The model execution time helps testing txtUML models in the following
-	 * way: when any time-related event inside the model is set to take
-	 * <i>ms</i> milliseconds, that event will take <i>ms</i> <code>*</code>
-	 * <i>mul</i> milliseconds during model execution, where <i>mul</i> is the
-	 * current execution time multiplier. This way, txtUML models might be
-	 * tested at the desired speed.
+	 * The model scheduler associated with this runtime instance.
 	 * <p>
-	 * Must be <b>thread-safe</b>.
-	 * 
-	 * @return the current model execution time multiplier
+	 * Thread-safe.
 	 */
-	double getExecutionTimeMultiplier();
-
-	/**
-	 * Provides a conversion from <i>'real time'</i> to model execution time by
-	 * multiplying its parameter with the execution time multiplier.
-	 * <p>
-	 * Must be <b>thread-safe</b>.
-	 * 
-	 * @param time
-	 *            the amount of time to be given in model execution time
-	 * @return the specified amount of time in model execution time
-	 * 
-	 * @see #getExecutionTimeMultiplier()
-	 */
-	default long inExecutionTime(long time) {
-		return Math.round(time * getExecutionTimeMultiplier());
-	}
-
-	/**
-	 * Schedules a timed event for this runtime instance. Delay is interpreted
-	 * in execution time.
-	 */
-	<V> ScheduledFuture<V> schedule(Callable<V> callable, long delay, TimeUnit unit);
+	BaseModelScheduler getScheduler();
 
 	/**
 	 * Called by {@link Action#connect(Class, Port, Class, Port)}.
@@ -113,11 +81,21 @@ public interface ModelRuntime extends ImplRelated {
 
 	/**
 	 * Creates a model class wrapper for the given wrapped object.
+	 * 
+	 * @param wrapped
+	 *            the model class instance instance to create a runtime for
+	 * @return the new runtime
 	 */
 	ModelClassRuntime createModelClassRuntime(ModelClass wrapped);
 
 	/**
 	 * Creates a port wrapper for the given wrapped port instance.
+	 * 
+	 * @param wrapped
+	 *            the port instance to create a runtime for
+	 * @param owner
+	 *            the owner of the port
+	 * @return the new runtime
 	 */
 	PortRuntime createPortRuntime(Port<?, ?> wrapped, ModelClass owner);
 

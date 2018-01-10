@@ -22,7 +22,6 @@ import hu.elte.txtuml.api.model.execution.LogLevel;
 import hu.elte.txtuml.api.model.execution.ModelExecutor;
 import hu.elte.txtuml.api.model.execution.TraceListener;
 import hu.elte.txtuml.api.model.execution.WarningListener;
-import hu.elte.txtuml.utils.Logger;
 import hu.elte.txtuml.utils.NotifierOfTermination.TerminationManager;
 
 /**
@@ -68,6 +67,8 @@ public abstract class AbstractModelExecutor<S extends AbstractModelExecutor<S>> 
 
 	private volatile Status status = Status.CREATED;
 
+	private volatile ModelSchedulerImpl scheduler;
+
 	private Execution.Settings settings = new Execution.Settings();
 
 	private Runnable initialization = null;
@@ -99,11 +100,26 @@ public abstract class AbstractModelExecutor<S extends AbstractModelExecutor<S>> 
 	}
 
 	@Override
+	public ModelSchedulerImpl getScheduler() {
+		/*
+		 * The field 'scheduler' is volatile. We must ensure that the same
+		 * reference is used below in the more then one occasions it is
+		 * accessed.
+		 */
+		ModelSchedulerImpl scheduler = this.scheduler;
+		if (scheduler == null) {
+			throw new IllegalStateException();
+		}
+		return scheduler;
+	}
+
+	@Override
 	public S startNoWait() throws LockedModelExecutorException {
 		checkIfLocked();
 		switchOnLogging.switchOnFor(this);
 
 		status = Status.ACTIVE;
+		scheduler = new ModelSchedulerImpl(this, settings.timeMultiplier);
 		traceListeners.forEach(x -> x.executionStarted());
 
 		createRuntime(() -> {
@@ -192,7 +208,6 @@ public abstract class AbstractModelExecutor<S extends AbstractModelExecutor<S>> 
 				}
 				copy = threads.toArray(new AbstractExecutorThread[threads.size()]);
 			}
-			Logger.sys.error("" + copy.length);
 			for (AbstractExecutorThread e : copy) {
 				joinUninterruptibly(e);
 			}
@@ -302,6 +317,7 @@ public abstract class AbstractModelExecutor<S extends AbstractModelExecutor<S>> 
 	 * <p>
 	 * Thread-safe.
 	 */
+
 	protected void performTermination() {
 		terminationManager.notifyAllOfTermination();
 		status = Status.TERMINATED;

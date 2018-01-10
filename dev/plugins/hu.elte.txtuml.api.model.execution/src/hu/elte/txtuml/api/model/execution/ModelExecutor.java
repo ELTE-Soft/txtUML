@@ -66,6 +66,9 @@ public interface ModelExecutor extends BaseModelExecutor, Runnable {
 
 	// manage
 
+	@Override
+	ModelScheduler getScheduler() throws IllegalStateException;
+
 	/**
 	 * Starts a model execution with the previously specified initialization,
 	 * sets the status of this executor to {@link Status#ACTIVE} and awaits its
@@ -416,6 +419,8 @@ public interface ModelExecutor extends BaseModelExecutor, Runnable {
 	 * Returns the current settings of this model executor; the returned
 	 * settings object is a copy: its modification has no effect on this
 	 * executor.
+	 * <p>
+	 * Thread-safe.
 	 */
 	Execution.Settings getSettings();
 
@@ -440,10 +445,14 @@ public interface ModelExecutor extends BaseModelExecutor, Runnable {
 	}
 
 	/**
-	 * A shorthand operation for {@link #getSettings()}&#x2e;
-	 * {@link ExecutionSettings#timeMultiplier timeMultiplier}.
+	 * The model execution time helps testing txtUML models in the following
+	 * way: when any time-related event inside the model is set to take
+	 * <i>ms</i> milliseconds, that event will take <i>ms</i> <code>*</code>
+	 * <i>mul</i> milliseconds during model execution, where <i>mul</i> is the
+	 * current execution time multiplier. This way, txtUML models might be
+	 * tested at the desired speed.
 	 * 
-	 * @return the current execution time multiplier
+	 * @return the current model execution time multiplier
 	 */
 	default double getExecutionTimeMultiplier() {
 		return getSettings().timeMultiplier;

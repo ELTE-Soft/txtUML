@@ -3,7 +3,7 @@ package hu.elte.txtuml.api.model.external;
 import java.util.function.Function;
 
 import hu.elte.txtuml.api.model.error.NotModelExecutorThreadError;
-import hu.elte.txtuml.api.model.impl.ModelRuntime;
+import hu.elte.txtuml.api.model.impl.ExecutorThread;
 
 /**
  * Through this interface some management features of the currently operating
@@ -25,18 +25,29 @@ public interface BaseModelExecutor {
 
 	/**
 	 * Gets the current model executor which is associated with the current
-	 * thread.
-	 * <p>
-	 * <b>Note:</b> calls {@link ModelRuntime#current()}.
-	 * {@link ModelRuntime#getExecutor getExecutor()}.
+	 * model executor thread.
 	 * 
 	 * @return the model executor which is associated with the current thread
 	 * @throws NotModelExecutorThreadError
 	 *             if the caller thread is not a model executor thread
 	 */
 	static BaseModelExecutor current() throws NotModelExecutorThreadError {
-		return ModelRuntime.current().getExecutor();
+		return ExecutorThread.current().getModelRuntime().getExecutor();
 	}
+
+	/**
+	 * Returns the model scheduler belonging to this model executor. Throws an
+	 * exception if this executor has not yet been started and therefore has no
+	 * scheduler.
+	 * <p>
+	 * Thread-safe.
+	 * 
+	 * @return the model scheduler belonging to the model executor
+	 * @throws IllegalStateException
+	 *             if this executor has not been started yet and therefore has
+	 *             no scheduler
+	 */
+	BaseModelScheduler getScheduler() throws IllegalStateException;
 
 	/**
 	 * Registers the specified {@link Runnable} to be run when the model
@@ -45,7 +56,7 @@ public interface BaseModelExecutor {
 	 * <p>
 	 * The listener <b>will not</b> necessarily run on the caller's thread.
 	 * <p>
-	 * Must be <b>thread-safe</b>.
+	 * Thread-safe.
 	 * 
 	 * @param listener
 	 *            the action to be run when the executor is terminated
@@ -58,7 +69,7 @@ public interface BaseModelExecutor {
 	 * list of actions which are performed when the model execution is
 	 * terminated.
 	 * <p>
-	 * Must be <b>thread-safe</b>.
+	 * Thread-safe.
 	 * 
 	 * @param listener
 	 *            the action to be removed
@@ -72,7 +83,7 @@ public interface BaseModelExecutor {
 	 * is, if all previously added blockers are removed. A forced termination
 	 * may omit this restriction.
 	 * <p>
-	 * Must be <b>thread-safe</b>.
+	 * Thread-safe.
 	 * 
 	 * @param blocker
 	 *            the blocker to be added
@@ -86,7 +97,7 @@ public interface BaseModelExecutor {
 	 * is empty, that is, if all previously added blockers are removed. A forced
 	 * termination may omit this restriction.
 	 * <p>
-	 * Must be <b>thread-safe</b>.
+	 * Thread-safe.
 	 * 
 	 * @param blocker
 	 *            the blocker to be removed
@@ -100,7 +111,7 @@ public interface BaseModelExecutor {
 	 * only use of this method is to associate services with this executor which
 	 * can be later retrieved with the {@link #getFeature} method.
 	 * <p>
-	 * Must be <b>thread-safe</b>.
+	 * Thread-safe.
 	 * <p>
 	 * Note that although this method and the {@link #getFeature} method are
 	 * both thread-safe, a code that calls {@link &getFeature} and then
@@ -120,7 +131,7 @@ public interface BaseModelExecutor {
 	 * Returns a specific feature for this model executor identified by the
 	 * given key or {@code null} if no such feature has been found.
 	 * <p>
-	 * Must be <b>thread-safe</b>.
+	 * Thread-safe.
 	 * 
 	 * @param key
 	 *            the key associated with the required feature in this model
@@ -136,7 +147,7 @@ public interface BaseModelExecutor {
 	 * given key or creates a new one with the provided supplier if no such
 	 * feature has been found.
 	 * <p>
-	 * Must be <b>thread-safe</b>.
+	 * Thread-safe.
 	 * 
 	 * @param key
 	 *            the key associated with the required feature in this model
