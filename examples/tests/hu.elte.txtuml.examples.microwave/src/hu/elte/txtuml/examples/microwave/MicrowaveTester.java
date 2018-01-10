@@ -2,8 +2,8 @@ package hu.elte.txtuml.examples.microwave;
 
 import hu.elte.txtuml.api.model.API;
 import hu.elte.txtuml.api.model.Action;
+import hu.elte.txtuml.api.model.execution.Execution;
 import hu.elte.txtuml.api.model.execution.LogLevel;
-import hu.elte.txtuml.api.model.execution.ModelExecutor;
 import hu.elte.txtuml.examples.microwave.model.Human;
 import hu.elte.txtuml.examples.microwave.model.Microwave;
 import hu.elte.txtuml.examples.microwave.model.associations.Usage;
@@ -16,12 +16,18 @@ import hu.elte.txtuml.examples.microwave.model.signals.SetTime;
 import hu.elte.txtuml.examples.microwave.model.signals.Start;
 import hu.elte.txtuml.examples.microwave.model.signals.Stop;
 
-public class MicrowaveTester {
+public class MicrowaveTester implements Execution {
 
-	static Microwave m;
-	static Human h;
+	@Override
+	public void configure(Settings s) {
+		s.logLevel = LogLevel.TRACE;
+	}
+	
+	Microwave m;
+	Human h;
 
-	static void init() {
+	@Override
+	public void initialization() {
 		m = Action.create(Microwave.class);
 		h = Action.create(Human.class);
 
@@ -32,9 +38,8 @@ public class MicrowaveTester {
 		Action.start(h);
 	}
 
-	public static void main(String args) throws InterruptedException {
-		ModelExecutor executor = ModelExecutor.create().setLogLevel(LogLevel.TRACE).start(MicrowaveTester::init);
-		
+	@Override
+	public void during() {
 		String inp = "";
 		do {
 			System.out.println("Do Action: ");
@@ -80,8 +85,10 @@ public class MicrowaveTester {
 			}
 
 		} while (!inp.equals("quit"));
-
-		executor.shutdown();
+	}
+	
+	public static void main(String[] args) {
+		new MicrowaveTester().run();
 	}
 
 }

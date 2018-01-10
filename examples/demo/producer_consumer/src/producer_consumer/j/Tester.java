@@ -1,17 +1,23 @@
 package producer_consumer.j;
 
 import hu.elte.txtuml.api.model.Action;
+import hu.elte.txtuml.api.model.execution.Execution;
 import hu.elte.txtuml.api.model.execution.LogLevel;
-import hu.elte.txtuml.api.model.execution.ModelExecutor;
 import producer_consumer.j.model.Consumer;
 import producer_consumer.j.model.Consumption;
 import producer_consumer.j.model.Producer;
 import producer_consumer.j.model.Production;
 import producer_consumer.j.model.Storage;
 
-public class Tester {
+public class Tester implements Execution {
 
-	static void init() {
+	@Override
+	public void configure(Settings s) {
+		s.logLevel = LogLevel.TRACE;
+	}
+
+	@Override
+	public void initialization() {
 		Storage storage = Action.create(Storage.class, Integer.valueOf(2));
 		Producer p1 = Action.create(Producer.class, Integer.valueOf(3));
 		Producer p2 = Action.create(Producer.class, Integer.valueOf(3));
@@ -32,6 +38,6 @@ public class Tester {
 	}
 
 	public static void main(String[] args) {
-		ModelExecutor.create().setLogLevel(LogLevel.TRACE).run(Tester::init);
+		new Tester().run();
 	}
 }

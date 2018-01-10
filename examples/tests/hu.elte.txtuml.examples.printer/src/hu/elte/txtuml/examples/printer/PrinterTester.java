@@ -2,8 +2,8 @@ package hu.elte.txtuml.examples.printer;
 
 import hu.elte.txtuml.api.model.API;
 import hu.elte.txtuml.api.model.Action;
+import hu.elte.txtuml.api.model.execution.Execution;
 import hu.elte.txtuml.api.model.execution.LogLevel;
-import hu.elte.txtuml.api.model.execution.ModelExecutor;
 import hu.elte.txtuml.examples.printer.model.Human;
 import hu.elte.txtuml.examples.printer.model.PrinterBackend;
 import hu.elte.txtuml.examples.printer.model.PrinterFrontend;
@@ -12,16 +12,22 @@ import hu.elte.txtuml.examples.printer.model.associations.Usage;
 import hu.elte.txtuml.examples.printer.model.signals.RestockPaper;
 import hu.elte.txtuml.examples.printer.model.signals.WantToPrint;
 
-public class PrinterTester {
+public class PrinterTester implements Execution {
 
-	static Human h1;
-	static Human h2;
-	static Human h3;
-	static Human h4;
-	static PrinterFrontend p;
-	static PrinterBackend pb;
+	@Override
+	public void configure(Settings s) {
+		s.logLevel = LogLevel.TRACE;
+	}
 
-	static void init() {
+	Human h1;
+	Human h2;
+	Human h3;
+	Human h4;
+	PrinterFrontend p;
+	PrinterBackend pb;
+
+	@Override
+	public void initialization() {
 		p = Action.create(PrinterFrontend.class);
 		pb = Action.create(PrinterBackend.class);
 		p.paperCount = 2;
@@ -47,27 +53,32 @@ public class PrinterTester {
 		Action.start(h4);
 	}
 
-	public static void main(String[] args) throws InterruptedException {
-		ModelExecutor executor = ModelExecutor.create().setLogLevel(LogLevel.TRACE).start(PrinterTester::init);
+	@Override
+	public void during() {
+		try {
+			API.send(new WantToPrint(), h1); // 2
+			Thread.sleep(500);
+			API.send(new WantToPrint(), h2); // 2
+			Thread.sleep(500);
+			API.send(new WantToPrint(), h1); // 2
+			Thread.sleep(500);
+			API.send(new WantToPrint(), h3); // 2
+			Thread.sleep(500);
+			API.send(new WantToPrint(), h4); // 2
+			Thread.sleep(500);
+			API.send(new WantToPrint(), h1); // 2
+			Thread.sleep(2000);
+			API.send(new RestockPaper(20), p);
 
-		API.send(new WantToPrint(), h1); // 2
-		Thread.sleep(500);
-		API.send(new WantToPrint(), h2); // 2
-		Thread.sleep(500);
-		API.send(new WantToPrint(), h1); // 2
-		Thread.sleep(500);
-		API.send(new WantToPrint(), h3); // 2
-		Thread.sleep(500);
-		API.send(new WantToPrint(), h4); // 2
-		Thread.sleep(500);
-		API.send(new WantToPrint(), h1); // 2
-		Thread.sleep(2000);
-		API.send(new RestockPaper(20), p);
+			Thread.sleep(24000);
 
-		Thread.sleep(24000);
-
-		API.log("Test: pc: " + p.paperCount + "."); // TODO unsafe access
-
-		executor.shutdown();
+			API.log("Test: pc: " + p.paperCount + "."); // TODO unsafe access
+		} catch (InterruptedException e) {
+		}
 	}
+
+	public static void main(String[] args) {
+		new PrinterTester().run();
+	}
+
 }

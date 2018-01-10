@@ -72,7 +72,7 @@ public class UI extends SwingWorldObjectListener implements Runnable {
 	private UI() {
 		model = new Model();
 
-		register(model.start(), View.id());
+		register(model.start().get(), View.id());
 		
 		Color monitorBlue = new Color(0, 0, 100);
 		buttonPanel.setOpaque(false);
