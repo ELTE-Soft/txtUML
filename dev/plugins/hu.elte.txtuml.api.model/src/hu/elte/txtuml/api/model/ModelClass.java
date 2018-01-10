@@ -10,7 +10,6 @@ import hu.elte.txtuml.api.model.ImplRelated.RequiresRuntime;
 import hu.elte.txtuml.api.model.error.PortParameterError;
 import hu.elte.txtuml.api.model.impl.ExecutorThread;
 import hu.elte.txtuml.api.model.impl.ModelClassRuntime;
-import hu.elte.txtuml.api.model.impl.ModelRuntime;
 import hu.elte.txtuml.api.model.impl.PortRuntime;
 
 /**
@@ -181,7 +180,7 @@ public abstract class ModelClass extends StateMachine {
 
 	@Override
 	ModelClassRuntime createRuntime() {
-		return ModelRuntime.current().createModelClassRuntime(this);
+		return ExecutorThread.current().getModelRuntime().createModelClassRuntime(this);
 	}
 
 	/**
@@ -284,8 +283,7 @@ public abstract class ModelClass extends StateMachine {
 	 * @param <R>
 	 *            the required interface
 	 */
-	public class Port<P extends Interface, R extends Interface>
-			extends @External RequiresRuntime<PortRuntime> {
+	public class Port<P extends Interface, R extends Interface> extends @External RequiresRuntime<PortRuntime> {
 
 		/**
 		 * The required interface of this port.

@@ -84,11 +84,11 @@ public abstract class GeneralCollection<E> implements @External Iterable<E>, @Ex
 	/**
 	 * Returns a collection of the given type that contains the same elements as
 	 * this. If either the lower bound or upper bound of the specified type
-	 * would be offended with this copy, a model error is raised. If this is
-	 * collection unordered or non-unique and the given type is ordered or
+	 * would be offended with this copy, a model error is raised. If this
+	 * collection is unordered or non-unique and the given type is ordered or
 	 * unique (respectively), that also results in a model error.
 	 * <p>
-	 * If the given type is the same as the type of this this, this collection
+	 * If the given type is the same as the type of this, this collection
 	 * is returned.
 	 * <p>
 	 * <i>Reason for ordering and uniqueness restriction:</i> this method is
@@ -336,8 +336,6 @@ public abstract class GeneralCollection<E> implements @External Iterable<E>, @Ex
 	 * <p>
 	 * See the documentation of {@link Model} for an overview on modeling in
 	 * JtxtUML.
-	 * 
-	 * @author kovacsgabor
 	 *
 	 * @param <E>
 	 *            type of the elements in the collection
@@ -354,6 +352,7 @@ public abstract class GeneralCollection<E> implements @External Iterable<E>, @Ex
 		 * 
 		 * @return the element at the specified index
 		 */
+		@ExternalBody
 		E get(int index);
 
 		/**
@@ -366,14 +365,15 @@ public abstract class GeneralCollection<E> implements @External Iterable<E>, @Ex
 		 * invalid if it is <i>not</i> between 0 (inclusive) and the size of
 		 * this collection (inclusive).
 		 * <p>
-		 * Note that in the case of this method, the size of the collection is
+		 * Note that in the case of this method, the size of this collection is
 		 * also a valid index. In this case, this method adds the element to the
 		 * end of this collection, so it has the same result as the
 		 * {@link GeneralCollection#add(Object)} method.
 		 * 
-		 * @return a copy of this which does contains the element at the
+		 * @return a copy of this which does contain the element at the
 		 *         specified index
 		 */
+		@ExternalBody
 		Ordered<E> add(int index, E element);
 
 		/**
@@ -389,8 +389,10 @@ public abstract class GeneralCollection<E> implements @External Iterable<E>, @Ex
 		 * @return a copy of this which does not contain the element at the
 		 *         specified index
 		 */
+		@ExternalBody
 		Ordered<E> remove(int index);
 
+		@External
 		@Override
 		default boolean isOrdered() {
 			return true;
@@ -408,14 +410,13 @@ public abstract class GeneralCollection<E> implements @External Iterable<E>, @Ex
 	 * <p>
 	 * See the documentation of {@link Model} for an overview on modeling in
 	 * JtxtUML.
-	 * 
-	 * @author kovacsgabor
 	 *
 	 * @param <E>
 	 *            type of the elements in the collection
 	 */
 	@External
 	public interface Unordered<E> extends Ordering<Unordered<E>> {
+		@External
 		@Override
 		default boolean isOrdered() {
 			return false;
@@ -430,14 +431,13 @@ public abstract class GeneralCollection<E> implements @External Iterable<E>, @Ex
 	 * <p>
 	 * See the documentation of {@link Model} for an overview on modeling in
 	 * JtxtUML.
-	 * 
-	 * @author kovacsgabor
 	 *
 	 * @param <E>
 	 *            type of the elements in the collection
 	 */
 	@External
 	public interface Unique<E> extends Uniqueness<Unique<E>> {
+		@External
 		@Override
 		default boolean isUnique() {
 			return true;
@@ -452,8 +452,6 @@ public abstract class GeneralCollection<E> implements @External Iterable<E>, @Ex
 	 * <p>
 	 * See the documentation of {@link Model} for an overview on modeling in
 	 * JtxtUML.
-	 * 
-	 * @author kovacsgabor
 	 *
 	 * @param <E>
 	 *            type of the elements in the collection
@@ -469,8 +467,10 @@ public abstract class GeneralCollection<E> implements @External Iterable<E>, @Ex
 		 * 
 		 * @return how many times the specified element is contained
 		 */
+		@ExternalBody
 		int countOf(E element);
 
+		@External
 		@Override
 		default boolean isUnique() {
 			return false;

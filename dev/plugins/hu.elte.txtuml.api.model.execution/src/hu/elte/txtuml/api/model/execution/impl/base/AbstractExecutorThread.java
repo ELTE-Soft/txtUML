@@ -122,16 +122,21 @@ public abstract class AbstractExecutorThread extends Thread implements ExecutorT
 	 * thread.
 	 */
 	public void runLoop() {
-		while (shouldContinue()) {
-			try {
-				processNext();
-				for (Runnable action; (action = delayedActions.poll()) != null;) {
-					action.run();
+		try {
+			while (shouldContinue()) {
+				try {
+					processNext();
+					for (Runnable action; (action = delayedActions.poll()) != null;) {
+						action.run();
+					}
+				} catch (Exception e) {
+					Logger.sys.error("Exception thrown on a model executor thread (id: " + getIdentifier()
+							+ "). Trying to continue by processing the next signal.", e);
 				}
-			} catch (Exception e) {
-				Logger.sys.error("Exception thrown on a model executor thread (id: " + getIdentifier()
-						+ "). Trying to continue by processing the next signal.", e);
 			}
+		} catch (Error e) {
+			Logger.sys.fatal("Error thrown on a model executor thread (id: " + getIdentifier()
+					+ "). The thread now stops.", e);
 		}
 	}
 

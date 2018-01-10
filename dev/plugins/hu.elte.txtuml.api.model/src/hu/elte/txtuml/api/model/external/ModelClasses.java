@@ -21,19 +21,26 @@ public final class ModelClasses {
 	 * <p>
 	 * Thread-safe.
 	 */
-	public static String getIdentifierOf(ModelClass cls) {
-		return RuntimeProvider.INSTANCE.getRuntimeOf(cls).getIdentifier();
+	public static String getIdentifierOf(ModelClass obj) {
+		return RuntimeProvider.INSTANCE.getRuntimeOf(obj).getIdentifier();
 	}
 
 	/**
-	 * Returns the name of the given model class instance. This name can be set
-	 * upon the creation of an object with the appropriate
-	 * {@link hu.elte.txtuml.api.model.Action Action} methods.
+	 * Returns the modifiable name of the given model class instance.
 	 * <p>
 	 * Thread-safe.
 	 */
-	public static String getNameOf(ModelClass cls) {
-		return RuntimeProvider.INSTANCE.getRuntimeOf(cls).getName();
+	public static String getNameOf(ModelClass obj) {
+		return RuntimeProvider.INSTANCE.getRuntimeOf(obj).getName();
+	}
+
+	/**
+	 * Sets the modifiable name of the given model class instance.
+	 * <p>
+	 * Thread-safe.
+	 */
+	public static void setNameOf(ModelClass obj, String newName) {
+		RuntimeProvider.INSTANCE.getRuntimeOf(obj).setName(newName);
 	}
 
 	/**
@@ -41,8 +48,8 @@ public final class ModelClasses {
 	 * <p>
 	 * Thread-safe.
 	 */
-	public static ModelClass.Status getStatusOf(ModelClass cls) {
-		return RuntimeProvider.INSTANCE.getRuntimeOf(cls).getStatus();
+	public static ModelClass.Status getStatusOf(ModelClass obj) {
+		return RuntimeProvider.INSTANCE.getRuntimeOf(obj).getStatus();
 	}
 
 }

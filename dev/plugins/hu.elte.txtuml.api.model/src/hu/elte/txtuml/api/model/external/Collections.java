@@ -19,7 +19,6 @@ import hu.elte.txtuml.api.model.UniqueAny;
  * See the documentation of {@link hu.elte.txtuml.api.model.Model} for an
  * overview on modeling in JtxtUML.
  */
-@SuppressWarnings("rawtypes")
 public final class Collections {
 
 	private Collections() {
@@ -30,7 +29,7 @@ public final class Collections {
 	 * (which has the same ordering and uniqueness properties as the specified
 	 * one).
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public static <E> Class<? extends GeneralCollection<E>> unbound(Class<? extends GeneralCollection<E>> type) {
 		boolean isOrdered = isOrdered(type);
 		boolean isUnique = isUnique(type);
@@ -58,6 +57,7 @@ public final class Collections {
 	 * 
 	 * @see GeneralCollection#isOrdered()
 	 */
+	@SuppressWarnings("rawtypes")
 	public static boolean isOrdered(Class<? extends GeneralCollection> type) {
 		return Ordered.class.isAssignableFrom(type);
 	}
@@ -67,6 +67,7 @@ public final class Collections {
 	 * 
 	 * @see GeneralCollection#isOrdered()
 	 */
+	@SuppressWarnings("rawtypes")
 	public static boolean isUnordered(Class<? extends GeneralCollection> type) {
 		return Unordered.class.isAssignableFrom(type);
 	}
@@ -77,6 +78,7 @@ public final class Collections {
 	 * 
 	 * @see GeneralCollection#isUnique()
 	 */
+	@SuppressWarnings("rawtypes")
 	public static boolean isUnique(Class<? extends GeneralCollection> type) {
 		return Unique.class.isAssignableFrom(type);
 	}
@@ -87,6 +89,7 @@ public final class Collections {
 	 * 
 	 * @see GeneralCollection#isUnique()
 	 */
+	@SuppressWarnings("rawtypes")
 	public static boolean isNonUnique(Class<? extends GeneralCollection> type) {
 		return NonUnique.class.isAssignableFrom(type);
 	}
@@ -96,6 +99,7 @@ public final class Collections {
 	 * minimum number of elements it may contain. It can be 0 or any positive
 	 * integer.
 	 */
+	@SuppressWarnings("rawtypes")
 	public static int getLowerBound(Class<? extends GeneralCollection> type) {
 		Min min = type.getAnnotation(Min.class);
 		return (min == null) ? 0 : min.value();
@@ -107,6 +111,7 @@ public final class Collections {
 	 * integer or equal to {@link GeneralCollection#INFINITE_BOUND}, which means
 	 * that the collection has no upper bound.
 	 */
+	@SuppressWarnings("rawtypes")
 	public static int getUpperBound(Class<? extends GeneralCollection> type) {
 		Max max = type.getAnnotation(Max.class);
 		return (max == null) ? GeneralCollection.INFINITE_BOUND : max.value();

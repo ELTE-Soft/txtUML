@@ -31,9 +31,10 @@ public abstract class AbstractModelClassRuntime extends AbstractSignalTargetRunt
 	private volatile String name;
 
 	/**
-	 * May only be accessed from the owner thread.
+	 * It is enough to set status volatile: it is only updated by the
+	 * {@link #thread owner} thread.
 	 */
-	private Status status;
+	private volatile Status status;
 
 	/**
 	 * May only be accessed from the owner thread.
@@ -125,7 +126,7 @@ public abstract class AbstractModelClassRuntime extends AbstractSignalTargetRunt
 	}
 
 	public void traceSender(Signal signal, AbstractModelClassRuntime sender) {
-		getModelRuntime().trace(x -> x.sendingSignal(sender.getWrapped(), signal));
+		trace(x -> x.sendingSignal(sender.getWrapped(), signal));
 	}
 
 	/**
@@ -151,12 +152,12 @@ public abstract class AbstractModelClassRuntime extends AbstractSignalTargetRunt
 		Status currentStatus = getStatus();
 		if (currentStatus != Status.ACTIVE) {
 			if (currentStatus == Status.DELETED) {
-				getModelRuntime().warning(x -> x.signalArrivedToDeletedObject(getWrapped(), signal));
+				warning(x -> x.signalArrivedToDeletedObject(getWrapped(), signal));
 				return;
 			}
 		} else {
 			if (signal != null) {
-				getModelRuntime().trace(x -> x.processingSignal(getWrapped(), signal));
+				trace(x -> x.processingSignal(getWrapped(), signal));
 			}
 
 			if (findAndExecuteTransition(signal, port)) {
@@ -166,9 +167,9 @@ public abstract class AbstractModelClassRuntime extends AbstractSignalTargetRunt
 		}
 
 		if (signal != null) {
-			getModelRuntime().warning(x -> x.lostSignalAtObject(signal, getWrapped()));
+			warning(x -> x.lostSignalAtObject(signal, getWrapped()));
 		} else {
-			getModelRuntime().error(x -> x.missingInitialTransition(currentVertex.getWrapped()));
+			error(x -> x.missingInitialTransition(currentVertex.getWrapped()));
 		}
 
 	}
@@ -204,7 +205,7 @@ public abstract class AbstractModelClassRuntime extends AbstractSignalTargetRunt
 						continue;
 					}
 				} catch (ElseException e) {
-					getModelRuntime().error(x -> x.elseGuardFromNonChoiceVertex(transition.getWrapped()));
+					error(x -> x.elseGuardFromNonChoiceVertex(transition.getWrapped()));
 					continue;
 				}
 
@@ -212,7 +213,7 @@ public abstract class AbstractModelClassRuntime extends AbstractSignalTargetRunt
 					// there was already an applicable transition
 
 					final Transition tmp = applicableTransition.getWrapped();
-					getModelRuntime().error(x -> x.guardsOfTransitionsAreOverlapping(tmp, transition.getWrapped(),
+					error(x -> x.guardsOfTransitionsAreOverlapping(tmp, transition.getWrapped(),
 							currentVertex.getWrapped()));
 					continue;
 				}
@@ -220,7 +221,7 @@ public abstract class AbstractModelClassRuntime extends AbstractSignalTargetRunt
 				fromState = examined;
 				applicableTransition = transition;
 
-				if (!getModelRuntime().getCheckLevel().isAtLeast(CheckLevel.OPTIONAL)) {
+				if (!toBeChecked(CheckLevel.OPTIONAL)) {
 					break;
 				}
 
@@ -235,7 +236,7 @@ public abstract class AbstractModelClassRuntime extends AbstractSignalTargetRunt
 		executeTransition(fromState, applicableTransition);
 
 		if (currentVertex.isChoice()) {
-			getModelRuntime().trace(x -> x.enteringVertex(getWrapped(), currentVertex.getWrapped()));
+			trace(x -> x.enteringVertex(getWrapped(), currentVertex.getWrapped()));
 			findAndExecuteTransitionFromChoice();
 		}
 
@@ -262,7 +263,7 @@ public abstract class AbstractModelClassRuntime extends AbstractSignalTargetRunt
 				if (elseTransition != null) {
 					// there was already a transition with an else condition
 
-					getModelRuntime().error(x -> x.moreThanOneElseTransitionsFromChoice(currentVertex.getWrapped()));
+					error(x -> x.moreThanOneElseTransitionsFromChoice(currentVertex.getWrapped()));
 					continue;
 				}
 
@@ -275,7 +276,7 @@ public abstract class AbstractModelClassRuntime extends AbstractSignalTargetRunt
 				// there was already an applicable transition
 
 				final Transition tmp = applicableTransition.getWrapped();
-				getModelRuntime().error(x -> x.guardsOfTransitionsAreOverlapping(tmp, transition.getWrapped(),
+				error(x -> x.guardsOfTransitionsAreOverlapping(tmp, transition.getWrapped(),
 						currentVertex.getWrapped()));
 
 				continue;
@@ -283,7 +284,7 @@ public abstract class AbstractModelClassRuntime extends AbstractSignalTargetRunt
 
 			applicableTransition = transition;
 
-			if (!getModelRuntime().getCheckLevel().isAtLeast(CheckLevel.OPTIONAL)) {
+			if (!toBeChecked(CheckLevel.OPTIONAL)) {
 				break;
 			}
 		}
@@ -301,7 +302,7 @@ public abstract class AbstractModelClassRuntime extends AbstractSignalTargetRunt
 			} else {
 				// no way to move from choice
 
-				getModelRuntime().error(x -> x.noTransitionFromChoice(currentVertex.getWrapped()));
+				error(x -> x.noTransitionFromChoice(currentVertex.getWrapped()));
 				return;
 			}
 		}
@@ -319,7 +320,7 @@ public abstract class AbstractModelClassRuntime extends AbstractSignalTargetRunt
 	 */
 	private void executeTransition(VertexWrapper fromVertex, TransitionWrapper transition) {
 		callExitAction(fromVertex);
-		getModelRuntime().trace(x -> x.usingTransition(getWrapped(), transition.getWrapped()));
+		trace(x -> x.usingTransition(getWrapped(), transition.getWrapped()));
 		transition.performEffect();
 		currentVertex = transition.getTarget();
 	}
@@ -339,7 +340,7 @@ public abstract class AbstractModelClassRuntime extends AbstractSignalTargetRunt
 	private void callExitAction(VertexWrapper vertex) {
 		while (true) {
 			currentVertex.performExit();
-			getModelRuntime().trace(x -> x.leavingVertex(getWrapped(), currentVertex.getWrapped()));
+			trace(x -> x.leavingVertex(getWrapped(), currentVertex.getWrapped()));
 
 			if (currentVertex == vertex) {
 				break;
@@ -358,11 +359,11 @@ public abstract class AbstractModelClassRuntime extends AbstractSignalTargetRunt
 	 * is neither a pseudostate, nor a composite state.
 	 */
 	private void callEntryAction() {
-		getModelRuntime().trace(x -> x.enteringVertex(getWrapped(), currentVertex.getWrapped()));
+		trace(x -> x.enteringVertex(getWrapped(), currentVertex.getWrapped()));
 		currentVertex.performEntry();
 		if (currentVertex.isComposite()) {
 			currentVertex = currentVertex.getInitialOfSubSM();
-			getModelRuntime().trace(x -> x.enteringVertex(getWrapped(), currentVertex.getWrapped()));
+			trace(x -> x.enteringVertex(getWrapped(), currentVertex.getWrapped()));
 			// no entry action needs to be called: initial pseudostates have
 			// none
 

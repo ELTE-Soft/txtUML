@@ -47,7 +47,7 @@ public abstract class AbstractPortRuntime extends AbstractSignalTargetRuntime<Po
 			target.receiveLater(signal, this);
 			return;
 		}
-		getModelRuntime().warning(x -> x.lostSignalAtPort(signal, getWrapped()));
+		warning(x -> x.lostSignalAtPort(signal, getWrapped()));
 	}
 
 	/**

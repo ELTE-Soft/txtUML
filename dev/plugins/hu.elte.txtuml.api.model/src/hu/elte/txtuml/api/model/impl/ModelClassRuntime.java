@@ -23,18 +23,31 @@ public interface ModelClassRuntime extends SignalTargetRuntime<ModelClass>, Impl
 
 	/**
 	 * The unique identifier of the wrapped model class instance.
+	 * <p>
+	 * Thread-safe.
 	 */
 	String getIdentifier();
 
 	/**
 	 * The modifiable name of the wrapped model class instance.
+	 * <p>
+	 * Thread-safe.
 	 */
 	String getName();
 
 	/**
 	 * Sets the modifiable name of the wrapped model class instance.
+	 * <p>
+	 * Thread-safe.
 	 */
 	void setName(String name);
+
+	/**
+	 * The current status of the wrapped model class instance.
+	 * <p>
+	 * Thread-safe.
+	 */
+	Status getStatus();
 
 	/**
 	 * Called by {@link Action#start(ModelClass)}.
@@ -45,13 +58,6 @@ public interface ModelClassRuntime extends SignalTargetRuntime<ModelClass>, Impl
 	 * Called by {@link Action#delete(ModelClass)}.
 	 */
 	void delete();
-
-	/**
-	 * The current status of the wrapped model class instance.
-	 * <p>
-	 * Thread-safe.
-	 */
-	Status getStatus();
 
 	/**
 	 * The object asynchronously sent a signal.

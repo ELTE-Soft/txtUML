@@ -11,7 +11,7 @@ import hu.elte.txtuml.api.model.Model;
  * JtxtUML.
  */
 @SuppressWarnings("serial")
-public class LockedModelExecutorException extends RuntimeException {
+public class LockedModelExecutorException extends IllegalStateException {
 
 	public LockedModelExecutorException() {
 		super("The accessed model executor is locked. This method cannot be called.");
