@@ -12,10 +12,10 @@ public class SequenceMessageSendingStrictErr2 extends SequenceBase {
 	@ExecutionMode(ExecMode.STRICT)
 	public void run() {
 		API.send(new TestSig(), a);
-		Action.send(a, new TestSig(), b);
-		Action.send(b, new TestSig(), c);
-		Action.send(b, new TestSig(), a);
-		Action.send(c, new TestSig(), b);
+		Action.send(new TestSig(), b, a);
+		Action.send(new TestSig(), c, b);
+		Action.send(new TestSig(), a, b);
+		Action.send(new TestSig(), b, c);
 	}
 
 }

@@ -15,10 +15,10 @@ public class SequenceFragmentLoop extends SequenceBase {
 	public void run() {
 		for (int i = 0; i < 1; ++i) {
 			API.send(new TestSig(), a);
-			Action.send(a, new TestSig(), b);
-			Action.send(b, new TestSig(), c);
-			Action.send(c, new TestSig(), b);
-			Action.send(b, new TestSig(), a);
+			Action.send(new TestSig(), b, a);
+			Action.send(new TestSig(), c, b);
+			Action.send(new TestSig(), b, c);
+			Action.send(new TestSig(), a, b);
 		}
 
 	}

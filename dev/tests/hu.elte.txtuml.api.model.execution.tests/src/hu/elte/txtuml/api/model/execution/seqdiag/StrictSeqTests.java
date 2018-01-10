@@ -2,7 +2,7 @@ package hu.elte.txtuml.api.model.execution.seqdiag;
 
 import org.junit.Test;
 
-import hu.elte.txtuml.api.model.execution.impl.seqdiag.SequenceDiagramExecutor;
+import hu.elte.txtuml.api.model.execution.SequenceDiagramExecutor;
 import hu.elte.txtuml.api.model.execution.seqdiag.sequences.SequenceMessageSendingStrictErr1;
 import hu.elte.txtuml.api.model.execution.seqdiag.sequences.SequenceMessageSendingStrictErr2;
 import hu.elte.txtuml.api.model.execution.seqdiag.sequences.SequenceMessageSendingStrictValid;

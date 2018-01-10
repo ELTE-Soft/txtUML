@@ -15,17 +15,17 @@ public class SequenceFragmentIF extends SequenceBase {
 	public void run() {
 		if (condition) {
 			API.send(new TestSig(), a);
-			Action.send(a, new TestSig(), b);
-			Action.send(b, new TestSig(), c);
-			Action.send(c, new TestSig(), b);
-			Action.send(b, new TestSig(), a);
+			Action.send(new TestSig(), b, a);
+			Action.send(new TestSig(), c, b);
+			Action.send(new TestSig(), b, c);
+			Action.send(new TestSig(), a, b);
 		} else {
 			API.send(new TestSig(), b);
-			Action.send(a, new TestSig(), b);
-			Action.send(c, new TestSig(), b);
-			Action.send(b, new TestSig(), a);
-			Action.send(a, new TestSig(), b);
-			Action.send(b, new TestSig(), c);
+			Action.send(new TestSig(), b, a);
+			Action.send(new TestSig(), b, c);
+			Action.send(new TestSig(), a, b);
+			Action.send(new TestSig(), b, a);
+			Action.send(new TestSig(), c, b);
 		}
 
 	}

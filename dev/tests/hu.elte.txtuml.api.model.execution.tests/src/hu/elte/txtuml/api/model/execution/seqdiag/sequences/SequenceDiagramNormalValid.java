@@ -12,8 +12,8 @@ public class SequenceDiagramNormalValid extends SequenceBase {
 	@ExecutionMode(ExecMode.NORMAL)
 	public void run() {
 		API.send(new TestSig(), a);
-		Action.send(a, new TestSig(), b);
-		Action.send(b, new TestSig(), a);
+		Action.send(new TestSig(), b, a);
+		Action.send(new TestSig(), a, b);
 	}
 
 }
