@@ -3,8 +3,7 @@ package hu.elte.txtuml.api.model.seqdiag;
 import hu.elte.txtuml.api.model.ExternalBody;
 import hu.elte.txtuml.api.model.ModelClass;
 import hu.elte.txtuml.api.model.Signal;
-import hu.elte.txtuml.api.model.impl.seqdiag.SeqDiagExecutorThread;
-import hu.elte.txtuml.api.model.impl.seqdiag.SeqDiagRuntime;
+import hu.elte.txtuml.api.model.impl.SeqDiagExecutorThread;
 
 public abstract class Action extends hu.elte.txtuml.api.model.Action {
 
@@ -15,10 +14,13 @@ public abstract class Action extends hu.elte.txtuml.api.model.Action {
 	protected Action() {
 	}
 
+	/**
+	 * Tells the sequence diagram executor that the given signal has to be sent
+	 * to the given target from the given sender.
+	 */
 	@ExternalBody
 	public static void send(Signal signal, ModelClass target, ModelClass sender) {
-		SeqDiagRuntime runtime = SeqDiagExecutorThread.current().getSeqDiagRuntime();
-		runtime.getCurrentInteraction().storeMessage(signal, target, sender);
+		SeqDiagExecutorThread.current().getSeqDiagRuntime().storeMessage(signal, target, sender);
 	}
 
 	/**
@@ -66,22 +68,14 @@ public abstract class Action extends hu.elte.txtuml.api.model.Action {
 	 */
 	@ExternalBody
 	public static void startFragment(CombinedFragmentType type, String fragmentName) {
-		SeqDiagRuntime runtime = SeqDiagExecutorThread.current().getSeqDiagRuntime();
-		runtime.setFragmentMode(type);
-		if (fragmentName == null) {
-			fragmentName = "UnnamedFragment";
-		}
-		runtime.getCurrentInteraction().storeFragment(type, fragmentName);
+		SeqDiagExecutorThread.current().getSeqDiagRuntime().storeFragment(type, fragmentName);
 	}
 
 	/**
 	 * Used to mark the end of in-line fragments.
 	 */
 	@ExternalBody
-	public static void endFragment() {		
-		SeqDiagRuntime runtime = SeqDiagExecutorThread.current().getSeqDiagRuntime();
-		runtime.fragmentModeEnded();
-
-		runtime.getCurrentInteraction().endFragment();
+	public static void endFragment() {
+		SeqDiagExecutorThread.current().getSeqDiagRuntime().endFragment();
 	}
 }

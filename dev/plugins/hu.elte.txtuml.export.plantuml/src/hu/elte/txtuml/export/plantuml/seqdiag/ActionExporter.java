@@ -11,7 +11,7 @@ import hu.elte.txtuml.export.plantuml.generator.PlantUmlCompiler;
  * @author Zoli
  *
  *         Currently responsible for exporting the message sending from the
- *         SequenceDiagrams( {@code API.send() } and {@code Action.send() }})
+ *         SequenceDiagrams( {@code Actor.send() } and {@code Action.send() }})
  * @Todo lifeline activation,deactivation, deletion, creation
  *
  */
@@ -26,7 +26,7 @@ public class ActionExporter extends MethodInvocationExporter {
 		if (super.validElement(curElement)) {
 			String fullName = PlantUmlCompiler.getFullyQualifiedName((MethodInvocation) curElement);
 			if (fullName.equals("hu.elte.txtuml.api.model.seqdiag.Action.send")
-					|| fullName.equals("hu.elte.txtuml.api.model.seqdiag.API.send")) {
+					|| fullName.equals("hu.elte.txtuml.api.model.seqdiag.Actor.send")) {
 				return true;
 			}
 		}

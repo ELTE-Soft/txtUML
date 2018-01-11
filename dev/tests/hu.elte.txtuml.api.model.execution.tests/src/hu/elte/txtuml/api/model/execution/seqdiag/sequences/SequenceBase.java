@@ -5,10 +5,12 @@ import hu.elte.txtuml.api.model.execution.testmodel.seqdiag.AToB;
 import hu.elte.txtuml.api.model.execution.testmodel.seqdiag.B;
 import hu.elte.txtuml.api.model.execution.testmodel.seqdiag.BToC;
 import hu.elte.txtuml.api.model.execution.testmodel.seqdiag.C;
+import hu.elte.txtuml.api.model.impl.SequenceDiagramRelated;
 import hu.elte.txtuml.api.model.seqdiag.Action;
 import hu.elte.txtuml.api.model.seqdiag.Interaction;
 import hu.elte.txtuml.api.model.seqdiag.Position;
 
+@SequenceDiagramRelated
 public abstract class SequenceBase extends Interaction {
 
 	@Position(1)
