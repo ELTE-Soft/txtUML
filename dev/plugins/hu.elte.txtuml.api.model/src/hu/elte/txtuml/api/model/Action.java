@@ -328,11 +328,7 @@ public abstract class Action {
 	public static void send(Signal signal, ModelClass target, ModelClass sender) {
 		ExecutorThread.current().requireOwned(sender);
 
-		if (sender != null) {
-			sender.runtime().didSend(signal);
-		}
-
-		API.send(signal, target);
+		target.runtime().receiveLater(signal, sender);
 	}
 
 	/**

@@ -2,6 +2,7 @@ package hu.elte.txtuml.api.model.execution.impl.base;
 
 import java.util.function.Consumer;
 
+import hu.elte.txtuml.api.model.ModelClass;
 import hu.elte.txtuml.api.model.Signal;
 import hu.elte.txtuml.api.model.execution.CheckLevel;
 import hu.elte.txtuml.api.model.execution.ErrorListener;
@@ -45,35 +46,37 @@ public abstract class AbstractSignalTargetRuntime<W> extends WrapperImpl<W> impl
 	protected void warning(Consumer<WarningListener> warningReporter) {
 		getModelRuntime().warning(warningReporter);
 	}
-	
+
 	/**
 	 * The model executor thread that runs this object.
 	 */
 	@Override
 	public abstract AbstractExecutorThread getThread();
 
-	/**
-	 * This target receives the specified signal. If the signal goes through a
-	 * chain of ports, {@code sender} is last port in that chain before this
-	 * target; otherwise it is {@code null}.
-	 * <p>
-	 * This method is <b>not</b> thread-safe. Should only be called from the
-	 * owner thread.
-	 */
-	public abstract void receive(Signal signal, AbstractPortRuntime sender);
-
 	@Override
 	public void receiveLater(Signal signal) {
-		receiveLater(signal, null);
+		receiveLater(SignalWrapper.of(signal));
+	}
+
+	@Override
+	public void receiveLater(Signal signal, ModelClass sender) {
+		receiveLater(SignalWrapper.of(signal, sender));
 	}
 
 	/**
 	 * Asynchronously sends the given signal to this target from the specified
-	 * sender. If the signal goes through a chain of ports, {@code sender} is
-	 * last port in that chain before this target; otherwise it is {@code null}.
+	 * sender.
 	 * <p>
 	 * Thread-safe.
 	 */
-	public abstract void receiveLater(Signal signal, AbstractPortRuntime sender);
+	public abstract void receiveLater(SignalWrapper signal);
+
+	/**
+	 * This target receives the specified signal.
+	 * <p>
+	 * This method is <b>not</b> thread-safe. Should only be called from the
+	 * owner thread.
+	 */
+	public abstract void receive(SignalWrapper signal);
 
 }

@@ -1,5 +1,7 @@
 package hu.elte.txtuml.api.model.execution.unittests;
 
+import java.util.Optional;
+
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -34,25 +36,25 @@ public class ShutdownTests extends UnitTestsBase {
 		assertEvents(x -> {
 			x.executionStarted();
 			transition(x, a, a.new Initialize());
-			x.processingSignal(a, new Sig0());
+			x.processingSignal(a, new Sig0(), Optional.empty());
 			transition(x, a, a.new S1_S2());
-			x.processingSignal(a, new Sig0());
+			x.processingSignal(a, new Sig0(), Optional.empty());
 			transition(x, a, a.new S2_S1());
-			x.processingSignal(a, new Sig0());
+			x.processingSignal(a, new Sig0(), Optional.empty());
 			transition(x, a, a.new S1_S2());
-			x.processingSignal(a, new Sig0());
+			x.processingSignal(a, new Sig0(), Optional.empty());
 			transition(x, a, a.new S2_S1());
-			x.processingSignal(a, new Sig0());
+			x.processingSignal(a, new Sig0(), Optional.empty());
 			transition(x, a, a.new S1_S2());
-			x.processingSignal(a, new Sig0());
+			x.processingSignal(a, new Sig0(), Optional.empty());
 			transition(x, a, a.new S2_S1());
-			x.processingSignal(a, new Sig0());
+			x.processingSignal(a, new Sig0(), Optional.empty());
 			transition(x, a, a.new S1_S2());
-			x.processingSignal(a, new Sig0());
+			x.processingSignal(a, new Sig0(), Optional.empty());
 			transition(x, a, a.new S2_S1());
-			x.processingSignal(a, new Sig0());
+			x.processingSignal(a, new Sig0(), Optional.empty());
 			transition(x, a, a.new S1_S2());
-			x.processingSignal(a, new Sig0());
+			x.processingSignal(a, new Sig0(), Optional.empty());
 			transition(x, a, a.new S2_S1());
 			x.executionTerminated();
 		});

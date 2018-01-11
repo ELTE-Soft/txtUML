@@ -2,7 +2,6 @@ package hu.elte.txtuml.api.model.execution.impl.base;
 
 import hu.elte.txtuml.api.model.ModelClass.Port;
 import hu.elte.txtuml.api.model.impl.PortRuntime;
-import hu.elte.txtuml.api.model.Signal;
 
 /**
  * Abstract base class for {@link PortRuntime} implementations.
@@ -17,8 +16,8 @@ public abstract class AbstractPortRuntime extends AbstractSignalTargetRuntime<Po
 	}
 
 	@Override
-	public void receiveLater(Signal signal, AbstractPortRuntime sender) {
-		getThread().receiveLater(signal, this, sender);
+	public void receiveLater(SignalWrapper signal) {
+		getThread().receiveLater(signal, this);
 	}
 
 	@Override
@@ -42,12 +41,12 @@ public abstract class AbstractPortRuntime extends AbstractSignalTargetRuntime<Po
 	 * Sends the given signal to the given target unless target is null. In the
 	 * latter case, a runtime warning is shown about a lost signal at this port.
 	 */
-	protected void tryToSend(Signal signal, AbstractSignalTargetRuntime<?> target) {
+	protected void tryToSend(SignalWrapper signal, AbstractSignalTargetRuntime<?> target) {
 		if (target != null) {
-			target.receiveLater(signal, this);
+			target.receiveLater(SignalWrapper.viaPort(signal, this));
 			return;
 		}
-		warning(x -> x.lostSignalAtPort(signal, getWrapped()));
+		warning(x -> x.lostSignalAtPort(signal.getWrapped(), getWrapped()));
 	}
 
 	/**
@@ -73,8 +72,5 @@ public abstract class AbstractPortRuntime extends AbstractSignalTargetRuntime<Po
 	 * inside the owner class.
 	 */
 	public abstract void setInnerConnection(AbstractSignalTargetRuntime<?> other);
-
-	@Override
-	public abstract void receive(Signal signal, AbstractPortRuntime sender);
 
 }

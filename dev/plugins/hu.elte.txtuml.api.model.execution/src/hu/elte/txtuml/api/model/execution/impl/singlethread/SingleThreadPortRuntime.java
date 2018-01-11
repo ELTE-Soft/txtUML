@@ -1,10 +1,10 @@
 package hu.elte.txtuml.api.model.execution.impl.singlethread;
 
 import hu.elte.txtuml.api.model.ModelClass.Port;
-import hu.elte.txtuml.api.model.Signal;
 import hu.elte.txtuml.api.model.execution.impl.base.AbstractModelClassRuntime;
 import hu.elte.txtuml.api.model.execution.impl.base.AbstractPortRuntime;
 import hu.elte.txtuml.api.model.execution.impl.base.AbstractSignalTargetRuntime;
+import hu.elte.txtuml.api.model.execution.impl.base.SignalWrapper;
 
 /**
  * A {@link hu.elte.txtuml.api.model.impl.PortRuntime} implementation for model
@@ -41,8 +41,8 @@ public class SingleThreadPortRuntime extends AbstractPortRuntime {
 	}
 
 	@Override
-	public void receive(Signal signal, AbstractPortRuntime sender) {
-		if (sender == outer) {
+	public void receive(SignalWrapper signal) {
+		if (signal.getPortOrNull() == outer) {
 			tryToSend(signal, inner);
 		} else {
 			tryToSend(signal, outer);

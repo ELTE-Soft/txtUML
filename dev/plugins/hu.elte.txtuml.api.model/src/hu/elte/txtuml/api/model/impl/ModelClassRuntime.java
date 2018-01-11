@@ -4,12 +4,12 @@ import hu.elte.txtuml.api.model.Action;
 import hu.elte.txtuml.api.model.AssociationEnd;
 import hu.elte.txtuml.api.model.AssociationEnd.Navigable;
 import hu.elte.txtuml.api.model.GeneralCollection;
+import hu.elte.txtuml.api.model.ImplRelated;
 import hu.elte.txtuml.api.model.ModelClass;
 import hu.elte.txtuml.api.model.ModelClass.Port;
 import hu.elte.txtuml.api.model.ModelClass.Status;
-import hu.elte.txtuml.api.model.error.LowerBoundError;
 import hu.elte.txtuml.api.model.Signal;
-import hu.elte.txtuml.api.model.ImplRelated;
+import hu.elte.txtuml.api.model.error.LowerBoundError;
 
 /**
  * Wraps a model class instance, providing additional runtime information and
@@ -58,13 +58,6 @@ public interface ModelClassRuntime extends SignalTargetRuntime<ModelClass>, Impl
 	 * Called by {@link Action#delete(ModelClass)}.
 	 */
 	void delete();
-
-	/**
-	 * The object asynchronously sent a signal.
-	 * <p>
-	 * Thread-safe.
-	 */
-	void didSend(Signal signal);
 
 	<T extends ModelClass, C extends GeneralCollection<T>, AE extends AssociationEnd<C> & Navigable> C navigateThroughAssociation(
 			Class<AE> otherEnd) throws LowerBoundError;

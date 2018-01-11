@@ -135,8 +135,8 @@ public abstract class AbstractExecutorThread extends Thread implements ExecutorT
 				}
 			}
 		} catch (Error e) {
-			Logger.sys.fatal("Error thrown on a model executor thread (id: " + getIdentifier()
-					+ "). The thread now stops.", e);
+			Logger.sys.fatal(
+					"Error thrown on a model executor thread (id: " + getIdentifier() + "). The thread now stops.", e);
 		}
 	}
 
@@ -199,24 +199,18 @@ public abstract class AbstractExecutorThread extends Thread implements ExecutorT
 
 	/**
 	 * Adds a new entry to this thread's mailbox to send the given signal to the
-	 * given target port. If the signal goes through a chain of ports,
-	 * {@code sender} is last port in that chain before this target; otherwise
-	 * it is {@code null}.
+	 * given target object.
 	 * <p>
 	 * Thread-safe.
 	 */
-	public abstract void receiveLater(Signal signal, AbstractPortRuntime target, AbstractPortRuntime sender);
+	public abstract void receiveLater(SignalWrapper signal, AbstractPortRuntime target);
 
 	/**
 	 * Adds a new entry to this thread's mailbox to send the given signal to the
-	 * given target object. If the signal goes through a chain of ports,
-	 * {@code sender} is last port in that chain before this target; otherwise
-	 * it is {@code null}.
+	 * given target object.
 	 * <p>
 	 * Thread-safe.
 	 */
-	public abstract void receiveLater(Signal signal, AbstractModelClassRuntime target, AbstractPortRuntime sender);
-
-	public abstract void didSend(Signal signal, AbstractModelClassRuntime sender);
+	public abstract void receiveLater(SignalWrapper signal, AbstractModelClassRuntime target);
 
 }

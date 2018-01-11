@@ -16,12 +16,13 @@ import hu.elte.txtuml.api.model.ModelClass;
 import hu.elte.txtuml.api.model.ModelClass.Port;
 import hu.elte.txtuml.api.model.ModelClass.Status;
 import hu.elte.txtuml.api.model.execution.CheckLevel;
-import hu.elte.txtuml.api.model.execution.impl.assoc.AssociationEndWrapper;
+import hu.elte.txtuml.api.model.execution.impl.assoc.AssociationEndRuntime;
 import hu.elte.txtuml.api.model.execution.impl.assoc.AssociationsMap;
 import hu.elte.txtuml.api.model.execution.impl.assoc.MultipleContainerException;
 import hu.elte.txtuml.api.model.execution.impl.assoc.MultiplicityException;
 import hu.elte.txtuml.api.model.execution.impl.base.AbstractExecutorThread;
 import hu.elte.txtuml.api.model.execution.impl.base.AbstractModelClassRuntime;
+import hu.elte.txtuml.api.model.execution.impl.base.SignalWrapper;
 import hu.elte.txtuml.utils.InstanceCreator;
 
 /**
@@ -60,7 +61,7 @@ public class SingleThreadModelClassRuntime extends AbstractModelClassRuntime {
 
 		setStatus(Status.ACTIVE);
 
-		process(null, null);
+		process(SignalWrapper.of(null));
 	}
 
 	@Override
@@ -87,7 +88,7 @@ public class SingleThreadModelClassRuntime extends AbstractModelClassRuntime {
 			return true;
 		}
 
-		for (AssociationEndWrapper<?, ?> assocEnd : this.associations.values()) {
+		for (AssociationEndRuntime<?, ?> assocEnd : this.associations.values()) {
 			if (!assocEnd.isEmpty()) {
 				return false;
 			}
@@ -120,11 +121,11 @@ public class SingleThreadModelClassRuntime extends AbstractModelClassRuntime {
 	}
 
 	@Override
-	public <T extends ModelClass, C extends GeneralCollection<T>> AssociationEndWrapper<T, C> getAssoc(
+	public <T extends ModelClass, C extends GeneralCollection<T>> AssociationEndRuntime<T, C> getAssoc(
 			Class<? extends AssociationEnd<C>> otherEnd) {
-		AssociationEndWrapper<T, C> ret = associations.getEnd(otherEnd);
+		AssociationEndRuntime<T, C> ret = associations.getEnd(otherEnd);
 		if (ret == null) {
-			ret = AssociationEndWrapper.create(otherEnd);
+			ret = AssociationEndRuntime.create(otherEnd);
 			associations.putEnd(otherEnd, ret);
 		}
 		return ret;
@@ -134,7 +135,7 @@ public class SingleThreadModelClassRuntime extends AbstractModelClassRuntime {
 	public <T extends ModelClass, C extends GeneralCollection<T>> boolean hasAssoc(
 			Class<? extends AssociationEnd<C>> otherEnd, T object) {
 
-		AssociationEndWrapper<T, ?> actualOtherEnd = associations.getEnd(otherEnd);
+		AssociationEndRuntime<T, ?> actualOtherEnd = associations.getEnd(otherEnd);
 		return actualOtherEnd == null ? false : actualOtherEnd.getCollection().contains(object);
 	}
 
@@ -143,7 +144,7 @@ public class SingleThreadModelClassRuntime extends AbstractModelClassRuntime {
 			Class<? extends AssociationEnd<C>> otherEnd, T object)
 			throws MultiplicityException, MultipleContainerException {
 		containerCheck(otherEnd);
-		AssociationEndWrapper<T, ?> assocEnd = getAssoc(otherEnd);
+		AssociationEndRuntime<T, ?> assocEnd = getAssoc(otherEnd);
 		assocEnd.add(object);
 	}
 
@@ -151,7 +152,7 @@ public class SingleThreadModelClassRuntime extends AbstractModelClassRuntime {
 	public <T extends ModelClass, C extends GeneralCollection<T>> void removeFromAssoc(
 			Class<? extends AssociationEnd<C>> otherEnd, T object) {
 
-		AssociationEndWrapper<T, C> assocEnd = getAssoc(otherEnd);
+		AssociationEndRuntime<T, C> assocEnd = getAssoc(otherEnd);
 		assocEnd.remove(object);
 
 		if (getModelRuntime().getCheckLevel().isAtLeast(CheckLevel.OPTIONAL) && !assocEnd.checkLowerBound()) {
@@ -167,7 +168,7 @@ public class SingleThreadModelClassRuntime extends AbstractModelClassRuntime {
 	private <T extends ModelClass, C extends GeneralCollection<T>, AE extends AssociationEnd<C>> void containerCheck(
 			Class<AE> otherEnd) throws MultipleContainerException {
 		if (Container.class.isAssignableFrom(otherEnd)) {
-			for (Entry<Class<? extends AssociationEnd<?>>, AssociationEndWrapper<?, ?>> entry : associations
+			for (Entry<Class<? extends AssociationEnd<?>>, AssociationEndRuntime<?, ?>> entry : associations
 					.entrySet()) {
 				if (Container.class.isAssignableFrom(entry.getKey()) && !entry.getValue().isEmpty()) {
 					throw new MultipleContainerException();

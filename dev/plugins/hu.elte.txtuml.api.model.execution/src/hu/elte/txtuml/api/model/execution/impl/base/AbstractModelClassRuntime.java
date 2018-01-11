@@ -1,5 +1,7 @@
 package hu.elte.txtuml.api.model.execution.impl.base;
 
+import java.util.Optional;
+
 import hu.elte.txtuml.api.model.AssociationEnd;
 import hu.elte.txtuml.api.model.AssociationEnd.Navigable;
 import hu.elte.txtuml.api.model.GeneralCollection;
@@ -10,7 +12,7 @@ import hu.elte.txtuml.api.model.Signal;
 import hu.elte.txtuml.api.model.StateMachine.Transition;
 import hu.elte.txtuml.api.model.error.LowerBoundError;
 import hu.elte.txtuml.api.model.execution.CheckLevel;
-import hu.elte.txtuml.api.model.execution.impl.assoc.AssociationEndWrapper;
+import hu.elte.txtuml.api.model.execution.impl.assoc.AssociationEndRuntime;
 import hu.elte.txtuml.api.model.execution.impl.assoc.MultipleContainerException;
 import hu.elte.txtuml.api.model.execution.impl.assoc.MultiplicityException;
 import hu.elte.txtuml.api.model.execution.impl.sm.StateMachineParser;
@@ -111,22 +113,13 @@ public abstract class AbstractModelClassRuntime extends AbstractSignalTargetRunt
 	}
 
 	@Override
-	public void receive(Signal signal, AbstractPortRuntime sender) {
-		process(signal, sender == null ? null : sender.getWrapped());
+	public void receive(SignalWrapper signal) {
+		process(signal);
 	}
 
 	@Override
-	public void receiveLater(Signal signal, AbstractPortRuntime sender) {
-		getThread().receiveLater(signal, this, sender);
-	}
-
-	@Override
-	public void didSend(Signal signal) {
-		getThread().didSend(signal, this);
-	}
-
-	public void traceSender(Signal signal, AbstractModelClassRuntime sender) {
-		trace(x -> x.sendingSignal(sender.getWrapped(), signal));
+	public void receiveLater(SignalWrapper signal) {
+		getThread().receiveLater(signal, this);
 	}
 
 	/**
@@ -139,14 +132,12 @@ public abstract class AbstractModelClassRuntime extends AbstractSignalTargetRunt
 	 * Is <b>not</b> thread-safe. Should only be called from the owner thread.
 	 * 
 	 * @param signal
-	 *            the signal object to be processed
-	 * @param port
-	 *            the port through which the signal arrived (might be
-	 *            {@code null} in case the signal did not arrive through a port)
+	 *            the signal to be processed
 	 * @throws NullPointerException
 	 *             if {@code signal} is {@code null}
 	 */
-	protected void process(Signal signal, Port<?, ?> port) {
+	protected void process(SignalWrapper signalWrapper) {
+		Signal signal = signalWrapper.getWrapped();
 		getThread().setCurrentTriggeringSignal(signal);
 
 		Status currentStatus = getStatus();
@@ -157,10 +148,11 @@ public abstract class AbstractModelClassRuntime extends AbstractSignalTargetRunt
 			}
 		} else {
 			if (signal != null) {
-				trace(x -> x.processingSignal(getWrapped(), signal));
+				Optional<ModelClass> sender = Optional.ofNullable(signalWrapper.getSenderOrNull());
+				trace(x -> x.processingSignal(getWrapped(), signal, sender));
 			}
 
-			if (findAndExecuteTransition(signal, port)) {
+			if (findAndExecuteTransition(signal, signalWrapper.getRawPortOrNull())) {
 				callEntryAction();
 				return;
 			}
@@ -196,7 +188,7 @@ public abstract class AbstractModelClassRuntime extends AbstractSignalTargetRunt
 
 			for (TransitionWrapper transition : examined.getOutgoings()) {
 
-				if (transition.notApplicableTrigger(signal, port)) {
+				if (!transition.applicableTrigger(signal, port)) {
 					continue;
 				}
 
@@ -367,7 +359,8 @@ public abstract class AbstractModelClassRuntime extends AbstractSignalTargetRunt
 			// no entry action needs to be called: initial pseudostates have
 			// none
 
-			process(null, null); // step forward from initial pseudostate
+			process(SignalWrapper.of(null)); // step forward from initial
+												// pseudostate
 		}
 	}
 
@@ -381,7 +374,7 @@ public abstract class AbstractModelClassRuntime extends AbstractSignalTargetRunt
 	 * collection containing the objects in association with the wrapped
 	 * ModelClass instance and being on the specified opposite association end.
 	 */
-	public abstract <T extends ModelClass, C extends GeneralCollection<T>> AssociationEndWrapper<T, C> getAssoc(
+	public abstract <T extends ModelClass, C extends GeneralCollection<T>> AssociationEndRuntime<T, C> getAssoc(
 			Class<? extends AssociationEnd<C>> otherEnd);
 
 	/**

@@ -1,6 +1,7 @@
 package hu.elte.txtuml.api.model.execution.unittests;
 
 import java.util.Arrays;
+import java.util.Optional;
 
 import org.junit.Test;
 
@@ -32,13 +33,13 @@ public class StateMachineTests extends UnitTestsBase {
 		assertEvents(x -> {
 			x.executionStarted();
 			transition(x, choice, choice.new Initialize());
-			x.processingSignal(choice, new Sig0());
+			x.processingSignal(choice, new Sig0(), Optional.empty());
 			transition(x, choice, choice.new S1_C());
 			transition(x, choice, choice.new T1());
-			x.processingSignal(choice, new Sig0());
+			x.processingSignal(choice, new Sig0(), Optional.empty());
 			transition(x, choice, choice.new S1_C());
 			transition(x, choice, choice.new T2());
-			x.processingSignal(choice, new Sig0());
+			x.processingSignal(choice, new Sig0(), Optional.empty());
 			transition(x, choice, choice.new S1_C());
 			transition(x, choice, choice.new T3());
 			x.executionTerminated();
@@ -86,15 +87,15 @@ public class StateMachineTests extends UnitTestsBase {
 		assertEvents(x -> {
 			x.executionStarted();
 			transition(x, hierarchical, hierarchical.new Initialize());
-			x.processingSignal(hierarchical, new Sig0());
+			x.processingSignal(hierarchical, new Sig0(), Optional.empty());
 			transition(x, hierarchical, hierarchical.new S1_CS1());
 			x.enteringVertex(hierarchical, cs1.new Init());
 			transition(x, hierarchical, cs1, cs1.new Initialize());
-			x.processingSignal(hierarchical, new Sig0());
+			x.processingSignal(hierarchical, new Sig0(), Optional.empty());
 			transition(x, hierarchical, cs1, cs1.new S2_CS2());
 			x.enteringVertex(hierarchical, cs2.new Init());
 			transition(x, hierarchical, cs2, cs2.new Initialize());
-			x.processingSignal(hierarchical, new Sig1());
+			x.processingSignal(hierarchical, new Sig1(), Optional.empty());
 			x.leavingVertex(hierarchical, cs2.new S3());
 			x.leavingVertex(hierarchical, cs2);
 			transition(x, hierarchical, hierarchical.new CS1_S1());
@@ -139,13 +140,13 @@ public class StateMachineTests extends UnitTestsBase {
 		assertEvents(x -> {
 			x.executionStarted();
 			transition(x, b, b.new Initialize());
-			x.processingSignal(b, new Sig3());
+			x.processingSignal(b, new Sig3(), Optional.empty());
 			transition(x, b, b.new T3());
-			x.processingSignal(b, new Sig3());
+			x.processingSignal(b, new Sig3(), Optional.empty());
 			transition(x, b, b.new T4());
-			x.processingSignal(b, new Sig3());
+			x.processingSignal(b, new Sig3(), Optional.empty());
 			transition(x, b, b.new T3());
-			x.processingSignal(b, new Sig3());
+			x.processingSignal(b, new Sig3(), Optional.empty());
 			transition(x, b, b.new T4());
 			x.executionTerminated();
 		});
@@ -169,17 +170,17 @@ public class StateMachineTests extends UnitTestsBase {
 		assertEvents(x -> {
 			x.executionStarted();
 			transition(x, b, b.new Initialize());
-			x.processingSignal(b, new Sig1());
+			x.processingSignal(b, new Sig1(), Optional.empty());
 			transition(x, b, b.new T1());
-			x.processingSignal(b, new Sig2());
+			x.processingSignal(b, new Sig2(), Optional.empty());
 			transition(x, b, b.new T2());
-			x.processingSignal(b, new Sig1());
+			x.processingSignal(b, new Sig1(), Optional.empty());
 			transition(x, b, b.new T1());
-			x.processingSignal(b, new Sig1());
+			x.processingSignal(b, new Sig1(), Optional.empty());
 			transition(x, b, b.new T1());
-			x.processingSignal(b, new Sig1());
+			x.processingSignal(b, new Sig1(), Optional.empty());
 			transition(x, b, b.new T1());
-			x.processingSignal(b, new Sig2());
+			x.processingSignal(b, new Sig2(), Optional.empty());
 			transition(x, b, b.new T2());
 			x.executionTerminated();
 		});

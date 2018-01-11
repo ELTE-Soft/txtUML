@@ -7,20 +7,20 @@ import hu.elte.txtuml.api.model.GeneralCollection;
 import hu.elte.txtuml.api.model.ModelClass;
 
 @SuppressWarnings("serial")
-public class AssociationsMap extends HashMap<Class<? extends AssociationEnd<?>>, AssociationEndWrapper<?, ?>> {
+public class AssociationsMap extends HashMap<Class<? extends AssociationEnd<?>>, AssociationEndRuntime<?, ?>> {
 
 	public static AssociationsMap create() {
 		return new AssociationsMap();
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T extends ModelClass, C extends GeneralCollection<T>> AssociationEndWrapper<T, C> getEnd(
+	public <T extends ModelClass, C extends GeneralCollection<T>> AssociationEndRuntime<T, C> getEnd(
 			Class<? extends AssociationEnd<C>> otherEnd) {
-		return (AssociationEndWrapper<T, C>) super.get(otherEnd);
+		return (AssociationEndRuntime<T, C>) super.get(otherEnd);
 	}
 
 	public <T extends ModelClass, C extends GeneralCollection<T>> void putEnd(
-			Class<? extends AssociationEnd<C>> otherEnd, AssociationEndWrapper<T, C> wrapper) {
+			Class<? extends AssociationEnd<C>> otherEnd, AssociationEndRuntime<T, C> wrapper) {
 		super.put(otherEnd, wrapper);
 	}
 

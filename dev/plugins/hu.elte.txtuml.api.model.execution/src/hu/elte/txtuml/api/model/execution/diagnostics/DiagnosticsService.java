@@ -7,6 +7,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.util.Optional;
 import java.util.Random;
 
 import hu.elte.txtuml.api.model.ModelClass;
@@ -80,27 +81,27 @@ public class DiagnosticsService extends NotifierOfTermination implements TraceLi
 	}
 
 	@Override
-	public void processingSignal(ModelClass object, Signal signal) {
-		sendNewModelEvent(MessageType.PROCESSING_SIGNAL, object.getClass().getCanonicalName(),
-				getIdentifierOf(object), signal.getClass().getCanonicalName());
+	public void processingSignal(ModelClass object, Signal signal, Optional<ModelClass> sender) {
+		sendNewModelEvent(MessageType.PROCESSING_SIGNAL, object.getClass().getCanonicalName(), getIdentifierOf(object),
+				signal.getClass().getCanonicalName());
 	}
 
 	@Override
 	public void usingTransition(ModelClass object, Transition transition) {
-		sendNewModelEvent(MessageType.USING_TRANSITION, object.getClass().getCanonicalName(),
-				getIdentifierOf(object), transition.getClass().getCanonicalName());
+		sendNewModelEvent(MessageType.USING_TRANSITION, object.getClass().getCanonicalName(), getIdentifierOf(object),
+				transition.getClass().getCanonicalName());
 	}
 
 	@Override
 	public void enteringVertex(ModelClass object, Vertex vertex) {
-		sendNewModelEvent(MessageType.ENTERING_VERTEX, object.getClass().getCanonicalName(),
-				getIdentifierOf(object), vertex.getClass().getCanonicalName());
+		sendNewModelEvent(MessageType.ENTERING_VERTEX, object.getClass().getCanonicalName(), getIdentifierOf(object),
+				vertex.getClass().getCanonicalName());
 	}
 
 	@Override
 	public void leavingVertex(ModelClass object, Vertex vertex) {
-		sendNewModelEvent(MessageType.LEAVING_VERTEX, object.getClass().getCanonicalName(),
-				getIdentifierOf(object), vertex.getClass().getCanonicalName());
+		sendNewModelEvent(MessageType.LEAVING_VERTEX, object.getClass().getCanonicalName(), getIdentifierOf(object),
+				vertex.getClass().getCanonicalName());
 	}
 
 	private void sendNewModelEvent(MessageType type, String modelClassName, String modelClassInstanceID,

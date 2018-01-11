@@ -2,6 +2,7 @@ package hu.elte.txtuml.api.model.impl;
 
 import hu.elte.txtuml.api.model.Signal;
 import hu.elte.txtuml.api.model.ImplRelated;
+import hu.elte.txtuml.api.model.ModelClass;
 
 /**
  * Wraps a signal target which is either a model class instance or a port
@@ -19,5 +20,13 @@ public interface SignalTargetRuntime<T> extends ModelElementRuntime<T>, ImplRela
 	 * Thread-safe.
 	 */
 	void receiveLater(Signal signal);
+
+	/**
+	 * Asynchronously sends a signal to this object from the given sender.
+	 * (Currently only used for {@linkplain ModelClass} targets, not for ports.)
+	 * <p>
+	 * Thread-safe.
+	 */
+	void receiveLater(Signal signal, ModelClass sender);
 
 }

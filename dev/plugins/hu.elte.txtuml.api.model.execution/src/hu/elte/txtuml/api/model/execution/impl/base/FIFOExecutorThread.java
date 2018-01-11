@@ -2,8 +2,6 @@ package hu.elte.txtuml.api.model.execution.impl.base;
 
 import java.util.concurrent.LinkedBlockingQueue;
 
-import hu.elte.txtuml.api.model.Signal;
-
 /**
  * A model executor thread implementation which has a FIFO mailbox, processing
  * events in the order in which they were raised.
@@ -38,18 +36,13 @@ public class FIFOExecutorThread extends AbstractExecutorThread {
 	}
 
 	@Override
-	public void receiveLater(Signal signal, AbstractModelClassRuntime target, AbstractPortRuntime sender) {
-		addEntry(() -> target.receive(signal, sender));
+	public void receiveLater(SignalWrapper signal, AbstractModelClassRuntime target) {
+		addEntry(() -> target.receive(signal));
 	}
 
 	@Override
-	public void receiveLater(Signal signal, AbstractPortRuntime target, AbstractPortRuntime sender) {
-		addEntry(() -> target.receive(signal, sender));
-	}
-
-	@Override
-	public void didSend(Signal signal, AbstractModelClassRuntime sender) {
-		addEntry(() -> sender.traceSender(signal, sender));
+	public void receiveLater(SignalWrapper signal, AbstractPortRuntime target) {
+		addEntry(() -> target.receive(signal));
 	}
 
 	/**
