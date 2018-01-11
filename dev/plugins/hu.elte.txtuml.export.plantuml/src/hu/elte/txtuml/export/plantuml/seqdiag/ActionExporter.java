@@ -7,12 +7,10 @@ import org.eclipse.jdt.core.dom.MethodInvocation;
 import hu.elte.txtuml.export.plantuml.generator.PlantUmlCompiler;
 
 /**
+ * Currently responsible for exporting the message sending from the
+ * SequenceDiagrams( {@code Actor.send() } and {@code Action.send() }})
  * 
- * @author Zoli
- *
- *         Currently responsible for exporting the message sending from the
- *         SequenceDiagrams( {@code Actor.send() } and {@code Action.send() }})
- * @Todo lifeline activation,deactivation, deletion, creation
+ * @todo lifeline activation,deactivation, deletion, creation
  *
  */
 public class ActionExporter extends MethodInvocationExporter {

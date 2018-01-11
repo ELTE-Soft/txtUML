@@ -10,14 +10,8 @@ import org.eclipse.jdt.core.dom.SingleMemberAnnotation;
 import hu.elte.txtuml.export.plantuml.generator.PlantUmlCompiler;
 
 /**
- * 
- * 
- * 
  * Responsible for exporting the {@link ModelClass} lifelines from the
  * SequenceDiagram
- * 
- * @author Zoli
- *
  */
 public class LifelineExporter extends BaseSeqdiagExporter<FieldDeclaration> {
 

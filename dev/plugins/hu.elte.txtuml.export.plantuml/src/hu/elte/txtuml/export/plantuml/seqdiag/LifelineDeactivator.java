@@ -8,8 +8,6 @@ import hu.elte.txtuml.export.plantuml.generator.PlantUmlCompiler;
 
 /**
  * Class responsible for deactivating all remaining active lifelines
- * @author Zoli
- *
  */
 public class LifelineDeactivator extends BaseSeqdiagExporter<Block> {
 
