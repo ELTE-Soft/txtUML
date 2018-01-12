@@ -2,6 +2,7 @@
 #include "ESRoot/Types.hpp"
 #include "InterfaceUtils.hpp"
 #include <iostream>
+#include <assert.h>
 #ifndef PORT_HPP
 #define PORT_HPP
 
@@ -37,11 +38,11 @@ public:
 	template <typename RequiredInf1, typename ProvidedInf1>
 	friend struct AssemblyConnection;
 
-	void setAssemblyConnectedPort (ES::SharedPtr<IPort<RequiredInf,ProvidedInf>> connectedPort_);
-	void setDelgationConnectedPort (ES::SharedPtr<Port<ProvidedInf,RequiredInf>> connectedPort_);
+	void setAssemblyConnectedPort (ES::IPortRef<RequiredInf, ProvidedInf> connectedPort_);
+	void setDelgationConnectedPort (ES::PortRef<ProvidedInf, RequiredInf> connectedPort_);
 
 protected:
-	IConnection * connectedPort;
+	ConnectionPtr connectedPort;
 };
 
 template <typename ProvidedInf, typename RequiredInf>
@@ -56,7 +57,7 @@ public:
 	friend class DelegationConnection;
 protected:
 	
-	ES::SharedPtr<IPort<ProvidedInf, RequiredInf>> connectionToInnerPort;
+	ES::IPortRef<ProvidedInf, RequiredInf> connectionToInnerPort;
 
 
 };
@@ -83,14 +84,14 @@ struct IConnection
 template <typename ProvidedInf, typename RequiredInf>
 struct AssemblyConnection : public IConnection
 {
-	AssemblyConnection (ES::SharedPtr<IPort<ProvidedInf, RequiredInf>> port_) : port(port_) {}
+	AssemblyConnection (ES::IPortRef<ProvidedInf, RequiredInf> port_) : port(port_) {}
 	virtual void fowardSendedMessageToConnectedPort (ES::EventRef signal)
 	{
 		port->reciveAny(signal);
 	}
 	
 private:
-	ES::SharedPtr<IPort<ProvidedInf,RequiredInf>> port;
+	ES::IPortRef<ProvidedInf, RequiredInf> port;
 };
 
 template <typename ProvidedInf, typename RequiredInf>
@@ -98,7 +99,7 @@ class DelegationConnection : public IConnection
 {
 public:
 
-	DelegationConnection (ES::SharedPtr<Port<ProvidedInf, RequiredInf>> port_) : port(port_) {}
+	DelegationConnection (ES::PortRef<ProvidedInf, RequiredInf> port_) : port(port_) {}
 
 	virtual void fowardSendedMessageToConnectedPort (ES::EventRef signal)
 	{
@@ -106,7 +107,7 @@ public:
 	}
 	
 private:
-	ES::SharedPtr<Port<ProvidedInf , RequiredInf>> port;
+	ES::PortRef<ProvidedInf, RequiredInf> port;
 };
 
 // TODO Handle create link actions uniformly
@@ -138,11 +139,15 @@ class BehaviorPortImpl : public BehaviorPort <ProvidedInf, RequiredInf>
     protected:
         virtual void sendAny (ES::EventRef signal)
         {
-			BehaviorPort <ProvidedInf, RequiredInf>::connectedPort->fowardSendedMessageToConnectedPort(signal);
+			assert(connectedPort != nullptr);
+			if (connectedPort != nullptr) {
+				BehaviorPort <ProvidedInf, RequiredInf>::connectedPort->fowardSendedMessageToConnectedPort(signal);
+			}
         }
 
         virtual void reciveAny (ES::EventRef signal)
         {
+			assert(owner != nullptr);
 			signal->setPortType(BehaviorPort <ProvidedInf, RequiredInf>::type);
 			BehaviorPort <ProvidedInf, RequiredInf>::owner->send(signal);
         }
@@ -161,7 +166,11 @@ public:
 protected:
 	virtual void sendAny(ES::EventRef signal)
 	{
-		Port <ProvidedInf, RequiredInf>::connectedPort->fowardSendedMessageToConnectedPort(signal);
+		assert(connectedPort != nullptr);
+		if (connectedPort != nullptr) {
+			Port <ProvidedInf, RequiredInf>::connectedPort->fowardSendedMessageToConnectedPort(signal);
+
+		}
 	}
 
 	virtual void reciveAny(ES::EventRef signal)
@@ -175,13 +184,13 @@ protected:
 };
 
 template <typename ProvidedInf, typename RequiredInf>
-void IPort<ProvidedInf,RequiredInf>::setAssemblyConnectedPort (ES::SharedPtr<IPort<RequiredInf,ProvidedInf> > connectedPort_) {
-	connectedPort = new AssemblyConnection<RequiredInf,ProvidedInf>(connectedPort_);
+void IPort<ProvidedInf,RequiredInf>::setAssemblyConnectedPort (ES::IPortRef<RequiredInf,ProvidedInf> connectedPort_) {
+	connectedPort = ConnectionPtr (new AssemblyConnection<RequiredInf,ProvidedInf>(connectedPort_));
 }
 
 template <typename ProvidedInf, typename RequiredInf>
-void IPort<ProvidedInf,RequiredInf>::setDelgationConnectedPort (ES::SharedPtr<Port<ProvidedInf,RequiredInf> > connectedPort_) {
-		connectedPort = new DelegationConnection<ProvidedInf,RequiredInf>(connectedPort_);
+void IPort<ProvidedInf,RequiredInf>::setDelgationConnectedPort (ES::PortRef<ProvidedInf, RequiredInf> connectedPort_) {
+		connectedPort = ConnectionPtr (new DelegationConnection<ProvidedInf,RequiredInf>(connectedPort_));
 }
 }
 

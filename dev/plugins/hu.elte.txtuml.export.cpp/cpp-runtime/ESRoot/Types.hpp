@@ -53,6 +53,9 @@ class Port;
 
 template <typename ProvidedInf, typename RequiredInf>
 class BehaviorPort;
+
+
+
 }
 
 
@@ -87,7 +90,12 @@ namespace ES
 
 	using TimerPtr = SharedPtr<Timer>;
 
+}
 
+namespace Model 
+{
+	struct IConnection;
+	using ConnectionPtr = ES::SharedPtr<Model::IConnection>;
 }
 
 #endif
