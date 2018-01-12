@@ -36,6 +36,7 @@ import org.eclipse.uml2.uml.Usage;
 
 import hu.elte.txtuml.export.cpp.activity.ActivityExporter;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames;
+import hu.elte.txtuml.export.cpp.templates.PrivateFunctionalTemplates;
 import hu.elte.txtuml.export.cpp.templates.activity.ActivityTemplates;
 import hu.elte.txtuml.utils.Pair;
 
@@ -243,7 +244,8 @@ public class CppExporterUtils {
 	
 	public static String getFirstGeneralClassName(Classifier cls) {
 		if (!cls.getGeneralizations().isEmpty()) {
-			return cls.getGeneralizations().get(0).getGeneral().getName();
+			String className = cls.getGeneralizations().get(0).getGeneral().getName();
+			return PrivateFunctionalTemplates.mapUMLClassToCppClass(className);
 		} else {
 			return GenerationNames.InterfaceNames.EmptyInfName;
 		}
@@ -261,7 +263,7 @@ public class CppExporterUtils {
 			if (infUsage.getSuppliers().isEmpty()) {
 				return GenerationNames.InterfaceNames.EmptyInfName;
 			}
-			return infUsage.getSuppliers().get(0).getName();
+			return PrivateFunctionalTemplates.mapUMLClassToCppClass(infUsage.getSuppliers().get(0).getName());
 		} else {
 			return GenerationNames.InterfaceNames.EmptyInfName;
 		}
