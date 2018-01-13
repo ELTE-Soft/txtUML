@@ -1,13 +1,6 @@
 package hu.elte.txtuml.api.model;
 
-import static java.util.Comparator.comparing;
-
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
-
+import hu.elte.txtuml.utils.BasedOnFields;
 import hu.elte.txtuml.utils.Logger;
 
 /**
@@ -99,61 +92,33 @@ public abstract class DataType {
 	@ExternalBody
 	@Override
 	public final boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (obj == null) {
+		try {
+			return BasedOnFields.equal(this, obj);
+		} catch (IllegalAccessException e) {
+			Logger.sys.fatal("Data type field cannot be accessed", e);
 			return false;
+			/*
+			 * It is ok to return false here because the only case in which we
+			 * must return true is when this == obj. In this case, however,
+			 * BasedOnFields.equal is guaranteed to return true.
+			 */
 		}
-		if (getClass() != obj.getClass()) {
-			return false;
-		}
-		for (Field[] array : getAllFields()) {
-			for (Field f : array) {
-				f.setAccessible(true);
-				try {
-					if (!Objects.equals(f.get(this), f.get(obj))) {
-						return false;
-					}
-				} catch (IllegalAccessException e) {
-					Logger.sys.fatal("Data type field cannot be accessed", e);
-				}
-			}
-		}
-		return true;
 	}
 
 	@External
 	@Override
 	public final int hashCode() {
-		final int prime = 1873;
-		int result = 1;
-		for (Field[] array : getAllFields()) {
-			Arrays.sort(array, comparing(Field::getName));
-			for (Field f : array) {
-				f.setAccessible(true);
-				try {
-					Object obj = f.get(this);
-					result = result * prime + Objects.hashCode(obj);
-				} catch (IllegalAccessException e) {
-					Logger.sys.fatal("Data type field cannot be accessed", e);
-				}
-			}
+		try {
+			return BasedOnFields.hashCode(this);
+		} catch (IllegalAccessException e) {
+			Logger.sys.fatal("Data type field cannot be accessed", e);
 		}
-		return result;
+		return 0;
 	}
 
 	@Override
 	public String toString() {
 		return "data_type:" + getClass().getSimpleName();
-	}
-
-	private final List<Field[]> getAllFields() {
-		List<Field[]> fields = new ArrayList<>();
-		for (Class<?> cls = getClass(); cls != DataType.class; cls = cls.getSuperclass()) {
-			fields.add(cls.getDeclaredFields());
-		}
-		return fields;
 	}
 
 }
