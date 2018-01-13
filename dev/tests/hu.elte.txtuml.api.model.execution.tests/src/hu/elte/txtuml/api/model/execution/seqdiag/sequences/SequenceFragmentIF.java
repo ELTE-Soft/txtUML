@@ -2,10 +2,9 @@ package hu.elte.txtuml.api.model.execution.seqdiag.sequences;
 
 import hu.elte.txtuml.api.model.execution.testmodel.seqdiag.TestSig;
 import hu.elte.txtuml.api.model.impl.SequenceDiagramRelated;
-import hu.elte.txtuml.api.model.seqdiag.Action;
-import hu.elte.txtuml.api.model.seqdiag.Actor;
 import hu.elte.txtuml.api.model.seqdiag.ExecMode;
 import hu.elte.txtuml.api.model.seqdiag.ExecutionMode;
+import hu.elte.txtuml.api.model.seqdiag.Sequence;
 
 @SequenceDiagramRelated
 public class SequenceFragmentIF extends SequenceBase {
@@ -16,18 +15,18 @@ public class SequenceFragmentIF extends SequenceBase {
 	@ExecutionMode(ExecMode.STRICT)
 	public void run() {
 		if (condition) {
-			Actor.send(new TestSig(), a);
-			Action.send(new TestSig(), b, a);
-			Action.send(new TestSig(), c, b);
-			Action.send(new TestSig(), b, c);
-			Action.send(new TestSig(), a, b);
+			Sequence.fromActor(new TestSig(), a);
+			Sequence.send(a, new TestSig(), b);
+			Sequence.send(b, new TestSig(), c);
+			Sequence.send(c, new TestSig(), b);
+			Sequence.send(b, new TestSig(), a);
 		} else {
-			Actor.send(new TestSig(), b);
-			Action.send(new TestSig(), b, a);
-			Action.send(new TestSig(), b, c);
-			Action.send(new TestSig(), a, b);
-			Action.send(new TestSig(), b, a);
-			Action.send(new TestSig(), c, b);
+			Sequence.fromActor(new TestSig(), b);
+			Sequence.send(a, new TestSig(), b);
+			Sequence.send(c, new TestSig(), b);
+			Sequence.send(b, new TestSig(), a);
+			Sequence.send(a, new TestSig(), b);
+			Sequence.send(b, new TestSig(), c);
 		}
 
 	}

@@ -7,16 +7,12 @@ import hu.elte.txtuml.api.model.seqdiag.ExecutionMode;
 import hu.elte.txtuml.api.model.seqdiag.Sequence;
 
 @SequenceDiagramRelated
-public class SequenceMessageSendingStrictErr1 extends SequenceBase {
+public class SequenceOnlyFromActorLenient extends SequenceBase {
 
 	@Override
-	@ExecutionMode(ExecMode.STRICT)
+	@ExecutionMode(ExecMode.LENIENT)
 	public void run() {
-		Sequence.send(a, new TestSig(), b);
 		Sequence.fromActor(new TestSig(), a);
-		Sequence.send(b, new TestSig(), c);
-		Sequence.send(c, new TestSig(), b);
-		Sequence.send(b, new TestSig(), a);
 	}
 
 }

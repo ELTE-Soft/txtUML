@@ -6,10 +6,11 @@ import org.junit.Test;
 import hu.elte.txtuml.api.model.execution.SequenceDiagramExecutor;
 import hu.elte.txtuml.api.model.execution.seqdiag.sequences.SequenceFragmentIF;
 import hu.elte.txtuml.api.model.execution.seqdiag.sequences.SequenceFragmentLoop;
+import hu.elte.txtuml.api.model.execution.seqdiag.sequences.SequencePar;
 import hu.elte.txtuml.api.model.impl.SequenceDiagramRelated;
 
 @SequenceDiagramRelated
-public class FragmentsTest {
+public class FragmentsTests {
 
 	@Test
 	public void testIFFragment() {
@@ -21,7 +22,7 @@ public class FragmentsTest {
 
 		SequenceDiagramExecutor executor = SequenceDiagramExecutor.create();
 
-		executor.setInteraction(diag).run();
+		executor.setDiagram(diag).run();
 
 		Assert.assertTrue(executor.getErrors().isEmpty());
 
@@ -32,10 +33,10 @@ public class FragmentsTest {
 		diag.condition = false;
 		executor = SequenceDiagramExecutor.create();
 
-		executor.setInteraction(diag).run();
+		executor.setDiagram(diag).run();
 
 		Assert.assertFalse(executor.getErrors().isEmpty());
-		Assert.assertEquals(1, executor.getErrors().size());
+		Assert.assertEquals(4, executor.getErrors().size());
 	}
 
 	@Test
@@ -45,8 +46,20 @@ public class FragmentsTest {
 
 		SequenceDiagramExecutor executor = SequenceDiagramExecutor.create();
 
-		executor.setInteraction(diag).run();
+		executor.setDiagram(diag).run();
 
 		Assert.assertTrue(executor.getErrors().isEmpty());
 	}
+
+	@Test
+	public void testParFragment() {
+		SequencePar diag = new SequencePar();
+
+		SequenceDiagramExecutor executor = SequenceDiagramExecutor.create();
+
+		executor.setDiagram(diag).run();
+
+		Assert.assertEquals(0, executor.getErrors().size());
+	}
+
 }
