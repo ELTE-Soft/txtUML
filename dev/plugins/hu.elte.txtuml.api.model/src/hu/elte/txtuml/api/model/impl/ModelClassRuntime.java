@@ -1,5 +1,6 @@
 package hu.elte.txtuml.api.model.impl;
 
+import hu.elte.txtuml.api.model.API;
 import hu.elte.txtuml.api.model.Action;
 import hu.elte.txtuml.api.model.AssociationEnd;
 import hu.elte.txtuml.api.model.AssociationEnd.Navigable;
@@ -58,6 +59,11 @@ public interface ModelClassRuntime extends SignalTargetRuntime<ModelClass>, Impl
 	 * Called by {@link Action#delete(ModelClass)}.
 	 */
 	void delete();
+
+	/**
+	 * Called by {@link API#send}.
+	  */
+	void receiveLaterViaAPI(Signal signal);
 
 	<T extends ModelClass, C extends GeneralCollection<T>, AE extends AssociationEnd<C> & Navigable> C navigateThroughAssociation(
 			Class<AE> otherEnd) throws LowerBoundError;

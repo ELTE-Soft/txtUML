@@ -37,11 +37,10 @@ import hu.elte.txtuml.utils.Logger;
  * Otherwise, the loop tries to continue working, even if it has been
  * interrupted while waiting for new events.
  */
-public abstract class AbstractExecutorThread extends Thread implements ExecutorThread, Runnable {
+public abstract class AbstractExecutorThread extends AbstractModelExecutor.OwnedThread<AbstractModelExecutor<?>> implements ExecutorThread, Runnable {
 
 	private static final AtomicLong count = new AtomicLong();
 
-	private final AbstractModelExecutor<?> modelExecutor;
 	private final AbstractModelRuntime<?, ?> runtime;
 	private final Runnable initialization;
 	private final long identifier;
@@ -56,8 +55,7 @@ public abstract class AbstractExecutorThread extends Thread implements ExecutorT
 
 	private AbstractExecutorThread(AbstractModelExecutor<?> modelExecutor, AbstractModelRuntime<?, ?> runtime,
 			Runnable initialization, long identifier) {
-		super("Model_thread-" + identifier);
-		this.modelExecutor = modelExecutor;
+		super("Model_thread-" + identifier, modelExecutor);
 		this.runtime = runtime;
 		this.initialization = initialization;
 		this.identifier = identifier;
@@ -100,19 +98,11 @@ public abstract class AbstractExecutorThread extends Thread implements ExecutorT
 	}
 
 	@Override
-	public synchronized void start() {
-		if (modelExecutor.registerThread(this)) {
-			super.start();
-		}
-	}
-
-	@Override
-	public void run() {
+	public void doRun() {
 		initialization.run();
 		runLoop();
-		modelExecutor.unregisterThread(this);
 	}
-
+	
 	/**
 	 * Runs the main loop of this thread until {@link #shouldContinue()} returns
 	 * false. Called from {@link run()} after running the initialization of this
@@ -154,7 +144,7 @@ public abstract class AbstractExecutorThread extends Thread implements ExecutorT
 	 * @see AbstractModelExecutor#shouldShutDownWhenNothingToDo()
 	 */
 	public boolean shouldContinue() {
-		if (modelExecutor.shouldShutDownImmediately() || (modelExecutor.shouldShutDownWhenNothingToDo() && isEmpty())) {
+		if (shouldShutDownImmediately() || (shouldShutDownWhenNothingToDo() && isEmpty())) {
 			return false;
 		}
 		return true;
@@ -190,14 +180,6 @@ public abstract class AbstractExecutorThread extends Thread implements ExecutorT
 	public abstract boolean isEmpty();
 
 	/**
-	 * If this thread is blocking because it called {@link #processNext} but it
-	 * is empty, a call of this method wakes the thread.
-	 * <p>
-	 * Thread-safe.
-	 */
-	public abstract void wake();
-
-	/**
 	 * Adds a new entry to this thread's mailbox to send the given signal to the
 	 * given target object.
 	 * <p>
@@ -213,4 +195,15 @@ public abstract class AbstractExecutorThread extends Thread implements ExecutorT
 	 */
 	public abstract void receiveLater(SignalWrapper signal, AbstractModelClassRuntime target);
 
+
+	/**
+	 * Adds a new entry to this thread's mailbox to send the given signal to the
+	 * given target object; the signal is known to have been sent via the API class.
+	 * <p>
+	 * Thread-safe.
+	 */
+	public void receiveLaterViaAPI(SignalWrapper signal, AbstractModelClassRuntime target) {
+		receiveLater(signal, target);
+	}
+	
 }

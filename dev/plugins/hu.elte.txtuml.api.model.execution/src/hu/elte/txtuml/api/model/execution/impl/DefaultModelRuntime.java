@@ -2,7 +2,6 @@ package hu.elte.txtuml.api.model.execution.impl;
 
 import hu.elte.txtuml.api.model.ModelClass;
 import hu.elte.txtuml.api.model.ModelClass.Port;
-import hu.elte.txtuml.api.model.execution.impl.base.AbstractExecutorThread;
 import hu.elte.txtuml.api.model.execution.impl.base.AbstractModelExecutor;
 import hu.elte.txtuml.api.model.execution.impl.base.FIFOExecutorThread;
 import hu.elte.txtuml.api.model.execution.impl.singlethread.SingleThreadModelClassRuntime;
@@ -24,7 +23,7 @@ public final class DefaultModelRuntime extends SingleThreadModelRuntime<SingleTh
 
 	@Override
 	public SingleThreadModelClassRuntime createModelClassRuntime(ModelClass object) {
-		return new SingleThreadModelClassRuntime(object, getThread());
+		return new SingleThreadModelClassRuntime(object, thread);
 	}
 
 	@Override
@@ -35,11 +34,6 @@ public final class DefaultModelRuntime extends SingleThreadModelRuntime<SingleTh
 	@Override
 	public void start() {
 		thread.start();
-	}
-
-	@Override
-	public AbstractExecutorThread getThread() {
-		return thread;
 	}
 
 }

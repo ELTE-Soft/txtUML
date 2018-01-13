@@ -304,7 +304,7 @@ public abstract class Action {
 	public static void send(Signal signal, ModelClass target) {
 		ExecutorThread.requirePresence();
 
-		API.send(signal, target);
+		target.runtime().receiveLater(signal);
 	}
 
 	/**

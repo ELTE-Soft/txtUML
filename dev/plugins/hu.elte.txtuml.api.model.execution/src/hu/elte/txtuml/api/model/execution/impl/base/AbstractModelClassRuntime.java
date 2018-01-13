@@ -121,6 +121,11 @@ public abstract class AbstractModelClassRuntime extends AbstractSignalTargetRunt
 	public void receiveLater(SignalWrapper signal) {
 		getThread().receiveLater(signal, this);
 	}
+	
+	@Override
+	public void receiveLaterViaAPI(Signal signal) {
+		getThread().receiveLaterViaAPI(SignalWrapper.of(signal), this);
+	}
 
 	/**
 	 * Processes a signal and changes to another state if necessary (possibly

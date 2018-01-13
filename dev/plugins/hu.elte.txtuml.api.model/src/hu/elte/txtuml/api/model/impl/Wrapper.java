@@ -31,18 +31,4 @@ public interface Wrapper<W> extends ImplRelated {
 		return (Class<W>) getWrapped().getClass();
 	}
 
-	/**
-	 * Returns a short string representation of the wrapped object.
-	 */
-	default String getStringRepresentation() {
-		return getWrapped().toString();
-	}
-
-	/**
-	 * A wrapper should have a custom string representation based on the wrapped
-	 * element.
-	 */
-	@Override
-	String toString();
-
 }

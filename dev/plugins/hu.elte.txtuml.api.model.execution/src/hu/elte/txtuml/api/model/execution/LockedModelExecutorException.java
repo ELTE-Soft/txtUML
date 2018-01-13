@@ -17,4 +17,8 @@ public class LockedModelExecutorException extends IllegalStateException {
 		super("The accessed model executor is locked. This method cannot be called.");
 	}
 
+	public LockedModelExecutorException(String message) {
+		super(message);
+	}
+
 }

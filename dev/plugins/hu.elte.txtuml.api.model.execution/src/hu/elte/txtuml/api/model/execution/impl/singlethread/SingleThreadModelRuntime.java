@@ -15,7 +15,6 @@ import hu.elte.txtuml.api.model.execution.TraceListener;
 import hu.elte.txtuml.api.model.execution.WarningListener;
 import hu.elte.txtuml.api.model.execution.impl.assoc.MultipleContainerException;
 import hu.elte.txtuml.api.model.execution.impl.assoc.MultiplicityException;
-import hu.elte.txtuml.api.model.execution.impl.base.AbstractExecutorThread;
 import hu.elte.txtuml.api.model.execution.impl.base.AbstractModelClassRuntime;
 import hu.elte.txtuml.api.model.execution.impl.base.AbstractModelExecutor;
 import hu.elte.txtuml.api.model.execution.impl.base.AbstractModelRuntime;
@@ -120,8 +119,6 @@ public abstract class SingleThreadModelRuntime<C extends AbstractModelClassRunti
 		left.removeFromAssoc(rightEnd, rightObj);
 		right.removeFromAssoc(leftEnd, leftObj);
 	}
-
-	public abstract AbstractExecutorThread getThread();
 
 	@Override
 	public abstract void start();

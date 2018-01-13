@@ -18,4 +18,9 @@ public interface ModelElementRuntime<T> extends Wrapper<T>, RequiresExecutorThre
 		return getThread().getModelRuntime();
 	}
 
+	/**
+	 * The default String representation of the wrapped model element.
+	 */
+	String getStringRepresentation();
+
 }

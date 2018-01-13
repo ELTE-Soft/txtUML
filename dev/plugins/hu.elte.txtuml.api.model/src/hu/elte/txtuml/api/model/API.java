@@ -41,7 +41,7 @@ public abstract class API {
 	 *             if {@code target} is {@code null}
 	 */
 	public static void send(Signal signal, ModelClass target) {
-		target.runtime().receiveLater(signal);
+		target.runtime().receiveLaterViaAPI(signal);
 	}
 
 	/**

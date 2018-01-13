@@ -27,7 +27,7 @@ import hu.elte.txtuml.utils.NotifierOfTermination.TerminationManager;
 /**
  * Abstract base class for {@link ModelExecutor} implementations.
  */
-public abstract class AbstractModelExecutor<S extends AbstractModelExecutor<S>> implements CastedModelExecutor<S> {
+public abstract class AbstractModelExecutor<S extends CastedModelExecutor<S>> implements CastedModelExecutor<S> {
 
 	/*
 	 * Implementation note: the fields of this executor which contain
@@ -61,7 +61,7 @@ public abstract class AbstractModelExecutor<S extends AbstractModelExecutor<S>> 
 	 * May only be accessed while holding the monitor of this collection
 	 * instance.
 	 */
-	private final List<AbstractExecutorThread> threads = new ArrayList<>(1);
+	private final List<OwnedThread<?>> threads = new ArrayList<>(1);
 
 	private volatile boolean shouldShutDownImmediately = false;
 
@@ -201,14 +201,14 @@ public abstract class AbstractModelExecutor<S extends AbstractModelExecutor<S>> 
 	@Override
 	public void awaitTerminationNoCatch() throws InterruptedException {
 		while (true) {
-			AbstractExecutorThread[] copy;
+			OwnedThread<?>[] copy;
 			synchronized (threads) {
 				if (threads.isEmpty()) {
 					return;
 				}
-				copy = threads.toArray(new AbstractExecutorThread[threads.size()]);
+				copy = threads.toArray(new OwnedThread<?>[threads.size()]);
 			}
-			for (AbstractExecutorThread e : copy) {
+			for (OwnedThread<?> e : copy) {
 				joinUninterruptibly(e);
 			}
 		}
@@ -369,11 +369,11 @@ public abstract class AbstractModelExecutor<S extends AbstractModelExecutor<S>> 
 	 * a concurrent action may freely change the state of this model executor.
 	 */
 	protected void wakeAllThreads() {
-		AbstractExecutorThread[] copy;
+		OwnedThread<?>[] copy;
 		synchronized (threads) {
-			copy = threads.toArray(new AbstractExecutorThread[threads.size()]);
+			copy = threads.toArray(new OwnedThread<?>[threads.size()]);
 		}
-		for (AbstractExecutorThread e : copy) {
+		for (OwnedThread<?> e : copy) {
 			e.wake();
 		}
 	}
@@ -388,7 +388,7 @@ public abstract class AbstractModelExecutor<S extends AbstractModelExecutor<S>> 
 	 * would be called from the new thread) this model executor could terminate
 	 * before the new thread starts.
 	 */
-	protected boolean registerThread(AbstractExecutorThread t) {
+	public boolean registerThread(OwnedThread<?> t) {
 		if (shouldShutDownImmediately) {
 			return false;
 		}
@@ -403,8 +403,8 @@ public abstract class AbstractModelExecutor<S extends AbstractModelExecutor<S>> 
 	 * <p>
 	 * Called from the given thread.
 	 */
-	protected void unregisterThread(AbstractExecutorThread t) {
-		boolean isEmpty = false;
+	public void unregisterThread(OwnedThread<?> t) {
+		boolean isEmpty;
 		synchronized (threads) {
 			threads.remove(t);
 			isEmpty = threads.isEmpty();
@@ -433,5 +433,65 @@ public abstract class AbstractModelExecutor<S extends AbstractModelExecutor<S>> 
 
 	@Override
 	public abstract S self();
+
+	public static abstract class OwnedThread<E extends AbstractModelExecutor<?>> extends Thread {
+
+		private final E executor;
+
+		public OwnedThread(String name, E owner) {
+			super(name);
+			executor = owner;
+		}
+
+		public E getExecutor() {
+			return executor;
+		}
+
+		@Override
+		public synchronized void start() {
+			if (executor.registerThread(this)) {
+				super.start();
+			}
+		}
+
+		/**
+		 * Use {@link #doRun()} instead.
+		 */
+		@Override
+		public final void run() {
+			doRun();
+			executor.unregisterThread(this);
+		}
+
+		/**
+		 * True iff {@link #shutdownNow} has already been called.
+		 * <p>
+		 * Thread-safe.
+		 */
+		protected boolean shouldShutDownImmediately() {
+			return executor.shouldShutDownImmediately();
+		}
+
+		/**
+		 * True iff no termination blocker is actually registered.
+		 * <p>
+		 * Thread-safe.
+		 */
+		protected boolean shouldShutDownWhenNothingToDo() {
+			return executor.shouldShutDownWhenNothingToDo();
+		}
+
+		/**
+		 * Used instead of {@link #run()}.
+		 */
+		public abstract void doRun();
+
+		/**
+		 * If this thread is blocking, a call of this method wakes the thread.
+		 * <p>
+		 * Thread-safe.
+		 */
+		public abstract void wake();
+	}
 
 }
