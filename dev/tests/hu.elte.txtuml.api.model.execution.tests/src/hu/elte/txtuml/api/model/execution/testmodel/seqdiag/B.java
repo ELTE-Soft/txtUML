@@ -45,8 +45,7 @@ public class B extends ModelClass {
 	public class StateBToStateA extends Transition {
 		@Override
 		public void effect() {
-			Action.send(new TestSig() {
-			}, assoc(AToB.ASide.class).one());
+			Action.send(new TestSig(), assoc(AToB.ASide.class).one());
 		}
 	}
 }
