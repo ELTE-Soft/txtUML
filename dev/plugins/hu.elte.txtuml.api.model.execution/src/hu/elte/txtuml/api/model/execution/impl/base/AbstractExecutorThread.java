@@ -27,8 +27,7 @@ import hu.elte.txtuml.utils.Logger;
  * down immediately,</li>
  * <li>or the model executor has no termination blockers (which implies that its
  * graceful shutdown procedure has been started) <b>and</b> this thread's
- * mailbox is empty,</li>
- * <li>or {@link #earlyStop} returns true (is false by default).</li>
+ * mailbox is empty.</li>
  * </ul>
  * </li>
  * <li>The {@link AbstractModelExecutor#unregisterThread(ModelExecutorThread)}
@@ -37,7 +36,8 @@ import hu.elte.txtuml.utils.Logger;
  * Otherwise, the loop tries to continue working, even if it has been
  * interrupted while waiting for new events.
  */
-public abstract class AbstractExecutorThread extends AbstractModelExecutor.OwnedThread<AbstractModelExecutor<?>> implements ExecutorThread, Runnable {
+public abstract class AbstractExecutorThread extends AbstractModelExecutor.OwnedThread<AbstractModelExecutor<?>>
+		implements ExecutorThread, Runnable {
 
 	private static final AtomicLong count = new AtomicLong();
 
@@ -102,7 +102,7 @@ public abstract class AbstractExecutorThread extends AbstractModelExecutor.Owned
 		initialization.run();
 		runLoop();
 	}
-	
+
 	/**
 	 * Runs the main loop of this thread until {@link #shouldContinue()} returns
 	 * false. Called from {@link run()} after running the initialization of this
@@ -173,7 +173,7 @@ public abstract class AbstractExecutorThread extends AbstractModelExecutor.Owned
 	protected abstract void processNext() throws InterruptedException;
 
 	/**
-	 * Checks whether this mailbox is empty.
+	 * Checks whether the mailbox of this thread is empty.
 	 * <p>
 	 * Thread-safe.
 	 */
@@ -195,15 +195,15 @@ public abstract class AbstractExecutorThread extends AbstractModelExecutor.Owned
 	 */
 	public abstract void receiveLater(SignalWrapper signal, AbstractModelClassRuntime target);
 
-
 	/**
 	 * Adds a new entry to this thread's mailbox to send the given signal to the
-	 * given target object; the signal is known to have been sent via the API class.
+	 * given target object; the signal is known to have been sent via the API
+	 * class.
 	 * <p>
 	 * Thread-safe.
 	 */
 	public void receiveLaterViaAPI(SignalWrapper signal, AbstractModelClassRuntime target) {
 		receiveLater(signal, target);
 	}
-	
+
 }

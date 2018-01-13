@@ -125,6 +125,7 @@ public abstract class AbstractModelExecutor<S extends CastedModelExecutor<S>> im
 		createRuntime(() -> {
 			if (initialization != null) {
 				initialization.run();
+				initialization = null; // Release it. Not needed anymore.
 			}
 			isInitialized.countDown();
 		}).start();

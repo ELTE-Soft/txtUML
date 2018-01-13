@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.google.common.collect.ImmutableList;
 
+import hu.elte.txtuml.api.model.execution.LockedModelExecutorException;
 import hu.elte.txtuml.api.model.execution.LockedSeqDiagExecutorException;
 import hu.elte.txtuml.api.model.execution.SequenceDiagramExecutor;
 import hu.elte.txtuml.api.model.execution.impl.base.AbstractModelExecutor;
@@ -14,6 +15,9 @@ import hu.elte.txtuml.api.model.execution.seqdiag.error.MessageError;
 import hu.elte.txtuml.api.model.impl.SequenceDiagramRelated;
 import hu.elte.txtuml.api.model.seqdiag.SequenceDiagram;
 
+/**
+ * The model executor implementation which executes the sequence diagram. 
+ */
 @SequenceDiagramRelated
 public class DefaultSeqDiagExecutor extends AbstractModelExecutor<SequenceDiagramExecutor>
 		implements SequenceDiagramExecutor {
@@ -46,6 +50,7 @@ public class DefaultSeqDiagExecutor extends AbstractModelExecutor<SequenceDiagra
 		return self();
 	}
 
+	@Override
 	public ImmutableList<MessageError> getErrors() {
 		synchronized (this.errors) {
 			return ImmutableList.copyOf(this.errors);
@@ -61,6 +66,7 @@ public class DefaultSeqDiagExecutor extends AbstractModelExecutor<SequenceDiagra
 		}
 	}
 
+	// Not supported.
 	@Override
 	public SequenceDiagramExecutor setInitialization(Runnable initialization) throws UnsupportedOperationException {
 		throw new UnsupportedOperationException();
@@ -71,6 +77,10 @@ public class DefaultSeqDiagExecutor extends AbstractModelExecutor<SequenceDiagra
 		return this;
 	}
 
+	/**
+	 * Throw {@link LockedSeqDiagExecutorException} instead of
+	 * {@link LockedModelExecutorException}.
+	 */
 	@Override
 	protected void checkIfLocked() throws LockedSeqDiagExecutorException {
 		if (getStatus() != Status.CREATED) {

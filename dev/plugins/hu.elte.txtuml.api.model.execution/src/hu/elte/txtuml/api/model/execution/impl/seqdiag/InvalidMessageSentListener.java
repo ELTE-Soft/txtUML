@@ -8,6 +8,9 @@ import hu.elte.txtuml.api.model.execution.seqdiag.error.LostMessageError;
 import hu.elte.txtuml.api.model.execution.seqdiag.error.MessageToDeletedError;
 import hu.elte.txtuml.api.model.impl.SequenceDiagramRelated;
 
+/**
+ * Reports errors when messages are lost or arrive to deleted model objects.
+ */
 @SequenceDiagramRelated
 public class InvalidMessageSentListener implements WarningListener {
 	private final DefaultSeqDiagExecutor executor;
