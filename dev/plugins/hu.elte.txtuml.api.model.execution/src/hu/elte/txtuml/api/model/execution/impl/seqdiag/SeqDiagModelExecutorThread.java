@@ -11,6 +11,12 @@ import hu.elte.txtuml.api.model.impl.ExecutorThread;
 import hu.elte.txtuml.api.model.impl.SequenceDiagramRelated;
 import hu.elte.txtuml.api.model.seqdiag.ExecMode;
 
+/**
+ * Class for the single model executor thread in a sequence diagram executor.
+ * <p>
+ * See the documentation of this package for an overview about the threads used
+ * in the sequence diagram executor.
+ */
 @SequenceDiagramRelated
 class SeqDiagModelExecutorThread extends FIFOExecutorThread implements ExecutorThread {
 
@@ -28,8 +34,9 @@ class SeqDiagModelExecutorThread extends FIFOExecutorThread implements ExecutorT
 	public void doRun() {
 		super.doRun();
 		root.kill();
+		// Ensures that the interaction threads are stopped with this.
 	}
-	
+
 	@Override
 	public void receiveLater(SignalWrapper signal, AbstractModelClassRuntime target) {
 		addEntry(() -> {
@@ -46,6 +53,10 @@ class SeqDiagModelExecutorThread extends FIFOExecutorThread implements ExecutorT
 		});
 	}
 
+	/**
+	 * Called <b>after</b> the given signal to the given target has arrived and
+	 * it has been processed.
+	 */
 	private void compareToPattern(SignalWrapper wrapper, ModelClass target, boolean viaAPI) {
 		if (wrapper.isEmpty()) {
 			return;
@@ -63,6 +74,11 @@ class SeqDiagModelExecutorThread extends FIFOExecutorThread implements ExecutorT
 		}
 
 		boolean result = root.testActual(actual);
+
+		/*
+		 * If the execution mode is LENIENT, any unmatched messages are
+		 * automatically accepted. Otherwise, we show an error.
+		 */
 		if (!result && mode == ExecMode.STRICT) {
 			root.getExecutor().addError(new InvalidMessageError(actual));
 		}

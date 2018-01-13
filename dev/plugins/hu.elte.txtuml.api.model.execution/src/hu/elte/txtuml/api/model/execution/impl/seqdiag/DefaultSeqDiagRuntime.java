@@ -12,12 +12,16 @@ import hu.elte.txtuml.api.model.seqdiag.ExecMode;
 import hu.elte.txtuml.api.model.seqdiag.ExecutionMode;
 import hu.elte.txtuml.api.model.seqdiag.SequenceDiagram;
 
+/**
+ * The model runtime which helps the execution of the sequence diagram. Starts
+ * the single model executor thread which then will start the root interaction
+ * thread.
+ */
 @SequenceDiagramRelated
 public class DefaultSeqDiagRuntime
 		extends SingleThreadModelRuntime<SingleThreadModelClassRuntime, SingleThreadPortRuntime> {
 
 	private final SeqDiagModelExecutorThread modelThread;
-	private final InteractionThread rootInteraction;
 
 	protected DefaultSeqDiagRuntime(DefaultSeqDiagExecutor executor, SequenceDiagram diagram, Runnable initialization) {
 		super(executor);
@@ -30,10 +34,22 @@ public class DefaultSeqDiagRuntime
 			throw new RuntimeException(e);
 		}
 
-		rootInteraction = new InteractionThread(executor, diagram);
+		/*
+		 * The root interaction thread that will execute the diagram itself as
+		 * an interaction.
+		 */
+		InteractionThread rootInteraction = new InteractionThread(executor, diagram);
+
 		modelThread = new SeqDiagModelExecutorThread(this, executor, rootInteraction, mode, () -> {
+			// The initialization of the model executor thread.
+
 			diagram.initialize();
 			initialization.run();
+			/*
+			 * The initialization received from the model executor must be
+			 * executed to signal those who have called awaitInitialization on
+			 * the model executor.
+			 */
 			rootInteraction.start();
 		});
 	}
@@ -42,6 +58,8 @@ public class DefaultSeqDiagRuntime
 		ExecutionMode annot = runMethod.getAnnotation(ExecutionMode.class);
 		return annot == null ? ExecutionMode.DEFAULT : annot.value();
 	}
+
+	// The required methods of an implementer of the SinglethreadModelRuntime
 
 	@Override
 	public DefaultSeqDiagExecutor getExecutor() {

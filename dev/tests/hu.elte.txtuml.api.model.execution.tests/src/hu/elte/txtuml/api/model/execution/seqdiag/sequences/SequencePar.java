@@ -12,10 +12,12 @@ public class SequencePar extends SequenceBase {
 		Sequence.par(() -> {
 			Sequence.send(a, new TestSig(), b);
 		}, () -> {
-			Sequence.send(b, new TestSig(), a);
+
+		}, () -> {
+			Sequence.send(c, new TestSig(), b);
 		}, () -> {
 			Sequence.send(b, new TestSig(), c);
-			Sequence.send(c, new TestSig(), b);
+			Sequence.send(b, new TestSig(), a);
 		}, () -> {
 			Sequence.fromActor(new TestSig(), a);
 		});
