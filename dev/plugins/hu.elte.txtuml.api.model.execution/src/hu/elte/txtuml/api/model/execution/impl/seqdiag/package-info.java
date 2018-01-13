@@ -7,4 +7,7 @@
  * Only basic elements are supported so far. These elements are: Sequential and
  * alternative fragments,synchronized messages and lifelines
  */
+@SequenceDiagramRelated
 package hu.elte.txtuml.api.model.execution.impl.seqdiag;
+
+import hu.elte.txtuml.api.model.impl.SequenceDiagramRelated;

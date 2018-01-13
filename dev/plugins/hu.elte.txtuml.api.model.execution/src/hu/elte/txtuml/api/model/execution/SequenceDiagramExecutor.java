@@ -1,12 +1,11 @@
 package hu.elte.txtuml.api.model.execution;
 
-import java.util.List;
+import com.google.common.collect.ImmutableList;
 
 import hu.elte.txtuml.api.model.Model;
-import hu.elte.txtuml.api.model.execution.impl.seqdiag.SeqDiagExecutorImpl;
-import hu.elte.txtuml.api.model.execution.seqdiag.error.SeqDiagValidationError;
+import hu.elte.txtuml.api.model.execution.impl.seqdiag.DefaultSeqDiagExecutor;
+import hu.elte.txtuml.api.model.execution.seqdiag.error.MessageError;
 import hu.elte.txtuml.api.model.impl.SequenceDiagramRelated;
-import hu.elte.txtuml.api.model.seqdiag.Interaction;
 import hu.elte.txtuml.api.model.seqdiag.SequenceDiagram;
 
 /**
@@ -18,14 +17,13 @@ import hu.elte.txtuml.api.model.seqdiag.SequenceDiagram;
  * diverge from the expected execution path.
  * <p>
  * On how to write Sequence Diagrams see the documentation of the
- * {@link SequenceDiagram} or {@link Interaction} classes.
+ * {@link SequenceDiagram} class.
  * <p>
  * <h2>How to Use:</h2>
  * <ol>
  * <li>Create new instance with the {@link #create} method.
- * <li>Set the Interaction to run by using the
- * {@link #setInteraction(Interaction) } method. Its Single parameter is an
- * interaction subclass instance.</li>
+ * <li>Set the Interaction to run by using the {@link #setDiagram } method. Its
+ * Single parameter is an interaction subclass instance.</li>
  * <li>Run the Executor using the {@link #start()} or {@link #run()} methods
  * more on these below.</li>
  * </ol>
@@ -34,6 +32,9 @@ import hu.elte.txtuml.api.model.seqdiag.SequenceDiagram;
  * {@link #start} method is for simply starting the executor and not waiting for
  * it to finish running.
  * <p>
+ * Note that without calling {@link #shutdown()}, an erronous sequence diagram
+ * execution may not stop.
+ * <p>
  * See the documentation of {@link Model} for an overview on modeling in
  * JtxtUML.
  */
@@ -41,21 +42,19 @@ import hu.elte.txtuml.api.model.seqdiag.SequenceDiagram;
 public interface SequenceDiagramExecutor extends CastedModelExecutor<SequenceDiagramExecutor> {
 
 	static SequenceDiagramExecutor create() {
-		return new SeqDiagExecutorImpl();
+		return new DefaultSeqDiagExecutor();
 	}
 
-	SequenceDiagramExecutor setInteraction(Interaction interaction) throws LockedSeqDiagExecutorException;
+	SequenceDiagramExecutor setDiagram(SequenceDiagram diagram) throws LockedSeqDiagExecutorException;
 
-	List<SeqDiagValidationError> getErrors();
+	ImmutableList<MessageError> getErrors();
 
 	/**
-	 * Not supported; use the {@link #setInteraction} method instead.
+	 * Not supported; use the {@link #setDiagram} method instead.
 	 * 
 	 * @throws UnsupportedOperationException
 	 *             always
 	 */
 	@Override
-	default SequenceDiagramExecutor setInitialization(Runnable initialization) throws UnsupportedOperationException {
-		throw new UnsupportedOperationException();
-	}
+	SequenceDiagramExecutor setInitialization(Runnable initialization) throws UnsupportedOperationException;
 }
