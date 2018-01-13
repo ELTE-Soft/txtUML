@@ -6,9 +6,14 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import hu.elte.txtuml.api.model.impl.SequenceDiagramRelated;
+
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 @Documented
+@SequenceDiagramRelated
 public @interface ExecutionMode {
-	public ExecMode value();
+	ExecMode value();
+	
+	ExecMode DEFAULT = ExecMode.STRICT;
 }

@@ -1,8 +1,6 @@
 package hu.elte.txtuml.export.plantuml.tests.models.sequences;
 
-import hu.elte.txtuml.api.model.Signal;
-import hu.elte.txtuml.api.model.seqdiag.API;
-import hu.elte.txtuml.api.model.seqdiag.Action;
+import hu.elte.txtuml.api.model.Action;
 import hu.elte.txtuml.api.model.seqdiag.Interaction;
 import hu.elte.txtuml.api.model.seqdiag.Position;
 import hu.elte.txtuml.export.plantuml.tests.models.testmodel.A;
@@ -26,7 +24,5 @@ public abstract class BaseSequence extends Interaction {
 		lifeline3 = new C();
 		Action.link(AToB.ASide.class, lifeline1, AToB.BSide.class, lifeline2);
 		Action.link(BToC.BSide.class, lifeline2, BToC.CSide.class, lifeline3);
-		API.send(new Signal() {
-		}, lifeline1);
 	}
 }

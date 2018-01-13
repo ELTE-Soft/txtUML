@@ -8,14 +8,14 @@ import hu.elte.txtuml.export.plantuml.generator.PlantUmlCompiler;
 
 /**
  * Currently responsible for exporting the message sending from the
- * SequenceDiagrams( {@code Actor.send() } and {@code Action.send() }})
+ * SequenceDiagrams( {@code Sequence.send() } and {@code Sequence.fromActor() }})
  * 
  * @todo lifeline activation,deactivation, deletion, creation
  *
  */
-public class ActionExporter extends MethodInvocationExporter {
+public class SequenceExporter extends MethodInvocationExporter {
 
-	public ActionExporter(PlantUmlCompiler compiler) {
+	public SequenceExporter(PlantUmlCompiler compiler) {
 		super(compiler);
 	}
 
@@ -23,8 +23,8 @@ public class ActionExporter extends MethodInvocationExporter {
 	public boolean validElement(ASTNode curElement) {
 		if (super.validElement(curElement)) {
 			String fullName = PlantUmlCompiler.getFullyQualifiedName((MethodInvocation) curElement);
-			if (fullName.equals("hu.elte.txtuml.api.model.seqdiag.Action.send")
-					|| fullName.equals("hu.elte.txtuml.api.model.seqdiag.Actor.send")) {
+			if (fullName.equals("hu.elte.txtuml.api.model.seqdiag.Sequence.send")
+					|| fullName.equals("hu.elte.txtuml.api.model.seqdiag.Sequence.fromActor")) {
 				return true;
 			}
 		}

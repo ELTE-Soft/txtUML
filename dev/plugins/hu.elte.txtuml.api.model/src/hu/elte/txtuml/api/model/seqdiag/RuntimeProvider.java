@@ -1,6 +1,7 @@
 package hu.elte.txtuml.api.model.seqdiag;
 
 import hu.elte.txtuml.api.model.ImplRelated;
+import hu.elte.txtuml.api.model.impl.SequenceDiagramRelated;
 
 /**
  * This is a helper type, only intended to be used inside this package.
@@ -14,6 +15,7 @@ import hu.elte.txtuml.api.model.ImplRelated;
  * not be used in the model or in external libraries, therefore the public types
  * of this package should not extend or implement it.
  */
+@SequenceDiagramRelated
 enum RuntimeProvider implements ImplRelated {
 	INSTANCE
 }

@@ -1,15 +1,19 @@
-package hu.elte.txtuml.api.model.impl.seqdiag;
+package hu.elte.txtuml.api.model.impl;
 
 import hu.elte.txtuml.api.model.ImplRelated;
 import hu.elte.txtuml.api.model.error.NotModelExecutorThreadError;
 import hu.elte.txtuml.api.model.error.NotSeqDiagExecutorThreadError;
-import hu.elte.txtuml.api.model.impl.ExecutorThread;
 
 /**
  * All model executor threads that execute a sequence diagram must implement
  * this interface.
+ * <p>
+ * As a member of the {@linkplain hu.elte.txtuml.api.model.impl} package, this
+ * type should <b>only be used to implement model executors</b>, not in the
+ * model or in external libraries.
  */
-public interface SeqDiagExecutorThread extends ExecutorThread, ImplRelated {
+@SequenceDiagramRelated
+public interface SeqDiagThread extends ImplRelated {
 
 	/**
 	 * Gets the current sequence diagram executor thread.
@@ -19,8 +23,12 @@ public interface SeqDiagExecutorThread extends ExecutorThread, ImplRelated {
 	 *             if the caller thread is not a sequence diagram executor
 	 *             thread
 	 */
-	static SeqDiagExecutorThread current() throws NotSeqDiagExecutorThreadError {
-		return cast(Thread.currentThread());
+	static SeqDiagThread current() throws NotSeqDiagExecutorThreadError {
+		Thread t = Thread.currentThread();
+		if (t instanceof SeqDiagThread) {
+			return (SeqDiagThread) t;
+		}
+		throw new NotSeqDiagExecutorThreadError();
 	}
 
 	/**
@@ -36,21 +44,6 @@ public interface SeqDiagExecutorThread extends ExecutorThread, ImplRelated {
 		current();
 	}
 
-	/**
-	 * Casts the given object as a sequence diagram executor thread, if
-	 * possible.
-	 * 
-	 * @return the given object as a sequence diagram executor thread
-	 * @throws NotSeqDiagExecutorThreadError
-	 *             if the given object is not a sequence diagram executor thread
-	 */
-	static SeqDiagExecutorThread cast(Object t) throws NotSeqDiagExecutorThreadError {
-		if (t instanceof SeqDiagExecutorThread) {
-			return (SeqDiagExecutorThread) t;
-		}
-		throw new NotSeqDiagExecutorThreadError();
-	}
-
-	SeqDiagRuntime getSeqDiagRuntime();
+	InteractionRuntime getCurrentInteraction();
 
 }
