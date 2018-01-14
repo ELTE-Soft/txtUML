@@ -1,6 +1,5 @@
 package hu.elte.txtuml.api.model.execution.impl.base;
 
-import static com.google.common.util.concurrent.Uninterruptibles.joinUninterruptibly;
 import static java.util.Objects.requireNonNull;
 
 import java.util.ArrayList;
@@ -54,6 +53,7 @@ public abstract class AbstractModelExecutor<S extends CastedModelExecutor<S>> im
 	private final Object defaultBlocker = createAndAddDefaultTerminationBlocker();
 
 	private final CountDownLatch isInitialized = new CountDownLatch(1);
+	private final CountDownLatch isTerminated = new CountDownLatch(1);
 
 	private final ConcurrentHashMap<Object, Object> featureMap = new ConcurrentHashMap<>();
 
@@ -103,8 +103,8 @@ public abstract class AbstractModelExecutor<S extends CastedModelExecutor<S>> im
 	public ModelSchedulerImpl getScheduler() {
 		/*
 		 * The field 'scheduler' is volatile. We must ensure that the same
-		 * reference is used below in the more then one occasions it is
-		 * accessed.
+		 * reference is used in the more then one occasions it is accessed in
+		 * this method.
 		 */
 		ModelSchedulerImpl scheduler = this.scheduler;
 		if (scheduler == null) {
@@ -201,18 +201,7 @@ public abstract class AbstractModelExecutor<S extends CastedModelExecutor<S>> im
 
 	@Override
 	public void awaitTerminationNoCatch() throws InterruptedException {
-		while (true) {
-			OwnedThread<?>[] copy;
-			synchronized (threads) {
-				if (threads.isEmpty()) {
-					return;
-				}
-				copy = threads.toArray(new OwnedThread<?>[threads.size()]);
-			}
-			for (OwnedThread<?> e : copy) {
-				joinUninterruptibly(e);
-			}
-		}
+		isTerminated.await();
 	}
 
 	@Override
@@ -314,15 +303,13 @@ public abstract class AbstractModelExecutor<S extends CastedModelExecutor<S>> im
 
 	/**
 	 * Runs all the registered termination listeners, and sets this model
-	 * executor terminated.
-	 * <p>
-	 * Thread-safe.
+	 * executor terminated. <b>Not idempotent.</b> Must be called exactly once.
 	 */
-
 	protected void performTermination() {
 		terminationManager.notifyAllOfTermination();
 		status = Status.TERMINATED;
 		traceListeners.forEach(x -> x.executionTerminated());
+		isTerminated.countDown();
 	}
 
 	/**
@@ -390,10 +377,10 @@ public abstract class AbstractModelExecutor<S extends CastedModelExecutor<S>> im
 	 * before the new thread starts.
 	 */
 	public boolean registerThread(OwnedThread<?> t) {
-		if (shouldShutDownImmediately) {
-			return false;
-		}
 		synchronized (threads) {
+			if (shouldShutDownImmediately || status == Status.TERMINATED) {
+				return false;
+			}
 			return threads.add(t);
 		}
 	}
@@ -402,16 +389,14 @@ public abstract class AbstractModelExecutor<S extends CastedModelExecutor<S>> im
 	 * Unregisters a model executor thread in this executor which is part of
 	 * this executor's runtime.
 	 * <p>
-	 * Called from the given thread.
+	 * Called from the given thread, as its last action.
 	 */
 	public void unregisterThread(OwnedThread<?> t) {
-		boolean isEmpty;
 		synchronized (threads) {
 			threads.remove(t);
-			isEmpty = threads.isEmpty();
-		}
-		if (isEmpty) {
-			performTermination();
+			if (threads.isEmpty()) {
+				performTermination();
+			}
 		}
 	}
 
@@ -448,11 +433,21 @@ public abstract class AbstractModelExecutor<S extends CastedModelExecutor<S>> im
 			return executor;
 		}
 
+		/**
+		 * Use {@link #doStart()} instead.
+		 */
 		@Override
-		public synchronized void start() {
+		public final void start() {
 			if (executor.registerThread(this)) {
-				super.start();
+				doStart();
 			}
+		}
+
+		/**
+		 * Used instead of {@link #start()}.
+		 */
+		public void doStart() {
+			super.start();
 		}
 
 		/**

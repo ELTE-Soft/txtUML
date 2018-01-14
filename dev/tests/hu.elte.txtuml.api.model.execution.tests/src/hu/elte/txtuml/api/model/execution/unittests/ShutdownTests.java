@@ -36,26 +36,14 @@ public class ShutdownTests extends UnitTestsBase {
 		assertEvents(x -> {
 			x.executionStarted();
 			transition(x, a, a.new Initialize());
-			x.processingSignal(a, new Sig0(), Optional.empty());
-			transition(x, a, a.new S1_S2());
-			x.processingSignal(a, new Sig0(), Optional.empty());
-			transition(x, a, a.new S2_S1());
-			x.processingSignal(a, new Sig0(), Optional.empty());
-			transition(x, a, a.new S1_S2());
-			x.processingSignal(a, new Sig0(), Optional.empty());
-			transition(x, a, a.new S2_S1());
-			x.processingSignal(a, new Sig0(), Optional.empty());
-			transition(x, a, a.new S1_S2());
-			x.processingSignal(a, new Sig0(), Optional.empty());
-			transition(x, a, a.new S2_S1());
-			x.processingSignal(a, new Sig0(), Optional.empty());
-			transition(x, a, a.new S1_S2());
-			x.processingSignal(a, new Sig0(), Optional.empty());
-			transition(x, a, a.new S2_S1());
-			x.processingSignal(a, new Sig0(), Optional.empty());
-			transition(x, a, a.new S1_S2());
-			x.processingSignal(a, new Sig0(), Optional.empty());
-			transition(x, a, a.new S2_S1());
+
+			for (int i = 0; i < 5; ++i) {
+				x.processingSignal(a, new Sig0(), Optional.empty());
+				transition(x, a, a.new S1_S2());
+				x.processingSignal(a, new Sig0(), Optional.empty());
+				transition(x, a, a.new S2_S1());
+			}
+
 			x.executionTerminated();
 		});
 		assertNoErrors();

@@ -189,8 +189,8 @@ public class InteractionThread extends AbstractModelExecutor.OwnedThread<Default
 	}
 
 	@Override
-	public void start() {
-		super.start();
+	public void doStart() {
+		super.doStart();
 		awaitThisWaiting();
 		/*
 		 * To make sure that the started thread executes everything it has to
