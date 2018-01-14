@@ -7,15 +7,14 @@ import org.junit.Test;
 
 import hu.elte.txtuml.api.model.Action;
 import hu.elte.txtuml.api.model.execution.testmodel.signals.Sig0;
-import hu.elte.txtuml.api.model.execution.util.MutableBoolean;
 
 public class ShutdownTests extends UnitTestsBase {
 
 	@Test
 	public void testShutdownWithTenMessages() {
-		MutableBoolean actionPerformed = new MutableBoolean();
+		boolean[] actionPerformed = new boolean[] { false };
 
-		executor.addTerminationListener(() -> actionPerformed.value = true);
+		executor.addTerminationListener(() -> actionPerformed[0] = true);
 
 		executor.start(() -> {
 			createAAndB();
@@ -27,11 +26,11 @@ public class ShutdownTests extends UnitTestsBase {
 
 		});
 
-		Assert.assertFalse(actionPerformed.value);
+		Assert.assertFalse(actionPerformed[0]);
 
 		executor.shutdown().awaitTermination();
 
-		Assert.assertTrue(actionPerformed.value);
+		Assert.assertTrue(actionPerformed[0]);
 
 		assertEvents(x -> {
 			x.executionStarted();
