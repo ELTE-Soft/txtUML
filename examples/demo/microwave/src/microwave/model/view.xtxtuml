@@ -1,0 +1,29 @@
+package microwave.model;
+
+import hu.elte.txtuml.api.stdlib.world.SignalToWorld;
+
+
+// signals sent to the view
+signal ClockTicked extends SignalToWorld;
+
+signal DoorOpened extends SignalToWorld;
+
+signal DoorClosed extends SignalToWorld;
+
+signal OvenIsOn extends SignalToWorld;
+
+signal OvenIsOff extends SignalToWorld;
+
+/**
+ * This class is used to share a String identifier between the
+ * model and the outside world. This identifies the 'view'
+ * (the UI in this case) that listens to the events of the model.
+ */
+class View {
+
+	public static String id() {
+		return "view";
+	}
+
+}
+

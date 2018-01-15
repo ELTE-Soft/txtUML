@@ -1,0 +1,43 @@
+package microwave.model;
+
+import hu.elte.txtuml.api.stdlib.timers.Timer;
+import hu.elte.txtuml.api.stdlib.world.World;
+
+signal SwitchOn;
+
+signal SwitchOff;
+
+class MicrowaveOven {
+
+	private int timeLeft;
+
+	initial Init;
+
+	state Ready;
+
+	state Cooking;
+
+	transition Initialize {
+		from Init;
+		to Ready;
+	}
+
+	transition Starting {
+		from Ready;
+		to Cooking;
+		trigger SwitchOn;
+		effect {
+			send new OvenIsOn() to World.get(View.id());
+		}
+	}
+
+	transition Stopping {
+		from Cooking;
+		to Ready;
+		trigger SwitchOff;
+		effect {
+			send new OvenIsOff() to World.get(View.id());
+		}
+	}
+}
+

@@ -1,0 +1,146 @@
+package microwave.model;
+
+import hu.elte.txtuml.api.stdlib.timers.Timer;
+import hu.elte.txtuml.api.stdlib.world.World;
+
+signal Tick;
+
+signal ChangeTime {
+	int newValue;
+}
+
+signal Timeout extends SwitchOff;
+
+/**
+ * A smarter version of the Clock that can be set to run for any
+ * amount of time and it can even be changed during its run. If the
+ * door is opened and then closed, this clock continues to run
+ * (unless it has been set to 0 in the meantime).
+ */
+class SmartClock extends Clock {
+
+	private int timeLeft;
+
+	public SmartClock() {
+		timeLeft = 0;
+	}
+
+	/*
+	 * States
+	 */
+	initial Init;
+
+	state Stopped;
+
+	state Running {
+		entry {
+			Timer timer = Timer.start(new Tick(), this, 1000);
+			link(TimerOfClock.timer, timer, TimerOfClock.clock, this);
+		}
+		exit {
+			Timer timer = this->(TimerOfClock.timer).one();
+			timer.cancel();
+			unlink(TimerOfClock.timer, timer, TimerOfClock.clock, this);
+		}
+	}
+
+	choice IsOver;
+
+	state Interrupted; // While the door is open
+
+	/*
+	 * Transitions
+	 */
+	transition Initialize {
+		from Init;
+		to Stopped;
+	}
+
+	transition Starting {
+		from Stopped;
+		to Running;
+		trigger ChangeTime;
+		guard ( trigger.newValue > 0 )
+		effect {
+			timeLeft = trigger.newValue;
+			send new SwitchOn() to this->(ClockOfOven.oven).one();
+		}
+	}
+
+	transition ChangingTimeDuringRun {
+		from Running;
+		to IsOver;
+		trigger ChangeTime;
+		effect {
+			timeLeft = trigger.newValue;
+		}
+	}
+
+	transition Ticking {
+		from Running;
+		to IsOver;
+		trigger Tick;
+		effect {
+			timeLeft = timeLeft - 1;
+			send new ClockTicked() to World.get(View.id());
+		}
+	}
+
+	transition Stop {
+		from IsOver;
+		to Stopped;
+		guard ( timeLeft <= 0 );
+		effect {
+			send new Timeout() to this->(ClockOfOven.oven).one();
+		}
+	}
+
+	transition KeepRunning {
+		from IsOver;
+		to Running;
+		guard ( else );
+	}
+
+	transition GetsInterruptedWhileRunning {
+		from Running;
+		to Interrupted;
+		trigger Interrupt;
+		effect {
+			send new SwitchOff() to this->(ClockOfOven.oven).one();
+		}
+	}
+
+	transition GetsInterruptedWhileStopped {
+		from Stopped;
+		to Interrupted;
+		trigger Interrupt;
+	}
+
+	transition ChangingTimeWhileBeingInterrupted {
+		from Interrupted;
+		to Interrupted;
+		trigger ChangeTime;
+		effect {
+			timeLeft = trigger.newValue;
+		}
+	}
+
+	transition ResettingToStopped {
+		from Interrupted;
+		to Stopped;
+		trigger Reset;
+		guard ( timeLeft <= 0 );
+	}
+
+	transition ResettingToRunning {
+		from Interrupted;
+		to Running;
+		trigger Reset;
+		guard ( timeLeft > 0 );
+		effect {
+			send new SwitchOn() to this->(ClockOfOven.oven).one();
+		}
+	}
+
+}
+
