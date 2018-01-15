@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.Constraint;
 import org.eclipse.uml2.uml.OpaqueExpression;
 import org.eclipse.uml2.uml.Pseudostate;
@@ -13,6 +12,7 @@ import org.eclipse.uml2.uml.Transition;
 import org.eclipse.uml2.uml.UMLPackage;
 import org.eclipse.uml2.uml.ValueSpecification;
 
+import hu.elte.txtuml.export.cpp.ActivityExportResult;
 import hu.elte.txtuml.export.cpp.activity.ActivityExporter;
 import hu.elte.txtuml.export.cpp.templates.activity.OperatorTemplates;
 import hu.elte.txtuml.export.cpp.templates.statemachine.StateMachineTemplates;
@@ -25,6 +25,7 @@ public class GuardExporter extends ActivityExporter {
 	private int guardCount;
 
 	public GuardExporter() {
+		super();
 		constratintFunctionMap = new HashMap<Constraint, String>();
 		guardCount = 0;
 	}
@@ -70,27 +71,26 @@ public class GuardExporter extends ActivityExporter {
 	public String defnieGuardFunctions(String className) {
 		StringBuilder source = new StringBuilder("");
 		for (Entry<Constraint, String> guardEntry : getGuards().entrySet()) {
-			String body = getGuardFromValueSpecification(guardEntry.getKey().getSpecification());
-			source.append(StateMachineTemplates.guardDefinition(guardEntry.getValue(), body, className,
-					isContainsSignalAccess()));
+			
+			ValueSpecification guard = guardEntry.getKey().getSpecification();
+			ActivityExportResult activityResult = new ActivityExportResult();
+			if (guard != null) {
+				if (guard.eClass().equals(UMLPackage.Literals.OPAQUE_EXPRESSION)) {
+					OpaqueExpression expression = (OpaqueExpression) guard;
+					activityResult = createFunctionBody(expression.getBehavior());
+					source.append(StateMachineTemplates.guardDefinition(guardEntry.getValue(), activityResult.getActivitySource(), className,
+							activityResult.sourceHasSignalReference()));
+					
+				} else {
+					source.append(StateMachineTemplates.guardDefinition(guardEntry.getValue(), "UNKNOWN_GUARD_TYPE", className, false));
+				}
+			}			
+			
+			
+
 		}
 
 		return source.toString();
-	}
-
-	public String getGuardFromValueSpecification(ValueSpecification guard) {
-		String source = "";
-		if (guard != null) {
-			if (guard.eClass().equals(UMLPackage.Literals.OPAQUE_EXPRESSION)) {
-				OpaqueExpression expression = (OpaqueExpression) guard;
-				if (expression.getBehavior() != null
-						&& expression.getBehavior().eClass().equals(UMLPackage.Literals.ACTIVITY))
-					source = createFunctionBody((Activity) expression.getBehavior()).toString();
-			} else {
-				source = "UNKNOWN_GUARD_TYPE";
-			}
-		}
-		return source;
 	}
 
 	public String calculateSmElseGuard(Transition elseTransition) {

@@ -1,0 +1,37 @@
+package vending_machine.model;
+
+import hu.elte.txtuml.api.stdlib.world.SignalToWorld;
+
+// Drink signals
+signal Request;
+
+signal Refill {
+	int quantity;
+}
+
+signal Empty;
+
+// CashRegister signals
+signal InsertCoin {
+	int coin;
+}
+
+signal GiveBackCash {
+	int paidAmount;
+}
+
+// VendingMachine signals
+signal DrinkChosen {
+	String name;
+}
+
+// universal signals
+signal Done;
+
+signal Error;
+
+// signals to world
+
+signal ShowMessage extends SignalToWorld {
+	public String message;
+}

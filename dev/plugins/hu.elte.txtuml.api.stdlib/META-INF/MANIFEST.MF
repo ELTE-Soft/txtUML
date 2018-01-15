@@ -2,10 +2,11 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: txtUML Standard Library
 Bundle-SymbolicName: hu.elte.txtuml.api.stdlib
-Bundle-Version: 0.5.1.qualifier
+Bundle-Version: 0.6.0.qualifier
 Bundle-Vendor: ELTE
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Export-Package: hu.elte.txtuml.api.stdlib,
  hu.elte.txtuml.api.stdlib.timers
-Require-Bundle: hu.elte.txtuml.api.model
+Require-Bundle: hu.elte.txtuml.api.model,
+ hu.elte.txtuml.utils
 

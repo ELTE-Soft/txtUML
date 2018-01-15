@@ -1,0 +1,186 @@
+package vending_machine.model;
+
+import hu.elte.txtuml.api.stdlib.timers.Timer;
+
+class Drink {
+
+	private int price;
+
+	private int quantity;
+
+	private String name;
+
+	private int delay;
+
+	public Drink(int price, int quantity, String name) {
+		this.price = price;
+		this.quantity = quantity;
+		this.name = name;
+		this.delay = 1000;
+	}
+
+	public int getPrice() {
+		return price;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public boolean onStock() {
+		return quantity > 0;
+	}
+
+	private void updateMessage(String msg) {
+		this->(Serve.theMachine).selectAny().updateMessage(msg);
+	}
+
+	// state machine states
+	initial Init;
+
+	choice IsThereMore;
+
+	state Available;
+
+	state OutOfStock;
+
+	state Giving {
+		entry {
+			quantity--;
+			updateMessage("Done! Take your " + name);
+			Timer.start(new Done(), this, delay);
+		}
+	}
+
+	state Refilling {
+		entry {
+			updateMessage("Refilling " + name);
+			Timer.start(new Done(), this, delay);
+		}
+	}
+
+	state Loading {
+		entry {
+			if (quantity <= 0) {
+				quantity = 0;
+				Timer.start(new Empty(), this, delay);
+			} else {
+				Timer.start(new Done(), this, delay);
+			}
+		}
+	}
+
+	state NotGiving {
+		entry {
+			updateMessage("Out of stock");
+			Timer.start(new Done(), this, delay);
+		}
+	}
+
+	// state machine transitions
+	transition Initialize {
+		from Init;
+		to IsThereMore;
+	}
+
+	transition ThereIs {
+		from IsThereMore;
+		to Available;
+		guard ( quantity > 0 );
+	}
+
+	transition ThereIsNot {
+		from IsThereMore;
+		to OutOfStock;
+		guard ( quantity <= 0 );
+	}
+
+	transition Give {
+		from Available;
+		to Giving;
+		trigger Request;
+	}
+
+	transition DoneGiving {
+		from Giving;
+		to IsThereMore;
+		trigger Done;
+		effect {
+			CashRegister register = this->(Serve.theMachine).selectAny()->(WorkTogether.theCashRegister).selectAny();
+			send new GiveBackCash(price) to register;
+		}
+	}
+
+	transition Refill {
+		from OutOfStock;
+		to Refilling;
+		trigger Refill;
+		effect {
+			if (quantity + trigger.quantity < 50) {
+				quantity += trigger.quantity;
+			} else {
+				quantity = 50;
+			}
+		}
+		guard ( trigger.quantity > 0 );
+	}
+
+	transition DoneRefilling {
+		from Refilling;
+		to IsThereMore;
+		trigger Done;
+		effect {
+			updateMessage("Online");
+		}
+	}
+
+	transition TakeAll {
+		from Loading;
+		to OutOfStock;
+		trigger Empty;
+		effect {
+			updateMessage("Online");
+		}
+	}
+
+	transition LoadMore {
+		from Available;
+		to Loading;
+		trigger Refill;
+		effect {
+			if (quantity + trigger.quantity < 50) {
+				quantity += trigger.quantity;
+			} else {
+				quantity = 50;
+			}
+			if (trigger.quantity >= 0) {
+				updateMessage("Loading more " + name);
+			} else {
+				updateMessage("Taking some " + name);
+			}
+		}
+	}
+
+	transition DoneLoading {
+		from Loading;
+		to IsThereMore;
+		trigger Done;
+		effect {
+			updateMessage("Online");
+		}
+	}
+
+	transition NotToGive {
+		from OutOfStock;
+		to NotGiving;
+		trigger Request;
+	}
+
+	transition ReturnToOutOfStock {
+		from NotGiving;
+		to OutOfStock;
+		trigger Done;
+	}
+
+}
+

@@ -1,14 +1,19 @@
 package hu.elte.txtuml.utils.eclipse;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.core.IAnnotation;
 import org.eclipse.jdt.core.ICompilationUnit;
+import org.eclipse.jdt.core.IField;
 import org.eclipse.jdt.core.IJavaProject;
+import org.eclipse.jdt.core.IMemberValuePair;
 import org.eclipse.jdt.core.IPackageDeclaration;
 import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.IType;
@@ -19,6 +24,8 @@ import org.eclipse.jface.viewers.IBaseLabelProvider;
 import org.eclipse.jface.viewers.StyledString;
 
 import hu.elte.txtuml.api.model.Model;
+import hu.elte.txtuml.utils.Pair;
+import hu.elte.txtuml.utils.jdt.ModelUtils;
 
 public class WizardUtils {
 
@@ -62,7 +69,7 @@ public class WizardUtils {
 		List<IPackageFragment> modelPackages = new ArrayList<>();
 		for (IPackageFragment pFragment : packageFragments) {
 			Optional<ICompilationUnit> foundPackageInfoCompilationUnit = Optional
-					.of(pFragment.getCompilationUnit("package-info.java"));
+					.of(pFragment.getCompilationUnit(PackageUtils.PACKAGE_INFO));
 
 			if (!foundPackageInfoCompilationUnit.isPresent() || !foundPackageInfoCompilationUnit.get().exists()) {
 				continue;
@@ -114,6 +121,85 @@ public class WizardUtils {
 				return name.append(new StyledString(qualifier, StyledString.QUALIFIER_STYLER));
 			};
 		};
+	}
+
+	/**
+	 * @return an empty optional if the given type is not annotated, otherwise
+	 *         the name of the model package and its java project respectively,
+	 *         which contains the types of the given annotation
+	 */
+	public static Optional<Pair<String, String>> getModelByAnnotations(IType annotatedType) {
+		try {
+			List<String> referencedProjects = new ArrayList<>(
+					Arrays.asList(annotatedType.getJavaProject().getRequiredProjectNames()));
+			referencedProjects.add(annotatedType.getJavaProject().getElementName());
+			for (IAnnotation annot : annotatedType.getAnnotations()) {
+				List<Object> annotValues = Stream.of(annot.getMemberValuePairs())
+						.filter(mvp -> mvp.getValueKind() == IMemberValuePair.K_CLASS)
+						.flatMap(mvp -> Stream.of(mvp.getValue())).collect(Collectors.toList());
+
+				for (Object val : annotValues) {
+					List<Object> annotations = new ArrayList<>();
+					if (val instanceof String) {
+						annotations.add(val);
+					} else {
+						annotations.addAll(Arrays.asList((Object[]) val));
+					}
+
+					for (Object v : annotations) {
+						String[][] resolvedTypes = resolveType(annotatedType, (String) v);
+						List<String[]> resolvedTypeList = new ArrayList<>(Arrays.asList(resolvedTypes));
+						for (String[] type : resolvedTypeList) {
+							Optional<Pair<String, String>> model = ModelUtils.getModelOf(type[0], referencedProjects);
+							if (model.isPresent()) {
+								return model;
+							}
+						}
+					}
+				}
+			}
+		} catch (JavaModelException | NoSuchElementException e) {
+		}
+
+		return Optional.empty();
+	}
+
+	/**
+	 * @return an empty optional if the given type does not have any field,
+	 *         otherwise the name of the model package and its java project
+	 *         respectively, which contains the types of the given diagramType
+	 */
+	public static Optional<Pair<String, String>> getModelByFields(IType diagramType) {
+		try {
+			List<String> referencedProjects = new ArrayList<>(
+					Arrays.asList(diagramType.getJavaProject().getRequiredProjectNames()));
+			referencedProjects.add(diagramType.getJavaProject().getElementName());
+
+			for (IField field : diagramType.getFields()) {
+				String typeSignature = field.getTypeSignature();
+				String[][] resolvedTypes = resolveType(diagramType,
+						typeSignature.substring(1, typeSignature.length() - 1));
+				List<String[]> resolvedTypeList = new ArrayList<>(Arrays.asList(resolvedTypes));
+
+				for (String[] type : resolvedTypeList) {
+					Optional<Pair<String, String>> model = ModelUtils.getModelOf(type[0], referencedProjects);
+					if (model.isPresent()) {
+						return model;
+					}
+				}
+			}
+		} catch (JavaModelException | NoSuchElementException e) {
+		}
+
+		return Optional.empty();
+	}
+
+	private static String[][] resolveType(IType context, String typeName) {
+		try {
+			return context.resolveType(typeName);
+		} catch (JavaModelException e) {
+			return new String[][] {};
+		}
 	}
 
 	private static boolean isImportedNameResolvedTo(ICompilationUnit compilationUnit, String elementName,

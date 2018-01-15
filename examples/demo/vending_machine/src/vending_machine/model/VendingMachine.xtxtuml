@@ -1,0 +1,107 @@
+package vending_machine.model;
+
+import hu.elte.txtuml.api.stdlib.world.World;
+import hu.elte.txtuml.api.stdlib.world.WorldObject;
+import hu.elte.txtuml.api.stdlib.timers.Timer;
+
+class VendingMachine {
+
+	private int delay;
+
+	public VendingMachine () {
+		delay = 1000;
+	}
+
+	public void updateMessage(String newMessage) {
+		send new ShowMessage(newMessage) to World.get(View.id());
+	}
+
+	private Drink getSelectedDrink(String name) {
+		Drink selectedDrink = null;
+		for (Drink d : this->(Serve.drinks)) {
+			if (d.getName().equals(name)) {
+				selectedDrink = d;
+			}
+		}
+		return selectedDrink;
+	}
+
+	// state machine states
+	initial Init;
+
+	state Idle {
+		entry {
+			if (this->(WorkTogether.theCashRegister).selectAny().howMuchIsInside() == 0) {
+				updateMessage("Online");
+			} else {
+				updateMessage("Inserted: " + this->(WorkTogether.theCashRegister).selectAny().howMuchIsInside());
+			}
+		}
+	}
+
+	choice IsMoneyInside;
+
+	state ShowingPrice {
+		entry {
+			Drink selectedDrink = getSelectedDrink(trigger.name);
+			if (selectedDrink.onStock()) {
+				updateMessage(selectedDrink.getName() + " costs " +  selectedDrink.getPrice());
+			} else {
+				updateMessage("Out of stock");
+			}
+			Timer.start(new Done(), this, delay);
+		}
+	}
+
+	state Vending {
+		entry {
+			Drink selectedDrink = getSelectedDrink(trigger.name);
+			CashRegister register = this->(WorkTogether.theCashRegister).selectAny();
+			
+			if (selectedDrink.getPrice() <= register.howMuchIsInside()) {
+				send new Request() to selectedDrink;
+			} else {
+				updateMessage("Please, give more money");
+			}
+			Timer.start(new Done(), this, delay);
+		}
+	}
+
+	// state machine transitions
+	transition Initalize {
+		from Init;
+		to Idle;
+	}
+
+	transition CheckWhetherMoneyIsInside {
+		from Idle;
+		to IsMoneyInside;
+		trigger DrinkChosen;
+	}
+
+	transition ShowPrice {
+		from IsMoneyInside;
+		to ShowingPrice;
+		guard (this->(WorkTogether.theCashRegister).selectAny().howMuchIsInside() == 0);
+	}
+
+	transition StartVending {
+		from IsMoneyInside;
+		to Vending;
+		guard (else);
+	}
+
+	transition HidePrice {
+		from ShowingPrice;
+		to Idle;
+		trigger Done;
+	}
+
+	transition DoneVending {
+		from Vending;
+		to Idle;
+		trigger Done;
+	}
+
+}
+

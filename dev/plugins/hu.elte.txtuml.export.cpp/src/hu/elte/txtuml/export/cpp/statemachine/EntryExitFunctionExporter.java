@@ -1,48 +1,52 @@
 package hu.elte.txtuml.export.cpp.statemachine;
 
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.Behavior;
 import org.eclipse.uml2.uml.State;
-import org.eclipse.uml2.uml.UMLPackage;
 
+import hu.elte.txtuml.export.cpp.ActivityExportResult;
 import hu.elte.txtuml.export.cpp.activity.ActivityExporter;
+import hu.elte.txtuml.export.cpp.templates.GenerationNames.HierarchicalStateMachineNames;
+import hu.elte.txtuml.export.cpp.templates.GenerationNames.StateMachineMethodNames;
+import hu.elte.txtuml.export.cpp.templates.activity.ActivityTemplates;
 import hu.elte.txtuml.export.cpp.templates.statemachine.EventTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.FunctionTemplates;
 import hu.elte.txtuml.utils.Logger;
 import hu.elte.txtuml.utils.Pair;
 
 class EntryExitFunctionDescription {
-	
-	public EntryExitFunctionDescription(String stateName, String functionName, String functionBody, boolean containsSignalAccess) {
+
+	public EntryExitFunctionDescription(String stateName, String functionName, String functionBody,
+			boolean containsEventParamReference) {
 		this.stateName = stateName;
 		this.functionName = functionName;
 		this.functionBody = functionBody;
-		this.containsSignalAccess = containsSignalAccess;
+		this.containsEventParamReference = containsEventParamReference;
 	}
-	
+
 	public String getStateName() {
 		return stateName;
 	}
-	
+
 	public String getFunctionName() {
 		return functionName;
 	}
-	
+
 	public String getFunctionBody() {
 		return functionBody;
 	}
-	
+
 	public boolean getContainsSignalAccess() {
-		return containsSignalAccess;
+		return containsEventParamReference;
 	}
-	
+
 	private String stateName;
 	private String functionName;
 	private String functionBody;
-	private boolean containsSignalAccess;
-	
+	private boolean containsEventParamReference;
+
 }
 
 public class EntryExitFunctionExporter {
@@ -55,7 +59,7 @@ public class EntryExitFunctionExporter {
 	}
 
 	private List<EntryExitFunctionDescription> entryList;
-	private List<EntryExitFunctionDescription> exitList; 
+	private List<EntryExitFunctionDescription> exitList;
 
 	private ActivityExporter activityExporter;
 	private List<State> stateList;
@@ -74,7 +78,7 @@ public class EntryExitFunctionExporter {
 	public List<EntryExitFunctionDescription> getEntryMap() {
 		return entryList;
 	}
- 
+
 	public void createEntryFunctionTypeMap() {
 		createFuncTypeMap(FuncTypeEnum.Entry);
 	}
@@ -84,26 +88,26 @@ public class EntryExitFunctionExporter {
 	}
 
 	public String createEntryFunctionsDecl() {
-		return createFunctionDecl (FuncTypeEnum.Entry);
+		return createFunctionDecl(FuncTypeEnum.Entry);
 	}
 
 	public String createExitFunctionsDecl() {
-		return createFunctionDecl (FuncTypeEnum.Exit);
+		return createFunctionDecl(FuncTypeEnum.Exit);
 	}
 
 	public String createEntryFunctionsDef() {
-		return createFunctionDef (FuncTypeEnum.Entry);
+		return createFunctionDef(FuncTypeEnum.Entry);
 	}
 
 	public String createExitFunctionsDef() {
-		return createFunctionDef (FuncTypeEnum.Exit);
+		return createFunctionDef(FuncTypeEnum.Exit);
 	}
 
 	private void createFuncTypeMap(FuncTypeEnum funcType) {
 		List<EntryExitFunctionDescription> functionList = new LinkedList<EntryExitFunctionDescription>();
-		String source = "";
-		String name = "";
 		for (State item : stateList) {
+			String source = "";
+			String name = "";
 			Behavior behavior = null;
 			String unknownName = null;
 			switch (funcType) {
@@ -118,13 +122,39 @@ public class EntryExitFunctionExporter {
 				break;
 			}
 			}
+			ActivityExportResult activityResult = new ActivityExportResult();
+			activityResult = activityExporter.createFunctionBody(behavior);
 
-			if (behavior != null) {
-				if (behavior.eClass().equals(UMLPackage.Literals.ACTIVITY)) {
-					source = activityExporter.createFunctionBody((Activity) behavior).toString();
-					name = item.getName() + "_" + unknownName;
-					functionList.add(new EntryExitFunctionDescription(item.getName(), name, source.toString(),activityExporter.isContainsSignalAccess()));
+			if (item.isComposite()) {
+				String compositeRelatedCode = "";
+				switch (funcType) {
+				case Entry:
+					compositeRelatedCode = ActivityTemplates.simpleIf(HierarchicalStateMachineNames.CurrentMachineName,
+							ActivityTemplates.operationCallOnPointerVariable(HierarchicalStateMachineNames.CurrentMachineName,
+									StateMachineMethodNames.InitializeFunctionName,
+									Arrays.asList(EventTemplates.EventFParamName)));
+					source = activityResult.getActivitySource() + compositeRelatedCode;
+
+					break;
+				case Exit:
+					compositeRelatedCode = ActivityTemplates.simpleIf(HierarchicalStateMachineNames.CurrentMachineName,
+							ActivityTemplates.operationCallOnPointerVariable(HierarchicalStateMachineNames.CurrentMachineName,
+									StateMachineMethodNames.FinalizeFunctionName,
+									Arrays.asList(EventTemplates.EventFParamName)));
+					source = compositeRelatedCode + activityResult.getActivitySource();
+					break;
+				default:
+					break;
 				}
+
+			} else {
+				source = activityResult.getActivitySource();
+			}
+			if (source != "") {
+				name = item.getName() + "_" + unknownName;
+				functionList.add(new EntryExitFunctionDescription(item.getName(), name, source,
+						item.isComposite() || activityResult.sourceHasSignalReference()));
+
 			}
 		}
 
@@ -135,48 +165,52 @@ public class EntryExitFunctionExporter {
 		}
 
 	}
-	
+
 	private String createFunctionDecl(FuncTypeEnum funcType) {
 		StringBuilder source = new StringBuilder("");
 		List<String> eventParameter = new LinkedList<String>();
-		eventParameter.add(EventTemplates.EventBaseRefName);
-		for (EntryExitFunctionDescription description : getTheProperList (funcType)) {
-			source.append(FunctionTemplates.functionDecl(description.getFunctionName(),eventParameter));
+		eventParameter.add(EventTemplates.EventPointerType);
+		for (EntryExitFunctionDescription description : getTheProperList(funcType)) {
+			source.append(FunctionTemplates.functionDecl(description.getFunctionName(), eventParameter));
 		}
 		return source.toString();
 	}
-	
+
 	private String createFunctionDef(FuncTypeEnum funcType) {
 		StringBuilder source = new StringBuilder("");
-		
+
 		List<Pair<String, String>> hiddenParam = new LinkedList<Pair<String, String>>();
-		List<Pair<String, String>> notHiddenParam = new LinkedList<Pair<String,String>>();
-		hiddenParam.add(new Pair<String,String>(EventTemplates.EventBaseRefName,""));
-		notHiddenParam.add(new Pair<String,String>(EventTemplates.EventBaseRefName,EventTemplates.EventParamName));
-		for (EntryExitFunctionDescription description : getTheProperList (funcType)) {
+		List<Pair<String, String>> notHiddenParam = new LinkedList<Pair<String, String>>();
+		hiddenParam.add(new Pair<String, String>(EventTemplates.EventPointerType, ""));
+		notHiddenParam.add(new Pair<String, String>(EventTemplates.EventPointerType, EventTemplates.EventParamName));
+		for (EntryExitFunctionDescription description : getTheProperList(funcType)) {
 			if (description.getContainsSignalAccess()) {
-				source.append(FunctionTemplates.functionDef(className, description.getFunctionName(),notHiddenParam,description.getFunctionBody()));
+				source.append(FunctionTemplates.functionDef(className, description.getFunctionName(), notHiddenParam,
+						description.getFunctionBody()));
 			} else {
-				source.append(FunctionTemplates.functionDef(className, description.getFunctionName(),hiddenParam,description.getFunctionBody()));
+				source.append(FunctionTemplates.functionDef(className, description.getFunctionName(), hiddenParam,
+						description.getFunctionBody()));
 
 			}
 		}
 		return source.toString();
 	}
-	
-	private List<EntryExitFunctionDescription> getTheProperList (FuncTypeEnum funcType) {
+
+	private List<EntryExitFunctionDescription> getTheProperList(FuncTypeEnum funcType) {
 		List<EntryExitFunctionDescription> functionList;
 		switch (funcType) {
-		case Entry : functionList = entryList;
+		case Entry:
+			functionList = entryList;
 			break;
-		case Exit : functionList = exitList;
+		case Exit:
+			functionList = exitList;
 			break;
-			default:
-				functionList = null;
-				Logger.user.error("The FunctionTypeEnum should be Entry or Exit");				
+		default:
+			functionList = null;
+			Logger.sys.error("The FunctionTypeEnum should be Entry or Exit");
 			break;
 		}
-		
+
 		return functionList;
 	}
 }

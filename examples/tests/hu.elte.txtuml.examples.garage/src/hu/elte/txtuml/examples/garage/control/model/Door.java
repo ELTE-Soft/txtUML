@@ -6,16 +6,20 @@ import hu.elte.txtuml.api.model.ModelClass;
 import hu.elte.txtuml.api.model.To;
 import hu.elte.txtuml.api.model.Trigger;
 import hu.elte.txtuml.api.stdlib.timers.Timer;
-import hu.elte.txtuml.examples.garage.control.glue.Glue;
+import hu.elte.txtuml.api.stdlib.world.SignalToWorld;
+import hu.elte.txtuml.api.stdlib.world.World;
+import hu.elte.txtuml.examples.garage.control.model.associations.DoorUsesTimer;
 import hu.elte.txtuml.examples.garage.control.model.associations.MotorMovesDoor;
-import hu.elte.txtuml.examples.garage.control.model.signals.external.MotionSensorActivated;
-import hu.elte.txtuml.examples.garage.control.model.signals.external.RemoteControlButtonPressed;
+import hu.elte.txtuml.examples.garage.control.model.signals.external.in.MotionSensorActivated;
+import hu.elte.txtuml.examples.garage.control.model.signals.external.in.RemoteControlButtonPressed;
+import hu.elte.txtuml.examples.garage.control.model.signals.external.out.StopDoor;
 import hu.elte.txtuml.examples.garage.control.model.signals.internal.ChangeMotorMode;
 import hu.elte.txtuml.examples.garage.control.model.signals.internal.DoorTimerExpired;
 import hu.elte.txtuml.examples.garage.control.model.signals.internal.ReenableMotor;
 
+class S extends SignalToWorld {}
+
 public class Door extends ModelClass {
-	Timer doorTimer;
 
 	public class InitDoor extends Initial {
 	}
@@ -31,13 +35,17 @@ public class Door extends ModelClass {
 	public class Disabled extends State {
 		@Override
 		public void entry() {
-			Glue.getInstance().stopDoor();
+			Action.send(new StopDoor(), World.get(View.id()));
 		}
 	}
 
 	@From(InitDoor.class)
 	@To(Enabled.class)
 	public class TInitDoor extends Transition {
+		@Override
+		public void effect() {
+			Action.send(new S(), World.get(View.id()));
+		}
 	}
 
 	@From(Enabled.class)
@@ -46,7 +54,12 @@ public class Door extends ModelClass {
 	public class TDisable extends Transition {
 		@Override
 		public void effect() {
-			doorTimer = Timer.start(Door.this, new DoorTimerExpired(), 2000);
+			if (!assoc(DoorUsesTimer.timer.class).isEmpty()) {
+				Timer timer = assoc(DoorUsesTimer.timer.class).selectAny();
+				Action.unlink(DoorUsesTimer.timer.class, timer, DoorUsesTimer.door.class, Door.this);				
+			}
+			Timer timer = Timer.start(new DoorTimerExpired(), Door.this, 2000);
+			Action.link(DoorUsesTimer.timer.class, timer, DoorUsesTimer.door.class, Door.this);
 		}
 	}
 
@@ -56,7 +69,7 @@ public class Door extends ModelClass {
 	public class TKeepDisabled extends Transition {
 		@Override
 		public void effect() {
-			doorTimer.reset(2000);
+			assoc(DoorUsesTimer.timer.class).selectAny().reset(2000);
 		}
 	}
 

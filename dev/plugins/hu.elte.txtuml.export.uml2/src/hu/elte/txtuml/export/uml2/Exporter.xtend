@@ -98,6 +98,7 @@ import org.eclipse.jdt.core.dom.IVariableBinding
 import org.eclipse.jdt.core.dom.IfStatement
 import org.eclipse.jdt.core.dom.InfixExpression
 import org.eclipse.jdt.core.dom.MethodInvocation
+import org.eclipse.jdt.core.dom.Modifier
 import org.eclipse.jdt.core.dom.Name
 import org.eclipse.jdt.core.dom.NullLiteral
 import org.eclipse.jdt.core.dom.NumberLiteral
@@ -121,7 +122,6 @@ import org.eclipse.uml2.uml.PackageableElement
 import org.eclipse.uml2.uml.PrimitiveType
 import org.eclipse.uml2.uml.Type
 import org.eclipse.uml2.uml.VisibilityKind
-import org.eclipse.jdt.core.dom.Modifier
 
 /** An exporter is able to fully or partially export a given element. 
  * Partial export only creates the UML object itself, while full export also creates its contents.

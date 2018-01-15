@@ -1,0 +1,70 @@
+package vending_machine.model;
+
+import hu.elte.txtuml.api.stdlib.timers.Timer;
+
+class CashRegister {
+
+	private int insertedCash;
+
+	private int delay;
+
+	public CashRegister() {
+		insertedCash = 0;
+		delay = 1000;
+	}
+
+	public int howMuchIsInside() {
+		return insertedCash;
+	}
+
+	private void updateMessage(String msg) {
+		this->(WorkTogether.theMachine).selectAny().updateMessage(msg);		
+	}
+
+	// state machine states
+	initial Init;
+
+	state Taking;
+
+	state Returning {
+		entry {
+			insertedCash -= trigger.paidAmount;
+			updateMessage("Returning: " + insertedCash);
+			insertedCash = 0;
+			Timer.start(new Done(), this, delay);
+		}
+	}
+
+	// state machine transitions
+	transition Initialize {
+		from Init;
+		to Taking;
+	}
+
+	transition StopTaking {
+		from Taking;
+		to Returning;
+		trigger GiveBackCash;
+	}
+
+	transition StopReturning {
+		from Returning;
+		to Taking;
+		trigger Done;
+		effect {
+			updateMessage("Online");
+		}
+	}
+
+	transition TakeCash {
+		from Taking;
+		to Taking;
+		trigger InsertCoin;
+		effect {
+			insertedCash += trigger.coin;
+			updateMessage("Inserted: " + insertedCash);
+		}
+	}
+
+}
+

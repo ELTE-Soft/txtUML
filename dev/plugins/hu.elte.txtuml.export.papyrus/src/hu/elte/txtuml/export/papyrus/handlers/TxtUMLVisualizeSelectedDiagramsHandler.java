@@ -17,14 +17,14 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.ui.handlers.HandlerUtil;
 
-import hu.elte.txtuml.export.papyrus.wizardz.TxtUMLVisuzalizeWizard;
+import hu.elte.txtuml.export.papyrus.wizardz.TxtUMLVisualizeWizard;
 import hu.elte.txtuml.export.papyrus.wizardz.VisualizeTxtUMLPage;
 
 public class TxtUMLVisualizeSelectedDiagramsHandler extends AbstractHandler {
 
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
-		TxtUMLVisuzalizeWizard wizard = new TxtUMLVisuzalizeWizard();
+		TxtUMLVisualizeWizard wizard = new TxtUMLVisualizeWizard();
 		WizardDialog wizardDialog = new WizardDialog(null, wizard);
 		wizardDialog.create();
 
@@ -42,7 +42,8 @@ public class TxtUMLVisualizeSelectedDiagramsHandler extends AbstractHandler {
 			for (ICompilationUnit cu : selectedCompilationUnits) {
 				types.addAll(Arrays.asList(cu.getTypes()));
 			}
-			page.selectElementsInDiagramTree(types.toArray());
+			page.selectElementsInDiagramTree(types.toArray(), false);
+			page.setExpandedLayouts(types);
 		} catch (JavaModelException ex) {
 		}
 

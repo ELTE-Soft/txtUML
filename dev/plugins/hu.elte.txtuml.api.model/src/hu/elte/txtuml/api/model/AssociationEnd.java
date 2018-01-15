@@ -68,21 +68,25 @@ import hu.elte.txtuml.api.model.runtime.collections.Sequence;
  * @param <T>
  *            the type of model objects to be contained in this collection
  */
-public abstract class AssociationEnd<T extends ModelClass, C extends Collection<T>> implements Bounds {
+public abstract class AssociationEnd<T extends ModelClass, C extends Collection<T>> implements @External Bounds {
 
+	@ExternalBody
 	AssociationEnd() {
 	}
 
+	@External
 	public abstract C createEmptyCollection();
 
 }
 
 abstract class MaybeEnd<T extends ModelClass> extends AssociationEnd<T, Maybe<T>> {
 
+	@ExternalBody
 	MaybeEnd() {
 	}
 
 	@Override
+	@External
 	public Maybe<T> createEmptyCollection() {
 		return Maybe.empty();
 	}
@@ -91,10 +95,12 @@ abstract class MaybeEnd<T extends ModelClass> extends AssociationEnd<T, Maybe<T>
 
 abstract class ManyEnd<T extends ModelClass> extends AssociationEnd<T, Sequence<T>> {
 
+	@ExternalBody
 	ManyEnd() {
 	}
 
 	@Override
+	@External
 	public Sequence<T> createEmptyCollection() {
 		return Sequence.empty();
 	}
@@ -103,15 +109,23 @@ abstract class ManyEnd<T extends ModelClass> extends AssociationEnd<T, Sequence<
 
 abstract class MultipleEnd<T extends ModelClass> extends ManyEnd<T> {
 
+	@External
 	private final int lowerBound = lowerBound();
+	@External
 	private final int upperBound = upperBound();
 
+	@ExternalBody
+	MultipleEnd() {
+	}
+	
 	@Override
+	@External
 	public boolean checkLowerBound(int actualSize) {
 		return actualSize >= lowerBound;
 	}
 
 	@Override
+	@External
 	public boolean checkUpperBound(int actualSize) {
 		return upperBound == -1 || actualSize <= upperBound;
 	}

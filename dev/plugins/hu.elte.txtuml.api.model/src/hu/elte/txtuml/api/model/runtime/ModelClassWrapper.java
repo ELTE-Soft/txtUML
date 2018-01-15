@@ -16,7 +16,8 @@ import hu.elte.txtuml.api.model.assocends.Navigability;
  * See the documentation of {@link hu.elte.txtuml.api.model.Model} for an
  * overview on modeling in JtxtUML.
  */
-public interface ModelClassWrapper extends SignalTargetWrapper<ModelClass>, RuntimeInfo {
+public interface ModelClassWrapper
+		extends SignalSenderWrapper<ModelClass>, SignalTargetWrapper<ModelClass>, RuntimeInfo {
 
 	/**
 	 * The unique identifier of the wrapped model class instance.

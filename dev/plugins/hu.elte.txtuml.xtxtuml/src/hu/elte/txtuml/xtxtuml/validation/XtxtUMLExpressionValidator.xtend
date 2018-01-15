@@ -6,6 +6,7 @@ import hu.elte.txtuml.api.model.Signal
 import hu.elte.txtuml.xtxtuml.common.XtxtUMLUtils
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAssociation
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAssociationEnd
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUAttribute
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUClass
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUClassPropertyAccessExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUDeleteObjectExpression
@@ -18,11 +19,14 @@ import hu.elte.txtuml.xtxtuml.xtxtUML.TUSignalAccessExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUState
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUStateType
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUTransition
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUTransitionGuard
 import java.util.HashSet
+import java.util.List
 import org.eclipse.emf.ecore.EObject
 import org.eclipse.xtext.EcoreUtil2
 import org.eclipse.xtext.common.types.JvmOperation
 import org.eclipse.xtext.naming.IQualifiedNameProvider
+import org.eclipse.xtext.naming.QualifiedName
 import org.eclipse.xtext.validation.Check
 import org.eclipse.xtext.xbase.XAbstractFeatureCall
 import org.eclipse.xtext.xbase.XBlockExpression
@@ -106,8 +110,16 @@ class XtxtUMLExpressionValidator extends XtxtUMLTypeValidator {
 		val portSourceElement = sendExpr.target.actualType.type.primarySourceElement as TUPort;
 		val requiredReceptionsOfPort = portSourceElement.members.findFirst[required]?.interface?.receptions;
 
+		val List<QualifiedName> supers = newArrayList
+		if (sentSignalSourceElement.travelSignalHierarchy [
+			supers.add(fullyQualifiedName)
+			false
+		] == null) {
+			return; // circle in hierarchy
+		}
+
 		if (requiredReceptionsOfPort?.findFirst [
-			signal?.fullyQualifiedName == sentSignalSourceElement?.fullyQualifiedName
+			supers.contains(signal?.fullyQualifiedName)
 		] == null) {
 			error("Signal type " + sentSignalSourceElement.name + " is not required by port " + portSourceElement.name,
 				sendExpr, TU_SEND_SIGNAL_EXPRESSION__SIGNAL, NOT_REQUIRED_SIGNAL);
@@ -248,8 +260,10 @@ class XtxtUMLExpressionValidator extends XtxtUMLTypeValidator {
 	override protected isValueExpectedRecursive(XExpression expr) {
 		val container = expr.eContainer;
 		return switch (container) {
+			TUAttribute,
+			TUDeleteObjectExpression,
 			TUSendSignalExpression,
-			TUDeleteObjectExpression: true
+			TUTransitionGuard: true
 			XBlockExpression: false
 			default: super.isValueExpectedRecursive(expr)
 		}

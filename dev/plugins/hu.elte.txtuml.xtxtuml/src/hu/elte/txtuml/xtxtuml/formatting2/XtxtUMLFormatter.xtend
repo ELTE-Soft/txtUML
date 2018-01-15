@@ -19,6 +19,7 @@ import hu.elte.txtuml.xtxtuml.xtxtUML.TUExecution
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUFile
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUInterface
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUModelDeclaration
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUModifiers
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUMultiplicity
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUOperation
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUPort
@@ -49,6 +50,10 @@ import static hu.elte.txtuml.xtxtuml.xtxtUML.XtxtUMLPackage.Literals.*
 
 /**
  * Defines formatting rules for XtxtUML elements.
+ * <p>
+ * <i>Rule:</i> The formatting of an element should only affect its inside. For example, it should not prepend any
+ * white space before the first part of the element or append any white space after the last part. In
+ * cases where this rule cannot be followed, it has to be stated explicitly.
  */
 class XtxtUMLFormatter extends XbaseFormatter {
 
@@ -86,6 +91,7 @@ class XtxtUMLFormatter extends XbaseFormatter {
 
 	def dispatch void format(TUSignal it, extension IFormattableDocument document) {
 		formatBlockElement(it, document, regionFor.keyword('signal'), attributes, false);
+		regionFor.keyword('extends').surround[oneSpace];
 	}
 
 	def dispatch void format(TUClass it, extension IFormattableDocument document) {
@@ -143,8 +149,18 @@ class XtxtUMLFormatter extends XbaseFormatter {
 		}
 	}
 
+	/**
+	 * This formatting rule appends one space after the {@link TUModifiers} element unless it
+	 * is empty (no part is defined).
+	 */
+	def dispatch void format(TUModifiers it, extension IFormattableDocument document) {
+		regionFor.feature(TU_MODIFIERS__STATIC).append[oneSpace];
+		regionFor.feature(TU_MODIFIERS__EXTERNALITY).append[oneSpace];
+		regionFor.feature(TU_MODIFIERS__VISIBILITY).append[oneSpace];
+	}
+
 	def dispatch void format(TUConstructor it, extension IFormattableDocument document) {
-		regionFor.feature(TU_CONSTRUCTOR__VISIBILITY).append[oneSpace];
+		format(modifiers, document); // empty or ends with one space
 		regionFor.keyword('(').surround[noSpace];
 		regionFor.keyword(')').prepend[noSpace].append[oneSpace];
 		regionFor.keywords(',').forEach[prepend[noSpace].append[oneSpace]];
@@ -156,7 +172,7 @@ class XtxtUMLFormatter extends XbaseFormatter {
 	}
 
 	def dispatch void format(TUAttributeOrOperationDeclarationPrefix it, extension IFormattableDocument document) {
-		regionFor.feature(TU_ATTRIBUTE_OR_OPERATION_DECLARATION_PREFIX__VISIBILITY).append[oneSpace];
+		format(modifiers, document); // empty or ends with one space 
 		format(type, document);
 	}
 
@@ -260,8 +276,12 @@ class XtxtUMLFormatter extends XbaseFormatter {
 	}
 
 	def dispatch void format(TUAttribute it, extension IFormattableDocument document) {
-		formatSimpleMember(it, document, TU_ATTRIBUTE__NAME);
+		regionFor.feature(TU_ATTRIBUTE__NAME).prepend[oneSpace];
+		regionFor.keyword('=').surround[oneSpace];
+		regionFor.keyword(';').prepend[noSpace];
+
 		format(prefix, document);
+		format(initExpression, document);
 	}
 
 	def dispatch void format(TUClassPropertyAccessExpression it, extension IFormattableDocument document) {
@@ -288,7 +308,7 @@ class XtxtUMLFormatter extends XbaseFormatter {
 
 		formatBlockElement(it, document, typeKeyword, members, isSpacious, [
 			append[newLines = if(isSpacious) 2 else 1];
-			format(document);
+			format(it, document); // don't omit 'it'
 		])
 	}
 

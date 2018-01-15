@@ -10,14 +10,15 @@ import hu.elte.txtuml.utils.Logger;
 
 /**
  * A model executor thread is used by a model executor to run a model or parts
- * of a model (the executor may use multiple threads). Every {@link ModelClass}
- * and {@link Port} instance is owned by one model executor thread which runs
- * and manages that instance. Whenever an asynchronous event is raised (for
- * example, a signal is sent to such an instance), it is reported to the owner
- * thread, which puts that event into its mailbox and later processes it. The
- * processing of one such event is called a model execution step, which is also
- * an iteration of the main loop of a model executor thread. This thread stops
- * if:
+ * of a model (the executor may use multiple threads). Every
+ * {@link hu.elte.txtuml.api.model.ModelClass} and
+ * {@link hu.elte.txtuml.api.model.ModelClass.Port} instance is owned by one
+ * model executor thread which runs and manages that instance. Whenever an
+ * asynchronous event is raised (for example, a signal is sent to such an
+ * instance), it is reported to the owner thread, which puts that event into its
+ * mailbox and later processes it. The processing of one such event is called a
+ * model execution step, which is also an iteration of the main loop of a model
+ * executor thread. This thread stops if:
  * <ol>
  * <li>Either
  * <ul>
@@ -29,8 +30,8 @@ import hu.elte.txtuml.utils.Logger;
  * <li>or {@link #earlyStop} returns true (is false by default).</li>
  * </ul>
  * </li>
- * <li>The {@link ModelExecutor#unregisterThread(ModelExecutorThread)} method
- * returns true.</li>
+ * <li>The {@link AbstractModelExecutor#unregisterThread(ModelExecutorThread)}
+ * method returns true.</li>
  * </ol>
  * Otherwise, the loop tries to continue working, even if it has been
  * interrupted while waiting for new events.
@@ -121,7 +122,7 @@ public abstract class ModelExecutorThread extends Thread implements RuntimeConte
 	}
 
 	private boolean shouldContinue() {
-		if (executor.shouldShutDownImmediately() || (isEmpty() && executor.shouldShutDownWhenNothingToDo())
+		if (executor.shouldShutDownImmediately() || (executor.shouldShutDownWhenNothingToDo() && isEmpty())
 				|| earlyStop()) {
 			if (executor.unregisterThread(this)) {
 				return false;
@@ -217,5 +218,7 @@ public abstract class ModelExecutorThread extends Thread implements RuntimeConte
 	 * Thread-safe.
 	 */
 	public abstract void send(Signal signal, AbstractPortWrapper sender, AbstractModelClassWrapper target);
+
+	public abstract void sent(Signal signal, AbstractModelClassWrapper sender);
 
 }

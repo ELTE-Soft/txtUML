@@ -220,7 +220,7 @@ class User {
 		
 		send new DoTasks(workToDo) to myMachine;
 
-		Timer.start(myMachine, new ButtonPress(), 2000);
+		Timer.start(new ButtonPress(), myMachine, 2000);
 		// Switching off the machine with some delay.
 		
 		log("\t" + name.toString() + ": work finished...");

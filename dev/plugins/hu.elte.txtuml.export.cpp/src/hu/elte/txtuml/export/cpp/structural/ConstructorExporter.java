@@ -5,7 +5,8 @@ import java.util.List;
 
 import org.eclipse.uml2.uml.Operation;
 
-import hu.elte.txtuml.export.cpp.Shared;
+import hu.elte.txtuml.export.cpp.ActivityExportResult;
+import hu.elte.txtuml.export.cpp.CppExporterUtils;
 import hu.elte.txtuml.export.cpp.activity.ActivityExporter;
 import hu.elte.txtuml.export.cpp.templates.structual.ConstructorTemplates;
 
@@ -27,10 +28,11 @@ class ConstructorExporter {
 	String exportConstructorsDefinitions(String className, boolean ownStateMachine) {
 		StringBuilder source = new StringBuilder();
 		for (Operation operation : constructors) {
-			String body = activityExporter.createFunctionBody(Shared.getOperationActivity(operation));
-			source.append(ConstructorTemplates.constructorDef(className, Shared.getOperationParamNames(operation),
-					Shared.getOperationParams(operation)));
-			source.append(ConstructorTemplates.initDef(className, body, Shared.getOperationParams(operation),
+			ActivityExportResult activityResult = activityExporter.createFunctionBody(CppExporterUtils.getOperationActivity(operation));
+			source.append(
+					ConstructorTemplates.constructorDef(className, CppExporterUtils.getOperationParamNames(operation),
+							CppExporterUtils.getOperationParams(operation)));
+			source.append(ConstructorTemplates.initDef(className, activityResult.getActivitySource(), CppExporterUtils.getOperationParams(operation),
 					ownStateMachine));
 
 		}
@@ -41,9 +43,10 @@ class ConstructorExporter {
 		StringBuilder source = new StringBuilder();
 		if (ownConstructor) {
 			for (Operation operation : constructors) {
+				source.append(ConstructorTemplates.constructorDecl(className,
+						CppExporterUtils.getOperationParamTypes(operation)));
 				source.append(
-						ConstructorTemplates.constructorDecl(className, Shared.getOperationParamTypes(operation)));
-				source.append(ConstructorTemplates.initDecl(className, Shared.getOperationParamTypes(operation)));
+						ConstructorTemplates.initDecl(className, CppExporterUtils.getOperationParamTypes(operation)));
 
 			}
 		} else {
@@ -56,7 +59,7 @@ class ConstructorExporter {
 
 	private void importConstructors(List<Operation> allOperation) {
 		for (Operation op : allOperation) {
-			if (Shared.isConstructor(op)) {
+			if (CppExporterUtils.isConstructor(op)) {
 				constructors.add(op);
 				ownConstructor = true;
 			}
