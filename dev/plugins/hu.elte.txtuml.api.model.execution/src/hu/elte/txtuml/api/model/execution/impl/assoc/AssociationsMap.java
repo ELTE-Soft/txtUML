@@ -14,12 +14,12 @@ public class AssociationsMap extends HashMap<Class<? extends AssociationEnd<?>>,
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T extends ModelClass, C extends GeneralCollection<T>> AssociationEndRuntime<T, C> getEnd(
+	public <T extends ModelClass, C extends GeneralCollection<? super T>> AssociationEndRuntime<T, C> getEnd(
 			Class<? extends AssociationEnd<C>> otherEnd) {
 		return (AssociationEndRuntime<T, C>) super.get(otherEnd);
 	}
 
-	public <T extends ModelClass, C extends GeneralCollection<T>> void putEnd(
+	public <T extends ModelClass, C extends GeneralCollection<? super T>> void putEnd(
 			Class<? extends AssociationEnd<C>> otherEnd, AssociationEndRuntime<T, C> wrapper) {
 		super.put(otherEnd, wrapper);
 	}

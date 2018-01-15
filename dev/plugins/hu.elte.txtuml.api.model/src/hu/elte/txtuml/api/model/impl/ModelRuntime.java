@@ -68,14 +68,14 @@ public interface ModelRuntime extends ImplRelated {
 	/**
 	 * Called by {@link Action#link(Class, ModelClass, Class, ModelClass)}.
 	 */
-	<L extends ModelClass, R extends ModelClass, CL extends GeneralCollection<L>, CR extends GeneralCollection<R>> void link(
+	<L extends ModelClass, R extends ModelClass, CL extends GeneralCollection<? super L>, CR extends GeneralCollection<? super R>> void link(
 			Class<? extends AssociationEnd<CL>> leftEnd, L leftObj, Class<? extends AssociationEnd<CR>> rightEnd,
 			R rightObj);
 
 	/**
 	 * Called by {@link Action#unlink(Class, ModelClass, Class, ModelClass)}.
 	 */
-	<L extends ModelClass, R extends ModelClass, CL extends GeneralCollection<L>, CR extends GeneralCollection<R>> void unlink(
+	<L extends ModelClass, R extends ModelClass, CL extends GeneralCollection<? super L>, CR extends GeneralCollection<? super R>> void unlink(
 			Class<? extends AssociationEnd<CL>> leftEnd, L leftObj, Class<? extends AssociationEnd<CR>> rightEnd,
 			R rightObj);
 

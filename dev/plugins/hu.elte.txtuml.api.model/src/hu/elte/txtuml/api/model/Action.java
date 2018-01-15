@@ -197,7 +197,7 @@ public abstract class Action {
 	 * @see ModelClass.Status#DELETED
 	 */
 	@ExternalBody
-	public static <L extends ModelClass, R extends ModelClass, CL extends GeneralCollection<L>, CR extends GeneralCollection<R>> void link(
+	public static <L extends ModelClass, R extends ModelClass, CL extends GeneralCollection<? super L>, CR extends GeneralCollection<? super R>> void link(
 			Class<? extends AssociationEnd<CL>> leftEnd, L leftObj, Class<? extends AssociationEnd<CR>> rightEnd,
 			R rightObj) {
 		ExecutorThread exec = ExecutorThread.current();
@@ -230,7 +230,7 @@ public abstract class Action {
 	 * @see AssociationEnd
 	 */
 	@ExternalBody
-	public static <L extends ModelClass, R extends ModelClass, CL extends GeneralCollection<L>, CR extends GeneralCollection<R>> void unlink(
+	public static <L extends ModelClass, R extends ModelClass, CL extends GeneralCollection<? super L>, CR extends GeneralCollection<? super R>> void unlink(
 			Class<? extends AssociationEnd<CL>> leftEnd, L leftObj, Class<? extends AssociationEnd<CR>> rightEnd,
 			R rightObj) {
 		ExecutorThread exec = ExecutorThread.current();

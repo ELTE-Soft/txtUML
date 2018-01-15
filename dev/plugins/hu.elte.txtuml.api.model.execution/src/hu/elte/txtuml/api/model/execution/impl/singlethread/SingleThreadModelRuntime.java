@@ -70,7 +70,7 @@ public abstract class SingleThreadModelRuntime<C extends AbstractModelClassRunti
 	}
 
 	@Override
-	public <L extends ModelClass, R extends ModelClass, CL extends GeneralCollection<L>, CR extends GeneralCollection<R>> void link(
+	public <L extends ModelClass, R extends ModelClass, CL extends GeneralCollection<? super L>, CR extends GeneralCollection<? super R>> void link(
 			Class<? extends AssociationEnd<CL>> leftEnd, L leftObj, Class<? extends AssociationEnd<CR>> rightEnd,
 			R rightObj) {
 		C left = getRuntimeOf(leftObj);
@@ -85,7 +85,7 @@ public abstract class SingleThreadModelRuntime<C extends AbstractModelClassRunti
 		tryAddToAssoc(right, leftEnd, left, leftObj, () -> left.removeFromAssoc(rightEnd, rightObj));
 	}
 
-	protected <R extends ModelClass, CR extends GeneralCollection<R>> void tryAddToAssoc(C left,
+	protected <R extends ModelClass, CR extends GeneralCollection<? super R>> void tryAddToAssoc(C left,
 			Class<? extends AssociationEnd<CR>> rightEnd, C right, R rightObj, Runnable rollBack) {
 		try {
 			left.addToAssoc(rightEnd, rightObj);
@@ -99,7 +99,7 @@ public abstract class SingleThreadModelRuntime<C extends AbstractModelClassRunti
 	}
 
 	@Override
-	public <L extends ModelClass, R extends ModelClass, CL extends GeneralCollection<L>, CR extends GeneralCollection<R>> void unlink(
+	public <L extends ModelClass, R extends ModelClass, CL extends GeneralCollection<? super L>, CR extends GeneralCollection<? super R>> void unlink(
 			Class<? extends AssociationEnd<CL>> leftEnd, L leftObj, Class<? extends AssociationEnd<CR>> rightEnd,
 			R rightObj) {
 		C left = getRuntimeOf(leftObj);

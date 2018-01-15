@@ -30,7 +30,7 @@ public final class Collections {
 	 * one).
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public static <E> Class<? extends GeneralCollection<E>> unbound(Class<? extends GeneralCollection<E>> type) {
+	public static <E> Class<? extends GeneralCollection<E>> unbound(Class<? extends GeneralCollection<?>> type) {
 		boolean isOrdered = isOrdered(type);
 		boolean isUnique = isUnique(type);
 

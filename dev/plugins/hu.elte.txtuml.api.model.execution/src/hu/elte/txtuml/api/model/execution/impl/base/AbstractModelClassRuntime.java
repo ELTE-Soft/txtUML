@@ -379,7 +379,7 @@ public abstract class AbstractModelClassRuntime extends AbstractSignalTargetRunt
 	 * collection containing the objects in association with the wrapped
 	 * ModelClass instance and being on the specified opposite association end.
 	 */
-	public abstract <T extends ModelClass, C extends GeneralCollection<T>> AssociationEndRuntime<T, C> getAssoc(
+	public abstract <T extends ModelClass, C extends GeneralCollection<? super T>> AssociationEndRuntime<T, C> getAssoc(
 			Class<? extends AssociationEnd<C>> otherEnd);
 
 	/**
@@ -387,7 +387,7 @@ public abstract class AbstractModelClassRuntime extends AbstractSignalTargetRunt
 	 * the objects in association with the wrapped ModelClass instance and being
 	 * on the specified opposite association end.
 	 */
-	public abstract <T extends ModelClass, C extends GeneralCollection<T>> boolean hasAssoc(
+	public abstract <T extends ModelClass, C extends GeneralCollection<? super T>> boolean hasAssoc(
 			Class<? extends AssociationEnd<C>> otherEnd, T object);
 
 	/**
@@ -395,7 +395,7 @@ public abstract class AbstractModelClassRuntime extends AbstractSignalTargetRunt
 	 * association with the wrapped ModelClass instance and being on the
 	 * specified opposite association end.
 	 */
-	public abstract <T extends ModelClass, C extends GeneralCollection<T>> void addToAssoc(
+	public abstract <T extends ModelClass, C extends GeneralCollection<? super T>> void addToAssoc(
 			Class<? extends AssociationEnd<C>> otherEnd, T object)
 			throws MultiplicityException, MultipleContainerException;
 
@@ -404,7 +404,7 @@ public abstract class AbstractModelClassRuntime extends AbstractSignalTargetRunt
 	 * in association with the wrapped ModelClass instance and being on the
 	 * specified opposite association end.
 	 */
-	public abstract <T extends ModelClass, C extends GeneralCollection<T>> void removeFromAssoc(
+	public abstract <T extends ModelClass, C extends GeneralCollection<? super T>> void removeFromAssoc(
 			Class<? extends AssociationEnd<C>> otherEnd, T object);
 
 	@Override

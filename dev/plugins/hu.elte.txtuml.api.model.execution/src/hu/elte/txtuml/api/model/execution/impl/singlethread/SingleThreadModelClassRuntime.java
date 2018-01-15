@@ -121,7 +121,7 @@ public class SingleThreadModelClassRuntime extends AbstractModelClassRuntime {
 	}
 
 	@Override
-	public <T extends ModelClass, C extends GeneralCollection<T>> AssociationEndRuntime<T, C> getAssoc(
+	public <T extends ModelClass, C extends GeneralCollection<? super T>> AssociationEndRuntime<T, C> getAssoc(
 			Class<? extends AssociationEnd<C>> otherEnd) {
 		AssociationEndRuntime<T, C> ret = associations.getEnd(otherEnd);
 		if (ret == null) {
@@ -132,7 +132,7 @@ public class SingleThreadModelClassRuntime extends AbstractModelClassRuntime {
 	}
 
 	@Override
-	public <T extends ModelClass, C extends GeneralCollection<T>> boolean hasAssoc(
+	public <T extends ModelClass, C extends GeneralCollection<? super T>> boolean hasAssoc(
 			Class<? extends AssociationEnd<C>> otherEnd, T object) {
 
 		AssociationEndRuntime<T, ?> actualOtherEnd = associations.getEnd(otherEnd);
@@ -140,7 +140,7 @@ public class SingleThreadModelClassRuntime extends AbstractModelClassRuntime {
 	}
 
 	@Override
-	public <T extends ModelClass, C extends GeneralCollection<T>> void addToAssoc(
+	public <T extends ModelClass, C extends GeneralCollection<? super T>> void addToAssoc(
 			Class<? extends AssociationEnd<C>> otherEnd, T object)
 			throws MultiplicityException, MultipleContainerException {
 		containerCheck(otherEnd);
@@ -149,7 +149,7 @@ public class SingleThreadModelClassRuntime extends AbstractModelClassRuntime {
 	}
 
 	@Override
-	public <T extends ModelClass, C extends GeneralCollection<T>> void removeFromAssoc(
+	public <T extends ModelClass, C extends GeneralCollection<? super T>> void removeFromAssoc(
 			Class<? extends AssociationEnd<C>> otherEnd, T object) {
 
 		AssociationEndRuntime<T, C> assocEnd = getAssoc(otherEnd);
@@ -165,7 +165,7 @@ public class SingleThreadModelClassRuntime extends AbstractModelClassRuntime {
 
 	}
 
-	private <T extends ModelClass, C extends GeneralCollection<T>, AE extends AssociationEnd<C>> void containerCheck(
+	private <T extends ModelClass, C extends GeneralCollection<? super T>, AE extends AssociationEnd<C>> void containerCheck(
 			Class<AE> otherEnd) throws MultipleContainerException {
 		if (Container.class.isAssignableFrom(otherEnd)) {
 			for (Entry<Class<? extends AssociationEnd<?>>, AssociationEndRuntime<?, ?>> entry : associations

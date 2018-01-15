@@ -11,7 +11,7 @@ import hu.elte.txtuml.api.model.external.Collections;
 import hu.elte.txtuml.api.model.impl.Wrapper;
 import hu.elte.txtuml.utils.InstanceCreator;
 
-public interface AssociationEndRuntime<T extends ModelClass, C extends GeneralCollection<T>>
+public interface AssociationEndRuntime<T extends ModelClass, C extends GeneralCollection<? super T>>
 		extends Wrapper<AssociationEnd<C>> {
 
 	GeneralCollection<T> getCollection();
@@ -30,12 +30,12 @@ public interface AssociationEndRuntime<T extends ModelClass, C extends GeneralCo
 
 	// create methods
 
-	static <T extends ModelClass, C extends GeneralCollection<T>> AssociationEndRuntime<T, C> create(
+	static <T extends ModelClass, C extends GeneralCollection<? super T>> AssociationEndRuntime<T, C> create(
 			Class<? extends AssociationEnd<C>> typeOfWrapped) {
 		return create(InstanceCreator.create(typeOfWrapped, (Object) null));
 	}
 
-	static <T extends ModelClass, C extends GeneralCollection<T>> AssociationEndRuntime<T, C> create(
+	static <T extends ModelClass, C extends GeneralCollection<? super T>> AssociationEndRuntime<T, C> create(
 			AssociationEnd<C> wrapped) {
 
 		final Class<C> type = Associations.getCollectionTypeOf(wrapped);
