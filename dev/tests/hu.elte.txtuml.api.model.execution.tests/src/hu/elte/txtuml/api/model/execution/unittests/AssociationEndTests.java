@@ -1,36 +1,34 @@
 package hu.elte.txtuml.api.model.execution.unittests;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.junit.Assert;
 import org.junit.Test;
 
 import hu.elte.txtuml.api.model.Action;
-import hu.elte.txtuml.api.model.Collection;
+import hu.elte.txtuml.api.model.GeneralCollection;
 import hu.elte.txtuml.api.model.ModelClass;
 import hu.elte.txtuml.api.model.execution.testmodel.A;
 import hu.elte.txtuml.api.model.execution.testmodel.B;
 import hu.elte.txtuml.api.model.execution.testmodel.assoc.A_A;
 import hu.elte.txtuml.api.model.execution.testmodel.assoc.A_B_2;
-import hu.elte.txtuml.api.model.execution.util.MutableBoolean;
 
 public class AssociationEndTests extends UnitTestsBase {
 
 	@Test
 	public void testAssociationEnds() {
-		MutableBoolean exceptionThrown = new MutableBoolean(false);
+		boolean[] exceptionThrown = new boolean[] { false };
 
 		executor.run(() -> {
 			try {
 				init();
 			} catch (AssertionError e) {
 				e.printStackTrace();
-				exceptionThrown.value = true;
+				exceptionThrown[0] = true;
 			}
 		});
 
-		Assert.assertFalse(exceptionThrown.value);
+		Assert.assertFalse(exceptionThrown[0]);
+		assertNoErrors();
+		assertNoWarnings();
 	}
 
 	private static void init() {
@@ -79,11 +77,10 @@ public class AssociationEndTests extends UnitTestsBase {
 		assertCollection(new A[] { a1 }, a2.assoc(A_A.a2.class));
 	}
 
-	private static <T extends ModelClass> void assertCollection(T[] expecteds, Collection<T> collection) {
-		List<T> actuals = new ArrayList<>();
-		collection.forEach(actuals::add);
-
-		Assert.assertArrayEquals(expecteds, actuals.toArray());
+	private static <T extends ModelClass> void assertCollection(T[] expecteds, GeneralCollection<T> actualCollection) {
+		GeneralCollection<T> expectedCollection = Action.collectIn(actualCollection.getClass(), expecteds);
+		
+		Assert.assertEquals(expectedCollection, actualCollection);
 	}
 
 }

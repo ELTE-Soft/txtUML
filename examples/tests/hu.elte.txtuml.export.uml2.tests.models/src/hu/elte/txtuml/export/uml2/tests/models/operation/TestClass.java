@@ -1,5 +1,7 @@
 package hu.elte.txtuml.export.uml2.tests.models.operation;
 
+import hu.elte.txtuml.api.model.External;
+import hu.elte.txtuml.api.model.ExternalBody;
 import hu.elte.txtuml.api.model.ModelClass;
 
 public class TestClass extends ModelClass {
@@ -15,5 +17,16 @@ public class TestClass extends ModelClass {
 	}
 	
 	protected void op4() {
+	}
+
+	@External
+	void external_op() {
+	}
+
+	@ExternalBody
+	void external_body_op() {
+	}
+
+	static void static_op() {
 	}
 }

@@ -41,7 +41,7 @@ public class User extends ModelClass {
 	void doWork() {
 		Action.log("\tUser: starting to work...");
 
-		Machine myMachine = this.assoc(Usage.usedMachine.class).selectAny();
+		Machine myMachine = this.assoc(Usage.usedMachine.class).one();
 
 		Action.send(new ButtonPress(), myMachine);
 		// Switching the machine on.

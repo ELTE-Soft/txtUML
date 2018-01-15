@@ -1,8 +1,27 @@
 package machine1.x.model;
 
+import java.time.format.DateTimeFormatter;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
 // classes
 
 class Machine {
+	private external List<String> switchOnLog = new ArrayList<String>();
+	private external DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+
+	private external-body void logSwitchOn() {
+		LocalDateTime now = LocalDateTime.now();
+		switchOnLog.add(dtf.format(now));
+	}
+
+	public external-body void printSwitchOnLog() {
+		for (String date : switchOnLog) {
+			System.out.println(date);
+		}
+	}
+
 	initial Init;
 
 	state Off {
@@ -18,12 +37,12 @@ class Machine {
 	state On {
 		entry {
 			log("\tMachine enters state: 'on'");
+			logSwitchOn();
 		}
 
 		exit {
 			log("\tMachine exits state: 'on'");
 		}
-
 	}
 
 	transition Initialize {
@@ -56,7 +75,7 @@ class Machine {
 class User {
 	initial Init;
 	state Ready;
-	
+
 	transition Initialize {
 		from Init;
 		to Ready;
@@ -74,10 +93,10 @@ class User {
 			doWork();
 		}
 	}
-	
+
 	void doWork() {
 		log("\tUser: starting to work...");
-		Machine myMachine = this->(Usage.usedMachine).selectAny();
+		Machine myMachine = this->(Usage.usedMachine).one();
 		send new ButtonPress() to myMachine;
 		send new ButtonPress() to myMachine;
 		send new ButtonPress() to myMachine;

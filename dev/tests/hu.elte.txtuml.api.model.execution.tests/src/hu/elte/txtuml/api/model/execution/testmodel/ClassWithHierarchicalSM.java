@@ -2,14 +2,13 @@ package hu.elte.txtuml.api.model.execution.testmodel;
 
 import hu.elte.txtuml.api.model.Action;
 import hu.elte.txtuml.api.model.From;
-import hu.elte.txtuml.api.model.ModelClass;
 import hu.elte.txtuml.api.model.To;
 import hu.elte.txtuml.api.model.Trigger;
 import hu.elte.txtuml.api.model.execution.testmodel.signals.Sig0;
 import hu.elte.txtuml.api.model.execution.testmodel.signals.Sig1;
 import hu.elte.txtuml.api.model.execution.testmodel.signals.Sig2;
 
-public class ClassWithHierarchicalSM extends ModelClass {
+public class ClassWithHierarchicalSM extends ClassWithOwnLog {
 
 	public class Init extends Initial {
 	}
@@ -21,12 +20,14 @@ public class ClassWithHierarchicalSM extends ModelClass {
 
 		@Override
 		public void entry() {
-			Action.log("CS1 entry");
+			Action.log("entry of CS1");
+			addToOwnLog("entry of CS1");
 		}
 
 		@Override
 		public void exit() {
-			Action.log("CS1 exit");
+			Action.log("exit of CS1");
+			addToOwnLog("exit of CS1");
 		}
 
 		public class Init extends Initial {
@@ -39,12 +40,14 @@ public class ClassWithHierarchicalSM extends ModelClass {
 
 			@Override
 			public void entry() {
-				Action.log("CS2 entry");
+				Action.log("entry of CS1.CS2");
+				addToOwnLog("entry of CS1.CS2");
 			}
 
 			@Override
 			public void exit() {
-				Action.log("CS2 exit");
+				Action.log("exit of CS1.CS2");
+				addToOwnLog("exit of CS1.CS2");
 			}
 
 			public class Init extends Initial {
@@ -54,12 +57,14 @@ public class ClassWithHierarchicalSM extends ModelClass {
 
 				@Override
 				public void entry() {
-					Action.log("S3 entry");
+					Action.log("entry of CS1.CS2.S3");
+					addToOwnLog("entry of CS1.CS2.S3");
 				}
 
 				@Override
 				public void exit() {
-					Action.log("S3 exit");
+					Action.log("exit of CS1.CS2.S3");
+					addToOwnLog("exit of CS1.CS2.S3");
 				}
 
 			}

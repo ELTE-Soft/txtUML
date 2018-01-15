@@ -1,6 +1,7 @@
 package hu.elte.txtuml.export.uml2.tests.models.attribute;
 
 import hu.elte.txtuml.api.model.DataType;
+import hu.elte.txtuml.api.model.External;
 import hu.elte.txtuml.api.model.ModelClass;
 
 public class TestClass extends ModelClass {
@@ -27,6 +28,9 @@ public class TestClass extends ModelClass {
 	private int private_attribute;
 	protected int protected_attribute;
 	public int public_attribute;
+
+	@External
+	int external_attribute;
 }
 
 class Reals extends DataType {

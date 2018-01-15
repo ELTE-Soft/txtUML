@@ -52,6 +52,8 @@ visualizer.visualizers.Visualizer.prototype.visualize = function (holder) {
 	_.each(this._nodes, function (node) {
 		// add node to graph
 		this._graph.addCell(node.getNode());
+		// add modifier CSS classes
+		node.addModifierClasses(paper);
 	}, this);
 
 	_.each(this._links, function (relation) {

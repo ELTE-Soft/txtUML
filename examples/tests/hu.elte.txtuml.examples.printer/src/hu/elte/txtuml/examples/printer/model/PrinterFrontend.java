@@ -34,7 +34,7 @@ public class PrinterFrontend extends ModelClass {
 		@Override
 		public void entry() {
 			if (size() > 0) {
-				PrinterBackend pb = PrinterFrontend.this.assoc(PrinterSystem.backend.class).selectAny();
+				PrinterBackend pb = PrinterFrontend.this.assoc(PrinterSystem.backend.class).one();
 				if (!lock) {
 					lock = true;
 					Document doc = first();
@@ -76,7 +76,7 @@ public class PrinterFrontend extends ModelClass {
 	public class PrintRecieved extends Transition {
 		@Override
 		public void effect() {
-			Document doc = PrinterFrontend.this.assoc(DocumentToPrint.toPrint.class).selectAny();
+			Document doc = PrinterFrontend.this.assoc(DocumentToPrint.toPrint.class).one();
 			addAsLast(doc);
 			Action.log("PrinterFrontend: Document recieved. Queue size: " + size() + ".");
 		}
@@ -112,17 +112,17 @@ public class PrinterFrontend extends ModelClass {
 	}
 
 	private Document first() {
-		return assoc(DocumentQueue.element.class).selectAny();
+		return assoc(DocumentQueue.element.class).one();
 	}
 
 	private void removeFirst() {
-		Document toRemove = assoc(DocumentQueue.element.class).selectAny();
+		Document toRemove = assoc(DocumentQueue.element.class).one();
 		
 		Action.unlink(DocumentQueue.element.class, toRemove, DocumentQueue.printerFrontend.class, this);
 	}
 
 	private int size() {
-		return assoc(DocumentQueue.element.class).count();
+		return assoc(DocumentQueue.element.class).size();
 	}
 
 }

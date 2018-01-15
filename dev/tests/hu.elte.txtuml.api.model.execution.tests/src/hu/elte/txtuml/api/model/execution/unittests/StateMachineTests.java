@@ -1,14 +1,13 @@
 package hu.elte.txtuml.api.model.execution.unittests;
 
+import java.util.Arrays;
+import java.util.Optional;
+
 import org.junit.Test;
-import org.mockito.InOrder;
-import org.mockito.Matchers;
-import org.mockito.Mockito;
 
 import hu.elte.txtuml.api.model.Action;
+import hu.elte.txtuml.api.model.execution.LogLevel;
 import hu.elte.txtuml.api.model.execution.ModelExecutor;
-import hu.elte.txtuml.api.model.execution.TraceListener;
-import hu.elte.txtuml.api.model.execution.testmodel.B;
 import hu.elte.txtuml.api.model.execution.testmodel.ClassWithChoice;
 import hu.elte.txtuml.api.model.execution.testmodel.ClassWithHierarchicalSM;
 import hu.elte.txtuml.api.model.execution.testmodel.signals.Sig0;
@@ -31,30 +30,27 @@ public class StateMachineTests extends UnitTestsBase {
 			Action.send(new Sig0(2), choice);
 		});
 
-		executionAsserter.assertEvents(x -> {
+		assertEvents(x -> {
 			x.executionStarted();
 			transition(x, choice, choice.new Initialize());
-			x.processingSignal(choice, new Sig0());
+			x.processingSignal(choice, new Sig0(), Optional.empty());
 			transition(x, choice, choice.new S1_C());
 			transition(x, choice, choice.new T1());
-			x.processingSignal(choice, new Sig0());
+			x.processingSignal(choice, new Sig0(), Optional.empty());
 			transition(x, choice, choice.new S1_C());
 			transition(x, choice, choice.new T2());
-			x.processingSignal(choice, new Sig0());
+			x.processingSignal(choice, new Sig0(), Optional.empty());
 			transition(x, choice, choice.new S1_C());
 			transition(x, choice, choice.new T3());
 			x.executionTerminated();
 		});
+		assertNoErrors();
+		assertNoWarnings();
 
 	}
 
 	@Test
-	// TODO This test should explicitly check whether the entry and exit methods
-	// are called in the model, not that it is reported.
 	public void testCompositeStateEntryExit() {
-		TraceListener mock = Mockito.mock(TraceListener.class);
-		executor.addTraceListener(mock);
-
 		executor.run(() -> {
 			hierarchical = Action.create(ClassWithHierarchicalSM.class);
 			Action.start(hierarchical);
@@ -63,19 +59,16 @@ public class StateMachineTests extends UnitTestsBase {
 			Action.send(new Sig1(), hierarchical);
 		});
 
-		InOrder inOrder = Mockito.inOrder(mock);
-		inOrder.verify(mock).enteringVertex(Matchers.isA(ClassWithHierarchicalSM.class),
-				Matchers.isA(ClassWithHierarchicalSM.CS1.class));
-		inOrder.verify(mock).enteringVertex(Matchers.isA(ClassWithHierarchicalSM.class),
-				Matchers.isA(ClassWithHierarchicalSM.CS1.CS2.class));
-		inOrder.verify(mock).enteringVertex(Matchers.isA(ClassWithHierarchicalSM.class),
-				Matchers.isA(ClassWithHierarchicalSM.CS1.CS2.S3.class));
-		inOrder.verify(mock).leavingVertex(Matchers.isA(ClassWithHierarchicalSM.class),
-				Matchers.isA(ClassWithHierarchicalSM.CS1.CS2.S3.class));
-		inOrder.verify(mock).leavingVertex(Matchers.isA(ClassWithHierarchicalSM.class),
-				Matchers.isA(ClassWithHierarchicalSM.CS1.CS2.class));
-		inOrder.verify(mock).leavingVertex(Matchers.isA(ClassWithHierarchicalSM.class),
-				Matchers.isA(ClassWithHierarchicalSM.CS1.class));
+		/*
+		 * The access to a field of 'b' is safe, there is no chance for memory
+		 * consistency errors here, because the model executor has already
+		 * terminated and a synchronization was made when awaiting its
+		 * termination.
+		 */
+		assertListsEqual(Arrays.asList("entry of CS1", "entry of CS1.CS2", "entry of CS1.CS2.S3",
+				"exit of CS1.CS2.S3", "exit of CS1.CS2", "exit of CS1"), hierarchical.ownLog);
+		assertNoErrors();
+		assertNoWarnings();
 	}
 
 	@Test
@@ -91,33 +84,30 @@ public class StateMachineTests extends UnitTestsBase {
 		ClassWithHierarchicalSM.CS1 cs1 = hierarchical.new CS1();
 		ClassWithHierarchicalSM.CS1.CS2 cs2 = cs1.new CS2();
 
-		executionAsserter.assertEvents(x -> {
+		assertEvents(x -> {
 			x.executionStarted();
 			transition(x, hierarchical, hierarchical.new Initialize());
-			x.processingSignal(hierarchical, new Sig0());
+			x.processingSignal(hierarchical, new Sig0(), Optional.empty());
 			transition(x, hierarchical, hierarchical.new S1_CS1());
 			x.enteringVertex(hierarchical, cs1.new Init());
 			transition(x, hierarchical, cs1, cs1.new Initialize());
-			x.processingSignal(hierarchical, new Sig0());
+			x.processingSignal(hierarchical, new Sig0(), Optional.empty());
 			transition(x, hierarchical, cs1, cs1.new S2_CS2());
 			x.enteringVertex(hierarchical, cs2.new Init());
 			transition(x, hierarchical, cs2, cs2.new Initialize());
-			x.processingSignal(hierarchical, new Sig1());
+			x.processingSignal(hierarchical, new Sig1(), Optional.empty());
 			x.leavingVertex(hierarchical, cs2.new S3());
 			x.leavingVertex(hierarchical, cs2);
 			transition(x, hierarchical, hierarchical.new CS1_S1());
 			x.executionTerminated();
 		});
+		assertNoErrors();
+		assertNoWarnings();
 	}
 
 	@Test
-	// TODO This test should explicitly check whether the entry and exit methods
-	// are called in the model, not that it is reported.
 	public void testEntryExit() {
-		TraceListener mock = Mockito.mock(TraceListener.class);
-
 		ModelExecutor executor = ModelExecutor.create();
-		executor.addTraceListener(mock);
 
 		executor.run(() -> {
 			createAndStartB();
@@ -125,14 +115,16 @@ public class StateMachineTests extends UnitTestsBase {
 			Action.send(new Sig2(), b);
 		});
 
-		InOrder inOrder = Mockito.inOrder(mock);
-		inOrder.verify(mock).enteringVertex(Matchers.isA(B.class), Matchers.isA(B.S.class));
-		inOrder.verify(mock).leavingVertex(Matchers.isA(B.class), Matchers.isA(B.S.class));
-		inOrder.verify(mock).usingTransition(Matchers.isA(B.class), Matchers.isA(B.T1.class));
-		inOrder.verify(mock).enteringVertex(Matchers.isA(B.class), Matchers.isA(B.S.class));
-		inOrder.verify(mock).leavingVertex(Matchers.isA(B.class), Matchers.isA(B.S.class));
-		inOrder.verify(mock).usingTransition(Matchers.isA(B.class), Matchers.isA(B.T2.class));
-		inOrder.verify(mock).enteringVertex(Matchers.isA(B.class), Matchers.isA(B.S.class));
+		/*
+		 * The access to a field of 'b' is safe, there is no chance for memory
+		 * consistency errors here, because the model executor has already
+		 * terminated and a synchronization was made when awaiting its
+		 * termination.
+		 */
+		assertListsEqual(Arrays.asList("entry", "exit", "entry", "exit", "entry"), b.ownLog);
+
+		assertNoErrors();
+		assertNoWarnings();
 	}
 
 	@Test
@@ -145,24 +137,27 @@ public class StateMachineTests extends UnitTestsBase {
 			Action.send(new Sig3(), b);
 		});
 
-		executionAsserter.assertEvents(x -> {
+		assertEvents(x -> {
 			x.executionStarted();
 			transition(x, b, b.new Initialize());
-			x.processingSignal(b, new Sig3());
+			x.processingSignal(b, new Sig3(), Optional.empty());
 			transition(x, b, b.new T3());
-			x.processingSignal(b, new Sig3());
+			x.processingSignal(b, new Sig3(), Optional.empty());
 			transition(x, b, b.new T4());
-			x.processingSignal(b, new Sig3());
+			x.processingSignal(b, new Sig3(), Optional.empty());
 			transition(x, b, b.new T3());
-			x.processingSignal(b, new Sig3());
+			x.processingSignal(b, new Sig3(), Optional.empty());
 			transition(x, b, b.new T4());
 			x.executionTerminated();
 		});
+
+		assertNoErrors();
+		assertNoWarnings();
 	}
 
 	@Test
 	public void testTrigger() {
-		executor.setTraceLogging(true).run(() -> {
+		executor.setLogLevel(LogLevel.TRACE).run(() -> {
 			createAndStartB();
 			Action.send(new Sig1(), b);
 			Action.send(new Sig2(), b);
@@ -172,23 +167,26 @@ public class StateMachineTests extends UnitTestsBase {
 			Action.send(new Sig2(), b);
 		});
 
-		executionAsserter.assertEvents(x -> {
+		assertEvents(x -> {
 			x.executionStarted();
 			transition(x, b, b.new Initialize());
-			x.processingSignal(b, new Sig1());
+			x.processingSignal(b, new Sig1(), Optional.empty());
 			transition(x, b, b.new T1());
-			x.processingSignal(b, new Sig2());
+			x.processingSignal(b, new Sig2(), Optional.empty());
 			transition(x, b, b.new T2());
-			x.processingSignal(b, new Sig1());
+			x.processingSignal(b, new Sig1(), Optional.empty());
 			transition(x, b, b.new T1());
-			x.processingSignal(b, new Sig1());
+			x.processingSignal(b, new Sig1(), Optional.empty());
 			transition(x, b, b.new T1());
-			x.processingSignal(b, new Sig1());
+			x.processingSignal(b, new Sig1(), Optional.empty());
 			transition(x, b, b.new T1());
-			x.processingSignal(b, new Sig2());
+			x.processingSignal(b, new Sig2(), Optional.empty());
 			transition(x, b, b.new T2());
 			x.executionTerminated();
 		});
+
+		assertNoErrors();
+		assertNoWarnings();
 	}
 
 }

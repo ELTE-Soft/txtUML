@@ -26,6 +26,11 @@
 			<unit id="org.eclipse.persistence.sdk.feature.group" version="2.6.4.v20160829-44060b6"/>
 			<repository location="http://download.eclipse.org/rt/eclipselink/updates"/>
 		</location>
+		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
+			<unit id="net.sourceforge.plantuml.feature.feature.group" version="1.1.19"/>
+			<repository location="http://files.idi.ntnu.no/publish/plantuml/repository/"/>
+		</location>
 	</locations>
 	<targetJRE path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
 </target>
+

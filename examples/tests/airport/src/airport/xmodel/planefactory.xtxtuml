@@ -19,7 +19,7 @@ class PlaneFactory {
 		trigger MakePlane;
 		effect {
 			Plane plane = new Plane(trigger.planeId, trigger.xCoord, trigger.yCoord, trigger.angle);
-			Plane lastPlane = this->(LastPlaneCreated.plane).selectAny();
+			Plane lastPlane = this->(LastPlaneCreated.plane).one();
 			if (lastPlane != null) {
 				unlink(LastPlaneCreated.factory, this, LastPlaneCreated.plane, lastPlane);
 			}
@@ -29,7 +29,7 @@ class PlaneFactory {
 	}
 	
 	public Plane lastPlaneCreated() {
-		return this->(LastPlaneCreated.plane).selectAny();
+		return this->(LastPlaneCreated.plane).one();
 	}
 	
 }

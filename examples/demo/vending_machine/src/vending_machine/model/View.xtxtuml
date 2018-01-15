@@ -1,0 +1,7 @@
+package vending_machine.model;
+
+class View {
+	public static String id() {
+		return "view";
+	}
+}

@@ -186,8 +186,8 @@ class XtxtUMLExpressionCompilerTest {
 			class A {
 				void foo() {
 					send new S() to this->(P);
-					send new S() to this->(AB.b).selectAny();
-					new B()->(AB.a).selectAny();
+					send new S() to this->(AB.b).one();
+					new B()->(AB.a).one();
 				}
 				port P {
 					required I;
@@ -221,8 +221,8 @@ class XtxtUMLExpressionCompilerTest {
 			public class A extends ModelClass {
 			  void foo() {
 			    Action.send(new S(), this.port(A.P.class).required::reception);
-			    Action.send(new S(), this.assoc(AB.b.class).selectAny());
-			    new B().assoc(AB.a.class).selectAny();
+			    Action.send(new S(), this.assoc(AB.b.class).one());
+			    new B().assoc(AB.a.class).one();
 			  }
 			  
 			  public class P extends ModelClass.Port<Interface.Empty, I> {
@@ -234,15 +234,16 @@ class XtxtUMLExpressionCompilerTest {
 			package test.model;
 
 			import hu.elte.txtuml.api.model.Association;
+			import hu.elte.txtuml.api.model.One;
 			import test.model.A;
 			import test.model.B;
 
 			@SuppressWarnings("all")
 			public class AB extends Association {
-			  public class a extends Association.One<A> {
+			  public class a extends Association.End<One<A>> {
 			  }
 			  
-			  public class b extends Association.One<B> {
+			  public class b extends Association.End<One<B>> {
 			  }
 			}
 

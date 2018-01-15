@@ -1,5 +1,6 @@
 package hu.elte.txtuml.export.cpp.templates.statemachine;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
@@ -16,8 +17,6 @@ import hu.elte.txtuml.utils.Pair;
 public class EventTemplates {
 	
 	public static final String EventHeader = EventTemplates.EventHeaderName + "." + FileNames.HeaderExtension;
-	public static final String InitSignal = GenerationNames.FixEventNames.InitialEventName;
-	public static final String DestroySignal = GenerationNames.FixEventNames.DestroyEventName;
 	public static final String ProcessEventFunctionName = "processEventVirtual";
 	public static final String EventFParamName = GenerationNames.formatIncomingParamName(EventTemplates.EventParamName);
 	public static final String EventParamName = "e";
@@ -25,6 +24,10 @@ public class EventTemplates {
 	public static final String EventBaseName = "EventBase";
 	public static final String EventsEnumName = "Events";
 	public static final String EventPointerType = GenerationNames.PointerAndMemoryNames.EventPtr;
+	
+	public static final List<String> EventParamVarList = Arrays.asList(EventFParamName);
+	public static final List<String> EventParamDeclList = Arrays.asList(EventPointerType);
+	public static final List<Pair<String,String>> EventParamDefList = Arrays.asList(new Pair<>(EventPointerType, EventParamName)); 
 
 	public static String eventClass(String className, List<Pair<String, String>> params, String constructorBody,
 			List<Property> properites) {
@@ -53,8 +56,6 @@ public class EventTemplates {
 		StringBuilder eventList = new StringBuilder("enum ");
 		eventList.append(EventTemplates.EventsEnumName);
 		eventList.append("{");
-		eventList.append(GenerationNames.eventEnumName(EventTemplates.InitSignal) + ",");
-
 		if (events != null && !events.isEmpty()) {
 			for (SignalEvent item : events) {
 				eventList.append(GenerationNames.eventEnumName(item.getSignal().getName()) + ",");

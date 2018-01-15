@@ -10,6 +10,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 import static hu.elte.txtuml.xtxtuml.tests.parser.XtxtUMLParserTestUtils.*
+import static hu.elte.txtuml.xtxtuml.xtxtUML.TUExternality.*
 import static hu.elte.txtuml.xtxtuml.xtxtUML.TUStateType.*
 import static hu.elte.txtuml.xtxtuml.xtxtUML.TUVisibility.*
 
@@ -45,7 +46,7 @@ class XtxtUMLExpressionParserTest {
 				[class_(
 					"TestClass", null, #[
 						[operation(
-							PACKAGE, "void", "testOperation", #[], #[
+							PACKAGE, false, NON_EXTERNAL, "void", "testOperation", #[], #[
 								[sendSignal(
 									[constructorCall("TestSignal", null, #[])],
 									[this_]
@@ -141,7 +142,7 @@ class XtxtUMLExpressionParserTest {
 				[class_(
 					"A", null, #[
 						[operation(
-							PACKAGE, "void", "foo", #[], #[
+							PACKAGE, false, NON_EXTERNAL, "void", "foo", #[], #[
 								[variableDeclaration(
 									"A", null, "a",
 									[constructorCall("A", null, #[])]
@@ -161,34 +162,30 @@ class XtxtUMLExpressionParserTest {
 		'''
 			package test.model;
 
-			import hu.elte.txtuml.api.model.Collection;
-			import hu.elte.txtuml.api.model.runtime.collections.Sequence;
+			import hu.elte.txtuml.api.model.GeneralCollection;
 
 			class TestClass {
 				void testOperation() {
-					int a;
-					String b = "test";
-					Collection<TestClass> c;
-					Collection<TestClass> d = new Sequence<TestClass>();
+					int i;
+					String s = "test";
+					GeneralCollection<TestClass> c;
+					TestClass t = new TestClass();
 				}
 			}
 		'''
 		.parse.
 		file(
 			"test.model", #[
-				[importDeclaration(false, "hu.elte.txtuml.api.model.Collection", false)],
-				[importDeclaration(false, "hu.elte.txtuml.api.model.runtime.collections.Sequence", false)]
+				[importDeclaration(false, "hu.elte.txtuml.api.model.GeneralCollection", false)]
 			], #[
 				[class_(
 					"TestClass", null, #[
 						[operation(
-							PACKAGE, "void", "testOperation", #[], #[
-								[variableDeclaration("int", null, "a", null)],
-								[variableDeclaration("String", null, "b", [string("test")])],
-								[variableDeclaration("Collection", "TestClass", "c", null)],
-								[variableDeclaration(
-									"Collection", "TestClass", "d",
-									[constructorCall("Sequence", "TestClass", #[])]
+							PACKAGE, false, NON_EXTERNAL, "void", "testOperation", #[], #[
+								[variableDeclaration("int", null, "i", null)],
+								[variableDeclaration("String", null, "s", [string("test")])],
+								[variableDeclaration("GeneralCollection", "TestClass", "c", null)],
+								[variableDeclaration("TestClass", null, "t", [constructorCall("TestClass", null, #[])]
 								)]
 							]
 						)]
@@ -206,8 +203,8 @@ class XtxtUMLExpressionParserTest {
 			class A {
 				void foo() {
 					send new S() to this->(P);
-					send new S() to this->(AB.b).selectAny();
-					new B()->(AB.a).selectAny();
+					send new S() to this->(AB.b).one();
+					new B()->(AB.a).one();
 				}
 
 				port P {}
@@ -227,7 +224,7 @@ class XtxtUMLExpressionParserTest {
 				[class_(
 					"A", null, #[
 						[operation(
-							PACKAGE, "void", "foo", #[], #[
+							PACKAGE, false, NON_EXTERNAL, "void", "foo", #[], #[
 								[sendSignal(
 									[constructorCall("S", null, #[])],
 									[propertyAccess([this_], "P")]
@@ -236,13 +233,13 @@ class XtxtUMLExpressionParserTest {
 									[constructorCall("S", null, #[])],
 									[featureCall(
 										[propertyAccess([this_], "b")],
-										"selectAny", #[]
+										"one", #[]
 									)]
 								)],
 								[featureCall(
 									[propertyAccess(
 										[constructorCall("B", null, #[])], "a"
-									)], "selectAny", #[]
+									)], "one", #[]
 								)]
 							]
 						)],
@@ -281,7 +278,7 @@ class XtxtUMLExpressionParserTest {
 				[class_(
 					"A", null, #[
 						[operation(
-							PACKAGE, "void", "foo", #[], #[
+							PACKAGE, false, NON_EXTERNAL, "void", "foo", #[], #[
 								[variableDeclaration("int", null, "i", [number(0)])],
 								[whileLoop(
 									[binaryOperation(OPERATOR_LESS_THAN, [variable("i")], [number(10)])], #[
@@ -316,7 +313,7 @@ class XtxtUMLExpressionParserTest {
 				[class_(
 					"A", null, #[
 						[operation(
-							PACKAGE, "void", "foo", #[], #[
+							PACKAGE, false, NON_EXTERNAL, "void", "foo", #[], #[
 								[variableDeclaration("int", null, "i", [number(0)])],
 								[doWhileLoop(
 									#[
@@ -361,7 +358,7 @@ class XtxtUMLExpressionParserTest {
 				[class_(
 					"A", null, #[
 						[operation(
-							PACKAGE, "void", "foo", #[], #[
+							PACKAGE, false, NON_EXTERNAL, "void", "foo", #[], #[
 								[variableDeclaration("int", null, "i", null)],
 								[if_(
 									[bool(true)], #[
@@ -423,7 +420,7 @@ class XtxtUMLExpressionParserTest {
 				[class_(
 					"A", null, #[
 						[operation(
-							PACKAGE, "void", "foo", #[], #[
+							PACKAGE, false, NON_EXTERNAL, "void", "foo", #[], #[
 								[variableDeclaration("int", null, "i", null)],
 								[switch_(
 									[variable("i")], #[
@@ -475,7 +472,7 @@ class XtxtUMLExpressionParserTest {
 				[class_(
 					"A", null, #[
 						[operation(
-							PACKAGE, "void", "foo", #[], #[
+							PACKAGE, false, NON_EXTERNAL, "void", "foo", #[], #[
 								[forEachLoop(
 									[parameter("B", "b")], [propertyAccess([this_], "b")], #[
 										[featureCall([variable("b")], "bar", #[])]
@@ -487,7 +484,7 @@ class XtxtUMLExpressionParserTest {
 				)],
 				[class_(
 					"B", null, #[
-						[operation(PACKAGE, "void", "bar", #[], #[])]
+						[operation(PACKAGE, false, NON_EXTERNAL, "void", "bar", #[], #[])]
 					]
 				)],
 				[association(
@@ -523,7 +520,7 @@ class XtxtUMLExpressionParserTest {
 				[class_(
 					"A", null, #[
 						[operation(
-							PACKAGE, "void", "foo", #[], #[
+							PACKAGE, false, NON_EXTERNAL, "void", "foo", #[], #[
 								[forLoop(
 									[variableDeclaration("int", null, "i", [number(0)])],
 									[binaryOperation(OPERATOR_LESS_THAN, [variable("i")], [number(10)])],

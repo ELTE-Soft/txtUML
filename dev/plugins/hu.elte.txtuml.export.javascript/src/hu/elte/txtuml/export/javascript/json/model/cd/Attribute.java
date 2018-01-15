@@ -28,6 +28,7 @@ public class Attribute extends ClassMember {
 	public Attribute(Property attr) {
 		super(attr.getName(), attr.getVisibility());
 		type = attr.getType().getName();
+		isStatic = attr.isStatic();
 	}
 
 	/**
