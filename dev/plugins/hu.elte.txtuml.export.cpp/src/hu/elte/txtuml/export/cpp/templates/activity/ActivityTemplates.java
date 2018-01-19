@@ -53,14 +53,14 @@ public class ActivityTemplates {
 	public static String linkObjects(String firstObjectName, String secondObjectName, String associationName,
 			String endPoint1, String endPoint2, LinkFunctionType linkType) {
 		
-		String secondTemplateArgument = associationName + "::" + endPoint2;
+		String secondTemplateArgument = "typename " + associationName + "::" + endPoint2;
 
 		if(linkType == LinkFunctionType.DelegeateConnect) {
 			secondTemplateArgument = endPoint2;
 		}
 		
 		return  LinkTemplates.getLinkFunctionName(linkType) + "<"
-				+ "typename " + associationName + "::" + endPoint1 + ",typename " + secondTemplateArgument
+				+ "typename " + associationName + "::" + endPoint1 + "," + secondTemplateArgument
 				+ ">" + "(" + firstObjectName + "," + secondObjectName + ");\n";
 	}
 

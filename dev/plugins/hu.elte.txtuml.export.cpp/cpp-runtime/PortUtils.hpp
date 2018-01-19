@@ -139,15 +139,15 @@ class BehaviorPortImpl : public BehaviorPort <ProvidedInf, RequiredInf>
     protected:
         virtual void sendAny (ES::EventRef signal)
         {
-			assert(connectedPort != nullptr);
-			if (connectedPort != nullptr) {
+			//assert(BehaviorPort <ProvidedInf, RequiredInf>::connectedPort != nullptr && "There should be exsists a connection in case of sending a singal to a behavior port.");
+			if (BehaviorPort <ProvidedInf, RequiredInf>::connectedPort != nullptr) {
 				BehaviorPort <ProvidedInf, RequiredInf>::connectedPort->fowardSendedMessageToConnectedPort(signal);
 			}
         }
 
         virtual void reciveAny (ES::EventRef signal)
         {
-			assert(owner != nullptr);
+			//assert(BehaviorPort <ProvidedInf, RequiredInf>::owner != nullptr && "The owner of behavior port should not be null");
 			signal->setPortType(BehaviorPort <ProvidedInf, RequiredInf>::type);
 			BehaviorPort <ProvidedInf, RequiredInf>::owner->send(signal);
         }
@@ -166,8 +166,8 @@ public:
 protected:
 	virtual void sendAny(ES::EventRef signal)
 	{
-		assert(connectedPort != nullptr);
-		if (connectedPort != nullptr) {
+		//assert(Port <ProvidedInf, RequiredInf>::connectedPort != nullptr && "There should be exsists a connection in case of sending a singal to a port.");
+		if (Port <ProvidedInf, RequiredInf>::connectedPort != nullptr) {
 			Port <ProvidedInf, RequiredInf>::connectedPort->fowardSendedMessageToConnectedPort(signal);
 
 		}
