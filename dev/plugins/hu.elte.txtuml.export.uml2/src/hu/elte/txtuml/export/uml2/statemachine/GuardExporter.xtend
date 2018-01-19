@@ -23,6 +23,7 @@ import org.eclipse.jdt.core.dom.PrefixExpression
 import org.eclipse.jdt.core.dom.MethodInvocation
 import org.eclipse.jdt.core.dom.ParenthesizedExpression
 import org.eclipse.jdt.core.dom.ExpressionStatement
+import org.eclipse.jdt.core.dom.ThisExpression
 
 class GuardExporter extends Exporter<MethodDeclaration, IMethodBinding, Constraint> {
 	
@@ -44,10 +45,10 @@ class GuardExporter extends Exporter<MethodDeclaration, IMethodBinding, Constrai
 		}
 
 		opaqueExpr.languages += "JAVA"
-		opaqueExpr.bodies += createFaltGuardExpressionCode(source.body)	
+		opaqueExpr.bodies += createFlatGuardExpressionCode(source.body)	
 	}
 	
-	def String createFaltGuardExpressionCode(Block block) {
+	def String createFlatGuardExpressionCode(Block block) {
 		
 		val localVariables = new HashMap<String,Expression>()
 		val blockStatements = block.statements
@@ -84,13 +85,18 @@ class GuardExporter extends Exporter<MethodDeclaration, IMethodBinding, Constrai
 				
 		]
 		
-		//TODO check if expressions contains assignment..
+		for(expr : localVariables.entrySet) {
+			if(expr.value instanceof Assignment) {
+				return guardExpressionSource
+			}
+		}
+		
 		
 		val retExpr = blockStatements.findFirst[it instanceof ReturnStatement] as ReturnStatement
-		guardExpressionSource = updateExpression(retExpr.expression, localVariables).toString
+		guardExpressionSource = asString(updateExpression(retExpr.expression, localVariables))
 			
 		
-		return guardExpressionSource
+		guardExpressionSource
 	}
 
 	def Expression updateExpression(Expression expr, Map<String,Expression> varCodes) {
@@ -136,8 +142,35 @@ class GuardExporter extends Exporter<MethodDeclaration, IMethodBinding, Constrai
 		}
 		
 		return resultExpr
+				
+	}
+	
+	def String asString(Expression expr) {
+		if(expr instanceof InfixExpression) {
+			val leftCode = asString(expr.leftOperand)
+			val rigthCode = asString(expr.rightOperand)
+			
+			return leftCode + expr.operator + rigthCode
+		} if(expr instanceof ParenthesizedExpression) {
+			return asString(expr.expression)
+			
+		} else if(expr instanceof PrefixExpression) {
+			return expr.operator + 	asString(expr.operand)	 
+			 
+		} else if(expr instanceof MethodInvocation) {
+			val invName = expr.resolveMethodBinding.name
+			if(invName == "getTrigger") {
+				return "trigger"
+			} else if(invName == "Else") {
+				return "else";
+			}
+						
+		} else if(expr instanceof ThisExpression) {
+			return "this"
+		}
 		
 		
+		expr.toString
 	}
 
 	
