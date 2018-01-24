@@ -154,17 +154,21 @@ class GuardExporter extends Exporter<MethodDeclaration, IMethodBinding, Constrai
 	
 	def String asString(Expression expr) {
 		if(expr instanceof InfixExpression) {
+			
 			val leftCode = asString(expr.leftOperand)
 			val rigthCode = asString(expr.rightOperand)
 			
 			return leftCode + expr.operator + rigthCode
 		} if(expr instanceof ParenthesizedExpression) {
+			
 			return asString(expr.expression)
 			
 		} else if(expr instanceof PrefixExpression) {
+			
 			return expr.operator + 	asString(expr.operand)	 
 			 
 		} else if(expr instanceof MethodInvocation) {
+			
 			val invName = expr.resolveMethodBinding.name
 			if(invName == "getTrigger") {
 				return "trigger"
@@ -173,13 +177,7 @@ class GuardExporter extends Exporter<MethodDeclaration, IMethodBinding, Constrai
 			}
 			
 			val targetExpr = expr.expression
-			var targetCode = ""
-			if(targetExpr != null) {
-				targetCode = asString(targetExpr)
-				if(!targetCode.empty) {
-					targetCode += "."
-				}
-			}
+			var targetCode = targetExpressionAsString(targetExpr)
 			
 			var operationCode = expr.name.identifier
 			var paramCodes = ""
@@ -194,18 +192,13 @@ class GuardExporter extends Exporter<MethodDeclaration, IMethodBinding, Constrai
 			
 			return targetCode + operationCode
 						
-		} else if(expr instanceof ThisExpression) {
-			return ""
+		} else if(expr instanceof ThisExpression) {	
+				
+			return "this"
+						
 		} else if(expr instanceof FieldAccess) {
-			val targetExpr = expr.expression
-			var targetCode = ""
-			if(targetExpr != null) {
-				targetCode = asString(targetExpr)
-				if(!targetCode.empty) {
-					targetCode += "."
-				}
-			}
 			
+			var targetCode = targetExpressionAsString(expr.expression)			
 			return targetCode + expr.name.identifier
 		}
 		
@@ -213,7 +206,20 @@ class GuardExporter extends Exporter<MethodDeclaration, IMethodBinding, Constrai
 		expr.toString
 	}
 
-	
+	def String targetExpressionAsString(Expression target) {
+		var targetCode = ""
+		if(target != null) {
+			if(!(target instanceof ThisExpression)) {
+				targetCode = asString(target)
+			}
+			if(!targetCode.empty) {
+				targetCode += "."
+			}
+
+		}
+		
+		targetCode
+	}
 	
 	def StateMachine getSM(Region reg) { reg.stateMachine ?: reg.state.container.getSM() }
 
