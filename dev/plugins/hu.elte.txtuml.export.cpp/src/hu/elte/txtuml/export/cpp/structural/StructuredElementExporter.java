@@ -15,12 +15,13 @@ import org.eclipse.uml2.uml.VisibilityKind;
 
 import hu.elte.txtuml.export.cpp.ActivityExportResult;
 import hu.elte.txtuml.export.cpp.CppExporterUtils;
+import hu.elte.txtuml.export.cpp.ICppCompilationUnit;
 import hu.elte.txtuml.export.cpp.activity.ActivityExporter;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames;
 import hu.elte.txtuml.export.cpp.templates.structual.FunctionTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.VariableTemplates;
 
-public abstract class StructuredElementExporter<StructuredElement extends OperationOwner & AttributeOwner> {
+public abstract class StructuredElementExporter<StructuredElement extends OperationOwner & AttributeOwner> implements ICppCompilationUnit {
 
 	private static final String UKNOWN_TYPE = "!!UNKNOWNTYPE!!";
 
@@ -45,7 +46,7 @@ public abstract class StructuredElementExporter<StructuredElement extends Operat
 
 	public void init() {
 		dependencyExporter = new DependencyExporter();
-		activityExporter = new ActivityExporter();
+		activityExporter = new ActivityExporter(this);
 	}
 
 	public boolean hasProperOperation() {
@@ -99,7 +100,6 @@ public abstract class StructuredElementExporter<StructuredElement extends Operat
 				String returnType = getReturnType(operation.getReturnResult());
 				if (!operation.isAbstract()) {
 					ActivityExportResult activityResult = activityExporter.createFunctionBody(CppExporterUtils.getOperationActivity(operation));				
-					dependencyExporter.addDependencies(activityExporter.getAdditionalClassDependencies());
 					source.append(FunctionTemplates.functionDef(name, returnType, operation.getName(),
 							CppExporterUtils.getOperationParams(operation), activityResult.getActivitySource()));
 					
@@ -187,6 +187,18 @@ public abstract class StructuredElementExporter<StructuredElement extends Operat
 
 	private boolean isSimpleAttribute(Property property) {
 		return property.getAssociation() == null;
+	}
+	
+	
+	// Dependecy owner part
+	@Override
+	public void addDependency(String dependency) {
+		dependencyExporter.addDependency(dependency);
+	}
+	
+	@Override
+	public String getUnitName() {
+		return name;
 	}
 
 }

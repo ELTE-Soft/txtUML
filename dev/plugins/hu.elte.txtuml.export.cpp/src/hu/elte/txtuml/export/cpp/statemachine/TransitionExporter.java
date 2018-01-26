@@ -12,6 +12,7 @@ import org.eclipse.uml2.uml.UMLPackage;
 import org.eclipse.uml2.uml.Vertex;
 
 import hu.elte.txtuml.export.cpp.ActivityExportResult;
+import hu.elte.txtuml.export.cpp.ICppCompilationUnit;
 import hu.elte.txtuml.export.cpp.activity.ActivityExporter;
 import hu.elte.txtuml.export.cpp.templates.activity.ActivityTemplates;
 import hu.elte.txtuml.export.cpp.templates.statemachine.EventTemplates;
@@ -22,15 +23,15 @@ public class TransitionExporter {
 	private ActivityExporter activityExporter;
 	private GuardExporter guardExporter;
 
-	String className;
 	List<Transition> transitions;
+	private ICppCompilationUnit owner;
 
-	TransitionExporter(String className, List<Transition> transitions, GuardExporter guardExporter) {
-		activityExporter = new ActivityExporter();
-
-		this.className = className;
+	TransitionExporter(ICppCompilationUnit owner, List<Transition> transitions, GuardExporter guardExporter) {
+		this.owner = owner;
 		this.transitions = transitions;
 		this.guardExporter = guardExporter;
+		this.activityExporter = new ActivityExporter(owner);
+
 	}
 
 	String createTransitionFunctionDecl() {
@@ -51,7 +52,7 @@ public class TransitionExporter {
 			activityResult = activityExporter.createFunctionBody((Activity) b);
 
 			
-			source.append(StateMachineTemplates.transitionActionDef(className, transition.getName(),
+			source.append(StateMachineTemplates.transitionActionDef(owner.getUnitName(), transition.getName(),
 					transition.getName(), activityResult.getActivitySource() + setState,
 					hasChoiceTarget(transition) || activityResult.sourceHasSignalReference()));
 		}

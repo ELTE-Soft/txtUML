@@ -23,9 +23,7 @@ import org.eclipse.uml2.uml.Association;
 import org.eclipse.uml2.uml.Class;
 import org.eclipse.uml2.uml.DataType;
 import org.eclipse.uml2.uml.Element;
-import org.eclipse.uml2.uml.Parameter;
 import org.eclipse.uml2.uml.Property;
-import org.eclipse.uml2.uml.Signal;
 import org.eclipse.uml2.uml.UMLPackage;
 import org.osgi.framework.Bundle;
 import hu.elte.txtuml.export.cpp.thread.ThreadPoolConfiguration;
@@ -33,6 +31,7 @@ import hu.elte.txtuml.api.deployment.RuntimeType;
 import hu.elte.txtuml.export.cpp.structural.ClassExporter;
 import hu.elte.txtuml.export.cpp.structural.DataTypeExporter;
 import hu.elte.txtuml.export.cpp.structural.DependencyExporter;
+import hu.elte.txtuml.export.cpp.structural.EventStructuresExporter;
 import hu.elte.txtuml.export.cpp.structural.OnlyAbstractOperationExporter;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.FileNames;
@@ -42,7 +41,6 @@ import hu.elte.txtuml.export.cpp.templates.Options;
 import hu.elte.txtuml.export.cpp.templates.PrivateFunctionalTemplates;
 import hu.elte.txtuml.export.cpp.templates.RuntimeTemplates;
 import hu.elte.txtuml.export.cpp.templates.activity.ActivityTemplates;
-import hu.elte.txtuml.export.cpp.templates.statemachine.EventTemplates;
 import hu.elte.txtuml.export.cpp.templates.statemachine.StateMachineTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.FunctionTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.HeaderTemplates;
@@ -59,7 +57,6 @@ public class Uml2ToCppExporter {
 	private static final String DEFAULT_ASSOCIATIONS_NAME = "associations";
 	private static final String PROJECT_NAME = "hu.elte.txtuml.export.cpp";
 	private static final String CPP_FILES_FOLDER_NAME = "cpp-runtime";
-	private static final String ENUM_EXTENSION = "_EE";
 
 	// default sources
 	private static final String DEFAULT_TARGET_EXECUTABLE = "main";
@@ -286,33 +283,8 @@ public class Uml2ToCppExporter {
 	}
 
 	private void createEventSource(String outputDirectory) throws FileNotFoundException, UnsupportedEncodingException {
-		List<Signal> signalList = new ArrayList<Signal>();
-		CppExporterUtils.getTypedElements(signalList, UMLPackage.Literals.SIGNAL, modelRoot);
-		StringBuilder forwardDecl = new StringBuilder("");
-		StringBuilder events = new StringBuilder("");
-		StringBuilder source = new StringBuilder("");
-		List<Pair<String, String>> allParam = new LinkedList<Pair<String, String>>();
-		for (Signal signal : signalList) {
-			List<Pair<String, String>> currentParams = getSignalParams(signal);
-			String ctrBody = CppExporterUtils.signalCtrBody(signal, modelRoot);
-			allParam.addAll(currentParams);
-			source.append(
-					EventTemplates.eventClass(signal.getName(), currentParams, ctrBody, signal.getOwnedAttributes()));
-			events.append(signal.getName() + ENUM_EXTENSION + ",");
-		}
-
-		DependencyExporter dependencyEporter = new DependencyExporter();
-		for (Pair<String, String> param : allParam) {
-			dependencyEporter.addDependency(param.getSecond());
-		}
-		forwardDecl.append(dependencyEporter.createDependencyHeaderIncludeCode());
-		forwardDecl.append(RuntimeTemplates.eventHeaderInclude());
-		forwardDecl.append("enum Events {" + CppExporterUtils.cutOffTheLastCharcter(events.toString()) + "};\n");
-		forwardDecl.append(source);
-		CppExporterUtils.writeOutSource(outputDirectory, (EventTemplates.EventHeader),
-				CppExporterUtils.format(
-						EventTemplates.eventHeaderGuard(RuntimeTemplates.eventHeaderInclude() + GenerationTemplates
-								.putNamespace(forwardDecl.toString(), GenerationNames.Namespaces.ModelNamespace))));
+		EventStructuresExporter eventSourceExporter = new EventStructuresExporter(CppExporterUtils.getSingalsWidthConstructors(modelRoot));
+		eventSourceExporter.createEventStructureSources(outputDirectory);
 
 	}
 
@@ -371,11 +343,4 @@ public class Uml2ToCppExporter {
 
 	}
 
-	private List<Pair<String, String>> getSignalParams(Signal signal) {
-		List<Pair<String, String>> ret = new ArrayList<Pair<String, String>>();
-		for (Parameter param : CppExporterUtils.getSignalConstructorParameters(signal, modelRoot)) {
-			ret.add(new Pair<String, String>(param.getType().getName(), param.getName()));
-		}
-		return ret;
-	}
 }

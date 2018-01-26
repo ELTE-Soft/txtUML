@@ -25,6 +25,7 @@ import org.eclipse.uml2.uml.Vertex;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 
+import hu.elte.txtuml.export.cpp.ICppCompilationUnit;
 import hu.elte.txtuml.export.cpp.templates.PrivateFunctionalTemplates;
 import hu.elte.txtuml.export.cpp.templates.statemachine.StateMachineTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.FunctionTemplates;
@@ -35,8 +36,7 @@ public class StateMachineExporterBase {
 
 	protected List<String> subSubMachines;
 
-	protected String ownerClassName;
-	protected Pseudostate initialState;
+	protected ICppCompilationUnit owner;
 	protected Multimap<TransitionConditions, Pair<String, String>> stateMachineMap;
 	protected Map<String, Pair<String, Region>> submachineMap;// <stateName,<machinename,behavior>>
 	protected List<State> stateList;
@@ -45,12 +45,14 @@ public class StateMachineExporterBase {
 	protected TransitionExporter transitionExporter;
 	protected EntryExitFunctionExporter entryExitFunctionExporter;
 	protected SubStateMachineExporter subStateMachineExporter;
-	protected String parentClassName;
 
 	private List<String> allSubMachineName;
 
-	public StateMachineExporterBase() {
+	public StateMachineExporterBase(ICppCompilationUnit owner) {
+		this.owner = owner;
 	}
+	
+	
 
 	public void createMachine() {
 		init();
@@ -88,10 +90,8 @@ public class StateMachineExporterBase {
 	
 	public void createSubMachineSources(String detiniation) throws FileNotFoundException, UnsupportedEncodingException {
 		for (Map.Entry<String, Pair<String, Region>> entry : submachineMap.entrySet()) {
-			subStateMachineExporter = new SubStateMachineExporter();
+			subStateMachineExporter = new SubStateMachineExporter(owner, entry.getValue().getFirst());
 			subStateMachineExporter.setRegion(entry.getValue().getSecond());
-			subStateMachineExporter.setName(entry.getValue().getFirst());
-			subStateMachineExporter.setParentClassName(parentClassName);
 			subStateMachineExporter.createSubSmSource(detiniation);
 			allSubMachineName.add(entry.getValue().getFirst());
 			allSubMachineName.addAll(subStateMachineExporter.getAllSubmachineName());
@@ -102,13 +102,6 @@ public class StateMachineExporterBase {
 		return allSubMachineName;
 	}
 
-	public void setName(String name) {
-		this.ownerClassName = name;
-	}
-
-	public void setParentClassName(String name) {
-		this.parentClassName = name;
-	}
 	protected Multimap<TransitionConditions, Pair<String, String>> getStateMachine() {
 		return stateMachineMap;
 	}
@@ -134,38 +127,24 @@ public class StateMachineExporterBase {
 	}
 
 	protected void init() {
-		searchInitialState();
 		
 		allSubMachineName = new LinkedList<>();
 		stateMachineMap = HashMultimap.create();
 		submachineMap = getSubMachines();
 		subSubMachines = new ArrayList<String>();
-		guardExporter = new GuardExporter();
-		transitionExporter = new TransitionExporter(ownerClassName, stateMachineRegion.getTransitions(), guardExporter);
-		entryExitFunctionExporter = new EntryExitFunctionExporter(ownerClassName, stateList);
+		guardExporter = new GuardExporter(owner);
+		transitionExporter = new TransitionExporter(owner, stateMachineRegion.getTransitions(), guardExporter);
+		entryExitFunctionExporter = new EntryExitFunctionExporter(owner, stateList);
 		entryExitFunctionExporter.createEntryFunctionTypeMap();
 		entryExitFunctionExporter.createExitFunctionTypeMap();
 
 	}
 
-	protected void searchInitialState() {
-		for (Vertex item : stateMachineRegion.getSubvertices()) {
-			if (item.eClass().equals(UMLPackage.Literals.PSEUDOSTATE)) {
-
-				Pseudostate pseduoState = (Pseudostate) item;
-				if (pseduoState.getKind().equals(PseudostateKind.INITIAL_LITERAL)) {
-					initialState = (Pseudostate) item;
-				}
-
-			}
-		}
-	}
-
 	protected String createTransitionTableInitRelatedCodes() {
 		StringBuilder source = new StringBuilder("");
-		source.append(PrivateFunctionalTemplates.transitionTableDef(ownerClassName));
-		source.append(FunctionTemplates.functionDef(ownerClassName, StateMachineTemplates.InitTransitionTable,
-				StateMachineTemplates.transitionTableInitilizationBody(ownerClassName, getStateMachine())));
+		source.append(PrivateFunctionalTemplates.transitionTableDef(owner.getUnitName()));
+		source.append(FunctionTemplates.functionDef(owner.getUnitName(), StateMachineTemplates.InitTransitionTable,
+				StateMachineTemplates.transitionTableInitilizationBody(owner.getUnitName(), getStateMachine())));
 
 		return source.toString();
 	}
@@ -178,7 +157,7 @@ public class StateMachineExporterBase {
 		return stateActionMap;
 	}
 
-	protected Map<String, String> getEventSubMachineNameMap() {
+	protected Map<String, String> getStateToSubMachineNameMap() {
 		Map<String, String> eventSubMachineMap = new HashMap<String, String>();
 		for (Map.Entry<String, Pair<String, Region>> entry : submachineMap.entrySet()) {
 			eventSubMachineMap.put(entry.getKey(), entry.getValue().getFirst());

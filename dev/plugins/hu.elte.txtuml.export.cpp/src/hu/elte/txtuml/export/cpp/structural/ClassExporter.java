@@ -56,7 +56,7 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 			throws FileNotFoundException, UnsupportedEncodingException {
 		super.init();
 		super.setStructuredElement(structuredElement);
-		constructorExporter = new ConstructorExporter(structuredElement.getOwnedOperations());
+		constructorExporter = new ConstructorExporter(structuredElement.getOwnedOperations(), super.activityExporter);
 		associationExporter = new AssociationExporter();
 		additionalSourcesNames = new ArrayList<String>();
 		baseClasses.clear();
@@ -66,9 +66,7 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 		StateMachine classSM = CppExporterUtils.getStateMachine(structuredElement);
 		if (classSM != null) {
 
-			stateMachineExporter = new StateMachineExporter(classSM);
-			stateMachineExporter.setName(name);
-			stateMachineExporter.setParentClassName(name);
+			stateMachineExporter = new StateMachineExporter(classSM, this);
 			stateMachineExporter.setStateMachineThreadPoolId(poolId);
 		}
 

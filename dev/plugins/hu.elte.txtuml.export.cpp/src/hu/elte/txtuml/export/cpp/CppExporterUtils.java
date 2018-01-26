@@ -6,9 +6,10 @@ import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.cdt.core.ToolFactory;
@@ -29,7 +30,6 @@ import org.eclipse.uml2.uml.StateMachine;
 import org.eclipse.uml2.uml.Stereotype;
 import org.eclipse.uml2.uml.UMLPackage;
 
-import hu.elte.txtuml.export.cpp.activity.ActivityExporter;
 import hu.elte.txtuml.export.cpp.templates.activity.ActivityTemplates;
 import hu.elte.txtuml.utils.Pair;
 
@@ -164,7 +164,7 @@ public class CppExporterUtils {
 		return formattedSource;
 	}
 	
-	public static Class getSignalFactoryClass(Signal signal, List<Element> elements) {
+	private static Class getSignalFactoryClass(Signal signal, List<Element> elements) {
 		for (Element element : elements) {
 			if (element.eClass().equals(UMLPackage.Literals.CLASS)) {
 				Class cls = (Class) element;
@@ -183,40 +183,37 @@ public class CppExporterUtils {
 		return null;
 	}
 	
-	public static String signalCtrBody(Signal signal, List<Element> elements) {
-		ActivityExporter activityExporter = new ActivityExporter();
-		Class factoryClass = getSignalFactoryClass(signal, elements);
-		String body = "";
-		for (Operation operation : factoryClass.getOperations()) {
-			if (isConstructor(operation)) {
-				body = activityExporter.createFunctionBody(getOperationActivity(operation)).getActivitySource();
-
+	
+	public static Map<Signal,Operation> getSingalsWidthConstructors(List<Element> elements) {
+		Map<Signal,Operation> singalsToConstructorOperations = new HashMap<>();
+		
+		List<Signal> signalList = new ArrayList<Signal>();
+		CppExporterUtils.getTypedElements(signalList, UMLPackage.Literals.SIGNAL, elements);
+		
+		for(Signal signal : signalList) {
+			Operation op = null;
+			Class factoryClass = getSignalFactoryClass(signal, elements);
+			assert(factoryClass != null);
+			if(factoryClass != null) {				
+				for (Operation operation : factoryClass.getOperations()) {
+					if (isConstructor(operation)) {
+						op = operation;
+					}
+				}												
 			}
+			
+			assert(op != null);
+			if(op != null) {
+				singalsToConstructorOperations.put(signal, op);
+			}			
+			
 		}
-
-		return body;
-
+		
+		
+		return singalsToConstructorOperations;
 	}
 	
-	public static List<Parameter> getSignalConstructorParameters(Signal signal, List<Element> elements) {
-		List<Parameter> signalParameters = new LinkedList<Parameter>();
 
-		Class factoryClass = getSignalFactoryClass(signal, elements);
-		if (factoryClass != null) {
-			for (Operation op : factoryClass.getOperations()) {
-				if (isConstructor(op)) {
-					for (Parameter parameter : op.getOwnedParameters()) {
-						if (!parameter.getType().getName().equals(signal.getName())) {
-							signalParameters.add(parameter);
-						}
-					}
-					break;
-				}
-			}
-		}
-
-		return signalParameters;
-	}
 	public static StateMachine getStateMachine(Class cls) {
 	
 		List<StateMachine> smList = new ArrayList<StateMachine>();
