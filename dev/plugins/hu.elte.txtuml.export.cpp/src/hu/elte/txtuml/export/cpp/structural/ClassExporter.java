@@ -209,10 +209,6 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 			source.append(PrivateFunctionalTemplates.include(GenerationNames.FileNames.ActionPath));
 			source.append(PrivateFunctionalTemplates.include(GenerationNames.FileNames.StringUtilsPath));
 			source.append(PrivateFunctionalTemplates.include(GenerationNames.FileNames.CollectionUtilsPath));
-			source.append(PrivateFunctionalTemplates
-					.include(RuntimeTemplates.RTPath + GenerationTemplates.TimerInterfaceHeader));
-			source.append(
-					PrivateFunctionalTemplates.include(RuntimeTemplates.RTPath + GenerationTemplates.TimerHeader));
 		} else {
 			source.append(PrivateFunctionalTemplates.include(GenerationNames.FileNames.TypesFilePath));
 			if (associationExporter.ownAssociation()) {

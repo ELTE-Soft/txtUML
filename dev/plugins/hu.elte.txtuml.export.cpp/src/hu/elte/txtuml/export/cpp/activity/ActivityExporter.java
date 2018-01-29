@@ -51,8 +51,6 @@ public class ActivityExporter {
 	private LinkActionExporter linkActionExporter;
 	private ObjectActionExporter objectActionExporter;
 	private ReturnNodeExporter returnNodeExporter;
-
-	private List<String> createdClassDependencies;
 	
 	private ActivityExportResult activityExportResult;
 	
@@ -153,7 +151,6 @@ public class ActivityExporter {
 	
 	private void init() {
 
-		createdClassDependencies = new LinkedList<String>();
 		tempVariableExporter = new OutVariableExporter();
 		userVariableExporter = new UserVariableExporter();
 		returnOutputsToCallActions = new HashMap<CallOperationAction, OutputPin>();
@@ -162,10 +159,10 @@ public class ActivityExporter {
 				userVariableExporter);
 		returnNodeExporter = new ReturnNodeExporter(activityExportResolver);
 		callOperationExporter = new CallOperationExporter(tempVariableExporter, returnOutputsToCallActions,
-				activityExportResolver);
+				activityExportResolver, exportUser);
 		linkActionExporter = new LinkActionExporter(tempVariableExporter, activityExportResolver);
 		objectActionExporter = new ObjectActionExporter(tempVariableExporter, objectMap, activityExportResolver,
-				createdClassDependencies);
+				exportUser);
 		controlNodeExporter = new StructuredControlNodeExporter(this, activityExportResolver, userVariableExporter,
 				returnNodeExporter);
 

@@ -1,6 +1,5 @@
 package hu.elte.txtuml.export.cpp.activity;
 
-import java.util.List;
 import java.util.Map;
 
 import org.eclipse.uml2.uml.CreateObjectAction;
@@ -10,6 +9,7 @@ import org.eclipse.uml2.uml.StartClassifierBehaviorAction;
 import org.eclipse.uml2.uml.StartObjectBehaviorAction;
 import org.eclipse.uml2.uml.UMLPackage;
 
+import hu.elte.txtuml.export.cpp.ICppCompilationUnit;
 import hu.elte.txtuml.export.cpp.templates.activity.ActivityTemplates;
 import hu.elte.txtuml.export.cpp.templates.activity.ActivityTemplates.CreateObjectType;
 
@@ -18,15 +18,15 @@ class ObjectActionExporter {
 	private Map<CreateObjectAction, String> objectMap;
 	private OutVariableExporter tempVariableExporter;
 	private ActivityNodeResolver activityExportResolver;
-	private List<String> createdObjectsDependencies;
+	private ICppCompilationUnit exportUser;
 
 	ObjectActionExporter(OutVariableExporter tempVariableExporter, Map<CreateObjectAction, String> objectMap,
-			ActivityNodeResolver activityExportResolver, List<String> createdObjectsDependencies) {
+			ActivityNodeResolver activityExportResolver, ICppCompilationUnit exportUser) {
 
 		this.tempVariableExporter = tempVariableExporter;
 		this.activityExportResolver = activityExportResolver;
 		this.objectMap = objectMap;
-		this.createdObjectsDependencies = createdObjectsDependencies;
+		this.exportUser = exportUser;
 	}
 
 	public String createCreateObjectActionCode(CreateObjectAction createObjectActionNode) {
@@ -37,7 +37,7 @@ class ObjectActionExporter {
 			objectType = ActivityTemplates.CreateObjectType.Signal;
 		} else {
 			objectType = CreateObjectType.Class;
-			createdObjectsDependencies.add(type);
+			exportUser.addDependency(type);
 		}
 
 		tempVariableExporter.exportOutputPinToMap(createObjectActionNode.getResult());

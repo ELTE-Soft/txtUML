@@ -16,32 +16,29 @@ import org.eclipse.uml2.uml.TestIdentityAction;
 import org.eclipse.uml2.uml.UMLPackage;
 
 import hu.elte.txtuml.export.cpp.CppExporterUtils;
+import hu.elte.txtuml.export.cpp.ICppCompilationUnit;
+import hu.elte.txtuml.export.cpp.templates.GenerationNames.FileNames;
 import hu.elte.txtuml.export.cpp.templates.activity.ActivityTemplates;
 import hu.elte.txtuml.export.cpp.templates.activity.OperatorTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.VariableTemplates;
 
 class CallOperationExporter {
 
-	private boolean containsTimerOperator;
-
 	private OutVariableExporter tempVariableExporter;
 	private Map<CallOperationAction, OutputPin> returnOutputsToCallActions;
 	private ActivityNodeResolver activityExportResolver;
 	private Set<String> declaredTempVariables;
+	ICppCompilationUnit exportUser;
 
 	public CallOperationExporter(OutVariableExporter tempVariableExporter,
 			Map<CallOperationAction, OutputPin> returnOutputsToCallActions,
-			ActivityNodeResolver activityExportResolver) {
-		containsTimerOperator = false;
+			ActivityNodeResolver activityExportResolver, ICppCompilationUnit exportUser) {
 		declaredTempVariables = new HashSet<String>();
 
 		this.tempVariableExporter = tempVariableExporter;
 		this.returnOutputsToCallActions = returnOutputsToCallActions;
 		this.activityExportResolver = activityExportResolver;
-	}
-
-	public boolean isInvokedTimerOperation() {
-		return containsTimerOperator;
+		this.exportUser = exportUser;
 	}
 
 	public String createTestIdentityActionCode(TestIdentityAction node) {
@@ -93,8 +90,10 @@ class CallOperationExporter {
 			addOutParametrsToList(parameterVariables, outParamaterPins);
 
 			val = ActivityTemplates.stdLibCall(node.getOperation().getName(), parameterVariables);
+			
 			if (OperatorTemplates.isTimerStart(node.getOperation().getName())) {
-				containsTimerOperator = true;
+				exportUser.addDependency(FileNames.TimerInterfaceHeader);
+				exportUser.addDependency(FileNames.TimerHeader);
 			}
 
 			if (node.getOperation().getType() != null) {
