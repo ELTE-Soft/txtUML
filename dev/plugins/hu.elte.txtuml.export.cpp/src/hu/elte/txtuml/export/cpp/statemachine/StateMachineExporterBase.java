@@ -46,8 +46,7 @@ public abstract class StateMachineExporterBase {
 
 	private List<String> allSubMachineName;	
 	
-	public void createMachine() {
-		init();
+	private void createMachine() {
 		for (Transition item : stateMachineRegion.getTransitions()) {
 			TransitionConditions transitionCondition = null;
 			for (Trigger tri : item.getTriggers()) {
@@ -82,9 +81,9 @@ public abstract class StateMachineExporterBase {
 	
 	public void createSubMachineSources(String detiniation) throws FileNotFoundException, UnsupportedEncodingException {
 		for (Map.Entry<String, Pair<String, Region>> entry : submachineMap.entrySet()) {
-			subStateMachineExporter = new SubStateMachineExporter(entry.getValue().getFirst(), getActualCompilationUnit().getUnitName());
-			subStateMachineExporter.setRegion(entry.getValue().getSecond());
+			subStateMachineExporter = new SubStateMachineExporter(entry.getValue().getFirst(), entry.getValue().getSecond(), getActualCompilationUnit().getUnitName());
 			subStateMachineExporter.createSubSmSource(detiniation);
+			
 			allSubMachineName.add(entry.getValue().getFirst());
 			allSubMachineName.addAll(subStateMachineExporter.getAllSubmachineName());
 		}
@@ -96,25 +95,25 @@ public abstract class StateMachineExporterBase {
 	
 	abstract protected ICppCompilationUnit getActualCompilationUnit();
 
-	protected Multimap<TransitionConditions, Pair<String, String>> getStateMachine() {
-		return stateMachineMap;
-	}
-
 	protected void init() {
 		
 		allSubMachineName = new LinkedList<>();
 		stateMachineMap = HashMultimap.create();
-		submachineMap = getSubMachines();
 		guardExporter = new GuardExporter(getActualCompilationUnit());
 		transitionExporter = new TransitionExporter(getActualCompilationUnit(), stateMachineRegion.getTransitions(), guardExporter);
+		
+		createStateList();
 		entryExitFunctionExporter = new EntryExitFunctionExporter(getActualCompilationUnit(), stateList);
 		entryExitFunctionExporter.createEntryFunctionTypeMap();
 		entryExitFunctionExporter.createExitFunctionTypeMap();
+		
+		createMachine();
+		createSubMachines();
 
 	}
 	
-	protected Map<String, Pair<String, Region>> getSubMachines() {
-		Map<String, Pair<String, Region>> submachineMap = new HashMap<String, Pair<String, Region>>();
+	protected void createSubMachines() {
+		submachineMap = new HashMap<String, Pair<String, Region>>();
 		for (State state : stateList) {
 			// either got a submachine or a region, both is not permitted
 			StateMachine stateMachine = state.getSubmachine();
@@ -130,14 +129,13 @@ public abstract class StateMachineExporterBase {
 				}
 			}
 		}
-		return submachineMap;
 	}
 
 	protected String createTransitionTableInitRelatedCodes() {
 		StringBuilder source = new StringBuilder("");
 		source.append(PrivateFunctionalTemplates.transitionTableDef(getActualCompilationUnit().getUnitName()));
 		source.append(FunctionTemplates.functionDef(getActualCompilationUnit().getUnitName(), StateMachineTemplates.InitTransitionTable,
-				StateMachineTemplates.transitionTableInitilizationBody(getActualCompilationUnit().getUnitName(), getStateMachine())));
+				StateMachineTemplates.transitionTableInitilizationBody(getActualCompilationUnit().getUnitName(), stateMachineMap)));
 
 		return source.toString();
 	}

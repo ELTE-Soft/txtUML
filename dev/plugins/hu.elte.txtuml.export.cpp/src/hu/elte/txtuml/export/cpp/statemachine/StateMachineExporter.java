@@ -10,24 +10,18 @@ import org.eclipse.uml2.uml.StateMachine;
 import hu.elte.txtuml.export.cpp.ICppCompilationUnit;
 import hu.elte.txtuml.export.cpp.templates.statemachine.StateMachineTemplates;
 import hu.elte.txtuml.utils.Pair;
-import org.eclipse.uml2.uml.Element;
 
 public class StateMachineExporter extends StateMachineExporterBase {
 
 	private int poolId;
-	private StateMachine sm;
 	ICppCompilationUnit ownerClassUnit;
 
 	public StateMachineExporter(StateMachine sm, ICppCompilationUnit owner, Integer threadPoolId) {
 		ownerClassUnit = owner;
-		this.sm = sm;
 		this.poolId = threadPoolId;
-	}
-
-	public <E extends Element> void createStateMachineRegion(E element) {
 		stateMachineRegion = sm.getRegions().get(0);
-		createStateList();
-
+		
+		init();
 	}
 
 	public String createStateMachineRelatedHeadedDeclarationCodes() {

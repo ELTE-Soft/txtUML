@@ -96,11 +96,9 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 	}
 
 	private void createSource(String dest) throws FileNotFoundException, UnsupportedEncodingException {
-		String source;
+		String source = "";
 		associationExporter.exportAssociations(structuredElement.getOwnedAttributes());
 		if (CppExporterUtils.isStateMachineOwner(structuredElement)) {
-			stateMachineExporter.createStateMachineRegion(structuredElement);
-			stateMachineExporter.createMachine();
 			stateMachineExporter.createSubMachineSources(dest);
 
 		}
@@ -190,6 +188,8 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 			for (Map.Entry<String, Pair<String, Region>> entry : stateMachineExporter.getSubMachineMap().entrySet()) {
 				dependencyExporter.addDependency(entry.getValue().getFirst());
 			}
+			
+			dependencyExporter.addHeaderOnlyDependencies(stateMachineExporter.getAllSubmachineName());
 
 		}
 

@@ -14,9 +14,11 @@ public class DependencyExporter {
 			UMLStdLibNames.UMLInteger, UMLStdLibNames.UMLBoolean, UMLStdLibNames.UMLReal, UMLStdLibNames.UMLString));
 
 	private Set<String> dependecies;
+	private Set<String> headerOnlyDependency;
 
 	public DependencyExporter() {
 		dependecies = new HashSet<String>();
+		headerOnlyDependency = new HashSet<>();
 	}
 
 	public String createDependencyCppIncludeCode(String className) {
@@ -33,6 +35,11 @@ public class DependencyExporter {
 		dependecies.forEach(type -> {
 			includes.append(GenerationTemplates.forwardDeclaration(type));
 		});
+		
+		headerOnlyDependency.forEach(type -> {
+			includes.append(GenerationTemplates.forwardDeclaration(type));
+		});
+		
 
 		return includes.toString();
 
@@ -49,6 +56,16 @@ public class DependencyExporter {
 		for (String dependency : dependecies) {
 			addDependency(dependency);
 		}
+	}
+	
+	public void addHeaderOnlyDependency(String dependency) {
+		if(!dependecies.contains(dependency)) {
+			headerOnlyDependency.add(dependency);
+		}
+	}
+	
+	public void addHeaderOnlyDependencies(Collection<String> dependencies) {
+		dependencies.forEach(d -> addHeaderOnlyDependency(d));
 	}
 
 	private boolean isSimpleDependency(String typename) {

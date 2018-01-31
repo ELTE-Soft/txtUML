@@ -25,27 +25,22 @@ import hu.elte.txtuml.utils.Pair;
 
 public class SubStateMachineExporter extends StateMachineExporterBase implements ICppCompilationUnit {
 
-	private Map<String, Pair<String, Region>> submachineMap;// <stateName,<machinename,behavior>>
 	private String subStateMachineName;
 	private String parentClassName;
 	private DependencyExporter dependecyExporter;
 	
-	public SubStateMachineExporter(String subStateMachineName, String parentClassName) {
+	public SubStateMachineExporter(String subStateMachineName, Region region, String parentClassName) {
 		
 		dependecyExporter = new DependencyExporter();
 		this.parentClassName = parentClassName;
 		this.subStateMachineName = subStateMachineName;
-	}
-
-	public void setRegion(Region region) {
 		this.stateMachineRegion = region;
-		createStateList();
+
 	}
 
 	public void createSubSmSource(String destination) throws FileNotFoundException, UnsupportedEncodingException {
-		super.createMachine();
+		init();
 		String source = "";
-		submachineMap = getSubMachines();
 		createSubMachineSources(destination);
 		
 		source = createSubSmClassHeaderSource();
