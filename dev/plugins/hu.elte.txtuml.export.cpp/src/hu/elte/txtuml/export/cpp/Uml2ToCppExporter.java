@@ -184,7 +184,6 @@ public class Uml2ToCppExporter {
 	private void createDataTypes(String outputDirectory) throws IOException {
 		for (DataType dataType : dataTypes) {
 			dataTypeExporter.setName(dataType.getName());
-			dataTypeExporter.init();
 			dataTypeExporter.exportStructuredElement(dataType, outputDirectory);
 		}
 

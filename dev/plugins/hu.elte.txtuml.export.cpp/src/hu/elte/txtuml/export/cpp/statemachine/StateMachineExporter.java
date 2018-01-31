@@ -16,14 +16,12 @@ public class StateMachineExporter extends StateMachineExporterBase {
 
 	private int poolId;
 	private StateMachine sm;
+	ICppCompilationUnit ownerClassUnit;
 
-	public StateMachineExporter(StateMachine sm, ICppCompilationUnit owner) {
-		super(owner);
+	public StateMachineExporter(StateMachine sm, ICppCompilationUnit owner, Integer threadPoolId) {
+		ownerClassUnit = owner;
 		this.sm = sm;
-	}
-
-	public void setStateMachineThreadPoolId(int id) {
-		this.poolId = id;
+		this.poolId = threadPoolId;
 	}
 
 	public <E extends Element> void createStateMachineRegion(E element) {
@@ -46,24 +44,24 @@ public class StateMachineExporter extends StateMachineExporterBase {
 	public String createStateMachineRelatedCppSourceCodes() {
 		StringBuilder source = new StringBuilder("");
 		source.append(createTransitionTableInitRelatedCodes());
-		source.append(StateMachineTemplates.stateMachineInitializationDefinition(owner.getUnitName(), poolId, 
+		source.append(StateMachineTemplates.stateMachineInitializationDefinition(ownerClassUnit.getUnitName(), poolId, 
 				submachineMap.isEmpty() ? Optional.empty() : Optional.of(getStateToSubMachineNameMap())));
-		source.append(StateMachineTemplates.stateMachineFixFunctionDefitions(owner.getUnitName(), 
+		source.append(StateMachineTemplates.stateMachineFixFunctionDefitions(ownerClassUnit.getUnitName(), 
 				getInitialState(stateMachineRegion) ,false, submachineMap.isEmpty()));
-		source.append(guardExporter.defnieGuardFunctions(owner.getUnitName()));
+		source.append(guardExporter.defnieGuardFunctions(ownerClassUnit.getUnitName()));
 		source.append(entryExitFunctionExporter.createEntryFunctionsDef());
 		source.append(entryExitFunctionExporter.createExitFunctionsDef());
 		source.append(transitionExporter.createTransitionFunctionsDef());
 
-		source.append(StateMachineTemplates.entry(owner.getUnitName(),
+		source.append(StateMachineTemplates.entry(ownerClassUnit.getUnitName(),
 				createStateActionMap(entryExitFunctionExporter.getEntryMap())) + "\n");
 		source.append(
-				StateMachineTemplates.exit(owner.getUnitName(), 
+				StateMachineTemplates.exit(ownerClassUnit.getUnitName(), 
 						createStateActionMap(entryExitFunctionExporter.getExitMap()))
 						+ "\n");
 		
-		source.append(StateMachineTemplates.finalizeFunctionDef(owner.getUnitName()));
-		source.append(StateMachineTemplates.initializeFunctionDef(owner.getUnitName(), getInitialTransition(stateMachineRegion)));
+		source.append(StateMachineTemplates.finalizeFunctionDef(ownerClassUnit.getUnitName()));
+		source.append(StateMachineTemplates.initializeFunctionDef(ownerClassUnit.getUnitName(), getInitialTransition(stateMachineRegion)));
 
 
 		return source.toString();
@@ -79,6 +77,11 @@ public class StateMachineExporter extends StateMachineExporterBase {
 
 	public Map<String, Pair<String, Region>> getSubMachineMap() {
 		return submachineMap;
+	}
+
+	@Override
+	protected ICppCompilationUnit getActualCompilationUnit() {
+		return ownerClassUnit;
 	}
 
 

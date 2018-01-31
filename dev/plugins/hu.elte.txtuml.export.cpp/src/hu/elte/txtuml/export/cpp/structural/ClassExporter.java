@@ -66,8 +66,7 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 		StateMachine classSM = CppExporterUtils.getStateMachine(structuredElement);
 		if (classSM != null) {
 
-			stateMachineExporter = new StateMachineExporter(classSM, this);
-			stateMachineExporter.setStateMachineThreadPoolId(poolId);
+			stateMachineExporter = new StateMachineExporter(classSM, this, poolId);
 		}
 
 		createSource(sourceDestination);

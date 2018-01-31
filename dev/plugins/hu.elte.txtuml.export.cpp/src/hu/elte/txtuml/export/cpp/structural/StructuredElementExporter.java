@@ -44,7 +44,7 @@ public abstract class StructuredElementExporter<StructuredElement extends Operat
 	abstract public void exportStructuredElement(StructuredElement structuredElement, String sourceDestination)
 			throws FileNotFoundException, UnsupportedEncodingException;
 
-	public void init() {
+	protected void init() {
 		dependencyExporter = new DependencyExporter();
 		activityExporter = new ActivityExporter(this);
 	}

@@ -27,12 +27,13 @@ public class SubStateMachineExporter extends StateMachineExporterBase implements
 
 	private Map<String, Pair<String, Region>> submachineMap;// <stateName,<machinename,behavior>>
 	private String subStateMachineName;
+	private String parentClassName;
 	private DependencyExporter dependecyExporter;
 	
-	public SubStateMachineExporter(ICppCompilationUnit owner, String subStateMachineName) {
-		super(owner);
+	public SubStateMachineExporter(String subStateMachineName, String parentClassName) {
 		
 		dependecyExporter = new DependencyExporter();
+		this.parentClassName = parentClassName;
 		this.subStateMachineName = subStateMachineName;
 	}
 
@@ -49,10 +50,10 @@ public class SubStateMachineExporter extends StateMachineExporterBase implements
 		
 		source = createSubSmClassHeaderSource();
 		CppExporterUtils.writeOutSource(destination, GenerationTemplates.headerName(getUnitName()),
-				HeaderTemplates.headerGuard(source, owner.getUnitName()));
+				HeaderTemplates.headerGuard(source, getUnitName()));
 
 		source = GenerationTemplates.putNamespace(createSubSmClassCppSource(), GenerationNames.Namespaces.ModelNamespace);
-		StringBuilder dependencyIncludes = new StringBuilder(PrivateFunctionalTemplates.include(getUnitName())
+		StringBuilder dependencyIncludes = new StringBuilder(PrivateFunctionalTemplates.include(parentClassName)
 				+ PrivateFunctionalTemplates.include(EventTemplates.EventHeaderName) + 
 				PrivateFunctionalTemplates.include(GenerationNames.FileNames.ActionPath) + 
 				GenerationTemplates.debugOnlyCodeBlock(GenerationTemplates.StandardIOinclude));
@@ -66,7 +67,7 @@ public class SubStateMachineExporter extends StateMachineExporterBase implements
 
 	private String createSubSmClassHeaderSource() {
 		String source = "";
-		StringBuilder dependency = new StringBuilder(PrivateFunctionalTemplates.include(owner.getUnitName()));
+		StringBuilder dependency = new StringBuilder(PrivateFunctionalTemplates.include(parentClassName));
 		dependency.append(PrivateFunctionalTemplates.include(GenerationNames.FileNames.StringUtilsPath));
 		dependency.append(PrivateFunctionalTemplates.include(GenerationNames.FileNames.CollectionUtilsPath));
 		
@@ -74,7 +75,7 @@ public class SubStateMachineExporter extends StateMachineExporterBase implements
 		StringBuilder protectedParts = new StringBuilder("");
 		StringBuilder privateParts = new StringBuilder("");
 
-		publicParts.append(ConstructorTemplates.constructorDecl(owner.getUnitName(), Arrays.asList(owner.getUnitName())));					
+		publicParts.append(ConstructorTemplates.constructorDecl(getUnitName(), Arrays.asList(parentClassName)));					
 		publicParts.append(StateMachineTemplates.stateEnum(stateList, getInitialState(stateMachineRegion)));
 			
 		privateParts.append(entryExitFunctionExporter.createEntryFunctionsDecl());
@@ -86,8 +87,8 @@ public class SubStateMachineExporter extends StateMachineExporterBase implements
 		source = HeaderTemplates
 					.classHeader(dependency.toString(), null, null,
 							publicParts.toString(), protectedParts.toString(), privateParts.toString(), 
-							new HeaderInfo(owner.getUnitName(), 
-									new HeaderTemplates.SubMachineHeaderType(owner.getUnitName(), !submachineMap.isEmpty())));
+							new HeaderInfo(getUnitName(), 
+									new HeaderTemplates.SubMachineHeaderType(parentClassName, !submachineMap.isEmpty())));
 				
 			
 		return source;
@@ -96,7 +97,7 @@ public class SubStateMachineExporter extends StateMachineExporterBase implements
 	private String createSubSmClassCppSource() {
 		StringBuilder source = new StringBuilder("");
 		source.append(createTransitionTableInitRelatedCodes());
-		source.append(ConstructorTemplates.subStateMachineClassConstructor(getUnitName(), owner.getUnitName(), stateMachineMap, 
+		source.append(ConstructorTemplates.subStateMachineClassConstructor(getUnitName(), parentClassName, stateMachineMap, 
 								 submachineMap.isEmpty() ? Optional.empty() : Optional.of(getStateToSubMachineNameMap())));
 		source.append(StateMachineTemplates.stateMachineFixFunctionDefitions(getUnitName(), getInitialState(stateMachineRegion), true, submachineMap.isEmpty()));
 
@@ -134,6 +135,11 @@ public class SubStateMachineExporter extends StateMachineExporterBase implements
 	public void addDependency(String type) {
 		dependecyExporter.addDependency(type);
 		
+	}
+
+	@Override
+	protected ICppCompilationUnit getActualCompilationUnit() {
+		return this;
 	}
 
 }
