@@ -28,7 +28,7 @@ class CallOperationExporter {
 	private Map<CallOperationAction, OutputPin> returnOutputsToCallActions;
 	private ActivityNodeResolver activityExportResolver;
 	private Set<String> declaredTempVariables;
-	ICppCompilationUnit exportUser;
+	private ICppCompilationUnit exportUser;
 
 	public CallOperationExporter(OutVariableExporter tempVariableExporter,
 			Map<CallOperationAction, OutputPin> returnOutputsToCallActions,
@@ -92,8 +92,8 @@ class CallOperationExporter {
 			val = ActivityTemplates.stdLibCall(node.getOperation().getName(), parameterVariables);
 			
 			if (OperatorTemplates.isTimerStart(node.getOperation().getName())) {
-				exportUser.addDependency(FileNames.TimerInterfaceHeader);
-				exportUser.addDependency(FileNames.TimerHeader);
+				exportUser.addCppOnlyDependency(FileNames.TimerInterfaceHeader);
+				exportUser.addCppOnlyDependency(FileNames.TimerHeader);
 			}
 
 			if (node.getOperation().getType() != null) {

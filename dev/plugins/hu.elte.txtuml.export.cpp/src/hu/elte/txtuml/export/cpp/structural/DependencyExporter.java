@@ -15,10 +15,12 @@ public class DependencyExporter {
 
 	private Set<String> dependecies;
 	private Set<String> headerOnlyDependency;
+	private Set<String> cppOnlyDependency;
 
 	public DependencyExporter() {
 		dependecies = new HashSet<String>();
 		headerOnlyDependency = new HashSet<>();
+		cppOnlyDependency = new HashSet<>();
 	}
 
 	public String createDependencyCppIncludeCode(String className) {
@@ -66,6 +68,16 @@ public class DependencyExporter {
 	
 	public void addHeaderOnlyDependencies(Collection<String> dependencies) {
 		dependencies.forEach(d -> addHeaderOnlyDependency(d));
+	}
+	
+	public void addCppOnlyDependency(String dependency) {
+		if(!dependecies.contains(dependency)) {
+			cppOnlyDependency.add(dependency);
+		}
+	}
+	
+	public void addCppOnlyDependencies(Collection<String> dependencies) {
+		dependencies.forEach(d -> addCppOnlyDependency(d));
 	}
 
 	private boolean isSimpleDependency(String typename) {

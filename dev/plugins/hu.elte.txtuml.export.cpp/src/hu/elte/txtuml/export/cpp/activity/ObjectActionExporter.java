@@ -37,7 +37,7 @@ class ObjectActionExporter {
 			objectType = ActivityTemplates.CreateObjectType.Signal;
 		} else {
 			objectType = CreateObjectType.Class;
-			exportUser.addDependency(type);
+			exportUser.addCppOnlyDependency(type);
 		}
 
 		tempVariableExporter.exportOutputPinToMap(createObjectActionNode.getResult());

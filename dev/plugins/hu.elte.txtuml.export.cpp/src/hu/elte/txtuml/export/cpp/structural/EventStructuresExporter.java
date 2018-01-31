@@ -81,7 +81,11 @@ public class EventStructuresExporter implements ICppCompilationUnit {
 
 	@Override
 	public void addDependency(String type) {
-		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void addCppOnlyDependency(String type) {
 		
 	}
 

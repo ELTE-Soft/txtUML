@@ -197,6 +197,11 @@ public abstract class StructuredElementExporter<StructuredElement extends Operat
 	}
 	
 	@Override
+	public void addCppOnlyDependency(String dependency) {
+		dependencyExporter.addCppOnlyDependency(dependency);
+	}
+	
+	@Override
 	public String getUnitName() {
 		return name;
 	}

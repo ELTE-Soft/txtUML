@@ -131,10 +131,18 @@ public class SubStateMachineExporter extends StateMachineExporterBase implements
 		dependecyExporter.addDependency(type);
 		
 	}
+	
+	@Override
+	public void addCppOnlyDependency(String type) {
+		dependecyExporter.addCppOnlyDependency(type);
+		
+	}
 
 	@Override
 	protected ICppCompilationUnit getActualCompilationUnit() {
 		return this;
 	}
+
+
 
 }
