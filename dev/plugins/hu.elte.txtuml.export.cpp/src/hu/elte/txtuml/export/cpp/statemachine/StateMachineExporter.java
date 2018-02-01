@@ -14,9 +14,9 @@ import hu.elte.txtuml.utils.Pair;
 public class StateMachineExporter extends StateMachineExporterBase {
 
 	private int poolId;
-	ICppCompilationUnit ownerClassUnit;
 
 	public StateMachineExporter(StateMachine sm, ICppCompilationUnit owner, Integer threadPoolId) {
+		super(owner);
 		ownerClassUnit = owner;
 		this.poolId = threadPoolId;
 		stateMachineRegion = sm.getRegions().get(0);

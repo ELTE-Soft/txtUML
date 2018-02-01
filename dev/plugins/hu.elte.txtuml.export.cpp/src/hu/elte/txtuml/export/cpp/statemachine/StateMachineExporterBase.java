@@ -43,7 +43,13 @@ public abstract class StateMachineExporterBase {
 	protected TransitionExporter transitionExporter;
 	protected EntryExitFunctionExporter entryExitFunctionExporter;
 	protected SubStateMachineExporter subStateMachineExporter;
+	protected ICppCompilationUnit ownerClassUnit;
 
+	
+	public StateMachineExporterBase(ICppCompilationUnit owner) {
+		this.ownerClassUnit = owner;
+	}
+	
 	private List<String> allSubMachineName;	
 	
 	private void createMachine() {
@@ -81,7 +87,7 @@ public abstract class StateMachineExporterBase {
 	
 	public void createSubMachineSources(String detiniation) throws FileNotFoundException, UnsupportedEncodingException {
 		for (Map.Entry<String, Pair<String, Region>> entry : submachineMap.entrySet()) {
-			subStateMachineExporter = new SubStateMachineExporter(entry.getValue().getFirst(), entry.getValue().getSecond(), getActualCompilationUnit().getUnitName());
+			subStateMachineExporter = new SubStateMachineExporter(entry.getValue().getFirst(), entry.getValue().getSecond(), ownerClassUnit);
 			subStateMachineExporter.createSubSmSource(detiniation);
 			
 			allSubMachineName.add(entry.getValue().getFirst());
@@ -94,7 +100,8 @@ public abstract class StateMachineExporterBase {
 	}
 	
 	abstract protected ICppCompilationUnit getActualCompilationUnit();
-
+	
+	
 	protected void init() {
 		
 		allSubMachineName = new LinkedList<>();

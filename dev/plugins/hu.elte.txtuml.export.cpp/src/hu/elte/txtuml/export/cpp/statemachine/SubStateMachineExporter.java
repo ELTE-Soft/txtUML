@@ -26,13 +26,11 @@ import hu.elte.txtuml.utils.Pair;
 public class SubStateMachineExporter extends StateMachineExporterBase implements ICppCompilationUnit {
 
 	private String subStateMachineName;
-	private String parentClassName;
 	private DependencyExporter dependecyExporter;
 	
-	public SubStateMachineExporter(String subStateMachineName, Region region, String parentClassName) {
-		
+	public SubStateMachineExporter(String subStateMachineName, Region region, ICppCompilationUnit owner) {
+		super(owner);
 		dependecyExporter = new DependencyExporter();
-		this.parentClassName = parentClassName;
 		this.subStateMachineName = subStateMachineName;
 		this.stateMachineRegion = region;
 
@@ -48,7 +46,7 @@ public class SubStateMachineExporter extends StateMachineExporterBase implements
 				HeaderTemplates.headerGuard(source, getUnitName()));
 
 		source = GenerationTemplates.putNamespace(createSubSmClassCppSource(), GenerationNames.Namespaces.ModelNamespace);
-		StringBuilder dependencyIncludes = new StringBuilder(PrivateFunctionalTemplates.include(parentClassName)
+		StringBuilder dependencyIncludes = new StringBuilder(PrivateFunctionalTemplates.include(ownerClassUnit.getUnitName())
 				+ PrivateFunctionalTemplates.include(EventTemplates.EventHeaderName) + 
 				PrivateFunctionalTemplates.include(GenerationNames.FileNames.ActionPath) + 
 				GenerationTemplates.debugOnlyCodeBlock(GenerationTemplates.StandardIOinclude));
@@ -62,7 +60,7 @@ public class SubStateMachineExporter extends StateMachineExporterBase implements
 
 	private String createSubSmClassHeaderSource() {
 		String source = "";
-		StringBuilder dependency = new StringBuilder(PrivateFunctionalTemplates.include(parentClassName));
+		StringBuilder dependency = new StringBuilder(PrivateFunctionalTemplates.include(ownerClassUnit.getUnitName()));
 		dependency.append(PrivateFunctionalTemplates.include(GenerationNames.FileNames.StringUtilsPath));
 		dependency.append(PrivateFunctionalTemplates.include(GenerationNames.FileNames.CollectionUtilsPath));
 		
@@ -70,7 +68,7 @@ public class SubStateMachineExporter extends StateMachineExporterBase implements
 		StringBuilder protectedParts = new StringBuilder("");
 		StringBuilder privateParts = new StringBuilder("");
 
-		publicParts.append(ConstructorTemplates.constructorDecl(getUnitName(), Arrays.asList(parentClassName)));					
+		publicParts.append(ConstructorTemplates.constructorDecl(getUnitName(), Arrays.asList(ownerClassUnit.getUnitName())));					
 		publicParts.append(StateMachineTemplates.stateEnum(stateList, getInitialState(stateMachineRegion)));
 			
 		privateParts.append(entryExitFunctionExporter.createEntryFunctionsDecl());
@@ -83,7 +81,7 @@ public class SubStateMachineExporter extends StateMachineExporterBase implements
 					.classHeader(dependency.toString(), null, null,
 							publicParts.toString(), protectedParts.toString(), privateParts.toString(), 
 							new HeaderInfo(getUnitName(), 
-									new HeaderTemplates.SubMachineHeaderType(parentClassName, !submachineMap.isEmpty())));
+									new HeaderTemplates.SubMachineHeaderType(ownerClassUnit.getUnitName(), !submachineMap.isEmpty())));
 				
 			
 		return source;
@@ -92,7 +90,7 @@ public class SubStateMachineExporter extends StateMachineExporterBase implements
 	private String createSubSmClassCppSource() {
 		StringBuilder source = new StringBuilder("");
 		source.append(createTransitionTableInitRelatedCodes());
-		source.append(ConstructorTemplates.subStateMachineClassConstructor(getUnitName(), parentClassName, stateMachineMap, 
+		source.append(ConstructorTemplates.subStateMachineClassConstructor(getUnitName(), ownerClassUnit.getUnitName(), stateMachineMap, 
 								 submachineMap.isEmpty() ? Optional.empty() : Optional.of(getStateToSubMachineNameMap())));
 		source.append(StateMachineTemplates.stateMachineFixFunctionDefitions(getUnitName(), getInitialState(stateMachineRegion), true, submachineMap.isEmpty()));
 
@@ -138,10 +136,13 @@ public class SubStateMachineExporter extends StateMachineExporterBase implements
 		
 	}
 
+
 	@Override
 	protected ICppCompilationUnit getActualCompilationUnit() {
 		return this;
 	}
+
+
 
 
 
