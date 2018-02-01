@@ -15,7 +15,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Platform;
@@ -32,7 +31,6 @@ import hu.elte.txtuml.export.cpp.structural.ClassExporter;
 import hu.elte.txtuml.export.cpp.structural.DataTypeExporter;
 import hu.elte.txtuml.export.cpp.structural.DependencyExporter;
 import hu.elte.txtuml.export.cpp.structural.EventStructuresExporter;
-import hu.elte.txtuml.export.cpp.structural.OnlyAbstractOperationExporter;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.FileNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.ModifierNames;
@@ -64,9 +62,6 @@ public class Uml2ToCppExporter {
 	private static final String DEFAULT_INIT_MACHINE_NAME = StateMachineTemplates.TransitionTableInitialSourceName;
 	private static final String DEFAULT_ENVIRONMENT_INITIALIZER = "Env";
 
-	private ClassExporter classExporter;
-	private DataTypeExporter dataTypeExporter;
-	private OnlyAbstractOperationExporter abstractOperationExporter;
 	private final Options options;
 
 	private ThreadHandlingManager threadManager;
@@ -76,16 +71,14 @@ public class Uml2ToCppExporter {
 	private List<DataType> dataTypes;
 	private List<String> classNames;
 	private List<Element> modelRoot;
+	private Boolean testing;
 
 
 	public Uml2ToCppExporter(List<Element> modelRoot, Pair<RuntimeType, Map<String, ThreadPoolConfiguration>> config,
 			boolean addRuntimeOption, boolean overWriteMainFileOption, Boolean testing) {
 
 		this.modelRoot = modelRoot;
-		classExporter = new ClassExporter();
-		classExporter.setTesting(testing);
-		dataTypeExporter = new DataTypeExporter();
-		abstractOperationExporter = new OnlyAbstractOperationExporter();
+		this.testing = testing;
 		threadManager = new ThreadHandlingManager(config);
 
 		classes = new ArrayList<Class>();
@@ -106,7 +99,6 @@ public class Uml2ToCppExporter {
 		copyPreWrittenCppFiles(outputDirectory);
 		createEventSource(outputDirectory);
 		createClassSources(outputDirectory);
-		createAbstractClassSources(outputDirectory);
 		createTransitionTableInitialSource(outputDirectory);
 		createDataTypes(outputDirectory);
 		createAssociationsSources(outputDirectory);
@@ -114,16 +106,20 @@ public class Uml2ToCppExporter {
 	}
 
 	private void createClassSources(String outputDirectory) throws IOException {
-		for (Class cls : classes) {
 
-			if (abstractOperationExporter.hasProperOperation(cls)) {
+		for (Class cls : classes) {
+			
+			ClassExporter classExporter = new ClassExporter(cls,cls.getName(), outputDirectory);
+			classExporter.setTesting(testing);
+			
+			//TODO
+			/*if (abstractOperationExporter.hasProperOperation(cls)) {
 				classExporter.setAbstractInterface(GenerationTemplates.generatedAbstractClassName(cls.getName()));
 			} else {
 				classExporter.removeAbstractInterface();
-			}
-			classExporter.setName(cls.getName());
+			}*/
 			classExporter.setPoolId(threadManager.getConfiguratedPoolId(cls.getName()));
-			classExporter.exportStructuredElement(cls, outputDirectory);
+			classExporter.createUnitSource();
 			if (CppExporterUtils.isStateMachineOwner(cls)) {
 				classNames.addAll(classExporter.getSubmachines());
 			}
@@ -137,16 +133,6 @@ public class Uml2ToCppExporter {
 			}
 
 		}
-	}
-
-	private void createAbstractClassSources(String outputDirectory) throws IOException {
-		List<Class> abstractClasses = classes.stream().filter(c -> abstractOperationExporter.hasProperOperation(c))
-				.collect(Collectors.toList());
-		for (Class cls : abstractClasses) {
-			abstractOperationExporter.setName(GenerationTemplates.generatedAbstractClassName(cls.getName()));
-			abstractOperationExporter.exportStructuredElement(cls, outputDirectory);
-		}
-
 	}
 
 	private void createTransitionTableInitialSource(String outputDirectory) throws IOException {
@@ -182,9 +168,11 @@ public class Uml2ToCppExporter {
 	}
 
 	private void createDataTypes(String outputDirectory) throws IOException {
+		
 		for (DataType dataType : dataTypes) {
-			dataTypeExporter.setName(dataType.getName());
-			dataTypeExporter.exportStructuredElement(dataType, outputDirectory);
+			DataTypeExporter dataTypeExporter = new DataTypeExporter(dataType, dataType.getName(), outputDirectory);
+			dataTypeExporter.createUnitSource();
+			
 		}
 
 	}

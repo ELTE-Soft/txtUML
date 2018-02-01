@@ -1,7 +1,5 @@
 package hu.elte.txtuml.export.cpp.structural;
 
-import java.io.FileNotFoundException;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
@@ -27,22 +25,23 @@ public abstract class StructuredElementExporter<StructuredElement extends Operat
 
 	protected StructuredElement structuredElement;
 	protected String name;
+	private String dest;
 
 	protected ActivityExporter activityExporter;
 	protected DependencyExporter dependencyExporter;
 	private Predicate<Operation> pred;
 	private Boolean testing;
-
-	public void setName(String name) {
+	
+	public StructuredElementExporter(StructuredElement structuredElement, String name, String dest) {
+		this.structuredElement = structuredElement;
 		this.name = name;
+		this.dest = dest;
+		
 	}
 	
 	public void setTesting(Boolean testing) {
 		this.testing = testing;
 	}
-
-	abstract public void exportStructuredElement(StructuredElement structuredElement, String sourceDestination)
-			throws FileNotFoundException, UnsupportedEncodingException;
 
 	protected void init() {
 		dependencyExporter = new DependencyExporter();
@@ -63,10 +62,6 @@ public abstract class StructuredElementExporter<StructuredElement extends Operat
 
 	protected StructuredElementExporter(Predicate<Operation> pred) {
 		this.pred = pred;
-	}
-
-	protected void setStructuredElement(StructuredElement structuredElement) {
-		this.structuredElement = structuredElement;
 	}
 
 	protected String createPublicAttributes() {
@@ -204,6 +199,11 @@ public abstract class StructuredElementExporter<StructuredElement extends Operat
 	@Override
 	public String getUnitName() {
 		return name;
+	}
+	
+	@Override
+	public String getDesniation() {
+		return dest;
 	}
 
 }

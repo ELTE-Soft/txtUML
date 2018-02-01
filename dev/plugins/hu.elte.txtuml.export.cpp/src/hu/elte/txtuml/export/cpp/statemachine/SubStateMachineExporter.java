@@ -142,6 +142,36 @@ public class SubStateMachineExporter extends StateMachineExporterBase implements
 		return this;
 	}
 
+	@Override
+	public String getUnitNamespace() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String createUnitCppCode() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String createUnitHeaderCode() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getUnitDependencies(UnitType type) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getDesniation() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 
 
 
