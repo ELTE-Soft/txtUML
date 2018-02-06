@@ -14,36 +14,37 @@ import hu.elte.txtuml.export.plantuml.exceptions.PreCompilationError;
 import hu.elte.txtuml.export.plantuml.exceptions.SequenceDiagramStructuralException;
 
 /**
- * 
- * This Class combines the compiler and the preCompiler and runs them. Provides
- * the required utility functions for them
+ * This class combines the functionality of the compiler and the precompiler,
+ * and generates sequence diagram output using PlantUML syntax (see
+ * {@link #generate(CompilationUnit, IFile)} method).
  */
 public class PlantUmlGenerator {
-
-	private IFile targetFile;
-	private CompilationUnit sourceCU;
 
 	private PlantUmlPreCompiler preCompiler;
 	private PlantUmlCompiler compiler;
 
-	public PlantUmlGenerator(IFile targetFile, CompilationUnit source) {
+	private CompilationUnit source;
 
-		this.targetFile = targetFile;
-		this.sourceCU = source;
+	/**
+	 * Processes the source, then generates PlantUML output to the given target
+	 * file.
+	 */
+	public void generate(final CompilationUnit source, final IFile targetFile)
+			throws SequenceDiagramStructuralException, PreCompilationError {
+		this.source = source;
+		preCompile();
+		compile(targetFile);
 	}
 
-	public void generate() throws SequenceDiagramStructuralException, PreCompilationError {
-
+	private void preCompile() throws PreCompilationError {
 		preCompiler = new PlantUmlPreCompiler();
-		sourceCU.accept(preCompiler);
+		source.accept(preCompiler);
 		if (!preCompiler.getErrors().isEmpty()) {
-
-			String messages = "";
-
+			StringBuilder messages = new StringBuilder();
 			for (Exception ex : preCompiler.getErrors()) {
-				messages += "\n" + ex.getMessage();
+				messages.append("\n" + ex.getMessage());
 			}
-			throw new PreCompilationError(messages);
+			throw new PreCompilationError(messages.toString());
 		}
 
 		Type superClass = preCompiler.getSuperClass();
@@ -53,34 +54,33 @@ public class PlantUmlGenerator {
 			cu.accept(preCompiler);
 			superClass = preCompiler.getSuperClass();
 		}
+	}
 
-		compiler = new PlantUmlCompiler(preCompiler.lifelines, preCompiler.fragments, false);
-		sourceCU.accept(compiler);
+	private void compile(IFile targetFile) throws SequenceDiagramStructuralException {
+		compiler = new PlantUmlCompiler(preCompiler.getLifelines());
+		source.accept(compiler);
 
-		String compiledOutput = compiler.getCompiledOutput();
+		createTargetFile(compiler.getCompiledOutput(), targetFile);
 
+		if (compiler.getErrors().size() > 0) {
+			StringBuilder errors = new StringBuilder();
+			compiler.getErrors().forEach(errors::append);
+			throw new SequenceDiagramStructuralException(errors.toString());
+		}
+	}
+
+	private void createTargetFile(String compiledOutput, IFile targetFile) throws ExportRuntimeException {
 		ByteArrayInputStream stream = new ByteArrayInputStream(compiledOutput.getBytes());
 
 		try {
 			targetFile.create(stream, false, null);
 		} catch (Exception e) {
 			throw new ExportRuntimeException(
-					"couldn't create targetFile:" + targetFile.getName() + "\n Reason:" + e.getMessage());
-		}
-
-		if (compiler.getErrors().size() > 0) {
-			String errString = "";
-
-			for (String error : compiler.getErrors()) {
-				errString += error;
-			}
-
-			throw new SequenceDiagramStructuralException(errString);
+					"Couldn't create target file: " + targetFile.getName() + "\n Reason: " + e.getMessage());
 		}
 	}
 
 	private CompilationUnit getSuperClassCU(Type superClass) {
-
 		ICompilationUnit element = (ICompilationUnit) superClass.resolveBinding().getTypeDeclaration().getJavaElement()
 				.getParent();
 
@@ -93,4 +93,5 @@ public class PlantUmlGenerator {
 
 		return cu;
 	}
+
 }
