@@ -5,26 +5,25 @@ import hu.elte.txtuml.api.model.Signal;
 import hu.elte.txtuml.api.model.StateMachine.Transition;
 import hu.elte.txtuml.api.model.Trigger;
 import hu.elte.txtuml.api.model.Trigger.AnyPort;
-import hu.elte.txtuml.api.model.runtime.ElseException;
-import hu.elte.txtuml.api.model.runtime.Wrapper;
+import hu.elte.txtuml.api.model.impl.ElseException;
+import hu.elte.txtuml.api.model.impl.Wrapper;
 
 public interface TransitionWrapper extends Wrapper<Transition> {
 
 	VertexWrapper getTarget();
 
 	/**
-	 * Checks whether the given signal is <b>not</b> triggering the wrapped
-	 * transition.
+	 * Checks whether the given signal is triggering the wrapped transition.
 	 * 
 	 * @param signal
 	 *            the signal to check
 	 * @param port
 	 *            the port through which the signal arrived (might be
 	 *            {@code null} in case the signal did not arrive through a port)
-	 * @return true if the signal does <b>not</b> trigger the specified
-	 *         transition, false otherwise
+	 * @return true if the signal does triggers the specified transition, false
+	 *         otherwise
 	 */
-	boolean notApplicableTrigger(Signal signal, Port<?, ?> port);
+	boolean applicableTrigger(Signal signal, Port<?, ?> port);
 
 	default boolean checkGuard() throws ElseException {
 		return getWrapped().guard();
@@ -59,8 +58,8 @@ public interface TransitionWrapper extends Wrapper<Transition> {
 			}
 
 			@Override
-			public boolean notApplicableTrigger(Signal signal, Port<?, ?> port) {
-				return signal != null;
+			public boolean applicableTrigger(Signal signal, Port<?, ?> port) {
+				return signal == null;
 			}
 
 		};
@@ -81,12 +80,9 @@ public interface TransitionWrapper extends Wrapper<Transition> {
 			}
 
 			@Override
-			public boolean notApplicableTrigger(Signal signal, Port<?, ?> portInstance) {
-				if (trigger.isInstance(signal)
-						&& (portOfTrigger == AnyPort.class || portOfTrigger.isInstance(portInstance))) {
-					return false;
-				}
-				return true;
+			public boolean applicableTrigger(Signal signal, Port<?, ?> portInstance) {
+				return trigger.isInstance(signal)
+						&& (portOfTrigger == AnyPort.class || portOfTrigger.isInstance(portInstance));
 			}
 
 		};

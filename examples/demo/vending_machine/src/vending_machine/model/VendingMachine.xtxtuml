@@ -3,6 +3,7 @@ package vending_machine.model;
 import hu.elte.txtuml.api.stdlib.world.World;
 import hu.elte.txtuml.api.stdlib.world.WorldObject;
 import hu.elte.txtuml.api.stdlib.timers.Timer;
+import hu.elte.txtuml.api.model.One;
 
 class VendingMachine {
 
@@ -31,10 +32,10 @@ class VendingMachine {
 
 	state Idle {
 		entry {
-			if (this->(WorkTogether.theCashRegister).selectAny().howMuchIsInside() == 0) {
+			if (this->(WorkTogether.theCashRegister).one().howMuchIsInside() == 0) {
 				updateMessage("Online");
 			} else {
-				updateMessage("Inserted: " + this->(WorkTogether.theCashRegister).selectAny().howMuchIsInside());
+				updateMessage("Inserted: " + this->(WorkTogether.theCashRegister).one().howMuchIsInside());
 			}
 		}
 	}
@@ -56,7 +57,7 @@ class VendingMachine {
 	state Vending {
 		entry {
 			Drink selectedDrink = getSelectedDrink(trigger.name);
-			CashRegister register = this->(WorkTogether.theCashRegister).selectAny();
+			CashRegister register = this->(WorkTogether.theCashRegister).one();
 			
 			if (selectedDrink.getPrice() <= register.howMuchIsInside()) {
 				send new Request() to selectedDrink;
@@ -82,7 +83,7 @@ class VendingMachine {
 	transition ShowPrice {
 		from IsMoneyInside;
 		to ShowingPrice;
-		guard (this->(WorkTogether.theCashRegister).selectAny().howMuchIsInside() == 0);
+		guard (this->(WorkTogether.theCashRegister).one().howMuchIsInside() == 0);
 	}
 
 	transition StartVending {

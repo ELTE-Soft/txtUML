@@ -21,9 +21,6 @@ import hu.elte.txtuml.export.plantuml.seqdiag.BaseSeqdiagExporter;
  * {@link #compile(String) } method compiles it depending on a fully qualified
  * name. Furthermore handles lifeline de-activation and activation. <br>
  * for more information on the compilation see {@link BaseSeqdiagExporter}
- * 
- * @author Zoli
- *
  */
 public class PlantUmlCompiler extends ASTVisitor {
 	private List<ASTNode> errors;

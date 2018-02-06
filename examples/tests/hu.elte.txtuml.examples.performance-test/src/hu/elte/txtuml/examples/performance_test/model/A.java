@@ -75,7 +75,7 @@ public class A extends ModelClass {
 				createChild();
 			}
 			if (!assoc(AB.b.class).isEmpty()) {
-				Action.send(new Forward(0), assoc(AB.b.class).selectAny());
+				Action.send(new Forward(0), assoc(AB.b.class).one());
 			}
 			Action.send(new Forward(++numForward), A.this);
 		}
@@ -93,7 +93,7 @@ public class A extends ModelClass {
 				createChild();
 			}
 			if (!assoc(AB.b.class).isEmpty()) {
-				Action.send(new Forward(0), assoc(AB.b.class).selectAny());
+				Action.send(new Forward(0), assoc(AB.b.class).one());
 			}
 			Action.send(new Forward(++numForward), A.this);
 		}
@@ -111,7 +111,7 @@ public class A extends ModelClass {
 				createChild();
 			}
 			if (!assoc(AB.b.class).isEmpty()) {
-				Action.send(new Forward(0), assoc(AB.b.class).selectAny());
+				Action.send(new Forward(0), assoc(AB.b.class).one());
 			}
 			Action.send(new Forward(++numForward), A.this);
 		}
@@ -129,7 +129,7 @@ public class A extends ModelClass {
 				createChild();
 			}
 			if (!assoc(AB.b.class).isEmpty()) {
-				Action.send(new Forward(0), assoc(AB.b.class).selectAny());
+				Action.send(new Forward(0), assoc(AB.b.class).one());
 			}
 			Action.send(new Forward(++numForward), A.this);
 		}

@@ -1,5 +1,7 @@
 package hu.elte.txtuml.api.model.execution.log;
 
+import static hu.elte.txtuml.api.model.external.ModelClasses.getNameOf;
+
 import java.text.MessageFormat;
 
 import hu.elte.txtuml.api.model.AssociationEnd;
@@ -50,15 +52,15 @@ public class ErrorLogger extends LoggerBase implements ErrorListener {
 	}
 
 	@Override
-	public void upperBoundOfMultiplicityOffended(ModelClass obj, Class<? extends AssociationEnd<?, ?>> assocEnd) {
+	public void upperBoundOfMultiplicityOffended(ModelClass obj, Class<? extends AssociationEnd<?>> assocEnd) {
 		error("Upper bound of the multiplicity of " + assocEnd.getName() + " has been offended at "
-				+ obj.runtimeInfo().getName() + ".");
+				+ getNameOf(obj) + ".");
 	}
 
 	@Override
-	public void lowerBoundOfMultiplicityOffended(ModelClass obj, Class<? extends AssociationEnd<?, ?>> assocEnd) {
+	public void lowerBoundOfMultiplicityOffended(ModelClass obj, Class<? extends AssociationEnd<?>> assocEnd) {
 		error("Lower bound of the multiplicity of " + assocEnd.getName() + " has been offended at "
-				+ obj.runtimeInfo().getName() + ".");
+				+ getNameOf(obj) + ".");
 	}
 
 	@Override
@@ -77,7 +79,7 @@ public class ErrorLogger extends LoggerBase implements ErrorListener {
 	}
 
 	@Override
-	public void multipleContainerForAnObject(ModelClass obj, Class<? extends AssociationEnd<?, ?>> assocEnd) {
+	public void multipleContainerForAnObject(ModelClass obj, Class<? extends AssociationEnd<?>> assocEnd) {
 		error(MessageFormat.format(
 				"Model object {0} cannot be put into container {1}, because it is already inside another container.",
 				obj, assocEnd.getName()));

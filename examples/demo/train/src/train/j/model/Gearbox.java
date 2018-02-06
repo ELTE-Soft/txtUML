@@ -107,9 +107,9 @@ public class Gearbox extends ModelClass {
 	class Forwards_Neutral extends Transition {
 		@Override
 		public void effect() {
-			Engine e = Gearbox.this.assoc(GE.e.class).selectAny();
+			Engine e = Gearbox.this.assoc(GE.e.class).one();
 			Action.send(new EngineOff(), e);
-			Lamp l = Gearbox.this.assoc(GL.l.class).selectAny();
+			Lamp l = Gearbox.this.assoc(GL.l.class).one();
 			Action.send(new LightOff(), l);
 		}
 	}
@@ -120,15 +120,15 @@ public class Gearbox extends ModelClass {
 	class Backwards_Neutral extends Forwards_Neutral {
 		@Override
 		public void effect() {
-			Engine e = Gearbox.this.assoc(GE.e.class).selectAny();
+			Engine e = Gearbox.this.assoc(GE.e.class).one();
 			Action.send(new EngineOff(), e);
-			Lamp l = Gearbox.this.assoc(GL.l.class).selectAny();
+			Lamp l = Gearbox.this.assoc(GL.l.class).one();
 			Action.send(new LightOff(), l);
 		}
 	}
 
 	void startEngineOp() {
-		Engine e = Gearbox.this.assoc(GE.e.class).selectAny();
+		Engine e = Gearbox.this.assoc(GE.e.class).one();
 		Action.send(new EngineOn(), e);
 	}
 }

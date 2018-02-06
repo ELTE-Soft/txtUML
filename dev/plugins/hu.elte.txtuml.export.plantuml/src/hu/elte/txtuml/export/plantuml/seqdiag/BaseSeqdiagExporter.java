@@ -11,8 +11,6 @@ import hu.elte.txtuml.export.plantuml.seqdiag.fragments.OptAltFragment;
  * This exporter class contains information on which nodeType is parsed by which
  * Exporter class.{@link #createExporter(ASTNode, PlantUmlCompiler)} creates the
  * exporter class for the given nodes
- * 
- * @author Zoli
  *
  * @param <T>
  *            the nodeType which is parsed by the exporter

@@ -8,12 +8,8 @@ import hu.elte.txtuml.api.model.seqdiag.SequenceDiagram;
 import hu.elte.txtuml.export.plantuml.generator.PlantUmlCompiler;
 
 /**
- * 
- * @author Zoli
- *
- *
- *         The class responsible for exporting the {@link SequenceDiagram} and
- *         {@link Interaction} classes
+ * The class responsible for exporting the {@link SequenceDiagram} and
+ * {@link Interaction} classes
  */
 public class InteractionExporter extends BaseSeqdiagExporter<TypeDeclaration> {
 

@@ -29,7 +29,7 @@ public class MoonLander extends ModelClass {
 		
 		@Override
 		public void entry() {
-			World world = assoc(LanderWorld.world.class).selectAny();
+			World world = assoc(LanderWorld.world.class).one();
 			Action.send(new ControlSignal(0), world);
 		}
 	}
@@ -60,7 +60,7 @@ public class MoonLander extends ModelClass {
 		
 		@Override
 		public void entry() {
-			World world = assoc(LanderWorld.world.class).selectAny();
+			World world = assoc(LanderWorld.world.class).one();
 			// better because of rounding in generated code
 			Action.send(new ControlSignal(world.v*world.h*world.h/500000 - (-world.v*world.h/1000) - world.v/2), world);
 		}
@@ -93,7 +93,7 @@ public class MoonLander extends ModelClass {
 		
 		@Override
 		public void entry() {
-			World world = assoc(LanderWorld.world.class).selectAny();
+			World world = assoc(LanderWorld.world.class).one();
 			Action.send(new ControlSignal(0), world);
 		}
 	}
@@ -113,7 +113,7 @@ public class MoonLander extends ModelClass {
 		
 		@Override
 		public void entry() {
-			World world = assoc(LanderWorld.world.class).selectAny();
+			World world = assoc(LanderWorld.world.class).one();
 			Action.send(new ControlSignal(0), world);
 		}
 	}

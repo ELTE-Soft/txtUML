@@ -32,7 +32,7 @@ class Drink {
 	}
 
 	private void updateMessage(String msg) {
-		this->(Serve.theMachine).selectAny().updateMessage(msg);
+		this->(Serve.theMachine).one().updateMessage(msg);
 	}
 
 	// state machine states
@@ -106,7 +106,7 @@ class Drink {
 		to IsThereMore;
 		trigger Done;
 		effect {
-			CashRegister register = this->(Serve.theMachine).selectAny()->(WorkTogether.theCashRegister).selectAny();
+			CashRegister register = this->(Serve.theMachine).one()->(WorkTogether.theCashRegister).one();
 			send new GiveBackCash(price) to register;
 		}
 	}

@@ -5,7 +5,9 @@ import hu.elte.txtuml.api.model.From;
 import hu.elte.txtuml.api.model.ModelClass;
 import hu.elte.txtuml.api.model.To;
 import hu.elte.txtuml.api.model.Trigger;
+import hu.elte.txtuml.api.model.impl.SequenceDiagramRelated;
 
+@SequenceDiagramRelated
 public class C extends ModelClass {
 
 	public class Init extends Initial {
@@ -32,7 +34,7 @@ public class C extends ModelClass {
 	public class StateB extends State {
 		@Override
 		public void entry() {
-			Action.send(new TestSig(), assoc(BToC.BSide.class).selectAny());
+			Action.send(new TestSig(), assoc(BToC.BSide.class).one());
 		}
 	}
 

@@ -32,7 +32,7 @@ public class C extends ModelClass {
 	public class StateB extends State {
 		@Override
 		public void entry() {
-			Action.send(new TestSig(), assoc(BToC.BSide.class).selectAny());
+			Action.send(new TestSig(), assoc(BToC.BSide.class).one());
 		}
 	}
 
