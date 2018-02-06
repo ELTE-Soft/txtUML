@@ -1,21 +1,24 @@
 package hu.elte.txtuml.export.plantuml.seqdiag;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.Annotation;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.SingleMemberAnnotation;
 
+import hu.elte.txtuml.api.model.ModelClass;
+import hu.elte.txtuml.api.model.seqdiag.SequenceDiagram;
 import hu.elte.txtuml.export.plantuml.generator.PlantUmlCompiler;
 
 /**
- * Responsible for exporting the {@link ModelClass} lifelines from the
- * SequenceDiagram
+ * Exporter implementation, which is responsible for exporting
+ * {@link ModelClass} lifelines from the user-given {@link SequenceDiagram}.
  */
-public class LifelineExporter extends BaseSeqdiagExporter<FieldDeclaration> {
+public class LifelineExporter extends ExporterBase<FieldDeclaration> {
 
-	public LifelineExporter(PlantUmlCompiler compiler) {
+	public LifelineExporter(final PlantUmlCompiler compiler) {
 		super(compiler);
 	}
 
@@ -24,39 +27,35 @@ public class LifelineExporter extends BaseSeqdiagExporter<FieldDeclaration> {
 		return true;
 	}
 
+	/**
+	 * Compiles lifelines in the order of their position.
+	 */
 	@Override
 	public boolean preNext(FieldDeclaration curElement) {
-
-		int annotationVal = -1;
-
-		int i = 0;
 		List<?> modifiers = curElement.modifiers();
-		for (i = 0; i < modifiers.size(); ++i) {
+		Optional<Integer> maybePosition = modifiers.stream().filter(modifier -> modifier instanceof Annotation)
+				.map(modifier -> (Annotation) modifier)
+				.filter(annot -> annot.getTypeName().getFullyQualifiedName().equals("Position"))
+				.map(ca -> (int) ((SingleMemberAnnotation) ca).getValue().resolveConstantExpressionValue()).findFirst();
 
-			if (modifiers.get(i) instanceof Annotation) {
-				Annotation ca = (Annotation) modifiers.get(i);
-				if (ca.getTypeName().getFullyQualifiedName().equals("Position")) {
-					annotationVal = (int) ((SingleMemberAnnotation) ca).getValue().resolveConstantExpressionValue();
-				}
+		if (maybePosition.isPresent()) {
+			int position = maybePosition.get();
+			if (compiler.lastLifelinePosition() + 1 != position) {
+				compiler.addToWaitingList(position, curElement);
+			} else if (position == compiler.lastLifelinePosition() + 1
+					|| position == compiler.lastLifelinePosition()) {
+				String participantName = curElement.fragments().get(0).toString();
+
+				compiler.println("participant " + participantName);
+				compiler.lifelineCompiled(position);
+				compiler.compileWaitingLifelines();
 			}
 		}
-
-		if (annotationVal != -1 && this.compiler.lastDeclaredParticipantID() + 1 != annotationVal) {
-			compiler.addToWaitingList(annotationVal, curElement);
-		} else if (annotationVal != -1 && (this.compiler.lastDeclaredParticipantID() + 1 == annotationVal
-				|| this.compiler.lastDeclaredParticipantID() == annotationVal)) {
-			String participantName = curElement.fragments().get(0).toString();
-
-			compiler.println("participant " + participantName);
-			compiler.compiledLifeline(annotationVal);
-			compiler.compileWaitingLifelines();
-		}
-
 		return true;
 	}
 
 	@Override
 	public void afterNext(FieldDeclaration curElement) {
-
 	}
+
 }

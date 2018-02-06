@@ -7,34 +7,28 @@ import org.eclipse.jdt.core.dom.MethodInvocation;
 import hu.elte.txtuml.export.plantuml.generator.PlantUmlCompiler;
 
 /**
- * Currently responsible for exporting the message sending from the
- * SequenceDiagrams( {@code Sequence.send() } and {@code Sequence.fromActor() }})
- * 
- * @todo lifeline activation,deactivation, deletion, creation
- *
+ * Exporter implementation, which is responsible for exporting the message
+ * sending from the SequenceDiagrams ({@code Sequence.send()} and
+ * {@code Sequence.fromActor()})
  */
 public class SequenceExporter extends MethodInvocationExporter {
 
-	public SequenceExporter(PlantUmlCompiler compiler) {
+	public SequenceExporter(final PlantUmlCompiler compiler) {
 		super(compiler);
 	}
 
 	@Override
 	public boolean validElement(ASTNode curElement) {
 		if (super.validElement(curElement)) {
-			String fullName = PlantUmlCompiler.getFullyQualifiedName((MethodInvocation) curElement);
-			if (fullName.equals("hu.elte.txtuml.api.model.seqdiag.Sequence.send")
-					|| fullName.equals("hu.elte.txtuml.api.model.seqdiag.Sequence.fromActor")) {
-				return true;
-			}
+			String fullName = ExporterUtils.getFullyQualifiedName((MethodInvocation) curElement);
+			return fullName.equals("hu.elte.txtuml.api.model.seqdiag.Sequence.send")
+					|| fullName.equals("hu.elte.txtuml.api.model.seqdiag.Sequence.fromActor");
 		}
-
 		return false;
 	}
 
 	@Override
 	public boolean preNext(MethodInvocation curElement) {
-
 		if (curElement.arguments().size() == 2) {
 			Expression target = (Expression) curElement.arguments().get(1);
 			String targetName = target.toString();
@@ -51,22 +45,13 @@ public class SequenceExporter extends MethodInvocationExporter {
 		Expression signal = (Expression) curElement.arguments().get(1);
 		String signalExpr = signal.resolveTypeBinding().getQualifiedName();
 
-		compiler.activateLifeline(targetName);
-
 		compiler.println(senderName + "->" + targetName + " : " + signalExpr);
-
+		compiler.activateLifeline(targetName);
 		return true;
 	}
 
 	@Override
 	public void afterNext(MethodInvocation curElement) {
-
 	}
 
-	protected String getMethodFullyQualifiedName(MethodInvocation inv) {
-		String QualifiedTypeName = inv.resolveMethodBinding().getDeclaringClass().getQualifiedName();
-		String MethodName = inv.getName().toString();
-
-		return QualifiedTypeName + "." + MethodName;
-	}
 }
