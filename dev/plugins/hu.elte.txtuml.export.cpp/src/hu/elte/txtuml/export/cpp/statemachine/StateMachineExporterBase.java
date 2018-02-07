@@ -87,8 +87,8 @@ public abstract class StateMachineExporterBase {
 	
 	public void createSubMachineSources(String detiniation) throws FileNotFoundException, UnsupportedEncodingException {
 		for (Map.Entry<String, Pair<String, Region>> entry : submachineMap.entrySet()) {
-			subStateMachineExporter = new SubStateMachineExporter(entry.getValue().getFirst(), entry.getValue().getSecond(), ownerClassUnit);
-			subStateMachineExporter.createSubSmSource(detiniation);
+			subStateMachineExporter = new SubStateMachineExporter(entry.getValue().getFirst(), entry.getValue().getSecond(), ownerClassUnit, detiniation);
+			subStateMachineExporter.createUnitSource();
 			
 			allSubMachineName.add(entry.getValue().getFirst());
 			allSubMachineName.addAll(subStateMachineExporter.getAllSubmachineName());

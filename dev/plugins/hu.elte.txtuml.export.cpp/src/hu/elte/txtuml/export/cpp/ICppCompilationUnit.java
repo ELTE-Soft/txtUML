@@ -23,7 +23,11 @@ public interface ICppCompilationUnit {
 	void addDependency(String type);
 	void addCppOnlyDependency(String type);
 	
+	default void createAddtionoalSources() throws FileNotFoundException, UnsupportedEncodingException {}
+	
 	default void createUnitSource() throws FileNotFoundException, UnsupportedEncodingException {
+		createAddtionoalSources();
+		
 		String headerSource = createUnitHeaderCode();
 		String cppSpurce = createUnitCppCode();
 		
