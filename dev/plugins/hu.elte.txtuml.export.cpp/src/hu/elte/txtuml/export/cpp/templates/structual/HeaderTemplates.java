@@ -10,7 +10,6 @@ import hu.elte.txtuml.export.cpp.templates.GenerationNames.EntryExitNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.FileNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.HierarchicalStateMachineNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.ModifierNames;
-import hu.elte.txtuml.export.cpp.templates.GenerationTemplates;
 import hu.elte.txtuml.export.cpp.templates.PrivateFunctionalTemplates;
 import hu.elte.txtuml.export.cpp.templates.RuntimeTemplates;
 import hu.elte.txtuml.export.cpp.templates.statemachine.StateMachineTemplates;
@@ -273,7 +272,6 @@ public class HeaderTemplates {
 
 	public static String classHeader(String dependency, List<String> baseClassNames, List<String> pureInfBasaNames, String publicPart,
 			String protectedPart, String privatePart, HeaderInfo headerInfo) {
-		StringBuilder source = new StringBuilder(dependency + headerInfo.getRelatedBaseClassInclude());
 		StringBuilder classDecleration = new StringBuilder("");
 		classDecleration.append(GenerationNames.ClassType + " " + headerInfo.getOwnerClassName());
 
@@ -301,9 +299,7 @@ public class HeaderTemplates {
 		classDecleration.append("\nprivate:\n" + headerInfo.getFixPrivateParts() + privatePart);
 
 		classDecleration.append("\n};\n\n");
-		source.append(GenerationTemplates.putNamespace(classDecleration.toString(),
-				GenerationNames.Namespaces.ModelNamespace));
-		return source.toString();
+		return classDecleration.toString();
 	}
 
 

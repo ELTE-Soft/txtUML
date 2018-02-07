@@ -29,18 +29,18 @@ public interface ICppCompilationUnit {
 		createAddtionoalSources();
 		
 		String headerSource = createUnitHeaderCode();
-		String cppSpurce = createUnitCppCode();
+		String cppSource = createUnitCppCode();
 		
 		
 		headerSource = getUnitDependencies(UnitType.Header) + GenerationTemplates.putNamespace(headerSource, getUnitNamespace());
-		cppSpurce = getUnitDependencies(UnitType.Cpp) + GenerationTemplates.putNamespace(cppSpurce, getUnitNamespace());;
+		cppSource = getUnitDependencies(UnitType.Cpp) + GenerationTemplates.putNamespace(cppSource, getUnitNamespace());;
 		
 		CppExporterUtils.writeOutSource(getDesniation(), GenerationTemplates.headerName(getUnitName()),
 				CppExporterUtils.format(HeaderTemplates.headerGuard(headerSource, getUnitName())));
 		
 		
-		CppExporterUtils.writeOutSource(getDesniation(), GenerationTemplates.headerName(getUnitName()),
-				CppExporterUtils.format(HeaderTemplates.headerGuard(cppSpurce, getUnitName())));	
+		CppExporterUtils.writeOutSource(getDesniation(), GenerationTemplates.sourceName(getUnitName()),
+				CppExporterUtils.format(cppSource));	
 		
 		
 	}

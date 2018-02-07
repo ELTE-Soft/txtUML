@@ -2,7 +2,6 @@ package hu.elte.txtuml.export.cpp.structural;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Predicate;
 
 import org.eclipse.uml2.uml.AttributeOwner;
 import org.eclipse.uml2.uml.Operation;
@@ -29,7 +28,6 @@ public abstract class StructuredElementExporter<StructuredElement extends Operat
 
 	protected ActivityExporter activityExporter;
 	protected DependencyExporter dependencyExporter;
-	private Predicate<Operation> pred;
 	private Boolean testing;
 	
 	public StructuredElementExporter(StructuredElement structuredElement, String name, String dest) {
@@ -46,22 +44,6 @@ public abstract class StructuredElementExporter<StructuredElement extends Operat
 	protected void init() {
 		dependencyExporter = new DependencyExporter();
 		activityExporter = new ActivityExporter(this);
-	}
-
-	public boolean hasProperOperation() {
-		return structuredElement.getOwnedOperations().stream().anyMatch(pred);
-	}
-
-	public boolean hasProperOperation(StructuredElement structuredElement) {
-		return structuredElement.getOwnedOperations().stream().anyMatch(pred);
-	}
-
-	protected StructuredElementExporter() {
-		pred = o -> true;
-	}
-
-	protected StructuredElementExporter(Predicate<Operation> pred) {
-		this.pred = pred;
 	}
 
 	protected String createPublicAttributes() {
@@ -165,7 +147,7 @@ public abstract class StructuredElementExporter<StructuredElement extends Operat
 	private String createOperationDeclarations(VisibilityKind modifier) {
 		StringBuilder source = new StringBuilder("");
 		for (Operation operation : structuredElement.getOwnedOperations()) {
-			if (operation.getVisibility().equals(modifier) && pred.test(operation)) {
+			if (operation.getVisibility().equals(modifier)) {
 				String returnType = getReturnType(operation.getReturnResult());
 				if (!CppExporterUtils.isConstructor(operation)) {
 					source.append(operationDecl(operation));
