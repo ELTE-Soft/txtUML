@@ -28,7 +28,7 @@ public class LifelineExporter extends ExporterBase<FieldDeclaration> {
 	}
 
 	/**
-	 * Compiles lifelines in the order of their position.
+	 * Compiles lifelines in the order of their given position.
 	 */
 	@Override
 	public boolean preNext(FieldDeclaration curElement) {
@@ -36,20 +36,11 @@ public class LifelineExporter extends ExporterBase<FieldDeclaration> {
 		Optional<Integer> maybePosition = modifiers.stream().filter(modifier -> modifier instanceof Annotation)
 				.map(modifier -> (Annotation) modifier)
 				.filter(annot -> annot.getTypeName().getFullyQualifiedName().equals("Position"))
-				.map(ca -> (int) ((SingleMemberAnnotation) ca).getValue().resolveConstantExpressionValue()).findFirst();
+				.map(annot -> (int) ((SingleMemberAnnotation) annot).getValue().resolveConstantExpressionValue()).findFirst();
 
 		if (maybePosition.isPresent()) {
 			int position = maybePosition.get();
-			if (compiler.lastLifelinePosition() + 1 != position) {
-				compiler.addToWaitingList(position, curElement);
-			} else if (position == compiler.lastLifelinePosition() + 1
-					|| position == compiler.lastLifelinePosition()) {
-				String participantName = curElement.fragments().get(0).toString();
-
-				compiler.println("participant " + participantName);
-				compiler.lifelineCompiled(position);
-				compiler.compileWaitingLifelines();
-			}
+			compiler.addLifeline(position, curElement);
 		}
 		return true;
 	}

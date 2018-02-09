@@ -98,6 +98,8 @@ public abstract class ExporterBase<T extends ASTNode> {
 			return (ExporterBase<T>) new LifelineExporter(compiler);
 		case ASTNode.METHOD_INVOCATION:
 			return (ExporterBase<T>) MethodInvocationExporter.createExporter(curElement, compiler);
+		case ASTNode.METHOD_DECLARATION:
+			return (ExporterBase<T>) new MethodDeclarationExporter(compiler);
 		case ASTNode.WHILE_STATEMENT:
 		case ASTNode.FOR_STATEMENT:
 		case ASTNode.ENHANCED_FOR_STATEMENT:

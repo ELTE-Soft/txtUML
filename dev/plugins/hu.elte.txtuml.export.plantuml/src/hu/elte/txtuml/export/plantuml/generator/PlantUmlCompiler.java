@@ -1,8 +1,9 @@
 package hu.elte.txtuml.export.plantuml.generator;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Comparator;
 import java.util.List;
+import java.util.PriorityQueue;
 import java.util.Stack;
 
 import org.eclipse.jdt.core.dom.ASTNode;
@@ -34,9 +35,7 @@ public class PlantUmlCompiler extends ASTVisitor {
 	private List<String> activeLifelines;
 	private List<ASTNode> errors;
 	private String currentClassFullyQualifiedName;
-
-	private HashMap<Integer, FieldDeclaration> lifelineDeclarationOrder;
-	private int lastLifelinePosition;
+	private PriorityQueue<QueueElem> declaredLifelines;
 
 	private StringBuilder compiledOutput;
 
@@ -44,11 +43,10 @@ public class PlantUmlCompiler extends ASTVisitor {
 		errors = new ArrayList<ASTNode>();
 		activeLifelines = new ArrayList<String>();
 		exporterQueue = new Stack<ExporterBase<? extends ASTNode>>();
+		declaredLifelines = new PriorityQueue<>(Comparator.comparing(QueueElem::getPriority));
 
 		compiledOutput = new StringBuilder();
 		this.lifelines = lifelines;
-		lifelineDeclarationOrder = new HashMap<Integer, FieldDeclaration>();
-		lastLifelinePosition = 0;
 	}
 
 	/**
@@ -214,37 +212,38 @@ public class PlantUmlCompiler extends ASTVisitor {
 	 * Lifeline position order handling
 	 */
 
-	/**
-	 * Returns the last lifeline position which has been compiled.
-	 */
-	public int lastLifelinePosition() {
-		return lastLifelinePosition;
+	public void addLifeline(int position, FieldDeclaration lifeline) {
+		QueueElem e = new QueueElem();
+		e.setLifelineDecl(lifeline);
+		e.setPriority(position);
+		declaredLifelines.offer(e);
 	}
 
-	/**
-	 * Adds the given lifeline to the waiting list. Called from the lifeline
-	 * exporter, when the given element is not on the next position.
-	 */
-	public void addToWaitingList(int lifelinePosition, FieldDeclaration element) {
-		lifelineDeclarationOrder.put(lifelinePosition, element);
+	public void printLifelines() {
+		while (!declaredLifelines.isEmpty()) {
+			QueueElem elem = declaredLifelines.poll();
+			println("participant " + elem.getLifelineDecl().fragments().get(0).toString());
+		}
 	}
 
-	/**
-	 * Called when a lifeline with the given position is compiled by the
-	 * lifeline exporter.
-	 */
-	public void lifelineCompiled(int lifelinePosition) {
-		lastLifelinePosition = lifelinePosition;
-	}
+	private class QueueElem {
+		private int priority;
+		private FieldDeclaration lifelineDecl;
 
-	/**
-	 * Tries to compile the waiting lifelines.
-	 */
-	public void compileWaitingLifelines() {
-		for (int key : lifelineDeclarationOrder.keySet()) {
-			if (key == lastLifelinePosition || key == lastLifelinePosition + 1) {
-				lifelineDeclarationOrder.get(key).accept(this);
-			}
+		public int getPriority() {
+			return priority;
+		}
+
+		public void setPriority(int priority) {
+			this.priority = priority;
+		}
+
+		public FieldDeclaration getLifelineDecl() {
+			return lifelineDecl;
+		}
+
+		public void setLifelineDecl(FieldDeclaration lifelineDecl) {
+			this.lifelineDecl = lifelineDecl;
 		}
 	}
 
