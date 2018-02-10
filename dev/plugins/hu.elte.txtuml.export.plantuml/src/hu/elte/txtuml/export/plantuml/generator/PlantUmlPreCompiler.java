@@ -1,9 +1,16 @@
 package hu.elte.txtuml.export.plantuml.generator;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 
-import org.eclipse.jdt.core.dom.*;
+import org.eclipse.jdt.core.dom.ASTVisitor;
+import org.eclipse.jdt.core.dom.Annotation;
+import org.eclipse.jdt.core.dom.FieldDeclaration;
+import org.eclipse.jdt.core.dom.SingleMemberAnnotation;
+import org.eclipse.jdt.core.dom.Type;
+import org.eclipse.jdt.core.dom.TypeDeclaration;
 
 import hu.elte.txtuml.api.model.ModelClass;
 import hu.elte.txtuml.utils.jdt.SharedUtils;
@@ -21,14 +28,14 @@ import hu.elte.txtuml.utils.jdt.SharedUtils;
  */
 public class PlantUmlPreCompiler extends ASTVisitor {
 
-	private List<FieldDeclaration> lifelines;
+	private List<Lifeline> lifelines;
 	private Type superClass;
 	private List<Exception> errorList;
 
 	public PlantUmlPreCompiler() {
 		super();
-		lifelines = new ArrayList<FieldDeclaration>();
 		errorList = new ArrayList<Exception>();
+		lifelines = new ArrayList<>();
 	}
 
 	@Override
@@ -50,12 +57,31 @@ public class PlantUmlPreCompiler extends ASTVisitor {
 	@Override
 	public boolean visit(FieldDeclaration decl) {
 		if (SharedUtils.typeIsAssignableFrom(decl.getType().resolveBinding(), ModelClass.class)) {
-			lifelines.add(decl);
+			List<?> modifiers = decl.modifiers();
+			Optional<Integer> position = modifiers.stream().filter(modifier -> modifier instanceof Annotation)
+					.map(modifier -> (Annotation) modifier)
+					.filter(annot -> annot.getTypeName().getFullyQualifiedName().equals("Position"))
+					.map(annot -> (int) ((SingleMemberAnnotation) annot).getValue().resolveConstantExpressionValue())
+					.findFirst();
+
+			if (position.isPresent()) {
+				addLifeline(position.get(), decl);
+			} else {
+				addLifeline(-1, decl);
+			}
 		}
 		return true;
 	}
 
-	public List<FieldDeclaration> getLifelines() {
+	private void addLifeline(Integer position, FieldDeclaration lifeline) {
+		Lifeline l = new Lifeline();
+		l.setLifelineDecl(lifeline);
+		l.setPriority(position);
+		lifelines.add(l);
+	}
+
+	public List<Lifeline> getOrderedLifelines() {
+		lifelines.sort(Comparator.comparing(Lifeline::getPriority));
 		return lifelines;
 	}
 

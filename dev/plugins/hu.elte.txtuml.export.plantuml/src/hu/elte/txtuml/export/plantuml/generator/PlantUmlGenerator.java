@@ -57,7 +57,7 @@ public class PlantUmlGenerator {
 	}
 
 	private void compile(IFile targetFile) throws SequenceDiagramStructuralException {
-		compiler = new PlantUmlCompiler(preCompiler.getLifelines());
+		compiler = new PlantUmlCompiler(preCompiler.getOrderedLifelines());
 		source.accept(compiler);
 
 		createTargetFile(compiler.getCompiledOutput(), targetFile);

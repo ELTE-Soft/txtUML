@@ -1,14 +1,11 @@
 package hu.elte.txtuml.export.plantuml.generator;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
-import java.util.PriorityQueue;
 import java.util.Stack;
 
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTVisitor;
-import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 
@@ -31,22 +28,20 @@ public class PlantUmlCompiler extends ASTVisitor {
 	 * {@link #postVisit(ASTNode)}).
 	 */
 	private Stack<ExporterBase<? extends ASTNode>> exporterQueue;
-	private List<FieldDeclaration> lifelines;
 	private List<String> activeLifelines;
 	private List<ASTNode> errors;
 	private String currentClassFullyQualifiedName;
-	private PriorityQueue<QueueElem> declaredLifelines;
+	private List<Lifeline> orderedLifelines;
 
 	private StringBuilder compiledOutput;
 
-	public PlantUmlCompiler(final List<FieldDeclaration> lifelines) {
+	public PlantUmlCompiler(final List<Lifeline> orderedLifelines) {
 		errors = new ArrayList<ASTNode>();
 		activeLifelines = new ArrayList<String>();
 		exporterQueue = new Stack<ExporterBase<? extends ASTNode>>();
-		declaredLifelines = new PriorityQueue<>(Comparator.comparing(QueueElem::getPriority));
+		this.orderedLifelines = orderedLifelines;
 
 		compiledOutput = new StringBuilder();
-		this.lifelines = lifelines;
 	}
 
 	/**
@@ -72,7 +67,7 @@ public class PlantUmlCompiler extends ASTVisitor {
 	@Override
 	public boolean visit(TypeDeclaration decl) {
 		currentClassFullyQualifiedName = decl.resolveBinding().getQualifiedName().toString();
-		lifelines.forEach(lifeline -> lifeline.accept(this));
+		orderedLifelines.stream().map(Lifeline::getLifelineDecl).forEach(lifeline -> lifeline.accept(this));
 		return true;
 	}
 
@@ -82,9 +77,12 @@ public class PlantUmlCompiler extends ASTVisitor {
 	 */
 	@Override
 	public boolean visit(MethodDeclaration decl) {
+		boolean isInitMethod = decl.getName().toString().equals("initialize");
+		if (isInitMethod) {
+			printLifelines();
+		}
 		return decl.resolveBinding().getDeclaringClass().getQualifiedName().toString()
-				.equals(currentClassFullyQualifiedName)
-				&& (decl.getName().toString().equals("run") || decl.getName().toString().equals("initialize"));
+				.equals(currentClassFullyQualifiedName) && (decl.getName().toString().equals("run") || isInitMethod);
 	}
 
 	/**
@@ -209,42 +207,11 @@ public class PlantUmlCompiler extends ASTVisitor {
 	}
 
 	/*
-	 * Lifeline position order handling
+	 * Used for lifeline position order handling.
 	 */
-
-	public void addLifeline(int position, FieldDeclaration lifeline) {
-		QueueElem e = new QueueElem();
-		e.setLifelineDecl(lifeline);
-		e.setPriority(position);
-		declaredLifelines.offer(e);
-	}
-
-	public void printLifelines() {
-		while (!declaredLifelines.isEmpty()) {
-			QueueElem elem = declaredLifelines.poll();
-			println("participant " + elem.getLifelineDecl().fragments().get(0).toString());
-		}
-	}
-
-	private class QueueElem {
-		private int priority;
-		private FieldDeclaration lifelineDecl;
-
-		public int getPriority() {
-			return priority;
-		}
-
-		public void setPriority(int priority) {
-			this.priority = priority;
-		}
-
-		public FieldDeclaration getLifelineDecl() {
-			return lifelineDecl;
-		}
-
-		public void setLifelineDecl(FieldDeclaration lifelineDecl) {
-			this.lifelineDecl = lifelineDecl;
-		}
+	private void printLifelines() {
+		orderedLifelines.stream().filter(elem -> elem.getPriority() != -1)
+				.forEach(elem -> println("participant " + elem.getLifelineDecl().fragments().get(0).toString()));
 	}
 
 }
