@@ -216,6 +216,7 @@ public class ArrangeAssociations {
 		}
 
 		// Remove occupied points
+		Set<Pair<Point, Double>> occupiedPoints = result.stream().filter(p -> occupiedLinks.contains(p.getFirst())).collect(Collectors.toSet());
 		result.removeIf(p -> occupiedLinks.contains(p.getFirst()));
 		// Remove corner points
 		// result.removeIf(p -> boxAtLinkEnd.isCornerPoint(p.getFirst()));
@@ -235,8 +236,10 @@ public class ArrangeAssociations {
 						}).get();
 
 				Double maxSide = (double) Math.max(boxAtLinkEnd.getWidth(), boxAtLinkEnd.getHeight());
+				
+				Double sumOfDistancesFromOccupiedPoints = occupiedPoints.stream().map(p -> Point.Substract(p.getFirst(), pair.getFirst()).length()).mapToDouble(d -> d).sum();
 
-				result.add(Pair.of(pair.getFirst(), maxSide - shortestDistance));
+				result.add(Pair.of(pair.getFirst(), 3.0 * maxSide - sumOfDistancesFromOccupiedPoints + maxSide - shortestDistance));
 				/*
 				 * if (Helper.isAlmostEqual(distanceFromTL, widthHalf, 0.8) ||
 				 * Helper.isAlmostEqual(distanceFromTL, heightHalf, 0.8) ||
@@ -530,7 +533,7 @@ public class ArrangeAssociations {
 			throw new CannotStartAssociationRouteException("Cannot get out of start, or cannot enter end!");
 		}
 
-		GraphSearch gs = new GraphSearch(STARTSET, ENDSET, occupied, bounds, link.isReflexive());
+		GraphSearch gs = new GraphSearch(STARTSET, ENDSET, occupied, bounds, link.isReflexive(), STARTBOX.getPerimiterPoints(), ENDBOX.getPerimiterPoints());
 
 		link.setRoute(convertFromNodes(gs.value(), STARTBOX.getPosition(), ENDBOX.getPosition()));
 		link.setExtends(gs.extendsNum());
@@ -592,9 +595,9 @@ public class ArrangeAssociations {
 		for (int ri = 1; ri < link.getRoute().size() - 1; ++ri) {
 			if (!Point.Substract(link.getRoute().get(ri - 1), link.getRoute().get(ri))
 					.equals(Point.Substract(link.getRoute().get(ri), link.getRoute().get(ri + 1)))) {
-				result.put(new Point(link.getRoute().get(ri)), Color.Red);
+				result.put(new Point(link.getRoute().get(ri)), Color.Red);//The red color of a point indicates that the point preceding p and the point following p are not on a straight line, so another path crossing this link at this point could lead to another crossing at the next point
 			} else {
-				result.put(new Point(link.getRoute().get(ri)), Color.Yellow);
+				result.put(new Point(link.getRoute().get(ri)), Color.Yellow);//The yellow color of a point indicates that the point preceding p and the point following p are on a straight line, so another path can cross this link here
 			}
 		}
 
