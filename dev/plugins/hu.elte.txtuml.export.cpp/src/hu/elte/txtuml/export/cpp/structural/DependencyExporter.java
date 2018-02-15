@@ -16,11 +16,13 @@ public class DependencyExporter {
 	private Set<String> dependecies;
 	private Set<String> headerOnlyDependency;
 	private Set<String> cppOnlyDependency;
+	private Set<String> headerOnlnyIncludeDependency;
 
 	public DependencyExporter() {
 		dependecies = new HashSet<String>();
 		headerOnlyDependency = new HashSet<>();
 		cppOnlyDependency = new HashSet<>();
+		headerOnlnyIncludeDependency = new HashSet<>();
 	}
 
 	public String createDependencyCppIncludeCode(String className) {
@@ -32,18 +34,24 @@ public class DependencyExporter {
 		return includes.toString();
 	}
 
-	public String createDependencyHeaderIncludeCode() {
+	public String createDependencyHeaderIncludeCode(String preDeclNamespace) {
+		StringBuilder preDeclerations = new StringBuilder();
 		StringBuilder includes = new StringBuilder();
+		
+		
 		dependecies.forEach(type -> {
-			includes.append(GenerationTemplates.forwardDeclaration(type));
+			preDeclerations.append(GenerationTemplates.forwardDeclaration(type));
 		});
 		
 		headerOnlyDependency.forEach(type -> {
-			includes.append(GenerationTemplates.forwardDeclaration(type));
+			preDeclerations.append(GenerationTemplates.forwardDeclaration(type));
 		});
 		
-
-		return includes.toString();
+		headerOnlnyIncludeDependency.forEach(type -> {
+			includes.append(PrivateFunctionalTemplates.include(type));
+		});
+			
+		return includes.toString() + GenerationTemplates.putNamespace(preDeclerations.toString(), preDeclNamespace);
 
 	}
 
@@ -68,6 +76,14 @@ public class DependencyExporter {
 	
 	public void addHeaderOnlyDependencies(Collection<String> dependencies) {
 		dependencies.forEach(d -> addHeaderOnlyDependency(d));
+	}
+	
+	public void addHeaderOnlyIncludeDependency(String dependency) {
+		headerOnlnyIncludeDependency.add(dependency);
+	}
+	
+	public void addHeaderOnlyIncludeDependencies(Collection<String> dependencies) {
+		dependencies.forEach(d -> addHeaderOnlyIncludeDependency(d));
 	}
 	
 	public void addCppOnlyDependency(String dependency) {

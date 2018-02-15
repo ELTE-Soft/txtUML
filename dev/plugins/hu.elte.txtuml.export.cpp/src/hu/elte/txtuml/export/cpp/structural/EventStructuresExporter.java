@@ -102,7 +102,7 @@ public class EventStructuresExporter implements ICppCompilationUnit {
 
 	@Override
 	public String getUnitDependencies(UnitType type) {
-		return dependencyEporter.createDependencyHeaderIncludeCode() + RuntimeTemplates.eventHeaderInclude();
+		return RuntimeTemplates.eventHeaderInclude() + dependencyEporter.createDependencyHeaderIncludeCode(GenerationNames.Namespaces.ModelNamespace);
 	}
 
 	@Override

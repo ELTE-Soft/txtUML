@@ -1,5 +1,7 @@
 package hu.elte.txtuml.export.cpp.structural;
 
+import java.io.FileNotFoundException;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -102,6 +104,11 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 	public String getUnitNamespace() {
 		return GenerationNames.Namespaces.ModelNamespace;
 	}
+	
+	@Override
+	public void createAddtionoalSources() throws FileNotFoundException, UnsupportedEncodingException {
+		stateMachineExporter.createSubMachineSources(getDesniation());
+	}
 
 	@Override
 	public String createUnitCppCode() {
@@ -143,24 +150,33 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 		publicParts.append(portExporter.createPortEnumCode(structuredElement.getOwnedPorts()));
 
 		collectModelBaseClasses();
-		//TODO dependency miert kell oda?
+		
 		if (CppExporterUtils.isStateMachineOwner(structuredElement)) {
 
 			publicParts.append(stateMachineExporter.createStateEnumCode());
 			privateParts.append(stateMachineExporter.createStateMachineRelatedHeadedDeclarationCodes());
+			
+			HeaderInfo stateMachineHeaderInfo = new HeaderInfo(name,
+					new HeaderTemplates.StateMachineClassHeaderType(stateMachineExporter.ownSubMachine() ? 
+							Optional.of(getSubmachines()) : Optional.empty()));			
 			source = HeaderTemplates
 						.classHeader("", baseClasses, interfacesToImplement,
 								publicParts.toString(), protectedParts.toString(), privateParts.toString(), 
-								new HeaderInfo(name,
-										new HeaderTemplates.StateMachineClassHeaderType(stateMachineExporter.ownSubMachine() ? 
-												Optional.of(getSubmachines()) : Optional.empty()))
+								stateMachineHeaderInfo
 							);
+			
+			dependencyExporter.addHeaderOnlyIncludeDependencies(stateMachineHeaderInfo.getRelatedBaseClassInclude());
+
 		} else {
+			HeaderInfo simpleClassHeaderInfo = new HeaderInfo(name, new HeaderTemplates.SimpleClassHeaderType());			
 			source = HeaderTemplates
 					.classHeader("", baseClasses, interfacesToImplement, publicParts.toString(),
 					protectedParts.toString(), privateParts.toString(), 
-					new HeaderInfo(name,new HeaderTemplates.SimpleClassHeaderType())	);
+					simpleClassHeaderInfo);
+			dependencyExporter.addHeaderOnlyIncludeDependencies(simpleClassHeaderInfo.getRelatedBaseClassInclude());
 		}
+		
+		
 		return source;
 	}
 
@@ -182,7 +198,6 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 			}
 			
 			dependencyExporter.addHeaderOnlyDependencies(stateMachineExporter.getAllSubmachineName());
-
 		}
 
 		if (type == UnitType.Cpp) {
@@ -201,13 +216,11 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 			source.append(PrivateFunctionalTemplates.include(GenerationNames.FileNames.StringUtilsPath));
 			source.append(PrivateFunctionalTemplates.include(GenerationNames.FileNames.CollectionUtilsPath));
 		} else if(type == UnitType.Header) {
-			source.append(PrivateFunctionalTemplates.include(GenerationNames.FileNames.TypesFilePath));
+			dependencyExporter.addHeaderOnlyIncludeDependency(GenerationNames.FileNames.TypesFilePath);
 			if (associationExporter.ownAssociation()) {
-				source.append(
-						PrivateFunctionalTemplates.include(RuntimeTemplates.RTPath + LinkTemplates.AssocationHeader));
+				dependencyExporter.addHeaderOnlyIncludeDependency(RuntimeTemplates.RTPath + LinkTemplates.AssocationHeader);
 			}
-			source.append(GenerationTemplates.putNamespace(dependencyExporter.createDependencyHeaderIncludeCode(),
-					GenerationNames.Namespaces.ModelNamespace));
+			source.append(dependencyExporter.createDependencyHeaderIncludeCode(GenerationNames.Namespaces.ModelNamespace));
 
 		}
 

@@ -31,7 +31,7 @@ public class DataTypeExporter extends StructuredElementExporter<DataType> {
 
 	@Override
 	public String getUnitDependencies(UnitType type) {
-		return dependencyExporter.createDependencyHeaderIncludeCode();
+		return dependencyExporter.createDependencyHeaderIncludeCode(GenerationNames.Namespaces.ModelNamespace);
 	}
 
 }

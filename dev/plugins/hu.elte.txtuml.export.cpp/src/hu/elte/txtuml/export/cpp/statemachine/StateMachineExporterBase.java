@@ -52,38 +52,6 @@ public abstract class StateMachineExporterBase {
 	
 	private List<String> allSubMachineName;	
 	
-	private void createMachine() {
-		for (Transition item : stateMachineRegion.getTransitions()) {
-			TransitionConditions transitionCondition = null;
-			for (Trigger tri : item.getTriggers()) {
-				Event e = tri.getEvent();
-
-				if (e != null && e.eClass().equals(UMLPackage.Literals.SIGNAL_EVENT)) {
-					SignalEvent se = (SignalEvent) e;
-					if (se != null) {
-						List<Port> ports = tri.getPorts();
-						assert (ports.size() == 0 || ports.size() == 1);
-						String port = ports.size() == 0 ? PortTemplates.NO_PORT : ports.get(0).getName();
-						transitionCondition = new TransitionConditions(se.getSignal().getName(),
-								item.getSource().getName(), port);
-
-					}
-				}
-			}
-			if (transitionCondition != null) {
-				Pair<String, String> guardTransitionPair = null;
-				if (item.getGuard() != null) {
-					guardExporter.exportConstraintToMap(item.getGuard());
-					guardTransitionPair = new Pair<String, String>(guardExporter.getGuard(item.getGuard()),
-							item.getName());
-
-				} else {
-					guardTransitionPair = new Pair<String, String>(null, item.getName());
-				}
-				stateMachineMap.put(transitionCondition, guardTransitionPair);
-			}
-		}
-	}
 	
 	public void createSubMachineSources(String detiniation) throws FileNotFoundException, UnsupportedEncodingException {
 		for (Map.Entry<String, Pair<String, Region>> entry : submachineMap.entrySet()) {
@@ -196,5 +164,38 @@ public abstract class StateMachineExporterBase {
 			}
 		}		
 		return Optional.empty();
+	}
+	
+	private void createMachine() {
+		for (Transition item : stateMachineRegion.getTransitions()) {
+			TransitionConditions transitionCondition = null;
+			for (Trigger tri : item.getTriggers()) {
+				Event e = tri.getEvent();
+
+				if (e != null && e.eClass().equals(UMLPackage.Literals.SIGNAL_EVENT)) {
+					SignalEvent se = (SignalEvent) e;
+					if (se != null) {
+						List<Port> ports = tri.getPorts();
+						assert (ports.size() == 0 || ports.size() == 1);
+						String port = ports.size() == 0 ? PortTemplates.NO_PORT : ports.get(0).getName();
+						transitionCondition = new TransitionConditions(se.getSignal().getName(),
+								item.getSource().getName(), port);
+
+					}
+				}
+			}
+			if (transitionCondition != null) {
+				Pair<String, String> guardTransitionPair = null;
+				if (item.getGuard() != null) {
+					guardExporter.exportConstraintToMap(item.getGuard());
+					guardTransitionPair = new Pair<String, String>(guardExporter.getGuard(item.getGuard()),
+							item.getName());
+
+				} else {
+					guardTransitionPair = new Pair<String, String>(null, item.getName());
+				}
+				stateMachineMap.put(transitionCondition, guardTransitionPair);
+			}
+		}
 	}
 }

@@ -1,5 +1,8 @@
 package hu.elte.txtuml.export.cpp.templates.structual;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -20,7 +23,7 @@ public class HeaderTemplates {
 	public static interface HeaderType {
 		String getSpecificBaseClass();
 		String getSpecificPrivatePart();
-		String getSpecificInclude();
+		List<String> getSpecificIncludes();
 		Boolean hasStateMachine();
 		Boolean hasHierarchicalStateMachine();
 		Boolean hasExecutionInterface();
@@ -40,8 +43,8 @@ public class HeaderTemplates {
 		}
 
 		@Override
-		public String getSpecificInclude() {
-			return "";
+		public List<String> getSpecificIncludes() {
+			return Collections.emptyList();
 		}
 
 		@Override
@@ -74,8 +77,8 @@ public class HeaderTemplates {
 		}
 
 		@Override
-		public String getSpecificInclude() {
-			return PrivateFunctionalTemplates.include(RuntimeTemplates.RTPath + ClassUtilsNames.NotStateMachineOwnerBaseName);
+		public List<String> getSpecificIncludes() {
+			return Arrays.asList(RuntimeTemplates.RTPath + ClassUtilsNames.NotStateMachineOwnerBaseName);
 		}
 
 		@Override
@@ -114,14 +117,14 @@ public class HeaderTemplates {
 			return ClassUtilsNames.StateMachineOwnerBaseName;
 		}
 		@Override
-		public String getSpecificInclude() {
-			StringBuilder includes = new StringBuilder("");
+		public List<String> getSpecificIncludes() {
+			List<String> includes = new ArrayList<>();
 			if(hasHierarchicalStateMachine()) {
-				includes.append(PrivateFunctionalTemplates.include(RuntimeTemplates.RTPath + ClassUtilsNames.SubStateMachineBase));
+				includes.add(RuntimeTemplates.RTPath + ClassUtilsNames.SubStateMachineBase);
 			}
-			includes.append(PrivateFunctionalTemplates.include(RuntimeTemplates.RTPath + ClassUtilsNames.StateMachineOwnerBaseName));
+			includes.add(RuntimeTemplates.RTPath + ClassUtilsNames.StateMachineOwnerBaseName);
 			
-			return includes.toString();
+			return includes;
 		}
 		@Override
 		public Boolean hasExecutionInterface() {
@@ -158,8 +161,8 @@ public class HeaderTemplates {
 		}
 
 		@Override
-		public String getSpecificInclude() {
-			return PrivateFunctionalTemplates.include(RuntimeTemplates.RTPath + ClassUtilsNames.SubStateMachineBase);
+		public List<String> getSpecificIncludes() {
+			return Arrays.asList(RuntimeTemplates.RTPath + ClassUtilsNames.SubStateMachineBase);
 		}
 
 		@Override
@@ -204,8 +207,8 @@ public class HeaderTemplates {
 			return headerType.getSpecificBaseClass();
 		}
 
-		public String getRelatedBaseClassInclude() {
-			return headerType.getSpecificInclude();
+		public List<String> getRelatedBaseClassInclude() {
+			return headerType.getSpecificIncludes();
 		}
 		
 		public String getOwnerClassName() {
