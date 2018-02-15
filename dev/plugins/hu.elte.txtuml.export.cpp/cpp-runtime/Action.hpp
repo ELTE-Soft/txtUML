@@ -1,6 +1,9 @@
 /** @file Action.hpp
 */
 
+#ifndef ACTION_HPP
+#define ACTION_HPP
+
 #include "ESRoot/Types.hpp"
 namespace ES
 {
@@ -74,3 +77,5 @@ void unlink(typename LeftEnd::EdgeType* e1, typename RightEnd::EdgeType* e2)
 }
 
 }
+
+#endif

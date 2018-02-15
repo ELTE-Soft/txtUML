@@ -220,6 +220,7 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 			dependencyExporter.addHeaderOnlyIncludeDependency(GenerationNames.FileNames.TypesFilePath);
 			if (associationExporter.ownAssociation()) {
 				dependencyExporter.addHeaderOnlyIncludeDependency(RuntimeTemplates.RTPath + LinkTemplates.AssocationHeader);
+				dependencyExporter.addHeaderOnlyIncludeDependency(LinkTemplates.AssociationsStructuresHreaderName);
 			}
 			source.append(dependencyExporter.createDependencyHeaderIncludeCode(GenerationNames.Namespaces.ModelNamespace));
 
