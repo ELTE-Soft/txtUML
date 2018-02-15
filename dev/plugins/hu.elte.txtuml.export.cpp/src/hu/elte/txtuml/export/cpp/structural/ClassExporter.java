@@ -48,7 +48,7 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 		baseClasses = new LinkedList<String>();
 		interfacesToImplement = new LinkedList<String>();
 		constructorExporter = new ConstructorExporter(structuredElement.getOwnedOperations(), super.activityExporter);
-		associationExporter = new AssociationExporter();
+		associationExporter = new AssociationExporter(structuredElement.getOwnedAttributes());
 		additionalSourcesNames = new ArrayList<String>();
 		baseClasses.clear();
 		interfacesToImplement.clear();
@@ -176,8 +176,9 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 			dependencyExporter.addHeaderOnlyIncludeDependencies(simpleClassHeaderInfo.getRelatedBaseClassInclude());
 		}
 		
+		String externalDeclerations = associationExporter.createLinkFunctionDeclarations(name);	
 		
-		return source;
+		return source + externalDeclerations;
 	}
 
 	@Override
