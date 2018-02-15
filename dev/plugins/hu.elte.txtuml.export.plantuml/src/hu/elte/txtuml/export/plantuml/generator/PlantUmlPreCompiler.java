@@ -73,13 +73,6 @@ public class PlantUmlPreCompiler extends ASTVisitor {
 		return true;
 	}
 
-	private void addLifeline(Integer position, FieldDeclaration lifeline) {
-		Lifeline l = new Lifeline();
-		l.setLifelineDecl(lifeline);
-		l.setPriority(position);
-		lifelines.add(l);
-	}
-
 	public List<Lifeline> getOrderedLifelines() {
 		lifelines.sort(Comparator.comparing(Lifeline::getPriority));
 		return lifelines;
@@ -91,6 +84,10 @@ public class PlantUmlPreCompiler extends ASTVisitor {
 
 	public List<Exception> getErrors() {
 		return errorList;
+	}
+
+	private void addLifeline(int position, FieldDeclaration lifeline) {
+		lifelines.add(new Lifeline(new LifelineDeclaration(lifeline, position)));
 	}
 
 }

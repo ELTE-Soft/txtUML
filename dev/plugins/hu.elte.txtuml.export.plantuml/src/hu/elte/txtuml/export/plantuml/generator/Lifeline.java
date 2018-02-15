@@ -1,30 +1,40 @@
 package hu.elte.txtuml.export.plantuml.generator;
 
 import org.eclipse.jdt.core.dom.FieldDeclaration;
+import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 
 /**
- * Represents a pair of lifeline declaration and its user-given position
- * priority.
+ * Represents a sequence diagram lifeline.
  */
 class Lifeline {
 
-	private int priority;
-	private FieldDeclaration lifelineDecl;
+	private LifelineDeclaration declaration;
+	private String name;
+	private boolean isActive;
+
+	Lifeline(final LifelineDeclaration declaration) {
+		this.declaration = declaration;
+		this.name = ((VariableDeclarationFragment) declaration.getLifelineDecl().fragments().get(0)).toString();
+	}
+
+	public void activate(boolean isActive) {
+		this.isActive = isActive;
+	}
+
+	public boolean isActive() {
+		return isActive;
+	}
+
+	public String getName() {
+		return name;
+	}
 
 	public int getPriority() {
-		return priority;
+		return declaration.getPriority();
 	}
 
-	public void setPriority(int priority) {
-		this.priority = priority;
-	}
-
-	public FieldDeclaration getLifelineDecl() {
-		return lifelineDecl;
-	}
-
-	public void setLifelineDecl(FieldDeclaration lifelineDecl) {
-		this.lifelineDecl = lifelineDecl;
+	public FieldDeclaration getLifelineDeclaration() {
+		return declaration.getLifelineDecl();
 	}
 
 }
