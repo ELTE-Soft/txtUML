@@ -48,7 +48,7 @@ class ObjectActionExporter {
 	}
 
 	public String createDestroyObjectActionCode(DestroyObjectAction node) {
-		return ActivityTemplates.deleteObject(activityExportResolver.getTargetFromInputPin(node.getTarget()));
+			return ActivityTemplates.deleteObject(activityExportResolver.getTargetFromInputPin(node.getTarget()));
 	}
 
 	public String createStartObjectActionCode(StartClassifierBehaviorAction node) {

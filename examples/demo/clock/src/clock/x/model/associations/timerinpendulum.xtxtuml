@@ -1,0 +1,10 @@
+package clock.x.model.associations;
+
+import hu.elte.txtuml.api.stdlib.timers.Timer;
+import clock.x.model.Pendulum;
+import clock.x.model.Clock;
+
+association TimerOfPendulum {
+	1 Timer timer;
+	hidden 0..1 Pendulum pendulum;
+}

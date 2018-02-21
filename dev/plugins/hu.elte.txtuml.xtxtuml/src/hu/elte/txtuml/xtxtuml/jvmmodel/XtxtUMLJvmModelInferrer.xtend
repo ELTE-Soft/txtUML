@@ -9,6 +9,8 @@ import hu.elte.txtuml.api.model.Composition.HiddenContainer
 import hu.elte.txtuml.api.model.Connector
 import hu.elte.txtuml.api.model.ConnectorBase.One
 import hu.elte.txtuml.api.model.Delegation
+import hu.elte.txtuml.api.model.External
+import hu.elte.txtuml.api.model.ExternalBody
 import hu.elte.txtuml.api.model.From
 import hu.elte.txtuml.api.model.Interface
 import hu.elte.txtuml.api.model.Max
@@ -20,6 +22,7 @@ import hu.elte.txtuml.api.model.Signal
 import hu.elte.txtuml.api.model.StateMachine
 import hu.elte.txtuml.api.model.To
 import hu.elte.txtuml.api.model.Trigger
+import hu.elte.txtuml.xtxtuml.common.XtxtUMLUtils
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAssociation
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAssociationEnd
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAttribute
@@ -49,6 +52,7 @@ import hu.elte.txtuml.xtxtuml.xtxtUML.TUTransitionPort
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUTransitionTrigger
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUTransitionVertex
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUVisibility
+import java.util.Deque
 import java.util.Map
 import org.eclipse.emf.ecore.EObject
 import org.eclipse.xtext.common.types.JvmDeclaredType
@@ -70,9 +74,10 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 
 	Map<EObject, JvmDeclaredType> registeredTypes = newHashMap;
 
-	@Inject extension XtxtUMLTypesBuilder;
 	@Inject extension IJvmModelAssociations;
 	@Inject extension IQualifiedNameProvider;
+	@Inject extension XtxtUMLTypesBuilder;
+	@Inject extension XtxtUMLUtils;
 
 	/**
 	 * Infers the given model declaration as a specialized {@link JvmGenericType},
@@ -122,25 +127,60 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 	def dispatch void infer(TUSignal signal, IJvmDeclaredTypeAcceptor acceptor, boolean isPreIndexingPhase) {
 		acceptor.accept(signal.toClass(signal.fullyQualifiedName)) [
 			documentation = signal.documentation
-			superTypes += Signal.typeRef
+			if (signal.superSignal != null) {
+				superTypes += signal.superSignal.inferredTypeRef
+			} else {
+				superTypes += Signal.typeRef
+			}
 
 			for (attr : signal.attributes) {
 				members += attr.toJvmMember
 			}
 
-			if (!signal.attributes.isEmpty) {
-				members += signal.toConstructor [
-					for (attr : signal.attributes) {
+			if (signal.attributes.isEmpty && signal.superSignal == null) {
+				return
+			}
+
+			members += signal.toConstructor [
+				val Deque<TUSignal> supers = newLinkedList
+				if (signal.superSignal.travelSignalHierarchy [
+					supers.add(it)
+					false
+				] == null) {
+					return // cycle in hierarchy
+				}
+
+				val Deque<TUSignalAttribute> superAttributes = newLinkedList
+				while (!supers.empty) {
+					superAttributes.addAll(supers.last.attributes)
+					supers.removeLast
+				}
+
+				val (TUSignalAttribute)=>void addAsParam = [ attr |
+					if (parameters.findFirst[name == attr.name] == null) {
+						// to eliminate 'duplicate local variable' errors
 						parameters += attr.toParameter(attr.name, attr.type)
 					}
-
-					body = '''
-						«FOR attr : signal.attributes»
-							this.«attr.name» = «attr.name»;
-						«ENDFOR»
-					'''
 				]
-			}
+
+				superAttributes.forEach(addAsParam)
+				signal.attributes.forEach(addAsParam) 
+
+				val lastSuperAttribute = if (superAttributes.empty) {
+						null
+					} else {
+						superAttributes.removeLast
+					}
+
+				body = '''
+					«IF lastSuperAttribute != null»					
+						super(«FOR attr : superAttributes»«attr.name», «ENDFOR»«lastSuperAttribute.name»);
+					«ENDIF»
+					«FOR attr : signal.attributes»
+						this.«attr.name» = «attr.name»;
+					«ENDFOR»
+				'''
+			]
 		]
 	}
 
@@ -295,7 +335,13 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 	def dispatch private toJvmMember(TUConstructor ctor) {
 		ctor.toConstructor [
 			documentation = ctor.documentation
-			visibility = ctor.visibility.toJvmVisibility
+			val modifiers = ctor.modifiers
+			visibility = modifiers.visibility.toJvmVisibility
+			switch (modifiers.externality) {
+				case EXTERNAL: annotations += External.annotationRef
+				case EXTERNAL_BODY: annotations += ExternalBody.annotationRef
+				default: {}
+			}
 
 			for (param : ctor.parameters) {
 				parameters += param.toParameter(param.name, param.parameterType) => [
@@ -310,7 +356,17 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 	def dispatch private toJvmMember(TUAttribute attr) {
 		attr.toField(attr.name, attr.prefix.type) [
 			documentation = attr.documentation
-			visibility = attr.prefix.visibility.toJvmVisibility
+			
+			val modifiers = attr.prefix.modifiers
+			static = modifiers.static
+			visibility = modifiers.visibility.toJvmVisibility
+
+			switch (modifiers.externality) {
+				case EXTERNAL: annotations += External.annotationRef
+				default: {}
+			}
+
+			initializer = attr.initExpression
 		]
 	}
 
@@ -330,7 +386,15 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 	def dispatch private toJvmMember(TUOperation op) {
 		op.toMethod(op.name, op.prefix.type) [
 			documentation = op.documentation
-			visibility = op.prefix.visibility.toJvmVisibility
+			val modifiers = op.prefix.modifiers
+			static = modifiers.static
+			visibility = modifiers.visibility.toJvmVisibility
+
+			switch (modifiers.externality) {
+				case EXTERNAL: annotations += External.annotationRef
+				case EXTERNAL_BODY: annotations += ExternalBody.annotationRef
+				default: {}
+			}
 
 			for (JvmFormalParameter param : op.parameters) {
 				parameters += param.toParameter(param.name, param.parameterType) => [

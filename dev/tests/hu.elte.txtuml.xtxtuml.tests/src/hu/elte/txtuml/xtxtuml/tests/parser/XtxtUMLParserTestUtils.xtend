@@ -16,10 +16,12 @@ import hu.elte.txtuml.xtxtuml.xtxtUML.TUEntryOrExitActivity
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUEnumeration
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUEnumerationLiteral
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUExecution
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUExternality
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUFile
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUInterface
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUModelDeclaration
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUModelElement
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUModifiers
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUMultiplicity
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUOperation
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUPort
@@ -108,11 +110,13 @@ class XtxtUMLParserTestUtils {
 		(execution.body as XBlockExpression).expressions.performChecks(expressionChecks);
 	}
 
-	def signal(TUModelElement element, String name, List<Procedure1<TUSignalAttribute>> attributeChecks) {
+	def signal(TUModelElement element, String name, String superName,
+		List<Procedure1<TUSignalAttribute>> attributeChecks) {
 		assertTrue(element instanceof TUSignal);
 		val signal = element as TUSignal;
 
 		assertEquals(name, signal.name);
+		assertEquals(superName, signal.superSignal?.name);
 		signal.attributes.performChecks(attributeChecks);
 	}
 
@@ -131,21 +135,28 @@ class XtxtUMLParserTestUtils {
 		clazz.members.performChecks(memberChecks);
 	}
 
-	def attribute(TUClassMember member, TUVisibility visibility, String typeName, String name) {
+	def attribute(TUClassMember member, TUVisibility visibility, boolean isStatic, TUExternality externality,
+		String typeName, String name, Procedure1<XExpression> initializerCheck) {
 		assertTrue(member instanceof TUAttribute);
 		val attribute = member as TUAttribute;
 
-		assertEquals(visibility, attribute.prefix.visibility);
+		attribute.prefix.modifiers.check(visibility, isStatic, externality);
 		assertEquals(typeName, attribute.prefix.type.simpleName);
 		assertEquals(name, attribute.name);
+
+		assertEquals(initializerCheck == null, attribute.initExpression == null);
+		if (initializerCheck != null) {
+			initializerCheck.apply(attribute.initExpression);
+		}
 	}
 
-	def operation(TUClassMember member, TUVisibility visibility, String typeName, String name,
-		List<Procedure1<JvmFormalParameter>> parameterChecks, List<Procedure1<XExpression>> expressionChecks) {
+	def operation(TUClassMember member, TUVisibility visibility, boolean isStatic, TUExternality externality,
+		String typeName, String name, List<Procedure1<JvmFormalParameter>> parameterChecks,
+		List<Procedure1<XExpression>> expressionChecks) {
 		assertTrue(member instanceof TUOperation);
 		val operation = member as TUOperation;
 
-		assertEquals(visibility, operation.prefix.visibility);
+		operation.prefix.modifiers.check(visibility, isStatic, externality);
 		assertEquals(typeName, operation.prefix.type.simpleName);
 		assertEquals(name, operation.name);
 
@@ -158,12 +169,12 @@ class XtxtUMLParserTestUtils {
 		assertEquals(name, parameter.name);
 	}
 
-	def constructor(TUClassMember member, TUVisibility visibility, String name,
+	def constructor(TUClassMember member, TUVisibility visibility, TUExternality externality, String name,
 		List<Procedure1<JvmFormalParameter>> parameterChecks, List<Procedure1<XExpression>> expressionChecks) {
 		assertTrue(member instanceof TUConstructor);
 		val ctor = member as TUConstructor;
 
-		assertEquals(visibility, ctor.visibility);
+		ctor.modifiers.check(visibility, false, externality);
 		assertEquals(name, ctor.name);
 
 		ctor.parameters.performChecks(parameterChecks);
@@ -613,6 +624,12 @@ class XtxtUMLParserTestUtils {
 				checkIt.next.apply(elementIt.next);
 			}
 		}
+	}
+
+	def private check(TUModifiers modifiers, TUVisibility visibility, boolean isStatic, TUExternality externality) {
+		assertEquals(visibility, modifiers.visibility);
+		assertEquals(isStatic, modifiers.static);
+		assertEquals(externality, modifiers.externality);
 	}
 
 }

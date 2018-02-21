@@ -189,7 +189,7 @@ public class CppExporterUtils {
 		String body = "";
 		for (Operation operation : factoryClass.getOperations()) {
 			if (isConstructor(operation)) {
-				body = activityExporter.createFunctionBody(getOperationActivity(operation)).toString();
+				body = activityExporter.createFunctionBody(getOperationActivity(operation)).getActivitySource();
 
 			}
 		}
@@ -245,5 +245,17 @@ public class CppExporterUtils {
 		}
 
 		return false;
+	}
+	
+	public static boolean isStateMachineOwner(Class cls) {
+		return CppExporterUtils.getStateMachine(cls) != null;
+	}
+	
+	public static String cutOffTheLastCharcter(String originalString) {
+		int originalLeght = originalString.length();
+		if(originalLeght == 0) {
+			return "";
+		}
+		return originalString.substring(0, originalLeght - 1);
 	}
 }

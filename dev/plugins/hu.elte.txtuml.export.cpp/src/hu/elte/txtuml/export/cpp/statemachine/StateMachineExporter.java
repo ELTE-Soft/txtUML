@@ -1,6 +1,8 @@
 package hu.elte.txtuml.export.cpp.statemachine;
 
+
 import java.util.Map;
+import java.util.Optional;
 
 import org.eclipse.uml2.uml.Region;
 import org.eclipse.uml2.uml.StateMachine;
@@ -43,19 +45,10 @@ public class StateMachineExporter extends StateMachineExporterBase {
 	public String createStateMachineRelatedCppSourceCodes() {
 		StringBuilder source = new StringBuilder("");
 		source.append(createTransitionTableInitRelatedCodes());
-		if (submachineMap.isEmpty()) {
-			source.append(StateMachineTemplates.simpleStateMachineInitializationDefinition(ownerClassName,
-					getInitialStateName(), true, poolId));
-			source.append(StateMachineTemplates.simpleStateMachineFixFunctionDefinitions(ownerClassName,
-					getInitialStateName(), false));
-
-		} else {
-			source.append(StateMachineTemplates.hierachialStateMachineInitialization(ownerClassName,
-					getInitialStateName(), true, poolId, getEventSubMachineNameMap()));
-			source.append(StateMachineTemplates.hiearchialStateMachineFixFunctionDefinitions(ownerClassName,
-					getInitialStateName(), false));
-
-		}
+		source.append(StateMachineTemplates.stateMachineInitializationDefinition(ownerClassName, poolId, 
+				submachineMap.isEmpty() ? Optional.empty() : Optional.of(getEventSubMachineNameMap())));
+		source.append(StateMachineTemplates.stateMachineFixFunctionDefitions(ownerClassName, 
+				getInitialState(stateMachineRegion) ,false, submachineMap.isEmpty()));
 		source.append(guardExporter.defnieGuardFunctions(ownerClassName));
 		source.append(entryExitFunctionExporter.createEntryFunctionsDef());
 		source.append(entryExitFunctionExporter.createExitFunctionsDef());
@@ -64,14 +57,19 @@ public class StateMachineExporter extends StateMachineExporterBase {
 		source.append(StateMachineTemplates.entry(ownerClassName,
 				createStateActionMap(entryExitFunctionExporter.getEntryMap())) + "\n");
 		source.append(
-				StateMachineTemplates.exit(ownerClassName, createStateActionMap(entryExitFunctionExporter.getExitMap()))
+				StateMachineTemplates.exit(ownerClassName, 
+						createStateActionMap(entryExitFunctionExporter.getExitMap()))
 						+ "\n");
+		
+		source.append(StateMachineTemplates.finalizeFunctionDef(ownerClassName));
+		source.append(StateMachineTemplates.initializeFunctionDef(ownerClassName, getInitialTransition(stateMachineRegion)));
+
 
 		return source.toString();
 	}
 
-	public String createStateEnumCode() {
-		return StateMachineTemplates.stateEnum(stateList, getInitialStateName());
+	public String createStateEnumCode() {		
+		return StateMachineTemplates.stateEnum(stateList, getInitialState(stateMachineRegion));
 	}
 
 	public boolean ownSubMachine() {
@@ -81,5 +79,6 @@ public class StateMachineExporter extends StateMachineExporterBase {
 	public Map<String, Pair<String, Region>> getSubMachineMap() {
 		return submachineMap;
 	}
+
 
 }

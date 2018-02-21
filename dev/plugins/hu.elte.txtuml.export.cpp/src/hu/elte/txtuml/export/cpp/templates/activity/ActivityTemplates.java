@@ -1,6 +1,7 @@
 package hu.elte.txtuml.export.cpp.templates.activity;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -102,7 +103,7 @@ public class ActivityTemplates {
 	}
 
 	public static String operationCallOnPointerVariable(String ownerName, String operationName, List<String> params) {
-		return operationCall(ownerName, PointerAndMemoryNames.PointerAccess, operationName, params);
+		return blockStatement(operationCall(ownerName, PointerAndMemoryNames.PointerAccess, operationName, params));
 	}
 
 	public static String blockStatement(String statement) {
@@ -126,7 +127,8 @@ public class ActivityTemplates {
 	}
 
 	public static String deleteObject(String objectVariable) {
-		return PointerAndMemoryNames.DeleteObject + " " + objectVariable + ";\n";
+		return blockStatement(operationCall(ActionNames.ActionDelete, Arrays.asList(objectVariable)));
+		
 	}
 
 	public static String simpleCondControlStruct(String control, String cond, String body) {

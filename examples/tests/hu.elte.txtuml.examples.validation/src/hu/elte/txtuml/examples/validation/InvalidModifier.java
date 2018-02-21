@@ -6,8 +6,8 @@ public class InvalidModifier extends ModelClass {
 	
 	synchronized void f() {}
 	
-	final void g() {}
+	static final void g() {}
 	
-	static void h() {}
+	static int i;
 	
 }

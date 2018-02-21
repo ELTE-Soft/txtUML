@@ -9,7 +9,7 @@ public class Messages extends NLS {
 	public static String InvalidModelClassElement_message;
 	public static String InvalidModifier_message;
 	public static String InvalidSignalContent_message;
-	public static String InvalidTemplate_message;
+	public static String InvalidTypeParameter_message;
 	public static String InvalidTypeInModel_message;
 	public static String InvalidParameterType_message;
 	public static String InvalidAttributeType_message;

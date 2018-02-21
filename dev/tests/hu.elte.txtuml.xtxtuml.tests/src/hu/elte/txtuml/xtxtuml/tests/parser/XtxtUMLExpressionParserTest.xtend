@@ -10,6 +10,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 import static hu.elte.txtuml.xtxtuml.tests.parser.XtxtUMLParserTestUtils.*
+import static hu.elte.txtuml.xtxtuml.xtxtUML.TUExternality.*
 import static hu.elte.txtuml.xtxtuml.xtxtUML.TUStateType.*
 import static hu.elte.txtuml.xtxtuml.xtxtUML.TUVisibility.*
 
@@ -41,11 +42,11 @@ class XtxtUMLExpressionParserTest {
 		file(
 			"test.model",
 			null, #[
-				[signal("TestSignal", #[])],
+				[signal("TestSignal", null, #[])],
 				[class_(
 					"TestClass", null, #[
 						[operation(
-							PACKAGE, "void", "testOperation", #[], #[
+							PACKAGE, false, NON_EXTERNAL, "void", "testOperation", #[], #[
 								[sendSignal(
 									[constructorCall("TestSignal", null, #[])],
 									[this_]
@@ -95,7 +96,7 @@ class XtxtUMLExpressionParserTest {
 			"test.model",
 			null, #[
 				[signal(
-					"TestSignal", #[
+					"TestSignal", null, #[
 						[attribute(PUBLIC, "String", "message")]
 					]
 				)],
@@ -141,7 +142,7 @@ class XtxtUMLExpressionParserTest {
 				[class_(
 					"A", null, #[
 						[operation(
-							PACKAGE, "void", "foo", #[], #[
+							PACKAGE, false, NON_EXTERNAL, "void", "foo", #[], #[
 								[variableDeclaration(
 									"A", null, "a",
 									[constructorCall("A", null, #[])]
@@ -182,7 +183,7 @@ class XtxtUMLExpressionParserTest {
 				[class_(
 					"TestClass", null, #[
 						[operation(
-							PACKAGE, "void", "testOperation", #[], #[
+							PACKAGE, false, NON_EXTERNAL, "void", "testOperation", #[], #[
 								[variableDeclaration("int", null, "a", null)],
 								[variableDeclaration("String", null, "b", [string("test")])],
 								[variableDeclaration("Collection", "TestClass", "c", null)],
@@ -227,7 +228,7 @@ class XtxtUMLExpressionParserTest {
 				[class_(
 					"A", null, #[
 						[operation(
-							PACKAGE, "void", "foo", #[], #[
+							PACKAGE, false, NON_EXTERNAL, "void", "foo", #[], #[
 								[sendSignal(
 									[constructorCall("S", null, #[])],
 									[propertyAccess([this_], "P")]
@@ -249,7 +250,7 @@ class XtxtUMLExpressionParserTest {
 						[port(false, "P", #[])]
 					]
 				)],
-				[signal("S", #[])],
+				[signal("S", null, #[])],
 				[class_("B", null, #[])],
 				[association(
 					false, "AB", #[
@@ -281,7 +282,7 @@ class XtxtUMLExpressionParserTest {
 				[class_(
 					"A", null, #[
 						[operation(
-							PACKAGE, "void", "foo", #[], #[
+							PACKAGE, false, NON_EXTERNAL, "void", "foo", #[], #[
 								[variableDeclaration("int", null, "i", [number(0)])],
 								[whileLoop(
 									[binaryOperation(OPERATOR_LESS_THAN, [variable("i")], [number(10)])], #[
@@ -316,7 +317,7 @@ class XtxtUMLExpressionParserTest {
 				[class_(
 					"A", null, #[
 						[operation(
-							PACKAGE, "void", "foo", #[], #[
+							PACKAGE, false, NON_EXTERNAL, "void", "foo", #[], #[
 								[variableDeclaration("int", null, "i", [number(0)])],
 								[doWhileLoop(
 									#[
@@ -361,7 +362,7 @@ class XtxtUMLExpressionParserTest {
 				[class_(
 					"A", null, #[
 						[operation(
-							PACKAGE, "void", "foo", #[], #[
+							PACKAGE, false, NON_EXTERNAL, "void", "foo", #[], #[
 								[variableDeclaration("int", null, "i", null)],
 								[if_(
 									[bool(true)], #[
@@ -423,7 +424,7 @@ class XtxtUMLExpressionParserTest {
 				[class_(
 					"A", null, #[
 						[operation(
-							PACKAGE, "void", "foo", #[], #[
+							PACKAGE, false, NON_EXTERNAL, "void", "foo", #[], #[
 								[variableDeclaration("int", null, "i", null)],
 								[switch_(
 									[variable("i")], #[
@@ -475,7 +476,7 @@ class XtxtUMLExpressionParserTest {
 				[class_(
 					"A", null, #[
 						[operation(
-							PACKAGE, "void", "foo", #[], #[
+							PACKAGE, false, NON_EXTERNAL, "void", "foo", #[], #[
 								[forEachLoop(
 									[parameter("B", "b")], [propertyAccess([this_], "b")], #[
 										[featureCall([variable("b")], "bar", #[])]
@@ -487,7 +488,7 @@ class XtxtUMLExpressionParserTest {
 				)],
 				[class_(
 					"B", null, #[
-						[operation(PACKAGE, "void", "bar", #[], #[])]
+						[operation(PACKAGE, false, NON_EXTERNAL, "void", "bar", #[], #[])]
 					]
 				)],
 				[association(
@@ -523,7 +524,7 @@ class XtxtUMLExpressionParserTest {
 				[class_(
 					"A", null, #[
 						[operation(
-							PACKAGE, "void", "foo", #[], #[
+							PACKAGE, false, NON_EXTERNAL, "void", "foo", #[], #[
 								[forLoop(
 									[variableDeclaration("int", null, "i", [number(0)])],
 									[binaryOperation(OPERATOR_LESS_THAN, [variable("i")], [number(10)])],

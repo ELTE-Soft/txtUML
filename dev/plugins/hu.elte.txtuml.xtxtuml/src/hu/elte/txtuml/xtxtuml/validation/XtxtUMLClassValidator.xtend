@@ -1,11 +1,14 @@
 package hu.elte.txtuml.xtxtuml.validation;
 
 import com.google.inject.Inject
+import hu.elte.txtuml.xtxtuml.common.XtxtUMLExternalityHelper
 import hu.elte.txtuml.xtxtuml.common.XtxtUMLUtils
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUAttribute
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUClass
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUClassMember
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUConstructor
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUEntryOrExitActivity
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUSignal
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUState
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUStateMember
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUStateType
@@ -28,7 +31,16 @@ import static hu.elte.txtuml.xtxtuml.xtxtUML.XtxtUMLPackage.Literals.*
 class XtxtUMLClassValidator extends XtxtUMLFileValidator {
 
 	@Inject extension IQualifiedNameProvider;
+	@Inject extension XtxtUMLExternalityHelper;
 	@Inject extension XtxtUMLUtils;
+
+	@Check
+	def checkNoCycleInSignalHierarchy(TUSignal signal) {
+		if (signal.travelSignalHierarchy[false] == null) {
+			error("Cycle in hierarchy of signal " + signal.name, signal, TU_SIGNAL__SUPER_SIGNAL,
+				SIGNAL_HIERARCHY_CYCLE);
+		}
+	}
 
 	@Check
 	def checkNoCycleInClassHiearchy(TUClass clazz) {
@@ -44,6 +56,15 @@ class XtxtUMLClassValidator extends XtxtUMLFileValidator {
 		if (name != enclosingClassName) {
 			error('''Constructor «name»(«ctor.parameters.typeNames.join(", ")») in class «enclosingClassName» must be named as its enclosing class''',
 				ctor, TU_CONSTRUCTOR__NAME, INVALID_CONSTRUCTOR_NAME);
+		}
+	}
+
+	@Check
+	def checkInitializerIsUsedOnlyOnExternalAttribute(TUAttribute attr) {
+		if (attr.initExpression != null && !attr.isExternal) {
+			error("Attribute " + attr.classQualifiedName + " cannot have an initializer expression" +
+				" – initializer expressions can be defined only for external attributes", attr,
+				TU_ATTRIBUTE__INIT_EXPRESSION, INITIALIZER_ON_NON_EXTERNAL_ATTRIBUTE);
 		}
 	}
 
@@ -183,8 +204,8 @@ class XtxtUMLClassValidator extends XtxtUMLFileValidator {
 	def checkOwnerOfTriggerPort(TUTransitionPort triggerPort) {
 		val triggerEnclosingClass = EcoreUtil2.getContainerOfType(triggerPort, TUClass) as TUClass;
 		if (!triggerEnclosingClass.ownsPort(triggerPort.port)) {
-			error(triggerPort.port.name + " cannot be resolved as a port of class " + triggerEnclosingClass.name, triggerPort,
-				TU_TRANSITION_PORT__PORT, NOT_OWNED_TRIGGER_PORT);
+			error(triggerPort.port.name + " cannot be resolved as a port of class " + triggerEnclosingClass.name,
+				triggerPort, TU_TRANSITION_PORT__PORT, NOT_OWNED_TRIGGER_PORT);
 		}
 	}
 

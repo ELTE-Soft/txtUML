@@ -1,17 +1,16 @@
 package clock.x.model;
 
-import hu.elte.txtuml.api.stdlib.timers.Timer
-import clock.x.model.connectors.SecondValues;
-import clock.x.model.connectors.MinuteValues;
-import clock.x.model.connectors.HourValues;
-import clock.x.model.connectors.Hours;
-import clock.x.model.connectors.Minutes;
-import clock.x.model.connectors.Seconds;
+import clock.x.model.associations.DisplayInClock;
+import clock.x.model.associations.HourHand;
+import clock.x.model.associations.MinuteHand;
 import clock.x.model.associations.PendulumInClock;
 import clock.x.model.associations.SecondHand;
-import clock.x.model.associations.MinuteHand;
-import clock.x.model.associations.HourHand;
-import clock.x.model.associations.DisplayInClock;
+import clock.x.model.connectors.HourValues;
+import clock.x.model.connectors.Hours;
+import clock.x.model.connectors.MinuteValues;
+import clock.x.model.connectors.Minutes;
+import clock.x.model.connectors.SecondValues;
+import clock.x.model.connectors.Seconds;
 
 // Classes
 

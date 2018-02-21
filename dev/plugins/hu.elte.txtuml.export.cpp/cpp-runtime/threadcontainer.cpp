@@ -1,36 +1,38 @@
 #include "threadcontainer.hpp"
 #include <algorithm>
 
+
 namespace Execution
 {
 
-ThreadContainer::ThreadContainer() : active_threads(0), expected_threads(0) {}
+ThreadContainer::ThreadContainer() : _activeThreads(0), _expectedThreads(0) {}
 
 void ThreadContainer::addThread(std::thread* th)
 {
 	std::unique_lock<std::mutex> mlock(_mutex);
 
 	threads.insert(std::pair<std::thread::id, EventProcessorThread>(th->get_id(), EventProcessorThread(th)));
-	active_threads++;
+	_activeThreads++;
 }
 
 
 
-void ThreadContainer::gettingThreadsReadyToStop(std::condition_variable& cond)
+void ThreadContainer::gettingThreadsReadyToStop(ES::SharedPtr<std::condition_variable> cond)
 {
-
-	cont_it it = threads.begin();
-	cont_it it2;
+	std::unique_lock<std::mutex> mlock(_removeMutex);
+	ContainerIterator it = threads.begin();
+	
 	while (isTooManyWorkers() && it != threads.end())
 	{
-		if (it->second._state == thread_state::working)
+		if (it->second.isWorking() && !it->second.threadsAreIdentical())
 		{
-			active_threads--;
-			modifyThreadState(it->first, thread_state::ready_to_stop);
-			cond.notify_all();
+			ContainerIterator it2;
+			_activeThreads--;
+			modifyThreadState(it->first, EventProcessorThread::ThreadState::ReadyToStop);
+			cond->notify_all();
 			it2 = it;
 			it++;
-			it2->second._thread->join();
+			it2->second.waitFinishing();
 			threads.erase(it2);
 
 		}
@@ -42,35 +44,26 @@ void ThreadContainer::gettingThreadsReadyToStop(std::condition_variable& cond)
 
 }
 
-void ThreadContainer::modifyThreadState(std::thread::id id, thread_state state)
+void ThreadContainer::modifyThreadState(EventProcessorThread::ThreadId id, EventProcessorThread::ThreadState state)
 {
 	std::unique_lock<std::mutex> mlock(_mutex);
-	threads[id]._state = state;
+	threads[id].modifyState(state);
 }
 
-bool ThreadContainer::isReadyToStop(std::thread::id thread_id)
+bool ThreadContainer::isReadyToStop(EventProcessorThread::ThreadId thread_id)
 {
 	std::unique_lock<std::mutex> mlock(_mutex);
-
-	if (threads.count(thread_id) > 0)
-	{
-		return threads[thread_id]._state == thread_state::ready_to_stop;
-	}
-	else
-	{
-		return false;
-	}
+	return threads.count(thread_id) > 0 && !threads[thread_id].isWorking();
 }
 
 void ThreadContainer::removeAll()
 {
-	std::unique_lock<std::mutex> mlock(_mutex);
+	std::unique_lock<std::mutex> mlock(_removeMutex);
 	threads.clear();
 }
 
 ThreadContainer::~ThreadContainer()
 {
-	removeAll();
 }
 
 }

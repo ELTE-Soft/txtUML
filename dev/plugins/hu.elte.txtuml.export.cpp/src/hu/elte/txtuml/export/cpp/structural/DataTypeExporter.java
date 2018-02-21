@@ -18,6 +18,7 @@ public class DataTypeExporter extends StructuredElementExporter<DataType> {
 	@Override
 	public void exportStructuredElement(DataType structuredElement, String sourceDestination)
 			throws FileNotFoundException, UnsupportedEncodingException {
+		super.init();
 		super.setStructuredElement(structuredElement);
 		exportDataType(sourceDestination);
 	}
