@@ -38,7 +38,6 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 
 	private StateMachineExporter stateMachineExporter;
 	private PortExporter portExporter;
-	private String abstractInterface;
 
 	private int poolId;
 
@@ -50,8 +49,6 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 		constructorExporter = new ConstructorExporter(structuredElement.getOwnedOperations(), super.activityExporter);
 		associationExporter = new AssociationExporter(structuredElement.getOwnedAttributes());
 		additionalSourcesNames = new ArrayList<String>();
-		baseClasses.clear();
-		interfacesToImplement.clear();
 		portExporter = new PortExporter();
 
 		StateMachine classSM = CppExporterUtils.getStateMachine(structuredElement);
@@ -80,22 +77,10 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 		
 	}
 
-	public void setAbstractInterface(String abstractInterface) {
-		this.abstractInterface = abstractInterface;
-	}
-
-	public void removeAbstractInterface() {
-		this.abstractInterface = null;
-	}
-
 
 	private void collectModelBaseClasses() {
 		for (Generalization base : structuredElement.getGeneralizations()) {
 			baseClasses.add(base.getGeneral().getName());
-		}
-
-		if (abstractInterface != null && !baseClasses.contains(abstractInterface)) {
-			interfacesToImplement.add(abstractInterface);
 		}
 
 	}

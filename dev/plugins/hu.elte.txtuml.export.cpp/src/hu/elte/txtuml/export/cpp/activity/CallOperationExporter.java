@@ -8,7 +8,10 @@ import java.util.Set;
 
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.uml2.uml.CallOperationAction;
+import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.InputPin;
+import org.eclipse.uml2.uml.NamedElement;
+import org.eclipse.uml2.uml.Operation;
 import org.eclipse.uml2.uml.OutputPin;
 import org.eclipse.uml2.uml.Parameter;
 import org.eclipse.uml2.uml.ParameterDirectionKind;
@@ -107,10 +110,18 @@ class CallOperationExporter {
 			}
 
 		} else {
-
+			
+			Operation op = node.getOperation();	
+			
+			Element opOwner = op.getOwner();
+			if(opOwner instanceof NamedElement) {
+				NamedElement namedOwner = (NamedElement)  opOwner;
+				exportUser.addCppOnlyDependency(namedOwner.getName());
+			}
+			
 			val = ActivityTemplates.operationCall(activityExportResolver.getTargetFromInputPin(node.getTarget(), false),
 					ActivityTemplates.accesOperatoForType(activityExportResolver.getTypeFromInputPin(node.getTarget())),
-					node.getOperation().getName(), getParametersNames(node.getArguments()));
+					op.getName(), getParametersNames(node.getArguments()));
 
 		}
 

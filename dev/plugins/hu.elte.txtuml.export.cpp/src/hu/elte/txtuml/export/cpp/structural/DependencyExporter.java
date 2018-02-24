@@ -31,6 +31,11 @@ public class DependencyExporter {
 		dependecies.forEach(type -> {
 			includes.append(PrivateFunctionalTemplates.include(type));
 		});
+		
+		cppOnlyDependency.forEach(type -> {
+			includes.append(PrivateFunctionalTemplates.include(type));
+		});
+			
 		return includes.toString();
 	}
 

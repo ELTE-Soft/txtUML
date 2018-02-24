@@ -138,13 +138,22 @@ public class SubStateMachineExporter extends StateMachineExporterBase implements
 
 	@Override
 	public String getUnitDependencies(UnitType type) {
-		StringBuilder dependencyIncludes = new StringBuilder(PrivateFunctionalTemplates.include(ownerClassUnit.getUnitName())
-				+ PrivateFunctionalTemplates.include(EventTemplates.EventHeaderName) + 
-				PrivateFunctionalTemplates.include(GenerationNames.FileNames.ActionPath) + 
-				GenerationTemplates.debugOnlyCodeBlock(GenerationTemplates.StandardIOinclude));
 		
+		StringBuilder dependencyIncludes = new StringBuilder("");
 		dependecyExporter.addDependencies(getOwnSubmachineNames());
-		dependencyIncludes.append(dependecyExporter.createDependencyCppIncludeCode(getUnitName()));
+		
+		if(type == UnitType.Header) {
+			dependencyIncludes.append(PrivateFunctionalTemplates.include(ownerClassUnit.getUnitName()));
+			dependencyIncludes.append(PrivateFunctionalTemplates.include(EventTemplates.EventHeaderName));
+			dependencyIncludes.append(GenerationTemplates.debugOnlyCodeBlock(GenerationTemplates.StandardIOinclude));
+			dependencyIncludes.append(dependecyExporter.createDependencyHeaderIncludeCode(GenerationNames.Namespaces.ModelNamespace));
+
+
+		} else {
+			dependencyIncludes.append(PrivateFunctionalTemplates.include(GenerationNames.FileNames.ActionPath));
+			dependencyIncludes.append(dependecyExporter.createDependencyCppIncludeCode(getUnitName()));
+		}
+				
 		
 		return dependencyIncludes.toString();
 	}
