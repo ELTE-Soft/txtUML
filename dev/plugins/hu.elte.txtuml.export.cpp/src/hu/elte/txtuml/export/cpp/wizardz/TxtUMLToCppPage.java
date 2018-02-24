@@ -56,7 +56,7 @@ public class TxtUMLToCppPage extends WizardPage {
 	protected TxtUMLToCppPage() {
 		super("Generate C++ Code Page");
 		setTitle("Generate C++ Code Page");
-		super.setDescription("Browse your txtUML project, model and configuration to generate C++ code!");
+		super.setDescription("Browse your txtUML project, model and configuration and set specific options to generate C++ code!");
 	}
 
 	@Override

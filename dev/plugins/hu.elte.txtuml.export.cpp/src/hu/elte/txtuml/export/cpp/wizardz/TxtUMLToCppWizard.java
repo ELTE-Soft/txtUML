@@ -13,6 +13,7 @@ import hu.elte.txtuml.utils.eclipse.WizardUtils;
 public class TxtUMLToCppWizard extends Wizard {
 
 	private TxtUMLToCppPage createCppCodePage;
+	private TxtUMLToCppOptionsPage createCppOptionsPage;
 
 	public TxtUMLToCppWizard() {
 		super();
@@ -27,7 +28,9 @@ public class TxtUMLToCppWizard extends Wizard {
 	@Override
 	public void addPages() {
 		createCppCodePage = new TxtUMLToCppPage();
+		createCppOptionsPage = new TxtUMLToCppOptionsPage();
 		addPage(createCppCodePage);
+		addPage(createCppOptionsPage);
 	}
 
 	@Override
