@@ -1,4 +1,4 @@
-package hu.elte.txtuml.export.papyrus.wizardz;
+package hu.elte.txtuml.export.plantuml.wizards;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -33,10 +33,6 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.model.WorkbenchContentProvider;
 
-import hu.elte.txtuml.api.layout.ClassDiagram;
-import hu.elte.txtuml.api.layout.CompositeDiagram;
-import hu.elte.txtuml.api.layout.StateMachineDiagram;
-import hu.elte.txtuml.api.model.seqdiag.Interaction;
 import hu.elte.txtuml.api.model.seqdiag.SequenceDiagram;
 import hu.elte.txtuml.export.papyrus.preferences.PreferencesManager;
 import hu.elte.txtuml.utils.Logger;
@@ -45,25 +41,21 @@ import hu.elte.txtuml.utils.eclipse.PackageUtils;
 import hu.elte.txtuml.utils.eclipse.ProjectUtils;
 import hu.elte.txtuml.utils.eclipse.WizardUtils;
 
-/**
- * The Page for txtUML visualization.
- */
-public class VisualizeTxtUMLPage extends WizardPage {
+public class VisualizePlantUMLPage extends WizardPage {
 
-	private static final Class<?>[] diagramTypes = { StateMachineDiagram.class, ClassDiagram.class,
-			CompositeDiagram.class};
+	private static final Class<?>[] diagramTypes = { SequenceDiagram.class };
 
 	private Composite container;
-	private List<IType> txtUMLLayout = new LinkedList<>();
+	private List<IType> plantUMLLayout = new LinkedList<>();
 	private ScrolledComposite sc;
 	private CheckboxTreeViewer tree;
 
 	/**
 	 * The Constructor
 	 */
-	public VisualizeTxtUMLPage() {
-		super("Visualize txtUML page");
-		setTitle("Visualize txtUML page");
+	public VisualizePlantUMLPage() {
+		super("Visualize sequence diagram page");
+		setTitle("Visualize sequence diagram page");
 		setDescription("Select the diagrams to be visualized.");
 	}
 
@@ -82,7 +74,7 @@ public class VisualizeTxtUMLPage extends WizardPage {
 		container.setLayout(layout);
 
 		final Label label = new Label(container, SWT.TOP);
-		label.setText("txtUML Diagrams: ");
+		label.setText("Sequence Diagrams: ");
 
 		addInitialLayoutFields();
 
@@ -109,19 +101,19 @@ public class VisualizeTxtUMLPage extends WizardPage {
 						boolean isChecked = checkedElements.contains(selectedElement);
 						tree.setChecked(selectedElement, !isChecked);
 						IType selectedType = (IType) selectedElement;
-						if (!isChecked && !txtUMLLayout.contains(selectedType)) {
-							txtUMLLayout.add(selectedType);
+						if (!isChecked && !plantUMLLayout.contains(selectedType)) {
+							plantUMLLayout.add(selectedType);
 						} else {
-							txtUMLLayout.remove(selectedType);
+							plantUMLLayout.remove(selectedType);
 						}
-						selectElementsInDiagramTree(txtUMLLayout.toArray(), true);
+						selectElementsInDiagramTree(plantUMLLayout.toArray(), true);
 					}
 				}
 			}
 		});
 
-		selectElementsInDiagramTree(txtUMLLayout.toArray(), false);
-		setExpandedLayouts(txtUMLLayout);
+		selectElementsInDiagramTree(plantUMLLayout.toArray(), false);
+		setExpandedLayouts(plantUMLLayout);
 
 		GridData treeGd = new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1);
 		treeGd.heightHint = 200;
@@ -146,13 +138,13 @@ public class VisualizeTxtUMLPage extends WizardPage {
 	}
 
 	/**
-	 * Returns the txtUML model layout classes
+	 * Returns the plantUML model layout classes
 	 * 
 	 * @return
 	 */
-	public List<IType> getTxtUmlLayouts() {
+	public List<IType> getPlantUmlLayouts() {
 		List<IType> result = new ArrayList<IType>();
-		for (IType layout : txtUMLLayout) {
+		for (IType layout : plantUMLLayout) {
 			if (!"".equals(layout.getFullyQualifiedName())) {
 				result.add(layout);
 			}
@@ -172,12 +164,12 @@ public class VisualizeTxtUMLPage extends WizardPage {
 		if (!isTreeVisible)
 			tree.expandAll();
 
-		txtUMLLayout.clear();
+		plantUMLLayout.clear();
 		tree.setCheckedElements(elements);
 		List<IType> checkedTypes = Arrays.asList(elements).stream().filter(e -> e instanceof IType).map(e -> (IType) e)
 				.collect(Collectors.toList());
 
-		checkedTypes.forEach(type -> txtUMLLayout.add(type));
+		checkedTypes.forEach(type -> plantUMLLayout.add(type));
 		Stream.of(tree.getTree().getItems()).forEach(pr -> updateParentCheck(pr));
 
 		if (!isTreeVisible)
@@ -262,10 +254,10 @@ public class VisualizeTxtUMLPage extends WizardPage {
 			TreeItem item = (TreeItem) event.item;
 			if (item.getData() instanceof IType) {
 				IType type = (IType) item.getData();
-				if (!txtUMLLayout.contains(type)) {
-					txtUMLLayout.add(type);
+				if (!plantUMLLayout.contains(type)) {
+					plantUMLLayout.add(type);
 				} else {
-					txtUMLLayout.remove(type);
+					plantUMLLayout.remove(type);
 				}
 				updateParentCheck(item.getParentItem());
 			} else {
@@ -301,7 +293,7 @@ public class VisualizeTxtUMLPage extends WizardPage {
 			List<IType> types = PackageUtils.findAllPackageFragmentsAsStream(layoutJavaProject)
 					.flatMap(pf -> getDiagramDescriptions(pf).stream()).collect(Collectors.toList());
 			types.stream().filter(type -> type.getFullyQualifiedName().equals(qualifiedName))
-					.forEach(type -> txtUMLLayout.add(type));
+					.forEach(type -> plantUMLLayout.add(type));
 		} catch (NotFoundException | JavaModelException ex) {
 			Logger.sys.error(ex.getMessage());
 		}
@@ -332,13 +324,12 @@ public class VisualizeTxtUMLPage extends WizardPage {
 			child.setChecked(checked);
 			IType childData = (IType) child.getData();
 			if (checked) {
-				if (!txtUMLLayout.contains(childData)) {
-					txtUMLLayout.add(childData);
+				if (!plantUMLLayout.contains(childData)) {
+					plantUMLLayout.add(childData);
 				}
 			} else {
-				txtUMLLayout.remove(childData);
+				plantUMLLayout.remove(childData);
 			}
 		}
 	}
-
 }
