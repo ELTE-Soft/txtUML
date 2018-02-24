@@ -109,9 +109,6 @@ public class SubStateMachineExporter extends StateMachineExporterBase implements
 	@Override
 	public String createUnitHeaderCode() {
 		String source = "";
-		StringBuilder dependency = new StringBuilder(PrivateFunctionalTemplates.include(ownerClassUnit.getUnitName()));
-		dependency.append(PrivateFunctionalTemplates.include(GenerationNames.FileNames.StringUtilsPath));
-		dependency.append(PrivateFunctionalTemplates.include(GenerationNames.FileNames.CollectionUtilsPath));
 		
 		StringBuilder publicParts = new StringBuilder("");	
 		StringBuilder protectedParts = new StringBuilder("");
@@ -127,7 +124,7 @@ public class SubStateMachineExporter extends StateMachineExporterBase implements
 		privateParts.append(transitionExporter.createTransitionFunctionDecl());
 			
 		source = HeaderTemplates
-					.classHeader(dependency.toString(), null, null,
+					.classHeader("", null, null,
 							publicParts.toString(), protectedParts.toString(), privateParts.toString(), 
 							new HeaderInfo(getUnitName(), 
 									new HeaderTemplates.SubMachineHeaderType(ownerClassUnit.getUnitName(), !submachineMap.isEmpty())));
@@ -145,13 +142,16 @@ public class SubStateMachineExporter extends StateMachineExporterBase implements
 		if(type == UnitType.Header) {
 			dependencyIncludes.append(PrivateFunctionalTemplates.include(ownerClassUnit.getUnitName()));
 			dependencyIncludes.append(PrivateFunctionalTemplates.include(EventTemplates.EventHeaderName));
-			dependencyIncludes.append(GenerationTemplates.debugOnlyCodeBlock(GenerationTemplates.StandardIOinclude));
+
 			dependencyIncludes.append(dependecyExporter.createDependencyHeaderIncludeCode(GenerationNames.Namespaces.ModelNamespace));
 
 
 		} else {
-			dependencyIncludes.append(PrivateFunctionalTemplates.include(GenerationNames.FileNames.ActionPath));
 			dependencyIncludes.append(dependecyExporter.createDependencyCppIncludeCode(getUnitName()));
+			dependencyIncludes.append(PrivateFunctionalTemplates.include(GenerationNames.FileNames.ActionPath));
+			dependencyIncludes.append(GenerationTemplates.debugOnlyCodeBlock(GenerationTemplates.StandardIOinclude));
+			dependencyIncludes.append(PrivateFunctionalTemplates.include(GenerationNames.FileNames.StringUtilsPath));
+			dependencyIncludes.append(PrivateFunctionalTemplates.include(GenerationNames.FileNames.CollectionUtilsPath));
 		}
 				
 		
