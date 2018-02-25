@@ -59,8 +59,10 @@ public class ResourceHandler {
 														// names and
 														// multiplicities
 
-			"visualizer/visualizers.js" // holds visualizers for class and
+			"visualizer/visualizers.js", // holds visualizers for class and
 										// statemachine diagrams
+			
+			"panAndZoom.js" //adds pan and zoom functionality to the diagram
 	};
 
 	/**
