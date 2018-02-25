@@ -147,7 +147,7 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 					new HeaderTemplates.StateMachineClassHeaderType(stateMachineExporter.ownSubMachine() ? 
 							Optional.of(getSubmachines()) : Optional.empty()));			
 			source = HeaderTemplates
-						.classHeader("", baseClasses, interfacesToImplement,
+						.classHeader(baseClasses, interfacesToImplement,
 								publicParts.toString(), protectedParts.toString(), privateParts.toString(), 
 								stateMachineHeaderInfo
 							);
@@ -157,7 +157,7 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 		} else {
 			HeaderInfo simpleClassHeaderInfo = new HeaderInfo(name, new HeaderTemplates.SimpleClassHeaderType());			
 			source = HeaderTemplates
-					.classHeader("", baseClasses, interfacesToImplement, publicParts.toString(),
+					.classHeader(baseClasses, interfacesToImplement, publicParts.toString(),
 					protectedParts.toString(), privateParts.toString(), 
 					simpleClassHeaderInfo);
 			dependencyExporter.addHeaderOnlyIncludeDependencies(simpleClassHeaderInfo.getRelatedBaseClassInclude());

@@ -16,10 +16,8 @@ public class StateMachineExporter extends StateMachineExporterBase {
 	private int poolId;
 
 	public StateMachineExporter(StateMachine sm, ICppCompilationUnit owner, Integer threadPoolId) {
-		super(owner);
-		ownerClassUnit = owner;
+		super(sm.getRegions().get(0), owner);
 		this.poolId = threadPoolId;
-		stateMachineRegion = sm.getRegions().get(0);
 		
 		init();
 	}
@@ -41,7 +39,7 @@ public class StateMachineExporter extends StateMachineExporterBase {
 		source.append(StateMachineTemplates.stateMachineInitializationDefinition(ownerClassUnit.getUnitName(), poolId, 
 				submachineMap.isEmpty() ? Optional.empty() : Optional.of(getStateToSubMachineNameMap())));
 		source.append(StateMachineTemplates.stateMachineFixFunctionDefitions(ownerClassUnit.getUnitName(), 
-				getInitialState(stateMachineRegion) ,false, submachineMap.isEmpty()));
+				getInitialState() ,false, submachineMap.isEmpty()));
 		source.append(guardExporter.defnieGuardFunctions(ownerClassUnit.getUnitName()));
 		source.append(entryExitFunctionExporter.createEntryFunctionsDef());
 		source.append(entryExitFunctionExporter.createExitFunctionsDef());
@@ -55,14 +53,14 @@ public class StateMachineExporter extends StateMachineExporterBase {
 						+ "\n");
 		
 		source.append(StateMachineTemplates.finalizeFunctionDef(ownerClassUnit.getUnitName()));
-		source.append(StateMachineTemplates.initializeFunctionDef(ownerClassUnit.getUnitName(), getInitialTransition(stateMachineRegion)));
+		source.append(StateMachineTemplates.initializeFunctionDef(ownerClassUnit.getUnitName(), getInitialTransition()));
 
 
 		return source.toString();
 	}
 
 	public String createStateEnumCode() {		
-		return StateMachineTemplates.stateEnum(stateList, getInitialState(stateMachineRegion));
+		return StateMachineTemplates.stateEnum(stateList, getInitialState());
 	}
 
 	public boolean ownSubMachine() {

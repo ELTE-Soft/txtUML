@@ -46,7 +46,8 @@ public abstract class StateMachineExporterBase {
 	protected ICppCompilationUnit ownerClassUnit;
 
 	
-	public StateMachineExporterBase(ICppCompilationUnit owner) {
+	protected StateMachineExporterBase(Region region, ICppCompilationUnit owner) {
+		this.stateMachineRegion = region;
 		this.ownerClassUnit = owner;
 	}
 	
@@ -141,7 +142,9 @@ public abstract class StateMachineExporterBase {
 	}
 	
 	
-	protected static Optional<Pseudostate> getInitialState(Region stateMachineRegion) {
+	protected  Optional<Pseudostate> getInitialState() {
+		assert(stateMachineRegion != null);
+		
 		for (Vertex item : stateMachineRegion.getSubvertices()) {
 			if (item.eClass().equals(UMLPackage.Literals.PSEUDOSTATE)) {
 				Pseudostate pseduoState = (Pseudostate) item;
@@ -154,8 +157,10 @@ public abstract class StateMachineExporterBase {
 		return Optional.empty();
 	}
 	
-	protected static Optional<Transition> getInitialTransition(Region stateMachineRegion) {
-		Optional<Pseudostate> initialState = getInitialState(stateMachineRegion);
+	protected Optional<Transition> getInitialTransition() {
+		assert(stateMachineRegion != null);
+
+		Optional<Pseudostate> initialState = getInitialState();
 		if (initialState.isPresent()) {
 			for (Transition transition : stateMachineRegion.getTransitions()) {
 				if(transition.getSource().equals(initialState.get())) {

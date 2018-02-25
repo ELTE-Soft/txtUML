@@ -273,7 +273,7 @@ public class HeaderTemplates {
 				+ "_";
 	}
 
-	public static String classHeader(String dependency, List<String> baseClassNames, List<String> pureInfBasaNames, String publicPart,
+	public static String classHeader(List<String> baseClassNames, List<String> pureInfBasaNames, String publicPart,
 			String protectedPart, String privatePart, HeaderInfo headerInfo) {
 		StringBuilder classDecleration = new StringBuilder("");
 		classDecleration.append(GenerationNames.ClassType + " " + headerInfo.getOwnerClassName());

@@ -29,7 +29,7 @@ public class SubStateMachineExporter extends StateMachineExporterBase implements
 	private String subMachineCodeDest;
 	
 	public SubStateMachineExporter(String subStateMachineName, Region region, ICppCompilationUnit owner, String subMachineCodeDest) {
-		super(owner);
+		super(region,owner);
 		this.subStateMachineName = subStateMachineName;
 		this.stateMachineRegion = region;
 		this.subMachineCodeDest = subMachineCodeDest;
@@ -87,7 +87,7 @@ public class SubStateMachineExporter extends StateMachineExporterBase implements
 		source.append(createTransitionTableInitRelatedCodes());
 		source.append(ConstructorTemplates.subStateMachineClassConstructor(getUnitName(), ownerClassUnit.getUnitName(), stateMachineMap, 
 								 submachineMap.isEmpty() ? Optional.empty() : Optional.of(getStateToSubMachineNameMap())));
-		source.append(StateMachineTemplates.stateMachineFixFunctionDefitions(getUnitName(), getInitialState(stateMachineRegion), true, submachineMap.isEmpty()));
+		source.append(StateMachineTemplates.stateMachineFixFunctionDefitions(getUnitName(), getInitialState(), true, submachineMap.isEmpty()));
 
 		
 		StringBuilder subSmSpec = new StringBuilder(entryExitFunctionExporter.createEntryFunctionsDef());
@@ -100,7 +100,7 @@ public class SubStateMachineExporter extends StateMachineExporterBase implements
 				StateMachineTemplates.exit(getUnitName(), createStateActionMap(entryExitFunctionExporter.getExitMap()))
 						+ "\n");
 		subSmSpec.append(StateMachineTemplates.finalizeFunctionDef(getUnitName()));
-		subSmSpec.append(StateMachineTemplates.initializeFunctionDef(getUnitName(), getInitialTransition(stateMachineRegion)));
+		subSmSpec.append(StateMachineTemplates.initializeFunctionDef(getUnitName(), getInitialTransition()));
 		source.append(GenerationTemplates.formatSubSmFunctions(subSmSpec.toString()));
 
 		return source.toString();
@@ -115,7 +115,7 @@ public class SubStateMachineExporter extends StateMachineExporterBase implements
 		StringBuilder privateParts = new StringBuilder("");
 
 		publicParts.append(ConstructorTemplates.constructorDecl(getUnitName(), Arrays.asList(ownerClassUnit.getUnitName())));					
-		publicParts.append(StateMachineTemplates.stateEnum(stateList, getInitialState(stateMachineRegion)));
+		publicParts.append(StateMachineTemplates.stateEnum(stateList, getInitialState()));
 			
 		privateParts.append(entryExitFunctionExporter.createEntryFunctionsDecl());
 		privateParts.append(entryExitFunctionExporter.createExitFunctionsDecl());
@@ -124,7 +124,7 @@ public class SubStateMachineExporter extends StateMachineExporterBase implements
 		privateParts.append(transitionExporter.createTransitionFunctionDecl());
 			
 		source = HeaderTemplates
-					.classHeader("", null, null,
+					.classHeader(null, null,
 							publicParts.toString(), protectedParts.toString(), privateParts.toString(), 
 							new HeaderInfo(getUnitName(), 
 									new HeaderTemplates.SubMachineHeaderType(ownerClassUnit.getUnitName(), !submachineMap.isEmpty())));
