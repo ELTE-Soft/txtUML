@@ -14,7 +14,6 @@ import org.eclipse.uml2.uml.SignalEvent
 import org.eclipse.uml2.uml.Transition
 import org.eclipse.uml2.uml.Vertex
 import org.eclipse.uml2.uml.Port
-import hu.elte.txtuml.export.uml2.structural.PortExporter
 import hu.elte.txtuml.api.model.Trigger.AnyPort
 
 class TransitionExporter extends Exporter<TypeDeclaration, ITypeBinding, Transition> {
@@ -40,7 +39,7 @@ class TransitionExporter extends Exporter<TypeDeclaration, ITypeBinding, Transit
 			val trigger = result.createTrigger(sigEvent.name + "_trigger")
 			trigger.event = sigEvent
 			if(triggerPort != null && triggerPort.qualifiedName != AnyPort.canonicalName) {
-				val port = fetchElement(triggerPort, new PortExporter(this)) as Port
+				val port = fetchElement(triggerPort) as Port
 				trigger.ports += port
 			}
 			

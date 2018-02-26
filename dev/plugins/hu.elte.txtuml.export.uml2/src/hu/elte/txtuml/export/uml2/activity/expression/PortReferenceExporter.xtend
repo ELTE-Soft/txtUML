@@ -5,7 +5,6 @@ import org.eclipse.uml2.uml.ReadStructuralFeatureAction
 import hu.elte.txtuml.export.uml2.BaseExporter
 import org.eclipse.jdt.core.dom.MethodInvocation
 import org.eclipse.jdt.core.dom.TypeLiteral
-import hu.elte.txtuml.export.uml2.structural.PortExporter
 import org.eclipse.uml2.uml.Port
 
 class PortReferenceExporter extends ActionExporter<MethodInvocation, ReadStructuralFeatureAction>{
@@ -27,7 +26,8 @@ class PortReferenceExporter extends ActionExporter<MethodInvocation, ReadStructu
 		result.name = '''read «portTypeBinding.name» '''
 		target.result.objectFlow(result.createObject("this", target.result.type))	
 		if(portTypeBinding != null) {
-			val portElement = fetchElement(portTypeBinding, new PortExporter(this)) as Port
+			var portElement = fetchElement(portTypeBinding) as Port
+			
 			result.structuralFeature = portElement
 			result.createResult(result.name, portElement.type)
 			
