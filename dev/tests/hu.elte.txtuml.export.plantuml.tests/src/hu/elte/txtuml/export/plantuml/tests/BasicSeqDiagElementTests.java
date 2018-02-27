@@ -1,104 +1,44 @@
 package hu.elte.txtuml.export.plantuml.tests;
 
 import java.util.ArrayList;
-import java.util.Scanner;
+import java.util.List;
 
-import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IFolder;
-import org.eclipse.core.resources.IProject;
-import org.eclipse.core.runtime.NullProgressMonitor;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
-import hu.elte.txtuml.export.plantuml.PlantUmlExporter;
-
-public class BasicSeqDiagElementTests {
-
-	static PlantUmlExporter exporter;
-	static IFolder genFolder;
-	static IProject project;
-
-	@BeforeClass
-	public static void setUp() throws Exception {
-		project = PlantUmlExportTestUtils.getModelsProject();
-		genFolder = project.getFolder("gen");
-	}
+public class BasicSeqDiagElementTests extends PlantUmlExportTestBase {
 
 	@Test
 	public void testLifelines() {
-		Scanner rd = null;
-		try {
-			ArrayList<String> SeqDiagNames = new ArrayList<String>();
+		List<String> expected = new ArrayList<>();
+		expected.add("@startuml");
+		expected.add("participant lifeline1");
+		expected.add("participant lifeline3");
+		expected.add("participant lifeline2");
+		expected.add("@enduml");
 
-			SeqDiagNames.add(project.getName().toString() + ".sequences.SequenceBasic");
-
-			exporter = new PlantUmlExporter(project, "gen", SeqDiagNames);
-			exporter.generatePlantUmlOutput(null);
-			IFile outfile = genFolder.getFile("SequenceBasic.txt");
-
-			String output = PlantUmlExportTestUtils.getOutput(outfile);
-
-			rd = new Scanner(output);
-
-			Assert.assertEquals("@startuml", rd.nextLine());
-			Assert.assertEquals("participant lifeline1", rd.nextLine());
-			Assert.assertEquals("participant lifeline3", rd.nextLine());
-			Assert.assertEquals("participant lifeline2", rd.nextLine());
-			Assert.assertEquals("@enduml", rd.nextLine());
-		} catch (Exception e) {
-			Assert.assertFalse("Exception:" + e.getMessage(), true);
-		} finally {
-			if (rd != null) {
-				rd.close();
-			}
-		}
+		assertOutput("SequenceBasic", expected);
 	}
 
 	@Test
 	public void testMessaging() {
-		Scanner rd = null;
-		try {
-			ArrayList<String> SeqDiagNames = new ArrayList<String>();
-			SeqDiagNames.add(project.getName().toString() + ".sequences.SequenceMessaging");
-			exporter = new PlantUmlExporter(project, "gen", SeqDiagNames);
-			exporter.generatePlantUmlOutput(null);
-			IFile outfile = genFolder.getFile("SequenceMessaging.txt");
+		List<String> expected = new ArrayList<>();
+		expected.add("@startuml");
+		expected.add("participant lifeline1");
+		expected.add("participant lifeline3");
+		expected.add("participant lifeline2");
+		expected.add("activate lifeline1");
+		expected.add("lifeline1->lifeline2 : " + project.getName() + ".testmodel.TestSig");
+		expected.add("activate lifeline2");
+		expected.add("lifeline2->lifeline3 : " + project.getName() + ".testmodel.TestSig");
+		expected.add("activate lifeline3");
+		expected.add("lifeline3->lifeline2 : " + project.getName() + ".testmodel.TestSig");
+		expected.add("lifeline2->lifeline1 : " + project.getName() + ".testmodel.TestSig");
+		expected.add("deactivate lifeline1");
+		expected.add("deactivate lifeline3");
+		expected.add("deactivate lifeline2");
+		expected.add("@enduml");
 
-			String output = PlantUmlExportTestUtils.getOutput(outfile);
-
-			rd = new Scanner(output);
-
-			Assert.assertEquals("@startuml", rd.nextLine());
-			Assert.assertEquals("participant lifeline1", rd.nextLine());
-			Assert.assertEquals("participant lifeline3", rd.nextLine());
-			Assert.assertEquals("participant lifeline2", rd.nextLine());
-			Assert.assertEquals("activate lifeline1", rd.nextLine());
-			Assert.assertEquals("activate lifeline2", rd.nextLine());
-			Assert.assertEquals("lifeline1->lifeline2 : " + project.getName() + ".testmodel.TestSig", rd.nextLine());
-			Assert.assertEquals("activate lifeline3", rd.nextLine());
-			Assert.assertEquals("lifeline2->lifeline3 : " + project.getName() + ".testmodel.TestSig", rd.nextLine());
-			Assert.assertEquals("lifeline3->lifeline2 : " + project.getName() + ".testmodel.TestSig", rd.nextLine());
-			Assert.assertEquals("lifeline2->lifeline1 : " + project.getName() + ".testmodel.TestSig", rd.nextLine());
-			Assert.assertEquals("deactivate lifeline1", rd.nextLine());
-			Assert.assertEquals("deactivate lifeline2", rd.nextLine());
-			Assert.assertEquals("deactivate lifeline3", rd.nextLine());
-			Assert.assertEquals("@enduml", rd.nextLine());
-		} catch (Exception e) {
-			Assert.assertFalse("Exception:" + e.getMessage(), true);
-		} finally {
-			if (rd != null) {
-				rd.close();
-			}
-		}
+		assertOutput("SequenceMessaging", expected);
 	}
 
-	@AfterClass
-	public static void tearDown() throws Exception {
-		exporter = null;
-		genFolder.delete(true, new NullProgressMonitor());
-		genFolder = null;
-		project = null;
-	}
 }
