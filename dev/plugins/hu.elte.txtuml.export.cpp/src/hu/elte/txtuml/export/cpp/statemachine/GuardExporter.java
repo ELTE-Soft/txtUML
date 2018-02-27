@@ -2,6 +2,7 @@ package hu.elte.txtuml.export.cpp.statemachine;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Map.Entry;
 
 import org.eclipse.uml2.uml.Constraint;
@@ -13,7 +14,7 @@ import org.eclipse.uml2.uml.UMLPackage;
 import org.eclipse.uml2.uml.ValueSpecification;
 
 import hu.elte.txtuml.export.cpp.ActivityExportResult;
-import hu.elte.txtuml.export.cpp.ICppCompilationUnit;
+import hu.elte.txtuml.export.cpp.IDependencyCollector;
 import hu.elte.txtuml.export.cpp.activity.ActivityExporter;
 import hu.elte.txtuml.export.cpp.templates.activity.OperatorTemplates;
 import hu.elte.txtuml.export.cpp.templates.statemachine.StateMachineTemplates;
@@ -25,7 +26,7 @@ public class GuardExporter extends ActivityExporter {
 	private Map<Constraint, String> constratintFunctionMap;
 	private int guardCount;
 
-	public GuardExporter(ICppCompilationUnit exportUser) {
+	public GuardExporter(Optional<IDependencyCollector> exportUser) {
 		super(exportUser);
 		constratintFunctionMap = new HashMap<Constraint, String>();
 		guardCount = 0;

@@ -3,11 +3,14 @@ package hu.elte.txtuml.export.cpp.statemachine;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
+
 import org.eclipse.uml2.uml.Behavior;
 import org.eclipse.uml2.uml.State;
 
 import hu.elte.txtuml.export.cpp.ActivityExportResult;
 import hu.elte.txtuml.export.cpp.ICppCompilationUnit;
+import hu.elte.txtuml.export.cpp.IDependencyCollector;
 import hu.elte.txtuml.export.cpp.activity.ActivityExporter;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.HierarchicalStateMachineNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.StateMachineMethodNames;
@@ -66,9 +69,9 @@ public class EntryExitFunctionExporter {
 	private List<State> stateList;
 	private ICppCompilationUnit owner;
 
-	EntryExitFunctionExporter(ICppCompilationUnit owner, List<State> stateList) {
+	EntryExitFunctionExporter(ICppCompilationUnit owner, IDependencyCollector ownerDependencyCollector, List<State> stateList) {
 		this.owner = owner;
-		activityExporter = new ActivityExporter(owner);
+		activityExporter = new ActivityExporter(Optional.of(ownerDependencyCollector));
 		this.stateList = stateList;
 	}
 

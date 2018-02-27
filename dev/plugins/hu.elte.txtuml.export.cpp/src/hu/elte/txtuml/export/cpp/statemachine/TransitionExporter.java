@@ -2,6 +2,7 @@ package hu.elte.txtuml.export.cpp.statemachine;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.Behavior;
@@ -13,6 +14,7 @@ import org.eclipse.uml2.uml.Vertex;
 
 import hu.elte.txtuml.export.cpp.ActivityExportResult;
 import hu.elte.txtuml.export.cpp.ICppCompilationUnit;
+import hu.elte.txtuml.export.cpp.IDependencyCollector;
 import hu.elte.txtuml.export.cpp.activity.ActivityExporter;
 import hu.elte.txtuml.export.cpp.templates.activity.ActivityTemplates;
 import hu.elte.txtuml.export.cpp.templates.statemachine.EventTemplates;
@@ -26,11 +28,11 @@ public class TransitionExporter {
 	List<Transition> transitions;
 	private ICppCompilationUnit owner;
 
-	TransitionExporter(ICppCompilationUnit owner, List<Transition> transitions, GuardExporter guardExporter) {
+	TransitionExporter(ICppCompilationUnit owner, IDependencyCollector ownerDependencyCollector, List<Transition> transitions, GuardExporter guardExporter) {
 		this.owner = owner;
 		this.transitions = transitions;
 		this.guardExporter = guardExporter;
-		this.activityExporter = new ActivityExporter(owner);
+		this.activityExporter = new ActivityExporter(Optional.of(ownerDependencyCollector));
 
 	}
 

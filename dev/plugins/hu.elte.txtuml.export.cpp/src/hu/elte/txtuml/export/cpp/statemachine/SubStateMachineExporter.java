@@ -11,6 +11,7 @@ import java.util.Optional;
 import org.eclipse.uml2.uml.Region;
 
 import hu.elte.txtuml.export.cpp.ICppCompilationUnit;
+import hu.elte.txtuml.export.cpp.IDependencyCollector;
 import hu.elte.txtuml.export.cpp.structural.DependencyExporter;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationTemplates;
@@ -22,7 +23,7 @@ import hu.elte.txtuml.export.cpp.templates.structual.HeaderTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.HeaderTemplates.HeaderInfo;
 import hu.elte.txtuml.utils.Pair;
 
-public class SubStateMachineExporter extends StateMachineExporterBase implements ICppCompilationUnit {
+public class SubStateMachineExporter extends StateMachineExporterBase implements ICppCompilationUnit, IDependencyCollector {
 
 	private String subStateMachineName;
 	private DependencyExporter dependecyExporter;
@@ -36,7 +37,7 @@ public class SubStateMachineExporter extends StateMachineExporterBase implements
 		
 		dependecyExporter = new DependencyExporter();
 		
-		init();
+		init(this);
 
 	}
 	

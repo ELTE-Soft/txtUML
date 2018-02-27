@@ -20,8 +20,6 @@ public interface ICppCompilationUnit {
 	String createUnitHeaderCode();
 	String getUnitDependencies(UnitType type);
 	String getDesniation();
-	void addDependency(String type);
-	void addCppOnlyDependency(String type);
 	
 	default void createAddtionoalSources() throws FileNotFoundException, UnsupportedEncodingException {}
 	

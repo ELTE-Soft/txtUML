@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.ActivityEdge;
@@ -32,7 +33,7 @@ import org.eclipse.uml2.uml.UMLPackage;
 
 import hu.elte.txtuml.export.cpp.ActivityExportResult;
 import hu.elte.txtuml.export.cpp.CppExporterUtils;
-import hu.elte.txtuml.export.cpp.ICppCompilationUnit;
+import hu.elte.txtuml.export.cpp.IDependencyCollector;
 import hu.elte.txtuml.export.cpp.templates.activity.ActivityTemplates;
 
 //import hu.elte.txtuml.utils.Logger;
@@ -54,9 +55,9 @@ public class ActivityExporter {
 	
 	private ActivityExportResult activityExportResult;
 	
-	private ICppCompilationUnit exportUser;
+	private Optional<IDependencyCollector> exportUser;
 	
-	public ActivityExporter(ICppCompilationUnit exportUser) {
+	public ActivityExporter(Optional<IDependencyCollector> exportUser) {
 		this.exportUser = exportUser;
 	}
 

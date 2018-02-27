@@ -1,6 +1,7 @@
 package hu.elte.txtuml.export.cpp.activity;
 
 import java.util.Map;
+import java.util.Optional;
 
 import org.eclipse.uml2.uml.CreateObjectAction;
 import org.eclipse.uml2.uml.DestroyObjectAction;
@@ -9,7 +10,7 @@ import org.eclipse.uml2.uml.StartClassifierBehaviorAction;
 import org.eclipse.uml2.uml.StartObjectBehaviorAction;
 import org.eclipse.uml2.uml.UMLPackage;
 
-import hu.elte.txtuml.export.cpp.ICppCompilationUnit;
+import hu.elte.txtuml.export.cpp.IDependencyCollector;
 import hu.elte.txtuml.export.cpp.templates.activity.ActivityTemplates;
 import hu.elte.txtuml.export.cpp.templates.activity.ActivityTemplates.CreateObjectType;
 
@@ -18,10 +19,10 @@ class ObjectActionExporter {
 	private Map<CreateObjectAction, String> objectMap;
 	private OutVariableExporter tempVariableExporter;
 	private ActivityNodeResolver activityExportResolver;
-	private ICppCompilationUnit exportUser;
+	private Optional<IDependencyCollector> exportUser;
 
 	ObjectActionExporter(OutVariableExporter tempVariableExporter, Map<CreateObjectAction, String> objectMap,
-			ActivityNodeResolver activityExportResolver, ICppCompilationUnit exportUser) {
+			ActivityNodeResolver activityExportResolver, Optional<IDependencyCollector> exportUser) {
 
 		this.tempVariableExporter = tempVariableExporter;
 		this.activityExportResolver = activityExportResolver;
@@ -37,7 +38,9 @@ class ObjectActionExporter {
 			objectType = ActivityTemplates.CreateObjectType.Signal;
 		} else {
 			objectType = CreateObjectType.Class;
-			exportUser.addCppOnlyDependency(type);
+			if(exportUser.isPresent()) {
+				exportUser.get().addCppOnlyDependency(type);
+			}
 		}
 
 		tempVariableExporter.exportOutputPinToMap(createObjectActionNode.getResult());

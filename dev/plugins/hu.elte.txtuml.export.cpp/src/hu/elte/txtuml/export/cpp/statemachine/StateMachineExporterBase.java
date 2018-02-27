@@ -26,6 +26,7 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 
 import hu.elte.txtuml.export.cpp.ICppCompilationUnit;
+import hu.elte.txtuml.export.cpp.IDependencyCollector;
 import hu.elte.txtuml.export.cpp.templates.PrivateFunctionalTemplates;
 import hu.elte.txtuml.export.cpp.templates.statemachine.StateMachineTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.FunctionTemplates;
@@ -71,15 +72,15 @@ public abstract class StateMachineExporterBase {
 	abstract protected ICppCompilationUnit getActualCompilationUnit();
 	
 	
-	protected void init() {
+	protected void init(IDependencyCollector ownerDependencyCollector) {
 		
 		allSubMachineName = new LinkedList<>();
 		stateMachineMap = HashMultimap.create();
-		guardExporter = new GuardExporter(getActualCompilationUnit());
-		transitionExporter = new TransitionExporter(getActualCompilationUnit(), stateMachineRegion.getTransitions(), guardExporter);
+		guardExporter = new GuardExporter(Optional.of(ownerDependencyCollector));
+		transitionExporter = new TransitionExporter(getActualCompilationUnit(),ownerDependencyCollector, stateMachineRegion.getTransitions(), guardExporter);
 		
 		createStateList();
-		entryExitFunctionExporter = new EntryExitFunctionExporter(getActualCompilationUnit(), stateList);
+		entryExitFunctionExporter = new EntryExitFunctionExporter(getActualCompilationUnit(), ownerDependencyCollector, stateList);
 		entryExitFunctionExporter.createEntryFunctionTypeMap();
 		entryExitFunctionExporter.createExitFunctionTypeMap();
 		

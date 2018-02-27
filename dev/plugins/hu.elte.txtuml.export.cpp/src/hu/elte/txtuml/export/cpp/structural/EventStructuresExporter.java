@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.eclipse.uml2.uml.Operation;
@@ -32,7 +33,7 @@ public class EventStructuresExporter implements ICppCompilationUnit {
 	public EventStructuresExporter(Map<Signal, Operation> eventListWithConstructors, String outputDirectory) {
 		this.eventListWithConstructors = eventListWithConstructors;
 
-		activityExporter = new ActivityExporter(this);
+		activityExporter = new ActivityExporter(Optional.empty());
 		dependencyEporter = new DependencyExporter();
 
 		this.outputDirectory = outputDirectory;
@@ -50,16 +51,6 @@ public class EventStructuresExporter implements ICppCompilationUnit {
 	@Override
 	public String getUnitName() {
 		return EventTemplates.EventHeaderName;
-	}
-
-	@Override
-	public void addDependency(String type) {
-
-	}
-
-	@Override
-	public void addCppOnlyDependency(String type) {
-
 	}
 
 	@Override

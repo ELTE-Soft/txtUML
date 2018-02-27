@@ -2,6 +2,7 @@ package hu.elte.txtuml.export.cpp.structural;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.eclipse.uml2.uml.AttributeOwner;
 import org.eclipse.uml2.uml.Operation;
@@ -13,12 +14,13 @@ import org.eclipse.uml2.uml.VisibilityKind;
 import hu.elte.txtuml.export.cpp.ActivityExportResult;
 import hu.elte.txtuml.export.cpp.CppExporterUtils;
 import hu.elte.txtuml.export.cpp.ICppCompilationUnit;
+import hu.elte.txtuml.export.cpp.IDependencyCollector;
 import hu.elte.txtuml.export.cpp.activity.ActivityExporter;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames;
 import hu.elte.txtuml.export.cpp.templates.structual.FunctionTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.VariableTemplates;
 
-public abstract class StructuredElementExporter<StructuredElement extends OperationOwner & AttributeOwner> implements ICppCompilationUnit {
+public abstract class StructuredElementExporter<StructuredElement extends OperationOwner & AttributeOwner> implements ICppCompilationUnit, IDependencyCollector {
 
 	private static final String UKNOWN_TYPE = "!!UNKNOWNTYPE!!";
 
@@ -43,7 +45,7 @@ public abstract class StructuredElementExporter<StructuredElement extends Operat
 
 	protected void init() {
 		dependencyExporter = new DependencyExporter();
-		activityExporter = new ActivityExporter(this);
+		activityExporter = new ActivityExporter(Optional.of(this));
 	}
 
 	protected String createPublicAttributes() {

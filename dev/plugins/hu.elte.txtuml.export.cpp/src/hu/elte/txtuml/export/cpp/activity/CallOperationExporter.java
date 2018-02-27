@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import org.eclipse.emf.common.util.EList;
@@ -19,7 +20,7 @@ import org.eclipse.uml2.uml.TestIdentityAction;
 import org.eclipse.uml2.uml.UMLPackage;
 
 import hu.elte.txtuml.export.cpp.CppExporterUtils;
-import hu.elte.txtuml.export.cpp.ICppCompilationUnit;
+import hu.elte.txtuml.export.cpp.IDependencyCollector;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.FileNames;
 import hu.elte.txtuml.export.cpp.templates.activity.ActivityTemplates;
 import hu.elte.txtuml.export.cpp.templates.activity.OperatorTemplates;
@@ -31,11 +32,11 @@ class CallOperationExporter {
 	private Map<CallOperationAction, OutputPin> returnOutputsToCallActions;
 	private ActivityNodeResolver activityExportResolver;
 	private Set<String> declaredTempVariables;
-	private ICppCompilationUnit exportUser;
+	private Optional<IDependencyCollector> exportUser;
 
 	public CallOperationExporter(OutVariableExporter tempVariableExporter,
 			Map<CallOperationAction, OutputPin> returnOutputsToCallActions,
-			ActivityNodeResolver activityExportResolver, ICppCompilationUnit exportUser) {
+			ActivityNodeResolver activityExportResolver, Optional<IDependencyCollector> exportUser) {
 		declaredTempVariables = new HashSet<String>();
 
 		this.tempVariableExporter = tempVariableExporter;
@@ -95,8 +96,11 @@ class CallOperationExporter {
 			val = ActivityTemplates.stdLibCall(node.getOperation().getName(), parameterVariables);
 			
 			if (OperatorTemplates.isTimerStart(node.getOperation().getName())) {
-				exportUser.addCppOnlyDependency(FileNames.TimerInterfaceHeader);
-				exportUser.addCppOnlyDependency(FileNames.TimerHeader);
+				if(exportUser.isPresent()) {
+					exportUser.get().addCppOnlyDependency(FileNames.TimerInterfaceHeader);
+					exportUser.get().addCppOnlyDependency(FileNames.TimerHeader);
+				}
+
 			}
 
 			if (node.getOperation().getType() != null) {
@@ -116,7 +120,9 @@ class CallOperationExporter {
 			Element opOwner = op.getOwner();
 			if(opOwner instanceof NamedElement) {
 				NamedElement namedOwner = (NamedElement)  opOwner;
-				exportUser.addCppOnlyDependency(namedOwner.getName());
+				if(exportUser.isPresent()) {
+					exportUser.get().addCppOnlyDependency(namedOwner.getName());
+				}
 			}
 			
 			val = ActivityTemplates.operationCall(activityExportResolver.getTargetFromInputPin(node.getTarget(), false),

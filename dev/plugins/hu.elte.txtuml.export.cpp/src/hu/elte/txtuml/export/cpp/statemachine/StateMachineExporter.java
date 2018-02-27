@@ -8,6 +8,7 @@ import org.eclipse.uml2.uml.Region;
 import org.eclipse.uml2.uml.StateMachine;
 
 import hu.elte.txtuml.export.cpp.ICppCompilationUnit;
+import hu.elte.txtuml.export.cpp.IDependencyCollector;
 import hu.elte.txtuml.export.cpp.templates.statemachine.StateMachineTemplates;
 import hu.elte.txtuml.utils.Pair;
 
@@ -15,11 +16,11 @@ public class StateMachineExporter extends StateMachineExporterBase {
 
 	private int poolId;
 
-	public StateMachineExporter(StateMachine sm, ICppCompilationUnit owner, Integer threadPoolId) {
+
+	public StateMachineExporter(StateMachine sm, ICppCompilationUnit owner, IDependencyCollector ownerDependencyCollector, Integer threadPoolId) {
 		super(sm.getRegions().get(0), owner);
-		this.poolId = threadPoolId;
-		
-		init();
+		this.poolId = threadPoolId;		
+		init(ownerDependencyCollector);
 	}
 
 	public String createStateMachineRelatedHeadedDeclarationCodes() {
