@@ -28,7 +28,7 @@ public abstract class MethodInvocationExporter extends ExporterBase<MethodInvoca
 	 *            The node type which is parsed by the exporter.
 	 */
 	@SuppressWarnings("unchecked")
-	public static <T extends ASTNode> ExporterBase<T> createExporter(ASTNode curElement,
+	public static <T extends ASTNode> ExporterBase<T> createExporter(T curElement,
 			PlantUmlCompiler compiler) {
 		MethodInvocationExporter exp = new SequenceExporter(compiler);
 		if (exp.validElement(curElement)) {

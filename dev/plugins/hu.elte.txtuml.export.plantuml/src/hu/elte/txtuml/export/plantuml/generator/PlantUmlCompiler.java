@@ -163,25 +163,7 @@ public class PlantUmlCompiler extends ASTVisitor {
 		Optional<Lifeline> lifeline = getLifelineByName(lifelineName);
 		if (lifeline.isPresent() && !lifeline.get().isActive()) {
 			lifeline.get().activate(true);
-			compiledOutput.append("activate ");
-			compiledOutput.append(lifelineName);
-			compiledOutput.append(System.lineSeparator());
-		}
-	}
-
-	/**
-	 * Deactivates the given lifeline if it is currently active.
-	 * 
-	 * @param lifelineName
-	 *            The lifeline to deactivate.
-	 */
-	public void deactivateLifeline(String lifelineName) {
-		Optional<Lifeline> lifeline = getLifelineByName(lifelineName);
-		if (lifeline.isPresent() && lifeline.get().isActive()) {
-			lifeline.get().activate(false);
-			compiledOutput.append("deactivate ");
-			compiledOutput.append(lifelineName);
-			compiledOutput.append(System.lineSeparator());
+			println("activate " + lifelineName);
 		}
 	}
 
@@ -189,7 +171,7 @@ public class PlantUmlCompiler extends ASTVisitor {
 	 * Deactivates all active lifelines.
 	 */
 	public void deactivateAllLifelines() {
-		orderedLifelines.forEach(lifeline -> lifeline.activate(false));
+		orderedLifelines.forEach(this::deactivateLifeline);
 	}
 
 	/**
@@ -201,6 +183,19 @@ public class PlantUmlCompiler extends ASTVisitor {
 	public void println(String message) {
 		compiledOutput.append(message);
 		compiledOutput.append(System.lineSeparator());
+	}
+
+	/**
+	 * Deactivates the given lifeline if it is currently active.
+	 * 
+	 * @param lifeline
+	 *            The lifeline to deactivate.
+	 */
+	private void deactivateLifeline(Lifeline lifeline) {
+		if (lifeline.isActive()) {
+			lifeline.activate(false);
+			println("deactivate " + lifeline.getName());
+		}
 	}
 
 	/*
