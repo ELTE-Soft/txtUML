@@ -1,5 +1,7 @@
 package hu.elte.txtuml.export.cpp.wizardz;
 
+import org.eclipse.jface.viewers.ArrayContentProvider;
+import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
@@ -11,6 +13,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.dialogs.ListSelectionDialog;
 
 public class TxtUMLToCppOptionsPage extends WizardPage {
 
@@ -21,6 +24,9 @@ public class TxtUMLToCppOptionsPage extends WizardPage {
 
     private Text mainCppText;
     private Button mainCppBrowser;
+    
+    private Text compilerText;
+    private Button compilerSelector;
     
     public TxtUMLToCppOptionsPage() {
         super("Generate C++ Code Page");
@@ -41,8 +47,8 @@ public class TxtUMLToCppOptionsPage extends WizardPage {
         mainCppText = new Text(composite, SWT.BORDER | SWT.SINGLE);
         mainCppText.setText("");
         
-        GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
-        mainCppText.setLayoutData(gridData);
+        GridData mainCppGridData = new GridData(GridData.FILL_HORIZONTAL);
+        mainCppText.setLayoutData(mainCppGridData);
 
         mainCppBrowser = new Button(composite, SWT.NONE);
         mainCppBrowser.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false));
@@ -55,7 +61,47 @@ public class TxtUMLToCppOptionsPage extends WizardPage {
 		        fd.setFilterPath("C:/");
 		        fd.setFilterExtensions(new String[] { "*.cpp"});
 		        String selected = fd.open();
-		        System.out.println(selected);
+		        mainCppText.setText(selected);
+			}
+
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+			}
+		});
+        
+        Label emptyRowLabel = new Label(composite, SWT.NONE);
+        emptyRowLabel.setText("");
+        
+        GridData emptryRowGridData = new GridData();
+        emptryRowGridData.horizontalAlignment = GridData.FILL;
+        emptryRowGridData.horizontalSpan = 3;
+        emptyRowLabel.setLayoutData(emptryRowGridData);
+        
+        Label compilerLabel = new Label(composite, SWT.NONE);
+        compilerLabel.setText("Select compilers: ");
+        
+        compilerText = new Text(composite, SWT.BORDER | SWT.SINGLE);
+        compilerText.setText("");
+        
+        GridData compilerGridData = new GridData(GridData.FILL_HORIZONTAL);
+        compilerText.setLayoutData(compilerGridData);
+        
+        compilerSelector = new Button(composite, SWT.NONE);
+        compilerSelector.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false));
+        compilerSelector.setText(browseButtonText);
+        compilerSelector.addSelectionListener(new SelectionListener() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				String[] compilers = {"GCC", "Clang", "Visual Studio"};
+				ListSelectionDialog dialog = 
+						   new ListSelectionDialog(parent.getShell(), compilers, ArrayContentProvider.getInstance(),
+						            new LabelProvider(), "Compilers");
+
+						dialog.setTitle("Compiler Selection Dialog");
+						dialog.open();
+						Object[] selectedCompilers = dialog.getResult();
+						
+						compilerText.setText(setCompilerText(selectedCompilers));
 			}
 
 			@Override
@@ -65,5 +111,19 @@ public class TxtUMLToCppOptionsPage extends WizardPage {
         
         setControl(composite);
         setPageComplete(true);
+    }
+    
+    private String setCompilerText(Object[] compilers){
+    	String result = "";
+    	
+		for(int i = 0; i < compilers.length; ++i){
+			if(i == 0) {
+				result += compilers[i].toString();
+				continue;
+			}
+			result += "; " + compilers[i].toString();
+		}
+		
+		return result;
     }
 }
