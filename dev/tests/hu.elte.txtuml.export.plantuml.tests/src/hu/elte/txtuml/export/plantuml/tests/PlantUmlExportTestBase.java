@@ -1,7 +1,6 @@
 package hu.elte.txtuml.export.plantuml.tests;
 
-import static java.util.Arrays.asList;
-
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
@@ -36,8 +35,9 @@ public class PlantUmlExportTestBase {
 	}
 
 	protected void assertOutput(String diagramName, List<String> expected) {
-		String diagramQualifiedName = project.getName().toString() + ".sequences." + diagramName;
-		exporter = new PlantUmlExporter(project, "gen", asList(diagramQualifiedName));
+		List<String> seqDiagNames = new ArrayList<>();
+		seqDiagNames.add(project.getName().toString() + ".sequences." + diagramName);
+		exporter = new PlantUmlExporter(project, "gen", seqDiagNames);
 		String output = null;
 		try {
 			exporter.generatePlantUmlOutput(null);

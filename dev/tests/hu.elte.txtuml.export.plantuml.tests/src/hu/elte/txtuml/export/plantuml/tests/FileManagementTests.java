@@ -1,6 +1,7 @@
 package hu.elte.txtuml.export.plantuml.tests;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
@@ -15,10 +16,10 @@ import hu.elte.txtuml.export.plantuml.PlantUmlExporter;
 public class FileManagementTests extends PlantUmlExportTestBase {
 
 	@BeforeClass
-	public static void setUp() throws Exception {
-		ArrayList<String> SeqDiagNames = new ArrayList<String>();
-		SeqDiagNames.add(project.getName().toString() + ".sequences.SequenceBasic");
-		exporter = new PlantUmlExporter(project, "gen", SeqDiagNames);
+	public static void initialize() throws Exception {
+		List<String> seqDiagNames = new ArrayList<>();
+		seqDiagNames.add(project.getName().toString() + ".sequences.SequenceBasic");
+		exporter = new PlantUmlExporter(project, "gen", seqDiagNames);
 		exporter.generatePlantUmlOutput(new NullProgressMonitor());
 	}
 

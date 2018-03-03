@@ -89,9 +89,7 @@ public class PlantUmlGenerator {
 		parser.setBindingsRecovery(true);
 		parser.setSource(element);
 
-		CompilationUnit cu = (CompilationUnit) parser.createAST(null);
-
-		return cu;
+		return (CompilationUnit) parser.createAST(null);
 	}
 
 }
