@@ -38,7 +38,6 @@ svgZoom.resize();
 svgZoom.center();
 
 //add mouse pan and wheel zoom toggle control
-var panEnabled = true;
 document.getElementById('toggle-pan').addEventListener('click', function(ev){
     if(panEnabled){
     	svgZoom.disablePan();

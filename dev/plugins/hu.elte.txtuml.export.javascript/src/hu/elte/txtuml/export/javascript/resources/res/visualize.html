@@ -1,5 +1,4 @@
-﻿<!-- saved from url=(0014)about:internet -->
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
 	<!-- 3rd party stylesheets -->
@@ -11,6 +10,11 @@
 	<script src="lib/lodash.min.js"></script>
 	<script src="lib/backbone-min.js"></script>
 	<script src="lib/joint.js"></script>
+	<script src="lib/svg-pan-zoom.min.js"></script>
+	
+	<!-- global variables -->
+	<script src="globals.js"></script>
+	
 	
 	<!-- visualizer libraries -->
 	<script src="visualizer/utils.js"></script>
@@ -67,7 +71,11 @@
 			</div>
 			<div class="button control" id="reset-view">reset view</div>
 			<input type="checkbox" class="toggle-checkbox" id="toggle-pan-checkbox" checked>
-			<label for="toggle-pan-checkbox" class="button control toggle" id="toggle-pan">Mouse pan</label>
+			<label for="toggle-pan-checkbox" class="button switch" id="toggle-pan">
+				<div class="switch-left switch-content">Edit</div>
+				<div class="switch-right switch-content">Pan</div>
+				<div class="switch-border"></div>
+			</label>
 			<input type="checkbox" class="toggle-checkbox" id="toggle-wheel-zoom-checkbox" checked>
 			<label for="toggle-wheel-zoom-checkbox" class="button control toggle" id="toggle-wheel-zoom">Wheel zoom</label>
 		</div>
@@ -76,9 +84,7 @@
 		<!-- resize control label -->
 		<script>
 		$("#pan-and-zoom-toggle-label").width($("#pan-and-zoom-control-container").innerHeight());
-		</script>
-		
-		<script src="http://ariutta.github.io/svg-pan-zoom/dist/svg-pan-zoom.min.js"></script>
+		</script>	
 		<script src="panAndZoom.js"></script>
 	</div>	
 	
@@ -90,6 +96,7 @@
 			<li class="button"><a href="https://jquery.com/">jQuery</a></li>
 			<li class="button"><a href="https://lodash.com/">Lodash</a></li>
 			<li class="button"><a href="http://backbonejs.org">Backbone.js</a></li>
+			<li class="button"><a href="https://github.com/ariutta/svg-pan-zoom">svg-pan-zoom</a></li>
 		</ul>
 		</div>
 	</div>
