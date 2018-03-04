@@ -62,16 +62,18 @@ protected:
 
 };
 
+
+
 template <typename ProvidedInf, typename RequiredInf>
 class BehaviorPort : public IPort<ProvidedInf, RequiredInf>
 {
 public:
-	BehaviorPort(int type_, ES::ModelObjectRef owner_) : type(type_), owner(owner_) {}
+	BehaviorPort(PortType type_, ES::ModelObjectRef owner_) : type(type_), owner(owner_) {}
 	virtual ~BehaviorPort() {}
-	int getType() const { return type; }
+	PortType getType() const { return type; }
 protected:
 
-	int type;
+	PortType type;
 	ES::ModelObjectRef owner;
 };
 
@@ -134,7 +136,7 @@ template <typename ProvidedInf, typename RequiredInf>
 class BehaviorPortImpl : public BehaviorPort <ProvidedInf, RequiredInf>
 {
     public:
-		BehaviorPortImpl (int type_, ES::ModelObjectRef parent_) : BehaviorPort <ProvidedInf, RequiredInf> (type_,parent_) {}
+		BehaviorPortImpl (PortType type_, ES::ModelObjectRef parent_) : BehaviorPort <ProvidedInf, RequiredInf> (type_,parent_) {}
 		virtual ~BehaviorPortImpl() {}
     protected:
         virtual void sendAny (ES::EventRef signal)

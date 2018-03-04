@@ -96,6 +96,20 @@ namespace Model
 {
 	struct IConnection;
 	using ConnectionPtr = ES::SharedPtr<Model::IConnection>;
+	
+	class PortType {
+	public:
+		static PortType AnyPort;
+
+	public:
+		PortType(int portTypeId_) : portTypeId(portTypeId_) {}
+		int getPortTypeId() const { return portTypeId; }
+
+	private:
+		int portTypeId;
+
+	};
+
 }
 
 #endif
