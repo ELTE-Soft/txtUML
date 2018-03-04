@@ -66,7 +66,7 @@ public class DependencyExporter {
 
 	}
 
-	public void addDependencies(Collection<String> dependecies) {
+	public void addDependencies(Collection<String> dependencies) {
 		dependencies.forEach(this::addDependency);
 	}
 
