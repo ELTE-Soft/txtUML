@@ -76,10 +76,8 @@ public class PlantUmlCompiler extends ASTVisitor {
 	 */
 	@Override
 	public boolean visit(MethodDeclaration decl) {
+		printLifelines();
 		boolean isInitMethod = decl.getName().toString().equals("initialize");
-		if (isInitMethod) {
-			printLifelines();
-		}
 		return decl.resolveBinding().getDeclaringClass().getQualifiedName().toString()
 				.equals(currentClassFullyQualifiedName) && (decl.getName().toString().equals("run") || isInitMethod);
 	}
@@ -202,8 +200,10 @@ public class PlantUmlCompiler extends ASTVisitor {
 	 * Used for lifeline position order handling.
 	 */
 	private void printLifelines() {
-		orderedLifelines.stream().filter(elem -> elem.getPriority() != -1)
-				.forEach(elem -> println("participant " + elem.getName()));
+		orderedLifelines.stream().filter(elem -> elem.getPriority() != -1).forEach(elem -> {
+			println("participant " + elem.getName());
+			elem.processed();
+		});
 	}
 
 }

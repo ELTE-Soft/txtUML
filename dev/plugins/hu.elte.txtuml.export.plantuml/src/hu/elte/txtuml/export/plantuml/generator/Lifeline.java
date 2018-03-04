@@ -37,4 +37,8 @@ class Lifeline {
 		return declaration.getLifelineDecl();
 	}
 
+	public void processed() {
+		declaration.setPriority(-1);
+	}
+
 }

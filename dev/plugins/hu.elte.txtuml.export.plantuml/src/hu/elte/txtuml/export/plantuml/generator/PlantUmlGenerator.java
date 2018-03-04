@@ -47,10 +47,10 @@ public class PlantUmlGenerator {
 			throw new PreCompilationError(messages.toString());
 		}
 
+		// parse all superclasses
 		Type superClass = preCompiler.getSuperClass();
 		while (superClass != null) {
-			CompilationUnit cu = null;
-			cu = getSuperClassCU(superClass);
+			CompilationUnit cu = getSuperClassCU(superClass);
 			cu.accept(preCompiler);
 			superClass = preCompiler.getSuperClass();
 		}

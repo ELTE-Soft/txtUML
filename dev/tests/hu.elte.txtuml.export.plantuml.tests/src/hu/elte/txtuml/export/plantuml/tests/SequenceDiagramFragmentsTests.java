@@ -54,7 +54,7 @@ public class SequenceDiagramFragmentsTests extends PlantUmlExportTestBase {
 
 		assertOutput("LoopFragment", expected);
 	}
-	
+
 	@Test
 	public void testParFragment() {
 		List<String> expected = new ArrayList<>();
@@ -68,8 +68,8 @@ public class SequenceDiagramFragmentsTests extends PlantUmlExportTestBase {
 		expected.add("lifeline1->lifeline2 : hu.elte.txtuml.export.plantuml.tests.models.testmodel.TestSig");
 		expected.add("activate lifeline2");
 		expected.add("end");
-		expected.add("activate lifeline1");
-		expected.add("activate lifeline2");
+		expected.add("deactivate lifeline1");
+		expected.add("deactivate lifeline2");
 		expected.add("@enduml");
 
 		assertOutput("ParFragment", expected);

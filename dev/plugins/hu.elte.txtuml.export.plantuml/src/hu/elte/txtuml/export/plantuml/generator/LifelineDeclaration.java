@@ -24,4 +24,8 @@ class LifelineDeclaration {
 		return lifelineDecl;
 	}
 
+	public void setPriority(int priority) {
+		this.priority = priority;
+	}
+
 }

@@ -38,6 +38,7 @@ public class PlantUmlExportTestBase {
 		List<String> seqDiagNames = new ArrayList<>();
 		seqDiagNames.add(project.getName().toString() + ".sequences." + diagramName);
 		exporter = new PlantUmlExporter(project, "gen", seqDiagNames);
+
 		String output = null;
 		try {
 			exporter.generatePlantUmlOutput(null);

@@ -40,6 +40,7 @@ public class PlantUmlPreCompiler extends ASTVisitor {
 
 	@Override
 	public boolean visit(TypeDeclaration decl) {
+		superClass = null;
 		Type sc = decl.getSuperclassType();
 
 		if (sc != null) {
@@ -50,7 +51,6 @@ public class PlantUmlPreCompiler extends ASTVisitor {
 				superClass = sc;
 			}
 		}
-
 		return true;
 	}
 
