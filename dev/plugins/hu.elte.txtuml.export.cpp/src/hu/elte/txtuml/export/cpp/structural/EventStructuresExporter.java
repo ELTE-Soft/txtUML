@@ -27,14 +27,14 @@ public class EventStructuresExporter implements ICppCompilationUnit {
 
 	private Map<Signal, Operation> eventListWithConstructors;
 	private ActivityExporter activityExporter;
-	DependencyExporter dependencyEporter;
+	DependencyExporter dependencyExporter;
 	private String outputDirectory;
 
 	public EventStructuresExporter(Map<Signal, Operation> eventListWithConstructors, String outputDirectory) {
 		this.eventListWithConstructors = eventListWithConstructors;
 
 		activityExporter = new ActivityExporter(Optional.empty());
-		dependencyEporter = new DependencyExporter();
+		dependencyExporter = new DependencyExporter();
 
 		this.outputDirectory = outputDirectory;
 	}
@@ -80,12 +80,12 @@ public class EventStructuresExporter implements ICppCompilationUnit {
 			events.append(signal.getKey().getName() + ENUM_EXTENSION + ",");
 		}
 
-		dependencyEporter = new DependencyExporter();
+		dependencyExporter = new DependencyExporter();
 		for (Pair<String, String> param : allParam) {
-			dependencyEporter.addDependency(param.getSecond());
+			dependencyExporter.addDependency(param.getSecond());
 		}
 
-		source.append("enum Events {" + CppExporterUtils.cutOffTheLastCharcter(events.toString()) + "};\n");
+		source.append("enum Events {" + CppExporterUtils.cutOffTheLastCharacter(events.toString()) + "};\n");
 		source.append(eventClasses);
 
 		return source.toString();
@@ -93,11 +93,12 @@ public class EventStructuresExporter implements ICppCompilationUnit {
 
 	@Override
 	public String getUnitDependencies(UnitType type) {
-		return RuntimeTemplates.eventHeaderInclude() + dependencyEporter.createDependencyHeaderIncludeCode(GenerationNames.Namespaces.ModelNamespace);
+		return RuntimeTemplates.eventHeaderInclude()
+				+ dependencyExporter.createDependencyHeaderIncludeCode(GenerationNames.Namespaces.ModelNamespace);
 	}
 
 	@Override
-	public String getDesniation() {
+	public String getDestination() {
 		return outputDirectory;
 	}
 

@@ -8,40 +8,42 @@ import hu.elte.txtuml.export.cpp.templates.structual.HeaderTemplates;
 
 public interface ICppCompilationUnit {
 
-	
 	enum UnitType {
-		Cpp,
-		Header
+		Cpp, Header
 	}
-	
+
 	String getUnitName();
+
 	String getUnitNamespace();
+
 	String createUnitCppCode();
+
 	String createUnitHeaderCode();
+
 	String getUnitDependencies(UnitType type);
-	String getDesniation();
-	
-	default void createAddtionoalSources() throws FileNotFoundException, UnsupportedEncodingException {}
-	
+
+	String getDestination();
+
+	default void createAdditionalSources() throws FileNotFoundException, UnsupportedEncodingException {
+	}
+
 	default void createUnitSource() throws FileNotFoundException, UnsupportedEncodingException {
-		createAddtionoalSources();
-		
+		createAdditionalSources();
+
 		String headerSource = createUnitHeaderCode();
 		String cppSource = createUnitCppCode();
-		
-		
-		headerSource = getUnitDependencies(UnitType.Header) + GenerationTemplates.putNamespace(headerSource, getUnitNamespace());
-		cppSource = getUnitDependencies(UnitType.Cpp) + GenerationTemplates.putNamespace(cppSource, getUnitNamespace());;
-		
-		CppExporterUtils.writeOutSource(getDesniation(), GenerationTemplates.headerName(getUnitName()),
+
+		headerSource = getUnitDependencies(UnitType.Header)
+				+ GenerationTemplates.putNamespace(headerSource, getUnitNamespace());
+		cppSource = getUnitDependencies(UnitType.Cpp) + GenerationTemplates.putNamespace(cppSource, getUnitNamespace());
+		;
+
+		CppExporterUtils.writeOutSource(getDestination(), GenerationTemplates.headerName(getUnitName()),
 				CppExporterUtils.format(HeaderTemplates.headerGuard(headerSource, getUnitName())));
-		
-		
-		CppExporterUtils.writeOutSource(getDesniation(), GenerationTemplates.sourceName(getUnitName()),
-				CppExporterUtils.format(cppSource));	
-		
-		
+
+		CppExporterUtils.writeOutSource(getDestination(), GenerationTemplates.sourceName(getUnitName()),
+				CppExporterUtils.format(cppSource));
+
 	}
-	 
 
 }
