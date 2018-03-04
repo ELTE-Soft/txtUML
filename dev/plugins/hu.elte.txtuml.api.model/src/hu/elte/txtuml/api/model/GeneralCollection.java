@@ -85,11 +85,11 @@ public abstract class GeneralCollection<E> implements @External Iterable<E>, @Ex
 	 * Returns a collection of the given type that contains the same elements as
 	 * this. If either the lower bound or upper bound of the specified type
 	 * would be offended with this copy, a model error is raised. If this is
-	 * collection unordered or non-unique and the given type is ordered or
-	 * unique (respectively), that also results in a model error.
+	 * unordered or non-unique and the given type is ordered or unique
+	 * (respectively), that also results in a model error.
 	 * <p>
-	 * If the given type is the same as the type of this this, this collection
-	 * is returned.
+	 * If the given type is the same as the type of this, this collection is
+	 * returned.
 	 * <p>
 	 * <i>Reason for ordering and uniqueness restriction:</i> this method is
 	 * meant to perform a trivial copy without any further actions, that is, the
@@ -362,8 +362,8 @@ public abstract class GeneralCollection<E> implements @External Iterable<E>, @Ex
 		 * end of this collection, so it has the same result as the
 		 * {@link GeneralCollection#add(Object)} method.
 		 * 
-		 * @return a copy of this which does contains the element at the
-		 *         specified index
+		 * @return a copy of this which contains the element at the specified
+		 *         index
 		 */
 		Ordered<E> add(int index, E element);
 

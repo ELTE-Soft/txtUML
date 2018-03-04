@@ -349,7 +349,7 @@ public interface Action {
 	 * @param elements
 	 *            the elements to collect
 	 * @return the newly created collection that contains the specified
-	 *         elementss
+	 *         elements
 	 */
 	@ExternalBody
 	@SafeVarargs
