@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import hu.elte.txtuml.export.cpp.CppExporterUtils;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames;
+import hu.elte.txtuml.export.cpp.templates.GenerationNames.ModifierNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.PointerAndMemoryNames;
 import hu.elte.txtuml.export.cpp.templates.PrivateFunctionalTemplates;
 import hu.elte.txtuml.export.cpp.templates.activity.ActivityTemplates;
@@ -13,10 +14,11 @@ import hu.elte.txtuml.export.cpp.templates.statemachine.EventTemplates;
 public class ObjectDeclDefTemplates {
 	public enum VariableType {
 		Default,
+		StackStored,
 		EventPtr,
 		SharedPtr
 	}
-	public static String variableDecl(String typeName, String variableName, String defaultValue, VariableType varType) {
+	public static String variableDecl(String typeName, String variableName, String defaultValue, VariableType varType, boolean isStatic) {
 		StringBuilder source = new StringBuilder("");
 		String type = "";
 		switch(varType) {
@@ -29,10 +31,15 @@ public class ObjectDeclDefTemplates {
 		case SharedPtr:
 			type = GenerationNames.sharedPtrType(typeName);
 			break;
+		case StackStored:
+			type = typeName;
 		default:
 			assert(false);
 			break;
 		
+		}
+		if(isStatic) {
+			source.append(ModifierNames.StaticModifier + " ");
 		}
 		source.append(type);
 		source.append(" ");
@@ -45,21 +52,21 @@ public class ObjectDeclDefTemplates {
 	}
 
 	public static String variableDecl(String typeName, String variableName) {
-		return variableDecl(typeName, variableName, "", VariableType.Default);
+		return variableDecl(typeName, variableName, "", VariableType.Default, false);
 	}
 
 	public static String variableDecl(String typeName, String variableName, VariableType varType) {
-		return variableDecl(typeName, variableName, "", varType);
+		return variableDecl(typeName, variableName, "", varType, false);
 	}
 
 	public static String propertyDecl(String typeName, String variableName, String defaultValue, Optional<List<String>> templateParameters, VariableType varType) {
 		return variableDecl(typeName + 
 				CppExporterUtils.createTemplateParametersCode(templateParameters), 
-				variableName, defaultValue, varType);
+				variableName, defaultValue, varType, false);
 	}
 	
 	public static String propertyDecl(String typeName, String variableName, String defaultValue) {
-		return variableDecl(typeName, variableName, defaultValue, VariableType.Default);
+		return variableDecl(typeName, variableName, defaultValue, VariableType.Default, false);
 	}
 
 	public static String createObject(String typeName, String objName, boolean sharedObject) {
@@ -108,6 +115,15 @@ public class ObjectDeclDefTemplates {
 
 	public static String allocateObject(String typeName) {
 		return allocateObject(typeName, Optional.empty(), Optional.empty(), false);
+	}
+
+	public static String staticPropertyDecl(String typeName, String variableName) {
+		return variableDecl(typeName, variableName, "", VariableType.StackStored, true);
+	}
+	
+	public static String staticPropertyDef(String typeName, String ownerClassName, String propertyName, String value) {				
+		return typeName + " " + ownerClassName + "::" + propertyName + " " + ActivityTemplates.ReplaceSimpleTypeOp + " " + value + ";\n";
+
 	}
 
 }

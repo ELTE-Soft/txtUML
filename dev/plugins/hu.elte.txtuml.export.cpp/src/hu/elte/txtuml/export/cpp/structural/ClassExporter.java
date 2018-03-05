@@ -62,7 +62,7 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 		constructorExporter = new ConstructorExporter(structuredElement.getOwnedOperations());
 		associationExporter = new AssociationExporter();
 		additionalSourcesNames = new ArrayList<String>();
-		portExporter = new PortExporter(structuredElement.getOwnedPorts());
+		portExporter = new PortExporter(structuredElement.getOwnedPorts(), structuredElement.getName());
 		baseClasses.clear();
 		interfacesToImplement.clear();
 
@@ -178,6 +178,7 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 		source.append(CppExporterUtils.isStateMachineOwner(structuredElement) ? ConstructorTemplates.destructorDef(name, true)
 				: ConstructorTemplates.destructorDef(name, false));
 		source.append(FunctionTemplates.functionDef(name, GenerationNames.InitiliazetFixFunctionNames.InitPorts, portExporter.createInitPortsCode()));
+		source.append(portExporter.createPortTypeInfoDefinitions());
 
 		return source.toString();
 	}

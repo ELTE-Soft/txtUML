@@ -103,7 +103,9 @@ namespace Model
 
 	public:
 		PortType(int portTypeId_) : portTypeId(portTypeId_) {}
+                PortType(const PortType& o) = default;
 		int getPortTypeId() const { return portTypeId; }
+                bool operator==(const PortType& o) const {return portTypeId == o.getPortTypeId();}
 
 	private:
 		int portTypeId;

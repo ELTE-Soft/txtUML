@@ -1,9 +1,8 @@
 package hu.elte.txtuml.export.cpp.structural;
 
-import java.io.FileNotFoundException;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -15,8 +14,9 @@ import org.eclipse.uml2.uml.UMLPackage;
 
 import hu.elte.txtuml.export.cpp.CppExporterUtils;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames;
-import hu.elte.txtuml.export.cpp.templates.GenerationNames.TypeDelcreationKeywords;
 import hu.elte.txtuml.export.cpp.templates.structual.FunctionTemplates;
+import hu.elte.txtuml.export.cpp.templates.structual.HeaderTemplates;
+import hu.elte.txtuml.export.cpp.templates.structual.HeaderTemplates.HeaderInfo;
 import hu.elte.txtuml.export.cpp.templates.structual.PortTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.ObjectDeclDefTemplates;
 import hu.elte.txtuml.utils.Pair;
@@ -24,13 +24,11 @@ import hu.elte.txtuml.utils.Pair;
 public class PortExporter {
 	
 	private List<Port> 	ports;
+	private String ownerName;
 	
-	public PortExporter(List<Port> ports) {
+	public PortExporter(List<Port> ports, String ownerName) {
 		this.ports = ports;
-	}
-	public void createPortSource(String outputDirectory) throws FileNotFoundException, UnsupportedEncodingException {
-		CppExporterUtils.writeOutSource(outputDirectory, (PortTemplates.PORT_HEADER),
-				CppExporterUtils.format(PortTemplates.portHeaderGuard("")));
+		this.ownerName = ownerName;
 	}
 
 	public Set<String> getUsedInterfaces() {
@@ -46,30 +44,32 @@ public class PortExporter {
 	
 	public String crearePortRelatedCodes() {
 		StringBuilder source = new StringBuilder("");
-		source.append(createPortEnumCode());
+		source.append(createPortClassType());
 		source.append(createPortDeclerations());
 		source.append(FunctionTemplates.functionDecl(PortTemplates.PORTS_INITIALIZER_FUNCTION_NAME));
 		return source.toString();
 		
 	}
 	
-	public String createPortEnumCode() {
+	public String createPortClassType() {
 		if (ports == null || ports.size() == 0) {
 			return "";
 		}
-
-		StringBuilder source = new StringBuilder("\n");
-		source.append(TypeDelcreationKeywords.EnumType).append(" ");
-		source.append(PortTemplates.PORT_ENUM_NAME);
-		source.append(" { ");
+		StringBuilder portTypes = new StringBuilder("");
 		for (Port port : ports) {
-			source.append(PortTemplates.ponrtEnumName(port.getName()));
-			source.append(",");
+			portTypes.append(ObjectDeclDefTemplates.staticPropertyDecl(PortTemplates.portTypeInfoClassName(ownerName), port.getName()));
 		}
-		source.deleteCharAt(source.length() - 1);
-		source.append(" }; ");
 
-		return source.toString();
+		return HeaderTemplates.classHeader("", 
+				Arrays.asList(PortTemplates.PORT_TYPE_CLASS_INFO_NAME), 
+				Collections.emptyList(), 
+				portTypes.toString(), 
+				"", 
+				"", 
+				new HeaderInfo(PortTemplates.portTypeInfoClassName(ownerName),new HeaderTemplates.RawClassHeaderType()));
+
+
+
 	}
 	
 	public String createPortDeclerations() {
@@ -80,13 +80,24 @@ public class PortExporter {
 		return ports.stream().map(p -> crteaInterfacePortDefinitionCode(p)).reduce("", (d1,d2) -> d1 + d2);
 	}
 	
+	public String createPortTypeInfoDefinitions() {
+		StringBuilder source = new StringBuilder("");
+		Integer id = PortTemplates.ANY_PORT_DEFAULT_VALUE + 1;
+		for(Port port : ports) {
+			source.append(PortTemplates.portTypeInfoDef(port.getName(), ownerName, id));
+			id++;
+		}
+		
+		return source.toString();
+	}
+	
 	private String crteaInterfacePortDefinitionCode(Port port) {
 		assert(port != null && isInterfacePort(port));
 		String portTypeName = getPortTypeName(port, true);
 		Pair<String,String> interfaces = getPortActualInterfaceTypes(port);
 		List<String> parameters = new ArrayList<>();
 		if(port.isBehavior()) {
-			parameters.add(PortTemplates.ponrtEnumName(port.getName()));
+			parameters.add(PortTemplates.portTypeInfoName(port.getName(), ownerName));
 			parameters.add(GenerationNames.PointerAndMemoryNames.Self);
 		}
 		return ObjectDeclDefTemplates.setAllocatedObjectToObjectVariable(portTypeName, 

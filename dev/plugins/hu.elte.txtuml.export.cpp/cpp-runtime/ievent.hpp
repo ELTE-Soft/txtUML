@@ -34,9 +34,9 @@ public:
 		return static_cast<const DerivedBase*>(this)->t;
 	}
 
-	int getPortTypeId() const
+        PortType getPortType() const
 	{
-		return static_cast<const DerivedBase*>(this)->pType.getPortTypeId();
+                return static_cast<const DerivedBase*>(this)->pType;
 	}
 	
 	void setPortType(PortType portType)

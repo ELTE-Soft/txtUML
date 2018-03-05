@@ -64,8 +64,8 @@ public class StateMachineExporterBase {
 					if (se != null) {
 						List<Port> ports = tri.getPorts();
 						assert (ports.size() == 0 || ports.size() == 1);
-						String port = ports.size() == 0 ? PortTemplates.NO_PORT : 
-							PortTemplates.ponrtEnumName(ports.get(0).getName());
+						String port = ports.size() == 0 ? PortTemplates.ANY_PORT : 
+							parentClassName + "::" + PortTemplates.portTypeInfoName(ports.get(0).getName(), parentClassName);
 						transitionCondition = new TransitionConditions(se.getSignal().getName(),
 								item.getSource().getName(), port);
 
