@@ -71,11 +71,11 @@ public class Uml2ToCppExporter {
 	private List<DataType> dataTypes;
 	private List<String> classNames;
 	private List<Element> modelRoot;
-	private Boolean testing;
+	private boolean testing;
 
 
 	public Uml2ToCppExporter(List<Element> modelRoot, Pair<RuntimeType, Map<String, ThreadPoolConfiguration>> config,
-			boolean addRuntimeOption, boolean overWriteMainFileOption, Boolean testing) {
+			boolean addRuntimeOption, boolean overWriteMainFileOption, boolean testing) {
 
 		this.modelRoot = modelRoot;
 		this.testing = testing;
@@ -112,12 +112,6 @@ public class Uml2ToCppExporter {
 			ClassExporter classExporter = new ClassExporter(cls,cls.getName(), outputDirectory);
 			classExporter.setTesting(testing);
 			
-			//TODO
-			/*if (abstractOperationExporter.hasProperOperation(cls)) {
-				classExporter.setAbstractInterface(GenerationTemplates.generatedAbstractClassName(cls.getName()));
-			} else {
-				classExporter.removeAbstractInterface();
-			}*/
 			classExporter.setPoolId(threadManager.getConfiguratedPoolId(cls.getName()));
 			classExporter.createUnitSource();
 			if (CppExporterUtils.isStateMachineOwner(cls)) {

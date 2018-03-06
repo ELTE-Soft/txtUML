@@ -41,8 +41,9 @@ public class EventStructuresExporter implements ICppCompilationUnit {
 
 	private List<Pair<String, String>> getSignalParams(Entry<Signal, Operation> signal) {
 		List<Pair<String, String>> ret = new ArrayList<Pair<String, String>>();
-		for (Parameter param : signal.getValue().getOwnedParameters().stream()
-				.filter(p -> !p.getType().getName().equals(signal.getKey().getName())).collect(Collectors.toList())) {
+		List<Parameter> selfFilteredParameters = signal.getValue().getOwnedParameters().stream()
+				.filter(p -> !p.getType().getName().equals(signal.getKey().getName())).collect(Collectors.toList());
+		for (Parameter param : selfFilteredParameters) {
 			ret.add(new Pair<String, String>(param.getType().getName(), param.getName()));
 		}
 		return ret;
