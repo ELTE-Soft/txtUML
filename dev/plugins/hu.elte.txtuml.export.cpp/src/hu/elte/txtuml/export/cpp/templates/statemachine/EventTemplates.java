@@ -18,7 +18,7 @@ public class EventTemplates {
 	public static final String ProcessEventFunctionName = "processEventVirtual";
 	public static final String EventFParamName = GenerationNames.formatIncomingParamName(EventTemplates.EventParamName);
 	public static final String EventParamName = "e";
-	public static final String EventHeaderName = "EventStrcutures";
+	public static final String EventHeaderName = "EventStructures";
 	public static final String EventBaseName = "EventBase";
 	public static final String EventsEnumName = "Events";
 	public static final String EventPointerType = GenerationNames.PointerAndMemoryNames.EventPtr;

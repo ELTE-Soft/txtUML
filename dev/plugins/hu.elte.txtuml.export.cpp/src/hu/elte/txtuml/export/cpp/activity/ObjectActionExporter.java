@@ -38,7 +38,7 @@ class ObjectActionExporter {
 			objectType = ActivityTemplates.CreateObjectType.Signal;
 		} else {
 			objectType = CreateObjectType.Class;
-			if(exportUser.isPresent()) {
+			if (exportUser.isPresent()) {
 				exportUser.get().addCppOnlyDependency(type);
 			}
 		}
@@ -46,12 +46,12 @@ class ObjectActionExporter {
 		tempVariableExporter.exportOutputPinToMap(createObjectActionNode.getResult());
 		String name = tempVariableExporter.getRealVariableName(createObjectActionNode.getResult());
 		objectMap.put(createObjectActionNode, name);
-		
+
 		return ActivityTemplates.createObject(type, name, objectType);
 	}
 
 	public String createDestroyObjectActionCode(DestroyObjectAction node) {
-			return ActivityTemplates.deleteObject(activityExportResolver.getTargetFromInputPin(node.getTarget()));
+		return ActivityTemplates.deleteObject(activityExportResolver.getTargetFromInputPin(node.getTarget()));
 	}
 
 	public String createStartObjectActionCode(StartClassifierBehaviorAction node) {

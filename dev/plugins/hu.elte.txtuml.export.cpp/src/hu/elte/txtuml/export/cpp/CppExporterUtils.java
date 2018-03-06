@@ -34,31 +34,32 @@ import hu.elte.txtuml.export.cpp.templates.activity.ActivityTemplates;
 import hu.elte.txtuml.utils.Pair;
 
 public class CppExporterUtils {
-	
+
 	private static String UNKNOWN_TYPE = "UNKNOWN_TYPE";
 	private static String WRITER_ENCODE = "UTF-8";
-	
+
 	@SuppressWarnings("unchecked")
-	public static <ElementTypeT, EClassTypeT> void getTypedElements(Collection<ElementTypeT> dest, EClassTypeT eClass, List<Element> elements) {
+	public static <ElementTypeT, EClassTypeT> void getTypedElements(Collection<ElementTypeT> dest, EClassTypeT eClass,
+			List<Element> elements) {
 		for (Element item : elements) {
 			if (item.eClass().equals(eClass)) {
 				dest.add((ElementTypeT) item);
 			}
 		}
 	}
-	
+
 	public static Set<String> getAllModelClassNames(List<Element> elements) {
 
 		Set<String> classNames = new HashSet<String>();
-		for (Class cls : getAllModelCLass(elements)) {
-			if (!isSignalFactoryClass(cls,elements)) {
+		for (Class cls : getAllModelClass(elements)) {
+			if (!isSignalFactoryClass(cls, elements)) {
 				classNames.add(cls.getName());
 			}
 		}
 
 		return classNames;
 	}
-	
+
 	public static boolean isConstructor(Operation operation) {
 
 		for (Stereotype stereotype : operation.getAppliedStereotypes()) {
@@ -70,15 +71,15 @@ public class CppExporterUtils {
 		return false;
 
 	}
-	
-	public static List<Class> getAllModelCLass(List<Element> elements) {
+
+	public static List<Class> getAllModelClass(List<Element> elements) {
 		List<Class> classes = new ArrayList<Class>();
 		getTypedElements(classes, UMLPackage.Literals.CLASS, elements);
 		classes.removeIf(c -> isSignalFactoryClass(c, elements));
 
 		return classes;
 	}
-	
+
 	public static Activity getOperationActivity(Operation operation) {
 		Activity activity = null;
 		for (Behavior behavior : operation.getMethods()) {
@@ -91,7 +92,7 @@ public class CppExporterUtils {
 
 		return activity;
 	}
-	
+
 	public static List<Pair<String, String>> getOperationParams(Operation operation) {
 		List<Pair<String, String>> operationParameters = new ArrayList<Pair<String, String>>();
 		for (Parameter param : operation.getOwnedParameters()) {
@@ -105,7 +106,7 @@ public class CppExporterUtils {
 		}
 		return operationParameters;
 	}
-	
+
 	public static List<String> getOperationParamNames(Operation operation) {
 		List<String> operationParameterTypes = new ArrayList<String>();
 		for (Parameter param : operation.getOwnedParameters()) {
@@ -117,7 +118,7 @@ public class CppExporterUtils {
 		}
 		return operationParameterTypes;
 	}
-	
+
 	public static List<String> getOperationParamTypes(Operation operation) {
 		List<String> operationParameterTypes = new ArrayList<String>();
 		for (Parameter param : operation.getOwnedParameters()) {
@@ -129,7 +130,7 @@ public class CppExporterUtils {
 		}
 		return operationParameterTypes;
 	}
-	
+
 	public static void writeOutSource(String path, String fileName, String source)
 			throws FileNotFoundException, UnsupportedEncodingException {
 		try {
@@ -163,7 +164,7 @@ public class CppExporterUtils {
 
 		return formattedSource;
 	}
-	
+
 	private static Class getSignalFactoryClass(Signal signal, List<Element> elements) {
 		for (Element element : elements) {
 			if (element.eClass().equals(UMLPackage.Literals.CLASS)) {
@@ -182,43 +183,40 @@ public class CppExporterUtils {
 
 		return null;
 	}
-	
-	
-	public static Map<Signal,Operation> getSingalsWidthConstructors(List<Element> elements) {
-		Map<Signal,Operation> singalsToConstructorOperations = new HashMap<>();
-		
+
+	public static Map<Signal, Operation> getSignalsWithConstructors(List<Element> elements) {
+		Map<Signal, Operation> signalsToConstructorOperations = new HashMap<>();
+
 		List<Signal> signalList = new ArrayList<Signal>();
 		CppExporterUtils.getTypedElements(signalList, UMLPackage.Literals.SIGNAL, elements);
-		
-		for(Signal signal : signalList) {
+
+		for (Signal signal : signalList) {
 			Operation op = null;
 			Class factoryClass = getSignalFactoryClass(signal, elements);
-			assert(factoryClass != null);
-			if(factoryClass != null) {				
+			assert (factoryClass != null);
+			if (factoryClass != null) {
 				for (Operation operation : factoryClass.getOperations()) {
 					if (isConstructor(operation)) {
 						op = operation;
 					}
-				}												
+				}
 			}
-			
-			assert(op != null);
-			if(op != null) {
-				singalsToConstructorOperations.put(signal, op);
-			}			
-			
+
+			assert (op != null);
+			if (op != null) {
+				signalsToConstructorOperations.put(signal, op);
+			}
+
 		}
-		
-		
-		return singalsToConstructorOperations;
+
+		return signalsToConstructorOperations;
 	}
-	
 
 	public static StateMachine getStateMachine(Class cls) {
-	
+
 		List<StateMachine> smList = new ArrayList<StateMachine>();
 		getTypedElements(smList, UMLPackage.Literals.STATE_MACHINE, cls.getOwnedElements());
-		
+
 		if (!smList.isEmpty()) {
 			return smList.get(0);
 
@@ -227,7 +225,6 @@ public class CppExporterUtils {
 		}
 	}
 
-	
 	private static boolean isSignalFactoryClass(Class cls, List<Element> elements) {
 		List<Signal> signals = new ArrayList<Signal>();
 		getTypedElements(signals, UMLPackage.Literals.SIGNAL, elements);
@@ -243,14 +240,14 @@ public class CppExporterUtils {
 
 		return false;
 	}
-	
+
 	public static boolean isStateMachineOwner(Class cls) {
 		return CppExporterUtils.getStateMachine(cls) != null;
 	}
-	
-	public static String cutOffTheLastCharcter(String originalString) {
+
+	public static String cutOffTheLastCharacter(String originalString) {
 		int originalLeght = originalString.length();
-		if(originalLeght == 0) {
+		if (originalLeght == 0) {
 			return "";
 		}
 		return originalString.substring(0, originalLeght - 1);

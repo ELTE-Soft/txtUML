@@ -88,7 +88,7 @@ public class Uml2ToCppExporter {
 		options = new Options(addRuntimeOption, overWriteMainFileOption);
 
 		CppExporterUtils.getTypedElements(dataTypes, UMLPackage.Literals.DATA_TYPE, modelRoot);
-		classes = CppExporterUtils.getAllModelCLass(modelRoot);
+		classes = CppExporterUtils.getAllModelClass(modelRoot);
 
 	}
 
@@ -270,7 +270,7 @@ public class Uml2ToCppExporter {
 	}
 
 	private void createEventSource(String outputDirectory) throws FileNotFoundException, UnsupportedEncodingException {
-		EventStructuresExporter eventSourceExporter = new EventStructuresExporter(CppExporterUtils.getSingalsWidthConstructors(modelRoot), outputDirectory);
+		EventStructuresExporter eventSourceExporter = new EventStructuresExporter(CppExporterUtils.getSignalsWithConstructors(modelRoot), outputDirectory);
 		eventSourceExporter.createUnitSource();
 
 	}

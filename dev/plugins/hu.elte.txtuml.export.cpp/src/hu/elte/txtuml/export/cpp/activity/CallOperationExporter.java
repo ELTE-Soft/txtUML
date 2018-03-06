@@ -35,8 +35,8 @@ class CallOperationExporter {
 	private Optional<IDependencyCollector> exportUser;
 
 	public CallOperationExporter(OutVariableExporter tempVariableExporter,
-			Map<CallOperationAction, OutputPin> returnOutputsToCallActions,
-			ActivityNodeResolver activityExportResolver, Optional<IDependencyCollector> exportUser) {
+			Map<CallOperationAction, OutputPin> returnOutputsToCallActions, ActivityNodeResolver activityExportResolver,
+			Optional<IDependencyCollector> exportUser) {
 		declaredTempVariables = new HashSet<String>();
 
 		this.tempVariableExporter = tempVariableExporter;
@@ -94,9 +94,9 @@ class CallOperationExporter {
 			addOutParametrsToList(parameterVariables, outParamaterPins);
 
 			val = ActivityTemplates.stdLibCall(node.getOperation().getName(), parameterVariables);
-			
+
 			if (OperatorTemplates.isTimerStart(node.getOperation().getName())) {
-				if(exportUser.isPresent()) {
+				if (exportUser.isPresent()) {
 					exportUser.get().addCppOnlyDependency(FileNames.TimerInterfaceHeader);
 					exportUser.get().addCppOnlyDependency(FileNames.TimerHeader);
 				}
@@ -114,17 +114,17 @@ class CallOperationExporter {
 			}
 
 		} else {
-			
-			Operation op = node.getOperation();	
-			
+
+			Operation op = node.getOperation();
+
 			Element opOwner = op.getOwner();
-			if(opOwner instanceof NamedElement) {
-				NamedElement namedOwner = (NamedElement)  opOwner;
-				if(exportUser.isPresent()) {
+			if (opOwner instanceof NamedElement) {
+				NamedElement namedOwner = (NamedElement) opOwner;
+				if (exportUser.isPresent()) {
 					exportUser.get().addCppOnlyDependency(namedOwner.getName());
 				}
 			}
-			
+
 			val = ActivityTemplates.operationCall(activityExportResolver.getTargetFromInputPin(node.getTarget(), false),
 					ActivityTemplates.accesOperatoForType(activityExportResolver.getTypeFromInputPin(node.getTarget())),
 					op.getName(), getParametersNames(node.getArguments()));

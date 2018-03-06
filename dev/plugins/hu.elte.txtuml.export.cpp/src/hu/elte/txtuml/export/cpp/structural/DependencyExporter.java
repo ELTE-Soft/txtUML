@@ -13,92 +13,89 @@ public class DependencyExporter {
 	private static Set<String> standardDependencies = new HashSet<>(Arrays.asList(UMLStdLibNames.ModelClassName,
 			UMLStdLibNames.UMLInteger, UMLStdLibNames.UMLBoolean, UMLStdLibNames.UMLReal, UMLStdLibNames.UMLString));
 
-	private Set<String> dependecies;
+	private Set<String> dependencies;
 	private Set<String> headerOnlyDependency;
 	private Set<String> cppOnlyDependency;
-	private Set<String> headerOnlnyIncludeDependency;
+	private Set<String> headerOnlyIncludeDependency;
 
 	public DependencyExporter() {
-		dependecies = new HashSet<String>();
+		dependencies = new HashSet<String>();
 		headerOnlyDependency = new HashSet<>();
 		cppOnlyDependency = new HashSet<>();
-		headerOnlnyIncludeDependency = new HashSet<>();
+		headerOnlyIncludeDependency = new HashSet<>();
 	}
 
 	public String createDependencyCppIncludeCode(String className) {
 		StringBuilder includes = new StringBuilder("");
 		includes.append(PrivateFunctionalTemplates.include(className));
-		dependecies.forEach(type -> {
+		dependencies.forEach(type -> {
 			includes.append(PrivateFunctionalTemplates.include(type));
 		});
-		
+
 		cppOnlyDependency.forEach(type -> {
 			includes.append(PrivateFunctionalTemplates.include(type));
 		});
-			
+
 		return includes.toString();
 	}
 
 	public String createDependencyHeaderIncludeCode(String preDeclNamespace) {
 		StringBuilder preDeclerations = new StringBuilder();
 		StringBuilder includes = new StringBuilder();
-		
-		
-		dependecies.forEach(type -> {
+
+		dependencies.forEach(type -> {
 			preDeclerations.append(GenerationTemplates.forwardDeclaration(type));
 		});
-		
+
 		headerOnlyDependency.forEach(type -> {
 			preDeclerations.append(GenerationTemplates.forwardDeclaration(type));
 		});
-		
-		headerOnlnyIncludeDependency.forEach(type -> {
+
+		headerOnlyIncludeDependency.forEach(type -> {
 			includes.append(PrivateFunctionalTemplates.include(type));
 		});
-			
+
 		return includes.toString() + GenerationTemplates.putNamespace(preDeclerations.toString(), preDeclNamespace);
 
 	}
 
 	public void addDependency(String dependency) {
 		if (!isSimpleDependency(dependency)) {
-			dependecies.add(dependency);
+			dependencies.add(dependency);
 		}
 
 	}
 
-	public void addDependencies(Collection<String> dependecies) {
-		for (String dependency : dependecies) {
-			addDependency(dependency);
-		}
+	public void addDependencies(Collection<String> dependencies) {
+		dependencies.forEach(this::addDependency);
 	}
-	
+
 	public void addHeaderOnlyDependency(String dependency) {
-		if(!dependecies.contains(dependency)) {
+		if (!dependencies.contains(dependency)) {
 			headerOnlyDependency.add(dependency);
 		}
 	}
-	
+
 	public void addHeaderOnlyDependencies(Collection<String> dependencies) {
-		dependencies.forEach(d -> addHeaderOnlyDependency(d));
+		dependencies.forEach(this::addHeaderOnlyDependency);
 	}
-	
+
 	public void addHeaderOnlyIncludeDependency(String dependency) {
-		headerOnlnyIncludeDependency.add(dependency);
+		headerOnlyIncludeDependency.add(dependency);
 	}
-	
+
 	public void addHeaderOnlyIncludeDependencies(Collection<String> dependencies) {
-		dependencies.forEach(d -> addHeaderOnlyIncludeDependency(d));
+		dependencies.forEach(this::addHeaderOnlyIncludeDependency);
 	}
-	
+
 	public void addCppOnlyDependency(String dependency) {
-		if(!dependecies.contains(dependency)) {
+		if (!dependencies.contains(dependency)) {
 			cppOnlyDependency.add(dependency);
 		}
 	}
-	
+
 	public void addCppOnlyDependencies(Collection<String> dependencies) {
-		dependencies.forEach(d -> addCppOnlyDependency(d));
+		dependencies.forEach(this::addCppOnlyDependency);
 	}
 
 	private boolean isSimpleDependency(String typename) {

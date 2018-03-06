@@ -186,7 +186,7 @@ public abstract class StructuredElementExporter<StructuredElement extends Operat
 	}
 	
 	@Override
-	public String getDesniation() {
+	public String getDestination() {
 		return dest;
 	}
 

@@ -91,9 +91,9 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 	}
 	
 	@Override
-	public void createAddtionoalSources() throws FileNotFoundException, UnsupportedEncodingException {
+	public void createAdditionalSources() throws FileNotFoundException, UnsupportedEncodingException {
 		if(CppExporterUtils.isStateMachineOwner(structuredElement)) {
-			stateMachineExporter.createSubMachineSources(getDesniation());
+			stateMachineExporter.createSubMachineSources(getDestination());
 		}
 	}
 

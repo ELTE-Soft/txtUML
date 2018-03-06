@@ -26,7 +26,7 @@ import hu.elte.txtuml.utils.Pair;
 public class SubStateMachineExporter extends StateMachineExporterBase implements ICppCompilationUnit, IDependencyCollector {
 
 	private String subStateMachineName;
-	private DependencyExporter dependecyExporter;
+	private DependencyExporter dependencyExporter;
 	private String subMachineCodeDest;
 	
 	public SubStateMachineExporter(String subStateMachineName, Region region, ICppCompilationUnit owner, String subMachineCodeDest) {
@@ -35,7 +35,7 @@ public class SubStateMachineExporter extends StateMachineExporterBase implements
 		this.stateMachineRegion = region;
 		this.subMachineCodeDest = subMachineCodeDest;
 		
-		dependecyExporter = new DependencyExporter();
+		dependencyExporter = new DependencyExporter();
 		
 		init(this);
 
@@ -56,13 +56,13 @@ public class SubStateMachineExporter extends StateMachineExporterBase implements
 
 	@Override
 	public void addDependency(String type) {
-		dependecyExporter.addDependency(type);
+		dependencyExporter.addDependency(type);
 		
 	}
 	
 	@Override
 	public void addCppOnlyDependency(String type) {
-		dependecyExporter.addCppOnlyDependency(type);
+		dependencyExporter.addCppOnlyDependency(type);
 		
 	}
 
@@ -78,8 +78,8 @@ public class SubStateMachineExporter extends StateMachineExporterBase implements
 	}
 	
 	@Override
-	public void createAddtionoalSources() throws FileNotFoundException, UnsupportedEncodingException {
-		createSubMachineSources(getDesniation());
+	public void createAdditionalSources() throws FileNotFoundException, UnsupportedEncodingException {
+		createSubMachineSources(getDestination());
 	}
 
 	@Override
@@ -138,17 +138,17 @@ public class SubStateMachineExporter extends StateMachineExporterBase implements
 	public String getUnitDependencies(UnitType type) {
 		
 		StringBuilder dependencyIncludes = new StringBuilder("");
-		dependecyExporter.addDependencies(getOwnSubmachineNames());
+		dependencyExporter.addDependencies(getOwnSubmachineNames());
 		
 		if(type == UnitType.Header) {
 			dependencyIncludes.append(PrivateFunctionalTemplates.include(ownerClassUnit.getUnitName()));
 			dependencyIncludes.append(PrivateFunctionalTemplates.include(EventTemplates.EventHeaderName));
 
-			dependencyIncludes.append(dependecyExporter.createDependencyHeaderIncludeCode(GenerationNames.Namespaces.ModelNamespace));
+			dependencyIncludes.append(dependencyExporter.createDependencyHeaderIncludeCode(GenerationNames.Namespaces.ModelNamespace));
 
 
 		} else {
-			dependencyIncludes.append(dependecyExporter.createDependencyCppIncludeCode(getUnitName()));
+			dependencyIncludes.append(dependencyExporter.createDependencyCppIncludeCode(getUnitName()));
 			dependencyIncludes.append(PrivateFunctionalTemplates.include(GenerationNames.FileNames.ActionPath));
 			dependencyIncludes.append(GenerationTemplates.debugOnlyCodeBlock(GenerationTemplates.StandardIOinclude));
 			dependencyIncludes.append(PrivateFunctionalTemplates.include(GenerationNames.FileNames.StringUtilsPath));
@@ -160,7 +160,7 @@ public class SubStateMachineExporter extends StateMachineExporterBase implements
 	}
 
 	@Override
-	public String getDesniation() {
+	public String getDestination() {
 		return subMachineCodeDest;
 	}
 
