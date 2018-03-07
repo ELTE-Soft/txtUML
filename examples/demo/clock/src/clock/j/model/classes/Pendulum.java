@@ -34,7 +34,7 @@ public class Pendulum extends ModelClass {
 	@From(Working.class) @To(Working.class) @Trigger(Tick.class)
 	class DoTick extends Transition {
 		public void effect() {
-			assoc(TimerOfPendulum.timer.class).selectAny().reset(unit);
+			assoc(TimerOfPendulum.timer.class).one().reset(unit);
 		}
 	}
 }

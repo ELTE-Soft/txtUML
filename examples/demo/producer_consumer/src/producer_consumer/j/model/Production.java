@@ -1,12 +1,14 @@
 package producer_consumer.j.model;
 
+import hu.elte.txtuml.api.model.Any;
 import hu.elte.txtuml.api.model.Association;
+import hu.elte.txtuml.api.model.One;
 
 public class Production extends Association {
 
-	public class producer extends Association.Many<Producer> {
+	public class producer extends End<Any<Producer>> {
 	}
 
-	public class storage extends Association.One<Storage> {
+	public class storage extends End<One<Storage>> {
 	}
 }

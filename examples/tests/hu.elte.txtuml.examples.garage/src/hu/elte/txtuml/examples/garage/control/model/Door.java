@@ -27,7 +27,7 @@ public class Door extends ModelClass {
 	public class Enabled extends State {
 		@Override
 		public void entry() {
-			Motor m = Door.this.assoc(MotorMovesDoor.movingMotor.class).selectAny();
+			Motor m = Door.this.assoc(MotorMovesDoor.movingMotor.class).one();
 			Action.send(new ReenableMotor(), m);
 		}
 	}
@@ -55,7 +55,7 @@ public class Door extends ModelClass {
 		@Override
 		public void effect() {
 			if (!assoc(DoorUsesTimer.timer.class).isEmpty()) {
-				Timer timer = assoc(DoorUsesTimer.timer.class).selectAny();
+				Timer timer = assoc(DoorUsesTimer.timer.class).one();
 				Action.unlink(DoorUsesTimer.timer.class, timer, DoorUsesTimer.door.class, Door.this);				
 			}
 			Timer timer = Timer.start(new DoorTimerExpired(), Door.this, 2000);
@@ -69,7 +69,7 @@ public class Door extends ModelClass {
 	public class TKeepDisabled extends Transition {
 		@Override
 		public void effect() {
-			assoc(DoorUsesTimer.timer.class).selectAny().reset(2000);
+			assoc(DoorUsesTimer.timer.class).one().reset(2000);
 		}
 	}
 
@@ -85,7 +85,7 @@ public class Door extends ModelClass {
 	public class TAcceptRemoteControl extends Transition {
 		@Override
 		public void effect() {
-			Motor m = Door.this.assoc(MotorMovesDoor.movingMotor.class).selectAny();
+			Motor m = Door.this.assoc(MotorMovesDoor.movingMotor.class).one();
 			Action.send(new ChangeMotorMode(), m);
 		}
 	}

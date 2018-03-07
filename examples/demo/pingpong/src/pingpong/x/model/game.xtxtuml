@@ -36,7 +36,7 @@ class Game {
 		to Waiting;
 		trigger Ball;
 		effect {
-			Player left = this->(LeftPlayer.player).selectAny();
+			Player left = this->(LeftPlayer.player).one();
 			send trigger to left;		
 		}
 	}

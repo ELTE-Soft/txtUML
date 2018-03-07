@@ -133,8 +133,9 @@ public class ClassDiagramExporter extends AbstractSourceExporter {
 			return null;
 		}
 		try {
-			return (Class<? extends ModelClass>) ((ParameterizedType) end.getGenericSuperclass())
-					.getActualTypeArguments()[0];
+			ParameterizedType endType = (ParameterizedType) end.getGenericSuperclass();
+			ParameterizedType collectionType = (ParameterizedType) endType.getActualTypeArguments()[0];
+			return (Class<? extends ModelClass>) collectionType.getActualTypeArguments()[0];
 		} catch (Exception e) {
 			throw new ElementExportationException();
 		}

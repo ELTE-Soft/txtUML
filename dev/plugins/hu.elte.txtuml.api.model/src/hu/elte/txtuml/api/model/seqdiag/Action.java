@@ -1,6 +1,7 @@
 package hu.elte.txtuml.api.model.seqdiag;
 
 import hu.elte.txtuml.api.model.AssociationEnd;
+import hu.elte.txtuml.api.model.GeneralCollection;
 import hu.elte.txtuml.api.model.Interface;
 import hu.elte.txtuml.api.model.ModelClass;
 import hu.elte.txtuml.api.model.ModelClass.Port;
@@ -27,13 +28,14 @@ public abstract class Action {
 		hu.elte.txtuml.api.model.Action.connect(parentPort, childEnd, childPort);
 	}
 
-	public static <L extends ModelClass, R extends ModelClass> void link(Class<? extends AssociationEnd<L, ?>> leftEnd,
-			L leftObj, Class<? extends AssociationEnd<R, ?>> rightEnd, R rightObj) {
+	public static <L extends ModelClass, R extends ModelClass, CL extends GeneralCollection<L>, CR extends GeneralCollection<R>> void link(
+			Class<? extends AssociationEnd<CL>> leftEnd, L leftObj, Class<? extends AssociationEnd<CR>> rightEnd,
+			R rightObj) {
 		hu.elte.txtuml.api.model.Action.link(leftEnd, leftObj, rightEnd, rightObj);
 	}
 
-	public static <L extends ModelClass, R extends ModelClass> void unlink(
-			Class<? extends AssociationEnd<L, ?>> leftEnd, L leftObj, Class<? extends AssociationEnd<R, ?>> rightEnd,
+	public static <L extends ModelClass, R extends ModelClass, CL extends GeneralCollection<L>, CR extends GeneralCollection<R>> void unlink(
+			Class<? extends AssociationEnd<CL>> leftEnd, L leftObj, Class<? extends AssociationEnd<CR>> rightEnd,
 			R rightObj) {
 		hu.elte.txtuml.api.model.Action.unlink(leftEnd, leftObj, rightEnd, rightObj);
 	}

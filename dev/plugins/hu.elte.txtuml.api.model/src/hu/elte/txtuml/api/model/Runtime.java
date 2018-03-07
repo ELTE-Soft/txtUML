@@ -121,15 +121,15 @@ public abstract class Runtime {
 	/**
 	 * Called by {@link Action#link(Class, ModelClass, Class, ModelClass)}.
 	 */
-	public abstract <L extends ModelClass, R extends ModelClass> void link(
-			Class<? extends AssociationEnd<L, ?>> leftEnd, L leftObj, Class<? extends AssociationEnd<R, ?>> rightEnd,
+	public abstract <L extends ModelClass, R extends ModelClass, CL extends GeneralCollection<L>, CR extends GeneralCollection<R>> void link(
+			Class<? extends AssociationEnd<CL>> leftEnd, L leftObj, Class<? extends AssociationEnd<CR>> rightEnd,
 			R rightObj);
 
 	/**
 	 * Called by {@link Action#unlink(Class, ModelClass, Class, ModelClass)}.
 	 */
-	public abstract <L extends ModelClass, R extends ModelClass> void unlink(
-			Class<? extends AssociationEnd<L, ?>> leftEnd, L leftObj, Class<? extends AssociationEnd<R, ?>> rightEnd,
+	public abstract <L extends ModelClass, R extends ModelClass, CL extends GeneralCollection<L>, CR extends GeneralCollection<R>> void unlink(
+			Class<? extends AssociationEnd<CL>> leftEnd, L leftObj, Class<? extends AssociationEnd<CR>> rightEnd,
 			R rightObj);
 
 	/**

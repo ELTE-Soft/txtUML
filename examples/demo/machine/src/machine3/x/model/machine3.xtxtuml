@@ -1,7 +1,8 @@
 package machine3.x.model;
 
-import hu.elte.txtuml.api.model.Collection
-import hu.elte.txtuml.api.stdlib.timers.Timer
+import hu.elte.txtuml.api.model.Any;
+import hu.elte.txtuml.api.model.GeneralCollection;
+import hu.elte.txtuml.api.stdlib.timers.Timer;
 
 // classes
 
@@ -38,7 +39,7 @@ class Machine {
 		state Active {
 			entry {
 				log("\tMachine enters state: 'active'");
-				log("\tMachine: tasks to do: " + Machine.this.tasksToDo);
+				log("\tMachine: tasks to do: " + tasksToDo);
 			}
 
 			exit {
@@ -58,11 +59,11 @@ class Machine {
 
 			effect {
 				DoTasks doTasks = trigger;
-				Machine.this.tasksToDo -= doTasks.count;
+				tasksToDo -= doTasks.count;
 				log("\tMachine: becoming active...");
 			}
 			
-			guard(Machine.this.tasksToDo > 0);
+			guard(tasksToDo > 0);
 		}
 		
 	}
@@ -94,7 +95,7 @@ class Machine {
 			log("\tMachine: switching off...");
 		}
 
-		guard(Machine.this.tasksToDo <= 0);
+		guard(tasksToDo <= 0);
 	}
 }
 
@@ -151,8 +152,8 @@ class User {
 
 		log("\t" + name.toString() + ": analyzing machine...");
 
-		Collection<User> usersOfM = m->(Usage.userOfMachine);
-		
+		Any<User> usersOfM = m->(Usage.userOfMachine);
+
 		log("\t\tI found its users!");
 		log("");
 		
@@ -165,23 +166,13 @@ class User {
  			log("\t\tI am a user of this machine.");
 	 	}
 
-		boolean id0 = false;
-		for(User user : usersOfM) {
-			if(user.id == 0) {
-				id0 = true;
-			}
-		}
-		if(!id0) {
- 			log("\t\tNo user of this machine has an id of 0.");				
-		}
-
-	 	Collection<User> otherUsers = usersOfM.remove(this);
+	 	GeneralCollection<User> otherUsers = usersOfM.remove(this);
 	 	
-	 	if (otherUsers.count() == 1) {
+	 	if (otherUsers.size() == 1) {
 	 		log("\t\tThere is exactly one other person who is user of this machine.");
 	 	}
 	 	
-	  	return otherUsers.selectAny();
+	  	return otherUsers.one();
 	}
 	
 	void sayHello() {
@@ -201,7 +192,7 @@ class User {
 	void doWork() {
 		log("\t" + name.toString() + ": starting to work...");
 
-		Machine myMachine = User.this->(Usage.usedMachine).selectAny();
+		Machine myMachine = User.this->(Usage.usedMachine).one();
 		
 		User otherUser = findOtherUser(myMachine);
 

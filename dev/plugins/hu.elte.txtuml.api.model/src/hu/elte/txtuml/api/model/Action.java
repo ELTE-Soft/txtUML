@@ -1,5 +1,6 @@
 package hu.elte.txtuml.api.model;
 
+import hu.elte.txtuml.api.model.AbstractGeneralCollection.Builder;
 import hu.elte.txtuml.api.model.ConnectorBase.ConnectorEnd;
 import hu.elte.txtuml.api.model.ModelClass.Port;
 import hu.elte.txtuml.api.model.error.ObjectCreationError;
@@ -33,7 +34,7 @@ import hu.elte.txtuml.utils.RuntimeInvocationTargetException;
  * See the documentation of {@link Model} for an overview on modeling in
  * JtxtUML.
  */
-public abstract class Action {
+public interface Action {
 
 	/**
 	 * Creates a new instance of the specified model class. Shows an error
@@ -51,7 +52,7 @@ public abstract class Action {
 	 *             if <code>classType</code> is <code>null</code>
 	 */
 	@ExternalBody
-	public static <T extends ModelClass> T create(Class<T> classType, Object... parameters) throws ObjectCreationError {
+	static <T extends ModelClass> T create(Class<T> classType, Object... parameters) throws ObjectCreationError {
 		try {
 			return InstanceCreator.create(classType, parameters);
 		} catch (IllegalArgumentException | RuntimeInvocationTargetException e) {
@@ -82,7 +83,7 @@ public abstract class Action {
 	 *             if <code>classType</code> is <code>null</code>
 	 */
 	@ExternalBody
-	public static <T extends ModelClass> T createWithName(Class<T> classType, String name, Object... parameters)
+	static <T extends ModelClass> T createWithName(Class<T> classType, String name, Object... parameters)
 			throws ObjectCreationError {
 		T ret = create(classType, parameters);
 		ret.runtimeInfo().setName(name);
@@ -103,7 +104,7 @@ public abstract class Action {
 	 *             if <code>obj</code> is <code>null</code>
 	 */
 	@ExternalBody
-	public static void delete(ModelClass obj) {
+	static void delete(ModelClass obj) {
 		obj.runtimeInfo().delete();
 	}
 
@@ -126,7 +127,7 @@ public abstract class Action {
 	 *             <code>null</code>
 	 */
 	@ExternalBody
-	public static <C1 extends ConnectorEnd<?, P1>, P1 extends Port<I1, I2>, C2 extends ConnectorEnd<?, P2>, P2 extends Port<I2, I1>, I1 extends Interface, I2 extends Interface> void connect(
+	static <C1 extends ConnectorEnd<?, P1>, P1 extends Port<I1, I2>, C2 extends ConnectorEnd<?, P2>, P2 extends Port<I2, I1>, I1 extends Interface, I2 extends Interface> void connect(
 			Class<C1> leftEnd, P1 leftPort, Class<C2> rightEnd, P2 rightPort) {
 		leftPort.getRuntime().connect(leftEnd, leftPort, rightEnd, rightPort);
 	}
@@ -147,7 +148,7 @@ public abstract class Action {
 	 *             <code>null</code>
 	 */
 	@ExternalBody
-	public static <P1 extends Port<I1, I2>, C extends ConnectorEnd<?, P2>, P2 extends Port<I1, I2>, I1 extends Interface, I2 extends Interface> void connect(
+	static <P1 extends Port<I1, I2>, C extends ConnectorEnd<?, P2>, P2 extends Port<I1, I2>, I1 extends Interface, I2 extends Interface> void connect(
 			P1 parentPort, Class<C> childEnd, P2 childPort) {
 		parentPort.getRuntime().connect(parentPort, childEnd, childPort);
 	}
@@ -177,8 +178,9 @@ public abstract class Action {
 	 * @see ModelClass.Status#DELETED
 	 */
 	@ExternalBody
-	public static <L extends ModelClass, R extends ModelClass> void link(Class<? extends AssociationEnd<L, ?>> leftEnd,
-			L leftObj, Class<? extends AssociationEnd<R, ?>> rightEnd, R rightObj) {
+	static <L extends ModelClass, R extends ModelClass, CL extends GeneralCollection<L>, CR extends GeneralCollection<R>> void link(
+			Class<? extends AssociationEnd<CL>> leftEnd, L leftObj, Class<? extends AssociationEnd<CR>> rightEnd,
+			R rightObj) {
 		leftObj.getRuntime().link(leftEnd, leftObj, rightEnd, rightObj);
 	}
 
@@ -205,8 +207,8 @@ public abstract class Action {
 	 * @see AssociationEnd
 	 */
 	@ExternalBody
-	public static <L extends ModelClass, R extends ModelClass> void unlink(
-			Class<? extends AssociationEnd<L, ?>> leftEnd, L leftObj, Class<? extends AssociationEnd<R, ?>> rightEnd,
+	static <L extends ModelClass, R extends ModelClass, CL extends GeneralCollection<L>, CR extends GeneralCollection<R>> void unlink(
+			Class<? extends AssociationEnd<CL>> leftEnd, L leftObj, Class<? extends AssociationEnd<CR>> rightEnd,
 			R rightObj) {
 		leftObj.getRuntime().unlink(leftEnd, leftObj, rightEnd, rightObj);
 	}
@@ -222,7 +224,7 @@ public abstract class Action {
 	 *             if <code>obj</code> is <code>null</code>
 	 */
 	@ExternalBody
-	public static void start(ModelClass obj) {
+	static void start(ModelClass obj) {
 		obj.runtimeInfo().start();
 	}
 
@@ -247,7 +249,7 @@ public abstract class Action {
 	 *             if <code>reception</code> is <code>null</code>
 	 */
 	@ExternalBody
-	public static <S extends Signal> void send(S signal, Reception<S> reception) {
+	static <S extends Signal> void send(S signal, Reception<S> reception) {
 		reception.accept(signal);
 	}
 
@@ -266,7 +268,7 @@ public abstract class Action {
 	 *             if <code>target</code> is <code>null</code>
 	 */
 	@ExternalBody
-	public static void send(Signal signal, ModelClass target) {
+	static void send(Signal signal, ModelClass target) {
 		Action.send(signal, target, null);
 	}
 	
@@ -287,7 +289,8 @@ public abstract class Action {
 	 * @throws NullPointerException
 	 *             if <code>target</code> is <code>null</code>
 	 */
-	public static void send(Signal signal, ModelClass target, ModelClass sender)
+	@ExternalBody
+	static void send(Signal signal, ModelClass target, ModelClass sender)
 	{
 		if (sender != null)
 		{
@@ -304,7 +307,7 @@ public abstract class Action {
 	 *            the message to be logged
 	 */
 	@ExternalBody
-	public static void log(String message) {
+	static void log(String message) {
 		Logger.user.info(message);
 	}
 
@@ -315,8 +318,51 @@ public abstract class Action {
 	 *            the error message to be logged
 	 */
 	@ExternalBody
-	public static void logError(String message) {
+	static void logError(String message) {
 		Logger.user.error(message);
+	}
+
+	/**
+	 * Collects the given elements to a new txtUML API collection. This method
+	 * creates the most general collection type, the unordered non-unique 0..*
+	 * collection, {@link Any}.
+	 * 
+	 * @param elements
+	 *            the elements to collect
+	 * @return the newly created collection that contains the specified elements
+	 */
+	@ExternalBody
+	@SafeVarargs
+	static <E> Any<E> collect(E... elements) {
+		return AbstractGeneralCollection.createAnyOf(Builder.createConsumerFor(elements));
+	}
+
+	/**
+	 * Collects the given elements to a new txtUML API collection of the given
+	 * type. If the specified collection type is ordered, it will contain the
+	 * elements in the provided order. If it is unique and multiple equal
+	 * elements are given, only the first will be contained in the collection.
+	 * 
+	 * @param collectionType
+	 *            the type of the collection to create; must be a txtUML API
+	 *            collection
+	 * @param elements
+	 *            the elements to collect
+	 * @return the newly created collection that contains the specified
+	 *         elements
+	 */
+	@ExternalBody
+	@SafeVarargs
+	@SuppressWarnings("unchecked")
+	static <E, C extends GeneralCollection<E>, C2 extends GeneralCollection<?>> C collectIn(Class<C2> collectionType,
+			E... elements) {
+		/*
+		 * This method is declared as it is because of similar reasons why the
+		 * "as" method of the GeneralCollection class is declared as that is.
+		 * For details, read the comments at the "as" method.
+		 */
+
+		return (C) AbstractGeneralCollection.create(collectionType, Builder.createConsumerFor(elements));
 	}
 
 }
