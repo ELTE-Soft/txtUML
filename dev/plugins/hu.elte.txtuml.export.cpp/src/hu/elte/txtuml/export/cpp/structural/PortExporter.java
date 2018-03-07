@@ -63,7 +63,7 @@ public class PortExporter {
 		return HeaderTemplates.classHeader("", 
 				Arrays.asList(PortTemplates.PORT_TYPE_CLASS_INFO_NAME), 
 				Collections.emptyList(), 
-				portTypes.toString(), 
+				portTypes.toString() + PortTemplates.portTypeInfoClassConstructor(ownerName), 
 				"", 
 				"", 
 				new HeaderInfo(PortTemplates.portTypeInfoClassName(ownerName),new HeaderTemplates.RawClassHeaderType()));

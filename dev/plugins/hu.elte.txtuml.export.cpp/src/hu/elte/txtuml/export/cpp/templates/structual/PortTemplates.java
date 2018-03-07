@@ -38,4 +38,9 @@ public class PortTemplates {
 		return ObjectDeclDefTemplates.staticPropertyDef(ownerClassName + "::" + portTypeInfoClassName(ownerClassName), ownerClassName, 
 				portTypeInfoClassName(ownerClassName) + "::" + portName, ownerClassName + "::" + portTypeInfoClassName(ownerClassName) + "(" + typeId + ")");
 	}
+	
+	public static String portTypeInfoClassConstructor(String ownerName) {
+		String portIdParamName = "portId";
+		return portTypeInfoClassName(ownerName) + "(int " + portIdParamName + ") :" + PORT_TYPE_CLASS_INFO_NAME + "(" + portIdParamName + ") {}\n";
+	}
 }
