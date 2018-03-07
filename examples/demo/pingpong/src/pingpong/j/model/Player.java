@@ -24,7 +24,7 @@ public class Player extends ModelClass {
 	public class BallAtPlayerPort extends Port<BallIfc, BallIfc> {
 	}
 
-	@BehaviorPort
+	//@BehaviorPort
 	public class ShoutPort extends OutPort<HitOrMissIfc> {
 	}
 
