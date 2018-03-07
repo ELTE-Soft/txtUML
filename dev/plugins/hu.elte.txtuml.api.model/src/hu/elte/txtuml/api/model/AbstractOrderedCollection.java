@@ -8,7 +8,7 @@ import hu.elte.txtuml.api.model.GeneralCollection.Ordered;
 import hu.elte.txtuml.api.model.error.InvalidIndexError;
 
 /**
- * Abstract base class for ordered (unique or non-non-unique) txtUML API
+ * Abstract base class for ordered (unique or non-unique) txtUML API
  * collections. Provides implementation for some of their methods.
  * <p>
  * See the documentation of {@link GeneralCollection} for detailed information

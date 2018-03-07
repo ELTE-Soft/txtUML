@@ -508,8 +508,6 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 		val endClassTypeParam = endClass.inferredTypeRef
 		if (isContainer) {
 			// Do not try to simplify the code here, as it breaks standalone builds.
-			// The inferred type will be Class<? extend MaybeOneBase>, which is invalid,
-			// as MaybeOneBase is a package private class in its own package.
 			if (notNavigable) {
 				return HiddenContainerEnd.typeRef(endClassTypeParam)
 			} else {
@@ -525,6 +523,7 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 			else if (!multiplicity.upperSet) { // <lower> (exact)
 				if (multiplicity.lower == 1)
 					"One"
+				// TODO support custom multiplicities
 			} else { // <lower> .. <upper>
 				if (multiplicity.lower == 0 && multiplicity.upper == 1)
 					"ZeroToOne"
@@ -534,6 +533,7 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 					"Any"
 				else if (multiplicity.lower == 1 && multiplicity.upperInf)
 					"OneToAny"
+				// TODO support custom multiplicities
 			}
 
 		val endClassImpl = "hu.elte.txtuml.api.model.Association$" + optionalHidden + "End"

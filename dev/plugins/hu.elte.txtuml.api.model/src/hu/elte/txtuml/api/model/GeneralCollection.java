@@ -370,8 +370,8 @@ public abstract class GeneralCollection<E> implements @External Iterable<E>, @Ex
 		 * end of this collection, so it has the same result as the
 		 * {@link GeneralCollection#add(Object)} method.
 		 * 
-		 * @return a copy of this which does contain the element at the
-		 *         specified index
+		 * @return a copy of this which contains the element at the specified
+		 *         index
 		 */
 		@ExternalBody
 		Ordered<E> add(int index, E element);

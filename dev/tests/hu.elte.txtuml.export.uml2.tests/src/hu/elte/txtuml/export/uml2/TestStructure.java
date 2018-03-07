@@ -304,5 +304,13 @@ public class TestStructure extends UMLExportTestBase {
 		transition(reg, init, s1, null);
 		transition(reg, s1, s1, sig);
 	}
+	
+	@Test
+	public void testMixed() throws Exception {
+		Model model = model("hu.elte.txtuml.export.uml2.tests.models.mixed");
+		cls(model, "A");
+		cls(model, "B");
+
+	}
 
 }

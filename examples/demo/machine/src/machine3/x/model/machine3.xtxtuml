@@ -3,12 +3,6 @@ package machine3.x.model;
 import hu.elte.txtuml.api.model.Any;
 import hu.elte.txtuml.api.model.GeneralCollection;
 import hu.elte.txtuml.api.stdlib.timers.Timer;
-import machine3.x.model.Machine.Off;
-import machine3.x.model.Machine.On;
-import machine3.x.model.Machine.On.Active;
-import machine3.x.model.Machine.On.Init;
-import machine3.x.model.User.NotWorking;
-import machine3.x.model.User.WhereToGo;
 
 // classes
 
@@ -45,7 +39,7 @@ class Machine {
 		state Active {
 			entry {
 				log("\tMachine enters state: 'active'");
-				log("\tMachine: tasks to do: " + Machine.this.tasksToDo);
+				log("\tMachine: tasks to do: " + tasksToDo);
 			}
 
 			exit {
@@ -65,17 +59,17 @@ class Machine {
 
 			effect {
 				DoTasks doTasks = trigger;
-				Machine.this.tasksToDo -= doTasks.count;
+				tasksToDo -= doTasks.count;
 				log("\tMachine: becoming active...");
 			}
 			
-			guard(Machine.this.tasksToDo > 0);
+			guard(tasksToDo > 0);
 		}
 		
 	}
 
 	transition Initialize {
-		from machine3.x.model.Machine.Init;
+		from Init;
 		to Off;
 		effect {
 			log("\tMachine: initializing...");
@@ -101,7 +95,7 @@ class Machine {
 			log("\tMachine: switching off...");
 		}
 
-		guard(Machine.this.tasksToDo <= 0);
+		guard(tasksToDo <= 0);
 	}
 }
 
@@ -120,7 +114,7 @@ class User {
 	choice WhereToGo;
 
 	transition Initialize {
-		from machine3.x.model.User.Init;
+		from Init;
 		to NotWorking;
 		effect {
 			log("\t" + name.toString() + ": initializing...");				
