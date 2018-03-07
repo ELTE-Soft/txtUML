@@ -1,6 +1,7 @@
 package hu.elte.txtuml.api.model.execution;
 
 import hu.elte.txtuml.api.model.AssociationEnd;
+import hu.elte.txtuml.api.model.GeneralCollection;
 import hu.elte.txtuml.api.model.Model;
 import hu.elte.txtuml.api.model.ModelClass;
 import hu.elte.txtuml.api.model.ModelClass.Port;
@@ -14,8 +15,8 @@ import hu.elte.txtuml.api.model.Signal;
  */
 public interface WarningListener {
 
-	default <L extends ModelClass, R extends ModelClass> void unlinkingNonExistingAssociation(
-			Class<? extends AssociationEnd<L, ?>> leftEnd, L leftObj, Class<? extends AssociationEnd<R, ?>> rightEnd,
+	default <L extends ModelClass, R extends ModelClass, CL extends GeneralCollection<L>, CR extends GeneralCollection<R>> void unlinkingNonExistingAssociation(
+			Class<? extends AssociationEnd<CL>> leftEnd, L leftObj, Class<? extends AssociationEnd<CR>> rightEnd,
 			R rightObj) {
 	}
 

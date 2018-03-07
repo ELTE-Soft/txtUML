@@ -564,7 +564,7 @@ class XtxtUMLStructureCompilerTest {
 			}
 			association AA2 {
 				hidden 1..* A a1;
-				5 A a2;
+				0..1 A a2;
 			}
 		'''.assertCompilesTo('''
 			MULTIPLE FILES WERE GENERATED
@@ -583,15 +583,17 @@ class XtxtUMLStructureCompilerTest {
 
 			package test.model;
 
+			import hu.elte.txtuml.api.model.Any;
 			import hu.elte.txtuml.api.model.Association;
+			import hu.elte.txtuml.api.model.One;
 			import test.model.A;
 
 			@SuppressWarnings("all")
 			public class AA1 extends Association {
-			  public class a1 extends Association.One<A> {
+			  public class a1 extends Association.End<One<A>> {
 			  }
 			  
-			  public class a2 extends Association.HiddenMany<A> {
+			  public class a2 extends Association.HiddenEnd<Any<A>> {
 			  }
 			}
 
@@ -600,18 +602,16 @@ class XtxtUMLStructureCompilerTest {
 			package test.model;
 
 			import hu.elte.txtuml.api.model.Association;
-			import hu.elte.txtuml.api.model.Max;
-			import hu.elte.txtuml.api.model.Min;
+			import hu.elte.txtuml.api.model.OneToAny;
+			import hu.elte.txtuml.api.model.ZeroToOne;
 			import test.model.A;
 
 			@SuppressWarnings("all")
 			public class AA2 extends Association {
-			  public class a1 extends Association.HiddenSome<A> {
+			  public class a1 extends Association.HiddenEnd<OneToAny<A>> {
 			  }
 			  
-			  @Min(5)
-			  @Max(5)
-			  public class a2 extends Association.Multiple<A> {
+			  public class a2 extends Association.End<ZeroToOne<A>> {
 			  }
 			}
 
@@ -646,14 +646,15 @@ class XtxtUMLStructureCompilerTest {
 
 			import hu.elte.txtuml.api.model.Association;
 			import hu.elte.txtuml.api.model.Composition;
+			import hu.elte.txtuml.api.model.One;
 			import test.model.A;
 
 			@SuppressWarnings("all")
 			public class AA extends Composition {
-			  public class a1 extends Composition.HiddenContainer<A> {
+			  public class a1 extends Composition.HiddenContainerEnd<A> {
 			  }
 			  
-			  public class a2 extends Association.One<A> {
+			  public class a2 extends Association.End<One<A>> {
 			  }
 			}
 
@@ -834,15 +835,16 @@ class XtxtUMLStructureCompilerTest {
 
 			import hu.elte.txtuml.api.model.Association;
 			import hu.elte.txtuml.api.model.Composition;
+			import hu.elte.txtuml.api.model.One;
 			import test.model.A;
 			import test.model.C;
 
 			@SuppressWarnings("all")
 			public class CA extends Composition {
-			  public class c extends Composition.Container<C> {
+			  public class c extends Composition.ContainerEnd<C> {
 			  }
 			  
-			  public class a extends Association.One<A> {
+			  public class a extends Association.End<One<A>> {
 			  }
 			}
 
@@ -852,15 +854,16 @@ class XtxtUMLStructureCompilerTest {
 
 			import hu.elte.txtuml.api.model.Association;
 			import hu.elte.txtuml.api.model.Composition;
+			import hu.elte.txtuml.api.model.One;
 			import test.model.B;
 			import test.model.C;
 
 			@SuppressWarnings("all")
 			public class CB extends Composition {
-			  public class c extends Composition.Container<C> {
+			  public class c extends Composition.ContainerEnd<C> {
 			  }
 			  
-			  public class b extends Association.One<B> {
+			  public class b extends Association.End<One<B>> {
 			  }
 			}
 

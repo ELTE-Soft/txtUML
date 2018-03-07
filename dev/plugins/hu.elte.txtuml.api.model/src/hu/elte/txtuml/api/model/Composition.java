@@ -1,8 +1,8 @@
 package hu.elte.txtuml.api.model;
 
-import hu.elte.txtuml.api.model.assocends.ContainmentKind;
-import hu.elte.txtuml.api.model.assocends.Multiplicity;
-import hu.elte.txtuml.api.model.assocends.Navigability;
+import hu.elte.txtuml.api.model.AssociationEnd.Container;
+import hu.elte.txtuml.api.model.AssociationEnd.Navigable;
+import hu.elte.txtuml.api.model.AssociationEnd.NonNavigable;
 
 /**
  * A base class for a composition associations in the model.
@@ -16,8 +16,9 @@ import hu.elte.txtuml.api.model.assocends.Navigability;
  * A composition in the model is a subclass of <code>Composition</code>, having
  * two inner classes which both extend {@link AssociationEnd}. One of these ends
  * must be the container of the members at the other end. The container must be
- * a subclass of <code>Container</code> or <code>HiddenContainer</code>. The
- * other end can be a subclass of any non-composite <code>AssociationEnd</code>.
+ * a subclass of <code>ContainerEnd</code> or <code>HiddenContainerEnd</code>.
+ * The other end can be a subclass of any non-composite
+ * <code>AssociationEnd</code>.
  * <p>
  * The two model classes which the association connects are defined by the two
  * association ends' generic parameters.
@@ -33,7 +34,7 @@ import hu.elte.txtuml.api.model.assocends.Navigability;
  * <li>must be a top level class (not a nested or local class)</li>
  * <li>must have two inner classes which are subclasses of
  * <code>AssociationEnd</code>, exactly one being a subclass of
- * <code>Container</code></li>
+ * <code>ContainerEnd</code> or <code>HiddenContainerEnd</code></li>
  * </ul>
  * <p>
  * <b>Subtype restrictions:</b>
@@ -47,7 +48,7 @@ import hu.elte.txtuml.api.model.assocends.Navigability;
  * <li><i>Nested interfaces:</i> disallowed</li>
  * <li><i>Nested classes:</i> allowed at most two, both of which are non-static
  * and are subclasses of <code>AssociationEnd</code>. Exactly one of them must
- * be a subclass of <code>Container</code>.</li>
+ * be a subclass of <code>ContainerEnd</code> or <code>HiddenContainerEnd</code>.</li>
  * <li><i>Nested enums:</i> disallowed</li>
  * </ul>
  * </li>
@@ -59,9 +60,9 @@ import hu.elte.txtuml.api.model.assocends.Navigability;
  * 
  * <pre>
  * <code>
- * class SampleAssociation extends Composition {
- * 	class ContainerEnd extends {@literal Container<SampleClass2>} {}
- * 	class PartEnd extends {@literal Many<SampleClass1>} {}
+ * class A_B extends Composition {
+ * 	class ContainerEnd extends {@literal ContainerEnd<A>} {}
+ * 	class PartEnd extends {@literal End<Any<B>>} {}
  * }
  * </code>
  * </pre>
@@ -70,8 +71,8 @@ import hu.elte.txtuml.api.model.assocends.Navigability;
  * JtxtUML.
  *
  * @see Association
- * @see Container
- * @see HiddenContainer
+ * @see ContainerEnd
+ * @see HiddenContainerEnd
  */
 public abstract class Composition extends Association {
 
@@ -90,10 +91,12 @@ public abstract class Composition extends Association {
 	 * <p>
 	 * Container ends have an implicit 0..1 multiplicity. They also have a
 	 * <b>global restriction</b>: any model object at any time might be
-	 * connected through its compositions to at most one container object.
+	 * connected through its compositions to at most one container object. Apart
+	 * from this, container ends should be used like any other
+	 * {@link AssociationEnd}.
 	 * <p>
-	 * Apart from this, container ends should be used like any other association
-	 * end. See the documentation of {@link AssociationEnd} for details.
+	 * See the documentation of {@link Association} for details on defining and
+	 * using associations.
 	 * 
 	 * <p>
 	 * <b>Java restrictions:</b>
@@ -103,8 +106,8 @@ public abstract class Composition extends Association {
 	 * <p>
 	 * <b>Subtype requirements:</b>
 	 * <ul>
-	 * <li>must be the inner class of an association class (a subclass of
-	 * {@link Association})</li>
+	 * <li>must be the inner class of a composition class (a subclass of
+	 * {@link Composition})</li>
 	 * </ul>
 	 * <p>
 	 * <b>Subtype restrictions:</b>
@@ -124,18 +127,14 @@ public abstract class Composition extends Association {
 	 * </ul>
 	 * 
 	 * <p>
-	 * See the documentation of {@link Association} for details on defining and
-	 * using associations and {@link Composition} for associations structurally
-	 * containing the associated values.
-	 * <p>
 	 * See the documentation of {@link Model} for an overview on modeling in
 	 * JtxtUML.
 	 * 
 	 * @param <T>
-	 *            the type of model objects to be contained in this collection
+	 *            the type of model objects at this end of the composition
 	 */
-	public abstract class Container<T extends ModelClass> extends MaybeEnd<T>
-			implements Multiplicity.ZeroToOne, Navigability.Navigable, ContainmentKind.ContainerEnd {
+	public abstract class ContainerEnd<T extends ModelClass> extends AssociationEnd<ZeroToOne<T>>
+			implements Container, Navigable {
 	}
 
 	/**
@@ -149,7 +148,17 @@ public abstract class Composition extends Association {
 	 * <b>Usage:</b>
 	 * <p>
 	 * 
-	 * See the documentation of {@link Container}.
+	 * The container end should be defined as inner class of a composition (a
+	 * subclass of {@link Composition}).
+	 * <p>
+	 * Container ends have an implicit 0..1 multiplicity. They also have a
+	 * <b>global restriction</b>: any model object at any time might be
+	 * connected through its compositions to at most one container object. Apart
+	 * from this, container ends should be used like any other
+	 * {@link AssociationEnd}.
+	 * <p>
+	 * See the documentation of {@link Association} for details on defining and
+	 * using associations.
 	 * 
 	 * <p>
 	 * <b>Java restrictions:</b>
@@ -159,8 +168,8 @@ public abstract class Composition extends Association {
 	 * <p>
 	 * <b>Subtype requirements:</b>
 	 * <ul>
-	 * <li>must be the inner class of an association class (a subclass of
-	 * {@link Association})</li>
+	 * <li>must be the inner class of a composition class (a subclass of
+	 * {@link Composition})</li>
 	 * </ul>
 	 * <p>
 	 * <b>Subtype restrictions:</b>
@@ -180,18 +189,14 @@ public abstract class Composition extends Association {
 	 * </ul>
 	 * 
 	 * <p>
-	 * See the documentation of {@link Association} for details on defining and
-	 * using associations and {@link Composition} for associations structurally
-	 * containing the associated values.
-	 * <p>
 	 * See the documentation of {@link Model} for an overview on modeling in
 	 * JtxtUML.
 	 * 
 	 * @param <T>
-	 *            the type of model objects to be contained in this collection
+	 *            the type of model objects at this end of the composition
 	 */
-	public abstract class HiddenContainer<T extends ModelClass> extends MaybeEnd<T>
-			implements Multiplicity.ZeroToOne, Navigability.NonNavigable, ContainmentKind.ContainerEnd {
+	public abstract class HiddenContainerEnd<T extends ModelClass> extends AssociationEnd<ZeroToOne<T>>
+			implements Container, NonNavigable {
 	}
 
 }

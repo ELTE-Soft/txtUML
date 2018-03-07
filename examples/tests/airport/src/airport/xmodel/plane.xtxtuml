@@ -68,7 +68,7 @@ class Plane {
 	}
 	
 	public int getTowerId() {
-		Tower t = Plane.this->(PlaneTowerUsage.theTower).selectAny();
+		Tower t = Plane.this->(PlaneTowerUsage.theTower).one();
 		
 		for (Tower tv : this->(PlaneTowerUsage.theTower)) {}
 		
@@ -109,7 +109,7 @@ class Plane {
 			effect {
 				log("The plane (" + id + ") is waiting for the permission to land");
 				
-				Tower t = this->(PlaneTowerUsage.theTower).selectAny();
+				Tower t = this->(PlaneTowerUsage.theTower).one();
 				send new SignalPlaneSendTheLandingApplicationToTower(this.id) to t;
 				
 				status = "WL";
@@ -122,7 +122,7 @@ class Plane {
 			to BeUnderLanding;
 			trigger SignalPlaneIsUnderLanding;
 			effect {
-				Tower t = Plane.this->(PlaneTowerUsage.theTower).selectAny();
+				Tower t = Plane.this->(PlaneTowerUsage.theTower).one();
 				send new SignalToTowerPlaneIsUnderLanding(this.id) to t;
 				status = "UL";
 			}
@@ -145,7 +145,7 @@ class Plane {
 			to OnGround;
 			trigger SignalPlaneAlreadyLanded;
 			effect {
-				Tower t = Plane.this->(PlaneTowerUsage.theTower).selectAny();
+				Tower t = Plane.this->(PlaneTowerUsage.theTower).one();
 				send new SignalToTowerPlaneAlreadyLanded(this.id) to t;
 				status = "OG";
 			}
@@ -157,7 +157,7 @@ class Plane {
 			to InAir;
 			trigger SignalAnnulingTheLanding;
 			effect {
-				Tower t = Plane.this->(PlaneTowerUsage.theTower).selectAny();
+				Tower t = Plane.this->(PlaneTowerUsage.theTower).one();
 				send new SignalToTowerAnnulingTheLanding_AL(this.id) to t;
 				status = "IA";
 			}
@@ -168,7 +168,7 @@ class Plane {
 			to InAir;
 			trigger SignalAnnulingTheLanding;
 			effect {
-				Tower t = Plane.this->(PlaneTowerUsage.theTower).selectAny();
+				Tower t = Plane.this->(PlaneTowerUsage.theTower).one();
 				send new SignalToTowerAnnulingTheLanding_WL(this.id) to t;
 				status = "IA";
 			}
@@ -193,7 +193,7 @@ class Plane {
 			effect {
 				log("The plane (" + this.id + ") is waiting for taking off");
 				
-				Tower t = Plane.this->(PlaneTowerUsage.theTower).selectAny();
+				Tower t = Plane.this->(PlaneTowerUsage.theTower).one();
 				send new SignalPlaneSendTheTakingOffApplicationToTower(this.id) to t;
 				status = "WT";
 			}
@@ -206,7 +206,7 @@ class Plane {
 			to BeUnderTakingOff;
 			trigger SignalPlaneIsUnderTakingOff;
 			effect {
-				Tower t = Plane.this->(PlaneTowerUsage.theTower).selectAny();
+				Tower t = Plane.this->(PlaneTowerUsage.theTower).one();
 				send new SignalToTowerPlaneIsUnderTakingOff(this.id) to t;
 				status = "UT";
 			}
@@ -218,7 +218,7 @@ class Plane {
 			to InAir;
 			trigger SignalPlaneAlreadyTakenOff;
 			effect {
-				Tower t = Plane.this->(PlaneTowerUsage.theTower).selectAny();
+				Tower t = Plane.this->(PlaneTowerUsage.theTower).one();
 				send new SignalToTowerPlaneAlreadyTakenOff(this.id) to t;
 				status = "IA";
 			}
@@ -251,7 +251,7 @@ class Plane {
 			to OnGround;
 			trigger SignalAnnulingTheTakingOff;
 			effect {
-				Tower t = Plane.this->(PlaneTowerUsage.theTower).selectAny();
+				Tower t = Plane.this->(PlaneTowerUsage.theTower).one();
 				send new SignalToTowerAnnulingTheTakingOff_AL(this.id) to t;
 				status = "OG";
 			}
@@ -261,7 +261,7 @@ class Plane {
 			to OnGround;
 			trigger SignalAnnulingTheTakingOff;
 			effect {
-				Tower t = Plane.this->(PlaneTowerUsage.theTower).selectAny();
+				Tower t = Plane.this->(PlaneTowerUsage.theTower).one();
 				send new SignalToTowerAnnulingTheTakingOff_WL(this.id) to t;
 				status = "OG";
 			}
@@ -275,7 +275,7 @@ class Plane {
 			effect {
 				log("Sorry, the weather is so bad, you cannot take of, please wait (plane: "+ id +")");
 				
-				Tower t = Plane.this->(PlaneTowerUsage.theTower).selectAny();
+				Tower t = Plane.this->(PlaneTowerUsage.theTower).one();
 				send new SignalPlaneSendTheTakingOffApplicationToTower(this.id) to t;
 				status = "WT";
 			}

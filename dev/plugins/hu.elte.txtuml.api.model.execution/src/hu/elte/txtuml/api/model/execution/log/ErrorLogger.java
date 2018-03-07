@@ -50,13 +50,13 @@ public class ErrorLogger extends LoggerBase implements ErrorListener {
 	}
 
 	@Override
-	public void upperBoundOfMultiplicityOffended(ModelClass obj, Class<? extends AssociationEnd<?, ?>> assocEnd) {
+	public void upperBoundOfMultiplicityOffended(ModelClass obj, Class<? extends AssociationEnd<?>> assocEnd) {
 		error("Upper bound of the multiplicity of " + assocEnd.getName() + " has been offended at "
 				+ obj.runtimeInfo().getName() + ".");
 	}
 
 	@Override
-	public void lowerBoundOfMultiplicityOffended(ModelClass obj, Class<? extends AssociationEnd<?, ?>> assocEnd) {
+	public void lowerBoundOfMultiplicityOffended(ModelClass obj, Class<? extends AssociationEnd<?>> assocEnd) {
 		error("Lower bound of the multiplicity of " + assocEnd.getName() + " has been offended at "
 				+ obj.runtimeInfo().getName() + ".");
 	}
@@ -77,7 +77,7 @@ public class ErrorLogger extends LoggerBase implements ErrorListener {
 	}
 
 	@Override
-	public void multipleContainerForAnObject(ModelClass obj, Class<? extends AssociationEnd<?, ?>> assocEnd) {
+	public void multipleContainerForAnObject(ModelClass obj, Class<? extends AssociationEnd<?>> assocEnd) {
 		error(MessageFormat.format(
 				"Model object {0} cannot be put into container {1}, because it is already inside another container.",
 				obj, assocEnd.getName()));

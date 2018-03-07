@@ -139,7 +139,6 @@ public abstract class DataType {
 		return "data_type:" + getClass().getSimpleName();
 	}
 
-	@External
 	private final List<Field[]> getAllFields() {
 		List<Field[]> fields = new ArrayList<>();
 		for (Class<?> cls = getClass(); cls != DataType.class; cls = cls.getSuperclass()) {

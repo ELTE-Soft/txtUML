@@ -29,21 +29,25 @@ class BinaryOperatorExporter extends ActionExporter<InfixExpression, CallOperati
 					case INTEGER: plusOp
 					case REAL: realPlusOp
 					case STRING: concatOp
+					default: {}
 				}
 			case Operator.MINUS:
 				switch rest {
 					case INTEGER: minusOp
 					case REAL: realMinusOp
+					default: {}
 				}
 			case Operator.TIMES:
 				switch rest {
 					case INTEGER: timesOp
 					case REAL: realTimesOp
+					default: {}
 				}
 			case Operator.DIVIDE:
 				switch rest {
 					case INTEGER: divideOp
 					case REAL: realDivideOp
+					default: {}
 				}
 			case Operator.REMAINDER:
 				remainderOp
@@ -52,18 +56,22 @@ class BinaryOperatorExporter extends ActionExporter<InfixExpression, CallOperati
 			case Operator.LESS: switch opst {
 				case INTEGER: lessOp
 				case REAL: realLessOp
+				default: {}
 			}
 			case Operator.GREATER: switch opst {
 				case INTEGER: greaterOp
 				case REAL: realGreaterOp
+				default: {}
 			}
 			case Operator.LESS_EQUALS: switch opst {
 				case INTEGER: lessEqualsOp
 				case REAL: realLessEqualsOp
+				default: {}
 			}
 			case Operator.GREATER_EQUALS: switch opst {
 				case INTEGER: greaterEqualsOp
 				case REAL: realGreaterEqualsOp
+				default: {}
 			}
 			case Operator.NOT_EQUALS: switch opst {
 				case INTEGER: integerNotEqualsOp
