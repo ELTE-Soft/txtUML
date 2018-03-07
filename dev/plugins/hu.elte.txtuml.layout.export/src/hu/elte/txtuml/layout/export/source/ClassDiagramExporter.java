@@ -1,7 +1,6 @@
 package hu.elte.txtuml.layout.export.source;
 
 import java.io.IOException;
-import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -18,7 +17,9 @@ import org.eclipse.jdt.core.dom.TypeDeclaration;
 
 import hu.elte.txtuml.api.model.Association;
 import hu.elte.txtuml.api.model.AssociationEnd;
+import hu.elte.txtuml.api.model.GeneralCollection;
 import hu.elte.txtuml.api.model.ModelClass;
+import hu.elte.txtuml.api.model.utils.Associations;
 import hu.elte.txtuml.layout.export.DiagramType;
 import hu.elte.txtuml.layout.export.interfaces.ElementExporter;
 import hu.elte.txtuml.layout.export.interfaces.NodeMap;
@@ -118,7 +119,8 @@ public class ClassDiagramExporter extends AbstractSourceExporter {
 		}
 
 		Class<?> base = node.getSuperclass();
-		if (base != null && allNodes.containsKey(base)) { // Load generalization.
+		if (base != null && allNodes.containsKey(base)) { // Load
+															// generalization.
 			try {
 				elementExporter.exportGeneralization(base, node);
 			} catch (ElementExportationException e) {
@@ -132,10 +134,9 @@ public class ClassDiagramExporter extends AbstractSourceExporter {
 		if (!AssociationEnd.class.isAssignableFrom(end)) {
 			return null;
 		}
+
 		try {
-			ParameterizedType endType = (ParameterizedType) end.getGenericSuperclass();
-			ParameterizedType collectionType = (ParameterizedType) endType.getActualTypeArguments()[0];
-			return (Class<? extends ModelClass>) collectionType.getActualTypeArguments()[0];
+			return Associations.getElementTypeOf((Class<? extends AssociationEnd<? extends GeneralCollection<?>>>) end);
 		} catch (Exception e) {
 			throw new ElementExportationException();
 		}
