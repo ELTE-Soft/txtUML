@@ -14,10 +14,10 @@ import hu.elte.txtuml.api.model.StateMachine.Vertex;
  */
 public interface ErrorListener {
 
-	default void lowerBoundOfMultiplicityOffended(ModelClass obj, Class<? extends AssociationEnd<?, ?>> assocEnd) {
+	default void lowerBoundOfMultiplicityOffended(ModelClass obj, Class<? extends AssociationEnd<?>> assocEnd) {
 	}
 
-	default void upperBoundOfMultiplicityOffended(ModelClass obj, Class<? extends AssociationEnd<?, ?>> assocEnd) {
+	default void upperBoundOfMultiplicityOffended(ModelClass obj, Class<? extends AssociationEnd<?>> assocEnd) {
 	}
 
 	default void linkingDeletedObject(ModelClass obj) {
@@ -47,7 +47,7 @@ public interface ErrorListener {
 	default void elseGuardFromNonChoiceVertex(Transition transition) {
 	}
 
-	default void multipleContainerForAnObject(ModelClass obj, Class<? extends AssociationEnd<?, ?>> assocEnd) {
+	default void multipleContainerForAnObject(ModelClass obj, Class<? extends AssociationEnd<?>> assocEnd) {
 	}
 
 }

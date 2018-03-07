@@ -38,7 +38,7 @@ class Pendulum {
 		to Working;
 		trigger Tick;
 		effect {
-			this->(TimerOfPendulum.timer).selectAny().reset(unit);
+			this->(TimerOfPendulum.timer).one().reset(unit);
 		}
 	}
 

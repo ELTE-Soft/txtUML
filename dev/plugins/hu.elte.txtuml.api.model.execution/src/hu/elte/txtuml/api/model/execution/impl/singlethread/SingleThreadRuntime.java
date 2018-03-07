@@ -3,6 +3,7 @@ package hu.elte.txtuml.api.model.execution.impl.singlethread;
 import java.util.List;
 
 import hu.elte.txtuml.api.model.AssociationEnd;
+import hu.elte.txtuml.api.model.GeneralCollection;
 import hu.elte.txtuml.api.model.ConnectorBase.ConnectorEnd;
 import hu.elte.txtuml.api.model.Interface;
 import hu.elte.txtuml.api.model.ModelClass;
@@ -69,8 +70,9 @@ public abstract class SingleThreadRuntime<C extends AbstractModelClassWrapper, P
 	}
 
 	@Override
-	public <L extends ModelClass, R extends ModelClass> void link(Class<? extends AssociationEnd<L, ?>> leftEnd,
-			L leftObj, Class<? extends AssociationEnd<R, ?>> rightEnd, R rightObj) {
+	public <L extends ModelClass, R extends ModelClass, CL extends GeneralCollection<L>, CR extends GeneralCollection<R>> void link(
+			Class<? extends AssociationEnd<CL>> leftEnd, L leftObj, Class<? extends AssociationEnd<CR>> rightEnd,
+			R rightObj) {
 		C left = getInfo(leftObj);
 		C right = getInfo(rightObj);
 
@@ -83,7 +85,7 @@ public abstract class SingleThreadRuntime<C extends AbstractModelClassWrapper, P
 		tryAddToAssoc(right, leftEnd, left, leftObj, () -> left.removeFromAssoc(rightEnd, rightObj));
 	}
 
-	protected <R extends ModelClass> void tryAddToAssoc(C left, Class<? extends AssociationEnd<R, ?>> rightEnd, C right,
+	protected <R extends ModelClass, CR extends GeneralCollection<R>> void tryAddToAssoc(C left, Class<? extends AssociationEnd<CR>> rightEnd, C right,
 			R rightObj, Runnable rollBack) {
 		try {
 			left.addToAssoc(rightEnd, rightObj);
@@ -97,8 +99,9 @@ public abstract class SingleThreadRuntime<C extends AbstractModelClassWrapper, P
 	}
 
 	@Override
-	public <L extends ModelClass, R extends ModelClass> void unlink(Class<? extends AssociationEnd<L, ?>> leftEnd,
-			L leftObj, Class<? extends AssociationEnd<R, ?>> rightEnd, R rightObj) {
+	public <L extends ModelClass, R extends ModelClass, CL extends GeneralCollection<L>, CR extends GeneralCollection<R>> void unlink(
+			Class<? extends AssociationEnd<CL>> leftEnd, L leftObj, Class<? extends AssociationEnd<CR>> rightEnd,
+			R rightObj) {
 		C left = getInfo(leftObj);
 		C right = getInfo(rightObj);
 

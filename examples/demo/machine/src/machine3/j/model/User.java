@@ -1,7 +1,7 @@
 package machine3.j.model;
 
 import hu.elte.txtuml.api.model.Action;
-import hu.elte.txtuml.api.model.Collection;
+import hu.elte.txtuml.api.model.Any;
 import hu.elte.txtuml.api.model.From;
 import hu.elte.txtuml.api.model.ModelClass;
 import hu.elte.txtuml.api.model.To;
@@ -77,7 +77,7 @@ public class User extends ModelClass {
 
 		Action.log("\t" + name.toString() + ": analyzing machine...");
 
-		Collection<User> usersOfM = m.assoc(Usage.userOfMachine.class);
+		Any<User> usersOfM = m.assoc(Usage.userOfMachine.class);
 
 		Action.log("\t\tI found its users!");
 		Action.log("");
@@ -89,17 +89,13 @@ public class User extends ModelClass {
 			Action.log("\t\tI am a user of this machine.");
 		}
 
-		if (usersOfM.selectAll(user -> user.id == 0).isEmpty()) {
-			Action.log("\t\tNo user of this machine has an id of 0.");
-		}
+		Any<User> otherUsers = usersOfM.remove(this);
 
-		Collection<User> otherUsers = usersOfM.remove(this);
-
-		if (otherUsers.count() == 1) {
+		if (otherUsers.size() == 1) {
 			Action.log("\t\tThere is exactly one other person who is user of this machine.");
 		}
 
-		return otherUsers.selectAny();
+		return otherUsers.one();
 	}
 
 	void sayHello() {
@@ -119,7 +115,7 @@ public class User extends ModelClass {
 	void doWork() {
 		Action.log("\t" + name.toString() + ": starting to work...");
 
-		Machine myMachine = this.assoc(Usage.usedMachine.class).selectAny();
+		Machine myMachine = this.assoc(Usage.usedMachine.class).one();
 
 		User otherUser = findOtherUser(myMachine);
 

@@ -21,6 +21,11 @@ public class ModelVisitor extends VisitorBase {
 			return false;
 		}
 
+		if (ElementTypeTeller.isCollection(elem)) {
+			// TODO: check collections
+			return false;
+		}
+
 		Utils.checkTypeParameter(collector, elem);
 
 		if (ElementTypeTeller.isSignal(elem)) {

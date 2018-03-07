@@ -19,7 +19,7 @@ class Producer {
 	state Active;
 	state Passive {
 		entry {
-			Storage storage = Producer.this->(Production.storage).selectAny();
+			Storage storage = Producer.this->(Production.storage).one();
 			unlink(Production.producer, Producer.this, Production.storage, storage);
 			delete Producer.this;
 		}
@@ -39,7 +39,7 @@ class Producer {
 		trigger DoWork;
 		guard (Producer.this.toProduce > 0);
 		effect {
-			Storage storage = Producer.this->(Production.storage).selectAny();
+			Storage storage = Producer.this->(Production.storage).one();
 			link(Offer.producer, Producer.this, Offer.storage, storage);
 			send new OfferNotification() to storage;
 		}
@@ -68,7 +68,7 @@ class Consumer {
 	state Active;
 	state Passive {
 		entry {
-			Storage storage = Consumer.this->(Consumption.storage).selectAny();
+			Storage storage = Consumer.this->(Consumption.storage).one();
 			unlink(Consumption.consumer, Consumer.this, Consumption.storage, storage);
 			delete Consumer.this;
 		}
@@ -88,7 +88,7 @@ class Consumer {
 		trigger DoWork;
 		guard (Consumer.this.toConsume > 0)
 		effect {
-			Storage storage = Consumer.this->(Consumption.storage).selectAny();
+			Storage storage = Consumer.this->(Consumption.storage).one();
 			link(Request.storage, storage, Request.consumer, Consumer.this);
 			send new RequestNotification() to storage;
 		}
@@ -124,9 +124,9 @@ class Storage {
 		from Working;
 		to Working;
 		trigger OfferNotification;
-		guard(Storage.this->(InStore.item).count() < capacity);
+		guard(Storage.this->(InStore.item).size() < capacity);
 		effect {
-			Producer producer = Storage.this->(Offer.producer).selectAny();
+			Producer producer = Storage.this->(Offer.producer).one();
 			unlink(Offer.producer, producer, Offer.storage, Storage.this);
 			Item item = producer.produce();
 			link(InStore.storage, Storage.this, InStore.item, item);
@@ -137,7 +137,7 @@ class Storage {
 		from Working;
 		to Working;
 		trigger OfferNotification;
-		guard(Storage.this->(InStore.item).count() >= capacity);
+		guard(Storage.this->(InStore.item).size() >= capacity);
 		effect {
 			// postpone the offer
 			send new OfferNotification() to Storage.this;
@@ -148,11 +148,11 @@ class Storage {
 		from Working;
 		to Working;
 		trigger RequestNotification;
-		guard(Storage.this->(InStore.item).count() > 0);
+		guard(Storage.this->(InStore.item).size() > 0);
 		effect {
-			Consumer consumer = Storage.this->(Request.consumer).selectAny();
+			Consumer consumer = Storage.this->(Request.consumer).one();
 			unlink(Request.storage, Storage.this, Request.consumer, consumer);
-			Item item = Storage.this->(InStore.item).selectAny();
+			Item item = Storage.this->(InStore.item).one();
 			unlink(InStore.storage, Storage.this, InStore.item, item);
 			consumer.consume(item);
 		}
@@ -162,7 +162,7 @@ class Storage {
 		from Working;
 		to Working;
 		trigger RequestNotification;
-		guard(Storage.this->(InStore.item).count() <= 0);
+		guard(Storage.this->(InStore.item).size() <= 0);
 		effect {
 			// postpone the request
 			send new RequestNotification() to Storage.this;

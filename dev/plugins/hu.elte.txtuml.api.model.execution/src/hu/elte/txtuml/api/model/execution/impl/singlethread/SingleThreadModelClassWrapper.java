@@ -7,13 +7,14 @@ import com.google.common.collect.ClassToInstanceMap;
 import com.google.common.collect.MutableClassToInstanceMap;
 
 import hu.elte.txtuml.api.model.AssociationEnd;
+import hu.elte.txtuml.api.model.AssociationEnd.Container;
 import hu.elte.txtuml.api.model.BehaviorPort;
 import hu.elte.txtuml.api.model.Collection;
+import hu.elte.txtuml.api.model.GeneralCollection;
 import hu.elte.txtuml.api.model.Model;
 import hu.elte.txtuml.api.model.ModelClass;
 import hu.elte.txtuml.api.model.ModelClass.Port;
 import hu.elte.txtuml.api.model.ModelClass.Status;
-import hu.elte.txtuml.api.model.assocends.ContainmentKind;
 import hu.elte.txtuml.api.model.execution.impl.assoc.AssociationEndWrapper;
 import hu.elte.txtuml.api.model.execution.impl.assoc.AssociationsMap;
 import hu.elte.txtuml.api.model.execution.impl.assoc.MultipleContainerException;
@@ -118,8 +119,8 @@ public class SingleThreadModelClassWrapper extends AbstractModelClassWrapper {
 	}
 
 	@Override
-	public <T extends ModelClass, C extends Collection<T>> AssociationEndWrapper<T, C> getAssoc(
-			Class<? extends AssociationEnd<T, C>> otherEnd) {
+	public <T extends ModelClass, C extends GeneralCollection<T>> AssociationEndWrapper<T, C> getAssoc(
+			Class<? extends AssociationEnd<C>> otherEnd) {
 		AssociationEndWrapper<T, C> ret = associations.getEnd(otherEnd);
 		if (ret == null) {
 			ret = AssociationEndWrapper.create(otherEnd);
@@ -129,16 +130,16 @@ public class SingleThreadModelClassWrapper extends AbstractModelClassWrapper {
 	}
 
 	@Override
-	public <T extends ModelClass, C extends Collection<T>> boolean hasAssoc(
-			Class<? extends AssociationEnd<T, C>> otherEnd, T object) {
+	public <T extends ModelClass, C extends GeneralCollection<T>> boolean hasAssoc(
+			Class<? extends AssociationEnd<C>> otherEnd, T object) {
 
 		AssociationEndWrapper<T, ?> actualOtherEnd = associations.getEnd(otherEnd);
 		return actualOtherEnd == null ? false : actualOtherEnd.getCollection().contains(object);
 	}
 
 	@Override
-	public <T extends ModelClass, C extends Collection<T>> void addToAssoc(
-			Class<? extends AssociationEnd<T, C>> otherEnd, T object)
+	public <T extends ModelClass, C extends GeneralCollection<T>> void addToAssoc(
+			Class<? extends AssociationEnd<C>> otherEnd, T object)
 			throws MultiplicityException, MultipleContainerException {
 		containerCheck(otherEnd);
 		AssociationEndWrapper<T, ?> assocEnd = getAssoc(otherEnd);
@@ -146,8 +147,8 @@ public class SingleThreadModelClassWrapper extends AbstractModelClassWrapper {
 	}
 
 	@Override
-	public <T extends ModelClass, C extends Collection<T>> void removeFromAssoc(
-			Class<? extends AssociationEnd<T, C>> otherEnd, T object) {
+	public <T extends ModelClass, C extends GeneralCollection<T>> void removeFromAssoc(
+			Class<? extends AssociationEnd<C>> otherEnd, T object) {
 
 		AssociationEndWrapper<T, C> assocEnd = getAssoc(otherEnd);
 		assocEnd.remove(object);
@@ -162,12 +163,12 @@ public class SingleThreadModelClassWrapper extends AbstractModelClassWrapper {
 
 	}
 
-	private <T extends ModelClass, C extends Collection<T>, AE extends AssociationEnd<T, C>> void containerCheck(
+	private <T extends ModelClass, C extends GeneralCollection<T>, AE extends AssociationEnd<C>> void containerCheck(
 			Class<AE> otherEnd) throws MultipleContainerException {
-		if (ContainmentKind.ContainerEnd.class.isAssignableFrom(otherEnd)) {
-			for (Entry<Class<? extends AssociationEnd<?, ?>>, AssociationEndWrapper<?, ?>> entry : associations
+		if (Container.class.isAssignableFrom(otherEnd)) {
+			for (Entry<Class<? extends AssociationEnd<?>>, AssociationEndWrapper<?, ?>> entry : associations
 					.entrySet()) {
-				if (ContainmentKind.ContainerEnd.class.isAssignableFrom(entry.getKey())
+				if (Container.class.isAssignableFrom(entry.getKey())
 						&& !entry.getValue().isEmpty()) {
 					throw new MultipleContainerException();
 				}

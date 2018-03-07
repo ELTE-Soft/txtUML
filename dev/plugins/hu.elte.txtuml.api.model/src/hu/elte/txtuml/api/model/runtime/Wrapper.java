@@ -16,8 +16,8 @@ public interface Wrapper<W> {
 	W getWrapped();
 
 	/**
-	 * A shorthand operation for {@link #getWrapped()}. {@link Object#getClass()
-	 * getClass()}.
+	 * A shorthand operation for
+	 * {@link #getWrapped()}&#x2e;{@link Object#getClass() getClass()}.
 	 */
 	default Class<?> getTypeOfWrapped() {
 		return getWrapped().getClass();

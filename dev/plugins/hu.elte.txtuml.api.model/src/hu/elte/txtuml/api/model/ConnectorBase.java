@@ -67,7 +67,7 @@ public abstract class ConnectorBase {
 	 *
 	 * @see ConnectorBase.One
 	 */
-	public abstract class ConnectorEnd<R extends AssociationEnd<?, ?>, P extends Port<?, ?>> {
+	public abstract class ConnectorEnd<R extends AssociationEnd<?>, P extends Port<?, ?>> {
 		ConnectorEnd() {
 		}
 	}
@@ -115,7 +115,7 @@ public abstract class ConnectorBase {
 	 * See the documentation of {@link Model} for an overview on modeling in
 	 * JtxtUML.
 	 */
-	public abstract class One<R extends AssociationEnd<?, ?>, P extends Port<?, ?>> extends ConnectorEnd<R, P> {
+	public abstract class One<R extends AssociationEnd<?>, P extends Port<?, ?>> extends ConnectorEnd<R, P> {
 	}
 
 }

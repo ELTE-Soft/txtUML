@@ -12,7 +12,7 @@ class SelectionExporter extends ActionExporter<MethodInvocation, CallOperationAc
 	}
 
 	override create(MethodInvocation access) {
-		if (isApiMethodInvocation(access.resolveMethodBinding) && access.resolveMethodBinding.name == "selectAny")
+		if (isApiMethodInvocation(access.resolveMethodBinding) && access.resolveMethodBinding.name == "one")
 			factory.createCallOperationAction
 	}
 
