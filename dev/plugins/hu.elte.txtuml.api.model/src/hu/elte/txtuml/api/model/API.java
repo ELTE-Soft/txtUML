@@ -11,13 +11,13 @@ package hu.elte.txtuml.api.model;
  * <p>
  * 
  * Cannot be used in a model, call its static methods from any outside code (it
- * is always safe).
+ * is always thread-safe).
  * 
  * <p>
  * See the documentation of {@link Model} for an overview on modeling in
  * JtxtUML.
  */
-public abstract class API {
+public interface API {
 
 	/**
 	 * Asynchronously sends the specified signal to the specified target object.
@@ -34,7 +34,7 @@ public abstract class API {
 	 *             if {@code target} is {@code null}
 	 */
 	@ExternalBody
-	public static void send(Signal signal, ModelClass target) {
+	static void send(Signal signal, ModelClass target) {
 		Action.send(signal, target);
 	}
 
@@ -45,7 +45,7 @@ public abstract class API {
 	 *            the message to be logged
 	 */
 	@ExternalBody
-	public static void log(String message) {
+	static void log(String message) {
 		Action.log(message);
 	}
 
@@ -56,7 +56,7 @@ public abstract class API {
 	 *            the error message to be logged
 	 */
 	@ExternalBody
-	public static void logError(String message) {
+	static void logError(String message) {
 		Action.logError(message);
 	}
 

@@ -77,6 +77,9 @@ abstract class AbstractPackageExporter<S, T extends Package> extends Exporter<S,
 			case ElementTypeTeller.isInterface(decl): {
 				exportInterface(decl)[result.packagedElements += it]
 			}
+			case ElementTypeTeller.isCollection(decl): {
+				//TODO handle collection types
+			}
 			default:
 				throw new IllegalArgumentException("Illegal type declaration: " + decl.toString)
 		}

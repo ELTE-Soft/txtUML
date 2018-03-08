@@ -33,7 +33,7 @@ public class B extends ModelClass {
 
 		@Override
 		public void entry() {
-			Action.send(new TestSig(), assoc(BToC.CSide.class).selectAny());
+			Action.send(new TestSig(), assoc(BToC.CSide.class).one());
 		}
 	}
 
@@ -44,7 +44,7 @@ public class B extends ModelClass {
 		@Override
 		public void effect() {
 			Action.send(new TestSig() {
-			}, assoc(AToB.ASide.class).selectAny());
+			}, assoc(AToB.ASide.class).one());
 		}
 	}
 }

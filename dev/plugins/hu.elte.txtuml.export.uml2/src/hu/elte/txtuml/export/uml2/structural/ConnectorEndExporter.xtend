@@ -2,7 +2,6 @@ package hu.elte.txtuml.export.uml2.structural
 
 import hu.elte.txtuml.export.uml2.BaseExporter
 import hu.elte.txtuml.export.uml2.Exporter
-import hu.elte.txtuml.export.uml2.utils.MultiplicityProvider
 import hu.elte.txtuml.utils.jdt.ElementTypeTeller
 import org.eclipse.jdt.core.dom.ITypeBinding
 import org.eclipse.jdt.core.dom.TypeDeclaration
@@ -31,8 +30,9 @@ class ConnectorEndExporter extends Exporter<TypeDeclaration, ITypeBinding, Conne
 	}
 
 	override exportContents(TypeDeclaration decl) {
-		result.lower = MultiplicityProvider.getLowerBound(decl);
-		result.upper = MultiplicityProvider.getUpperBound(decl);
+		// TODO connector end multiplicity
+		result.lower = 1;
+		result.upper = 1;
 
 		val port = fetchElement(decl.resolveBinding.superclass.typeArguments.get(1)) as Port
 		result.role = port

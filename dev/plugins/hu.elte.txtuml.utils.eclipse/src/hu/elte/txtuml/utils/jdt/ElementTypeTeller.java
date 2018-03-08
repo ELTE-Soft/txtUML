@@ -27,6 +27,7 @@ import org.eclipse.jdt.core.dom.TypeDeclaration;
 
 import hu.elte.txtuml.api.model.Association;
 import hu.elte.txtuml.api.model.AssociationEnd;
+import hu.elte.txtuml.api.model.AssociationEnd.Container;
 import hu.elte.txtuml.api.model.BehaviorPort;
 import hu.elte.txtuml.api.model.Composition;
 import hu.elte.txtuml.api.model.ConnectorBase;
@@ -35,6 +36,7 @@ import hu.elte.txtuml.api.model.DataType;
 import hu.elte.txtuml.api.model.Delegation;
 import hu.elte.txtuml.api.model.External;
 import hu.elte.txtuml.api.model.ExternalBody;
+import hu.elte.txtuml.api.model.GeneralCollection;
 import hu.elte.txtuml.api.model.Interface;
 import hu.elte.txtuml.api.model.Model;
 import hu.elte.txtuml.api.model.ModelClass;
@@ -49,7 +51,6 @@ import hu.elte.txtuml.api.model.StateMachine.Initial;
 import hu.elte.txtuml.api.model.StateMachine.State;
 import hu.elte.txtuml.api.model.StateMachine.Transition;
 import hu.elte.txtuml.api.model.StateMachine.Vertex;
-import hu.elte.txtuml.api.model.assocends.ContainmentKind;
 
 /**
  * This class provides utilities for telling the types of txtUML model elements.
@@ -238,11 +239,11 @@ public final class ElementTypeTeller {
 	}
 
 	public static boolean isContainer(TypeDeclaration typeDeclaration) {
-		return SharedUtils.typeIsAssignableFrom(typeDeclaration, ContainmentKind.ContainerEnd.class);
+		return SharedUtils.typeIsAssignableFrom(typeDeclaration, Container.class);
 	}
 	
 	public static boolean isContainer(ITypeBinding typeBinding) {
-		return SharedUtils.typeIsAssignableFrom(typeBinding, ContainmentKind.ContainerEnd.class);
+		return SharedUtils.typeIsAssignableFrom(typeBinding, Container.class);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -435,5 +436,9 @@ public final class ElementTypeTeller {
 		
 	}
 	
+
+	public static boolean isCollection(TypeDeclaration binding) {
+		return SharedUtils.typeIsAssignableFrom(binding, GeneralCollection.class);
+	}
 
 }

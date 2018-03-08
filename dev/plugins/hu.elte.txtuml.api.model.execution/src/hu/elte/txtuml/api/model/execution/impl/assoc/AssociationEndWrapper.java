@@ -1,23 +1,28 @@
 package hu.elte.txtuml.api.model.execution.impl.assoc;
 
+import hu.elte.txtuml.api.model.Action;
 import hu.elte.txtuml.api.model.AssociationEnd;
-import hu.elte.txtuml.api.model.Collection;
+import hu.elte.txtuml.api.model.GeneralCollection;
 import hu.elte.txtuml.api.model.ModelClass;
+import hu.elte.txtuml.api.model.error.LowerBoundError;
+import hu.elte.txtuml.api.model.error.UpperBoundError;
 import hu.elte.txtuml.api.model.runtime.Wrapper;
+import hu.elte.txtuml.api.model.utils.Associations;
+import hu.elte.txtuml.api.model.utils.Collections;
 import hu.elte.txtuml.utils.InstanceCreator;
 
-public interface AssociationEndWrapper<T extends ModelClass, C extends Collection<T>>
-		extends Wrapper<AssociationEnd<T, C>> {
+public interface AssociationEndWrapper<T extends ModelClass, C extends GeneralCollection<T>>
+		extends Wrapper<AssociationEnd<C>> {
 
-	C getCollection();
+	GeneralCollection<T> getCollection();
+
+	C getCollectionOfTargetType() throws LowerBoundError;
 
 	void add(T object) throws MultiplicityException;
 
 	void remove(T object);
 
-	default boolean checkLowerBound() {
-		return getWrapped().checkLowerBound(getCollection().count());
-	}
+	boolean checkLowerBound();
 
 	default boolean isEmpty() {
 		return getCollection().isEmpty();
@@ -25,40 +30,86 @@ public interface AssociationEndWrapper<T extends ModelClass, C extends Collectio
 
 	// create methods
 
-	static <T extends ModelClass, C extends Collection<T>> AssociationEndWrapper<T, C> create(
-			Class<? extends AssociationEnd<T, C>> typeOfWrapped) {
+	static <T extends ModelClass, C extends GeneralCollection<T>> AssociationEndWrapper<T, C> create(
+			Class<? extends AssociationEnd<C>> typeOfWrapped) {
 		return create(InstanceCreator.create(typeOfWrapped, (Object) null));
 	}
 
-	static <T extends ModelClass, C extends Collection<T>> AssociationEndWrapper<T, C> create(
-			AssociationEnd<T, C> wrapped) {
+	static <T extends ModelClass, C extends GeneralCollection<T>> AssociationEndWrapper<T, C> create(
+			AssociationEnd<C> wrapped) {
+
+		final Class<C> type = Associations.getCollectionTypeOf(wrapped);
+
 		return new AssociationEndWrapper<T, C>() {
 
-			private C collection = wrapped.createEmptyCollection();
+			/**
+			 * Is of the proper type if {@link #valid} is true; is of its
+			 * unbounded version otherwise.
+			 */
+			private GeneralCollection<T> collection;
+
+			private boolean valid = true;
+
+			{
+				// initialize collection
+				try {
+					collection = Action.collectIn(type);
+				} catch (LowerBoundError e) {
+					valid = false;
+					collection = Action.collectIn(Collections.unbound(type));
+				}
+			}
 
 			@Override
-			public AssociationEnd<T, C> getWrapped() {
+			public AssociationEnd<C> getWrapped() {
 				return wrapped;
 			}
 
 			@Override
-			public C getCollection() {
+			public boolean checkLowerBound() {
+				return valid;
+			}
+
+			@Override
+			public GeneralCollection<T> getCollection() {
 				return collection;
 			}
 
-			@Override
 			@SuppressWarnings("unchecked")
-			public void remove(T object) {
-				collection = (C) collection.remove(object);
+			@Override
+			public C getCollectionOfTargetType() throws LowerBoundError {
+				if (valid) {
+					return (C) collection;
+				} else {
+					throw new LowerBoundError(type);
+				}
 			}
 
 			@Override
-			@SuppressWarnings("unchecked")
+			public void remove(T object) {
+				try {
+					collection = collection.remove(object);
+				} catch (LowerBoundError e) {
+					valid = false;
+					collection = collection.unbound().remove(object);
+				}
+			}
+
+			@Override
 			public void add(T object) throws MultiplicityException {
-				if (!wrapped.checkUpperBound(collection.count() + 1)) {
+				try {
+					collection = collection.add(object);
+				} catch (UpperBoundError e) {
 					throw new MultiplicityException();
 				}
-				collection = (C) collection.add(object);
+				if (!valid) {
+					try {
+						collection = collection.as(type);
+						valid = true; // If no exception is thrown.
+					} catch (LowerBoundError e) {
+						// Nothing to do.
+					}
+				}
 			}
 
 			@Override

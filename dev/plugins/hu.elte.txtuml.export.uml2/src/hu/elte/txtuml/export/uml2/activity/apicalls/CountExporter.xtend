@@ -12,7 +12,7 @@ class CountExporter extends ActionExporter<MethodInvocation, CallOperationAction
 	}
 
 	override create(MethodInvocation access) {
-		if (isApiMethodInvocation(access.resolveMethodBinding) && access.resolveMethodBinding.name == "count")
+		if (isApiMethodInvocation(access.resolveMethodBinding) && access.resolveMethodBinding.name == "size")
 			factory.createCallOperationAction
 	}
 

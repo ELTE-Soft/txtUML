@@ -31,7 +31,7 @@ public class Producer extends ModelClass {
 
 		@Override
 		public void entry() {
-			Storage storage = Producer.this.assoc(Production.storage.class).selectAny();
+			Storage storage = Producer.this.assoc(Production.storage.class).one();
 			Action.unlink(Production.producer.class, Producer.this, Production.storage.class, storage);
 			Action.delete(Producer.this);
 		}
@@ -56,7 +56,7 @@ public class Producer extends ModelClass {
 
 		@Override
 		public void effect() {
-			Storage storage = Producer.this.assoc(Production.storage.class).selectAny();
+			Storage storage = Producer.this.assoc(Production.storage.class).one();
 			Action.link(Offer.producer.class, Producer.this, Offer.storage.class, storage);
 			Action.send(new OfferNotification(), storage);
 		}

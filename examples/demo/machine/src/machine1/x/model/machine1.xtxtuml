@@ -96,7 +96,7 @@ class User {
 
 	void doWork() {
 		log("\tUser: starting to work...");
-		Machine myMachine = this->(Usage.usedMachine).selectAny();
+		Machine myMachine = this->(Usage.usedMachine).one();
 		send new ButtonPress() to myMachine;
 		send new ButtonPress() to myMachine;
 		send new ButtonPress() to myMachine;

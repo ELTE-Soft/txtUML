@@ -25,7 +25,7 @@ public class B extends ModelClass {
 	public class finalstate extends State {
 		@Override
 		public void entry() {
-			A a = assoc(AB.a.class).selectAny();
+			A a = assoc(AB.a.class).one();
 			if (a != null) {
 				Action.unlink(AB.a.class, a, AB.b.class, B.this);
 				a.childTerminated();

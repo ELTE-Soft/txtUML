@@ -357,7 +357,7 @@ abstract class Exporter<S, A, R extends Element> extends BaseExporter<S, A, R> {
 
 	def getUnlimitedNaturalType() { getImportedElement("UnlimitedNatural") as PrimitiveType }
 
-	def getCollectionType() { getImportedElement("Collection") as Class }
+	def getCollectionType() { getImportedElement("GeneralCollection") as Class }
 
 	override def Element getImportedElement(String name) { parent.getImportedElement(name) }
 
