@@ -172,13 +172,9 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 	public String getUnitDependencies(UnitType type) {
 		StringBuilder source = new StringBuilder("");
 		dependencyExporter.addDependencies(associationExporter.getAssociatedPropertyTypes());
-		for (String baseClassName : baseClasses) {
-			source.append(PrivateFunctionalTemplates.include(baseClassName));
-		}
-		
-		for (String pureInterfaceName : interfacesToImplement) {
-			source.append(PrivateFunctionalTemplates.include(pureInterfaceName));
-		}
+		dependencyExporter.addHeaderOnlyIncludeDependencies(baseClasses);
+		dependencyExporter.addHeaderOnlyIncludeDependencies(interfacesToImplement);
+
 
 		if (CppExporterUtils.isStateMachineOwner(structuredElement)) {
 			for (Map.Entry<String, Pair<String, Region>> entry : stateMachineExporter.getSubMachineMap().entrySet()) {

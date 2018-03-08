@@ -3,6 +3,7 @@ package hu.elte.txtuml.export.cpp.structural;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.UMLStdLibNames;
@@ -26,13 +27,11 @@ public class DependencyExporter {
 	}
 
 	public String createDependencyCppIncludeCode(String className) {
+		addCppOnlyDependency(className);	
+		Set<String> allDependency = mergeDependencies(Arrays.asList(cppOnlyDependency, dependencies));
+		
 		StringBuilder includes = new StringBuilder("");
-		includes.append(PrivateFunctionalTemplates.include(className));
-		dependencies.forEach(type -> {
-			includes.append(PrivateFunctionalTemplates.include(type));
-		});
-
-		cppOnlyDependency.forEach(type -> {
+		allDependency.forEach(type -> {
 			includes.append(PrivateFunctionalTemplates.include(type));
 		});
 
@@ -42,15 +41,13 @@ public class DependencyExporter {
 	public String createDependencyHeaderIncludeCode(String preDeclNamespace) {
 		StringBuilder preDeclerations = new StringBuilder();
 		StringBuilder includes = new StringBuilder();
+		
+		Set<String> preDeclDependencies = mergeDependencies(Arrays.asList(dependencies, headerOnlyDependency));
 
-		dependencies.forEach(type -> {
+		preDeclDependencies.forEach(type -> {
 			preDeclerations.append(GenerationTemplates.forwardDeclaration(type));
 		});
-
-		headerOnlyDependency.forEach(type -> {
-			preDeclerations.append(GenerationTemplates.forwardDeclaration(type));
-		});
-
+		
 		headerOnlyIncludeDependency.forEach(type -> {
 			includes.append(PrivateFunctionalTemplates.include(type));
 		});
@@ -81,6 +78,7 @@ public class DependencyExporter {
 	}
 
 	public void addHeaderOnlyIncludeDependency(String dependency) {
+		assert(!dependencies.contains(dependency));
 		headerOnlyIncludeDependency.add(dependency);
 	}
 
@@ -100,6 +98,15 @@ public class DependencyExporter {
 
 	private boolean isSimpleDependency(String typename) {
 		return standardDependencies.contains(typename);
+	}
+	
+	private Set<String> mergeDependencies(List<Set<String>> dependencyContainers) {
+		Set<String> allDependency = new HashSet<>();
+		for(Set<String> dependencies : dependencyContainers) {
+			allDependency.addAll(dependencies);
+		}
+		
+		return allDependency;
 	}
 
 }
