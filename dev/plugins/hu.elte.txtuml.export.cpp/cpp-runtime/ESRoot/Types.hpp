@@ -99,11 +99,14 @@ namespace Model
 	
 	class PortType {
 	public:
+		static int portIdCounter;
 		static PortType AnyPort;
 
 	public:
-		PortType(int portTypeId_) : portTypeId(portTypeId_) {}
-                PortType(const PortType& o) = default;
+		PortType() : portTypeId(portIdCounter++) {}
+        PortType(const PortType& o) = default;
+		PortType& operator=(const PortType& o) = default;
+
 		int getPortTypeId() const { return portTypeId; }
                 bool operator==(const PortType& o) const {return portTypeId == o.getPortTypeId();}
 

@@ -82,10 +82,8 @@ public class PortExporter {
 	
 	public String createPortTypeInfoDefinitions() {
 		StringBuilder source = new StringBuilder("");
-		Integer id = PortTemplates.ANY_PORT_DEFAULT_VALUE + 1;
 		for(Port port : ports) {
-			source.append(PortTemplates.portTypeInfoDef(port.getName(), ownerName, id));
-			id++;
+			source.append(PortTemplates.portTypeInfoDef(port.getName(), ownerName));
 		}
 		
 		return source.toString();

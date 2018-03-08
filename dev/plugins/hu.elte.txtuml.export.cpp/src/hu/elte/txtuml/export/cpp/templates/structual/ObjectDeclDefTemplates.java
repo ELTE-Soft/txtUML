@@ -121,8 +121,10 @@ public class ObjectDeclDefTemplates {
 		return variableDecl(typeName, variableName, "", VariableType.StackStored, true);
 	}
 	
-	public static String staticPropertyDef(String typeName, String ownerClassName, String propertyName, String value) {				
-		return typeName + " " + ownerClassName + "::" + propertyName + " " + ActivityTemplates.ReplaceSimpleTypeOp + " " + value + ";\n";
+	public static String staticPropertyDef(String typeName, String ownerClassName, String propertyName, Optional<String> value) {
+		String leftExpression =  typeName + " " + ownerClassName + "::" + propertyName;
+		String rightPart = value.isPresent() ? " " + ActivityTemplates.ReplaceSimpleTypeOp + " " + value : "";
+		return leftExpression + rightPart + ";\n";
 
 	}
 
