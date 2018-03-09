@@ -11,11 +11,10 @@ import org.eclipse.jdt.core.compiler.ReconcileContext;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 
 import hu.elte.txtuml.utils.Logger;
-import hu.elte.txtuml.validation.model.ModelValidationError;
 
 public class ProblemCollector {
 
-	private final List<ModelValidationError> problems = new ArrayList<>();
+	private final List<ValidationProblem> problems = new ArrayList<>();
 	private final String markerType;
 	private final SourceInfo sourceInfo;
 	private final IResource resource;
@@ -33,7 +32,7 @@ public class ProblemCollector {
 	/**
 	 * Adds a new problem.
 	 */
-	public void report(ModelValidationError problem) {
+	public void report(ValidationProblem problem) {
 		problems.add(problem);
 	}
 
@@ -48,7 +47,7 @@ public class ProblemCollector {
 		}
 		try {
 			resource.deleteMarkers(markerType, true, IResource.DEPTH_ZERO);
-			for (ModelValidationError problem : problems) {
+			for (ValidationProblem problem : problems) {
 				IMarker marker = resource.createMarker(problem.getMarkerType());
 				marker.setAttribute(IMarker.CHAR_START, problem.getSourceStart());
 				marker.setAttribute(IMarker.CHAR_END, problem.getSourceEnd());
