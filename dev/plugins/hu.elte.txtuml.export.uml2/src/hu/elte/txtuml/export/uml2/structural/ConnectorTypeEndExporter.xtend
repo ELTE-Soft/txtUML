@@ -31,9 +31,11 @@ class ConnectorTypeEndExporter extends Exporter<TypeDeclaration, ITypeBinding, P
 		} else {
 			result.type = providedInterfaceBase
 		}
-			
-		result.lower = MultiplicityProvider.getLowerBound(source);
-		result.upper = MultiplicityProvider.getUpperBound(source);
+		val assocEndType = source.resolveBinding.superclass.typeArguments.get(0)
+		val collectionType = assocEndType.superclass.typeArguments.get(0)
+		
+		result.lower = MultiplicityProvider.getLowerBound(collectionType);
+		result.upper = MultiplicityProvider.getUpperBound(collectionType);
 		result.association = (parent as ConnectorTypeExporter).result
 		result.isNavigable = true
 		
