@@ -16,7 +16,7 @@ public enum ValidationErrors {
 
 	// general problems
 
-	INVALID_SUPERCLASS, SEND_EXPECTED;
+	INVALID_SUPERCLASS, SEND_EXPECTED, INVALID_POSITION;
 
 	private static final String SUFFIX = "_message";
 
@@ -44,6 +44,11 @@ public enum ValidationErrors {
 			public String getMarkerType() {
 				return SequenceDiagramCompilationParticipant.MARKER_TYPE;
 			}
+
+			@Override
+			public boolean isError() {
+				return true;
+			};
 
 		};
 	}

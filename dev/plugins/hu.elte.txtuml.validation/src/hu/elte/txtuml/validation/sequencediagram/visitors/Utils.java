@@ -3,9 +3,11 @@ package hu.elte.txtuml.validation.sequencediagram.visitors;
 import java.util.List;
 
 import org.eclipse.jdt.core.dom.AbstractTypeDeclaration;
+import org.eclipse.jdt.core.dom.Annotation;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
+import org.eclipse.jdt.core.dom.SingleMemberAnnotation;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 
 import hu.elte.txtuml.api.model.seqdiag.SequenceDiagram;
@@ -23,8 +25,19 @@ public class Utils {
 		}
 	}
 
-	public static void checkField(ProblemCollector collector, FieldDeclaration elem) {
-
+	public static void checkFieldDeclaration(ProblemCollector collector, FieldDeclaration elem) {
+		List<?> modifiers = elem.modifiers();
+		for (Object modifier : modifiers) {
+			if (modifier instanceof Annotation) {
+				Annotation ca = (Annotation) modifier;
+				if (ca.getTypeName().getFullyQualifiedName().equals("Position")) {
+					int annotationVal = (int) ((SingleMemberAnnotation) ca).getValue().resolveConstantExpressionValue();
+					if (annotationVal < 0) {
+						collector.report(ValidationErrors.INVALID_POSITION.create(collector.getSourceInfo(), elem));
+					}
+				}
+			}
+		}
 	}
 
 	public static void checkMethod(ProblemCollector collector, MethodDeclaration elem) {

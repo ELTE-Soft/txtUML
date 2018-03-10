@@ -34,7 +34,7 @@ public class SequenceDiagramVisitor extends ASTVisitor {
 
 	@Override
 	public boolean visit(FieldDeclaration elem) {
-		Utils.checkField(collector, elem);
+		Utils.checkFieldDeclaration(collector, elem);
 		return false;
 	}
 
@@ -52,7 +52,7 @@ public class SequenceDiagramVisitor extends ASTVisitor {
 				.filter(stm -> stm instanceof ExpressionStatement).map(stm -> (ExpressionStatement) stm);
 		boolean isError = !expressions.anyMatch(expr -> checkSendInExpression(expr.getExpression()));
 		if (isError) {
-			collector.report(ValidationErrors.INVALID_SUPERCLASS.create(collector.getSourceInfo(), node));
+			collector.report(ValidationErrors.SEND_EXPECTED.create(collector.getSourceInfo(), node));
 		}
 		return true;
 	}
