@@ -171,6 +171,19 @@ public class CppExporterUtils {
 		return formattedSource;
 	}
 	
+	public static String escapeQuates(String source) {
+		StringBuilder resultSource = new StringBuilder("");
+		
+		for(char ch : source.toCharArray()) {
+			if(ch == '"') {
+				resultSource.append("\\");
+			}
+			resultSource.append(ch);
+		}
+		
+		return resultSource.toString();
+	}
+	
 	public static Class getSignalFactoryClass(Signal signal, List<Element> elements) {
 		for (Element element : elements) {
 			if (element.eClass().equals(UMLPackage.Literals.CLASS)) {
