@@ -2,6 +2,7 @@ package hu.elte.txtuml.export.cpp;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
@@ -9,6 +10,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.cdt.core.ToolFactory;
@@ -45,6 +47,24 @@ public class CppExporterUtils {
 				dest.add((ElementTypeT) item);
 			}
 		}
+	}
+	
+	public static int executeCommand(String directory, List<String> strings, Map<String, String> environment, String fileNameToRedirect)
+			throws IOException, InterruptedException {
+		ProcessBuilder processBuilder = new ProcessBuilder(strings);
+		if (environment != null) {
+			processBuilder.environment().putAll(environment);
+		}
+					
+		processBuilder.inheritIO();
+		processBuilder.directory(new File(directory));
+		
+		if(fileNameToRedirect != null){
+			processBuilder = processBuilder.redirectOutput(new File(directory + "/" + fileNameToRedirect));
+		}
+
+		Process process = processBuilder.start();
+		return process.waitFor();
 	}
 	
 	public static Set<String> getAllModelClassNames(List<Element> elements) {
