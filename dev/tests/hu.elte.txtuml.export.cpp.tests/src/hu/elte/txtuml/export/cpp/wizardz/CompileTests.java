@@ -241,7 +241,8 @@ public class CompileTests {
 			}
 		}
 
-		cppgen.uml2ToCpp(testProject, config.model, config.deployment, testProject, addRuntime, overWriteMainFile);
+		cppgen.uml2ToCpp(testProject, config.model, config.deployment, testProject, 
+				addRuntime, overWriteMainFile, null);
 
 		project.close(null);
 		project.delete(false, false, null);

@@ -25,8 +25,9 @@ public class TxtUMLToCppOptionsPage extends WizardPage {
     private Text mainCppText;
     private Button mainCppBrowser;
     
-    private Text compilerText;
-    private Button compilerSelector;
+    private Text buildEnvironmentText;
+    private Button buildEnvironmentSelector;
+    private String[] buildEnvironments;
     
     public TxtUMLToCppOptionsPage() {
         super("Generate C++ Code Page");
@@ -77,31 +78,30 @@ public class TxtUMLToCppOptionsPage extends WizardPage {
         emptryRowGridData.horizontalSpan = 3;
         emptyRowLabel.setLayoutData(emptryRowGridData);
         
-        Label compilerLabel = new Label(composite, SWT.NONE);
-        compilerLabel.setText("Select compilers: ");
+        Label buildEnvironmentLabel = new Label(composite, SWT.NONE);
+        buildEnvironmentLabel.setText("Select build environments: ");
         
-        compilerText = new Text(composite, SWT.BORDER | SWT.SINGLE);
-        compilerText.setText("");
+        buildEnvironmentText = new Text(composite, SWT.BORDER | SWT.SINGLE);
+        buildEnvironmentText.setText("");
         
-        GridData compilerGridData = new GridData(GridData.FILL_HORIZONTAL);
-        compilerText.setLayoutData(compilerGridData);
+        GridData buildEnvironmentGridData = new GridData(GridData.FILL_HORIZONTAL);
+        buildEnvironmentText.setLayoutData(buildEnvironmentGridData);
         
-        compilerSelector = new Button(composite, SWT.NONE);
-        compilerSelector.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false));
-        compilerSelector.setText(browseButtonText);
-        compilerSelector.addSelectionListener(new SelectionListener() {
+        buildEnvironmentSelector = new Button(composite, SWT.NONE);
+        buildEnvironmentSelector.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false));
+        buildEnvironmentSelector.setText(browseButtonText);
+        buildEnvironmentSelector.addSelectionListener(new SelectionListener() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				String[] compilers = {"GCC", "Clang", "Visual Studio"};
 				ListSelectionDialog dialog = 
-						   new ListSelectionDialog(parent.getShell(), compilers, ArrayContentProvider.getInstance(),
-						            new LabelProvider(), "Compilers");
+						   new ListSelectionDialog(parent.getShell(), initBuildEnvironments(), ArrayContentProvider.getInstance(),
+						            new LabelProvider(), "Build environments");
 
-						dialog.setTitle("Compiler Selection Dialog");
+						dialog.setTitle("Build Environment Selection Dialog");
 						dialog.open();
-						Object[] selectedCompilers = dialog.getResult();
+						Object[] selectedEnvironments = dialog.getResult();
 						
-						compilerText.setText(setCompilerText(selectedCompilers));
+						buildEnvironmentText.setText(setBuildEnvironmentText(selectedEnvironments));
 			}
 
 			@Override
@@ -113,17 +113,41 @@ public class TxtUMLToCppOptionsPage extends WizardPage {
         setPageComplete(true);
     }
     
-    private String setCompilerText(Object[] compilers){
+    private String setBuildEnvironmentText(Object[] environments){
     	String result = "";
+    	buildEnvironments = new String[environments.length];
     	
-		for(int i = 0; i < compilers.length; ++i){
+		for(int i = 0; i < environments.length; ++i){
+			buildEnvironments[i] = environments[i].toString();
 			if(i == 0) {
-				result += compilers[i].toString();
+				result += buildEnvironments[i];
 				continue;
 			}
-			result += "; " + compilers[i].toString();
+			result += "; " + buildEnvironments[i];
+			
 		}
 		
 		return result;
+    }
+    
+    private String[] initBuildEnvironments() {
+    	return new String[] {
+    			"Visual Studio 15 2017",
+				"Visual Studio 14 2015",
+				"Visual Studio 12 2013",
+				"MinGW Makefiles",
+				"Unix Makefiles",
+				"Ninja",
+				"CodeBlocks - MinGW Makefile",
+				"CodeBlocks - Ninja",
+				"CodeBlocks - Unix Makefiles",
+				"Eclipse CDT4 - MinGW Makefiles",
+				"Eclipse CDT4 - Ninja",
+				"Eclipse CDT4 - Unix Makefiles"
+    	};
+    }
+    
+    public String[] getSelectedBuildEnvironments() {
+    	return buildEnvironments;
     }
 }

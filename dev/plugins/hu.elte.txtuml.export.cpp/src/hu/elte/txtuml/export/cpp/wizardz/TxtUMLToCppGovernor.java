@@ -10,6 +10,7 @@ import org.eclipse.uml2.uml.Model;
 import org.eclipse.uml2.uml.UMLPackage;
 
 import hu.elte.txtuml.api.deployment.Configuration;
+import hu.elte.txtuml.export.cpp.BuildSupport;
 import hu.elte.txtuml.export.cpp.CppExporterUtils;
 import hu.elte.txtuml.export.cpp.Uml2ToCppExporter;
 import hu.elte.txtuml.export.cpp.thread.ThreadDescriptionExporter;
@@ -30,7 +31,7 @@ class TxtUMLToCppGovernor {
 	}
 
 	void uml2ToCpp(String txtUMLProject, String txtUMLModel, String deploymentDescription,
-			String deploymentDescriptionProjectName, boolean addRuntimeOption, boolean overWriteMainFileOption)
+			String deploymentDescriptionProjectName, boolean addRuntimeOption, boolean overWriteMainFileOption, String[] buildEnvironments)
 			throws Exception {
 
 		String projectFolder = ResourcesPlugin.getWorkspace().getRoot().getProject(txtUMLProject).getLocation().toFile()
@@ -84,8 +85,14 @@ class TxtUMLToCppGovernor {
 		Uml2ToCppExporter cppExporter = new Uml2ToCppExporter(model.allOwnedElements(), exporter.getExportedConfiguration(),
 				addRuntimeOption, overWriteMainFileOption, testing);
 		try {
-			cppExporter.buildCppCode(
-					projectFolder + File.separator + GeneratedCPPFolderName + File.separator + txtUMLModel);
+			String outputDirectory = projectFolder + File.separator + GeneratedCPPFolderName 
+									+ File.separator + txtUMLModel;
+			cppExporter.buildCppCode(outputDirectory);
+			
+			if(buildEnvironments != null && buildEnvironments.length > 0){
+				BuildSupport.build(outputDirectory, buildEnvironments);
+			}
+			
 		} catch (Exception e) {
 			if (!testing) {
 				Dialogs.errorMsgb("C++ export error!", e.getClass() + ":" + System.lineSeparator() + e.getMessage(), e);

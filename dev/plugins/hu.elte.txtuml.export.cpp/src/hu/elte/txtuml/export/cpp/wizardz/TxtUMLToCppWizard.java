@@ -43,6 +43,7 @@ public class TxtUMLToCppWizard extends Wizard {
 
 			boolean addRuntimeOption = createCppCodePage.getAddRuntimeOptionSelection();
 			boolean overWriteMainFileOption = createCppCodePage.getOverWriteMainFileSelection();
+			String[] buildEnvironments = createCppOptionsPage.getSelectedBuildEnvironments();
 
 			Pair<String, String> model;
 			try {
@@ -62,7 +63,7 @@ public class TxtUMLToCppWizard extends Wizard {
 
 			TxtUMLToCppGovernor governor = new TxtUMLToCppGovernor(false);
 			governor.uml2ToCpp(txtUMLProject, txtUMLModel, threadManagementDescription.getFullyQualifiedName(),
-					descriptionProjectName, addRuntimeOption, overWriteMainFileOption);
+					descriptionProjectName, addRuntimeOption, overWriteMainFileOption, buildEnvironments);
 		} catch (Exception e) {
 			Dialogs.errorMsgb("C++ code generation error", e.getMessage(), e);
 			return false;
