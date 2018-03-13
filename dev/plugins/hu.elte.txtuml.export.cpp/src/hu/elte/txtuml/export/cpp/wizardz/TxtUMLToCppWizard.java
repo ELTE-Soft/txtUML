@@ -1,5 +1,6 @@
 package hu.elte.txtuml.export.cpp.wizardz;
 
+import java.util.List;
 import java.util.NoSuchElementException;
 
 import org.eclipse.jdt.core.IType;
@@ -43,7 +44,7 @@ public class TxtUMLToCppWizard extends Wizard {
 
 			boolean addRuntimeOption = createCppCodePage.getAddRuntimeOptionSelection();
 			boolean overWriteMainFileOption = createCppCodePage.getOverWriteMainFileSelection();
-			String[] buildEnvironments = createCppOptionsPage.getSelectedBuildEnvironments();
+			List<String> buildEnvironments = createCppOptionsPage.getSelectedBuildEnvironments();
 
 			Pair<String, String> model;
 			try {

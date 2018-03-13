@@ -2,9 +2,10 @@ package hu.elte.txtuml.export.cpp;
 
 import java.io.File;
 import java.util.Arrays;
+import java.util.List;
 
 public class BuildSupport {
-	public static void build(String directory, String[] environments) throws Exception {
+	public static void build(String directory, List<String> environments) throws Exception {
 		for(String environment : environments){
 			build(directory, environment);
 		}

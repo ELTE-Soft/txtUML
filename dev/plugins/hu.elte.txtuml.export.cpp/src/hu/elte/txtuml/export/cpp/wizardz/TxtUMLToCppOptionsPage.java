@@ -1,5 +1,9 @@
 package hu.elte.txtuml.export.cpp.wizardz;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.wizard.WizardPage;
@@ -27,7 +31,7 @@ public class TxtUMLToCppOptionsPage extends WizardPage {
     
     private Text buildEnvironmentText;
     private Button buildEnvironmentSelector;
-    private String[] buildEnvironments;
+    private List<String> buildEnvironments;
     
     public TxtUMLToCppOptionsPage() {
         super("Generate C++ Code Page");
@@ -115,23 +119,24 @@ public class TxtUMLToCppOptionsPage extends WizardPage {
     
     private String setBuildEnvironmentText(Object[] environments){
     	String result = "";
-    	buildEnvironments = new String[environments.length];
+    	String actualEnvironment = "";
+    	buildEnvironments = new ArrayList<String>();
     	
 		for(int i = 0; i < environments.length; ++i){
-			buildEnvironments[i] = environments[i].toString();
+			actualEnvironment = environments[i].toString();
+			buildEnvironments.add(actualEnvironment);
 			if(i == 0) {
-				result += buildEnvironments[i];
+				result += actualEnvironment;
 				continue;
 			}
-			result += "; " + buildEnvironments[i];
-			
+			result += "; " + actualEnvironment;
 		}
 		
 		return result;
     }
     
-    private String[] initBuildEnvironments() {
-    	return new String[] {
+    private List<String> initBuildEnvironments() {
+    	return Arrays.asList(
     			"Visual Studio 15 2017",
 				"Visual Studio 14 2015",
 				"Visual Studio 12 2013",
@@ -144,10 +149,10 @@ public class TxtUMLToCppOptionsPage extends WizardPage {
 				"Eclipse CDT4 - MinGW Makefiles",
 				"Eclipse CDT4 - Ninja",
 				"Eclipse CDT4 - Unix Makefiles"
-    	};
+    	);
     }
     
-    public String[] getSelectedBuildEnvironments() {
+    public List<String> getSelectedBuildEnvironments() {
     	return buildEnvironments;
     }
 }

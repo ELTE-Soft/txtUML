@@ -3,6 +3,7 @@ package hu.elte.txtuml.export.cpp.wizardz;
 import java.io.File;
 import java.net.URLClassLoader;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -31,7 +32,8 @@ class TxtUMLToCppGovernor {
 	}
 
 	void uml2ToCpp(String txtUMLProject, String txtUMLModel, String deploymentDescription,
-			String deploymentDescriptionProjectName, boolean addRuntimeOption, boolean overWriteMainFileOption, String[] buildEnvironments)
+			String deploymentDescriptionProjectName, boolean addRuntimeOption, boolean overWriteMainFileOption, 
+			List<String> buildEnvironments)
 			throws Exception {
 
 		String projectFolder = ResourcesPlugin.getWorkspace().getRoot().getProject(txtUMLProject).getLocation().toFile()
@@ -89,7 +91,7 @@ class TxtUMLToCppGovernor {
 									+ File.separator + txtUMLModel;
 			cppExporter.buildCppCode(outputDirectory);
 			
-			if(buildEnvironments != null && buildEnvironments.length > 0){
+			if(buildEnvironments != null && buildEnvironments.size() > 0){
 				BuildSupport.build(outputDirectory, buildEnvironments);
 			}
 			
