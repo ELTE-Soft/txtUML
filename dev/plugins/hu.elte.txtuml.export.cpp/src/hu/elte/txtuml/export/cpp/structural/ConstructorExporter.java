@@ -16,11 +16,10 @@ class ConstructorExporter {
 	List<Operation> constructors;
 	ActivityExporter activityExporter;
 
-	ConstructorExporter(List<Operation> allOperation) {
+	ConstructorExporter(List<Operation> allOperation, ActivityExporter activityExporter) {
 		constructors = new ArrayList<Operation>();
 		ownConstructor = false;
-
-		activityExporter = new ActivityExporter();
+		this.activityExporter = activityExporter;
 
 		importConstructors(allOperation);
 	}
