@@ -13,6 +13,7 @@ import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.progress.IProgressService;
 
+import hu.elte.txtuml.api.model.seqdiag.Interaction;
 import hu.elte.txtuml.api.model.seqdiag.SequenceDiagram;
 import hu.elte.txtuml.export.plantuml.PlantUmlExporter;
 import hu.elte.txtuml.export.plantuml.exceptions.SequenceDiagramExportException;
@@ -38,7 +39,7 @@ public class PlantUMLVisualizeWizard extends TxtUMLVisualizeWizard {
 	
 	@Override
 	public void addPages() {
-		selectTxtUmlPage = new VisualizeTxtUMLPage(SequenceDiagram.class);
+		selectTxtUmlPage = new VisualizeTxtUMLPage(false, SequenceDiagram.class, Interaction.class);
 		addPage(selectTxtUmlPage);
 	}
 

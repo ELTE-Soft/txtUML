@@ -47,13 +47,15 @@ public class VisualizeTxtUMLPage extends WizardPage {
 	private List<IType> txtUMLLayout = new LinkedList<>();
 	private ScrolledComposite sc;
 	private CheckboxTreeViewer tree;
+	private final boolean directSuperClasses;
 
 	/**
 	 * The Constructor
 	 */
-	public VisualizeTxtUMLPage(Class<?>... diagramTypes) {
+	public VisualizeTxtUMLPage(boolean directSuperClasses, Class<?>... diagramTypes) {
 		super("Visualize txtUML page");
 		this.diagramTypes = diagramTypes;
+		this.directSuperClasses = directSuperClasses;
 		setTitle("Visualize txtUML page");
 		setDescription("Select the diagrams to be visualized.");
 	}
@@ -196,7 +198,9 @@ public class VisualizeTxtUMLPage extends WizardPage {
 					for (IProject pr : allProjects) {
 						try {
 							IJavaProject javaProject = ProjectUtils.findJavaProject(pr.getName());
-							if (WizardUtils.containsClassesWithSuperTypes(javaProject, diagramTypes)) {
+							if (directSuperClasses && WizardUtils.containsClassesWithDirectSuperTypes(javaProject, diagramTypes)) {
+								javaProjects.add(ProjectUtils.findJavaProject(pr.getName()));
+							} else if (WizardUtils.containsClassesWithSuperTypes(javaProject, diagramTypes)) {
 								javaProjects.add(ProjectUtils.findJavaProject(pr.getName()));
 							}
 						} catch (NotFoundException e) {
@@ -266,7 +270,11 @@ public class VisualizeTxtUMLPage extends WizardPage {
 	}
 
 	private List<IType> getDiagramDescriptions(IPackageFragment packageFragment) {
-		return WizardUtils.getTypesBySuperclass(packageFragment, diagramTypes);
+		if (directSuperClasses) {
+			return WizardUtils.getTypesByDirectSuperclass(packageFragment, diagramTypes);
+		} else {
+			return WizardUtils.getTypesBySuperclass(packageFragment, diagramTypes);
+		}
 	}
 
 	private void addInitialLayoutFields() {

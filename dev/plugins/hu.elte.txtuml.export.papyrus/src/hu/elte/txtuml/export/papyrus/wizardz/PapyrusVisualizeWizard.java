@@ -50,7 +50,7 @@ public class PapyrusVisualizeWizard extends TxtUMLVisualizeWizard {
 	
 	@Override
 	public void addPages() {
-		selectTxtUmlPage = new VisualizeTxtUMLPage(StateMachineDiagram.class, ClassDiagram.class, CompositeDiagram.class);
+		selectTxtUmlPage = new VisualizeTxtUMLPage(true, StateMachineDiagram.class, ClassDiagram.class, CompositeDiagram.class);
 		addPage(selectTxtUmlPage);
 	}
 

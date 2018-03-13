@@ -90,6 +90,9 @@ public abstract class TxtUMLVisualizeWizard extends Wizard {
 
 	
 	
+	/**
+	 * Abstract method for diagram export.
+	 */
 	protected abstract boolean exportDiagrams(Map<Pair<String, String>, List<IType>> layoutConfigs, List<IType> txtUMLLayout);
 
 	protected void checkNoLayoutDescriptionsSelected() throws InterruptedException {

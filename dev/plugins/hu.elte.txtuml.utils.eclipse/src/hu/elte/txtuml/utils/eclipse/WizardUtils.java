@@ -18,6 +18,10 @@ import org.eclipse.jdt.core.IPackageDeclaration;
 import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
+import org.eclipse.jdt.core.dom.AST;
+import org.eclipse.jdt.core.dom.ASTParser;
+import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.jdt.ui.JavaElementLabelProvider;
 import org.eclipse.jface.viewers.DelegatingStyledCellLabelProvider;
 import org.eclipse.jface.viewers.IBaseLabelProvider;
@@ -26,10 +30,16 @@ import org.eclipse.jface.viewers.StyledString;
 import hu.elte.txtuml.api.model.Model;
 import hu.elte.txtuml.utils.Pair;
 import hu.elte.txtuml.utils.jdt.ModelUtils;
+import hu.elte.txtuml.utils.jdt.SharedUtils;
 
 public class WizardUtils {
 
-	public static List<IType> getTypesBySuperclass(IPackageFragment packageFragment, Class<?>... superClasses) {
+	/**
+	 * 
+	 * @return the list of classes in the given package which extends
+	 *         at least one of the given superclasses directly.
+	 */
+	public static List<IType> getTypesByDirectSuperclass(IPackageFragment packageFragment, Class<?>... superClasses) {
 		List<IType> typesWithGivenSuperclass = new ArrayList<>();
 
 		ICompilationUnit[] compilationUnits;
@@ -61,6 +71,36 @@ public class WizardUtils {
 					return false;
 				}
 			}).forEach(type -> typesWithGivenSuperclass.add(type));
+		}
+		return typesWithGivenSuperclass;
+	}
+	
+	/**
+	 * 
+	 * @return the list of classes in the given package which extends
+	 *         at least one of the given superclasses directly.
+	 */
+	public static List<IType> getTypesBySuperclass(IPackageFragment packageFragment, Class<?>... superClasses) {
+		List<IType> typesWithGivenSuperclass = new ArrayList<>();
+
+		ICompilationUnit[] compilationUnits;
+		try {
+			compilationUnits = packageFragment.getCompilationUnits();
+		} catch (JavaModelException ex) {
+			return Collections.emptyList();
+		}
+	
+		for (ICompilationUnit cUnit : compilationUnits) {
+			List<?> types = getTypes(cUnit);
+			
+			types.stream().filter(type -> {
+				try {
+					return Stream.of(superClasses)
+							.anyMatch(superClass -> SharedUtils.typeIsAssignableFrom((TypeDeclaration) type, superClass));
+				} catch (NullPointerException ex) {
+					return false;
+				}
+			}).forEach(type -> typesWithGivenSuperclass.add((IType) ((TypeDeclaration) type).resolveBinding().getJavaElement()));
 		}
 		return typesWithGivenSuperclass;
 	}
@@ -96,15 +136,32 @@ public class WizardUtils {
 		return modelPackages;
 	}
 
-	public static boolean containsClassesWithSuperTypes(IJavaProject javaProject, Class<?>... superClasses) {
+	/**
+	 * @return true if the given project contains at least one Class which
+	 *         extends one of the given superclasses directly
+	 */
+	public static boolean containsClassesWithDirectSuperTypes(IJavaProject javaProject, Class<?>... superClasses) {
 		try {
 			return PackageUtils.findAllPackageFragmentsAsStream(javaProject)
-					.anyMatch(pf -> !getTypesBySuperclass(pf, superClasses).isEmpty());
+					.anyMatch(pf -> !getTypesByDirectSuperclass(pf, superClasses).isEmpty());
 		} catch (JavaModelException ex) {
 			return false;
 		}
 	}
-
+	
+	/**
+	 * @return true if the given project contains at least one Class with
+	 *         at least one of the given superclasses
+	 */
+	public static boolean containsClassesWithSuperTypes(IJavaProject javaProject, Class<?>... superClasses) {
+		try {
+			return PackageUtils.findAllPackageFragmentsAsStream(javaProject)
+					.anyMatch(pf -> containsAnyClassWithSuperTypes(pf, superClasses));
+		} catch (JavaModelException ex) {
+			return false;
+		}
+	}
+	
 	public static IBaseLabelProvider getPostQualifiedLabelProvider() {
 		return new DelegatingStyledCellLabelProvider(new JavaElementLabelProvider(
 				JavaElementLabelProvider.SHOW_POST_QUALIFIED | JavaElementLabelProvider.SHOW_SMALL_ICONS)) {
@@ -196,6 +253,48 @@ public class WizardUtils {
 		}
 
 		return Optional.empty();
+	}
+
+	/**
+	 * @return true if there is at least one class in the given package
+	 *         with at least one of the given superclasses.
+	 */
+	private static boolean containsAnyClassWithSuperTypes(IPackageFragment packageFragment, Class<?>... superClasses) {
+		ICompilationUnit[] compilationUnits;
+		try {
+			compilationUnits = packageFragment.getCompilationUnits();
+		} catch (JavaModelException ex) {
+			return false;
+		}
+	
+		for (ICompilationUnit cUnit : compilationUnits) {
+			List<?> types = getTypes(cUnit);
+			
+			boolean result = types.stream().anyMatch(type -> {
+				try {
+					return Stream.of(superClasses)
+							.anyMatch(superClass -> SharedUtils.typeIsAssignableFrom((TypeDeclaration) type, superClass));
+				} catch (NullPointerException ex) {
+					return false;
+				}
+			});
+			
+			if (result)
+				return true;
+		}
+		return false;
+	}
+
+	/**
+	 * 
+	 * @return the list of types in the given compilation unit.
+	 */
+	private static List<?> getTypes(ICompilationUnit compilationUnit) {
+		ASTParser parser = ASTParser.newParser(AST.JLS8);
+		parser.setResolveBindings(true);
+		parser.setSource(compilationUnit);
+		CompilationUnit cu = (CompilationUnit) parser.createAST(null);
+		return cu.types();
 	}
 
 	private static String[][] resolveType(IType context, String typeName) {
