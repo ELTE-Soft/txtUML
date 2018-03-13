@@ -1,4 +1,4 @@
-package hu.elte.txtuml.export.plantuml.wizards;
+package hu.elte.txtuml.utils.eclipse.wizards;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -33,29 +33,28 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.model.WorkbenchContentProvider;
 
-import hu.elte.txtuml.api.model.seqdiag.SequenceDiagram;
-import hu.elte.txtuml.export.papyrus.preferences.PreferencesManager;
 import hu.elte.txtuml.utils.Logger;
 import hu.elte.txtuml.utils.eclipse.NotFoundException;
 import hu.elte.txtuml.utils.eclipse.PackageUtils;
 import hu.elte.txtuml.utils.eclipse.ProjectUtils;
 import hu.elte.txtuml.utils.eclipse.WizardUtils;
+import hu.elte.txtuml.utils.eclipse.preferences.PreferencesManager;
 
-public class VisualizePlantUMLPage extends WizardPage {
+public class VisualizeTxtUMLPage extends WizardPage {
 
-	private static final Class<?>[] diagramTypes = { SequenceDiagram.class };
-
+	private final Class<?>[] diagramTypes;
 	private Composite container;
-	private List<IType> plantUMLLayout = new LinkedList<>();
+	private List<IType> txtUMLLayout = new LinkedList<>();
 	private ScrolledComposite sc;
 	private CheckboxTreeViewer tree;
 
 	/**
 	 * The Constructor
 	 */
-	public VisualizePlantUMLPage() {
-		super("Visualize sequence diagram page");
-		setTitle("Visualize sequence diagram page");
+	public VisualizeTxtUMLPage(Class<?>... diagramTypes) {
+		super("Visualize txtUML page");
+		this.diagramTypes = diagramTypes;
+		setTitle("Visualize txtUML page");
 		setDescription("Select the diagrams to be visualized.");
 	}
 
@@ -74,7 +73,7 @@ public class VisualizePlantUMLPage extends WizardPage {
 		container.setLayout(layout);
 
 		final Label label = new Label(container, SWT.TOP);
-		label.setText("Sequence Diagrams: ");
+		label.setText("txtUML Diagrams: ");
 
 		addInitialLayoutFields();
 
@@ -101,19 +100,19 @@ public class VisualizePlantUMLPage extends WizardPage {
 						boolean isChecked = checkedElements.contains(selectedElement);
 						tree.setChecked(selectedElement, !isChecked);
 						IType selectedType = (IType) selectedElement;
-						if (!isChecked && !plantUMLLayout.contains(selectedType)) {
-							plantUMLLayout.add(selectedType);
+						if (!isChecked && !txtUMLLayout.contains(selectedType)) {
+							txtUMLLayout.add(selectedType);
 						} else {
-							plantUMLLayout.remove(selectedType);
+							txtUMLLayout.remove(selectedType);
 						}
-						selectElementsInDiagramTree(plantUMLLayout.toArray(), true);
+						selectElementsInDiagramTree(txtUMLLayout.toArray(), true);
 					}
 				}
 			}
 		});
 
-		selectElementsInDiagramTree(plantUMLLayout.toArray(), false);
-		setExpandedLayouts(plantUMLLayout);
+		selectElementsInDiagramTree(txtUMLLayout.toArray(), false);
+		setExpandedLayouts(txtUMLLayout);
 
 		GridData treeGd = new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1);
 		treeGd.heightHint = 200;
@@ -142,9 +141,9 @@ public class VisualizePlantUMLPage extends WizardPage {
 	 * 
 	 * @return
 	 */
-	public List<IType> getPlantUmlLayouts() {
+	public List<IType> getTxtUmlLayouts() {
 		List<IType> result = new ArrayList<IType>();
-		for (IType layout : plantUMLLayout) {
+		for (IType layout : txtUMLLayout) {
 			if (!"".equals(layout.getFullyQualifiedName())) {
 				result.add(layout);
 			}
@@ -164,12 +163,12 @@ public class VisualizePlantUMLPage extends WizardPage {
 		if (!isTreeVisible)
 			tree.expandAll();
 
-		plantUMLLayout.clear();
+		txtUMLLayout.clear();
 		tree.setCheckedElements(elements);
 		List<IType> checkedTypes = Arrays.asList(elements).stream().filter(e -> e instanceof IType).map(e -> (IType) e)
 				.collect(Collectors.toList());
 
-		checkedTypes.forEach(type -> plantUMLLayout.add(type));
+		checkedTypes.forEach(type -> txtUMLLayout.add(type));
 		Stream.of(tree.getTree().getItems()).forEach(pr -> updateParentCheck(pr));
 
 		if (!isTreeVisible)
@@ -254,10 +253,10 @@ public class VisualizePlantUMLPage extends WizardPage {
 			TreeItem item = (TreeItem) event.item;
 			if (item.getData() instanceof IType) {
 				IType type = (IType) item.getData();
-				if (!plantUMLLayout.contains(type)) {
-					plantUMLLayout.add(type);
+				if (!txtUMLLayout.contains(type)) {
+					txtUMLLayout.add(type);
 				} else {
-					plantUMLLayout.remove(type);
+					txtUMLLayout.remove(type);
 				}
 				updateParentCheck(item.getParentItem());
 			} else {
@@ -293,7 +292,7 @@ public class VisualizePlantUMLPage extends WizardPage {
 			List<IType> types = PackageUtils.findAllPackageFragmentsAsStream(layoutJavaProject)
 					.flatMap(pf -> getDiagramDescriptions(pf).stream()).collect(Collectors.toList());
 			types.stream().filter(type -> type.getFullyQualifiedName().equals(qualifiedName))
-					.forEach(type -> plantUMLLayout.add(type));
+					.forEach(type -> txtUMLLayout.add(type));
 		} catch (NotFoundException | JavaModelException ex) {
 			Logger.sys.error(ex.getMessage());
 		}
@@ -324,11 +323,11 @@ public class VisualizePlantUMLPage extends WizardPage {
 			child.setChecked(checked);
 			IType childData = (IType) child.getData();
 			if (checked) {
-				if (!plantUMLLayout.contains(childData)) {
-					plantUMLLayout.add(childData);
+				if (!txtUMLLayout.contains(childData)) {
+					txtUMLLayout.add(childData);
 				}
 			} else {
-				plantUMLLayout.remove(childData);
+				txtUMLLayout.remove(childData);
 			}
 		}
 	}

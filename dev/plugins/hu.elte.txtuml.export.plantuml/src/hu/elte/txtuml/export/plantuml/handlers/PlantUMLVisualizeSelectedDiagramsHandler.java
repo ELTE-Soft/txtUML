@@ -18,7 +18,7 @@ import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.ui.handlers.HandlerUtil;
 
 import hu.elte.txtuml.export.plantuml.wizards.PlantUMLVisualizeWizard;
-import hu.elte.txtuml.export.plantuml.wizards.VisualizePlantUMLPage;
+import hu.elte.txtuml.utils.eclipse.wizards.VisualizeTxtUMLPage;
 
 public class PlantUMLVisualizeSelectedDiagramsHandler extends AbstractHandler {
 	
@@ -28,7 +28,7 @@ public class PlantUMLVisualizeSelectedDiagramsHandler extends AbstractHandler {
 		WizardDialog wizardDialog = new WizardDialog(null, wizard);
 		wizardDialog.create();
 
-		VisualizePlantUMLPage page = ((VisualizePlantUMLPage) wizardDialog.getSelectedPage());
+		VisualizeTxtUMLPage page = ((VisualizeTxtUMLPage) wizardDialog.getSelectedPage());
 
 		// get selected files
 		ISelection selection = HandlerUtil.getCurrentSelection(event);

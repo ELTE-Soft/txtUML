@@ -1,4 +1,4 @@
-package hu.elte.txtuml.export.papyrus.preferences;
+package hu.elte.txtuml.utils.eclipse.preferences;
 
 import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
 

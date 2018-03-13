@@ -8,6 +8,8 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 
+import hu.elte.txtuml.utils.eclipse.preferences.PreferencesManager;
+
 /**
  * The Preferences page for txtUML Papyrus visualization
  * The UI is the same as by {@link hu.elte.txtuml.export.papyrus.wizardz.PreferencesPage PreferencesPage}

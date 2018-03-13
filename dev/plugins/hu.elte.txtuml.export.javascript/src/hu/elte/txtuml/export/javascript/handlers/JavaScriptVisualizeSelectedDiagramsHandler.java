@@ -17,14 +17,14 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.ui.handlers.HandlerUtil;
 
-import hu.elte.txtuml.export.javascript.wizardz.TxtUMLVisualizeWizard;
-import hu.elte.txtuml.export.papyrus.wizardz.VisualizeTxtUMLPage;
+import hu.elte.txtuml.export.javascript.wizardz.JavaScriptVisualizeWizard;
+import hu.elte.txtuml.utils.eclipse.wizards.VisualizeTxtUMLPage;
 
-public class TxtUMLVisualizeSelectedDiagramsHandler extends AbstractHandler {
+public class JavaScriptVisualizeSelectedDiagramsHandler extends AbstractHandler {
 
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
-		TxtUMLVisualizeWizard wizard = new TxtUMLVisualizeWizard();
+		JavaScriptVisualizeWizard wizard = new JavaScriptVisualizeWizard();
 		WizardDialog wizardDialog = new WizardDialog(null, wizard);
 		wizardDialog.create();
 

@@ -1,16 +1,16 @@
-package hu.elte.txtuml.export.javascript.handlers;
+package hu.elte.txtuml.export.papyrus.handlers;
 
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.jface.wizard.WizardDialog;
 
-import hu.elte.txtuml.export.javascript.wizardz.TxtUMLVisualizeWizard;
+import hu.elte.txtuml.export.papyrus.wizardz.PapyrusVisualizeWizard;
 
 /**
  * Handles the call to txtUML Visualization
  */
-public class TxtUMLVisualizeHandler extends AbstractHandler {
+public class PapyrusVisualizeHandler  extends AbstractHandler {
 
 	/**
 	 * Opens a TxtUMLVisuzalize wizard
@@ -18,10 +18,12 @@ public class TxtUMLVisualizeHandler extends AbstractHandler {
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 
-		WizardDialog wizardDialog = new WizardDialog(null, new TxtUMLVisualizeWizard());
 
+		WizardDialog wizardDialog = new WizardDialog( null,
+	      new PapyrusVisualizeWizard());
+		
 		wizardDialog.open();
 		return null;
 	}
-
+	
 }
