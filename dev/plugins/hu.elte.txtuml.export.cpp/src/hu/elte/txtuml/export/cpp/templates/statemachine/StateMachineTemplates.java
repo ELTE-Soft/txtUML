@@ -104,7 +104,7 @@ public class StateMachineTemplates {
 		for (State item : states) {
 			statesDecl.append(GenerationNames.stateEnumName(item.getName()) + ",");
 		}
-		String cuttedStateList = CppExporterUtils.cutOffTheLastCharcter(statesDecl.toString());
+		String cuttedStateList = CppExporterUtils.cutOffTheLastCharacter(statesDecl.toString());
 		if(!cuttedStateList.isEmpty()) {
 			finalStateList = "{" + cuttedStateList + "}";
 		}

@@ -60,7 +60,7 @@ public class PortExporter {
 			portTypes.append(ObjectDeclDefTemplates.staticPropertyDecl(PortTemplates.portTypeInfoClassName(ownerName), port.getName()));
 		}
 
-		return HeaderTemplates.classHeader("", 
+		return HeaderTemplates.classHeader( 
 				Arrays.asList(PortTemplates.PORT_TYPE_CLASS_INFO_NAME), 
 				Collections.emptyList(), 
 				portTypes.toString() + PortTemplates.portTypeInfoClassConstructor(ownerName), 

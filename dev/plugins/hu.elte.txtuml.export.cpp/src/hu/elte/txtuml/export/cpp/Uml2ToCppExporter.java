@@ -15,7 +15,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Platform;
@@ -24,9 +23,7 @@ import org.eclipse.uml2.uml.Class;
 import org.eclipse.uml2.uml.DataType;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.Interface;
-import org.eclipse.uml2.uml.Parameter;
 import org.eclipse.uml2.uml.Property;
-import org.eclipse.uml2.uml.Signal;
 import org.eclipse.uml2.uml.UMLPackage;
 import org.osgi.framework.Bundle;
 import hu.elte.txtuml.export.cpp.thread.ThreadPoolConfiguration;
@@ -34,7 +31,7 @@ import hu.elte.txtuml.api.deployment.RuntimeType;
 import hu.elte.txtuml.export.cpp.structural.ClassExporter;
 import hu.elte.txtuml.export.cpp.structural.DataTypeExporter;
 import hu.elte.txtuml.export.cpp.structural.DependencyExporter;
-import hu.elte.txtuml.export.cpp.structural.OnlyAbstractOperationExporter;
+import hu.elte.txtuml.export.cpp.structural.EventStructuresExporter;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.FileNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.ModifierNames;
@@ -43,7 +40,6 @@ import hu.elte.txtuml.export.cpp.templates.Options;
 import hu.elte.txtuml.export.cpp.templates.PrivateFunctionalTemplates;
 import hu.elte.txtuml.export.cpp.templates.RuntimeTemplates;
 import hu.elte.txtuml.export.cpp.templates.activity.ActivityTemplates;
-import hu.elte.txtuml.export.cpp.templates.statemachine.EventTemplates;
 import hu.elte.txtuml.export.cpp.templates.statemachine.StateMachineTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.FunctionTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.HeaderTemplates;
@@ -62,7 +58,6 @@ public class Uml2ToCppExporter {
 	private static final String DEFAULT_ASSOCIATIONS_NAME = "associations";
 	private static final String PROJECT_NAME = "hu.elte.txtuml.export.cpp";
 	private static final String CPP_FILES_FOLDER_NAME = "cpp-runtime";
-	private static final String ENUM_EXTENSION = "_EE";
 
 	// default sources
 	private static final String DEFAULT_TARGET_EXECUTABLE = "main";
@@ -70,36 +65,33 @@ public class Uml2ToCppExporter {
 	private static final String INIT_MACHINE_NAME = StateMachineTemplates.TransitionTableInitialSourceName;
 	private static final String ENVIRONMENT_INITIALIZER = "Env";
 
-	private ClassExporter classExporter;
-	private DataTypeExporter dataTypeExporter;
-	private InterfaceExporter interfaceExporter;
-	private OnlyAbstractOperationExporter abstractOperationExporter;
+
 	private final Options options;
 
 	private ThreadHandlingManager threadManager;
 
+	private List<Class> classes;
 	private Set<String> stateMachineOwners;
 	private List<String> classNames;
-	private List<Class> classes;
 	private List<Element> modelRoot;
+	private boolean testing;
 
 
 	public Uml2ToCppExporter(List<Element> modelRoot, Pair<RuntimeType, Map<String, ThreadPoolConfiguration>> config,
-			boolean addRuntimeOption, boolean overWriteMainFileOption, Boolean testing) {
+			boolean addRuntimeOption, boolean overWriteMainFileOption, boolean testing) {
 
 		this.modelRoot = modelRoot;
-		classExporter = new ClassExporter();
-		classExporter.setTesting(testing);
-		dataTypeExporter = new DataTypeExporter();
-		interfaceExporter = new InterfaceExporter();
-		abstractOperationExporter = new OnlyAbstractOperationExporter();
+
+		this.testing = testing;
 		threadManager = new ThreadHandlingManager(config);
 
 		classNames = new LinkedList<String>();
 		stateMachineOwners = new HashSet<String>();
 		options = new Options(addRuntimeOption, overWriteMainFileOption);
-		
-		classes = CppExporterUtils.getAllModelCLass(modelRoot);
+
+
+		classes = CppExporterUtils.getAllModelClass(modelRoot);
+
 	}
 
 	public void buildCppCode(String outputDirectory) throws IOException {
@@ -109,7 +101,6 @@ public class Uml2ToCppExporter {
 		copyPreWrittenCppFiles(outputDirectory);
 		createEventSource(outputDirectory);
 		createClassSources(outputDirectory);
-		createAbstractClassSources(outputDirectory);
 		createTransitionTableInitialSource(outputDirectory);
 		createDataTypes(outputDirectory);
 		createAssociationsSources(outputDirectory);
@@ -118,19 +109,13 @@ public class Uml2ToCppExporter {
 	}
 
 	private void createClassSources(String outputDirectory) throws IOException {
-
-
 		for (Class cls : classes) {
-
-			if (abstractOperationExporter.hasProperOperation(cls)) {
-				classExporter.setAbstractInterface(GenerationTemplates.generatedAbstractClassName(cls.getName()));
-			} else {
-				classExporter.removeAbstractInterface();
-			}
-			classExporter.setName(cls.getName());
+			
+			ClassExporter classExporter = new ClassExporter(cls, cls.getName(), outputDirectory);
+			classExporter.setTesting(testing);		
 			classExporter.setPoolId(threadManager.getConfiguratedPoolId(cls.getName()));
 
-			classExporter.exportStructuredElement(cls, outputDirectory);
+			classExporter.createUnitSource();
 			if (CppExporterUtils.isStateMachineOwner(cls)) {
 				classNames.addAll(classExporter.getSubmachines());
 			}
@@ -144,16 +129,6 @@ public class Uml2ToCppExporter {
 			}
 
 		}
-	}
-
-	private void createAbstractClassSources(String outputDirectory) throws IOException {
-		List<Class> abstractClasses = classes.stream().filter(c -> abstractOperationExporter.hasProperOperation(c))
-				.collect(Collectors.toList());
-		for (Class cls : abstractClasses) {
-			abstractOperationExporter.setName(GenerationTemplates.generatedAbstractClassName(cls.getName()));
-			abstractOperationExporter.exportStructuredElement(cls, outputDirectory);
-		}
-
 	}
 
 	private void createTransitionTableInitialSource(String outputDirectory) throws IOException {
@@ -189,12 +164,14 @@ public class Uml2ToCppExporter {
 	}
 
 	private void createDataTypes(String outputDirectory) throws IOException {
+		
 		List<DataType> dataTypes = new ArrayList<>();
 		CppExporterUtils.getTypedElements(dataTypes, UMLPackage.Literals.DATA_TYPE, modelRoot);
+
 		for (DataType dataType : dataTypes) {
-			dataTypeExporter.setName(dataType.getName());
-			dataTypeExporter.init();
-			dataTypeExporter.exportStructuredElement(dataType, outputDirectory);
+			DataTypeExporter dataTypeExporter = new DataTypeExporter(dataType, dataType.getName(), outputDirectory);
+			dataTypeExporter.createUnitSource();
+			
 		}
 
 	}
@@ -292,36 +269,9 @@ public class Uml2ToCppExporter {
 	}
 
 	private void createEventSource(String outputDirectory) throws FileNotFoundException, UnsupportedEncodingException {
-		List<Signal> signalList = new ArrayList<Signal>();
-		CppExporterUtils.getTypedElements(signalList, UMLPackage.Literals.SIGNAL, modelRoot);
-		StringBuilder source = new StringBuilder("");
-		StringBuilder eventClasses = new StringBuilder("");
-		StringBuilder events = new StringBuilder("");
-		StringBuilder typeDefinitions = new StringBuilder("");
-		List<Pair<String, String>> allParam = new LinkedList<Pair<String, String>>();
-		for (Signal signal : signalList) {
-			List<Pair<String, String>> currentParams = getSignalParams(signal);
-			String ctrBody = CppExporterUtils.signalCtrBody(signal, modelRoot);
-			allParam.addAll(currentParams);
-			eventClasses.append(
-					EventTemplates.eventClass(signal.getName(), currentParams, ctrBody, signal.getOwnedAttributes()));
-			typeDefinitions.append(EventTemplates.eventPtrTypeDef(signal.getName()));
-			events.append(signal.getName() + ENUM_EXTENSION + ",");
-		}
-
-		DependencyExporter dependencyEporter = new DependencyExporter();
-		for (Pair<String, String> param : allParam) {
-			dependencyEporter.addDependency(param.getSecond());
-		}
-
-		String includes = dependencyEporter.createDependencyHeaderIncludeCode() + RuntimeTemplates.eventHeaderInclude();
-		source.append("enum Events {" + CppExporterUtils.cutOffTheLastCharcter(events.toString()) + "};\n");
-		source.append(eventClasses);
-		source.append(typeDefinitions);
-		CppExporterUtils.writeOutSource(outputDirectory, (EventTemplates.EventHeader),
-				CppExporterUtils.format(EventTemplates.eventHeaderGuard(includes + GenerationTemplates
-						.putNamespace(source.toString(), GenerationNames.Namespaces.ModelNamespace))));
-
+		
+		EventStructuresExporter eventSourceExporter = new EventStructuresExporter(CppExporterUtils.getSignalsWithConstructors(modelRoot), outputDirectory);
+		eventSourceExporter.createUnitSource();
 
 	}
 
@@ -447,18 +397,12 @@ public class Uml2ToCppExporter {
 
 		for (Interface inf : interfaces) {
 			if (!inf.getOwnedReceptions().isEmpty()) {
-				interfaceExporter.setName(inf.getName());
-				interfaceExporter.exportStructuredElement(inf, outputDirectory);
+				InterfaceExporter interfaceExporter = new InterfaceExporter(inf,inf.getName(), outputDirectory);
+				interfaceExporter.createUnitSource();
 			}
 
 		}
 	}
 
-	private List<Pair<String, String>> getSignalParams(Signal signal) {
-		List<Pair<String, String>> ret = new ArrayList<Pair<String, String>>();
-		for (Parameter param : CppExporterUtils.getSignalConstructorParameters(signal, modelRoot)) {
-			ret.add(new Pair<String, String>(param.getType().getName(), param.getName()));
-		}
-		return ret;
-	}
+
 }

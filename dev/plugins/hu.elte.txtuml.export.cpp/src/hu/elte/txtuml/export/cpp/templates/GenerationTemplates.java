@@ -5,15 +5,12 @@ import java.util.List;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.FileNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.HierarchicalStateMachineNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.PointerAndMemoryNames;
-import hu.elte.txtuml.export.cpp.templates.GenerationNames.TimerNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.TypeDelcreationKeywords;
 
 public class GenerationTemplates {
 
 	public static final String StandardIOinclude = GenerationNames.StandardIOInclude;
 	public static final String DeploymentHeader = GenerationNames.DeploymentHeaderName;
-	public static final String TimerInterfaceHeader = TimerNames.TimerInterFaceName.toLowerCase();
-	public static final String TimerHeader = TimerNames.TimerClassName.toLowerCase();
 
 	public static String headerName(String className) {
 		return className + "." + FileNames.HeaderExtension;

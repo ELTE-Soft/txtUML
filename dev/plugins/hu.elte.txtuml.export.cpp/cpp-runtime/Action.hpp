@@ -7,7 +7,6 @@
 #include "ESRoot/Types.hpp"
 #include "PortUtils.hpp"
 
-#include "ESRoot/Types.hpp"
 namespace ES
 {
 class ModelObject;

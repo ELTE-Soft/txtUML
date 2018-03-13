@@ -8,7 +8,6 @@ import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.SignalEvent;
 
 import hu.elte.txtuml.export.cpp.templates.GenerationNames;
-import hu.elte.txtuml.export.cpp.templates.GenerationNames.FileNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.TypeDelcreationKeywords;
 import hu.elte.txtuml.export.cpp.templates.GenerationTemplates;
 import hu.elte.txtuml.export.cpp.templates.PrivateFunctionalTemplates;
@@ -18,11 +17,10 @@ import hu.elte.txtuml.utils.Pair;
 
 public class EventTemplates {
 	
-	public static final String EventHeader = EventTemplates.EventHeaderName + "." + FileNames.HeaderExtension;
 	public static final String ProcessEventFunctionName = "processEventVirtual";
 	public static final String EventFParamName = GenerationNames.formatIncomingParamName(EventTemplates.EventParamName);
 	public static final String EventParamName = "e";
-	public static final String EventHeaderName = "event";
+	public static final String EventHeaderName = "EventStructures";
 	public static final String EventBaseName = "EventBase";
 	public static final String EventsEnumName = "Events";
 	public static final String EventPointerType = GenerationNames.PointerAndMemoryNames.EventPtr;

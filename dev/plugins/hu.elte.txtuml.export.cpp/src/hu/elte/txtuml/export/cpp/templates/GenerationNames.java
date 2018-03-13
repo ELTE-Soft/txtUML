@@ -31,7 +31,10 @@ public class GenerationNames {
 		public static final String CollectionUtilsPath = ESRootPath + FileNamesCollectionUtilsHeaderName;
 		public static final String PortUtilsPath = RuntimeTemplates.RTPath + "PortUtils";
 		public static final String InterfaceUtilsPath = RuntimeTemplates.RTPath + "InterfaceUtils";
-	
+		
+		public static final String TimerInterfaceHeader = RuntimeTemplates.RTPath + TimerNames.TimerInterFaceName.toLowerCase();
+		public static final String TimerHeader = RuntimeTemplates.RTPath + TimerNames.TimerClassName.toLowerCase();
+
 		public static final String HeaderExtension = "hpp";
 		public static final String SourceExtension = "cpp";
 	}

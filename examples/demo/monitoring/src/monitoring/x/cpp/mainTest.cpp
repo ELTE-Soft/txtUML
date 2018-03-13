@@ -7,7 +7,7 @@
 #include "Alert.hpp"
 #include "associations.hpp"
 #include "Action.hpp"
-#include "event.hpp"
+#include "EventStructures.hpp"
 
 int main()
 {
