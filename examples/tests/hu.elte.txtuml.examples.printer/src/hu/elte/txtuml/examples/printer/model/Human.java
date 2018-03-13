@@ -23,7 +23,7 @@ public class Human extends ModelClass {
 	public class DoPrint extends State {
 		@Override
 		public void entry() {
-			PrinterFrontend p = Human.this.assoc(Usage.usedPrinter.class).selectAny();
+			PrinterFrontend p = Human.this.assoc(Usage.usedPrinter.class).one();
 
 			Document doc = Action.create(Document.class);
 			doc.sideCount = count;

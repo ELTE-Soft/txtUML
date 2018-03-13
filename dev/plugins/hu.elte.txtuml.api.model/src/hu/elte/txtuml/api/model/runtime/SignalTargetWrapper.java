@@ -12,7 +12,7 @@ import hu.elte.txtuml.api.model.Signal;
 public interface SignalTargetWrapper<W> extends Wrapper<W>, RuntimeInfo {
 
 	/**
-	 * Asynchronously sends a signal to this object. *
+	 * Asynchronously sends a signal to this object.
 	 * <p>
 	 * Thread-safe.
 	 */

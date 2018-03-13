@@ -90,8 +90,8 @@ public class Motor extends ModelClass {
 	public class TStopAtBottom extends Transition {
 		@Override
 		public void effect() {
-			Door d = Motor.this.assoc(MotorMovesDoor.movedDoor.class).selectAny();
-			Alarm a = d.assoc(DoorSwitchesOnAlarm.SwitchedAlarm.class).selectAny();
+			Door d = Motor.this.assoc(MotorMovesDoor.movedDoor.class).one();
+			Alarm a = d.assoc(DoorSwitchesOnAlarm.SwitchedAlarm.class).one();
 			Action.send(new StarPressed(), a);
 		}
 	}

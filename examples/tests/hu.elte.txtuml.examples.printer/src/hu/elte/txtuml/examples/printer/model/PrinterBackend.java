@@ -34,7 +34,7 @@ public class PrinterBackend extends ModelClass {
 	public class RecievedJob extends Transition {
 		@Override
 		public boolean guard() {
-			Document doc = PrinterBackend.this.assoc(DocumentBeingPrinted.beingPrinted.class).selectAny();
+			Document doc = PrinterBackend.this.assoc(DocumentBeingPrinted.beingPrinted.class).one();
 			return tonerPercent >= doc.sideCount;
 		}
 
@@ -50,7 +50,7 @@ public class PrinterBackend extends ModelClass {
 	public class RecievedJobError extends Transition {
 		@Override
 		public boolean guard() {
-			Document doc = PrinterBackend.this.assoc(DocumentBeingPrinted.beingPrinted.class).selectAny();
+			Document doc = PrinterBackend.this.assoc(DocumentBeingPrinted.beingPrinted.class).one();
 			return tonerPercent < doc.sideCount;
 		}
 
@@ -64,7 +64,7 @@ public class PrinterBackend extends ModelClass {
 		@Override
 		public void entry() {
 			Action.log("PrinterBackend: started printing.");
-			Document doc = PrinterBackend.this.assoc(DocumentBeingPrinted.beingPrinted.class).selectAny();
+			Document doc = PrinterBackend.this.assoc(DocumentBeingPrinted.beingPrinted.class).one();
 			for (int i = 0; i < doc.sideCount; ++i) {
 				try {
 					Thread.sleep(2000);
@@ -85,10 +85,10 @@ public class PrinterBackend extends ModelClass {
 	public class FinishedJob extends Transition {
 		@Override
 		public void effect() {
-			Document doc = PrinterBackend.this.assoc(DocumentBeingPrinted.beingPrinted.class).selectAny();
+			Document doc = PrinterBackend.this.assoc(DocumentBeingPrinted.beingPrinted.class).one();
 			Action.unlink(DocumentBeingPrinted.beingPrinted.class, doc, DocumentBeingPrinted.printerBackend.class,
 					PrinterBackend.this);
-			PrinterFrontend pf = PrinterBackend.this.assoc(PrinterSystem.frontend.class).selectAny();
+			PrinterFrontend pf = PrinterBackend.this.assoc(PrinterSystem.frontend.class).one();
 			Action.send(new FinishedPrinting(), pf);
 		}
 	}

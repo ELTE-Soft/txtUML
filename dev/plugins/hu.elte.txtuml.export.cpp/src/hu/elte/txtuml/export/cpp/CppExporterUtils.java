@@ -7,8 +7,8 @@ import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -31,54 +31,36 @@ import org.eclipse.uml2.uml.StateMachine;
 import org.eclipse.uml2.uml.Stereotype;
 import org.eclipse.uml2.uml.UMLPackage;
 
-import hu.elte.txtuml.export.cpp.activity.ActivityExporter;
 import hu.elte.txtuml.export.cpp.templates.activity.ActivityTemplates;
 import hu.elte.txtuml.utils.Pair;
 
 public class CppExporterUtils {
-	
+
 	private static String UNKNOWN_TYPE = "UNKNOWN_TYPE";
 	private static String WRITER_ENCODE = "UTF-8";
-	
+
 	@SuppressWarnings("unchecked")
-	public static <ElementTypeT, EClassTypeT> void getTypedElements(Collection<ElementTypeT> dest, EClassTypeT eClass, List<Element> elements) {
+	public static <ElementTypeT, EClassTypeT> void getTypedElements(Collection<ElementTypeT> dest, EClassTypeT eClass,
+			List<Element> elements) {
 		for (Element item : elements) {
 			if (item.eClass().equals(eClass)) {
 				dest.add((ElementTypeT) item);
 			}
 		}
 	}
-	
-	public static int executeCommand(String directory, List<String> strings, Map<String, String> environment, String fileNameToRedirect)
-			throws IOException, InterruptedException {
-		ProcessBuilder processBuilder = new ProcessBuilder(strings);
-		if (environment != null) {
-			processBuilder.environment().putAll(environment);
-		}
-					
-		processBuilder.inheritIO();
-		processBuilder.directory(new File(directory));
-		
-		if(fileNameToRedirect != null){
-			processBuilder = processBuilder.redirectOutput(new File(directory + "/" + fileNameToRedirect));
-		}
 
-		Process process = processBuilder.start();
-		return process.waitFor();
-	}
-	
 	public static Set<String> getAllModelClassNames(List<Element> elements) {
 
 		Set<String> classNames = new HashSet<String>();
-		for (Class cls : getAllModelCLass(elements)) {
-			if (!isSignalFactoryClass(cls,elements)) {
+		for (Class cls : getAllModelClass(elements)) {
+			if (!isSignalFactoryClass(cls, elements)) {
 				classNames.add(cls.getName());
 			}
 		}
 
 		return classNames;
 	}
-	
+
 	public static boolean isConstructor(Operation operation) {
 
 		for (Stereotype stereotype : operation.getAppliedStereotypes()) {
@@ -90,15 +72,15 @@ public class CppExporterUtils {
 		return false;
 
 	}
-	
-	public static List<Class> getAllModelCLass(List<Element> elements) {
+
+	public static List<Class> getAllModelClass(List<Element> elements) {
 		List<Class> classes = new ArrayList<Class>();
 		getTypedElements(classes, UMLPackage.Literals.CLASS, elements);
 		classes.removeIf(c -> isSignalFactoryClass(c, elements));
 
 		return classes;
 	}
-	
+
 	public static Activity getOperationActivity(Operation operation) {
 		Activity activity = null;
 		for (Behavior behavior : operation.getMethods()) {
@@ -111,7 +93,7 @@ public class CppExporterUtils {
 
 		return activity;
 	}
-	
+
 	public static List<Pair<String, String>> getOperationParams(Operation operation) {
 		List<Pair<String, String>> operationParameters = new ArrayList<Pair<String, String>>();
 		for (Parameter param : operation.getOwnedParameters()) {
@@ -125,7 +107,7 @@ public class CppExporterUtils {
 		}
 		return operationParameters;
 	}
-	
+
 	public static List<String> getOperationParamNames(Operation operation) {
 		List<String> operationParameterTypes = new ArrayList<String>();
 		for (Parameter param : operation.getOwnedParameters()) {
@@ -137,7 +119,7 @@ public class CppExporterUtils {
 		}
 		return operationParameterTypes;
 	}
-	
+
 	public static List<String> getOperationParamTypes(Operation operation) {
 		List<String> operationParameterTypes = new ArrayList<String>();
 		for (Parameter param : operation.getOwnedParameters()) {
@@ -149,7 +131,7 @@ public class CppExporterUtils {
 		}
 		return operationParameterTypes;
 	}
-	
+
 	public static void writeOutSource(String path, String fileName, String source)
 			throws FileNotFoundException, UnsupportedEncodingException {
 		try {
@@ -183,8 +165,8 @@ public class CppExporterUtils {
 
 		return formattedSource;
 	}
-	
-	public static Class getSignalFactoryClass(Signal signal, List<Element> elements) {
+
+	private static Class getSignalFactoryClass(Signal signal, List<Element> elements) {
 		for (Element element : elements) {
 			if (element.eClass().equals(UMLPackage.Literals.CLASS)) {
 				Class cls = (Class) element;
@@ -202,46 +184,40 @@ public class CppExporterUtils {
 
 		return null;
 	}
-	
-	public static String signalCtrBody(Signal signal, List<Element> elements) {
-		ActivityExporter activityExporter = new ActivityExporter();
-		Class factoryClass = getSignalFactoryClass(signal, elements);
-		String body = "";
-		for (Operation operation : factoryClass.getOperations()) {
-			if (isConstructor(operation)) {
-				body = activityExporter.createFunctionBody(getOperationActivity(operation)).getActivitySource();
 
-			}
-		}
+	public static Map<Signal, Operation> getSignalsWithConstructors(List<Element> elements) {
+		Map<Signal, Operation> signalsToConstructorOperations = new HashMap<>();
 
-		return body;
+		List<Signal> signalList = new ArrayList<Signal>();
+		CppExporterUtils.getTypedElements(signalList, UMLPackage.Literals.SIGNAL, elements);
 
-	}
-	
-	public static List<Parameter> getSignalConstructorParameters(Signal signal, List<Element> elements) {
-		List<Parameter> signalParameters = new LinkedList<Parameter>();
-
-		Class factoryClass = getSignalFactoryClass(signal, elements);
-		if (factoryClass != null) {
-			for (Operation op : factoryClass.getOperations()) {
-				if (isConstructor(op)) {
-					for (Parameter parameter : op.getOwnedParameters()) {
-						if (!parameter.getType().getName().equals(signal.getName())) {
-							signalParameters.add(parameter);
-						}
+		for (Signal signal : signalList) {
+			Operation op = null;
+			Class factoryClass = getSignalFactoryClass(signal, elements);
+			assert (factoryClass != null);
+			if (factoryClass != null) {
+				for (Operation operation : factoryClass.getOperations()) {
+					if (isConstructor(operation)) {
+						op = operation;
 					}
-					break;
 				}
 			}
+
+			assert (op != null);
+			if (op != null) {
+				signalsToConstructorOperations.put(signal, op);
+			}
+
 		}
 
-		return signalParameters;
+		return signalsToConstructorOperations;
 	}
+
 	public static StateMachine getStateMachine(Class cls) {
-	
+
 		List<StateMachine> smList = new ArrayList<StateMachine>();
 		getTypedElements(smList, UMLPackage.Literals.STATE_MACHINE, cls.getOwnedElements());
-		
+
 		if (!smList.isEmpty()) {
 			return smList.get(0);
 
@@ -250,7 +226,6 @@ public class CppExporterUtils {
 		}
 	}
 
-	
 	private static boolean isSignalFactoryClass(Class cls, List<Element> elements) {
 		List<Signal> signals = new ArrayList<Signal>();
 		getTypedElements(signals, UMLPackage.Literals.SIGNAL, elements);
@@ -266,16 +241,35 @@ public class CppExporterUtils {
 
 		return false;
 	}
-	
+
 	public static boolean isStateMachineOwner(Class cls) {
 		return CppExporterUtils.getStateMachine(cls) != null;
 	}
-	
-	public static String cutOffTheLastCharcter(String originalString) {
+
+	public static String cutOffTheLastCharacter(String originalString) {
 		int originalLeght = originalString.length();
-		if(originalLeght == 0) {
+		if (originalLeght == 0) {
 			return "";
 		}
 		return originalString.substring(0, originalLeght - 1);
 	}
+	
+	public static int executeCommand(String directory, List<String> strings, Map<String, String> environment, String fileNameToRedirect)
+			throws IOException, InterruptedException {
+		ProcessBuilder processBuilder = new ProcessBuilder(strings);
+		if (environment != null) {
+			processBuilder.environment().putAll(environment);
+		}
+					
+		processBuilder.inheritIO();
+		processBuilder.directory(new File(directory));
+		
+		if(fileNameToRedirect != null){
+			processBuilder = processBuilder.redirectOutput(new File(directory + "/" + fileNameToRedirect));
+		}
+
+		Process process = processBuilder.start();
+		return process.waitFor();
+	}
+
 }
