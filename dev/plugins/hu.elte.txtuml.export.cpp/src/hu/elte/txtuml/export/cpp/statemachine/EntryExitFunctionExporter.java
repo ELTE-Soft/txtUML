@@ -3,10 +3,14 @@ package hu.elte.txtuml.export.cpp.statemachine;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
+
 import org.eclipse.uml2.uml.Behavior;
 import org.eclipse.uml2.uml.State;
 
 import hu.elte.txtuml.export.cpp.ActivityExportResult;
+import hu.elte.txtuml.export.cpp.ICppCompilationUnit;
+import hu.elte.txtuml.export.cpp.IDependencyCollector;
 import hu.elte.txtuml.export.cpp.activity.ActivityExporter;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.HierarchicalStateMachineNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.StateMachineMethodNames;
@@ -63,11 +67,11 @@ public class EntryExitFunctionExporter {
 
 	private ActivityExporter activityExporter;
 	private List<State> stateList;
-	private String className;
+	private ICppCompilationUnit owner;
 
-	EntryExitFunctionExporter(String className, List<State> stateList) {
-		activityExporter = new ActivityExporter();
-		this.className = className;
+	EntryExitFunctionExporter(ICppCompilationUnit owner, IDependencyCollector ownerDependencyCollector, List<State> stateList) {
+		this.owner = owner;
+		activityExporter = new ActivityExporter(Optional.of(ownerDependencyCollector));
 		this.stateList = stateList;
 	}
 
@@ -185,10 +189,10 @@ public class EntryExitFunctionExporter {
 		notHiddenParam.add(new Pair<String, String>(EventTemplates.EventPointerType, EventTemplates.EventParamName));
 		for (EntryExitFunctionDescription description : getTheProperList(funcType)) {
 			if (description.getContainsSignalAccess()) {
-				source.append(FunctionTemplates.functionDef(className, description.getFunctionName(), notHiddenParam,
+				source.append(FunctionTemplates.functionDef(owner.getUnitName(), description.getFunctionName(), notHiddenParam,
 						description.getFunctionBody()));
 			} else {
-				source.append(FunctionTemplates.functionDef(className, description.getFunctionName(), hiddenParam,
+				source.append(FunctionTemplates.functionDef(owner.getUnitName(), description.getFunctionName(), hiddenParam,
 						description.getFunctionBody()));
 
 			}

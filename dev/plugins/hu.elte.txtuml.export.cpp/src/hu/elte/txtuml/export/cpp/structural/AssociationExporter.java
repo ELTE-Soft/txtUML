@@ -6,35 +6,25 @@ import java.util.List;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.uml2.uml.Property;
 
-import hu.elte.txtuml.export.cpp.templates.GenerationNames;
-import hu.elte.txtuml.export.cpp.templates.GenerationTemplates;
-import hu.elte.txtuml.export.cpp.templates.PrivateFunctionalTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.LinkTemplates;
 
 class AssociationExporter {
 	private List<Property> associationMembers;
-	private boolean ownAssociations;
-	
-	AssociationExporter() {
-		associationMembers = new ArrayList<Property>();
-		ownAssociations = false;
-	}
 	
 	AssociationExporter(EList<Property> properites) {
 		associationMembers = new ArrayList<Property>();
 		exportAssociations(properites);
 	}
 
-	void exportAssociations(EList<Property> properites) {
+	private void exportAssociations(EList<Property> properites) {
 		for (Property prop : properites) {
 			if (prop.getAssociation() != null) {
 				associationMembers.add(prop);
-				ownAssociations = true;
 			}
 		}
 	}
 	
-	boolean ownAssociation() {return ownAssociations;}
+	boolean ownAssociation() {return !associationMembers.isEmpty();}
 
 	String createAssociationMemberDeclarationsCode() {
 		StringBuilder source = new StringBuilder("");
@@ -63,8 +53,7 @@ class AssociationExporter {
 			}
 
 		}
-		return PrivateFunctionalTemplates.include(LinkTemplates.AssociationsStructuresHreaderName)
-				+ GenerationTemplates.putNamespace(assocDeclerations.toString(), GenerationNames.Namespaces.ModelNamespace);
+		return  assocDeclerations.toString();
 	}
 	
 	List<String> getAssociatedPropertyTypes() {
