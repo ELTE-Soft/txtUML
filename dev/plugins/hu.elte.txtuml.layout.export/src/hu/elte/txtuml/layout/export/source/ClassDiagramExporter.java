@@ -119,8 +119,7 @@ public class ClassDiagramExporter extends AbstractSourceExporter {
 		}
 
 		Class<?> base = node.getSuperclass();
-		if (base != null && allNodes.containsKey(base)) { // Load
-															// generalization.
+		if (base != null && allNodes.containsKey(base)) { // Load generalization.
 			try {
 				elementExporter.exportGeneralization(base, node);
 			} catch (ElementExportationException e) {
