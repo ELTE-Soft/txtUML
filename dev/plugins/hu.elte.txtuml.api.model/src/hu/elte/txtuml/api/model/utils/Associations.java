@@ -4,6 +4,7 @@ import java.lang.reflect.ParameterizedType;
 
 import hu.elte.txtuml.api.model.AssociationEnd;
 import hu.elte.txtuml.api.model.AssociationEnd.Container;
+import hu.elte.txtuml.api.model.GeneralCollection;
 import hu.elte.txtuml.api.model.ZeroToOne;
 
 /**
@@ -44,8 +45,41 @@ public final class Associations {
 
 	@SuppressWarnings("unchecked")
 	public static <C> Class<C> getCollectionTypeOfNonContainerEnd(Class<? extends AssociationEnd<C>> assocEndType) {
-		return (Class<C>) ((ParameterizedType) ((ParameterizedType) assocEndType.getGenericSuperclass())
-				.getActualTypeArguments()[0]).getRawType();
+		ParameterizedType endType = (ParameterizedType) assocEndType.getGenericSuperclass();
+		ParameterizedType collectionType = (ParameterizedType) endType.getActualTypeArguments()[0];
+
+		return (Class<C>) collectionType.getRawType();
+	}
+
+	@SuppressWarnings("unchecked")
+	public static <T, C extends GeneralCollection<T>> Class<T> getElementTypeOf(AssociationEnd<C> assocEnd) {
+		return getElementTypeOf((Class<? extends AssociationEnd<C>>) assocEnd.getClass());
+	}
+
+	public static <T, C extends GeneralCollection<T>> Class<T> getElementTypeOf(
+			Class<? extends AssociationEnd<C>> assocEndType) {
+		if (Container.class.isAssignableFrom(assocEndType)) {
+			return getElementTypeOfContainerEnd(assocEndType);
+		} else {
+			return getElementTypeOfNonContainerEnd(assocEndType);
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	public static <T, C extends GeneralCollection<T>> Class<T> getElementTypeOfContainerEnd(
+			Class<? extends AssociationEnd<C>> assocEndType) {
+		ParameterizedType endType = (ParameterizedType) assocEndType.getGenericSuperclass();
+
+		return (Class<T>) endType.getActualTypeArguments()[0];
+	}
+
+	@SuppressWarnings("unchecked")
+	public static <T, C extends GeneralCollection<T>> Class<T> getElementTypeOfNonContainerEnd(
+			Class<? extends AssociationEnd<C>> assocEndType) {
+		ParameterizedType endType = (ParameterizedType) assocEndType.getGenericSuperclass();
+		ParameterizedType collectionType = (ParameterizedType) endType.getActualTypeArguments()[0];
+
+		return (Class<T>) collectionType.getActualTypeArguments()[0];
 	}
 
 }
