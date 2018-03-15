@@ -1,10 +1,10 @@
-package hu.elte.txtuml.examples.validation;
+package hu.elte.txtuml.examples.validation.model;
 
 import hu.elte.txtuml.api.model.From;
 import hu.elte.txtuml.api.model.ModelClass;
 import hu.elte.txtuml.api.model.To;
 import hu.elte.txtuml.api.model.Trigger;
-import hu.elte.txtuml.examples.validation.helpers.Sig;
+import hu.elte.txtuml.examples.validation.model.helpers.Sig;
 
 public class TransitionsWithoutSourceTargetOrTrigger extends ModelClass {
 

@@ -1,4 +1,4 @@
-package hu.elte.txtuml.examples.validation;
+package hu.elte.txtuml.examples.validation.model;
 import hu.elte.txtuml.api.model.Signal;
 
 public class MethodInSignal extends Signal {

@@ -1,8 +1,8 @@
-package hu.elte.txtuml.examples.validation;
+package hu.elte.txtuml.examples.validation.model;
 
 import hu.elte.txtuml.api.model.Any;
 import hu.elte.txtuml.api.model.Composition;
-import hu.elte.txtuml.examples.validation.helpers.A;
+import hu.elte.txtuml.examples.validation.model.helpers.A;
 
 class CompositionNoContainer extends Composition {
 

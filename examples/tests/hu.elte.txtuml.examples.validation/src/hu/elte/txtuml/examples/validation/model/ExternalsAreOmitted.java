@@ -1,4 +1,4 @@
-package hu.elte.txtuml.examples.validation;
+package hu.elte.txtuml.examples.validation.model;
 
 import java.io.Serializable;
 import java.util.List;

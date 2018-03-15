@@ -21,57 +21,31 @@ import static hu.elte.txtuml.validation.model.ModelErrors.UNKNOWN_TRANSITION_MET
 import static hu.elte.txtuml.validation.model.ModelErrors.WRONG_COMPOSITION_ENDS;
 import static hu.elte.txtuml.validation.model.ModelErrors.WRONG_NUMBER_OF_ASSOCIATION_ENDS;
 import static hu.elte.txtuml.validation.model.ModelErrors.WRONG_TYPE_IN_ASSOCIATION;
-import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.argThat;
-import static org.mockito.Mockito.atLeast;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
-
-import java.io.File;
-import java.io.IOException;
 
 import org.eclipse.core.resources.IResource;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.compiler.ReconcileContext;
-import org.eclipse.jdt.core.dom.AST;
-import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.hamcrest.Description;
-import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentMatcher;
 
-import hu.elte.txtuml.utils.jdt.SharedUtils;
 import hu.elte.txtuml.validation.common.ProblemCollector;
-import hu.elte.txtuml.validation.common.SourceInfo;
 import hu.elte.txtuml.validation.model.JtxtUMLModelCompilationParticipant;
 import hu.elte.txtuml.validation.model.ModelErrors;
 import hu.elte.txtuml.validation.model.ModelValidationError;
 import hu.elte.txtuml.validation.model.visitors.ModelVisitor;
 
-public class ModelTest {
+public class ModelTest extends ValidationTestBase {
 
-	/*
-	 * This test suite relies on the repository having a given structure. The
-	 * structure is encoded in these pathes:
-	 */
+	private static final String VALIDATION_EXAMPLES_PACKAGE = "/hu/elte/txtuml/examples/validation/model/";
 
-	private static final String VALIDATION_EXAMPLES_PACKAGE = "/hu/elte/txtuml/examples/validation/";
-	private static final String VALIDATION_EXAMPLES_ROOT = "../../../examples/tests/hu.elte.txtuml.examples.validation/src";
-	private static final String API_SRC_LOC = "../../plugins/hu.elte.txtuml.api.model/src/";
-
-	ProblemCollector mockCollector;
-
-	@Before
-	public void before() {
-		mockCollector = mock(ModelProblemCollector.class);
-		SourceInfo sourceInfo = mock(SourceInfo.class);
-		when(mockCollector.getSourceInfo()).thenReturn(sourceInfo);
-		when(sourceInfo.getOriginatingFileName()).thenReturn("");
-		when(sourceInfo.getSourceLineNumber(anyInt())).thenReturn(0);
+	@Override
+	protected String getValidationExamplesPackage() {
+		return VALIDATION_EXAMPLES_PACKAGE;
 	}
 
 	@Test
@@ -126,7 +100,7 @@ public class ModelTest {
 
 		checkNoOtherErrorRaised();
 	}
-	
+
 	@Test
 	public void testFieldType() throws Exception {
 		CompilationUnit compilationUnit = prepareAST("InvalidFieldType.java");
@@ -275,33 +249,6 @@ public class ModelTest {
 		verify(mockCollector, times(2)).report(is(INVALID_DATA_TYPE_FIELD));
 
 		checkNoOtherErrorRaised();
-	}
-
-	private void checkNoOtherErrorRaised() {
-		verify(mockCollector, atLeast(0)).getSourceInfo();
-		verifyNoMoreInteractions(mockCollector);
-	}
-
-	private CompilationUnit prepareAST(String javaFile) throws IOException {
-		File projectRoot = new File(VALIDATION_EXAMPLES_ROOT).getAbsoluteFile();
-		File sourceFile = new File(projectRoot.getCanonicalPath() + VALIDATION_EXAMPLES_PACKAGE + javaFile);
-
-		ASTParser parser = ASTParser.newParser(AST.JLS8);
-		char[] content = SharedUtils.getFileContents(sourceFile);
-
-		String[] classpath = {};
-		String[] sourcepath = { projectRoot.getCanonicalPath(), new File(API_SRC_LOC).getCanonicalPath() };
-		String[] encodings = { "UTF-8", "UTF-8" };
-
-		parser.setSource(content);
-
-		parser.setResolveBindings(true);
-		parser.setBindingsRecovery(true);
-		parser.setUnitName(sourceFile.getName());
-		parser.setKind(ASTParser.K_COMPILATION_UNIT);
-		parser.setEnvironment(classpath, sourcepath, encodings, true);
-
-		return (CompilationUnit) parser.createAST(null);
 	}
 
 	private static ModelValidationError is(ModelErrors type) {

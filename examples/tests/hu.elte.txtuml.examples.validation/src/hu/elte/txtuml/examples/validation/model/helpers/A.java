@@ -1,4 +1,4 @@
-package hu.elte.txtuml.examples.validation.helpers;
+package hu.elte.txtuml.examples.validation.model.helpers;
 
 import hu.elte.txtuml.api.model.ModelClass;
 

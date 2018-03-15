@@ -1,8 +1,8 @@
-package hu.elte.txtuml.examples.validation;
+package hu.elte.txtuml.examples.validation.model;
 
 import hu.elte.txtuml.api.model.Any;
 import hu.elte.txtuml.api.model.Association;
-import hu.elte.txtuml.examples.validation.helpers.A;
+import hu.elte.txtuml.examples.validation.model.helpers.A;
 
 class AssociationWithoutEnds extends Association {
 
