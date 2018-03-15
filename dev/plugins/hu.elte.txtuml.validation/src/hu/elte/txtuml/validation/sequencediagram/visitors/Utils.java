@@ -10,6 +10,7 @@ import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.SingleMemberAnnotation;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 
+import hu.elte.txtuml.api.model.ModelClass;
 import hu.elte.txtuml.api.model.seqdiag.SequenceDiagram;
 import hu.elte.txtuml.utils.jdt.ElementTypeTeller;
 import hu.elte.txtuml.validation.common.ProblemCollector;
@@ -31,17 +32,22 @@ public class Utils {
 			if (modifier instanceof Annotation) {
 				Annotation ca = (Annotation) modifier;
 				if (ca.getTypeName().getFullyQualifiedName().equals("Position")) {
+					// value
 					int annotationVal = (int) ((SingleMemberAnnotation) ca).getValue().resolveConstantExpressionValue();
 					if (annotationVal < 0) {
 						collector.report(ValidationErrors.INVALID_POSITION.create(collector.getSourceInfo(), elem));
 					}
+
+					// type of annotated field
+					boolean isModelClass = ElementTypeTeller.hasSuperClass(elem.getType().resolveBinding(),
+							ModelClass.class.getCanonicalName());
+					if (!isModelClass) {
+						collector.report(
+								ValidationErrors.INVALID_LIFELINE_DECLARATION.create(collector.getSourceInfo(), elem));
+					}
 				}
 			}
 		}
-	}
-
-	public static void checkMethod(ProblemCollector collector, MethodDeclaration elem) {
-
 	}
 
 	public static boolean isSequenceDiagram(CompilationUnit unit) {
