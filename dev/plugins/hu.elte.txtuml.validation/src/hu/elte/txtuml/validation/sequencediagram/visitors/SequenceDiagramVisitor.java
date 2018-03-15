@@ -1,18 +1,21 @@
 package hu.elte.txtuml.validation.sequencediagram.visitors;
 
-import java.util.List;
-import java.util.stream.Stream;
+import static java.util.stream.Collectors.toList;
 
-import org.eclipse.jdt.core.dom.ASTNode;
+import java.util.List;
+
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.Block;
-import org.eclipse.jdt.core.dom.Expression;
+import org.eclipse.jdt.core.dom.DoStatement;
 import org.eclipse.jdt.core.dom.ExpressionStatement;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
+import org.eclipse.jdt.core.dom.ForStatement;
+import org.eclipse.jdt.core.dom.IfStatement;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.eclipse.jdt.core.dom.Statement;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
+import org.eclipse.jdt.core.dom.WhileStatement;
 
 import hu.elte.txtuml.api.model.seqdiag.Sequence;
 import hu.elte.txtuml.validation.common.ProblemCollector;
@@ -40,31 +43,40 @@ public class SequenceDiagramVisitor extends ASTVisitor {
 
 	@Override
 	public boolean visit(MethodDeclaration elem) {
-		Utils.checkMethod(collector, elem);
-		return elem.getName().getFullyQualifiedName().equals("run");
+		return !elem.getName().getFullyQualifiedName().equals("initialize");
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public boolean visit(Block node) {
 		List<Statement> statements = (List<Statement>) node.statements();
-		Stream<ExpressionStatement> expressions = statements.stream().map(stm -> ((Statement) stm))
-				.filter(stm -> stm instanceof ExpressionStatement).map(stm -> (ExpressionStatement) stm);
-		boolean isError = !expressions.anyMatch(expr -> checkSendInExpression(expr.getExpression()));
-		if (isError) {
+		boolean isLeaf = !statements.stream().anyMatch(stm -> stm instanceof WhileStatement
+				|| stm instanceof IfStatement || stm instanceof ForStatement || stm instanceof DoStatement);
+		if (!isLeaf) {
+			return true;
+		}
+
+		List<MethodInvocation> methodInvocations = statements.stream().map(stm -> ((Statement) stm))
+				.filter(stm -> stm instanceof ExpressionStatement).map(stm -> (ExpressionStatement) stm)
+				.map(ExpressionStatement::getExpression).filter(expr -> expr instanceof MethodInvocation)
+				.map(expr -> (MethodInvocation) expr).collect(toList());
+
+		boolean containsSend = methodInvocations.stream().anyMatch(this::isSendInvocation);
+		if (!containsSend) {
+			if (!methodInvocations.isEmpty()) {
+				// check other method calls in this block instead
+				return true;
+			}
 			collector.report(ValidationErrors.SEND_EXPECTED.create(collector.getSourceInfo(), node));
 		}
 		return true;
 	}
 
-	private boolean checkSendInExpression(Expression expression) {
-		if (expression.getNodeType() != ASTNode.METHOD_INVOCATION) {
-			return false;
-		}
-		MethodInvocation mi = ((MethodInvocation) expression);
-
-		return mi.resolveMethodBinding().getName().equals("send") && mi.resolveMethodBinding().getDeclaringClass()
-				.getQualifiedName().equals(Sequence.class.getCanonicalName());
+	private boolean isSendInvocation(MethodInvocation expression) {
+		return (expression.resolveMethodBinding().getName().equals("send")
+				|| expression.resolveMethodBinding().getName().equals("fromActor"))
+				&& expression.resolveMethodBinding().getDeclaringClass().getQualifiedName()
+						.equals(Sequence.class.getCanonicalName());
 	}
 
 }
