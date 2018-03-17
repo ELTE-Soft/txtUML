@@ -18,7 +18,7 @@ public class SequenceDiagramCompilationParticipant extends AbstractJtxtUMLCompil
 
 	@Override
 	protected void validate(CompilationUnit unit, ProblemCollector collector) {
-		if (Utils.isSequenceDiagram(unit)) {
+		if (Utils.isSequenceDiagramDescription(unit)) {
 			unit.accept(new SequenceDiagramVisitor(collector));
 		}
 	}
