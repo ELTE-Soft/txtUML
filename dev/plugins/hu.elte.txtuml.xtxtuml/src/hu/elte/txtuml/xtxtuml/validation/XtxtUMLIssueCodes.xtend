@@ -28,6 +28,7 @@ class XtxtUMLIssueCodes {
 
 	public static val INVALID_TYPE = ISSUE_CODE_PREFIX + "invalid_type";
 	public static val TYPE_MISMATCH = ISSUE_CODE_PREFIX + "type_mismatch";
+	public static val AMBIGUOUS_LINK_EXPRESSION = ISSUE_CODE_PREFIX + "ambiguous_link_expression";
 
 	// Expression-related issues
 
@@ -41,6 +42,9 @@ class XtxtUMLIssueCodes {
 	public static val NOT_ACCESSIBLE_PORT = ISSUE_CODE_PREFIX + "not_accessible_port";
 	public static val NOT_ACCESSIBLE_ASSOCIATION_END = ISSUE_CODE_PREFIX + "not_accessible_association_end";
 	public static val NOT_NAVIGABLE_ASSOCIATION_END = ISSUE_CODE_PREFIX + "not_navigable_association_end";
+	public static val DUPLICATE_END_IN_LINK_EXPRESSION = ISSUE_CODE_PREFIX + "duplicate_end_in_link_expression";
+	public static val END_MISMATCH_IN_LINK_EXPRESSION = ISSUE_CODE_PREFIX + "end_mismatch_in_link_expression";
+	public static val UNSPECIFIED_REFLEXIVE_ENDS = ISSUE_CODE_PREFIX + "unspecified_reflexive_ends";
 
 	// File-related issues
 

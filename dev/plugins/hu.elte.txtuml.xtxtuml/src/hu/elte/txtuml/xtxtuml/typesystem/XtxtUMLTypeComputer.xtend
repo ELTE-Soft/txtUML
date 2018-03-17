@@ -224,8 +224,8 @@ class XtxtUMLTypeComputer extends XbaseWithAnnotationsTypeComputer {
 		state.acceptActualType(state.getPrimitiveVoid);
 		val childState = state.withoutRootExpectation;
 
-		childState.computeTypes(linkExpr.rightObject);
 		childState.computeTypes(linkExpr.leftObject);
+		childState.computeTypes(linkExpr.rightObject);
 	}
 
 	/**

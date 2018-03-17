@@ -16,6 +16,7 @@ import hu.elte.txtuml.xtxtuml.xtxtUML.TUEnumeration
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUExecution
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUFile
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUInterface
+import hu.elte.txtuml.xtxtuml.xtxtUML.TULinkExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUModelDeclaration
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUModifiers
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUMultiplicity
@@ -241,6 +242,16 @@ class XtxtUMLFormatter extends XbaseFormatter {
 	def dispatch void format(TUDeleteObjectExpression it, extension IFormattableDocument document) {
 		object.prepend[oneSpace];
 		format(object, document);
+	}
+
+	def dispatch void format(TULinkExpression it, extension IFormattableDocument document) {
+		regionFor.keyword('link').append[oneSpace];
+		regionFor.keyword(',').prepend[noSpace].append[oneSpace];
+		regionFor.keyword('via').surround[oneSpace];
+		regionFor.keywords('as').forEach[surround[oneSpace]];
+
+		format(leftObject, document);
+		format(rightObject, document);
 	}
 
 	override dispatch void format(XBlockExpression it, extension IFormattableDocument document) {

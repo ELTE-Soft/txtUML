@@ -2,6 +2,7 @@ package hu.elte.txtuml.xtxtuml.validation;
 
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUClassPropertyAccessExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUDeleteObjectExpression
+import hu.elte.txtuml.xtxtuml.xtxtUML.TULinkExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUSendSignalExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUSignalAccessExpression
 import org.eclipse.xtext.xbase.XExpression
@@ -15,6 +16,7 @@ class XtxtUMLExpressionHelper extends XExpressionHelper {
 	public override hasSideEffects(XExpression expr) {
 		switch (expr) {
 			TUDeleteObjectExpression,
+			TULinkExpression,
 			TUSendSignalExpression:
 				true
 			TUSignalAccessExpression,

@@ -6,6 +6,7 @@ import hu.elte.txtuml.api.model.ModelClass.Port
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAssociationEnd
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUClassPropertyAccessExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUDeleteObjectExpression
+import hu.elte.txtuml.xtxtuml.xtxtUML.TULinkExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUSendSignalExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUSignalAccessExpression
 import org.eclipse.xtext.common.types.JvmType
@@ -22,6 +23,7 @@ class XtxtUMLCompiler extends XbaseCompiler {
 		switch (obj) {
 			TUClassPropertyAccessExpression,
 			TUDeleteObjectExpression,
+			TULinkExpression,
 			TUSendSignalExpression,
 			TUSignalAccessExpression:
 				obj.toJavaStatement(builder)
@@ -41,14 +43,31 @@ class XtxtUMLCompiler extends XbaseCompiler {
 	def dispatch toJavaStatement(TUDeleteObjectExpression deleteExpr, ITreeAppendable it) {
 		newLine;
 		append(Action);
-		append(".delete(")
+		append(".delete(");
 		deleteExpr.object.internalToJavaExpression(it);
+		append(");");
+	}
+
+	def dispatch toJavaStatement(TULinkExpression linkExpr, ITreeAppendable it) {
+		newLine;
+		append(Action);
+		append('''.«IF linkExpr.unlink»un«ENDIF»link(''');
+
+		val compileSide = [ Pair<TUAssociationEnd, XExpression> side |
+			append(side.key.getPrimaryJvmElement as JvmType);
+			append(".class, ");
+			side.value.internalToJavaExpression(it);
+		];
+
+		compileSide.apply(linkExpr.leftEnd -> linkExpr.leftObject);
+		append(", ");
+		compileSide.apply(linkExpr.rightEnd -> linkExpr.rightObject);
 		append(");");
 	}
 
 	def dispatch toJavaStatement(TUSendSignalExpression sendExpr, ITreeAppendable it) {
 		newLine;
-		append(Action)
+		append(Action);
 		append(".send(");
 
 		sendExpr.signal.internalToJavaExpression(it);
