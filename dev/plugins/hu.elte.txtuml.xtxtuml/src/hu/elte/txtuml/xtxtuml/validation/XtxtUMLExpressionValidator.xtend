@@ -11,11 +11,13 @@ import hu.elte.txtuml.xtxtuml.xtxtUML.TUClass
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUClassPropertyAccessExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUDeleteObjectExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUEntryOrExitActivity
+import hu.elte.txtuml.xtxtuml.xtxtUML.TULinkExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUOperation
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUPort
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUSendSignalExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUSignal
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUSignalAccessExpression
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUStartObjectExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUState
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUStateType
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUTransition
@@ -39,7 +41,6 @@ import org.eclipse.xtext.xbase.typesystem.util.ExtendedEarlyExitComputer
 
 import static hu.elte.txtuml.xtxtuml.validation.XtxtUMLIssueCodes.*
 import static hu.elte.txtuml.xtxtuml.xtxtUML.XtxtUMLPackage.Literals.*
-import hu.elte.txtuml.xtxtuml.xtxtUML.TULinkExpression
 
 class XtxtUMLExpressionValidator extends XtxtUMLTypeValidator {
 
@@ -262,6 +263,7 @@ class XtxtUMLExpressionValidator extends XtxtUMLTypeValidator {
 		val container = expr.eContainer;
 		return switch (container) {
 			TUAttribute,
+			TUStartObjectExpression,
 			TUDeleteObjectExpression,
 			TUSendSignalExpression,
 			TULinkExpression,

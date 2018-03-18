@@ -236,6 +236,11 @@ TUDeleteObjectExpression returns xbase::XExpression :
 	'delete' object=XExpression
 ;
 
+TUStartObjectExpression returns xbase::XExpression :
+	{TUStartObjectExpression}
+	'start' object=XExpression
+;
+
 TULinkExpression returns xbase::XExpression :
 	{TULinkExpression}
 	('link' | unlink?='unlink') leftObject=XMemberFeatureCall ('as' leftEnd=[TUAssociationEnd|QualifiedName])? ','
@@ -271,6 +276,7 @@ TUStatementSemicolonNeeded returns xbase::XExpression
 	| XDoWhileExpression
 	| XExpression
 	| TUSendSignalExpression
+	| TUStartObjectExpression
 	| TUDeleteObjectExpression
 	| TUConnectExpression
 	| TULinkExpression

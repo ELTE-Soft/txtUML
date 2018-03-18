@@ -9,6 +9,7 @@ import hu.elte.txtuml.xtxtuml.xtxtUML.TUDeleteObjectExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TULinkExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUSendSignalExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUSignalAccessExpression
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUStartObjectExpression
 import org.eclipse.xtext.common.types.JvmType
 import org.eclipse.xtext.xbase.XExpression
 import org.eclipse.xtext.xbase.compiler.XbaseCompiler
@@ -22,6 +23,7 @@ class XtxtUMLCompiler extends XbaseCompiler {
 	override protected doInternalToJavaStatement(XExpression obj, ITreeAppendable builder, boolean isReferenced) {
 		switch (obj) {
 			TUClassPropertyAccessExpression,
+			TUStartObjectExpression,
 			TUDeleteObjectExpression,
 			TULinkExpression,
 			TUSendSignalExpression,
@@ -38,6 +40,14 @@ class XtxtUMLCompiler extends XbaseCompiler {
 
 	def dispatch toJavaStatement(TUSignalAccessExpression sigExpr, ITreeAppendable it) {
 		// intentionally left empty
+	}
+
+	def dispatch toJavaStatement(TUStartObjectExpression startExpr, ITreeAppendable it) {
+		newLine;
+		append(Action);
+		append(".start(");
+		startExpr.object.internalToJavaExpression(it);
+		append(");");
 	}
 
 	def dispatch toJavaStatement(TUDeleteObjectExpression deleteExpr, ITreeAppendable it) {

@@ -17,6 +17,7 @@ import hu.elte.txtuml.xtxtuml.xtxtUML.TULinkExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUOperation
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUSendSignalExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUSignalAttribute
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUStartObjectExpression
 import java.util.Set
 import org.eclipse.emf.ecore.EObject
 import org.eclipse.emf.ecore.EStructuralFeature
@@ -82,6 +83,13 @@ class XtxtUMLTypeValidator extends XtxtUMLUniquenessValidator {
 
 		if (!sendExpr.target.isConformantWith(ModelClass, false) && !sendExpr.target.isConformantWith(Port, false)) {
 			typeMismatch("Class or Port", sendExpr, TU_SEND_SIGNAL_EXPRESSION__TARGET);
+		}
+	}
+
+	@Check
+	def checkStartObjectExpressionTypes(TUStartObjectExpression startExpr) {
+		if (!startExpr.object.isConformantWith(ModelClass, false)) {
+			typeMismatch("Class", startExpr, TU_START_OBJECT_EXPRESSION__OBJECT)
 		}
 	}
 

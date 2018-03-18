@@ -7,6 +7,7 @@ import hu.elte.txtuml.api.model.Signal
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAssociationEnd
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUClass
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUClassPropertyAccessExpression
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUStartObjectExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUDeleteObjectExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUEntryOrExitActivity
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUPort
@@ -205,6 +206,11 @@ class XtxtUMLTypeComputer extends XbaseWithAnnotationsTypeComputer {
 		} else {
 			getTypeForName(Signal, computationState)
 		}
+	}
+
+	def dispatch computeTypes(TUStartObjectExpression startExpr, ITypeComputationState state) {
+		state.acceptActualType(state.getPrimitiveVoid);
+		state.withoutRootExpectation.computeTypes(startExpr.object);
 	}
 
 	def dispatch computeTypes(TUDeleteObjectExpression deleteExpr, ITypeComputationState state) {

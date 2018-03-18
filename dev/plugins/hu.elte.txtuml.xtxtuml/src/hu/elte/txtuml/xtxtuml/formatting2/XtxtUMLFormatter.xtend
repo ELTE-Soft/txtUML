@@ -27,6 +27,7 @@ import hu.elte.txtuml.xtxtuml.xtxtUML.TUReception
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUSendSignalExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUSignal
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUSignalAttribute
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUStartObjectExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUState
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUTransition
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUTransitionEffect
@@ -237,6 +238,11 @@ class XtxtUMLFormatter extends XbaseFormatter {
 
 		format(signal, document);
 		format(target, document);
+	}
+
+	def dispatch void format(TUStartObjectExpression it, extension IFormattableDocument document) {
+		object.prepend[oneSpace];
+		format(object, document);
 	}
 
 	def dispatch void format(TUDeleteObjectExpression it, extension IFormattableDocument document) {
