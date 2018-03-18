@@ -7,6 +7,7 @@ import hu.elte.txtuml.xtxtuml.xtxtUML.TUAssociationEnd
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUClassPropertyAccessExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUDeleteObjectExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TULinkExpression
+import hu.elte.txtuml.xtxtuml.xtxtUML.TULogExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUSendSignalExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUSignalAccessExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUStartObjectExpression
@@ -26,6 +27,7 @@ class XtxtUMLCompiler extends XbaseCompiler {
 			TUStartObjectExpression,
 			TUDeleteObjectExpression,
 			TULinkExpression,
+			TULogExpression,
 			TUSendSignalExpression,
 			TUSignalAccessExpression:
 				obj.toJavaStatement(builder)
@@ -55,6 +57,14 @@ class XtxtUMLCompiler extends XbaseCompiler {
 		append(Action);
 		append(".delete(");
 		deleteExpr.object.internalToJavaExpression(it);
+		append(");");
+	}
+
+	def dispatch toJavaStatement(TULogExpression logExpr, ITreeAppendable it) {
+		newLine;
+		append(Action);
+		append('''.log«IF logExpr.error»Error«ENDIF»(''');
+		logExpr.log.internalToJavaExpression(it);
 		append(");");
 	}
 

@@ -12,6 +12,7 @@ import hu.elte.txtuml.xtxtuml.xtxtUML.TUClassPropertyAccessExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUDeleteObjectExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUEntryOrExitActivity
 import hu.elte.txtuml.xtxtuml.xtxtUML.TULinkExpression
+import hu.elte.txtuml.xtxtuml.xtxtUML.TULogExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUOperation
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUPort
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUSendSignalExpression
@@ -265,6 +266,7 @@ class XtxtUMLExpressionValidator extends XtxtUMLTypeValidator {
 			TUAttribute,
 			TUStartObjectExpression,
 			TUDeleteObjectExpression,
+			TULogExpression,
 			TUSendSignalExpression,
 			TULinkExpression,
 			TUTransitionGuard: true

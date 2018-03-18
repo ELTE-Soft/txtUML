@@ -3,6 +3,7 @@ package hu.elte.txtuml.xtxtuml.validation;
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUClassPropertyAccessExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUDeleteObjectExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TULinkExpression
+import hu.elte.txtuml.xtxtuml.xtxtUML.TULogExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUSendSignalExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUSignalAccessExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUStartObjectExpression
@@ -18,6 +19,7 @@ class XtxtUMLExpressionHelper extends XExpressionHelper {
 		switch (expr) {
 			TUStartObjectExpression,
 			TUDeleteObjectExpression,
+			TULogExpression,
 			TULinkExpression,
 			TUSendSignalExpression:
 				true

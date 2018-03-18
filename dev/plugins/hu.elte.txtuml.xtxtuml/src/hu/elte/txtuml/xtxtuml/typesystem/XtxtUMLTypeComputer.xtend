@@ -7,12 +7,14 @@ import hu.elte.txtuml.api.model.Signal
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAssociationEnd
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUClass
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUClassPropertyAccessExpression
-import hu.elte.txtuml.xtxtuml.xtxtUML.TUStartObjectExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUDeleteObjectExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUEntryOrExitActivity
+import hu.elte.txtuml.xtxtuml.xtxtUML.TULinkExpression
+import hu.elte.txtuml.xtxtuml.xtxtUML.TULogExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUPort
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUSendSignalExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUSignalAccessExpression
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUStartObjectExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUState
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUStateType
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUTransition
@@ -35,7 +37,6 @@ import org.eclipse.xtext.xbase.typesystem.computation.ITypeComputationState
 import org.eclipse.xtext.xbase.typesystem.conformance.ConformanceFlags
 import org.eclipse.xtext.xbase.typesystem.references.LightweightTypeReference
 import org.eclipse.xtext.xbase.typesystem.references.ParameterizedTypeReference
-import hu.elte.txtuml.xtxtuml.xtxtUML.TULinkExpression
 
 class XtxtUMLTypeComputer extends XbaseWithAnnotationsTypeComputer {
 
@@ -216,6 +217,11 @@ class XtxtUMLTypeComputer extends XbaseWithAnnotationsTypeComputer {
 	def dispatch computeTypes(TUDeleteObjectExpression deleteExpr, ITypeComputationState state) {
 		state.acceptActualType(state.getPrimitiveVoid);
 		state.withoutRootExpectation.computeTypes(deleteExpr.object);
+	}
+
+	def dispatch computeTypes(TULogExpression logExpr, ITypeComputationState state) {
+		state.acceptActualType(state.getPrimitiveVoid);
+		state.withoutRootExpectation.computeTypes(logExpr.log);
 	}
 
 	def dispatch computeTypes(TUSendSignalExpression sendExpr, ITypeComputationState state) {

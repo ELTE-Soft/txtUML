@@ -14,6 +14,7 @@ import hu.elte.txtuml.xtxtuml.xtxtUML.TUClass
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUClassPropertyAccessExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUDeleteObjectExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TULinkExpression
+import hu.elte.txtuml.xtxtuml.xtxtUML.TULogExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUOperation
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUSendSignalExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUSignalAttribute
@@ -97,6 +98,13 @@ class XtxtUMLTypeValidator extends XtxtUMLUniquenessValidator {
 	def checkDeleteObjectExpressionTypes(TUDeleteObjectExpression deleteExpr) {
 		if (!deleteExpr.object.isConformantWith(ModelClass, false)) {
 			typeMismatch("Class", deleteExpr, TU_DELETE_OBJECT_EXPRESSION__OBJECT)
+		}
+	}
+
+	@Check
+	def checkLogExpressionType(TULogExpression logExpr) {
+		if (!logExpr.log.isConformantWith(String, false)) {
+			typeMismatch("String", logExpr, TU_LOG_EXPRESSION__LOG)
 		}
 	}
 

@@ -241,6 +241,11 @@ TUStartObjectExpression returns xbase::XExpression :
 	'start' object=XExpression
 ;
 
+TULogExpression returns xbase::XExpression:
+	{TULogExpression}
+	('log' | error?='log-error') log=XExpression
+;
+
 TULinkExpression returns xbase::XExpression :
 	{TULinkExpression}
 	('link' | unlink?='unlink') leftObject=XMemberFeatureCall ('as' leftEnd=[TUAssociationEnd|QualifiedName])? ','
@@ -277,6 +282,7 @@ TUStatementSemicolonNeeded returns xbase::XExpression
 	| XExpression
 	| TUSendSignalExpression
 	| TUStartObjectExpression
+	| TULogExpression
 	| TUDeleteObjectExpression
 	| TUConnectExpression
 	| TULinkExpression
