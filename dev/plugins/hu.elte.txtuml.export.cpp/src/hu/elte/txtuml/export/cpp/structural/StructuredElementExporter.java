@@ -185,6 +185,12 @@ public abstract class StructuredElementExporter<StructuredElement extends Operat
 	}
 	
 	@Override
+	public void addHeaderOnlyIncludeDependency(String type) {
+		dependencyExporter.addHeaderOnlyIncludeDependency(type);
+		
+	}
+	
+	@Override
 	public String getUnitName() {
 		return name;
 	}

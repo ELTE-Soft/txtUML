@@ -75,7 +75,7 @@ public:
 	EventBase(int t_, SpecialSignalType extermalType_ = SpecialSignalType::NoSpecial, PortType pType_ = PortType::AnyPort) :
 		t(t_),
 		specialType(extermalType_),
-		pType(pType) {}
+                pType(pType_) {}
 
 	ES::StateMachineRef targetSM;
 	int t;

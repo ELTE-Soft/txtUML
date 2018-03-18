@@ -76,7 +76,7 @@ public class ActivityExporter {
 			source.append(controlNodeExporter.createSequenceNodeCode((SequenceNode) node));
 		} else if (node.eClass().equals(UMLPackage.Literals.ADD_STRUCTURAL_FEATURE_VALUE_ACTION)) {
 			AddStructuralFeatureValueAction asfva = (AddStructuralFeatureValueAction) node;
-			createAddStructuralFeatureActionCode(asfva);
+			source.append(createAddStructuralFeatureActionCode(asfva));
 		} else if (node.eClass().equals(UMLPackage.Literals.CREATE_OBJECT_ACTION)) {
 			source.append(objectActionExporter.createCreateObjectActionCode((CreateObjectAction) node));
 		} else if (node.eClass().equals(UMLPackage.Literals.CREATE_LINK_ACTION)) {

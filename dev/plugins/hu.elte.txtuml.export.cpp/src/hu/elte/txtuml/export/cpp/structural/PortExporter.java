@@ -13,6 +13,7 @@ import org.eclipse.uml2.uml.Port;
 import org.eclipse.uml2.uml.UMLPackage;
 
 import hu.elte.txtuml.export.cpp.CppExporterUtils;
+import hu.elte.txtuml.export.cpp.IDependencyCollector;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames;
 import hu.elte.txtuml.export.cpp.templates.structual.FunctionTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.HeaderTemplates;
@@ -25,10 +26,13 @@ public class PortExporter {
 	
 	private List<Port> 	ports;
 	private String ownerName;
+	private IDependencyCollector ownerClassCollector;
 	
-	public PortExporter(List<Port> ports, String ownerName) {
+	
+	public PortExporter(List<Port> ports, String ownerName, IDependencyCollector ownerClassCollector) {
 		this.ports = ports;
 		this.ownerName = ownerName;
+		this.ownerClassCollector = ownerClassCollector;
 	}
 
 	public Set<String> getUsedInterfaces() {
@@ -105,7 +109,9 @@ public class PortExporter {
 	private String createinterfacePortCode(Port port) {
 		assert(port != null && isInterfacePort(port));
 		String portTypeName = getPortTypeName(port, false);
-		Pair<String,String> interfaces = getPortActualInterfaceTypes(port);		
+		Pair<String,String> interfaces = getPortActualInterfaceTypes(port);
+		ownerClassCollector.addHeaderOnlyIncludeDependency(interfaces.getFirst());
+		ownerClassCollector.addHeaderOnlyIncludeDependency(interfaces.getSecond());
 		return ObjectDeclDefTemplates.propertyDecl(portTypeName,port.getName(),"",
 				Optional.of(Arrays.asList(interfaces.getFirst(),interfaces.getSecond())), ObjectDeclDefTemplates.VariableType.SharedPtr);
 	}

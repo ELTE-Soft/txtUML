@@ -19,15 +19,11 @@ public class PrivateFunctionalTemplates {
 	public static String signalType(String type) {
 		return type + GenerationNames.EventClassTypeId;
 	}
-	
-	
-	// TODO map to name is not enough, need path..
+		
 	public static String include(String className) {
-		return "#include \"" + getClassIncludeWithPath(className) + "\"\n";
+		return "#include \"" + getClassPath(mapUMLClassToCppClass(className)) + "\"\n";
 	}
-	public static String interfaceIndlude(String infName) {
-		return include(infName.equals(InterfaceNames.EmptyInfName) ? FileNames.InterfaceUtilsPath : infName);
-	}
+
 	public static String typedefs(String className) {
 		return "typedef std::function<" + ModifierNames.NoReturn + "(" + className + "&,"
 				+ EventTemplates.EventPointerType + ")> " + GenerationNames.FunctionPtrTypeName + ";\n"
@@ -107,9 +103,9 @@ public class PrivateFunctionalTemplates {
 		}
 	}
 	
-	public static String getClassIncludeWithPath(String className) {
+	private static String getClassPath(String className) {
 		switch(className) {
-		case UMLStdLibNames.EmptyInfName :
+		case InterfaceNames.EmptyInfName :
 			return FileNames.InterfaceUtilsPath + "." + FileNames.HeaderExtension;
 		default:
 			return className +  "." + FileNames.HeaderExtension;
