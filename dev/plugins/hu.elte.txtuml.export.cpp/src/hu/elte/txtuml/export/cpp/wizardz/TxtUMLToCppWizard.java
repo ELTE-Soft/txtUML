@@ -1,11 +1,15 @@
 package hu.elte.txtuml.export.cpp.wizardz;
 
+import java.io.File;
 import java.util.List;
 import java.util.NoSuchElementException;
 
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jface.wizard.Wizard;
 
+import hu.elte.txtuml.export.cpp.BuildSupport;
+import hu.elte.txtuml.export.cpp.Uml2ToCppExporter;
 import hu.elte.txtuml.utils.Pair;
 import hu.elte.txtuml.utils.eclipse.Dialogs;
 import hu.elte.txtuml.utils.eclipse.SaveUtils;
@@ -65,6 +69,17 @@ public class TxtUMLToCppWizard extends Wizard {
 			TxtUMLToCppGovernor governor = new TxtUMLToCppGovernor(false);
 			governor.uml2ToCpp(txtUMLProject, txtUMLModel, threadManagementDescription.getFullyQualifiedName(),
 					descriptionProjectName, addRuntimeOption, overWriteMainFileOption, buildEnvironments);
+
+			String projectFolder = ResourcesPlugin.getWorkspace().getRoot().getProject(txtUMLProject).getLocation()
+					.toFile().getAbsolutePath();
+
+			String outputDirectory = projectFolder + File.separator + Uml2ToCppExporter.GENERATED_CPP_FOLDER_NAME
+					+ File.separator + txtUMLModel;
+
+			if (buildEnvironments != null && buildEnvironments.size() > 0) {
+				getContainer().run(true, true, new BuildSupport(outputDirectory, buildEnvironments));
+			}
+
 		} catch (Exception e) {
 			Dialogs.errorMsgb("C++ code generation error", e.getMessage(), e);
 			return false;
