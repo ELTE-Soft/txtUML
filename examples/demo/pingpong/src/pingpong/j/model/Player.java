@@ -1,7 +1,6 @@
 package pingpong.j.model;
 
 import hu.elte.txtuml.api.model.Action;
-import hu.elte.txtuml.api.model.BehaviorPort;
 import hu.elte.txtuml.api.model.From;
 import hu.elte.txtuml.api.model.ModelClass;
 import hu.elte.txtuml.api.model.To;
@@ -24,7 +23,6 @@ public class Player extends ModelClass {
 	public class BallAtPlayerPort extends Port<BallIfc, BallIfc> {
 	}
 
-	//@BehaviorPort
 	public class ShoutPort extends OutPort<HitOrMissIfc> {
 	}
 
