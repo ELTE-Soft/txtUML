@@ -1,5 +1,6 @@
 package hu.elte.txtuml.utils.eclipse.wizards;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -12,10 +13,12 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
+import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.viewers.CheckboxTreeViewer;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IContentProvider;
@@ -31,7 +34,9 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.TreeItem;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.model.WorkbenchContentProvider;
+import org.eclipse.ui.progress.IProgressService;
 
 import hu.elte.txtuml.utils.Logger;
 import hu.elte.txtuml.utils.eclipse.NotFoundException;
@@ -68,74 +73,88 @@ public class VisualizeTxtUMLPage extends WizardPage {
 	 */
 	@Override
 	public void createControl(Composite parent) {
-		sc = new ScrolledComposite(parent, SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER);
-		container = new Composite(sc, SWT.NONE);
+		IProgressService progressService = PlatformUI.getWorkbench().getProgressService();
 
-		GridLayout layout = new GridLayout(4, false);
-		container.setLayout(layout);
+		try {
+			progressService.runInUI(progressService, new IRunnableWithProgress() {
 
-		final Label label = new Label(container, SWT.TOP);
-		label.setText("txtUML Diagrams: ");
+				@Override
+				public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
+					monitor.beginTask("Creating dialog", 100);
+					sc = new ScrolledComposite(parent, SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER);
+					container = new Composite(sc, SWT.NONE);
 
-		addInitialLayoutFields();
+					GridLayout layout = new GridLayout(4, false);
+					container.setLayout(layout);
 
-		// diagram descriptions tree
-		ScrolledComposite treeComposite = new ScrolledComposite(container, SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER);
-		tree = getDiagramTreeViewer(treeComposite);
-		tree.addDoubleClickListener(new IDoubleClickListener() {
-			@Override
-			public void doubleClick(DoubleClickEvent event) {
-				ISelection selection = event.getSelection();
-				Iterator<?> selectedElements = ((IStructuredSelection) selection).iterator();
-				if (selectedElements.hasNext()) {
-					Object selectedElement = selectedElements.next();
-					if (selectedElement instanceof IJavaProject) {
-						List<Object> expandedElements = new ArrayList<>(Arrays.asList(tree.getExpandedElements()));
-						if (expandedElements.contains(selectedElement)) {
-							expandedElements.remove(selectedElement);
-						} else {
-							expandedElements.add(selectedElement);
+					final Label label = new Label(container, SWT.TOP);
+					label.setText("txtUML Diagrams: ");
+
+					addInitialLayoutFields();
+
+					// diagram descriptions tree
+					ScrolledComposite treeComposite = new ScrolledComposite(container, SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER);
+					tree = getDiagramTreeViewer(treeComposite, monitor);
+					tree.addDoubleClickListener(new IDoubleClickListener() {
+						@Override
+						public void doubleClick(DoubleClickEvent event) {
+							ISelection selection = event.getSelection();
+							Iterator<?> selectedElements = ((IStructuredSelection) selection).iterator();
+							if (selectedElements.hasNext()) {
+								Object selectedElement = selectedElements.next();
+								if (selectedElement instanceof IJavaProject) {
+									List<Object> expandedElements = new ArrayList<>(Arrays.asList(tree.getExpandedElements()));
+									if (expandedElements.contains(selectedElement)) {
+										expandedElements.remove(selectedElement);
+									} else {
+										expandedElements.add(selectedElement);
+									}
+									tree.setExpandedElements(expandedElements.toArray());
+								} else if (selectedElement instanceof IType) {
+									List<Object> checkedElements = new ArrayList<>(Arrays.asList(tree.getCheckedElements()));
+									boolean isChecked = checkedElements.contains(selectedElement);
+									tree.setChecked(selectedElement, !isChecked);
+									IType selectedType = (IType) selectedElement;
+									if (!isChecked && !txtUMLLayout.contains(selectedType)) {
+										txtUMLLayout.add(selectedType);
+									} else {
+										txtUMLLayout.remove(selectedType);
+									}
+									selectElementsInDiagramTree(txtUMLLayout.toArray(), true);
+								}
+							}
 						}
-						tree.setExpandedElements(expandedElements.toArray());
-					} else if (selectedElement instanceof IType) {
-						List<Object> checkedElements = new ArrayList<>(Arrays.asList(tree.getCheckedElements()));
-						boolean isChecked = checkedElements.contains(selectedElement);
-						tree.setChecked(selectedElement, !isChecked);
-						IType selectedType = (IType) selectedElement;
-						if (!isChecked && !txtUMLLayout.contains(selectedType)) {
-							txtUMLLayout.add(selectedType);
-						} else {
-							txtUMLLayout.remove(selectedType);
-						}
-						selectElementsInDiagramTree(txtUMLLayout.toArray(), true);
-					}
-				}
-			}
-		});
+					});
 
-		selectElementsInDiagramTree(txtUMLLayout.toArray(), false);
-		setExpandedLayouts(txtUMLLayout);
+					selectElementsInDiagramTree(txtUMLLayout.toArray(), false);
+					setExpandedLayouts(txtUMLLayout);
 
-		GridData treeGd = new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1);
-		treeGd.heightHint = 200;
-		treeGd.widthHint = 150;
-		GridData labelGd = new GridData(SWT.FILL, SWT.TOP, false, false, 1, 1);
-		labelGd.verticalIndent = 5;
-		label.setLayoutData(labelGd);
-		treeComposite.setLayoutData(treeGd);
+					GridData treeGd = new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1);
+					treeGd.heightHint = 200;
+					treeGd.widthHint = 150;
+					GridData labelGd = new GridData(SWT.FILL, SWT.TOP, false, false, 1, 1);
+					labelGd.verticalIndent = 5;
+					label.setLayoutData(labelGd);
+					treeComposite.setLayoutData(treeGd);
 
-		treeComposite.setContent(tree.getControl());
-		treeComposite.setExpandHorizontal(true);
-		treeComposite.setExpandVertical(true);
-		sc.setContent(container);
-		sc.setExpandHorizontal(true);
-		sc.setExpandVertical(true);
-		container.setSize(container.computeSize(450, 300, true));
-		sc.setMinSize(container.getSize());
-		sc.setSize(container.getSize());
+					treeComposite.setContent(tree.getControl());
+					treeComposite.setExpandHorizontal(true);
+					treeComposite.setExpandVertical(true);
+					sc.setContent(container);
+					sc.setExpandHorizontal(true);
+					sc.setExpandVertical(true);
+					container.setSize(container.computeSize(450, 300, true));
+					sc.setMinSize(container.getSize());
+					sc.setSize(container.getSize());
 
-		setControl(parent);
-		setPageComplete(true);
+					setControl(parent);
+					setPageComplete(true);
+					monitor.done();
+				}			
+			}, ResourcesPlugin.getWorkspace().getRoot());
+		} catch (InvocationTargetException | InterruptedException e) {
+			Logger.sys.error(e.getMessage());
+		}
 	}
 
 	/**
@@ -187,14 +206,17 @@ public class VisualizeTxtUMLPage extends WizardPage {
 		tree.setExpandedElements(typesToExpand.stream().map(type -> type.getJavaProject()).toArray());
 	}
 
-	private CheckboxTreeViewer getDiagramTreeViewer(ScrolledComposite treeComposite) {
+	private CheckboxTreeViewer getDiagramTreeViewer(ScrolledComposite treeComposite, IProgressMonitor monitor) {
 		CheckboxTreeViewer tree = new CheckboxTreeViewer(treeComposite, SWT.NONE);
 		IContentProvider cp = new WorkbenchContentProvider() {
+			private int projectNum;
+			
 			@Override
 			public Object[] getChildren(Object element) {
 				if (element instanceof IWorkspaceRoot) {
 					List<IJavaProject> javaProjects = new ArrayList<>();
 					IProject[] allProjects = ((IWorkspaceRoot) element).getProjects();
+					projectNum = allProjects.length;
 					for (IProject pr : allProjects) {
 						try {
 							IJavaProject javaProject = ProjectUtils.findJavaProject(pr.getName());
@@ -203,6 +225,7 @@ public class VisualizeTxtUMLPage extends WizardPage {
 							} else if (WizardUtils.containsClassesWithSuperTypes(javaProject, diagramTypes)) {
 								javaProjects.add(ProjectUtils.findJavaProject(pr.getName()));
 							}
+							monitor.worked(80 / projectNum);
 						} catch (NotFoundException e) {
 						}
 					}
@@ -219,6 +242,7 @@ public class VisualizeTxtUMLPage extends WizardPage {
 							.flatMap(pf -> getDiagramDescriptions(pf).stream()).collect(Collectors.toList());
 					return descriptionTypes.toArray();
 				}
+				monitor.worked(20 / projectNum);
 				return new Object[0];
 			}
 
@@ -249,6 +273,7 @@ public class VisualizeTxtUMLPage extends WizardPage {
 		tree.setContentProvider(cp);
 		tree.setLabelProvider(WizardUtils.getPostQualifiedLabelProvider());
 		tree.setInput(ResourcesPlugin.getWorkspace().getRoot());
+		monitor.worked(80);
 		return tree;
 	}
 
