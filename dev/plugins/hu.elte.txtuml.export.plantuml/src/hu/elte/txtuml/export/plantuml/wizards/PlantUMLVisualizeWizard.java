@@ -1,6 +1,7 @@
 package hu.elte.txtuml.export.plantuml.wizards;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -51,13 +52,18 @@ public class PlantUMLVisualizeWizard extends TxtUMLVisualizeWizard {
 
 			String generatedFolderName = PreferencesManager
 					.getString(PreferencesManager.TXTUML_VISUALIZE_DESTINATION_FOLDER);
-
-			List<String> diagramNames = txtUMLLayout.stream().map(IType::getFullyQualifiedName)
+	
+			List<String> diagramNames = new ArrayList<>();
+			layoutConfigs.get(model).forEach(
+					layout -> diagramNames.add(layout.getFullyQualifiedName()));
+			
+			List<String> fullyQualifiedNames = txtUMLLayout.stream().map(IType::getFullyQualifiedName)
 					.collect(Collectors.toList());
 			boolean saveSucceeded = SaveUtils.saveAffectedFiles(getShell(), txtUMLProjectName, txtUMLModelName,
-					diagramNames);
+					fullyQualifiedNames);
 			if (!saveSucceeded)
 				return false;
+			
 			try {
 				checkNoLayoutDescriptionsSelected();
 
@@ -82,10 +88,6 @@ public class PlantUMLVisualizeWizard extends TxtUMLVisualizeWizard {
 						}
 
 					}, ResourcesPlugin.getWorkspace().getRoot());
-
-					if (exp.noDiagramLayout()) {
-						return true;
-					}
 				}
 			} catch (InterruptedException | InvocationTargetException e) {
 				Logger.sys.error(e.getMessage());
