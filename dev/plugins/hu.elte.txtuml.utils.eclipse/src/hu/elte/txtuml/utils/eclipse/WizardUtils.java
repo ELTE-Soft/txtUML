@@ -9,6 +9,10 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jdt.core.IAnnotation;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IField;
@@ -90,18 +94,22 @@ public class WizardUtils {
 			return Collections.emptyList();
 		}
 	
+		List<SuperTypeListJob> jobs = new ArrayList<>();
 		for (ICompilationUnit cUnit : compilationUnits) {
-			List<?> types = getTypes(cUnit);
-			
-			types.stream().filter(type -> {
-				try {
-					return Stream.of(superClasses)
-							.anyMatch(superClass -> SharedUtils.typeIsAssignableFrom((TypeDeclaration) type, superClass));
-				} catch (NullPointerException ex) {
-					return false;
-				}
-			}).forEach(type -> typesWithGivenSuperclass.add((IType) ((TypeDeclaration) type).resolveBinding().getJavaElement()));
+			SuperTypeListJob job = new SuperTypeListJob("Get supertype list", cUnit, superClasses);
+			jobs.add(job);
+			job.setPriority(Job.INTERACTIVE);
+			job.schedule();
 		}
+		
+		jobs.stream().forEach(job -> {
+			try {
+				job.join();
+				typesWithGivenSuperclass.addAll(job.gettypesWithGivenSuperclass());
+			} catch (InterruptedException e) {
+			}
+		});
+		
 		return typesWithGivenSuperclass;
 	}
 
@@ -260,6 +268,7 @@ public class WizardUtils {
 	 *         with at least one of the given superclasses.
 	 */
 	private static boolean containsAnyClassWithSuperTypes(IPackageFragment packageFragment, Class<?>... superClasses) {
+		boolean result = false;
 		ICompilationUnit[] compilationUnits;
 		try {
 			compilationUnits = packageFragment.getCompilationUnits();
@@ -267,22 +276,27 @@ public class WizardUtils {
 			return false;
 		}
 	
+		List<ContainsClassWithSuperTypesJob> jobs = new ArrayList<>();
 		for (ICompilationUnit cUnit : compilationUnits) {
-			List<?> types = getTypes(cUnit);
-			
-			boolean result = types.stream().anyMatch(type -> {
-				try {
-					return Stream.of(superClasses)
-							.anyMatch(superClass -> SharedUtils.typeIsAssignableFrom((TypeDeclaration) type, superClass));
-				} catch (NullPointerException ex) {
-					return false;
-				}
-			});
-			
-			if (result)
-				return true;
+			ContainsClassWithSuperTypesJob job = new ContainsClassWithSuperTypesJob("Search for type with superclasses", cUnit, superClasses);
+			jobs.add(job);
+			job.setPriority(Job.INTERACTIVE);
+			job.schedule();
 		}
-		return false;
+		
+		for (ContainsClassWithSuperTypesJob job : jobs) {
+			if (!result) {
+				try {
+					job.join();
+					result = job.getHaveClassWithSuperTypes();
+				} catch (InterruptedException e) {
+					continue;
+				}
+			} else {
+				job.cancel();
+			}
+		}
+		return result;
 	}
 
 	/**
@@ -315,4 +329,66 @@ public class WizardUtils {
 		return (compilationUnit.getImport(qualifiedName).exists() || compilationUnit.getImport(pack + ".*").exists());
 	}
 
+	private static class SuperTypeListJob extends Job {
+		private List<IType> typesWithGivenSuperclass;
+		private ICompilationUnit cUnit;
+		private Class<?>[] superClasses;
+		
+		public SuperTypeListJob(String name, ICompilationUnit cUnit, Class<?>... superClasses) {
+			super(name);
+			typesWithGivenSuperclass = new ArrayList<IType>();
+			this.cUnit = cUnit;
+			this.superClasses = superClasses;
+		}
+
+		@Override
+		protected IStatus run(IProgressMonitor monitor) {
+			List<?> types = getTypes(cUnit);
+			
+			types.stream().filter(type -> {
+				try {
+					return Stream.of(superClasses)
+							.anyMatch(superClass -> SharedUtils.typeIsAssignableFrom((TypeDeclaration) type, superClass));
+				} catch (NullPointerException ex) {
+					return false;
+				}
+			}).forEach(type -> typesWithGivenSuperclass.add((IType) ((TypeDeclaration) type).resolveBinding().getJavaElement()));
+			return Status.OK_STATUS;
+		}
+		
+		public List<IType> gettypesWithGivenSuperclass() {
+			return typesWithGivenSuperclass;
+		}		
+	}
+	
+	private static class ContainsClassWithSuperTypesJob extends Job {
+		private boolean haveClassWithSuperTypes;
+		private ICompilationUnit cUnit;
+		private Class<?>[] superClasses;
+		
+		public ContainsClassWithSuperTypesJob(String name, ICompilationUnit cUnit, Class<?>... superClasses) {
+			super(name);
+			this.cUnit = cUnit;
+			this.superClasses = superClasses;
+		}
+
+		@Override
+		protected IStatus run(IProgressMonitor monitor) {
+			List<?> types = getTypes(cUnit);
+			
+			haveClassWithSuperTypes = types.stream().anyMatch(type -> {
+				try {
+					return Stream.of(superClasses)
+							.anyMatch(superClass -> SharedUtils.typeIsAssignableFrom((TypeDeclaration) type, superClass));
+				} catch (NullPointerException ex) {
+					return false;
+				}
+			});
+			return Status.OK_STATUS;
+		}
+		
+		public boolean getHaveClassWithSuperTypes() {
+			return haveClassWithSuperTypes;
+		}	
+	}
 }
