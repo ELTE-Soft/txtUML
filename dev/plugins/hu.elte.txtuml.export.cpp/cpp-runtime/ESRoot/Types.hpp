@@ -103,12 +103,13 @@ namespace Model
 		static PortType AnyPort;
 
 	public:
-		PortType() : portTypeId(portIdCounter++) {}
-        PortType(const PortType& o) = default;
+		PortType () : portTypeId (portIdCounter++) {}
+		PortType (const PortType& o) = default;
 		PortType& operator=(const PortType& o) = default;
 
-		int getPortTypeId() const { return portTypeId; }
-                bool operator==(const PortType& o) const {return portTypeId == o.getPortTypeId();}
+		int getPortTypeId () const { return portTypeId; }
+		bool operator==(const PortType& o) const { return portTypeId == o.getPortTypeId (); }
+		bool operator!=(const PortType& o) const { return !(portTypeId == o.getPortTypeId ()); }
 
 	private:
 		int portTypeId;

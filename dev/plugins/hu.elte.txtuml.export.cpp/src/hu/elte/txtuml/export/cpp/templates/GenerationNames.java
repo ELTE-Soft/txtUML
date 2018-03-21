@@ -3,6 +3,7 @@ package hu.elte.txtuml.export.cpp.templates;
 import org.eclipse.core.runtime.Path;
 
 import hu.elte.txtuml.export.cpp.templates.statemachine.EventTemplates;
+import hu.elte.txtuml.export.cpp.templates.structual.PortTemplates;
 
 public class GenerationNames {
 
@@ -18,7 +19,7 @@ public class GenerationNames {
 	}
 
 	public static class FileNames {
-		
+
 		public static final String ESRootFolderName = "ESRoot";
 		public static final String ESRootPath = RuntimeTemplates.RTPath + ESRootFolderName + Path.SEPARATOR;
 		public static final String FileNameTypes = "Types";
@@ -31,8 +32,9 @@ public class GenerationNames {
 		public static final String CollectionUtilsPath = ESRootPath + FileNamesCollectionUtilsHeaderName;
 		public static final String PortUtilsPath = RuntimeTemplates.RTPath + "PortUtils";
 		public static final String InterfaceUtilsPath = RuntimeTemplates.RTPath + "InterfaceUtils";
-		
-		public static final String TimerInterfaceHeader = RuntimeTemplates.RTPath + TimerNames.TimerInterFaceName.toLowerCase();
+
+		public static final String TimerInterfaceHeader = RuntimeTemplates.RTPath
+				+ TimerNames.TimerInterFaceName.toLowerCase();
 		public static final String TimerHeader = RuntimeTemplates.RTPath + TimerNames.TimerClassName.toLowerCase();
 
 		public static final String HeaderExtension = "hpp";
@@ -97,16 +99,17 @@ public class GenerationNames {
 		public static final String StaticModifier = "static";
 		public static final String AbstractModifier = "virtual";
 		public static final String PublicModifier = "public";
-		
+
 	}
-	
+
 	public static class Macros {
 		public static final String ErrorMacro = "#error";
 	}
-	
+
 	public static class Comments {
-		public static final String ToDoMessage = comment("TODO: Add your source code here\n"); 
+		public static final String ToDoMessage = comment("TODO: Add your source code here\n");
 	}
+
 	public static class GeneralFunctionNames {
 		public static final String InitFunctionName = "init";
 	}
@@ -115,15 +118,14 @@ public class GenerationNames {
 		public static final String FixContainer = Namespaces.ContainerNamespace + "::" + "FixedArray";
 	}
 
-
 	public static class StateMachineMethodNames {
 
 		public static final String InitFunctionName = "init";
 		public static final String ProcessEventFName = "process_event";
 		public static final String InitializeFunctionName = "initialize";
 		public static final String FinalizeFunctionName = "finalize";
-	}	
-	
+	}
+
 	public static class TypeDelcreationKeywords {
 		public static final String ClassType = "class";
 		public static final String DataType = "struct";
@@ -133,38 +135,37 @@ public class GenerationNames {
 		public static final String PublicPartSign = "public:";
 		public static final String ProtectedPartSign = "protected:";
 		public static final String PrivatePartSign = "private:";
-		
+
 	}
-	
+
 	public static class InterfaceNames {
-		
+
 		public static final String SendReceptionName = "send";
 		public static final String ReciveReceptionName = "recive";
 		public static final String CommonSendAnySignalName = "sendAny";
 		public static final String CommonReciveAnySignalName = "reciveAny";
 		public static final String IntegratedBaseTemplateName = "IntegratedInf";
 		public static final String EmptyInfName = "EmptyInf";
-		
+
 	}
-	
+
 	public static class InitiliazetFixFunctionNames {
 		public static final String InitPorts = "initPorts";
 		public static final String InitStateMachine = "initStateMachine";
 
 	}
-	
+
 	public static class EntryExitNames {
 
 		public static final String EntryName = "entry";
 		public static final String ExitName = "exit";
 		public static final String EntryDecl = GenerationNames.ModifierNames.NoReturn + " " + EntryName + "("
-		+ EventTemplates.EventPointerType + " " + EventTemplates.EventFParamName + ");\n";
+				+ EventTemplates.EventPointerType + " " + EventTemplates.EventFParamName + ");\n";
 		public static final String ExitDecl = GenerationNames.ModifierNames.NoReturn + " " + ExitName + "("
-		+ EventTemplates.EventPointerType + " " + EventTemplates.EventFParamName + ");\n";
+				+ EventTemplates.EventPointerType + " " + EventTemplates.EventFParamName + ");\n";
 		public static final String EntryInvoke = EntryName + "(" + EventTemplates.EventFParamName + ");";
 		public static final String ExitInvoke = ExitName + "(" + EventTemplates.EventFParamName + ");";
 	}
-
 
 	public static class ClassUtilsNames {
 		public static final String BaseClassName = Namespaces.RootNamespace + "::" + "ModelObject";
@@ -233,7 +234,6 @@ public class GenerationNames {
 	public static final String AssocationHeaderName = "association";
 	public static final String DeploymentHeaderName = "deployment";
 
-
 	public static final String PoolIdSetter = "setPoolId";
 
 	public static final String AssigmentOperator = "=";
@@ -251,10 +251,10 @@ public class GenerationNames {
 	public static final String AssociationsHeaderName = "associations";
 	public static final String EdgeType = "EdgeType";
 
-	public static String comment(String text){
+	public static String comment(String text) {
 		return "//" + text;
 	}
-	
+
 	public static String initFunctionName(String className) {
 		return GeneralFunctionNames.InitFunctionName + className;
 	}
@@ -290,11 +290,17 @@ public class GenerationNames {
 		return "{\n" + "bool handled=false;\n" + "auto range = " + TransitionTableName + ".equal_range(EventState("
 				+ EventTemplates.EventFParamName + GenerationNames.PointerAndMemoryNames.PointerAccess + "getType(),"
 				+ CurrentStateName + "," + EventTemplates.EventFParamName
-				+ GenerationNames.PointerAndMemoryNames.PointerAccess + "getPortType()));\n" + "if(range.first!="
-				+ TransitionTableName + ".end())\n" + "{\n" + "for(auto it=range.first;it!=range.second;++it)\n" + "{\n"
-				+ "if((it->second).first(*this," + EventTemplates.EventFParamName + "))//Guard call\n" + "{\n"
-				+ EntryExitNames.ExitInvoke + "(it->second).second(*this," + EventTemplates.EventFParamName + ");//Action Call\n"
-				+ EntryExitNames.EntryInvoke + "handled=true;\n" + "break;\n" + "}\n" + "}\n" + "}\n" + "return handled;\n" + "}\n";
+				+ GenerationNames.PointerAndMemoryNames.PointerAccess + "getPortType()));\n" + "if (range.first == "
+				+ TransitionTableName + ".end () && e_" + GenerationNames.PointerAndMemoryNames.PointerAccess
+				+ "getPortType () != " + PortTemplates.ANY_PORT + "){" + "range =" + TransitionTableName // TODO its only a quickfix, handle different when the port dimension can be a list.. 
+				+ ".equal_range(EventState(" + EventTemplates.EventFParamName
+				+ GenerationNames.PointerAndMemoryNames.PointerAccess + "getType()," + CurrentStateName + ","
+				+ PortTemplates.ANY_PORT + "));}" + "if(range.first!=" + TransitionTableName + ".end())\n" + "{\n"
+				+ "for(auto it=range.first;it!=range.second;++it)\n" + "{\n" + "if((it->second).first(*this,"
+				+ EventTemplates.EventFParamName + "))//Guard call\n" + "{\n" + EntryExitNames.ExitInvoke
+				+ "(it->second).second(*this," + EventTemplates.EventFParamName + ");//Action Call\n"
+				+ EntryExitNames.EntryInvoke + "handled=true;\n" + "break;\n" + "}\n" + "}\n" + "}\n"
+				+ "return handled;\n" + "}\n";
 	}
 
 	private static final String setStateFunctionDefSharedHeaderPart(String className) {
@@ -312,12 +318,14 @@ public class GenerationNames {
 
 	public static String hierachicalSetStateDef(String className) {
 
-		return setStateFunctionDefSharedHeaderPart(className) + "\n" + "{\n" + "auto it=" + HierarchicalStateMachineNames.CompositeStateMapName
-				+ ".find(" + GenerationNames.StateParamName + ");\n" + "if(it!=" + HierarchicalStateMachineNames.CompositeStateMapName + ".end())\n"
-				+ "{\n" + HierarchicalStateMachineNames.CurrentMachineName + "=(it->second).get();\n" + HierarchicalStateMachineNames.CurrentMachineName + "->"
-				+ SetInitialStateName + "();//restarting from initial state\n" + "}\n" + "else\n" + "{\n"
-				+ HierarchicalStateMachineNames.CurrentMachineName + "=" + PointerAndMemoryNames.NullPtr + ";\n" + "}\n" + CurrentStateName + "="
-				+ GenerationNames.StateParamName + ";\n" + "}\n";
+		return setStateFunctionDefSharedHeaderPart(className) + "\n" + "{\n" + "auto it="
+				+ HierarchicalStateMachineNames.CompositeStateMapName + ".find(" + GenerationNames.StateParamName
+				+ ");\n" + "if(it!=" + HierarchicalStateMachineNames.CompositeStateMapName + ".end())\n" + "{\n"
+				+ HierarchicalStateMachineNames.CurrentMachineName + "=(it->second).get();\n"
+				+ HierarchicalStateMachineNames.CurrentMachineName + "->" + SetInitialStateName
+				+ "();//restarting from initial state\n" + "}\n" + "else\n" + "{\n"
+				+ HierarchicalStateMachineNames.CurrentMachineName + "=" + PointerAndMemoryNames.NullPtr + ";\n" + "}\n"
+				+ CurrentStateName + "=" + GenerationNames.StateParamName + ";\n" + "}\n";
 	}
 
 	public static String eventClassName(String eventName) {
@@ -339,10 +347,10 @@ public class GenerationNames {
 	public static String pointerType(String typeName) {
 		return typeName + "*";
 	}
-	
+
 	public static String signalPointerType(String signalClassName) {
 		return sharedPtrType(PrivateFunctionalTemplates.signalType(signalClassName));
-}
+	}
 
 	public static String formatIncomingParamName(String paramName) {
 		if (paramName.isEmpty())
@@ -355,11 +363,11 @@ public class GenerationNames {
 
 		return PointerAndMemoryNames.SmartPtr + "<" + typeName + ">";
 	}
-	
+
 	public static String requiredInfPartName(String infName) {
 		return infName + "ReqInf";
 	}
-	
+
 	public static String providedInfPartName(String infName) {
 		return infName + "ProvInf";
 	}
