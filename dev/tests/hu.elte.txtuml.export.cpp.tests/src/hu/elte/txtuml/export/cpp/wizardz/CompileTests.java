@@ -71,7 +71,8 @@ public class CompileTests {
 			new Config("monitoring", "monitoring.x.model", "monitoring.x.cpp.XMonitoringConfiguration", DemoExpectedLines.MONITORING.getLines(), false, "mainTest.cpp"),
 			new Config("producer_consumer", "producer_consumer.j.model",
 					"producer_consumer.j.cpp.ProducerConsumerConfiguration", DemoExpectedLines.PRODUCER_CONSUMER.getLines(), false, "main.cpp"),
-			new Config("train", "train.j.model", "train.j.cpp.TrainConfiguration", DemoExpectedLines.TRAIN.getLines(), false, "mainTest.cpp") };
+			new Config("train", "train.j.model", "train.j.cpp.TrainConfiguration", DemoExpectedLines.TRAIN.getLines(), false, "mainTest.cpp"),
+			new Config("pingpong", "pingpong.j.model", "pingpong.j.cpp.PingPongConf", DemoExpectedLines.TRAIN.getLines(), true, "main.cpp")};
 	
 	private static final String EXPORT_TEST_PROJECT_PREFIX = "exportTest_";
 	private static final String COMPILE_TEST_PROJECT_PREFIX = "compileTest_";

@@ -1,4 +1,4 @@
-package pingpong.j;
+package pingpong.j.cpp;
 
 import hu.elte.txtuml.api.deployment.Configuration;
 import hu.elte.txtuml.api.deployment.Group;
