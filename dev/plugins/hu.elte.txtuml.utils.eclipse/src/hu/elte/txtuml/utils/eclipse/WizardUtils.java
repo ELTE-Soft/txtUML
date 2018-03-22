@@ -257,6 +257,12 @@ public class WizardUtils {
 					}
 				}
 			}
+			
+			IType[] superTypes = diagramType.newSupertypeHierarchy(null).getAllSupertypes(diagramType);
+			if (superTypes.length != 0) {
+				IType superType = superTypes[0];
+				return getModelByFields(superType);
+			}
 		} catch (JavaModelException | NoSuchElementException e) {
 		}
 
