@@ -303,7 +303,7 @@ public class WizardUtils {
 	 * 
 	 * @return the list of types in the given compilation unit.
 	 */
-	private static List<?> getTypes(ICompilationUnit compilationUnit) {
+	private synchronized static List<?> getTypes(ICompilationUnit compilationUnit) {
 		ASTParser parser = ASTParser.newParser(AST.JLS8);
 		parser.setResolveBindings(true);
 		parser.setSource(compilationUnit);
@@ -329,6 +329,10 @@ public class WizardUtils {
 		return (compilationUnit.getImport(qualifiedName).exists() || compilationUnit.getImport(pack + ".*").exists());
 	}
 
+	/**
+	 * 
+	 * Job for finding the types with the given superclasses in a compilation unit.
+	 */
 	private static class SuperTypeListJob extends Job {
 		private List<IType> typesWithGivenSuperclass;
 		private ICompilationUnit cUnit;
@@ -361,6 +365,11 @@ public class WizardUtils {
 		}		
 	}
 	
+	/**
+	 * 
+	 * Job for calculating if there is any type in a compilation unit with at least one of the
+	 * given superclasses.
+	 */
 	private static class ContainsClassWithSuperTypesJob extends Job {
 		private boolean haveClassWithSuperTypes;
 		private ICompilationUnit cUnit;

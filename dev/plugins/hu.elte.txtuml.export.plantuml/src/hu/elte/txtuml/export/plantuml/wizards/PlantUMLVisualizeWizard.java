@@ -40,7 +40,7 @@ public class PlantUMLVisualizeWizard extends TxtUMLVisualizeWizard {
 	
 	@Override
 	public void addPages() {
-		selectTxtUmlPage = new VisualizeTxtUMLPage(false, SequenceDiagram.class, Interaction.class);
+		selectTxtUmlPage = new VisualizeTxtUMLPage(true, false, SequenceDiagram.class, Interaction.class);
 		addPage(selectTxtUmlPage);
 	}
 

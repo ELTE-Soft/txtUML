@@ -53,14 +53,16 @@ public class VisualizeTxtUMLPage extends WizardPage {
 	private ScrolledComposite sc;
 	private CheckboxTreeViewer tree;
 	private final boolean directSuperClasses;
+	private final boolean progressBar;
 
 	/**
 	 * The Constructor
 	 */
-	public VisualizeTxtUMLPage(boolean directSuperClasses, Class<?>... diagramTypes) {
+	public VisualizeTxtUMLPage(boolean progressBar, boolean directSuperClasses, Class<?>... diagramTypes) {
 		super("Visualize txtUML page");
 		this.diagramTypes = diagramTypes;
 		this.directSuperClasses = directSuperClasses;
+		this.progressBar = progressBar;
 		setTitle("Visualize txtUML page");
 		setDescription("Select the diagrams to be visualized.");
 	}
@@ -73,87 +75,22 @@ public class VisualizeTxtUMLPage extends WizardPage {
 	 */
 	@Override
 	public void createControl(Composite parent) {
-		IProgressService progressService = PlatformUI.getWorkbench().getProgressService();
+		if (progressBar) {
+			IProgressService progressService = PlatformUI.getWorkbench().getProgressService();
+			try {
+				progressService.runInUI(progressService, new IRunnableWithProgress() {
 
-		try {
-			progressService.runInUI(progressService, new IRunnableWithProgress() {
-
-				@Override
-				public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
-					monitor.beginTask("Creating dialog", 100);
-					sc = new ScrolledComposite(parent, SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER);
-					container = new Composite(sc, SWT.NONE);
-
-					GridLayout layout = new GridLayout(4, false);
-					container.setLayout(layout);
-
-					final Label label = new Label(container, SWT.TOP);
-					label.setText("txtUML Diagrams: ");
-
-					addInitialLayoutFields();
-
-					// diagram descriptions tree
-					ScrolledComposite treeComposite = new ScrolledComposite(container, SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER);
-					tree = getDiagramTreeViewer(treeComposite, monitor);
-					tree.addDoubleClickListener(new IDoubleClickListener() {
-						@Override
-						public void doubleClick(DoubleClickEvent event) {
-							ISelection selection = event.getSelection();
-							Iterator<?> selectedElements = ((IStructuredSelection) selection).iterator();
-							if (selectedElements.hasNext()) {
-								Object selectedElement = selectedElements.next();
-								if (selectedElement instanceof IJavaProject) {
-									List<Object> expandedElements = new ArrayList<>(Arrays.asList(tree.getExpandedElements()));
-									if (expandedElements.contains(selectedElement)) {
-										expandedElements.remove(selectedElement);
-									} else {
-										expandedElements.add(selectedElement);
-									}
-									tree.setExpandedElements(expandedElements.toArray());
-								} else if (selectedElement instanceof IType) {
-									List<Object> checkedElements = new ArrayList<>(Arrays.asList(tree.getCheckedElements()));
-									boolean isChecked = checkedElements.contains(selectedElement);
-									tree.setChecked(selectedElement, !isChecked);
-									IType selectedType = (IType) selectedElement;
-									if (!isChecked && !txtUMLLayout.contains(selectedType)) {
-										txtUMLLayout.add(selectedType);
-									} else {
-										txtUMLLayout.remove(selectedType);
-									}
-									selectElementsInDiagramTree(txtUMLLayout.toArray(), true);
-								}
-							}
-						}
-					});
-
-					selectElementsInDiagramTree(txtUMLLayout.toArray(), false);
-					setExpandedLayouts(txtUMLLayout);
-
-					GridData treeGd = new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1);
-					treeGd.heightHint = 200;
-					treeGd.widthHint = 150;
-					GridData labelGd = new GridData(SWT.FILL, SWT.TOP, false, false, 1, 1);
-					labelGd.verticalIndent = 5;
-					label.setLayoutData(labelGd);
-					treeComposite.setLayoutData(treeGd);
-
-					treeComposite.setContent(tree.getControl());
-					treeComposite.setExpandHorizontal(true);
-					treeComposite.setExpandVertical(true);
-					sc.setContent(container);
-					sc.setExpandHorizontal(true);
-					sc.setExpandVertical(true);
-					container.setSize(container.computeSize(450, 300, true));
-					sc.setMinSize(container.getSize());
-					sc.setSize(container.getSize());
-
-					setControl(parent);
-					setPageComplete(true);
-					monitor.done();
-				}			
-			}, ResourcesPlugin.getWorkspace().getRoot());
-		} catch (InvocationTargetException | InterruptedException e) {
-			Logger.sys.error(e.getMessage());
+					@Override
+					public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
+						createPage(parent, monitor);
+					}
+					
+				}, ResourcesPlugin.getWorkspace().getRoot());
+			} catch (InvocationTargetException | InterruptedException e) {
+				Logger.sys.error(e.getMessage());
+			}
+		} else {
+			createPage(parent, null);
 		}
 	}
 
@@ -204,77 +141,6 @@ public class VisualizeTxtUMLPage extends WizardPage {
 	 */
 	public void setExpandedLayouts(List<IType> typesToExpand) {
 		tree.setExpandedElements(typesToExpand.stream().map(type -> type.getJavaProject()).toArray());
-	}
-
-	private CheckboxTreeViewer getDiagramTreeViewer(ScrolledComposite treeComposite, IProgressMonitor monitor) {
-		CheckboxTreeViewer tree = new CheckboxTreeViewer(treeComposite, SWT.NONE);
-		IContentProvider cp = new WorkbenchContentProvider() {
-			private int projectNum;
-			
-			@Override
-			public Object[] getChildren(Object element) {
-				if (element instanceof IWorkspaceRoot) {
-					List<IJavaProject> javaProjects = new ArrayList<>();
-					IProject[] allProjects = ((IWorkspaceRoot) element).getProjects();
-					projectNum = allProjects.length;
-					for (IProject pr : allProjects) {
-						try {
-							IJavaProject javaProject = ProjectUtils.findJavaProject(pr.getName());
-							if (directSuperClasses && WizardUtils.containsClassesWithDirectSuperTypes(javaProject, diagramTypes)) {
-								javaProjects.add(ProjectUtils.findJavaProject(pr.getName()));
-							} else if (WizardUtils.containsClassesWithSuperTypes(javaProject, diagramTypes)) {
-								javaProjects.add(ProjectUtils.findJavaProject(pr.getName()));
-							}
-							monitor.worked(80 / projectNum);
-						} catch (NotFoundException e) {
-						}
-					}
-					return javaProjects.toArray();
-				}
-				if (element instanceof IJavaProject) {
-					List<IPackageFragment> packageFragments = null;
-					try {
-						packageFragments = PackageUtils.findAllPackageFragmentsAsStream((IJavaProject) element)
-								.collect(Collectors.toList());
-					} catch (JavaModelException ex) {
-					}
-					List<IType> descriptionTypes = packageFragments.stream()
-							.flatMap(pf -> getDiagramDescriptions(pf).stream()).collect(Collectors.toList());
-					return descriptionTypes.toArray();
-				}
-				monitor.worked(20 / projectNum);
-				return new Object[0];
-			}
-
-			@Override
-			public Object[] getElements(Object inputElement) {
-				return getChildren(inputElement);
-			}
-
-			@Override
-			public Object getParent(Object element) {
-				if (element instanceof IResource) {
-					return ((IResource) element).getParent();
-				}
-				return null;
-			}
-
-			@Override
-			public boolean hasChildren(Object element) {
-				try {
-					return getChildren(element).length > 0;
-				} catch (NullPointerException ex) {
-					return false;
-				}
-			}
-		};
-
-		tree.getTree().addListener(SWT.Selection, event -> selectionHandler(event));
-		tree.setContentProvider(cp);
-		tree.setLabelProvider(WizardUtils.getPostQualifiedLabelProvider());
-		tree.setInput(ResourcesPlugin.getWorkspace().getRoot());
-		monitor.worked(80);
-		return tree;
 	}
 
 	private void selectionHandler(Event event) {
@@ -363,5 +229,154 @@ public class VisualizeTxtUMLPage extends WizardPage {
 				txtUMLLayout.remove(childData);
 			}
 		}
+	}
+	
+	private void createPage(Composite parent, IProgressMonitor monitor) {
+		if (monitor != null)
+			monitor.beginTask("Creating dialog", 100);
+		
+		sc = new ScrolledComposite(parent, SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER);
+		container = new Composite(sc, SWT.NONE);
+
+		GridLayout layout = new GridLayout(4, false);
+		container.setLayout(layout);
+
+		final Label label = new Label(container, SWT.TOP);
+		label.setText("txtUML Diagrams: ");
+
+		addInitialLayoutFields();
+
+		// diagram descriptions tree
+		ScrolledComposite treeComposite = new ScrolledComposite(container, SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER);
+		tree = getDiagramTreeViewer(treeComposite, monitor);
+		tree.addDoubleClickListener(new IDoubleClickListener() {
+			@Override
+			public void doubleClick(DoubleClickEvent event) {
+				ISelection selection = event.getSelection();
+				Iterator<?> selectedElements = ((IStructuredSelection) selection).iterator();
+				if (selectedElements.hasNext()) {
+					Object selectedElement = selectedElements.next();
+					if (selectedElement instanceof IJavaProject) {
+						List<Object> expandedElements = new ArrayList<>(Arrays.asList(tree.getExpandedElements()));
+						if (expandedElements.contains(selectedElement)) {
+							expandedElements.remove(selectedElement);
+						} else {
+							expandedElements.add(selectedElement);
+						}
+						tree.setExpandedElements(expandedElements.toArray());
+					} else if (selectedElement instanceof IType) {
+						List<Object> checkedElements = new ArrayList<>(Arrays.asList(tree.getCheckedElements()));
+						boolean isChecked = checkedElements.contains(selectedElement);
+						tree.setChecked(selectedElement, !isChecked);
+						IType selectedType = (IType) selectedElement;
+						if (!isChecked && !txtUMLLayout.contains(selectedType)) {
+							txtUMLLayout.add(selectedType);
+						} else {
+							txtUMLLayout.remove(selectedType);
+						}
+						selectElementsInDiagramTree(txtUMLLayout.toArray(), true);
+					}
+				}
+			}
+		});
+
+		selectElementsInDiagramTree(txtUMLLayout.toArray(), false);
+		setExpandedLayouts(txtUMLLayout);
+
+		GridData treeGd = new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1);
+		treeGd.heightHint = 200;
+		treeGd.widthHint = 150;
+		GridData labelGd = new GridData(SWT.FILL, SWT.TOP, false, false, 1, 1);
+		labelGd.verticalIndent = 5;
+		label.setLayoutData(labelGd);
+		treeComposite.setLayoutData(treeGd);
+
+		treeComposite.setContent(tree.getControl());
+		treeComposite.setExpandHorizontal(true);
+		treeComposite.setExpandVertical(true);
+		sc.setContent(container);
+		sc.setExpandHorizontal(true);
+		sc.setExpandVertical(true);
+		container.setSize(container.computeSize(450, 300, true));
+		sc.setMinSize(container.getSize());
+		sc.setSize(container.getSize());
+
+		setControl(parent);
+		setPageComplete(true);
+		if (monitor != null)
+			monitor.done();
+	}
+
+	private CheckboxTreeViewer getDiagramTreeViewer(ScrolledComposite treeComposite, IProgressMonitor monitor) {
+		CheckboxTreeViewer tree = new CheckboxTreeViewer(treeComposite, SWT.NONE);
+		IContentProvider cp = new WorkbenchContentProvider() {
+			private int projectNum;
+			
+			@Override
+			public Object[] getChildren(Object element) {
+				if (element instanceof IWorkspaceRoot) {
+					List<IJavaProject> javaProjects = new ArrayList<>();
+					IProject[] allProjects = ((IWorkspaceRoot) element).getProjects();
+					projectNum = allProjects.length;
+					for (IProject pr : allProjects) {
+						try {
+							IJavaProject javaProject = ProjectUtils.findJavaProject(pr.getName());
+							if (directSuperClasses && WizardUtils.containsClassesWithDirectSuperTypes(javaProject, diagramTypes)) {
+								javaProjects.add(ProjectUtils.findJavaProject(pr.getName()));
+							} else if (WizardUtils.containsClassesWithSuperTypes(javaProject, diagramTypes)) {
+								javaProjects.add(ProjectUtils.findJavaProject(pr.getName()));
+							}
+							if (monitor != null)
+								monitor.worked(80 / projectNum);
+						} catch (NotFoundException e) {
+						}
+					}
+					return javaProjects.toArray();
+				}
+				if (element instanceof IJavaProject) {
+					List<IPackageFragment> packageFragments = null;
+					try {
+						packageFragments = PackageUtils.findAllPackageFragmentsAsStream((IJavaProject) element)
+								.collect(Collectors.toList());
+					} catch (JavaModelException ex) {
+					}
+					List<IType> descriptionTypes = packageFragments.stream()
+							.flatMap(pf -> getDiagramDescriptions(pf).stream()).collect(Collectors.toList());
+					return descriptionTypes.toArray();
+				}
+				if (monitor != null)
+					monitor.worked(20 / projectNum);
+				
+				return new Object[0];
+			}
+	
+			@Override
+			public Object[] getElements(Object inputElement) {
+				return getChildren(inputElement);
+			}
+	
+			@Override
+			public Object getParent(Object element) {
+				if (element instanceof IResource) {
+					return ((IResource) element).getParent();
+				}
+				return null;
+			}
+	
+			@Override
+			public boolean hasChildren(Object element) {
+				try {
+					return getChildren(element).length > 0;
+				} catch (NullPointerException ex) {
+					return false;
+				}
+			}
+		};
+	
+		tree.getTree().addListener(SWT.Selection, event -> selectionHandler(event));
+		tree.setContentProvider(cp);
+		tree.setLabelProvider(WizardUtils.getPostQualifiedLabelProvider());
+		tree.setInput(ResourcesPlugin.getWorkspace().getRoot());
+		return tree;
 	}
 }
