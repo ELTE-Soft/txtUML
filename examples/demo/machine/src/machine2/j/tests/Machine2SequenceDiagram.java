@@ -1,16 +1,19 @@
 package machine2.j.tests;
 
+// import static hu.elte.txtuml.api.model.seqdiag.Sequence.assertState;
+
 import hu.elte.txtuml.api.model.Action;
 import hu.elte.txtuml.api.model.seqdiag.ExecMode;
 import hu.elte.txtuml.api.model.seqdiag.ExecutionMode;
 import hu.elte.txtuml.api.model.seqdiag.Position;
 import hu.elte.txtuml.api.model.seqdiag.Sequence;
 import hu.elte.txtuml.api.model.seqdiag.SequenceDiagram;
-import machine1.j.model.Machine;
-import machine1.j.model.User;
-import machine1.j.model.associations.Usage;
-import machine1.j.model.signals.ButtonPress;
-import machine1.j.model.signals.DoYourWork;
+import machine2.j.model.Machine;
+import machine2.j.model.User;
+import machine2.j.model.associations.Usage;
+import machine2.j.model.signals.ButtonPress;
+import machine2.j.model.signals.DoTasks;
+import machine2.j.model.signals.DoYourWork;
 
 public class Machine2SequenceDiagram extends SequenceDiagram {
 
@@ -25,7 +28,7 @@ public class Machine2SequenceDiagram extends SequenceDiagram {
 
 	@Override
 	public void initialize() {
-		m = Action.create(Machine.class);
+		m = Action.create(Machine.class, 3);
 		u1 = Action.create(User.class);
 		u2 = Action.create(User.class);
 
@@ -39,11 +42,17 @@ public class Machine2SequenceDiagram extends SequenceDiagram {
 	}
 
 	@Override
-	@ExecutionMode(ExecMode.STRICT)
+	@ExecutionMode(ExecMode.LENIENT)
 	public void run() {
 		Sequence.fromActor(new DoYourWork(), u1);
+		// assertState(m, Off.class);
+
+		Sequence.send(u1, new ButtonPress(), m);
+		// assertState(m, On.Active.class);
+
 		for (int i = 0; i < 3; ++i) {
-			Sequence.send(u1, new ButtonPress(), m);
+			Sequence.send(u1, new DoTasks(1), m);
+			// assertState(m, On.Active.class);
 		}
 	}
 
