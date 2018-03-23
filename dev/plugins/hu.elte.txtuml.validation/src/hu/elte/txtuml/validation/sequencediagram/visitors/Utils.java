@@ -4,6 +4,10 @@ import static java.util.stream.Collectors.toList;
 
 import java.util.List;
 
+import org.eclipse.jdt.core.ICompilationUnit;
+import org.eclipse.jdt.core.IJavaElement;
+import org.eclipse.jdt.core.dom.AST;
+import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.AbstractTypeDeclaration;
 import org.eclipse.jdt.core.dom.Annotation;
@@ -15,14 +19,17 @@ import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.ForStatement;
 import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.IfStatement;
+import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.eclipse.jdt.core.dom.SingleMemberAnnotation;
 import org.eclipse.jdt.core.dom.Statement;
 import org.eclipse.jdt.core.dom.WhileStatement;
 
+import hu.elte.txtuml.api.model.Action;
 import hu.elte.txtuml.api.model.ModelClass;
 import hu.elte.txtuml.api.model.seqdiag.Sequence;
 import hu.elte.txtuml.api.model.seqdiag.SequenceDiagram;
+import hu.elte.txtuml.utils.Logger;
 import hu.elte.txtuml.utils.jdt.ElementTypeTeller;
 import hu.elte.txtuml.validation.common.ProblemCollector;
 import hu.elte.txtuml.validation.sequencediagram.ValidationErrors;
@@ -51,7 +58,13 @@ public class Utils {
 				Annotation ca = (Annotation) modifier;
 				if (ca.getTypeName().getFullyQualifiedName().equals("Position")) {
 					// position value
-					int annotationVal = (int) ((SingleMemberAnnotation) ca).getValue().resolveConstantExpressionValue();
+					SingleMemberAnnotation position;
+					try {
+						position = (SingleMemberAnnotation) ca;
+					} catch (ClassCastException ex) {
+						return;
+					}
+					int annotationVal = (int) position.getValue().resolveConstantExpressionValue();
 					if (annotationVal < 0) {
 						collector.report(ValidationErrors.INVALID_POSITION.create(collector.getSourceInfo(), elem));
 					}
@@ -68,7 +81,7 @@ public class Utils {
 		}
 	}
 
-	public static void checkSendExists(ProblemCollector collector, Block node) {
+	public static void checkSendExists(ProblemCollector collector, Block node, ASTVisitor visitor) {
 		List<Statement> statements = (List<Statement>) node.statements();
 		boolean isLeaf = !statements.stream().anyMatch(stm -> stm instanceof WhileStatement
 				|| stm instanceof IfStatement || stm instanceof ForStatement || stm instanceof DoStatement);
@@ -81,13 +94,51 @@ public class Utils {
 				.map(ExpressionStatement::getExpression).filter(expr -> expr instanceof MethodInvocation)
 				.map(expr -> (MethodInvocation) expr).collect(toList());
 
+		List<MethodInvocation> notSequenceInvocations = methodInvocations.stream().filter(inv -> {
+			try {
+				String declaringClass = inv.resolveMethodBinding().getDeclaringClass().getQualifiedName();
+				return !declaringClass.equals(Sequence.class.getCanonicalName())
+						&& !declaringClass.equals(Action.class.getCanonicalName());
+			} catch (NullPointerException ex) {
+				return false;
+			}
+		}).collect(toList());
+
 		boolean containsSend = methodInvocations.stream().anyMatch(Utils::isSendInvocation);
 		if (!containsSend) {
-			if (!methodInvocations.isEmpty()) {
-				// check other method calls in this block instead
+			if (methodInvocations.isEmpty() || methodInvocations.stream().allMatch(inv -> {
+				try {
+					return inv.resolveMethodBinding().getDeclaringClass().getQualifiedName()
+							.equals(Sequence.class.getCanonicalName());
+				} catch (NullPointerException ex) {
+					return false;
+				}
+			})) {
+				collector.report(ValidationErrors.SEND_EXPECTED.create(collector.getSourceInfo(), node));
+			}
+			notSequenceInvocations.forEach(inv -> checkMethodInvocation(inv, visitor, collector));
+		}
+	}
+
+	private static void checkMethodInvocation(MethodInvocation node, ASTVisitor visitor, ProblemCollector collector) {
+		try {
+			IMethodBinding binding = node.resolveMethodBinding();
+			ICompilationUnit unit = (ICompilationUnit) binding.getJavaElement()
+					.getAncestor(IJavaElement.COMPILATION_UNIT);
+			if (unit == null) {
 				return;
 			}
-			collector.report(ValidationErrors.SEND_EXPECTED.create(collector.getSourceInfo(), node));
+
+			ASTParser parser = ASTParser.newParser(AST.JLS8);
+			parser.setKind(ASTParser.K_COMPILATION_UNIT);
+			parser.setSource(unit);
+			parser.setResolveBindings(true);
+			CompilationUnit cu = (CompilationUnit) parser.createAST(null);
+
+			MethodDeclaration decl = (MethodDeclaration) cu.findDeclaringNode(binding.getKey());
+			decl.getBody().accept(visitor);
+		} catch (NullPointerException ex) {
+			Logger.sys.debug("Method calling cannot be validated.");
 		}
 	}
 
