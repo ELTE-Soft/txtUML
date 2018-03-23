@@ -73,7 +73,7 @@ public enum DemoExpectedLines {
 			"Game::Initialize",
 			"Game::StartGame",
 			"Player::Serve",
-			"Left : \"I'll serve now...!",
+			"Left : \"I'll serve now...!\"",
 			"Racket::ReceiveBall",
 			"Racket::CanHit",
 			"Racket::ReceiveBall",

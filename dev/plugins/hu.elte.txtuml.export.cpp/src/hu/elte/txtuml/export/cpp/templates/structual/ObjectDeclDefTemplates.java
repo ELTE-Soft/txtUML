@@ -33,6 +33,7 @@ public class ObjectDeclDefTemplates {
 			break;
 		case StackStored:
 			type = typeName;
+			break;
 		default:
 			assert(false);
 			break;

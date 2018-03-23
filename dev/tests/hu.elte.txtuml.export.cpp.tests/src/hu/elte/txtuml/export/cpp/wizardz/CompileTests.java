@@ -72,7 +72,7 @@ public class CompileTests {
 			new Config("producer_consumer", "producer_consumer.j.model",
 					"producer_consumer.j.cpp.ProducerConsumerConfiguration", DemoExpectedLines.PRODUCER_CONSUMER.getLines(), false, "main.cpp"),
 			new Config("train", "train.j.model", "train.j.cpp.TrainConfiguration", DemoExpectedLines.TRAIN.getLines(), false, "mainTest.cpp"),
-			new Config("pingpong", "pingpong.j.model", "pingpong.j.cpp.PingPongConf", DemoExpectedLines.TRAIN.getLines(), true, "main.cpp")};
+			new Config("pingpong", "pingpong.j.model", "pingpong.j.cpp.PingPongConf", DemoExpectedLines.PINGPONG.getLines(), true, "main.cpp")};
 	
 	private static final String EXPORT_TEST_PROJECT_PREFIX = "exportTest_";
 	private static final String COMPILE_TEST_PROJECT_PREFIX = "compileTest_";
@@ -184,7 +184,7 @@ public class CompileTests {
 		}
 	}
 
-	@Test(timeout=600000)
+	@Test(timeout=720 * 1000)
 	public void compileTest() {
 		for (Config config : TEST_PROJECTS) {
 			try {
