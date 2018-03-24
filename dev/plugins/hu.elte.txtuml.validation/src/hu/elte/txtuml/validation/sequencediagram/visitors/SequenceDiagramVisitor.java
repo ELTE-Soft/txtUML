@@ -7,10 +7,11 @@ import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.MethodInvocation;
 
-import hu.elte.txtuml.api.model.Action;
 import hu.elte.txtuml.validation.common.ProblemCollector;
-import hu.elte.txtuml.validation.sequencediagram.ValidationErrors;
 
+/**
+ * Visitor for sequence diagram description validation.
+ */
 public class SequenceDiagramVisitor extends ASTVisitor {
 
 	protected ProblemCollector collector;
@@ -38,18 +39,9 @@ public class SequenceDiagramVisitor extends ASTVisitor {
 
 	@Override
 	public boolean visit(MethodInvocation elem) {
-		boolean isActionCall;
-		try {
-			isActionCall = elem.resolveMethodBinding().getDeclaringClass().getQualifiedName()
-					.equals(Action.class.getCanonicalName());
-		} catch (NullPointerException ex) {
-			isActionCall = false;
-		}
-		if (isActionCall) {
-			collector.report(ValidationErrors.INVALID_ACTION_CALL.create(collector.getSourceInfo(), elem));
-		}
+		Utils.checkInvalidActionCall(elem, collector);
 		return false;
-	};
+	}
 
 	@Override
 	public boolean visit(Block node) {

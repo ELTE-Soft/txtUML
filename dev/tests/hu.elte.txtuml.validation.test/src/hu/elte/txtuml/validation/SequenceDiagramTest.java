@@ -19,6 +19,9 @@ import hu.elte.txtuml.validation.common.ValidationProblem;
 import hu.elte.txtuml.validation.sequencediagram.ValidationErrors;
 import hu.elte.txtuml.validation.sequencediagram.visitors.SequenceDiagramVisitor;
 
+/**
+ * Test cases for sequence diagram validation.
+ */
 public class SequenceDiagramTest extends ValidationTestBase {
 
 	private static final String VALIDATION_EXAMPLES_PACKAGE = "/hu/elte/txtuml/examples/validation/sequencediagram/";

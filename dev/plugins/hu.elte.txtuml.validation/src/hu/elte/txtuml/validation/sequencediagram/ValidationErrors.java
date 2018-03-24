@@ -50,6 +50,11 @@ public enum ValidationErrors {
 				return true;
 			};
 
+			@Override
+			public int getSourceEnd() {
+				return super.getSourceEnd() + 1;
+			}
+
 		};
 	}
 

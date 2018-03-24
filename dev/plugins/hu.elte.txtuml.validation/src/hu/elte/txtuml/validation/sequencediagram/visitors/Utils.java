@@ -34,6 +34,9 @@ import hu.elte.txtuml.utils.jdt.ElementTypeTeller;
 import hu.elte.txtuml.validation.common.ProblemCollector;
 import hu.elte.txtuml.validation.sequencediagram.ValidationErrors;
 
+/**
+ * Utils for sequence diagram validation.
+ */
 @SuppressWarnings("unchecked")
 public class Utils {
 
@@ -66,15 +69,15 @@ public class Utils {
 					}
 					int annotationVal = (int) position.getValue().resolveConstantExpressionValue();
 					if (annotationVal < 0) {
-						collector.report(ValidationErrors.INVALID_POSITION.create(collector.getSourceInfo(), elem));
+						collector.report(ValidationErrors.INVALID_POSITION.create(collector.getSourceInfo(), position));
 					}
 
 					// type of annotated field
 					boolean isModelClass = ElementTypeTeller.hasSuperClass(elem.getType().resolveBinding(),
 							ModelClass.class.getCanonicalName());
 					if (!isModelClass) {
-						collector.report(
-								ValidationErrors.INVALID_LIFELINE_DECLARATION.create(collector.getSourceInfo(), elem));
+						collector.report(ValidationErrors.INVALID_LIFELINE_DECLARATION.create(collector.getSourceInfo(),
+								elem.getType()));
 					}
 				}
 			}
@@ -106,21 +109,36 @@ public class Utils {
 
 		boolean containsSend = methodInvocations.stream().anyMatch(Utils::isSendInvocation);
 		if (!containsSend) {
-			if (methodInvocations.isEmpty() || methodInvocations.stream().allMatch(inv -> {
+			boolean isAllSequenceMethod = methodInvocations.stream().allMatch(inv -> {
 				try {
 					return inv.resolveMethodBinding().getDeclaringClass().getQualifiedName()
 							.equals(Sequence.class.getCanonicalName());
 				} catch (NullPointerException ex) {
 					return false;
 				}
-			})) {
+			});
+
+			if (methodInvocations.isEmpty() || isAllSequenceMethod) {
 				collector.report(ValidationErrors.SEND_EXPECTED.create(collector.getSourceInfo(), node));
 			}
-			notSequenceInvocations.forEach(inv -> checkMethodInvocation(inv, visitor, collector));
+			notSequenceInvocations.forEach(inv -> validateInvokedMethod(inv, visitor, collector));
 		}
 	}
 
-	private static void checkMethodInvocation(MethodInvocation node, ASTVisitor visitor, ProblemCollector collector) {
+	public static void checkInvalidActionCall(MethodInvocation elem, ProblemCollector collector) {
+		boolean isActionCall;
+		try {
+			isActionCall = elem.resolveMethodBinding().getDeclaringClass().getQualifiedName()
+					.equals(Action.class.getCanonicalName());
+		} catch (NullPointerException ex) {
+			isActionCall = false;
+		}
+		if (isActionCall) {
+			collector.report(ValidationErrors.INVALID_ACTION_CALL.create(collector.getSourceInfo(), elem));
+		}
+	}
+
+	private static void validateInvokedMethod(MethodInvocation node, ASTVisitor visitor, ProblemCollector collector) {
 		try {
 			IMethodBinding binding = node.resolveMethodBinding();
 			ICompilationUnit unit = (ICompilationUnit) binding.getJavaElement()
