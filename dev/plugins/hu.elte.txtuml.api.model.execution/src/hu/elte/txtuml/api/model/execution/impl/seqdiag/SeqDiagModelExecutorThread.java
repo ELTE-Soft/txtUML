@@ -14,8 +14,8 @@ import hu.elte.txtuml.api.model.seqdiag.ExecMode;
 /**
  * Class for the single model executor thread in a sequence diagram executor.
  * <p>
- * See the documentation of this package for an overview about the threads used
- * in the sequence diagram executor.
+ * See the documentation of this package for an overview of the threads used in
+ * the sequence diagram executor.
  */
 @SequenceDiagramRelated
 class SeqDiagModelExecutorThread extends FIFOExecutorThread implements ExecutorThread {
