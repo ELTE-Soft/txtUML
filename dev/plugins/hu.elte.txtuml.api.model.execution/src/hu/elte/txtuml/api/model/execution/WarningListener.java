@@ -15,7 +15,7 @@ import hu.elte.txtuml.api.model.Signal;
  */
 public interface WarningListener {
 
-	default <L extends ModelClass, R extends ModelClass, CL extends GeneralCollection<L>, CR extends GeneralCollection<R>> void unlinkingNonExistingAssociation(
+	default <L extends ModelClass, R extends ModelClass, CL extends GeneralCollection<? super L>, CR extends GeneralCollection<? super R>> void unlinkingNonExistingAssociation(
 			Class<? extends AssociationEnd<CL>> leftEnd, L leftObj, Class<? extends AssociationEnd<CR>> rightEnd,
 			R rightObj) {
 	}

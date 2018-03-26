@@ -7,8 +7,6 @@ Fragment-Host: hu.elte.txtuml.export.javascript
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Require-Bundle: org.junit,
  hu.elte.txtuml.layout.visualizer,
- org.eclipse.emf.ecore,
- org.mockito.mockito-core,
  hu.elte.txtuml.utils,
  hu.elte.txtuml.export.uml2,
  org.eclipse.uml2.uml

@@ -10,24 +10,25 @@ import hu.elte.txtuml.api.model.execution.testmodel.A;
 import hu.elte.txtuml.api.model.execution.testmodel.B;
 import hu.elte.txtuml.api.model.execution.testmodel.assoc.A_A;
 import hu.elte.txtuml.api.model.execution.testmodel.assoc.A_B_2;
-import hu.elte.txtuml.api.model.execution.util.MutableBoolean;
 
 public class AssociationEndTests extends UnitTestsBase {
 
 	@Test
 	public void testAssociationEnds() {
-		MutableBoolean exceptionThrown = new MutableBoolean(false);
+		boolean[] exceptionThrown = new boolean[] { false };
 
 		executor.run(() -> {
 			try {
 				init();
 			} catch (AssertionError e) {
 				e.printStackTrace();
-				exceptionThrown.value = true;
+				exceptionThrown[0] = true;
 			}
 		});
 
-		Assert.assertFalse(exceptionThrown.value);
+		Assert.assertFalse(exceptionThrown[0]);
+		assertNoErrors();
+		assertNoWarnings();
 	}
 
 	private static void init() {

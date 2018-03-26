@@ -2,25 +2,29 @@ package hu.elte.txtuml.utils;
 
 import java.util.function.Function;
 
-/*
- * Multiple types defined in this file.
- */
-
 /**
- * Methods of this interface should be used with extreme care.
+ * Methods of this class should be used with extreme care; see the documentation
+ * of {@link #sneakyThrow} for more information about the purpose of this type.
  */
-public interface Sneaky {
+public class Sneaky {
 
 	/**
+	 * Does nothing, only forces the compiler to think that the given Exception
+	 * can be thrown at this point in the code.
+	 * <p>
 	 * Useful in cases when a checked exception is thrown in a sneaky way and it
 	 * has to be caught in a surrounding catch block (which would cause compile
 	 * error without this method as the compiler does not see the checked
 	 * exception to be thrown).
 	 */
-	static <E extends Exception> void Throw() throws E {
+	public static <E extends Exception> void Throw() throws E {
 	}
 
-	static <E extends Exception> void uncheck(ExceptionThrowingRunnable<E> r) {
+	/**
+	 * Runs the given action; if an exception is raised, this throws it in a
+	 * {@link #sneakyThrow(Throwable) sneaky} way.
+	 */
+	public static <E extends Exception> void uncheck(ExceptionThrowingRunnable<E> r) {
 		try {
 			r.run();
 		} catch (Exception e) {
@@ -28,7 +32,12 @@ public interface Sneaky {
 		}
 	}
 
-	static <T, R, E extends Exception> R uncheck(ExceptionThrowingFunction<T, R, E> f, T param) {
+	/**
+	 * Runs the given action with the given parameter and returns the result; if
+	 * an exception is raised, this throws it in a
+	 * {@link #sneakyThrow(Throwable) sneaky} way.
+	 */
+	public static <T, R, E extends Exception> R uncheck(ExceptionThrowingFunction<T, R, E> f, T param) {
 		try {
 			return f.apply(param);
 		} catch (Exception e) {
@@ -36,36 +45,48 @@ public interface Sneaky {
 		}
 	}
 
-	static <E extends Exception> Runnable unchecked(ExceptionThrowingRunnable<E> r) {
+	/**
+	 * Returns a Runnable that, when executed, throws any raised exception in a
+	 * {@link #sneakyThrow(Throwable) sneaky} way.
+	 */
+	public static <E extends Exception> Runnable unchecked(ExceptionThrowingRunnable<E> r) {
 		return () -> uncheck(r);
 	}
 
-	static <T, R, E extends Exception> Function<T, R> unchecked(ExceptionThrowingFunction<T, R, E> f) {
+	/**
+	 * Returns a Function that, when executed, throws any raised exception in a
+	 * {@link #sneakyThrow(Throwable) sneaky} way.
+	 */
+	public static <T, R, E extends Exception> Function<T, R> unchecked(ExceptionThrowingFunction<T, R, E> f) {
 		return t -> uncheck(f, t);
 	}
 
-	static <T> T sneakyThrow(Throwable e) {
-		return SneakyThrow.<RuntimeException, T> sneakyThrow0(e);
+	/**
+	 * Throw the given throwable in a sneaky way, that is, by forcing the
+	 * compiler to treat checked exceptions as they were unchecked. The compiler
+	 * will be unaware of the fact that this exception is thrown here but it
+	 * will still be thrown at runtime.
+	 * 
+	 * @throws T
+	 *             always, but without the compiler realizing it
+	 */
+	public static <T> T sneakyThrow(Throwable e) {
+		return Sneaky.<RuntimeException, T>sneakyThrow0(e);
+	}
+
+	@SuppressWarnings("unchecked")
+	private static <E extends Throwable, T> T sneakyThrow0(Throwable t) throws E {
+		throw (E) t;
 	}
 
 	@FunctionalInterface
-	interface ExceptionThrowingRunnable<E extends Exception> {
+	public interface ExceptionThrowingRunnable<E extends Exception> {
 		void run() throws E;
 	}
 
 	@FunctionalInterface
-	interface ExceptionThrowingFunction<T, R, E extends Exception> {
+	public interface ExceptionThrowingFunction<T, R, E extends Exception> {
 		R apply(T t) throws E;
 	}
 
-}
-
-final class SneakyThrow {
-	@SuppressWarnings("unchecked")
-	static <E extends Throwable, T> T sneakyThrow0(Throwable t) throws E {
-		throw (E) t;
-	}
-
-	private SneakyThrow() {
-	}
 }

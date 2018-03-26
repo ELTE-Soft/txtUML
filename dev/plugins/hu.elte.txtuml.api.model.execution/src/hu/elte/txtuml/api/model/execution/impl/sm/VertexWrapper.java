@@ -2,7 +2,7 @@ package hu.elte.txtuml.api.model.execution.impl.sm;
 
 import hu.elte.txtuml.api.model.StateMachine.Choice;
 import hu.elte.txtuml.api.model.StateMachine.Vertex;
-import hu.elte.txtuml.api.model.runtime.Wrapper;
+import hu.elte.txtuml.api.model.impl.Wrapper;
 
 public interface VertexWrapper extends Wrapper<Vertex> {
 

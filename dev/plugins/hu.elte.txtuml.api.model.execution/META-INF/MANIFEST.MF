@@ -17,4 +17,5 @@ Export-Package: hu.elte.txtuml.api.model.execution,
  hu.elte.txtuml.api.model.execution.impl.seqdiag,
  hu.elte.txtuml.api.model.execution.impl.singlethread,
  hu.elte.txtuml.api.model.execution.impl.sm,
- hu.elte.txtuml.api.model.execution.log
+ hu.elte.txtuml.api.model.execution.log,
+ hu.elte.txtuml.api.model.execution.seqdiag.error

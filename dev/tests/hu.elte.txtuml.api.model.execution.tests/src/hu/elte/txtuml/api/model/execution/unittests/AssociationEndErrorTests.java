@@ -33,8 +33,8 @@ public class AssociationEndErrorTests extends UnitTestsBase {
 			Action.send(new Sig0(), a);
 		});
 
-		executionAsserter.assertErrors(x -> x.lowerBoundOfMultiplicityOffended(a, A_B.b.class));
-
+		assertErrors(x -> x.lowerBoundOfMultiplicityOffended(a, A_B.b.class));
+		assertNoWarnings();
 	}
 
 	@Test
@@ -48,9 +48,8 @@ public class AssociationEndErrorTests extends UnitTestsBase {
 			Action.send(new Sig0(), a);
 		});
 
-		executionAsserter.assertErrors(x -> {
-			// no errors should be raised
-		});
+		assertNoErrors();
+		assertNoWarnings();
 	}
 
 	@Test
@@ -62,8 +61,8 @@ public class AssociationEndErrorTests extends UnitTestsBase {
 			Action.link(A_B.a.class, a, A_B.b.class, b2);
 		});
 
-		executionAsserter.assertErrors(x -> x.upperBoundOfMultiplicityOffended(a, A_B.b.class));
-
+		assertErrors(x -> x.upperBoundOfMultiplicityOffended(a, A_B.b.class));
+		assertNoWarnings();
 	}
 
 }

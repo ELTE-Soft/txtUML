@@ -4,7 +4,7 @@ import java.io.IOException;
 
 import hu.elte.txtuml.api.model.API;
 import hu.elte.txtuml.api.model.Action;
-import hu.elte.txtuml.api.model.execution.ModelExecutor;
+import hu.elte.txtuml.api.model.execution.Execution;
 import monitoring.x.model.Aggregator;
 import monitoring.x.model.Alert;
 import monitoring.x.model.Close;
@@ -15,13 +15,14 @@ import monitoring.x.model.ToAggregator;
 import monitoring.x.model.ToAlert;
 import monitoring.x.model.Write;
 
-public class Tester {
+public class Tester implements Execution {
 
-	static ResourceMonitor monitor;
-	static Aggregator aggregator;
-	static Alert alert;
+	ResourceMonitor monitor;
+	Aggregator aggregator;
+	Alert alert;
 
-	static void init() {
+	@Override
+	public void initialization() {
 		monitor = Action.create(ResourceMonitor.class);
 		aggregator = Action.create(Aggregator.class);
 		alert = Action.create(Alert.class, 3);
@@ -32,9 +33,8 @@ public class Tester {
 		Action.start(alert);
 	}
 
-	public static void main(String[] args) {
-		ModelExecutor executor = ModelExecutor.create().setTraceLogging(false).launch(Tester::init);
-		
+	@Override
+	public void during() {
 		System.out.println("Testing monitoring example.");
 		System.out.println("\tq - quit");
 		System.out.println("\tr - read");
@@ -59,7 +59,9 @@ public class Tester {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-
-		executor.shutdown();
+	}
+	
+	public static void main(String[] args) {
+		new Tester().run();
 	}
 }
