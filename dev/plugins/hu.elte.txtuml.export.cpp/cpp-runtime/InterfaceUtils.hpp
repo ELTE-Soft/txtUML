@@ -12,9 +12,6 @@ public:
 };
 
 class EmptyReqInf {
-/*protected:
-	template <typename, typename>
-	friend class DelegationConnection;*/
 
 protected:
 	virtual void sendAny(ES::EventRef s) = 0;
