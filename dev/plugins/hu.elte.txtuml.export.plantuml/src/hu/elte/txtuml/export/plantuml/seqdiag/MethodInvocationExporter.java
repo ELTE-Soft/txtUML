@@ -8,9 +8,6 @@ import hu.elte.txtuml.export.plantuml.generator.PlantUmlCompiler;
 /**
  * Base exporter for all MethodInvocation handlers(Actions and
  * fragmentInvocations)
- * 
- * @author Zoli
- *
  */
 public abstract class MethodInvocationExporter extends BaseSeqdiagExporter<MethodInvocation> {
 
@@ -29,7 +26,7 @@ public abstract class MethodInvocationExporter extends BaseSeqdiagExporter<Metho
 	@SuppressWarnings("unchecked")
 	public static <T extends ASTNode> BaseSeqdiagExporter<T> createExporter(ASTNode curElement,
 			PlantUmlCompiler compiler) {
-		MethodInvocationExporter exp = new ActionExporter(compiler);
+		MethodInvocationExporter exp = new SequenceExporter(compiler);
 		if (exp.validElement(curElement)) {
 			return (BaseSeqdiagExporter<T>) exp;
 		} else {

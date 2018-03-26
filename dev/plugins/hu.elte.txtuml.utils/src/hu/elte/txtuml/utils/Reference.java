@@ -1,5 +1,7 @@
 package hu.elte.txtuml.utils;
 
+import java.util.Objects;
+
 /**
  * Mutable container of a single object. Useful in cases when an out or in/out
  * parameter is needed or when the value of a local variable should be changed
@@ -56,7 +58,7 @@ public class Reference<E> {
 
 	@Override
 	public int hashCode() {
-		return value == null ? 0 : value.hashCode();
+		return Objects.hashCode(value);
 	}
 
 	@Override
@@ -67,13 +69,8 @@ public class Reference<E> {
 		if (obj == null || !(obj instanceof Reference)) {
 			return false;
 		}
-		@SuppressWarnings("rawtypes")
-		Reference other = (Reference) obj;
-		if (value == null) {
-			if (other.value != null) {
-				return false;
-			}
-		} else if (!value.equals(other.value)) {
+		Reference<?> other = (Reference<?>) obj;
+		if (!Objects.equals(value, other.value)) {
 			return false;
 		}
 		return true;

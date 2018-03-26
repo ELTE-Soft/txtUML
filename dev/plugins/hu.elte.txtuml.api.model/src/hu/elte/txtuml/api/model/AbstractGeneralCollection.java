@@ -2,6 +2,7 @@ package hu.elte.txtuml.api.model;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.function.Consumer;
 
@@ -11,8 +12,9 @@ import hu.elte.txtuml.api.model.error.LowerBoundError;
 import hu.elte.txtuml.api.model.error.MultiplicityError;
 import hu.elte.txtuml.api.model.error.UninitializedCollectionError;
 import hu.elte.txtuml.api.model.error.UpperBoundError;
-import hu.elte.txtuml.api.model.utils.Collections;
+import hu.elte.txtuml.api.model.external.Collections;
 import hu.elte.txtuml.utils.InstanceCreator;
+import hu.elte.txtuml.utils.Logger;
 import hu.elte.txtuml.utils.RuntimeInvocationTargetException;
 
 /**
@@ -121,15 +123,16 @@ abstract class AbstractGeneralCollection<E, B extends java.util.Collection<E>, C
 		return getBackend().iterator();
 	}
 
-	@ExternalBody
+	@External
 	@Override
 	@SuppressWarnings("unchecked")
 	protected final C clone() {
 		try {
 			return (C) super.clone();
 		} catch (CloneNotSupportedException e) {
-			// Cannot happen.
-			e.printStackTrace();
+			// Cannot happen. It is a fatal error if for some reason it still
+			// happens.
+			Logger.sys.fatal("", e);
 			return null;
 		}
 	}
@@ -137,7 +140,7 @@ abstract class AbstractGeneralCollection<E, B extends java.util.Collection<E>, C
 	@External
 	@Override
 	public final int hashCode() {
-		return getBackend().hashCode();
+		return Objects.hashCode(getBackend());
 	}
 
 	@ExternalBody
@@ -153,7 +156,7 @@ abstract class AbstractGeneralCollection<E, B extends java.util.Collection<E>, C
 			return false;
 		}
 		AbstractGeneralCollection<?, ?, ?> other = (AbstractGeneralCollection<?, ?, ?>) obj;
-		return this.getBackend().equals(other.getBackend());
+		return Objects.equals(this.getBackend(), other.getBackend());
 	}
 
 	@ExternalBody

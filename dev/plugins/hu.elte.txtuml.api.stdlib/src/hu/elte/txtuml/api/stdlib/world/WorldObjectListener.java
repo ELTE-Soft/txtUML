@@ -9,7 +9,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import hu.elte.txtuml.api.model.External;
-import hu.elte.txtuml.api.model.runtime.BaseModelExecutor;
+import hu.elte.txtuml.api.model.external.BaseModelExecutor;
 import hu.elte.txtuml.utils.Logger;
 
 /**

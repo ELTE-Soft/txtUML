@@ -5,9 +5,6 @@ import java.util.List;
 
 /**
  * Cache element for the {@link CompileCache}
- * 
- * @author Zoli
- *
  */
 public class CompiledElementsCache {
 

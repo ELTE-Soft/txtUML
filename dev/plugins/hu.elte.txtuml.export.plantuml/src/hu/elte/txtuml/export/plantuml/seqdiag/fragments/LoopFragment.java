@@ -15,9 +15,6 @@ import hu.elte.txtuml.export.plantuml.generator.PlantUmlCompiler;
 
 /**
  * All looptypes handled by this compiler(While,do - While, for and foreach)
- * 
- * @author Zoli
- *
  */
 public class LoopFragment extends CombinedFragmentExporter<Statement> {
 

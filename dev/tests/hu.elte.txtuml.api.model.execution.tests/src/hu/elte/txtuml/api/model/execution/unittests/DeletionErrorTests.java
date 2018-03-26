@@ -16,7 +16,8 @@ public class DeletionErrorTests extends UnitTestsBase {
 			Action.delete(a);
 		});
 
-		executionAsserter.assertErrors(x -> x.objectCannotBeDeleted(a));
+		assertErrors(x -> x.objectCannotBeDeleted(a));
+		assertNoWarnings();
 	}
 
 	@Test
@@ -27,7 +28,8 @@ public class DeletionErrorTests extends UnitTestsBase {
 			Action.link(A_B.a.class, a, A_B.b.class, b);
 		});
 
-		executionAsserter.assertErrors(x -> x.linkingDeletedObject(a));
+		assertErrors(x -> x.linkingDeletedObject(a));
+		assertNoWarnings();
 	}
 
 	@Test
@@ -38,7 +40,8 @@ public class DeletionErrorTests extends UnitTestsBase {
 			Action.send(new Sig0(), a);
 		});
 
-		executionAsserter.assertWarnings(x -> x.signalArrivedToDeletedObject(a, new Sig0()));
+		assertNoErrors();
+		assertWarnings(x -> x.signalArrivedToDeletedObject(a, new Sig0()));
 	}
 
 	@Test
@@ -49,7 +52,8 @@ public class DeletionErrorTests extends UnitTestsBase {
 			Action.start(a);
 		});
 
-		executionAsserter.assertErrors(x -> x.startingDeletedObject(a));
+		assertErrors(x -> x.startingDeletedObject(a));
+		assertNoWarnings();
 	}
 
 	@Test
@@ -60,7 +64,8 @@ public class DeletionErrorTests extends UnitTestsBase {
 			Action.unlink(A_B.a.class, a, A_B.b.class, b);
 		});
 
-		executionAsserter.assertErrors(x -> x.unlinkingDeletedObject(a));
+		assertErrors(x -> x.unlinkingDeletedObject(a));
+		assertNoWarnings();
 	}
 
 }

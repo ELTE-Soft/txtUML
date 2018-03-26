@@ -9,8 +9,6 @@ import hu.elte.txtuml.export.plantuml.seqdiag.BaseSeqdiagExporter;
 /**
  * Base class for exporting a combined fragment
  * 
- * @author Zoli
- *
  * @param <T>
  */
 public abstract class CombinedFragmentExporter<T extends ASTNode> extends BaseSeqdiagExporter<T> {

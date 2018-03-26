@@ -1,8 +1,9 @@
 package hu.elte.txtuml.api.model;
 
-import hu.elte.txtuml.api.model.Runtime.Described;
-import hu.elte.txtuml.api.model.runtime.ElseException;
-import hu.elte.txtuml.api.model.runtime.ModelClassWrapper;
+import hu.elte.txtuml.api.model.ImplRelated.RequiresRuntime;
+import hu.elte.txtuml.api.model.impl.ElseException;
+import hu.elte.txtuml.api.model.impl.ExecutorThread;
+import hu.elte.txtuml.api.model.impl.ModelClassRuntime;
 
 /**
  * Base class for state machines in the model.
@@ -180,7 +181,7 @@ import hu.elte.txtuml.api.model.runtime.ModelClassWrapper;
  * @see State
  * @see CompositeState
  */
-public abstract class StateMachine extends @External Described<ModelClassWrapper> {
+public abstract class StateMachine extends @External RequiresRuntime<ModelClassRuntime> {
 
 	/**
 	 * Base type for vertices in the model.
@@ -235,8 +236,8 @@ public abstract class StateMachine extends @External Described<ModelClassWrapper
 		public void exit() {
 		}
 
+		@ExternalBody
 		@Override
-		@External
 		public final String toString() {
 			return getVertexTypeName() + ":" + getClass().getSimpleName();
 		}
@@ -250,7 +251,6 @@ public abstract class StateMachine extends @External Described<ModelClassWrapper
 			return getVertexTypeName() + ":" + getClass().getName();
 		}
 
-		@External
 		String getVertexTypeName() {
 			return "vertex";
 		}
@@ -310,7 +310,6 @@ public abstract class StateMachine extends @External Described<ModelClassWrapper
 		}
 
 		@Override
-		@External
 		String getVertexTypeName() {
 			return "pseudostate";
 		}
@@ -382,7 +381,6 @@ public abstract class StateMachine extends @External Described<ModelClassWrapper
 	public abstract class Initial extends Pseudostate {
 
 		@Override
-		@External
 		String getVertexTypeName() {
 			return "initial";
 		}
@@ -453,7 +451,6 @@ public abstract class StateMachine extends @External Described<ModelClassWrapper
 	public abstract class Choice extends Pseudostate {
 
 		@Override
-		@External
 		String getVertexTypeName() {
 			return "choice";
 		}
@@ -568,10 +565,12 @@ public abstract class StateMachine extends @External Described<ModelClassWrapper
 		 * @throws ClassCastException
 		 *             if the cast might not be performed
 		 */
-		@SuppressWarnings("unchecked")
 		@ExternalBody
+		@SuppressWarnings("unchecked")
 		protected final <T extends Signal> T getTrigger(Class<T> signalClass) throws ClassCastException {
-			return (T) runtimeInfo().getCurrentTrigger();
+			ExecutorThread.current().requireOwned(StateMachine.this);
+
+			return (T) runtime().getCurrentTrigger();
 		}
 
 		@Override
@@ -582,8 +581,8 @@ public abstract class StateMachine extends @External Described<ModelClassWrapper
 		public void exit() {
 		}
 
-		@Override
 		@External
+		@Override
 		public String getVertexTypeName() {
 			return "state";
 		}
@@ -653,8 +652,8 @@ public abstract class StateMachine extends @External Described<ModelClassWrapper
 	 */
 	public abstract class CompositeState extends State {
 
-		@Override
 		@External
+		@Override
 		public String getVertexTypeName() {
 			return "composite_state";
 		}
@@ -781,8 +780,8 @@ public abstract class StateMachine extends @External Described<ModelClassWrapper
 		 * actions.
 		 * <p>
 		 * If the actual transition has a trigger defined, the
-		 * {@code getTrigger} method can be used inside the
-		 * overriding methods to get the triggering signal.
+		 * {@code getTrigger} method can be used inside the overriding methods
+		 * to get the triggering signal.
 		 * <p>
 		 * Overriding methods may only contain action code. See the
 		 * documentation of {@link Model} for details about the action language.
@@ -830,8 +829,8 @@ public abstract class StateMachine extends @External Described<ModelClassWrapper
 		 * should always do so.
 		 * <p>
 		 * If the actual transition has a trigger defined, the
-		 * {@code getTrigger} method can be used inside the
-		 * overriding methods to get the triggering signal.
+		 * {@code getTrigger} method can be used inside the overriding methods
+		 * to get the triggering signal.
 		 * <p>
 		 * Overriding methods may only contain a condition evaluation. See the
 		 * documentation of {@link Model} for details about condition
@@ -878,14 +877,16 @@ public abstract class StateMachine extends @External Described<ModelClassWrapper
 		 * @throws ClassCastException
 		 *             if the cast might not be performed
 		 */
-		@SuppressWarnings("unchecked")
 		@ExternalBody
+		@SuppressWarnings("unchecked")
 		protected final <T extends Signal> T getTrigger(Class<T> signalClass) throws ClassCastException {
-			return (T) runtimeInfo().getCurrentTrigger();
+			ExecutorThread.current().requireOwned(StateMachine.this);
+
+			return (T) runtime().getCurrentTrigger();
 		}
 
+		@ExternalBody
 		@Override
-		@External
 		public String toString() {
 			return "transition:" + getClass().getSimpleName();
 		}

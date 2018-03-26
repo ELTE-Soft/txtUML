@@ -1,7 +1,9 @@
 package hu.elte.txtuml.utils;
 
+import java.util.Objects;
+
 /**
- * Quadruple type. One type to store four different types.
+ * Immutable quadruple type to store four objects of (possibly) different types.
  *
  * @param <T1>
  *            First type.
@@ -13,58 +15,69 @@ package hu.elte.txtuml.utils;
  *            Fourth type.
  */
 public class Quadruple<T1, T2, T3, T4> {
-	private final T1 _first;
-	private final T2 _second;
-	private final T3 _third;
-	private final T4 _fourth;
-
-	public static <T1, T2, T3, T4> Quadruple<T1, T2, T3, T4> of(T1 first,
-			T2 second, T3 third, T4 fourth) {
-		return new Quadruple<T1, T2, T3, T4>(first, second, third, fourth);
-	}
+	private final T1 first;
+	private final T2 second;
+	private final T3 third;
+	private final T4 fourth;
 
 	/**
-	 * Create Quadruple.
+	 * Create new Quadruple.
 	 * 
-	 * @param f
+	 * @param first
 	 *            First value.
-	 * @param s
+	 * @param second
 	 *            Second value.
-	 * @param t
+	 * @param tthird
 	 *            Third value.
 	 * @param fo
 	 *            Fourth value.
 	 */
-	public Quadruple(T1 f, T2 s, T3 t, T4 fo) {
-		_first = f;
-		_second = s;
-		_third = t;
-		_fourth = fo;
+	public static <T1, T2, T3, T4> Quadruple<T1, T2, T3, T4> of(T1 first, T2 second, T3 third, T4 fourth) {
+		return new Quadruple<T1, T2, T3, T4>(first, second, third, fourth);
+	}
+
+	/**
+	 * Create new Quadruple.
+	 * 
+	 * @param first
+	 *            First value.
+	 * @param second
+	 *            Second value.
+	 * @param tthird
+	 *            Third value.
+	 * @param fo
+	 *            Fourth value.
+	 */
+	public Quadruple(T1 first, T2 second, T3 third, T4 fourth) {
+		this.first = first;
+		this.second = second;
+		this.third = third;
+		this.fourth = fourth;
 	}
 
 	public T1 getFirst() {
-		return _first;
+		return first;
 	}
 
 	public T2 getSecond() {
-		return _second;
+		return second;
 	}
 
 	public T3 getThird() {
-		return _third;
+		return third;
 	}
 
 	public T4 getFourth() {
-		return _fourth;
+		return fourth;
 	}
 
 	@Override
 	public int hashCode() {
 		final int prime = 10007;
-		int result = prime + ((_first == null) ? 0 : _first.hashCode());
-		result = prime * result + ((_second == null) ? 0 : _second.hashCode());
-		result = prime * result + ((_third == null) ? 0 : _third.hashCode());
-		result = prime * result + ((_fourth == null) ? 0 : _fourth.hashCode());
+		int result = prime + Objects.hashCode(first);
+		result = prime * result + Objects.hashCode(second);
+		result = prime * result + Objects.hashCode(third);
+		result = prime * result + Objects.hashCode(fourth);
 		return result;
 	}
 
@@ -77,28 +90,12 @@ public class Quadruple<T1, T2, T3, T4> {
 			return false;
 		}
 		Quadruple<?, ?, ?, ?> other = (Quadruple<?, ?, ?, ?>) obj;
-		if (_first == null ? other._first != null : !_first
-				.equals(other._first)) {
-			return false;
-		}
-		if (_second == null ? other._second != null : !_second
-				.equals(other._second)) {
-			return false;
-		}
-		if (_third == null ? other._third != null : !_third
-				.equals(other._third)) {
-			return false;
-		}
-		if (_fourth == null ? other._fourth != null : !_fourth
-				.equals(other._fourth)) {
-			return false;
-		}
-		return true;
+		return Objects.equals(first, other.first) && Objects.equals(second, other.second)
+				&& Objects.equals(third, other.third) && Objects.equals(fourth, other.fourth);
 	}
 
 	@Override
 	public String toString() {
-		return "<" + _first + ", " + _second + ", " + _third + ", " + _fourth
-				+ ">";
+		return "<" + first + ", " + second + ", " + third + ", " + fourth + ">";
 	}
 }
