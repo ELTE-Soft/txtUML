@@ -58,4 +58,19 @@ class XtxtUMLAssociationValidator extends XtxtUMLClassValidator {
 		}
 	}
 
+	@Check
+	def checkMultiplicityIsNotCustom(TUAssociationEnd assocEnd) { // TODO support custom multiplicities
+		val it = assocEnd.multiplicity;
+		if (
+			!( it == null // omitted
+			|| any // *
+			|| lower == 1 && !upperSet // 1
+			|| (lower == 0 || lower == 1) && (upperInf || upper == 1) // 0|1..1|*
+		)) {
+			error("The multiplicity of association end " + assocEnd.name + " is invalid – "
+				+ "custom multiplicities are not supported in XtxtUML yet, please use one of the following: 1, *, 0..1, 1..1, 0..*, 1..*",
+				assocEnd, TU_ASSOCIATION_END__MULTIPLICITY, UNSUPPORTED_MULTIPLICITY);
+		}
+	}
+
 }

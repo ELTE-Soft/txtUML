@@ -28,6 +28,8 @@ public class GenerationNames {
 		public static final String StringUtilsPath = ESRootPath + FileNamesStringUtilsHeaderName;
 		public static final String FileNamesCollectionUtilsHeaderName = "CollectionUtils";
 		public static final String CollectionUtilsPath = ESRootPath + FileNamesCollectionUtilsHeaderName;
+		public static final String TimerInterfaceHeader = RuntimeTemplates.RTPath + TimerNames.TimerInterFaceName.toLowerCase();
+		public static final String TimerHeader = RuntimeTemplates.RTPath + TimerNames.TimerClassName.toLowerCase();
 
 		public static final String HeaderExtension = "hpp";
 		public static final String SourceExtension = "cpp";

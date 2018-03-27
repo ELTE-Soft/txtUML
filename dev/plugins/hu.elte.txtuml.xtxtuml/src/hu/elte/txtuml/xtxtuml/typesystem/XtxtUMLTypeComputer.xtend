@@ -60,7 +60,7 @@ class XtxtUMLTypeComputer extends XbaseWithAnnotationsTypeComputer {
 			TUAssociationEnd: {
 				val collectionOfAssocEndTypeRef =
 					state.nullSafeJvmElementTypeRef(rightChild, AssociationEnd).allSuperTypes.
-					findFirst[isType(AssociationEnd)] as ParameterizedTypeReference;
+						findFirst[isType(AssociationEnd)] as ParameterizedTypeReference;
 
 				state.acceptActualType(collectionOfAssocEndTypeRef.typeArguments.head);
 			}
