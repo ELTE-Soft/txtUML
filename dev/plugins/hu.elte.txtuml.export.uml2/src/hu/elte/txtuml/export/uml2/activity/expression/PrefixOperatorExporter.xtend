@@ -22,6 +22,7 @@ class PrefixOperatorExporter extends OperatorExporter<PrefixExpression> {
 			case Operator.MINUS: switch getType(source.operand.resolveTypeBinding) {
 				case INTEGER: getImportedOperation("IntegerOperations", "neg")
 				case REAL: getImportedOperation("RealOperations", "neg")
+				default: {}
 			}
 			case Operator.INCREMENT:
 				getImportedOperation("IntegerOperations", "add")

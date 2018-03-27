@@ -6,8 +6,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import hu.elte.txtuml.api.model.external.ExternalClass;
-
 /**
  * This annotation shows that the annotated package and its subpackages form a
  * JtxtUML model. Read this documentation page further for an overview on
@@ -57,13 +55,11 @@ import hu.elte.txtuml.api.model.external.ExternalClass;
  * <h3>Allowed in the model</h3>
  * 
  * <ul>
- * <li>Using and extending classes, interfaces, enums and annotations of this
- * package (hu.elte.txtuml.api.model), if the opposite is not stated on the
- * corresponding pages of this documentation.</li>
+ * <li>Using and extending visible classes, interfaces, enums and annotations of
+ * this package (hu.elte.txtuml.api.model) with the exception of the
+ * {@link ImplRelated} and {@link API} types which cannot be used.</li>
  * <li>Using and extending types of other txtUML models.</li>
  * <li>Using Java primitive types and <code>String</code>s.</li>
- * <li>Using subclasses of {@code ExternalClass}. See the documentation of
- * {@link ExternalClass} for details.</li>
  * </ul>
  * 
  * <h3>Disallowed in the model</h3>
@@ -89,18 +85,15 @@ import hu.elte.txtuml.api.model.external.ExternalClass;
  * <ul>
  * <li>The model is accessed from another thread (that is, not the executor's
  * thread).</li>
- * <li>The model calls a method of a class that is not part of the model (only
- * allowed if that class extends {@link ExternalClass}), and then the model is
- * accessed from that method (on the executor's thread).</li>
+ * <li>The model calls a method of a class the body of which is not part of the
+ * model (only allowed if that method is marked with {@link ExternalBody}).</li>
  * </ul>
  * 
  * <p>
- * For details about the second case, see the documentation of
- * {@link ExternalClass}. In the first case, when the model is accessed <b>from
- * another thread, only a small set of safe operations</b> can be done which are
- * listed in the {@link API} class. This class cannot be used from the model but
- * its static methods are the only ones which can be called from any other
- * thread.
+ * In the first case, when the model is accessed <b>from another thread, only a
+ * small set of safe operations</b> can be done which are listed in the
+ * {@link API} class. This class cannot be used from the model but its static
+ * methods are the only ones which can be called from any other thread.
  * 
  * <h2>Definitions</h2>
  * 
@@ -121,11 +114,8 @@ import hu.elte.txtuml.api.model.external.ExternalClass;
  * <li>Getting/setting fields of model objects (as UML attributes), calling
  * their methods (as UML operations).</li>
  * <li>Querying association ends with the {@link ModelClass#assoc(Class)
- * ModelClass.assoc} method, using the result through the {@link Collection}
- * interface.</li>
- * <li>Using subclasses of {@link ExternalClass} to bring external features into
- * the model or to communicate with components of the program that are not part
- * of the model.</li>
+ * ModelClass.assoc} method, using the result through the returned collection
+ * type.</li>
  * </ul>
  * 
  * <h3>Condition evaluation</h3>
@@ -136,8 +126,7 @@ import hu.elte.txtuml.api.model.external.ExternalClass;
  * the model (which condition the block represents) holds or not.
  * <p>
  * Condition evaluations in JtxtUML include
- * {@link StateMachine.Transition#guard() guards} of transitions and conditions
- * of certain <code>Collection</code> methods ( {@link Collection#selectAll} ).
+ * {@link StateMachine.Transition#guard() guards} of transitions.
  * <p>
  * A condition evaluation is exported as a single model query, so it <b>may
  * include only the following actions</b>:
@@ -148,9 +137,10 @@ import hu.elte.txtuml.api.model.external.ExternalClass;
  * <li>Querying association ends with the {@link ModelClass#assoc(Class)
  * ModelClass.assoc} method.</li>
  * <li>Using primitives (including <code>Sting</code>).</li>
- * <li>Creating {@link Collection} instances with methods of that type or its
- * subtypes. (As all such instances are immutable, this does not affect the
- * state of the model in any way.)</li>
+ * <li>Creating {@link GeneralCollection} instances with the
+ * {@link Action#collect}, {@link Action#collectIn} methods or methods of the
+ * collection types. (As all such instances are immutable, this does not affect
+ * the state of the model in any way.)</li>
  * <li>Calling methods of model objects as operations.</li>
  * </ul>
  * 

@@ -36,6 +36,8 @@ import org.eclipse.ui.model.WorkbenchContentProvider;
 import hu.elte.txtuml.api.layout.ClassDiagram;
 import hu.elte.txtuml.api.layout.CompositeDiagram;
 import hu.elte.txtuml.api.layout.StateMachineDiagram;
+import hu.elte.txtuml.api.model.seqdiag.Interaction;
+import hu.elte.txtuml.api.model.seqdiag.SequenceDiagram;
 import hu.elte.txtuml.export.papyrus.preferences.PreferencesManager;
 import hu.elte.txtuml.utils.Logger;
 import hu.elte.txtuml.utils.eclipse.NotFoundException;
@@ -49,7 +51,7 @@ import hu.elte.txtuml.utils.eclipse.WizardUtils;
 public class VisualizeTxtUMLPage extends WizardPage {
 
 	private static final Class<?>[] diagramTypes = { StateMachineDiagram.class, ClassDiagram.class,
-			CompositeDiagram.class };
+			CompositeDiagram.class, Interaction.class, SequenceDiagram.class };
 
 	private Composite container;
 	private List<IType> txtUMLLayout = new LinkedList<>();
@@ -301,7 +303,7 @@ public class VisualizeTxtUMLPage extends WizardPage {
 			types.stream().filter(type -> type.getFullyQualifiedName().equals(qualifiedName))
 					.forEach(type -> txtUMLLayout.add(type));
 		} catch (NotFoundException | JavaModelException ex) {
-			Logger.user.error(ex.getMessage());
+			Logger.sys.error(ex.getMessage());
 		}
 	}
 

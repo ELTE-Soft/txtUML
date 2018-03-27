@@ -2,6 +2,8 @@ package airport.xmodel;
 
 import hu.elte.txtuml.api.stdlib.timers.Timer
 import hu.elte.txtuml.api.model.Collection
+import hu.elte.txtuml.api.model.One;
+import hu.elte.txtuml.api.model.Any;
 
 class Weather {
 	private int temperature;
@@ -35,13 +37,13 @@ class Weather {
 			//System.err.println(temperature + " " + rain + " " + wind);	
 			
 			//Collection<Tower> allTowers = Weather.this->TowerWeatherUsage::theTower;
-			Collection<Tower> allTowers = Weather.this->(TowerWeatherUsage.theTower);
+			Any<Tower> allTowers = Weather.this->(TowerWeatherUsage.theTower);
 		
-			for(Tower t in allTowers) {
+			for(Tower t : allTowers) {
 				send new SignalSendTheWeatherValues(temperature, wind, rain) to t;
 			}
 			
-			Timer.start(this, new SignalWeatherAutoSending(), 2000); // It send a signal in every 30 sec
+			Timer.start(new SignalWeatherAutoSending(), this, 2000); // It send a signal in every 30 sec
 		}
 	}
 	/* 

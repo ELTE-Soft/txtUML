@@ -165,7 +165,7 @@ public class Microwave extends ModelClass {
 				--time;
 				Action.log("Microwave: remaining time: " + time + " second(s).");
 
-				Timer.start(Microwave.this, new TimedOut(), 1000);
+				Timer.start(new TimedOut(), Microwave.this, 1000);
 			}
 		}
 
@@ -262,7 +262,7 @@ public class Microwave extends ModelClass {
 	public class Finishing extends Transition {
 		@Override
 		public void effect() {
-			Human h = Microwave.this.assoc(Usage.userOfMicrowave.class).selectAny();
+			Human h = Microwave.this.assoc(Usage.userOfMicrowave.class).one();
 			Action.send(new Ding(), h);
 		}
 	}

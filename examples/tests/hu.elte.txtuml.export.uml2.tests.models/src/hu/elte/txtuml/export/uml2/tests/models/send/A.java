@@ -6,7 +6,7 @@ import hu.elte.txtuml.api.model.ModelClass;
 public class A extends ModelClass {
 
 	public void test(A a) {
-		Action.send(new Sig(), a.assoc(A_B.B_end.class).selectAny());
+		Action.send(new Sig(), a.assoc(A_B.B_end.class).one());
 	}
 	
 }

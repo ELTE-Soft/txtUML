@@ -1,5 +1,8 @@
 package hu.elte.txtuml.utils;
 
+/**
+ * The different loggers used by the txtUML framework.
+ */
 public enum Logger {
 	sys("SYS"), user("USER"), executor("EXEC");
 

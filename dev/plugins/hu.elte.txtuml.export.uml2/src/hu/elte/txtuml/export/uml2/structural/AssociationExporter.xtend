@@ -1,6 +1,6 @@
 package hu.elte.txtuml.export.uml2.structural
 
-import hu.elte.txtuml.api.model.assocends.Navigability.Navigable
+import hu.elte.txtuml.api.model.AssociationEnd.Navigable
 import hu.elte.txtuml.export.uml2.BaseExporter
 import hu.elte.txtuml.export.uml2.Exporter
 import hu.elte.txtuml.utils.jdt.ElementTypeTeller
@@ -22,7 +22,12 @@ class AssociationExporter extends Exporter<TypeDeclaration, ITypeBinding, Associ
 
 	override exportContents(TypeDeclaration decl) {
 		result.name = decl.name.identifier
-		val classes = decl.types.map[fetchType(resolveBinding.superclass.typeArguments.get(0)) as Class]
+
+		val classes = decl.types.map [
+			fetchType(
+				resolveBinding.superclass.superclass.typeArguments.get(0).typeArguments.get(0)
+			) as Class
+		]
 
 		decl.types.forEach [ td, i |
 			exportAssociationEnd(td) [

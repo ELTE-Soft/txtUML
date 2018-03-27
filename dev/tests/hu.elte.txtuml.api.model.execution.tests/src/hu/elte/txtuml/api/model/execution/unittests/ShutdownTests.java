@@ -1,21 +1,22 @@
 package hu.elte.txtuml.api.model.execution.unittests;
 
+import java.util.Optional;
+
 import org.junit.Assert;
 import org.junit.Test;
 
 import hu.elte.txtuml.api.model.Action;
 import hu.elte.txtuml.api.model.execution.testmodel.signals.Sig0;
-import hu.elte.txtuml.api.model.execution.util.MutableBoolean;
 
 public class ShutdownTests extends UnitTestsBase {
 
 	@Test
 	public void testShutdownWithTenMessages() {
-		MutableBoolean actionPerformed = new MutableBoolean();
+		boolean[] actionPerformed = new boolean[] { false };
 
-		executor.addTerminationListener(() -> actionPerformed.value = true);
+		executor.addTerminationListener(() -> actionPerformed[0] = true);
 
-		executor.launch(() -> {
+		executor.start(() -> {
 			createAAndB();
 
 			Action.start(a);
@@ -25,37 +26,27 @@ public class ShutdownTests extends UnitTestsBase {
 
 		});
 
-		Assert.assertFalse(actionPerformed.value);
+		Assert.assertFalse(actionPerformed[0]);
 
 		executor.shutdown().awaitTermination();
 
-		Assert.assertTrue(actionPerformed.value);
+		Assert.assertTrue(actionPerformed[0]);
 
-		executionAsserter.assertEvents(x -> {
+		assertEvents(x -> {
 			x.executionStarted();
 			transition(x, a, a.new Initialize());
-			x.processingSignal(a, new Sig0());
-			transition(x, a, a.new S1_S2());
-			x.processingSignal(a, new Sig0());
-			transition(x, a, a.new S2_S1());
-			x.processingSignal(a, new Sig0());
-			transition(x, a, a.new S1_S2());
-			x.processingSignal(a, new Sig0());
-			transition(x, a, a.new S2_S1());
-			x.processingSignal(a, new Sig0());
-			transition(x, a, a.new S1_S2());
-			x.processingSignal(a, new Sig0());
-			transition(x, a, a.new S2_S1());
-			x.processingSignal(a, new Sig0());
-			transition(x, a, a.new S1_S2());
-			x.processingSignal(a, new Sig0());
-			transition(x, a, a.new S2_S1());
-			x.processingSignal(a, new Sig0());
-			transition(x, a, a.new S1_S2());
-			x.processingSignal(a, new Sig0());
-			transition(x, a, a.new S2_S1());
+
+			for (int i = 0; i < 5; ++i) {
+				x.processingSignal(a, new Sig0(), Optional.empty());
+				transition(x, a, a.new S1_S2());
+				x.processingSignal(a, new Sig0(), Optional.empty());
+				transition(x, a, a.new S2_S1());
+			}
+
 			x.executionTerminated();
 		});
+		assertNoErrors();
+		assertNoWarnings();
 	}
 
 }

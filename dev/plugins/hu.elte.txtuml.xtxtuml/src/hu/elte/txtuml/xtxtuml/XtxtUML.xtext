@@ -38,7 +38,7 @@ TUExecution :
 ;
 
 TUSignal :
-	'signal' name=ValidID ('{'
+	'signal' name=ValidID ('extends' superSignal=[TUSignal|QualifiedName])? ('{'
 		attributes+=TUSignalAttribute*
 	'}' ';'? | ';')
 ;
@@ -96,7 +96,7 @@ TUSignalAttribute :
 TUClassMember
 	: TUConstructor
 	| TUAttributeOrOperationDeclarationPrefix (
-		{TUAttribute.prefix=current} name=ValidID ';' |
+		{TUAttribute.prefix=current} name=ValidID ('=' initExpression=XExpression)? ';' |
 		{TUOperation.prefix=current} name=ValidID '(' (parameters+=FullJvmFormalParameter (',' parameters+=FullJvmFormalParameter)*)? ')'
 			body=XBlockExpression ';'?
 	  )
@@ -113,12 +113,12 @@ TUClassProperty :
 ;
 
 TUConstructor :
-	visibility=TUVisibility? name=ValidID '(' (parameters+=FullJvmFormalParameter (',' parameters+=FullJvmFormalParameter)*)? ')'
+	modifiers=TUModifiers name=ValidID '(' (parameters+=FullJvmFormalParameter (',' parameters+=FullJvmFormalParameter)*)? ')'
 		body=XBlockExpression ';'?
 ;
 
 TUAttributeOrOperationDeclarationPrefix :
-	visibility=TUVisibility? type=JvmTypeReference
+	modifiers=TUModifiers type=JvmTypeReference
 ;
 
 TUState :
@@ -212,8 +212,16 @@ TUMultiplicity :
 
 // Commons
 
+TUModifiers:
+	{TUModifiers} (static?='static'? & visibility=TUVisibility? & externality=TUExternality?)
+;
+
 enum TUVisibility :
 	PACKAGE = 'package' | PRIVATE = 'private' | PROTECTED = 'protected' | PUBLIC = 'public'
+;
+
+enum TUExternality :
+	NON_EXTERNAL = 'non-external' | EXTERNAL = 'external' | EXTERNAL_BODY = 'external-body' 
 ;
 
 // Actions

@@ -1,0 +1,68 @@
+package hu.elte.txtuml.api.stdlib.world;
+
+import hu.elte.txtuml.api.model.ModelEnum;
+
+/**
+ * This class represents the outside world in a txtUML model. It can be viewed as a singleton as
+ * there is at most one instance of this class for every running model execution.
+ * <p>
+ * A {@link World} consists of {@link WorldObject}s, which represent active entities
+ * outside the model that can accept certain signals.
+ * Each world object is identified by a {@code String} identifier
+ * which is unique in a model execution.
+ * <p>
+ * To get a world object by its identifier, use the {@link #get} method of this class. 
+ * <p>
+ * See the documentation of the {@link hu.elte.txtuml.api.stdlib.world}
+ * package or further details and examples about the services provided by
+ * the <i>txtUML World</i> model.
+ * <p>
+ * See the documentation of {@link hu.elte.txtuml.api.model.Model} for an
+ * overview on modeling in JtxtUML.
+ */
+class World {
+
+	/**
+	 * Required for implementation purposes.
+	 */
+	external WorldHelper helper;
+
+	/**
+	 * This class cannot be instantiated directly.
+	 */
+	private external-body World() {}
+
+	external World(WorldHelper helper) {
+		this.helper = helper;
+	}
+
+	/**
+	 * Returns the single {@link WorldObject} instance identified by the specified name
+	 * in this model execution. If such a {@link WorldObject} does not exist, it is created
+	 * upon the call of this method.
+	 * <p>
+	 * <i>Note:</i> a shorthand operation for {@link getInstance()}.{@link getObject}(name).
+	 */
+	public static WorldObject get(String name) {
+		return getInstance().getObject(name);
+	}
+
+	/**
+	 * Returns the single {@link World} instance in this model execution. 
+	 * If it does not exist, it is created upon the call of this method.
+	 */
+	public static external-body World getInstance() {
+		return WorldHelper.getOrCreateWorldInstance();
+	}
+
+	/**
+	 * Returns the single {@link WorldObject} instance identified by the specified name
+	 * in this model execution. If such a {@link WorldObject} does not exist, it is created
+	 * upon the call of this method.
+	 */
+	public external-body WorldObject getObject(String name) {
+		return helper.getOrCreateObject(name);
+	}
+
+}
+

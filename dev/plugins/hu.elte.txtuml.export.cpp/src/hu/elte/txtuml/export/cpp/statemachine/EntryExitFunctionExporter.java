@@ -1,13 +1,20 @@
 package hu.elte.txtuml.export.cpp.statemachine;
 
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-import org.eclipse.uml2.uml.Activity;
+import java.util.Optional;
+
 import org.eclipse.uml2.uml.Behavior;
 import org.eclipse.uml2.uml.State;
-import org.eclipse.uml2.uml.UMLPackage;
 
+import hu.elte.txtuml.export.cpp.ActivityExportResult;
+import hu.elte.txtuml.export.cpp.ICppCompilationUnit;
+import hu.elte.txtuml.export.cpp.IDependencyCollector;
 import hu.elte.txtuml.export.cpp.activity.ActivityExporter;
+import hu.elte.txtuml.export.cpp.templates.GenerationNames.HierarchicalStateMachineNames;
+import hu.elte.txtuml.export.cpp.templates.GenerationNames.StateMachineMethodNames;
+import hu.elte.txtuml.export.cpp.templates.activity.ActivityTemplates;
 import hu.elte.txtuml.export.cpp.templates.statemachine.EventTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.FunctionTemplates;
 import hu.elte.txtuml.utils.Logger;
@@ -16,11 +23,11 @@ import hu.elte.txtuml.utils.Pair;
 class EntryExitFunctionDescription {
 
 	public EntryExitFunctionDescription(String stateName, String functionName, String functionBody,
-			boolean containsSignalAccess) {
+			boolean containsEventParamReference) {
 		this.stateName = stateName;
 		this.functionName = functionName;
 		this.functionBody = functionBody;
-		this.containsSignalAccess = containsSignalAccess;
+		this.containsEventParamReference = containsEventParamReference;
 	}
 
 	public String getStateName() {
@@ -36,13 +43,13 @@ class EntryExitFunctionDescription {
 	}
 
 	public boolean getContainsSignalAccess() {
-		return containsSignalAccess;
+		return containsEventParamReference;
 	}
 
 	private String stateName;
 	private String functionName;
 	private String functionBody;
-	private boolean containsSignalAccess;
+	private boolean containsEventParamReference;
 
 }
 
@@ -60,11 +67,11 @@ public class EntryExitFunctionExporter {
 
 	private ActivityExporter activityExporter;
 	private List<State> stateList;
-	private String className;
+	private ICppCompilationUnit owner;
 
-	EntryExitFunctionExporter(String className, List<State> stateList) {
-		activityExporter = new ActivityExporter();
-		this.className = className;
+	EntryExitFunctionExporter(ICppCompilationUnit owner, IDependencyCollector ownerDependencyCollector, List<State> stateList) {
+		this.owner = owner;
+		activityExporter = new ActivityExporter(Optional.of(ownerDependencyCollector));
 		this.stateList = stateList;
 	}
 
@@ -102,9 +109,9 @@ public class EntryExitFunctionExporter {
 
 	private void createFuncTypeMap(FuncTypeEnum funcType) {
 		List<EntryExitFunctionDescription> functionList = new LinkedList<EntryExitFunctionDescription>();
-		String source = "";
-		String name = "";
 		for (State item : stateList) {
+			String source = "";
+			String name = "";
 			Behavior behavior = null;
 			String unknownName = null;
 			switch (funcType) {
@@ -119,14 +126,39 @@ public class EntryExitFunctionExporter {
 				break;
 			}
 			}
+			ActivityExportResult activityResult = new ActivityExportResult();
+			activityResult = activityExporter.createFunctionBody(behavior);
 
-			if (behavior != null) {
-				if (behavior.eClass().equals(UMLPackage.Literals.ACTIVITY)) {
-					source = activityExporter.createFunctionBody((Activity) behavior).toString();
-					name = item.getName() + "_" + unknownName;
-					functionList.add(new EntryExitFunctionDescription(item.getName(), name, source.toString(),
-							activityExporter.isContainsSignalAccess()));
+			if (item.isComposite()) {
+				String compositeRelatedCode = "";
+				switch (funcType) {
+				case Entry:
+					compositeRelatedCode = ActivityTemplates.simpleIf(HierarchicalStateMachineNames.CurrentMachineName,
+							ActivityTemplates.operationCallOnPointerVariable(HierarchicalStateMachineNames.CurrentMachineName,
+									StateMachineMethodNames.InitializeFunctionName,
+									Arrays.asList(EventTemplates.EventFParamName)));
+					source = activityResult.getActivitySource() + compositeRelatedCode;
+
+					break;
+				case Exit:
+					compositeRelatedCode = ActivityTemplates.simpleIf(HierarchicalStateMachineNames.CurrentMachineName,
+							ActivityTemplates.operationCallOnPointerVariable(HierarchicalStateMachineNames.CurrentMachineName,
+									StateMachineMethodNames.FinalizeFunctionName,
+									Arrays.asList(EventTemplates.EventFParamName)));
+					source = compositeRelatedCode + activityResult.getActivitySource();
+					break;
+				default:
+					break;
 				}
+
+			} else {
+				source = activityResult.getActivitySource();
+			}
+			if (source != "") {
+				name = item.getName() + "_" + unknownName;
+				functionList.add(new EntryExitFunctionDescription(item.getName(), name, source,
+						item.isComposite() || activityResult.sourceHasSignalReference()));
+
 			}
 		}
 
@@ -157,10 +189,10 @@ public class EntryExitFunctionExporter {
 		notHiddenParam.add(new Pair<String, String>(EventTemplates.EventPointerType, EventTemplates.EventParamName));
 		for (EntryExitFunctionDescription description : getTheProperList(funcType)) {
 			if (description.getContainsSignalAccess()) {
-				source.append(FunctionTemplates.functionDef(className, description.getFunctionName(), notHiddenParam,
+				source.append(FunctionTemplates.functionDef(owner.getUnitName(), description.getFunctionName(), notHiddenParam,
 						description.getFunctionBody()));
 			} else {
-				source.append(FunctionTemplates.functionDef(className, description.getFunctionName(), hiddenParam,
+				source.append(FunctionTemplates.functionDef(owner.getUnitName(), description.getFunctionName(), hiddenParam,
 						description.getFunctionBody()));
 
 			}
@@ -179,7 +211,7 @@ public class EntryExitFunctionExporter {
 			break;
 		default:
 			functionList = null;
-			Logger.user.error("The FunctionTypeEnum should be Entry or Exit");
+			Logger.sys.error("The FunctionTypeEnum should be Entry or Exit");
 			break;
 		}
 

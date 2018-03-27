@@ -91,7 +91,7 @@ public class ModelTest {
 
 		compilationUnit.accept(new ModelVisitor(mockCollector));
 
-		verify(mockCollector, times(2)).report(is(INVALID_PARAMETER_TYPE));
+		verify(mockCollector, times(4)).report(is(INVALID_PARAMETER_TYPE));
 
 		checkNoOtherErrorRaised();
 	}
@@ -119,12 +119,21 @@ public class ModelTest {
 	}
 
 	@Test
+	public void testExternalsAreOmitted() throws Exception {
+		CompilationUnit compilationUnit = prepareAST("ExternalsAreOmitted.java");
+
+		compilationUnit.accept(new ModelVisitor(mockCollector));
+
+		checkNoOtherErrorRaised();
+	}
+	
+	@Test
 	public void testFieldType() throws Exception {
 		CompilationUnit compilationUnit = prepareAST("InvalidFieldType.java");
 
 		compilationUnit.accept(new ModelVisitor(mockCollector));
 
-		verify(mockCollector, times(2)).report(is(INVALID_ATTRIBUTE_TYPE));
+		verify(mockCollector, times(3)).report(is(INVALID_ATTRIBUTE_TYPE));
 
 		checkNoOtherErrorRaised();
 	}

@@ -1,22 +1,34 @@
 /** @file Action.hpp
 */
-#include "istatemachine.hpp"
-#include "ESRoot/Types.hpp"
 
+#ifndef ACTION_HPP
+#define ACTION_HPP
+
+#include "ESRoot/Types.hpp"
+namespace ES
+{
+class ModelObject;
+}
 namespace Action 
 {
 	
-void send(ES::StateMachineRef target, ES::EventRef signal);
+void send(ES::ModelObject* target, ES::EventRef signal);
 /**<
 Sends a message to a model object.
 @param target The target object where the signal has to be sent. 
 @param signal The signal to be sent.
 */
 
-void start(ES::StateMachineRef sm);
+void start(ES::ModelObject* sm);
 /**<
 Starts the state machine of a model object.
 @param sm The state machine to be started. 
+*/
+
+void deleteObject(ES::ModelObject* modelObject);
+/**<
+Dispose a model object reference.
+@param modelObject The object to be deleted.
 */
 	
 void log(ES::String message);
@@ -65,3 +77,5 @@ void unlink(typename LeftEnd::EdgeType* e1, typename RightEnd::EdgeType* e2)
 }
 
 }
+
+#endif

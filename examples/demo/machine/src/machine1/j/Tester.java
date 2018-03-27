@@ -1,16 +1,25 @@
 package machine1.j;
 
 import hu.elte.txtuml.api.model.Action;
-import hu.elte.txtuml.api.model.execution.ModelExecutor;
+import hu.elte.txtuml.api.model.execution.Execution;
+import hu.elte.txtuml.api.model.execution.LogLevel;
 import machine1.j.model.Machine;
 import machine1.j.model.User;
 import machine1.j.model.associations.Usage;
 import machine1.j.model.signals.DoYourWork;
 
-public class Tester {
+public class Tester implements Execution {
 
-	static void init() {
-		Machine m = Action.create(Machine.class);
+	@Override
+	public void configure(Settings s) {
+		s.logLevel = LogLevel.TRACE;
+	}
+
+	Machine m;
+
+	@Override
+	public void initialization() {
+		m = Action.create(Machine.class);
 		User u1 = Action.create(User.class);
 		User u2 = Action.create(User.class);
 
@@ -25,8 +34,12 @@ public class Tester {
 		Action.send(new DoYourWork(), u1);
 	}
 
-	public static void main(String[] args) {
-		ModelExecutor.create().setTraceLogging(true).run(Tester::init);
+	@Override
+	public void after() {
+		m.printSwitchOnLog();
 	}
 
+	public static void main(String[] args) {
+		new Tester().run();
+	}
 }

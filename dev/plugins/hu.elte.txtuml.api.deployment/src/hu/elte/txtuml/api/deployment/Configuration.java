@@ -9,6 +9,7 @@ package hu.elte.txtuml.api.deployment;
  * <pre>
  * <code>@Group(contains = {A.class,B.class}, max = 10, constant = 5, gradient = 0.1)</code>
  * <code>@Group(contains = {C.class})</code>
+ * <code>@Runtime(RuntimeType.THREADED)
  * public class C extends Configuration {}
  * </pre>
  */

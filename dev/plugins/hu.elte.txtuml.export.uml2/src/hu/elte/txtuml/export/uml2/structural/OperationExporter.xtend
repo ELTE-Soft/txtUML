@@ -12,6 +12,7 @@ import org.eclipse.jdt.core.dom.SingleVariableDeclaration
 import org.eclipse.uml2.uml.Operation
 import org.eclipse.uml2.uml.ParameterDirectionKind
 import org.eclipse.uml2.uml.Stereotype
+import hu.elte.txtuml.utils.jdt.ElementTypeTeller
 
 class OperationExporter extends Exporter<MethodDeclaration, IMethodBinding, Operation> {
 
@@ -35,13 +36,13 @@ class OperationExporter extends Exporter<MethodDeclaration, IMethodBinding, Oper
 			result.ownedParameters += retParam
 		}
 		result.redefinedOperations += binding.overridden.map[fetchElement as Operation]
-		if (exportActions) {
+		if (exportActions && !ElementTypeTeller.hasExternalBody(decl)) {
 			result.methods += fetchElement(decl.resolveBinding, new MethodActivityExporter(this))
 		}
 		result.ownedParameters += decl.parameters.map [
 			exportParameter((it as SingleVariableDeclaration).resolveBinding)
 		]
-		result.isAbstract = Modifier.isAbstract(binding.modifiers)
+		result.isAbstract = Modifier.isAbstract(binding.modifiers) || ElementTypeTeller.hasExternalBody(decl);
 		result.isStatic = Modifier.isStatic(binding.getModifiers)
 		if (decl.isConstructor) {
 			result.applyStereotype(getImportedElement("Create") as Stereotype)

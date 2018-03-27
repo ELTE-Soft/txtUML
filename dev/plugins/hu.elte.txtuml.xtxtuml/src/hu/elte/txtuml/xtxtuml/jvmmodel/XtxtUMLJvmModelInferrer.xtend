@@ -4,15 +4,13 @@ import com.google.inject.Inject
 import hu.elte.txtuml.api.model.Association
 import hu.elte.txtuml.api.model.BehaviorPort
 import hu.elte.txtuml.api.model.Composition
-import hu.elte.txtuml.api.model.Composition.Container
-import hu.elte.txtuml.api.model.Composition.HiddenContainer
 import hu.elte.txtuml.api.model.Connector
 import hu.elte.txtuml.api.model.ConnectorBase.One
 import hu.elte.txtuml.api.model.Delegation
+import hu.elte.txtuml.api.model.External
+import hu.elte.txtuml.api.model.ExternalBody
 import hu.elte.txtuml.api.model.From
 import hu.elte.txtuml.api.model.Interface
-import hu.elte.txtuml.api.model.Max
-import hu.elte.txtuml.api.model.Min
 import hu.elte.txtuml.api.model.ModelClass
 import hu.elte.txtuml.api.model.ModelClass.Port
 import hu.elte.txtuml.api.model.ModelEnum
@@ -20,6 +18,7 @@ import hu.elte.txtuml.api.model.Signal
 import hu.elte.txtuml.api.model.StateMachine
 import hu.elte.txtuml.api.model.To
 import hu.elte.txtuml.api.model.Trigger
+import hu.elte.txtuml.xtxtuml.common.XtxtUMLUtils
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAssociation
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAssociationEnd
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAttribute
@@ -49,6 +48,7 @@ import hu.elte.txtuml.xtxtuml.xtxtUML.TUTransitionPort
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUTransitionTrigger
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUTransitionVertex
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUVisibility
+import java.util.Deque
 import java.util.Map
 import org.eclipse.emf.ecore.EObject
 import org.eclipse.xtext.common.types.JvmDeclaredType
@@ -61,6 +61,8 @@ import org.eclipse.xtext.naming.IQualifiedNameProvider
 import org.eclipse.xtext.xbase.jvmmodel.AbstractModelInferrer
 import org.eclipse.xtext.xbase.jvmmodel.IJvmDeclaredTypeAcceptor
 import org.eclipse.xtext.xbase.jvmmodel.IJvmModelAssociations
+import hu.elte.txtuml.api.model.Composition.HiddenContainerEnd
+import hu.elte.txtuml.api.model.Composition.ContainerEnd
 
 /**
  * Infers a JVM model equivalent from an XtxtUML resource. If not stated otherwise,
@@ -70,9 +72,10 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 
 	Map<EObject, JvmDeclaredType> registeredTypes = newHashMap;
 
-	@Inject extension XtxtUMLTypesBuilder;
 	@Inject extension IJvmModelAssociations;
 	@Inject extension IQualifiedNameProvider;
+	@Inject extension XtxtUMLTypesBuilder;
+	@Inject extension XtxtUMLUtils;
 
 	/**
 	 * Infers the given model declaration as a specialized {@link JvmGenericType},
@@ -122,25 +125,60 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 	def dispatch void infer(TUSignal signal, IJvmDeclaredTypeAcceptor acceptor, boolean isPreIndexingPhase) {
 		acceptor.accept(signal.toClass(signal.fullyQualifiedName)) [
 			documentation = signal.documentation
-			superTypes += Signal.typeRef
+			if (signal.superSignal != null) {
+				superTypes += signal.superSignal.inferredTypeRef
+			} else {
+				superTypes += Signal.typeRef
+			}
 
 			for (attr : signal.attributes) {
 				members += attr.toJvmMember
 			}
 
-			if (!signal.attributes.isEmpty) {
-				members += signal.toConstructor [
-					for (attr : signal.attributes) {
+			if (signal.attributes.isEmpty && signal.superSignal == null) {
+				return
+			}
+
+			members += signal.toConstructor [
+				val Deque<TUSignal> supers = newLinkedList
+				if (signal.superSignal.travelSignalHierarchy [
+					supers.add(it)
+					false
+				] == null) {
+					return // cycle in hierarchy
+				}
+
+				val Deque<TUSignalAttribute> superAttributes = newLinkedList
+				while (!supers.empty) {
+					superAttributes.addAll(supers.last.attributes)
+					supers.removeLast
+				}
+
+				val (TUSignalAttribute)=>void addAsParam = [ attr |
+					if (parameters.findFirst[name == attr.name] == null) {
+						// to eliminate 'duplicate local variable' errors
 						parameters += attr.toParameter(attr.name, attr.type)
 					}
-
-					body = '''
-						«FOR attr : signal.attributes»
-							this.«attr.name» = «attr.name»;
-						«ENDFOR»
-					'''
 				]
-			}
+
+				superAttributes.forEach(addAsParam)
+				signal.attributes.forEach(addAsParam) 
+
+				val lastSuperAttribute = if (superAttributes.empty) {
+						null
+					} else {
+						superAttributes.removeLast
+					}
+
+				body = '''
+					«IF lastSuperAttribute != null»					
+						super(«FOR attr : superAttributes»«attr.name», «ENDFOR»«lastSuperAttribute.name»);
+					«ENDIF»
+					«FOR attr : signal.attributes»
+						this.«attr.name» = «attr.name»;
+					«ENDFOR»
+				'''
+			]
 		]
 	}
 
@@ -220,15 +258,7 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 			documentation = assocEnd.documentation
 			visibility = JvmVisibility.PUBLIC
 
-			val calcApiSuperTypeResult = assocEnd.calculateApiSuperType
-			superTypes += calcApiSuperTypeResult.key
-
-			if (calcApiSuperTypeResult.value != null) {
-				annotations += calcApiSuperTypeResult.value.key.toAnnotationRef(Min)
-				if (!assocEnd.multiplicity.isUpperInf) {
-					annotations += calcApiSuperTypeResult.value.value.toAnnotationRef(Max)
-				}
-			}
+			superTypes += assocEnd.calculateApiSuperType
 		]
 	}
 
@@ -295,7 +325,13 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 	def dispatch private toJvmMember(TUConstructor ctor) {
 		ctor.toConstructor [
 			documentation = ctor.documentation
-			visibility = ctor.visibility.toJvmVisibility
+			val modifiers = ctor.modifiers
+			visibility = modifiers.visibility.toJvmVisibility
+			switch (modifiers.externality) {
+				case EXTERNAL: annotations += External.annotationRef
+				case EXTERNAL_BODY: annotations += ExternalBody.annotationRef
+				default: {}
+			}
 
 			for (param : ctor.parameters) {
 				parameters += param.toParameter(param.name, param.parameterType) => [
@@ -310,7 +346,17 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 	def dispatch private toJvmMember(TUAttribute attr) {
 		attr.toField(attr.name, attr.prefix.type) [
 			documentation = attr.documentation
-			visibility = attr.prefix.visibility.toJvmVisibility
+			
+			val modifiers = attr.prefix.modifiers
+			static = modifiers.static
+			visibility = modifiers.visibility.toJvmVisibility
+
+			switch (modifiers.externality) {
+				case EXTERNAL: annotations += External.annotationRef
+				default: {}
+			}
+
+			initializer = attr.initExpression
 		]
 	}
 
@@ -330,7 +376,15 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 	def dispatch private toJvmMember(TUOperation op) {
 		op.toMethod(op.name, op.prefix.type) [
 			documentation = op.documentation
-			visibility = op.prefix.visibility.toJvmVisibility
+			val modifiers = op.prefix.modifiers
+			static = modifiers.static
+			visibility = modifiers.visibility.toJvmVisibility
+
+			switch (modifiers.externality) {
+				case EXTERNAL: annotations += External.annotationRef
+				case EXTERNAL_BODY: annotations += ExternalBody.annotationRef
+				default: {}
+			}
 
 			for (JvmFormalParameter param : op.parameters) {
 				parameters += param.toParameter(param.name, param.parameterType) => [
@@ -433,14 +487,6 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 		)
 	}
 
-	def private toAnnotationRef(int i, Class<?> annotationType) {
-		annotationRef(annotationType) => [
-			explicitValues += TypesFactory::eINSTANCE.createJvmIntAnnotationValue => [
-				values += i
-			]
-		]
-	}
-
 	/**
 	 * Creates a type reference for the given annotation type with the given parameters.
 	 */
@@ -462,45 +508,37 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 		val endClassTypeParam = endClass.inferredTypeRef
 		if (isContainer) {
 			// Do not try to simplify the code here, as it breaks standalone builds.
-			// The inferred type will be Class<? extend MaybeOneBase>, which is invalid,
-			// as MaybeOneBase is a package private class in its own package.
 			if (notNavigable) {
-				return HiddenContainer.typeRef(endClassTypeParam) -> null
+				return HiddenContainerEnd.typeRef(endClassTypeParam)
 			} else {
-				return Container.typeRef(endClassTypeParam) -> null
+				return ContainerEnd.typeRef(endClassTypeParam)
 			}
 		}
 
 		val optionalHidden = if(notNavigable) "Hidden" else ""
-		var Pair<Integer, Integer> explicitMultiplicities = null
 		val apiBoundTypeName = if (multiplicity == null) // omitted
 				"One"
 			else if (multiplicity.any) // *
-				"Many"
+				"Any"
 			else if (!multiplicity.upperSet) { // <lower> (exact)
 				if (multiplicity.lower == 1)
 					"One"
-				else {
-					explicitMultiplicities = multiplicity.lower -> multiplicity.lower
-					"Multiple"
-				}
+				// TODO support custom multiplicities
 			} else { // <lower> .. <upper>
 				if (multiplicity.lower == 0 && multiplicity.upper == 1)
-					"MaybeOne"
+					"ZeroToOne"
 				else if (multiplicity.lower == 1 && multiplicity.upper == 1)
 					"One"
 				else if (multiplicity.lower == 0 && multiplicity.upperInf)
-					"Many"
+					"Any"
 				else if (multiplicity.lower == 1 && multiplicity.upperInf)
-					"Some"
-				else {
-					explicitMultiplicities = multiplicity.lower -> multiplicity.upper
-					"Multiple"
-				}
+					"OneToAny"
+				// TODO support custom multiplicities
 			}
 
-		val endClassImpl = "hu.elte.txtuml.api.model.Association$" + optionalHidden + apiBoundTypeName
-		return endClassImpl.typeRef(endClassTypeParam) -> explicitMultiplicities
+		val endClassImpl = "hu.elte.txtuml.api.model.Association$" + optionalHidden + "End"
+		val endCollectionImpl = "hu.elte.txtuml.api.model." + apiBoundTypeName
+		return endClassImpl.typeRef(endCollectionImpl.typeRef(endClassTypeParam))
 	}
 
 	def private inferredTypeRef(EObject sourceElement) {

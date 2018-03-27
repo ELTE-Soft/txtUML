@@ -108,11 +108,20 @@ public class TestStructure extends UMLExportTestBase {
 		Property publicAttribute = property(testClass, "public_attribute", "Integer");
 		assertEquals(VisibilityKind.PUBLIC_LITERAL, publicAttribute.getVisibility());
 
+		assertNull(testClass.getAttribute("external_attribute", null));
+
 		DataType reals = dataType(model, "Reals");
 		property(reals, "double_prim", "Real");
 		property(reals, "double_boxed", "Real");
 		property(reals, "float_prim", "Real");
 		property(reals, "float_boxed", "Real");
+	}
+
+	@Test
+	public void testClass() throws Exception {
+		Model model = model("hu.elte.txtuml.export.uml2.tests.models.cls");
+		cls(model, "TestClass");
+		assertNull(model.getMember("ExternalTestClass"));
 	}
 
 	@Test
@@ -212,6 +221,12 @@ public class TestStructure extends UMLExportTestBase {
 		assertEquals(VisibilityKind.PRIVATE_LITERAL, op3.getVisibility());
 		Operation op4 = operation(cls, "op4");
 		assertEquals(VisibilityKind.PROTECTED_LITERAL, op4.getVisibility());
+
+		assertNull(cls.getOperation("external_op", null, null));
+		Operation externalBodyOp = operation(cls, "external_body_op");
+		assertTrue(externalBodyOp.isAbstract());
+		Operation staticOp = operation(cls, "static_op");
+		assertTrue(staticOp.isStatic());
 	}
 
 	@Test
@@ -288,6 +303,14 @@ public class TestStructure extends UMLExportTestBase {
 		State s1 = state(reg, "S1");
 		transition(reg, init, s1, null);
 		transition(reg, s1, s1, sig);
+	}
+	
+	@Test
+	public void testMixed() throws Exception {
+		Model model = model("hu.elte.txtuml.export.uml2.tests.models.mixed");
+		cls(model, "A");
+		cls(model, "B");
+
 	}
 
 }

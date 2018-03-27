@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.eclipse.uml2.uml.Operation;
 
+import hu.elte.txtuml.export.cpp.ActivityExportResult;
 import hu.elte.txtuml.export.cpp.CppExporterUtils;
 import hu.elte.txtuml.export.cpp.activity.ActivityExporter;
 import hu.elte.txtuml.export.cpp.templates.structual.ConstructorTemplates;
@@ -15,11 +16,10 @@ class ConstructorExporter {
 	List<Operation> constructors;
 	ActivityExporter activityExporter;
 
-	ConstructorExporter(List<Operation> allOperation) {
+	ConstructorExporter(List<Operation> allOperation, ActivityExporter activityExporter) {
 		constructors = new ArrayList<Operation>();
 		ownConstructor = false;
-
-		activityExporter = new ActivityExporter();
+		this.activityExporter = activityExporter;
 
 		importConstructors(allOperation);
 	}
@@ -27,11 +27,11 @@ class ConstructorExporter {
 	String exportConstructorsDefinitions(String className, boolean ownStateMachine) {
 		StringBuilder source = new StringBuilder();
 		for (Operation operation : constructors) {
-			String body = activityExporter.createFunctionBody(CppExporterUtils.getOperationActivity(operation));
+			ActivityExportResult activityResult = activityExporter.createFunctionBody(CppExporterUtils.getOperationActivity(operation));
 			source.append(
 					ConstructorTemplates.constructorDef(className, CppExporterUtils.getOperationParamNames(operation),
 							CppExporterUtils.getOperationParams(operation)));
-			source.append(ConstructorTemplates.initDef(className, body, CppExporterUtils.getOperationParams(operation),
+			source.append(ConstructorTemplates.initDef(className, activityResult.getActivitySource(), CppExporterUtils.getOperationParams(operation),
 					ownStateMachine));
 
 		}

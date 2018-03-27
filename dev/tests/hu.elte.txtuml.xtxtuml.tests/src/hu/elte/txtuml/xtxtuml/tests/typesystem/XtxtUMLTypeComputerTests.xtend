@@ -54,13 +54,14 @@ class XtxtUMLTypeComputerTests {
 			class A {
 				void foo() {
 					this->(AA.a1);
+					this->(AA.a2);
 					this->(P);
 				}
 				port P {}
 			}
 			association AA {
 				A a1;
-				A a2;
+				* A a2;
 			}
 		'''.parse;
 
@@ -68,15 +69,18 @@ class XtxtUMLTypeComputerTests {
 		val op = class.members.head as TUOperation;
 		val block = op.body as XBlockExpression;
 
-		val assocEndAccess = block.expressions.head as TUClassPropertyAccessExpression;
-		assertEquals("hu.elte.txtuml.api.model.Collection<test.model.A>", assocEndAccess.resolvedTypeId);
+		val assocEndAccess1 = block.expressions.head as TUClassPropertyAccessExpression;
+		assertEquals("hu.elte.txtuml.api.model.One<test.model.A>", assocEndAccess1.resolvedTypeId);
 
-		val portAccess = block.expressions.get(1) as TUClassPropertyAccessExpression;
+		val assocEndAccess2 = block.expressions.get(1) as TUClassPropertyAccessExpression;
+		assertEquals("hu.elte.txtuml.api.model.Any<test.model.A>", assocEndAccess2.resolvedTypeId);
+
+		val portAccess = block.expressions.get(2) as TUClassPropertyAccessExpression;
 		assertEquals("test.model.A$P", portAccess.resolvedTypeId);
 	}
 
 	@Test
-	def computeSignalAccessExpressionTypes() {
+	def computeSignalAccessExpressionTypesWithoutInheritance() {
 		val file1 = '''
 			package test.model;
 			class A {
@@ -190,6 +194,162 @@ class XtxtUMLTypeComputerTests {
 
 		val accessExpressions2 = file2.eAllContents.filter(TUSignalAccessExpression);
 		assertTrue(accessExpressions2.forall[resolvedTypeId == "hu.elte.txtuml.api.model.Signal"]);
+	}
+
+	@Test
+	def computeSignalAccessExpressionTypesWithInheritance() {
+		val simpleParsed = '''
+			package test.model;
+			signal Sig1;
+			signal Sig2 extends Sig1;
+			signal Sig3 extends Sig1;
+			signal Sig4 extends Sig3;
+			signal Sig5;
+			signal Sig6 extends Sig5;
+			class A {
+				state S1 {
+					entry { trigger; }
+					exit { trigger; }
+				}
+				state S2 {
+					entry { trigger; }
+					exit { trigger; }
+				}
+				state S3 {
+					entry { trigger; }
+					exit { trigger; }
+				}
+				transition T1 {
+					from S1;
+					trigger Sig2;
+				}
+				transition T2 {
+					from S1;
+					trigger Sig4;
+				}
+				transition T3 {
+					from S2;
+					trigger Sig4;
+				}
+				transition T4 {
+					from S2;
+					trigger Sig5;
+				}
+				transition T5 {
+					from S3;
+					trigger Sig3;
+				}
+				transition T6 {
+					from S3;
+					trigger Sig3;
+				}
+				transition T7 {
+					to S1;
+					trigger Sig3;
+				}
+				transition T8 {
+					to S1;
+					trigger Sig3;
+				}
+				transition T9 {
+					to S2;
+					trigger Sig2;
+				}
+				transition T10 {
+					to S2;
+					trigger Sig6;
+				}
+				transition T11 {
+					to S3;
+					trigger Sig2;
+				}
+				transition T12 {
+					to S3;
+					trigger Sig4;
+				}
+			}
+		'''.parse;
+
+		val simpleAccesses = simpleParsed.eAllContents.filter(TUSignalAccessExpression).toList;
+		assertEquals("test.model.Sig3", simpleAccesses.get(0).resolvedTypeId);
+		assertEquals("test.model.Sig1", simpleAccesses.get(1).resolvedTypeId);
+		assertEquals("hu.elte.txtuml.api.model.Signal", simpleAccesses.get(2).resolvedTypeId);
+		assertEquals("hu.elte.txtuml.api.model.Signal", simpleAccesses.get(3).resolvedTypeId);
+		assertEquals("test.model.Sig1", simpleAccesses.get(4).resolvedTypeId);
+		assertEquals("test.model.Sig3", simpleAccesses.get(5).resolvedTypeId);
+
+		val choiceParsed = '''
+			package test.model;
+			signal Sig1;
+			signal Sig2 extends Sig1;
+			signal Sig3 extends Sig1;
+			signal Sig4 extends Sig3;
+			signal Sig5;
+			signal Sig6 extends Sig5;
+			class A {
+				choice C1;
+				choice C2;
+				choice C3;
+				choice C4;
+				choice C5;
+				state S1 {
+					entry { trigger; }
+				}
+				transition T1 {
+					to C1;
+					trigger Sig4;
+				}
+				transition T2 {
+					from C1;
+					to C2;
+					effect { trigger; }
+				}
+				transition T3 {
+					to C2;
+					trigger Sig3;
+				}
+				transition T4 {
+					from C2;
+					to C3;
+					effect { trigger; }
+				}
+				transition T5 {
+					to C3;
+					trigger Sig2;
+				}
+				transition T6 {
+					from C3;
+					to S1;
+					effect { trigger; }
+				}
+				transition T7 {
+					to C4;
+					trigger Sig5;
+				}
+				transition T8 {
+					from C4;
+					to C5;
+					effect { trigger; }
+				}
+				transition T9 {
+					to C5;
+					trigger Sig6;
+				}
+				transition T10 {
+					from C5;
+					to S1;
+					effect { trigger; }
+				}
+			}
+		'''.parse;
+
+		val choiceAccesses = choiceParsed.eAllContents.filter(TUSignalAccessExpression).toList;
+		assertEquals("hu.elte.txtuml.api.model.Signal", choiceAccesses.get(0).resolvedTypeId);
+		assertEquals("test.model.Sig4", choiceAccesses.get(1).resolvedTypeId);
+		assertEquals("test.model.Sig3", choiceAccesses.get(2).resolvedTypeId);
+		assertEquals("test.model.Sig1", choiceAccesses.get(3).resolvedTypeId);
+		assertEquals("test.model.Sig5", choiceAccesses.get(4).resolvedTypeId);
+		assertEquals("test.model.Sig5", choiceAccesses.get(5).resolvedTypeId);
 	}
 
 	def private getResolvedTypeId(XExpression expr) {

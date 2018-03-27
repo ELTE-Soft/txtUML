@@ -5,12 +5,15 @@ import hu.elte.txtuml.api.model.From;
 import hu.elte.txtuml.api.model.ModelClass;
 import hu.elte.txtuml.api.model.To;
 import hu.elte.txtuml.api.model.Trigger;
-import hu.elte.txtuml.examples.garage.control.glue.View;
+import hu.elte.txtuml.api.stdlib.world.World;
 import hu.elte.txtuml.examples.garage.control.model.associations.DoorSwitchesOnAlarm;
 import hu.elte.txtuml.examples.garage.control.model.associations.MotorMovesDoor;
-import hu.elte.txtuml.examples.garage.control.model.signals.external.DoorReachedBottom;
-import hu.elte.txtuml.examples.garage.control.model.signals.external.DoorReachedTop;
-import hu.elte.txtuml.examples.garage.control.model.signals.external.StarPressed;
+import hu.elte.txtuml.examples.garage.control.model.signals.external.in.DoorReachedBottom;
+import hu.elte.txtuml.examples.garage.control.model.signals.external.in.DoorReachedTop;
+import hu.elte.txtuml.examples.garage.control.model.signals.external.in.StarPressed;
+import hu.elte.txtuml.examples.garage.control.model.signals.external.out.StartDoorDown;
+import hu.elte.txtuml.examples.garage.control.model.signals.external.out.StartDoorUp;
+import hu.elte.txtuml.examples.garage.control.model.signals.external.out.StopDoor;
 import hu.elte.txtuml.examples.garage.control.model.signals.internal.ChangeMotorMode;
 import hu.elte.txtuml.examples.garage.control.model.signals.internal.ReenableMotor;
 
@@ -26,28 +29,28 @@ public class Motor extends ModelClass {
 	public class MovingUp extends State {
 		@Override
 		public void entry() {
-			View.getInstance().startDoorUp();
+			Action.send(new StartDoorUp(), World.get(View.id()));
 		}
 	}
 
 	public class MovingDown extends State {
 		@Override
 		public void entry() {
-			View.getInstance().startDoorDown();
+			Action.send(new StartDoorDown(), World.get(View.id()));
 		}
 	}
 
 	public class HeadingUp extends State {
 		@Override
 		public void entry() {
-			View.getInstance().stopDoor();
+			Action.send(new StopDoor(), World.get(View.id()));
 		}
 	}
 
 	public class HeadingDown extends State {
 		@Override
 		public void entry() {
-			View.getInstance().stopDoor();
+			Action.send(new StopDoor(), World.get(View.id()));
 		}
 	}
 
@@ -87,8 +90,8 @@ public class Motor extends ModelClass {
 	public class TStopAtBottom extends Transition {
 		@Override
 		public void effect() {
-			Door d = Motor.this.assoc(MotorMovesDoor.movedDoor.class).selectAny();
-			Alarm a = d.assoc(DoorSwitchesOnAlarm.SwitchedAlarm.class).selectAny();
+			Door d = Motor.this.assoc(MotorMovesDoor.movedDoor.class).one();
+			Alarm a = d.assoc(DoorSwitchesOnAlarm.SwitchedAlarm.class).one();
 			Action.send(new StarPressed(), a);
 		}
 	}

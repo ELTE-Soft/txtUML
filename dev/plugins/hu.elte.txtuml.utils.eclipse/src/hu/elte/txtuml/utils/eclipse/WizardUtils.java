@@ -11,6 +11,7 @@ import java.util.stream.Stream;
 
 import org.eclipse.jdt.core.IAnnotation;
 import org.eclipse.jdt.core.ICompilationUnit;
+import org.eclipse.jdt.core.IField;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IMemberValuePair;
 import org.eclipse.jdt.core.IPackageDeclaration;
@@ -137,6 +138,10 @@ public class WizardUtils {
 						.filter(mvp -> mvp.getValueKind() == IMemberValuePair.K_CLASS)
 						.flatMap(mvp -> Stream.of(mvp.getValue())).collect(Collectors.toList());
 
+				if (annotValues.isEmpty()) {
+					throw new NoSuchElementException("Group is empty.");
+				}
+				
 				for (Object val : annotValues) {
 					List<Object> annotations = new ArrayList<>();
 					if (val instanceof String) {
@@ -154,6 +159,36 @@ public class WizardUtils {
 								return model;
 							}
 						}
+					}
+				}
+			}
+		} catch (JavaModelException e) {
+		}
+
+		return Optional.empty();
+	}
+
+	/**
+	 * @return an empty optional if the given type does not have any field,
+	 *         otherwise the name of the model package and its java project
+	 *         respectively, which contains the types of the given diagramType
+	 */
+	public static Optional<Pair<String, String>> getModelByFields(IType diagramType) {
+		try {
+			List<String> referencedProjects = new ArrayList<>(
+					Arrays.asList(diagramType.getJavaProject().getRequiredProjectNames()));
+			referencedProjects.add(diagramType.getJavaProject().getElementName());
+
+			for (IField field : diagramType.getFields()) {
+				String typeSignature = field.getTypeSignature();
+				String[][] resolvedTypes = resolveType(diagramType,
+						typeSignature.substring(1, typeSignature.length() - 1));
+				List<String[]> resolvedTypeList = new ArrayList<>(Arrays.asList(resolvedTypes));
+
+				for (String[] type : resolvedTypeList) {
+					Optional<Pair<String, String>> model = ModelUtils.getModelOf(type[0], referencedProjects);
+					if (model.isPresent()) {
+						return model;
 					}
 				}
 			}
