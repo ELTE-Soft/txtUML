@@ -14,7 +14,7 @@ import org.eclipse.ui.IEditorPart;
 
 import hu.elte.txtuml.export.papyrus.DiagramManager;
 import hu.elte.txtuml.export.papyrus.UMLModelManager;
-import hu.elte.txtuml.export.papyrus.elementsarrangers.ArrangeException;
+import hu.elte.txtuml.layout.visualizer.exceptions.ArrangeException;
 import hu.elte.txtuml.utils.eclipse.Dialogs;
 
 /**

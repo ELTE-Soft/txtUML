@@ -2,6 +2,8 @@ package hu.elte.txtuml.export.papyrus.elementsarrangers;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 
+import hu.elte.txtuml.layout.visualizer.exceptions.ArrangeException;
+
 /**
  * An Interface for arranging elements of a diagram 
  */

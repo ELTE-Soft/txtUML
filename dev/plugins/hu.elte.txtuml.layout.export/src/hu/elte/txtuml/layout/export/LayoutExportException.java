@@ -1,4 +1,4 @@
-package hu.elte.txtuml.export.papyrus.layout.txtuml;
+package hu.elte.txtuml.layout.export;
 
 /**
  * Exception for Layout export errors

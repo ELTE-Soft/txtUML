@@ -1,9 +1,11 @@
 package hu.elte.txtuml.export.plantuml.wizards;
 
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -47,6 +49,7 @@ public class PlantUMLVisualizeWizard extends TxtUMLVisualizeWizard {
 	@Override
 	protected boolean exportDiagrams(Map<Pair<String, String>, List<IType>> layoutConfigs, List<IType> txtUMLLayout) {
 		for (Pair<String, String> model : layoutConfigs.keySet()) {
+			
 			String txtUMLModelName = model.getFirst();
 			String txtUMLProjectName = model.getSecond();
 
@@ -95,6 +98,11 @@ public class PlantUMLVisualizeWizard extends TxtUMLVisualizeWizard {
 			}
 		}
 		return true;
+	}
+
+	@Override
+	protected void cleanBeforeVisualization(Set<Pair<String, String>> layouts) throws CoreException, IOException {
+		// no cleanup
 	}
 
 }

@@ -1,11 +1,16 @@
 package hu.elte.txtuml.export.javascript.wizardz;
 
+import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
@@ -15,15 +20,22 @@ import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.progress.IProgressService;
 
+import org.eclipse.core.resources.IFile;
+import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.common.CommonPlugin;
+import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.part.FileEditorInput;
+
 import hu.elte.txtuml.api.layout.ClassDiagram;
 import hu.elte.txtuml.api.layout.CompositeDiagram;
 import hu.elte.txtuml.api.layout.StateMachineDiagram;
 import hu.elte.txtuml.export.javascript.Exporter;
-import hu.elte.txtuml.export.papyrus.layout.txtuml.TxtUMLExporter;
-import hu.elte.txtuml.export.papyrus.layout.txtuml.TxtUMLLayoutDescriptor;
 import hu.elte.txtuml.export.uml2.ExportMode;
 import hu.elte.txtuml.export.uml2.TxtUMLToUML2;
 import hu.elte.txtuml.layout.export.DiagramExportationReport;
+import hu.elte.txtuml.layout.export.TxtUMLExporter;
+import hu.elte.txtuml.layout.export.TxtUMLLayoutDescriptor;
 import hu.elte.txtuml.utils.Logger;
 import hu.elte.txtuml.utils.Pair;
 import hu.elte.txtuml.utils.eclipse.Dialogs;
@@ -56,12 +68,13 @@ public class JavaScriptVisualizeWizard extends TxtUMLVisualizeWizard {
 	@Override
 	protected boolean exportDiagrams(Map<Pair<String, String>, List<IType>> layoutConfigs, List<IType> txtUMLLayout) {
 		for (Pair<String, String> model : layoutConfigs.keySet()) {
+			//1
 			String txtUMLModelName = model.getFirst();
 			String txtUMLProjectName = model.getSecond();
-
+			//2
 			String generatedFolderName = PreferencesManager
 					.getString(PreferencesManager.TXTUML_VISUALIZE_DESTINATION_FOLDER);
-
+			//4
 			Map<String, String> layouts = new HashMap<String, String>();
 			layoutConfigs.get(model).forEach(
 					layout -> layouts.put(layout.getFullyQualifiedName(), layout.getJavaProject().getElementName()));
@@ -79,15 +92,9 @@ public class JavaScriptVisualizeWizard extends TxtUMLVisualizeWizard {
 					public void run(IProgressMonitor monitor) throws InterruptedException {
 						monitor.beginTask("Visualization", 100);
 
-						TxtUMLExporter exporter = new TxtUMLExporter(txtUMLProjectName, generatedFolderName,
+						TxtUMLExporter exporter = new TxtUMLExporter(txtUMLProjectName,
 								txtUMLModelName, layouts);
-						try {
-							exporter.cleanBeforeVisualization();
-						} catch (CoreException | IOException e) {
-							Dialogs.errorMsgb("txtUML export Error - cleaning resources",
-									"Error occured when cleaning resources.", e);
-							throw new InterruptedException();
-						}
+						
 						monitor.subTask("Exporting txtUML Model to UML2 model...");
 						try {
 							TxtUMLToUML2.exportModel(txtUMLProjectName, txtUMLModelName,
@@ -157,6 +164,55 @@ public class JavaScriptVisualizeWizard extends TxtUMLVisualizeWizard {
 			}
 		}
 		return true;
+	}
+
+	@Override
+	protected void cleanBeforeVisualization(Set<Pair<String, String>> layouts) throws CoreException, IOException {
+		for (Pair<String, String> model : layouts) {
+			String txtUMLModelName = model.getFirst();
+			String txtUMLProjectName = model.getSecond();
+			
+			String generatedFolderName = PreferencesManager
+					.getString(PreferencesManager.TXTUML_VISUALIZE_DESTINATION_FOLDER);
+			
+			String projectAbsLocation = ResourcesPlugin.getWorkspace().getRoot().getProject(txtUMLProjectName).getLocation()
+					.toFile().getAbsolutePath();
+	
+			Path notationFilePath = Paths.get(projectAbsLocation, generatedFolderName, txtUMLModelName + ".di");
+			Path mappingFilePath = Paths.get(projectAbsLocation, generatedFolderName, txtUMLModelName + ".mapping");
+			Path diFilePath = Paths.get(projectAbsLocation, generatedFolderName, txtUMLModelName + ".notation");
+			Path umlFilePath = Paths.get(projectAbsLocation, generatedFolderName, txtUMLModelName + ".uml");
+			Path profileFilePath = Paths.get(projectAbsLocation, generatedFolderName, txtUMLModelName + ".profile.uml");
+			
+			Path modelFolderPath = Paths.get(projectAbsLocation, generatedFolderName, "js", txtUMLModelName);
+			
+			Path htmlFilePath = Paths.get(modelFolderPath.toString(), "visualize.html");
+			URI htmlFileURI = URI.createFileURI(htmlFilePath.toString());
+
+			IFile htmlFile = ResourcesPlugin.getWorkspace().getRoot()
+					.getFile(new org.eclipse.core.runtime.Path(CommonPlugin.resolve(htmlFileURI).toFileString()));
+
+			IEditorInput input = new FileEditorInput(htmlFile);
+
+			IEditorPart editor = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().findEditor(input);
+			if (editor != null) {
+				PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().closeEditor(editor, false);
+			}
+			
+			deleteFolderRecursively(modelFolderPath);
+	
+			profileFilePath.toFile().delete();
+			mappingFilePath.toFile().delete();
+			umlFilePath.toFile().delete();
+			diFilePath.toFile().delete();
+			notationFilePath.toFile().delete();
+		}
+	}
+	
+	private void deleteFolderRecursively(Path modelFolderPath) throws IOException {
+		if (modelFolderPath.toFile().exists()) {
+			Files.walk(modelFolderPath).map(Path::toFile).sorted((o1, o2) -> -o1.compareTo(o2)).forEach(File::delete);
+		}
 	}
 
 }
