@@ -13,7 +13,6 @@ import org.eclipse.papyrus.uml.diagram.composite.CreateCompositeDiagramCommand;
 import org.eclipse.papyrus.uml.diagram.statemachine.CreateStateMachineDiagramCommand;
 import org.eclipse.uml2.uml.Element;
 
-import hu.elte.txtuml.export.papyrus.elementsarrangers.ArrangeException;
 import hu.elte.txtuml.export.papyrus.elementsarrangers.IDiagramElementsArranger;
 import hu.elte.txtuml.export.papyrus.elementsarrangers.txtumllayout.ClassDiagramElementsTxtUmlArranger;
 import hu.elte.txtuml.export.papyrus.elementsarrangers.txtumllayout.CompositeDiagramElementsTxtUmlArranger;
@@ -23,8 +22,9 @@ import hu.elte.txtuml.export.papyrus.elementsmanagers.ClassDiagramElementsManage
 import hu.elte.txtuml.export.papyrus.elementsmanagers.CompositeDiagramElementsManager;
 import hu.elte.txtuml.export.papyrus.elementsmanagers.StateMachineDiagramElementsManager;
 import hu.elte.txtuml.export.papyrus.layout.txtuml.TxtUMLElementsRegistry;
-import hu.elte.txtuml.export.papyrus.layout.txtuml.TxtUMLLayoutDescriptor;
 import hu.elte.txtuml.layout.export.DiagramType;
+import hu.elte.txtuml.layout.export.TxtUMLLayoutDescriptor;
+import hu.elte.txtuml.layout.visualizer.exceptions.ArrangeException;
 import hu.elte.txtuml.utils.Triple;
 import hu.elte.txtuml.utils.eclipse.preferences.PreferencesManager;
 

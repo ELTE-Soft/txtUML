@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -15,16 +16,24 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.swt.widgets.Display;
 
+import org.eclipse.emf.common.util.URI;
+import org.eclipse.core.resources.IFile;
+import org.eclipse.emf.common.CommonPlugin;
+import org.eclipse.core.resources.ResourcesPlugin;
+
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 import hu.elte.txtuml.api.layout.ClassDiagram;
 import hu.elte.txtuml.api.layout.CompositeDiagram;
 import hu.elte.txtuml.api.layout.StateMachineDiagram;
 import hu.elte.txtuml.export.papyrus.PapyrusVisualizer;
-import hu.elte.txtuml.export.papyrus.layout.txtuml.TxtUMLExporter;
-import hu.elte.txtuml.export.papyrus.layout.txtuml.TxtUMLLayoutDescriptor;
 import hu.elte.txtuml.export.papyrus.papyrusmodelmanagers.TxtUMLPapyrusModelManager;
 import hu.elte.txtuml.export.uml2.ExportMode;
 import hu.elte.txtuml.export.uml2.TxtUMLToUML2;
 import hu.elte.txtuml.layout.export.DiagramExportationReport;
+import hu.elte.txtuml.layout.export.TxtUMLExporter;
+import hu.elte.txtuml.layout.export.TxtUMLLayoutDescriptor;
 import hu.elte.txtuml.utils.Logger;
 import hu.elte.txtuml.utils.Pair;
 import hu.elte.txtuml.utils.eclipse.Dialogs;
@@ -57,12 +66,13 @@ public class PapyrusVisualizeWizard extends TxtUMLVisualizeWizard {
 	@Override
 	protected boolean exportDiagrams(Map<Pair<String, String>, List<IType>> layoutConfigs, List<IType> txtUMLLayout) {
 		for (Pair<String, String> model : layoutConfigs.keySet()) {
+			//1
 			String txtUMLModelName = model.getFirst();
 			String txtUMLProjectName = model.getSecond();
-
+			//2
 			String generatedFolderName = PreferencesManager
 					.getString(PreferencesManager.TXTUML_VISUALIZE_DESTINATION_FOLDER);
-
+			//3
 			Map<String, String> layouts = new HashMap<String, String>();
 			layoutConfigs.get(model).forEach(
 					layout -> layouts.put(layout.getFullyQualifiedName(), layout.getJavaProject().getElementName()));
@@ -83,16 +93,9 @@ public class PapyrusVisualizeWizard extends TxtUMLVisualizeWizard {
 					protected IStatus run(IProgressMonitor monitor) {
 						monitor.beginTask("Visualization", 100);
 
-						TxtUMLExporter exporter = new TxtUMLExporter(txtUMLProjectName, generatedFolderName,
+						TxtUMLExporter exporter = new TxtUMLExporter(txtUMLProjectName,
 								txtUMLModelName, layouts);
-						Display.getDefault().syncExec(() -> {
-							try {
-								exporter.cleanBeforeVisualization();
-							} catch (CoreException | IOException e) {
-								Dialogs.errorMsgb("txtUML export Error - cleaning resources",
-										"Error occured when cleaning resources.", e);
-							}
-						});
+					
 						monitor.subTask("Exporting txtUML Model to UML2 model...");
 						try {
 							TxtUMLToUML2.exportModel(txtUMLProjectName, txtUMLModelName,
@@ -139,7 +142,13 @@ public class PapyrusVisualizeWizard extends TxtUMLVisualizeWizard {
 							return Status.CANCEL_STATUS;
 						}
 
-						PapyrusVisualizer pv = exporter.createVisualizer(layoutDescriptor);
+						URI umlFileURI = URI.createFileURI(txtUMLProjectName + "/" + generatedFolderName + "/" + txtUMLModelName + ".uml");
+						URI UmlFileResURI = CommonPlugin.resolve(umlFileURI);
+						IFile UmlFile = ResourcesPlugin.getWorkspace().getRoot()
+								.getFile(new org.eclipse.core.runtime.Path(UmlFileResURI.toFileString()));
+
+						PapyrusVisualizer pv = new PapyrusVisualizer(txtUMLProjectName, generatedFolderName + "/" + txtUMLModelName,
+								UmlFile.getRawLocationURI().toString(), layoutDescriptor);
 						pv.registerPayprusModelManager(TxtUMLPapyrusModelManager.class);
 
 						Display.getDefault().syncExec(() -> {
@@ -163,5 +172,31 @@ public class PapyrusVisualizeWizard extends TxtUMLVisualizeWizard {
 			}
 		}
 		return true;
+	}
+
+	@Override
+	protected void cleanBeforeVisualization(Set<Pair<String, String>> layouts) throws CoreException, IOException {
+		for (Pair<String, String> model : layouts) {
+			String txtUMLModelName = model.getFirst();
+			String txtUMLProjectName = model.getSecond();
+			
+			String generatedFolderName = PreferencesManager
+					.getString(PreferencesManager.TXTUML_VISUALIZE_DESTINATION_FOLDER);
+			
+			String projectAbsLocation = ResourcesPlugin.getWorkspace().getRoot().getProject(txtUMLProjectName).getLocation()
+					.toFile().getAbsolutePath();
+	
+			Path notationFilePath = Paths.get(projectAbsLocation, generatedFolderName, txtUMLModelName + ".di");
+			Path mappingFilePath = Paths.get(projectAbsLocation, generatedFolderName, txtUMLModelName + ".mapping");
+			Path diFilePath = Paths.get(projectAbsLocation, generatedFolderName, txtUMLModelName + ".notation");
+			Path umlFilePath = Paths.get(projectAbsLocation, generatedFolderName, txtUMLModelName + ".uml");
+			Path profileFilePath = Paths.get(projectAbsLocation, generatedFolderName, txtUMLModelName + ".profile.uml");
+			
+			profileFilePath.toFile().delete();
+			mappingFilePath.toFile().delete();
+			umlFilePath.toFile().delete();
+			diFilePath.toFile().delete();
+			notationFilePath.toFile().delete();
+		}
 	}
 }
