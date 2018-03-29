@@ -8,7 +8,7 @@ import hu.elte.txtuml.api.model.impl.SequenceDiagramRelated;
 public class InvalidMessageError extends MessageError {
 
 	public InvalidMessageError(Message message) {
-		super(message, "It sent but is should not have:");
+		super(message, "It sent but it should not have:");
 	}
 
 	public InvalidMessageError(Message message, String concreteError) {
