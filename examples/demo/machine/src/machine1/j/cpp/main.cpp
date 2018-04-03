@@ -6,7 +6,7 @@
 #include "User.hpp"
 #include "associations.hpp"
 #include "runtime/Action.hpp"
-#include "event.hpp"
+#include "EventStructures.hpp"
 
 int main()
 {
