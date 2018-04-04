@@ -53,8 +53,18 @@ body {
           flex-direction: column;
 }
 
+#paper{
+	width: 100%;
+	min-width: 100%;
+	height: 100%;
+	min-height: 100%;
+}
+
 #paper svg{
 	width: 100%;
+	min-width: 100%;
+	height: 100%;
+	min-height: 100%;
 	display: block;
 }
 
@@ -67,6 +77,8 @@ body {
 	display:-ms-flexbox;
 	display:flex;
 	min-height: 70vh;
+	/*new*/
+	min-height: 100vh;
 }
 
 .middle-container{
@@ -380,7 +392,7 @@ body {
 	border: 2px inset;
 }
 
-@media screen and (orientation: portrait) {
+/*@media screen and (orientation: portrait) {
   
 	#pan-and-zoom-control-container{
 		position: absolute;
@@ -424,4 +436,4 @@ body {
 		left: 0;
 		top:0;
 	}
-}
+}*/
