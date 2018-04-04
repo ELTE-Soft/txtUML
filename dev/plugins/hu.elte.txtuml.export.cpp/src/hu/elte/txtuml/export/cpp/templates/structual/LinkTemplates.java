@@ -3,13 +3,13 @@ package hu.elte.txtuml.export.cpp.templates.structual;
 import java.util.Arrays;
 import java.util.Optional;
 
+import hu.elte.txtuml.export.cpp.CppExporterUtils;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.ActionNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.CollectionNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.FileNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.ModifierNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.PointerAndMemoryNames;
-import hu.elte.txtuml.export.cpp.templates.GenerationNames.TypeDelcreationKeywords;
 import hu.elte.txtuml.export.cpp.templates.PrivateFunctionalTemplates;
 
 public class LinkTemplates {
@@ -112,21 +112,14 @@ public class LinkTemplates {
 
 	}
 
-	public static String createAssociationStructure(String associationName, String E1, String E2, String endPoint1,
-			String endPoint2) {
-		StringBuilder source = new StringBuilder("");
-		source.append(TypeDelcreationKeywords.AssociationStructure + " " + associationName);
-		source.append("{\n");
-		source.append(createEndPointClass(E1, endPoint1));
-		source.append(createEndPointClass(E2, endPoint2));
-		source.append("};\n");
-		return source.toString();
-	}
+	public static String createEndPointClass(String endPointType, String endPointName, String otherEndPointName, Integer lowMultiplicity, Integer upMultiplicity) {
 
-	public static String createEndPointClass(String classType, String endPointName) {
+		return GenerationNames.TypeDelcreationKeywords.AssociationEndDescriptor + " " + endStructDescriptor(endPointName) + ": public " + "AssocEnd" 
+				+ CppExporterUtils.createTemplateParametersCode(Optional.of(
+						Arrays.asList(endStructDescriptor(endPointName), 
+								endStructDescriptor(otherEndPointName), endPointType, lowMultiplicity.toString(), upMultiplicity.toString()))) + 
+				ObjectDeclDefTemplates.propertyDecl(endStructDescriptor(endPointName), endPointName, GenerationNames.PointerAndMemoryNames.Self);	
 
-		return GenerationNames.TypeDelcreationKeywords.AssociationStructure + " " + endPointName + "{typedef " + PrivateFunctionalTemplates.mapUMLClassToCppClass(classType) + " " + GenerationNames.EdgeType
-				+ ";};\n";
 	}
 
 	public static String formatAssociationRoleName(String associationName, String role) {

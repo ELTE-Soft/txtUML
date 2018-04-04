@@ -130,7 +130,7 @@ public class GenerationNames {
 	public static class TypeDelcreationKeywords {
 		public static final String ClassType = "class";
 		public static final String DataType = "struct";
-		public static final String AssociationStructure = "struct";
+		public static final String AssociationEndDescriptor = "struct";
 		public static final String EnumType = "enum";
 		public static final String InterfacType = "class";
 		public static final String PublicPartSign = "public:";
