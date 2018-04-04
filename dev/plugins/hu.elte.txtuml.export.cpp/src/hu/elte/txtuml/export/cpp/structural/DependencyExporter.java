@@ -45,7 +45,7 @@ public class DependencyExporter {
 		Set<String> preDeclDependencies = mergeDependencies(Arrays.asList(dependencies, headerOnlyDependency));
 
 		preDeclDependencies.forEach(type -> {
-			preDeclerations.append(GenerationTemplates.forwardDeclaration(type));
+			preDeclerations.append(GenerationTemplates.forwardDeclaration(type, GenerationTemplates.ClassDeclerationType.Class));
 		});
 		
 		headerOnlyIncludeDependency.forEach(type -> {
