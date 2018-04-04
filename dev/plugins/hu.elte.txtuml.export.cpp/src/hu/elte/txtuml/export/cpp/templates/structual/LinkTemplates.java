@@ -1,5 +1,8 @@
 package hu.elte.txtuml.export.cpp.templates.structual;
 
+import java.util.Arrays;
+import java.util.Optional;
+
 import hu.elte.txtuml.export.cpp.templates.GenerationNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.ActionNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.CollectionNames;
@@ -11,13 +14,6 @@ import hu.elte.txtuml.export.cpp.templates.PrivateFunctionalTemplates;
 
 public class LinkTemplates {
 
-	public static final String AssocationHeader = GenerationNames.AssocationHeaderName;
-	public static final String AssociationsStructuresHreaderName = GenerationNames.AssociationsHeaderName;
-	public static final String AssociationStructuresHeader = GenerationNames.AssociationsHeaderName + "."
-			+ FileNames.HeaderExtension;
-	public static final String AssociationStructuresSource = GenerationNames.AssociationsHeaderName + "."
-			+ FileNames.SourceExtension;
-
 	public enum LinkFunctionType {
 		Link, Unlink,
 		AssemblyConnect, 
@@ -26,12 +22,6 @@ public class LinkTemplates {
 
 	public static String linkSourceName(String className) {
 		return className + "-" + GenerationNames.LinkAddition + "." + FileNames.SourceExtension;
-	}
-
-	public static String assocationEndPointDecl(String className, String roleName, Integer lower, Integer upper) {
-		return GenerationNames.AssocMultiplicityDataStruct + "<" + className + ">" + " " + roleName + " "
-				+ GenerationNames.AssigmentOperator + " " + GenerationNames.AssocMultiplicityDataStruct + "<"
-				+ className + ">" + "(" + lower + "," + upper + ");\n";
 	}
 
 	public static String templateLinkFunctionGeneralDef(LinkFunctionType linkFunction) {
@@ -146,5 +136,20 @@ public class LinkTemplates {
 	public static String manyMultiplicityDependency() {
 		return PrivateFunctionalTemplates.include(CollectionNames.Collection);
 	}
+	
+	public static String associationDecl(String assocName, String leftDescriptor, String rigthDescriptor) {
+		return "extern " + ObjectDeclDefTemplates.variableDecl(GenerationNames.AssociationNames.AssociationClassName, 
+				assocName, "", Optional.of(Arrays.asList(endStructDescriptor(leftDescriptor), endStructDescriptor(rigthDescriptor))), 
+				ObjectDeclDefTemplates.VariableType.StackStored, false);
+	}
+	
+	public static String associationDef(String assocName, String leftDescriptor, String rigthDescriptor) {
+		return ObjectDeclDefTemplates.variableDecl(GenerationNames.AssociationNames.AssociationClassName, 
+				assocName, "", Optional.of(Arrays.asList(endStructDescriptor(leftDescriptor) , endStructDescriptor(rigthDescriptor))), 
+				ObjectDeclDefTemplates.VariableType.StackStored, false);
+	}
 
+	private static String endStructDescriptor(String originalDescriptor) {
+		return originalDescriptor + "End";
+	}
 }

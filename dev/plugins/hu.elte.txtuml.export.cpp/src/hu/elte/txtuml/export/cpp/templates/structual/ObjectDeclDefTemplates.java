@@ -18,7 +18,7 @@ public class ObjectDeclDefTemplates {
 		EventPtr,
 		SharedPtr
 	}
-	public static String variableDecl(String typeName, String variableName, String defaultValue, VariableType varType, boolean isStatic) {
+	public static String variableDecl(String typeName, String variableName, String defaultValue, Optional<List<String>> templateParameters, VariableType varType, boolean isStatic) {
 		StringBuilder source = new StringBuilder("");
 		String type = "";
 		switch(varType) {
@@ -43,6 +43,7 @@ public class ObjectDeclDefTemplates {
 			source.append(ModifierNames.StaticModifier + " ");
 		}
 		source.append(type);
+		source.append(CppExporterUtils.createTemplateParametersCode(templateParameters));
 		source.append(" ");
 		source.append(variableName);
 		if (defaultValue != "" && defaultValue != null) {
@@ -53,21 +54,19 @@ public class ObjectDeclDefTemplates {
 	}
 
 	public static String variableDecl(String typeName, String variableName) {
-		return variableDecl(typeName, variableName, "", VariableType.Default, false);
+		return variableDecl(typeName, variableName, "", Optional.empty(), VariableType.Default, false);
 	}
 
 	public static String variableDecl(String typeName, String variableName, VariableType varType) {
-		return variableDecl(typeName, variableName, "", varType, false);
+		return variableDecl(typeName, variableName, "", Optional.empty(), varType, false);
 	}
-
+	
 	public static String propertyDecl(String typeName, String variableName, String defaultValue, Optional<List<String>> templateParameters, VariableType varType) {
-		return variableDecl(typeName + 
-				CppExporterUtils.createTemplateParametersCode(templateParameters), 
-				variableName, defaultValue, varType, false);
+		return variableDecl(typeName,variableName, defaultValue,templateParameters, varType, false);
 	}
 	
 	public static String propertyDecl(String typeName, String variableName, String defaultValue) {
-		return variableDecl(typeName, variableName, defaultValue, VariableType.Default, false);
+		return variableDecl(typeName, variableName, defaultValue,Optional.empty(), VariableType.Default, false);
 	}
 
 	public static String createObject(String typeName, String objName, boolean sharedObject) {
@@ -119,7 +118,7 @@ public class ObjectDeclDefTemplates {
 	}
 
 	public static String staticPropertyDecl(String typeName, String variableName) {
-		return variableDecl(typeName, variableName, "", VariableType.StackStored, true);
+		return variableDecl(typeName, variableName, "",Optional.empty(), VariableType.StackStored, true);
 	}
 	
 	public static String staticPropertyDef(String typeName, String ownerClassName, String propertyName, Optional<String> value) {

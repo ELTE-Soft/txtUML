@@ -32,6 +32,7 @@ public class GenerationNames {
 		public static final String CollectionUtilsPath = ESRootPath + FileNamesCollectionUtilsHeaderName;
 		public static final String PortUtilsPath = RuntimeTemplates.RTPath + "PortUtils";
 		public static final String InterfaceUtilsPath = RuntimeTemplates.RTPath + "InterfaceUtils";
+		public static final String AssociationUtilsPath = RuntimeTemplates.RTPath + "AssociationUtils";
 
 		public static final String TimerInterfaceHeader = RuntimeTemplates.RTPath
 				+ TimerNames.TimerInterFaceName.toLowerCase();
@@ -199,6 +200,13 @@ public class GenerationNames {
 				+ EventTemplates.EventPointerType + " " + EventTemplates.EventFParamName + ");\n";
 
 	}
+	
+	public static class AssociationNames {
+		public static final String AssocMultiplicityDataStruct = "AssociationEnd";
+		public static final String AssociationClassName = "Association";
+		public static final String AssociationInstancesUnitName = "AssociationInstances";		
+		public static final String AssociationEndDescriptorUnitName = "AssoctaionEndDescriptors";
+	}
 
 	public static final String EnumName = "enum";
 
@@ -229,9 +237,7 @@ public class GenerationNames {
 	public static final String SetInitialStateDecl = ModifierNames.NoReturn + " " + SetInitialStateName + "();";
 	public static final String StatemachineBaseHeaderName = "statemachinebase";
 	public static final String DefaultGuardName = "defaultGuard";
-	public static final String AssocMultiplicityDataStruct = "AssociationEnd";
-	public static final String AssociationClassName = "Association";
-	public static final String AssocationHeaderName = "association";
+
 	public static final String DeploymentHeaderName = "deployment";
 
 	public static final String PoolIdSetter = "setPoolId";
@@ -248,7 +254,6 @@ public class GenerationNames {
 	public static final String TemplateParameterName = "T";
 	public static final String EndPointName = "EndPointName";
 
-	public static final String AssociationsHeaderName = "associations";
 	public static final String EdgeType = "EdgeType";
 
 	public static String comment(String text) {
