@@ -59,9 +59,14 @@ public class ActivityTemplates {
 			secondTemplateArgument = endPoint2;
 		}
 		
-		return  LinkTemplates.getLinkFunctionName(linkType) + "<"
-				+ "typename " + associationName + "::" + endPoint1 + "," + secondTemplateArgument
-				+ ">" + "(" + firstObjectName + "," + secondObjectName + ");\n";
+		return operationCall(LinkTemplates.getLinkFunctionName(linkType),
+				Arrays.asList(roleReadFromAssoc(associationName, endPoint1), firstObjectName, 
+						roleReadFromAssoc(associationName, endPoint2),secondObjectName ));
+
+	}
+	
+	private static String roleReadFromAssoc(String associationName, String role) {
+		return associationName + "." + role;
 	}
 
 	public static String signalSend(String target, String signalName) {
@@ -219,9 +224,11 @@ public class ActivityTemplates {
 	}
 
 	public static String selectAllTemplate(String target, String otherEnd, String associationName) {
-		return target + PointerAndMemoryNames.PointerAccess
-				+ LinkTemplates.formatAssociationRoleName(otherEnd, associationName)
-				+ PointerAndMemoryNames.SimpleAccess + CollectionNames.SelectAllFunctionName + "()";
+		return operationCallOnPointerVariable(target, 
+				GenerationNames.AssociationNames.NavigationFunctionName, 
+				Arrays.asList(roleReadFromAssoc(associationName, otherEnd))) /*+ PointerAndMemoryNames.SimpleAccess + CollectionNames.SelectAllFunctionName + "()"; */;
+
+				
 	}
 
 	public static String collectionTemplate(String collectedType) {

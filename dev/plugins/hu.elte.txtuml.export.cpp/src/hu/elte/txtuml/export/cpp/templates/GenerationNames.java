@@ -80,7 +80,7 @@ public class GenerationNames {
 
 		public static final String Collection = "std::list";
 		public static final String SelectAnyFunctionName = "getOne";
-		public static final String SelectAllFunctionName = "getAll";
+		public static final String SelectAllFunctionName = "selectAll";
 
 	}
 
@@ -206,6 +206,7 @@ public class GenerationNames {
 		public static final String AssociationClassName = "Association";
 		public static final String AssociationInstancesUnitName = "AssociationInstances";		
 		public static final String AssociationEndDescriptorUnitName = "AssoctaionEndDescriptors";
+		public static final String NavigationFunctionName = "assoc";
 	}
 
 	public static final String EnumName = "enum";
