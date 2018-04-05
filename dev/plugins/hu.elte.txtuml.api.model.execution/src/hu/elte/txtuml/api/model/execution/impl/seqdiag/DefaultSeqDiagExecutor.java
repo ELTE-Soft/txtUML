@@ -11,7 +11,7 @@ import hu.elte.txtuml.api.model.execution.SequenceDiagramExecutor;
 import hu.elte.txtuml.api.model.execution.impl.base.AbstractModelExecutor;
 import hu.elte.txtuml.api.model.execution.impl.base.AbstractModelRuntime;
 import hu.elte.txtuml.api.model.execution.impl.base.SwitchOnLogging;
-import hu.elte.txtuml.api.model.execution.seqdiag.error.MessageError;
+import hu.elte.txtuml.api.model.execution.seqdiag.error.SequenceDiagramProblem;
 import hu.elte.txtuml.api.model.impl.SequenceDiagramRelated;
 import hu.elte.txtuml.api.model.seqdiag.SequenceDiagram;
 
@@ -25,7 +25,7 @@ public class DefaultSeqDiagExecutor extends AbstractModelExecutor<SequenceDiagra
 	/**
 	 * May only be accessed when holding the monitor of this list.
 	 */
-	private final List<MessageError> errors = new ArrayList<>();
+	private final List<SequenceDiagramProblem> errors = new ArrayList<>();
 
 	private SequenceDiagram diagram;
 
@@ -51,7 +51,7 @@ public class DefaultSeqDiagExecutor extends AbstractModelExecutor<SequenceDiagra
 	}
 
 	@Override
-	public ImmutableList<MessageError> getErrors() {
+	public ImmutableList<SequenceDiagramProblem> getErrors() {
 		synchronized (this.errors) {
 			return ImmutableList.copyOf(this.errors);
 		}
@@ -60,7 +60,7 @@ public class DefaultSeqDiagExecutor extends AbstractModelExecutor<SequenceDiagra
 	/**
 	 * Thread-safe.
 	 */
-	protected void addError(MessageError error) {
+	protected void addError(SequenceDiagramProblem error) {
 		synchronized (errors) {
 			this.errors.add(error);
 		}
