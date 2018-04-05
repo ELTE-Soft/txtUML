@@ -50,20 +50,20 @@ public class AssociationEndDescriptorsExproter implements ICppCompilationUnit {
 			
 			source.append(GenerationTemplates.forwardDeclaration(e1End.getName(), GenerationTemplates.ClassDeclerationType.AssocDescriptor));
 			source.append(GenerationTemplates.forwardDeclaration(e2End.getName(), GenerationTemplates.ClassDeclerationType.AssocDescriptor));
-			source.append(endDescriptor(e1End, e2End));
-			source.append(endDescriptor(e2End, e1End));
+			source.append(endDescriptor(e1End, e1End.getName(), e2End.getName()));
+			source.append(endDescriptor(e2End, e1End.getName(), e2End.getName()));
 
 		}
 
 		return source.toString();
 	}
 	
-	private String endDescriptor(Property end, Property otherEnd) {
+	private String endDescriptor(Property end, String leftEndPointName, String rigthEndPointName) {
 		String type = end.getType().getName();
 		String name = end.getName();		
 		dependencies.addHeaderOnlyDependency(type);
 		
-		return LinkTemplates.createEndPointClass(type, name, otherEnd.getName(), end.getLower(), end.getUpper());
+		return LinkTemplates.createEndPointClass(type, name, leftEndPointName, rigthEndPointName, end.getLower(), end.getUpper());
 	}
 
 	@Override

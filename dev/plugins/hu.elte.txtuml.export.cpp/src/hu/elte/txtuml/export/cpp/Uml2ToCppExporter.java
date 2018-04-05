@@ -27,6 +27,7 @@ import org.eclipse.uml2.uml.UMLPackage;
 import org.osgi.framework.Bundle;
 
 import hu.elte.txtuml.api.deployment.RuntimeType;
+import hu.elte.txtuml.export.cpp.structural.AssociationEndDescriptorsExproter;
 import hu.elte.txtuml.export.cpp.structural.AssociationInstancesExporter;
 import hu.elte.txtuml.export.cpp.structural.ClassExporter;
 import hu.elte.txtuml.export.cpp.structural.DataTypeExporter;
@@ -281,6 +282,9 @@ public class Uml2ToCppExporter {
 		CppExporterUtils.getTypedElements(associationList, UMLPackage.Literals.ASSOCIATION, modelRoot);
 		AssociationInstancesExporter associationInstances = new AssociationInstancesExporter(associationList,outputDirectory);
 		associationInstances.createUnitSource();
+		
+		AssociationEndDescriptorsExproter associationDescriptorsExporter = new AssociationEndDescriptorsExproter(associationList, outputDirectory);
+		associationDescriptorsExporter.createUnitSource();
 
 	}
 

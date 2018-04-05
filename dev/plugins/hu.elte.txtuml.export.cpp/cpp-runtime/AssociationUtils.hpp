@@ -42,7 +42,7 @@ template<typename T, int low, int up, typename Container = std::list<T*>>
 class Property {
 public:
 	void add(T* o) {
-		objects.push_back(object);
+		objects.push_back(o);
 	}
 
 	T* selectAny() {

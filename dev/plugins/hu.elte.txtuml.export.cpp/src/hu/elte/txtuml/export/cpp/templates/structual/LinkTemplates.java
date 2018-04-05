@@ -112,13 +112,14 @@ public class LinkTemplates {
 
 	}
 
-	public static String createEndPointClass(String endPointType, String endPointName, String otherEndPointName, Integer lowMultiplicity, Integer upMultiplicity) {
+	public static String createEndPointClass(String endPointType, String endPointName, String leftEndPointName, String rightEndPointName, 
+			Integer lowMultiplicity, Integer upMultiplicity) {
 
 		return GenerationNames.TypeDelcreationKeywords.AssociationEndDescriptor + " " + endStructDescriptor(endPointName) + ": public " + "AssocEnd" 
 				+ CppExporterUtils.createTemplateParametersCode(Optional.of(
-						Arrays.asList(endStructDescriptor(endPointName), 
-								endStructDescriptor(otherEndPointName), endPointType, lowMultiplicity.toString(), upMultiplicity.toString()))) + 
-				ObjectDeclDefTemplates.propertyDecl(endStructDescriptor(endPointName), endPointName, GenerationNames.PointerAndMemoryNames.Self);	
+						Arrays.asList(endStructDescriptor(leftEndPointName), 
+								endStructDescriptor(rightEndPointName), endPointType, lowMultiplicity.toString(), upMultiplicity.toString()))) + "{" +
+				ObjectDeclDefTemplates.propertyDecl(endStructDescriptor(endPointName), endPointName, GenerationNames.PointerAndMemoryNames.Self) + "};";	
 
 	}
 
