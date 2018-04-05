@@ -24,6 +24,16 @@ public:
 		LeftRoleTable[second].add(first);
 	}
 
+	void unlink (typename FirstClassRole::RoleType* first, FirstClassRole*, typename SecondClassRole::RoleType* second, SecondClassRole*) {
+		LeftRoleTable[first].remove (second);
+		RigthRoleTable[second].remove (first);
+	}
+
+	void unlink (typename SecondClassRole::RoleType* first, SecondClassRole*, typename FirstClassRole::RoleType* second, FirstClassRole*) {
+		RigthRoleTable[first].remove (second);
+		LeftRoleTable[second].remove (first);
+	}
+
 	const typename SecondClassRole::CollectionType& get(typename FirstClassRole::RoleType* left, SecondClassRole*)  {
 		return LeftRoleTable[left];
 	}
@@ -43,6 +53,10 @@ class Property {
 public:
 	void add(T* o) {
 		objects.push_back(o);
+	}
+
+	void remove (T* o) {
+		objects.remove (o);
 	}
 
 	T* selectAny() {
@@ -65,6 +79,13 @@ class Property<T, low, 1> {
 public:
 	void add(T* o) {
 		object = o;
+	}
+
+	void remove (T* o) {
+		assert (o == object);
+		if (o == object) {
+			object = nullptr;
+		}
 	}
 
 	T* selectAny() {
