@@ -47,4 +47,6 @@ public interface InteractionRuntime extends Wrapper<Interaction>, ImplRelated {
 	 * Called by {@link Sequence#par(Interaction...)}. Read semantics there.
 	 */
 	void par(Interaction[] operands);
+
+	void assertState(ModelClass instance, Class<?> state);
 }

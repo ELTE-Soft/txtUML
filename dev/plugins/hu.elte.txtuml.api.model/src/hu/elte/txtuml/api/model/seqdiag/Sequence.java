@@ -1,5 +1,6 @@
 package hu.elte.txtuml.api.model.seqdiag;
 
+import hu.elte.txtuml.api.model.API;
 import hu.elte.txtuml.api.model.ModelClass;
 import hu.elte.txtuml.api.model.Signal;
 import hu.elte.txtuml.api.model.impl.InteractionRuntime;
@@ -113,9 +114,6 @@ public abstract class Sequence {
 	}
 
 	/**
-	 * Experimental feature. Not yet exported to plantUML diagrams, only used by
-	 * sequence diagram execution.
-	 * <p>
 	 * The given operands are executed in an arbitrary order, their execution
 	 * may even overlap. However, it is still insured that during the execution
 	 * of the sequence diagram, only one of the operands is running at any given
@@ -124,6 +122,14 @@ public abstract class Sequence {
 	 */
 	public static void par(Interaction... operands) {
 		InteractionRuntime.current().par(operands);
+	}
+
+	public static void assertState(ModelClass instance, Class<?> state) {
+		InteractionRuntime.current().assertState(instance, state);
+	}
+
+	public static void log(String message) {
+		API.log(message);
 	}
 
 }
