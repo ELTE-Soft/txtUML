@@ -1,13 +1,19 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: txtUML API for Model Execution
-Bundle-SymbolicName: hu.elte.txtuml.api.model.execution
+Bundle-SymbolicName: hu.elte.txtuml.api.model.execution;singleton:=true
 Bundle-Version: 0.6.0.qualifier
 Bundle-Vendor: ELTE
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Require-Bundle: hu.elte.txtuml.api.model,
  hu.elte.txtuml.utils,
- com.google.guava
+ org.eclipse.core.runtime,
+ org.eclipse.jdt.core,
+ org.eclipse.ui,
+ com.google.guava,
+ org.eclipse.ui.console,
+ org.eclipse.jdt.launching,
+ org.eclipse.core.expressions
 Export-Package: hu.elte.txtuml.api.model.execution,
  hu.elte.txtuml.api.model.execution.diagnostics,
  hu.elte.txtuml.api.model.execution.diagnostics.protocol,
