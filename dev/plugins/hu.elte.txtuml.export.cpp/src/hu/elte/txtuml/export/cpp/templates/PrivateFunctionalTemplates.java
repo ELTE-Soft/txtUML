@@ -53,7 +53,7 @@ public class PrivateFunctionalTemplates {
 			return "";
 		StringBuilder source = new StringBuilder("");
 		for (Pair<String, String> item : params) {
-			source.append(PrivateFunctionalTemplates.cppType(item.getFirst()) + " "
+			source.append(PrivateFunctionalTemplates.cppType(item.getFirst(),  GenerationTemplates.VariableType.Default) + " "
 					+ GenerationNames.formatIncomingParamName(item.getSecond()) + ",");
 		}
 		return source.substring(0, source.length() - 1);
@@ -76,7 +76,7 @@ public class PrivateFunctionalTemplates {
 			return "";
 		StringBuilder source = new StringBuilder("");
 		for (String item : params) {
-			source.append(cppType(item) + ",");
+			source.append(cppType(item, GenerationTemplates.VariableType.Default) + ",");
 		}
 		return source.substring(0, source.length() - 1);
 	}
@@ -113,9 +113,9 @@ public class PrivateFunctionalTemplates {
 		}
 	}
 	
-	public static String cppType(String typeName) {
+	public static String cppType(String typeName, GenerationTemplates.VariableType varType) {
 		String cppType = typeName;
-		if (typeName != EventTemplates.EventPointerType && typeName != ModifierNames.NoReturn) {
+		if (typeName != ModifierNames.NoReturn) {
 			if (typeName != null) {
 				switch (typeName) {
 				case "Integer":
@@ -139,8 +139,23 @@ public class PrivateFunctionalTemplates {
 					cppType = typeName;
 					break;
 				default:
-					cppType = GenerationNames.pointerType(mapUMLClassToCppClass(typeName));
-					break;
+					String mappedType = mapUMLClassToCppClass(typeName);
+					switch(varType) {
+					case  Default:
+						cppType = GenerationNames.pointerType(mappedType);
+						break;
+					case EventPtr:
+						cppType = EventTemplates.eventPtr(mappedType);
+						break;
+					case SharedPtr:
+						cppType = GenerationNames.sharedPtrType(mappedType);
+						break;
+					case StackStored:
+						cppType = mappedType;
+						break;
+					default:
+						break;
+					}
 				}
 			} else {
 				cppType = "void";

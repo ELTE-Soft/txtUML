@@ -8,6 +8,7 @@ import com.google.common.collect.Multimap;
 
 import hu.elte.txtuml.export.cpp.statemachine.TransitionConditions;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames;
+import hu.elte.txtuml.export.cpp.templates.GenerationTemplates;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.HierarchicalStateMachineNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.ModifierNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.PointerAndMemoryNames;
@@ -103,7 +104,7 @@ public class ConstructorTemplates {
 	private static String subStateMachineSharedConstructor(String className, String parentClassName, 
 			Multimap<TransitionConditions, Pair<String, String>> machine, String body) {
 		String parentParamName = GenerationNames.formatIncomingParamName(HierarchicalStateMachineNames.ParentSmName);
-		return className + "::" + className + "(" + PrivateFunctionalTemplates.cppType(parentClassName)
+		return className + "::" + className + "(" + PrivateFunctionalTemplates.cppType(parentClassName, GenerationTemplates.VariableType.Default)
 		+ " " + parentParamName + "):" + HierarchicalStateMachineNames.ParentSmMemberName + "(" + parentParamName + ")"
 		+ "\n{\n" + body
 		+ "}\n\n";

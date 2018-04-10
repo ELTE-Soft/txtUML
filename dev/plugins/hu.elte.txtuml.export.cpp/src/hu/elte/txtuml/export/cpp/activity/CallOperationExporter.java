@@ -21,6 +21,7 @@ import org.eclipse.uml2.uml.UMLPackage;
 
 import hu.elte.txtuml.export.cpp.CppExporterUtils;
 import hu.elte.txtuml.export.cpp.IDependencyCollector;
+import hu.elte.txtuml.export.cpp.templates.GenerationTemplates;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.FileNames;
 import hu.elte.txtuml.export.cpp.templates.activity.ActivityTemplates;
 import hu.elte.txtuml.export.cpp.templates.activity.OperatorTemplates;
@@ -160,7 +161,7 @@ class CallOperationExporter {
 		StringBuilder declerations = new StringBuilder("");
 		for (OutputPin outPin : outParamaterPins) {
 			declerations.append(ObjectDeclDefTemplates.variableDecl(outPin.getType().getName(),
-					tempVariableExporter.getRealVariableName(outPin), ObjectDeclDefTemplates.VariableType.Default));
+					tempVariableExporter.getRealVariableName(outPin), GenerationTemplates.VariableType.Default));
 		}
 
 		return declerations.toString();
@@ -189,7 +190,7 @@ class CallOperationExporter {
 			return ActivityTemplates.simpleSetValue(var, value);
 		} else {
 			declaredTempVariables.add(var);
-			return ActivityTemplates.addVariableTemplate(type, var, value);
+			return ActivityTemplates.addVariableTemplate(type, var, value, GenerationTemplates.VariableType.Default);
 
 		}
 	}

@@ -5,11 +5,9 @@ import java.util.Optional;
 
 import hu.elte.txtuml.export.cpp.CppExporterUtils;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames;
+import hu.elte.txtuml.export.cpp.templates.GenerationTemplates;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.ActionNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.CollectionNames;
-import hu.elte.txtuml.export.cpp.templates.GenerationNames.FileNames;
-import hu.elte.txtuml.export.cpp.templates.GenerationNames.ModifierNames;
-import hu.elte.txtuml.export.cpp.templates.GenerationNames.PointerAndMemoryNames;
 import hu.elte.txtuml.export.cpp.templates.PrivateFunctionalTemplates;
 
 public class LinkTemplates {
@@ -20,79 +18,8 @@ public class LinkTemplates {
 		DelegeateConnect
 	};
 
-	public static String linkSourceName(String className) {
-		return className + "-" + GenerationNames.LinkAddition + "." + FileNames.SourceExtension;
-	}
 
-	public static String templateLinkFunctionGeneralDef(LinkFunctionType linkFunction) {
-
-		StringBuilder source = new StringBuilder("");
-		source.append(GenerationNames.TemplateDecl + "<" + GenerationNames.TemplateType + " "
-				+ GenerationNames.EndPointName + ">\n");
-		source.append(ModifierNames.NoReturn + " " + getMemberLinkUnlinkFunctionName(linkFunction));
-		source.append("(" + GenerationNames.TemplateType + " "
-				+ PrivateFunctionalTemplates.cppType(GenerationNames.EndPointName + "::" + GenerationNames.EdgeType)
-				+ " " + ") {}\n");
-
-		return source.toString();
-	}
-
-	public static String linkTemplateSpecializationDecl(String className, String otherClassName,
-			String otherEndPointName, String assocName, LinkFunctionType linkFunction) {
-		StringBuilder source = new StringBuilder("");
-		source.append(GenerationNames.TemplateDecl + "<>\n");
-		source.append(ModifierNames.NoReturn + " " + className + "::" + getMemberLinkUnlinkFunctionName(linkFunction));
-		source.append("<" + GenerationNames.TemplateType + " " + assocName + "::" + otherEndPointName
-				+ ">");
-		source.append("(" + PrivateFunctionalTemplates.cppType(otherClassName) + ");\n");
-
-		return source.toString();
-	}
 	
-	private static String getAddOrRemoveAssoc(LinkFunctionType linkFunction) {
-		if (linkFunction == LinkFunctionType.Link)
-			return GenerationNames.AddAssocToAssocationFunctionName;
-		else if (linkFunction == LinkFunctionType.Unlink)
-			return GenerationNames.RemoveAssocToAssocationFunctionName;
-
-		return "";
-	}
-	
-	private static String getMemberLinkUnlinkFunctionName(LinkFunctionType linkFunction) {
-		switch(linkFunction) {
-		
-		case Link:
-			return GenerationNames.LinkMemberFunctionName;
-		case Unlink:
-			return GenerationNames.UnlinkMemberFunctionName;
-		case AssemblyConnect:
-		case DelegeateConnect:
-		default:
-			assert(false);
-			return "UNSUPPORTED_MEMBER_LINK";
-		
-		}
-		
-	}
-
-	public static String linkTemplateSpecializationDef(String className, String otherClassName, String assocName,
-			String roleName, boolean isNavigable, LinkFunctionType linkFunction) {
-		StringBuilder source = new StringBuilder("");
-		if (isNavigable) {
-			source.append(GenerationNames.TemplateDecl + "<>\n");
-			source.append(ModifierNames.NoReturn + " " + className + "::" + getMemberLinkUnlinkFunctionName(linkFunction));
-			source.append(
-					"<" + GenerationNames.TemplateType + " " + assocName + "::" + roleName + ">");
-			source.append("(" + PrivateFunctionalTemplates.cppType(otherClassName) + " "
-					+ GenerationNames.AssocParameterName + ")\n");
-			source.append("{\n" + formatAssociationRoleName(assocName, roleName) + PointerAndMemoryNames.SimpleAccess
-					+ getAddOrRemoveAssoc(linkFunction) + "(" + GenerationNames.AssocParameterName + ");\n}\n");
-		}
-
-		return source.toString();
-	}
-
-
 	public static String getLinkFunctionName(LinkFunctionType linkFunction) {
 		
 		switch (linkFunction) {
@@ -134,13 +61,13 @@ public class LinkTemplates {
 	public static String associationDecl(String assocName, String leftDescriptor, String rigthDescriptor) {
 		return "extern " + ObjectDeclDefTemplates.variableDecl(GenerationNames.AssociationNames.AssociationClassName, 
 				assocName, "", Optional.of(Arrays.asList(endStructDescriptor(leftDescriptor), endStructDescriptor(rigthDescriptor))), 
-				ObjectDeclDefTemplates.VariableType.StackStored, false);
+				GenerationTemplates.VariableType.StackStored, false);
 	}
 	
 	public static String associationDef(String assocName, String leftDescriptor, String rigthDescriptor) {
 		return ObjectDeclDefTemplates.variableDecl(GenerationNames.AssociationNames.AssociationClassName, 
 				assocName, "", Optional.of(Arrays.asList(endStructDescriptor(leftDescriptor) , endStructDescriptor(rigthDescriptor))), 
-				ObjectDeclDefTemplates.VariableType.StackStored, false);
+				GenerationTemplates.VariableType.StackStored, false);
 	}
 
 	private static String endStructDescriptor(String originalDescriptor) {

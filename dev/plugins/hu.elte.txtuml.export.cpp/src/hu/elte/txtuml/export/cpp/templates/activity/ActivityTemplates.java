@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Optional;
 
 import hu.elte.txtuml.export.cpp.templates.GenerationNames;
+import hu.elte.txtuml.export.cpp.templates.GenerationTemplates;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.ActionNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.CollectionNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.PointerAndMemoryNames;
@@ -175,7 +176,7 @@ public class ActivityTemplates {
 
 	public static String foreachCycle(String conatinedType, String paramName, String collection, String body,
 			String inits) {
-		return inits + "for (" + PrivateFunctionalTemplates.cppType(conatinedType) + " " + paramName + " :" + collection
+		return inits + "for (" + PrivateFunctionalTemplates.cppType(conatinedType, GenerationTemplates.VariableType.Default) + " " + paramName + " :" + collection
 				+ ")\n{\n" + body + "\n}\n";
 	}
 
@@ -223,17 +224,16 @@ public class ActivityTemplates {
 
 	}
 
-	public static String selectAllTemplate(String target, String otherEnd, String associationName) {
+	public static String readLinkTemplate(String target, String otherEnd, String associationName) {
 		return operationCallOnPointerVariable(target, 
 				GenerationNames.AssociationNames.NavigationFunctionName, 
 				Arrays.asList(roleReadFromAssoc(associationName, otherEnd))) /*+ PointerAndMemoryNames.SimpleAccess + CollectionNames.SelectAllFunctionName + "()"; */;
 
 				
 	}
-
-	public static String collectionTemplate(String collectedType) {
-		return CollectionNames.Collection + "<" + PrivateFunctionalTemplates.cppType(collectedType) + ">";
-
+	
+	public static String endCollectionType(String endName) {
+		return endName + "::" + CollectionNames.EndCollectionTypeDef;
 	}
 
 	public static String getRealSignal(String signalType, String signalVariableName) {
@@ -272,13 +272,8 @@ public class ActivityTemplates {
 		return PointerAndMemoryNames.PointerAccess;
 	}
 
-	public static String addVariableTemplate(String type, String left, String right) {
-		return PrivateFunctionalTemplates.cppType(type) + " " + left + " = " + right + ";\n";
-	}
-
-	public static String defineAndAddToCollection(String collectedType, String collectionName, String valueName) {
-		return collectionTemplate(collectedType) + " " + collectionName + " " + ReplaceSimpleTypeOp + " " + valueName
-				+ ";\n";
+	public static String addVariableTemplate(String type, String left, String right, GenerationTemplates.VariableType varType) {
+		return PrivateFunctionalTemplates.cppType(type, varType) + " " + left + " = " + right + ";\n";
 	}
 
 	public static String generatedTempVariable(int count) {

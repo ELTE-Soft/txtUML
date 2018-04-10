@@ -15,6 +15,7 @@ import org.eclipse.uml2.uml.UMLPackage;
 import hu.elte.txtuml.export.cpp.CppExporterUtils;
 import hu.elte.txtuml.export.cpp.IDependencyCollector;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames;
+import hu.elte.txtuml.export.cpp.templates.GenerationTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.FunctionTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.HeaderTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.HeaderTemplates.HeaderInfo;
@@ -113,7 +114,7 @@ public class PortExporter {
 		ownerClassCollector.addHeaderOnlyIncludeDependency(interfaces.getFirst());
 		ownerClassCollector.addHeaderOnlyIncludeDependency(interfaces.getSecond());
 		return ObjectDeclDefTemplates.propertyDecl(portTypeName,port.getName(),"",
-				Optional.of(Arrays.asList(interfaces.getFirst(),interfaces.getSecond())), ObjectDeclDefTemplates.VariableType.SharedPtr);
+				Optional.of(Arrays.asList(interfaces.getFirst(),interfaces.getSecond())), GenerationTemplates.VariableType.SharedPtr);
 	}
 	
 	private Pair<String,String> getPortActualInterfaceTypes(Port port) {

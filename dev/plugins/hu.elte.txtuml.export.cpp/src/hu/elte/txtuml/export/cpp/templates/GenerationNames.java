@@ -79,8 +79,9 @@ public class GenerationNames {
 	public static class CollectionNames {
 
 		public static final String Collection = "std::list";
-		public static final String SelectAnyFunctionName = "getOne";
+		public static final String SelectAnyFunctionName = "selectAny";
 		public static final String SelectAllFunctionName = "selectAll";
+		public static final String EndCollectionTypeDef = "CollectionType";
 
 	}
 

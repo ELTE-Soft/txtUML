@@ -14,6 +14,7 @@ import org.eclipse.uml2.uml.ReadStructuralFeatureAction;
 import org.eclipse.uml2.uml.UMLPackage;
 
 import hu.elte.txtuml.export.cpp.CppExporterUtils;
+import hu.elte.txtuml.export.cpp.templates.GenerationTemplates;
 import hu.elte.txtuml.export.cpp.templates.activity.ActivityTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.LinkTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.LinkTemplates.LinkFunctionType;
@@ -41,10 +42,13 @@ class LinkActionExporter {
 		String target = readLinkNode.getInputValues().size() > 0
 				? activityExportResolver.getTargetFromInputPin(readLinkNode.getInputValues().get(0))
 				: ActivityTemplates.SelfLiteral;
+		
+		String readLink = ActivityTemplates
+				.readLinkTemplate(target, otherMember.getName(), otherMember.getAssociation().getName());
+		String collectionType = ActivityTemplates.endCollectionType(otherMember.getName());
+		String readVarName = tempVariableExporter.getRealVariableName(readLinkNode.getResult());
+		return ActivityTemplates.addVariableTemplate(collectionType, readVarName, readLink, GenerationTemplates.VariableType.StackStored);
 
-		return ActivityTemplates.defineAndAddToCollection(otherMember.getType().getName(),
-				tempVariableExporter.getRealVariableName(readLinkNode.getResult()), ActivityTemplates
-						.selectAllTemplate(target, otherMember.getAssociation().getName(), otherMember.getName()));
 	}
 
 	public String createLinkActionCode(CreateLinkAction node) {

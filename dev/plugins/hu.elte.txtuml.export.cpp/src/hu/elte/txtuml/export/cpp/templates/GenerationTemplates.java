@@ -29,6 +29,15 @@ public class GenerationTemplates {
 		
 		
 	}
+	
+	public enum VariableType {
+		Default,
+		StackStored,
+		EventPtr,
+		SharedPtr
+	}
+	
+	
 	public static String headerName(String className) {
 		return className + "." + FileNames.HeaderExtension;
 	}

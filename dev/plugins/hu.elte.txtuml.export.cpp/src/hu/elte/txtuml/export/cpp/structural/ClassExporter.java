@@ -132,8 +132,6 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 		publicParts.append(ConstructorTemplates.destructorDecl(name));
 
 
-		publicParts.append(LinkTemplates.templateLinkFunctionGeneralDef(LinkTemplates.LinkFunctionType.Link));
-		publicParts.append(LinkTemplates.templateLinkFunctionGeneralDef(LinkTemplates.LinkFunctionType.Unlink));
 
 		publicParts.append(portExporter.crearePortRelatedCodes());
 
