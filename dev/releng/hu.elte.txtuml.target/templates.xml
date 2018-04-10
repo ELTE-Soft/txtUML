@@ -1,60 +1,77 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
 <templates>
-	<template autoinsert="true" id="asss" context="hu.elte.txtuml.xtxtuml.XtxtUML.kw_association" deleted="false" description="a simple association between two classes" enabled="true" name="Association">
-		association ${name}{&#13;
-		${multiplicitya}  ${classA: class}  ${nameA};&#13;
-		${multiplicityb}  ${classB : class} ${nameB};&#13;
-		} 
-	</template>
-	<template autoinsert="true" id="bport" context="hu.elte.txtuml.xtxtuml.XtxtUML.kw_behavior" deleted="false" description="behaviour port definition" enabled="true" name="behaviour port">
-		behavior port ${portName}{&#13;
-		provided ${Interface1: interface};&#13;
-		required ${Interface2: interface};&#13;
+	<template autoinsert="true" id="asss"
+		context="hu.elte.txtuml.xtxtuml.XtxtUML.kw_association" deleted="false"
+		description="association between two classes" enabled="true"
+		name="association">
+		association ${name} {&#13;
+			${multiplicityA} ${classA} ${nameA};&#13;
+			${multiplicityB} ${classB} ${nameB};&#13;
 		}
 	</template>
-	<template autoinsert="true" id="port" context="hu.elte.txtuml.xtxtuml.XtxtUML.kw_port" deleted="false" description="port definition" enabled="true" name="port">
-		port ${Portname} {&#13;
-		provided ${Interface1: interface};&#13;
-		required ${Interface2: interface};&#13;
+	<template autoinsert="true" id="bport"
+		context="hu.elte.txtuml.xtxtuml.XtxtUML.kw_behavior" deleted="false"
+		description="behaviour port definition" enabled="true" name="behaviour_port">
+		behavior port ${name} {&#13;
+			provided ${interface1};&#13;
+			required ${interface2};&#13;
 		}
 	</template>
-	<template autoinsert="true" id="sig" context="hu.elte.txtuml.xtxtuml.XtxtUML.kw_signal" deleted="false" description="signal definition" enabled="true" name="signal">
-		signal ${signalName} {&#13;
-		${parametersAsFields};&#13;
+	<template autoinsert="true" id="port"
+		context="hu.elte.txtuml.xtxtuml.XtxtUML.TUModelElement" deleted="false"
+		description="port definition" enabled="true" name="port">
+		port ${name} {&#13;
+			provided ${interface1};&#13;
+			required ${interface2};&#13;
 		}
 	</template>
-	<template autoinsert="true" id="stat" context="hu.elte.txtuml.xtxtuml.XtxtUML.TUState" deleted="false" description="state with entry and exit activities" enabled="true" name="state with activities">
-		state ${stateName} {&#13;
-		entry { /* ... */ }&#13;
-		exit { /* ... */ }  &#13;
+	<template autoinsert="true" id="sig"
+		context="hu.elte.txtuml.xtxtuml.XtxtUML.kw_signal" deleted="false"
+		description="signal definition" enabled="true" name="signal">
+		signal ${name} {&#13;
+			${parametersAsFields};&#13;
 		}
 	</template>
-	<template autoinsert="true" id="tran" context="hu.elte.txtuml.xtxtuml.XtxtUML.kw_transition" deleted="false" description="transition definicion with trigger" enabled="true" name="transition">
-		transition ${TransitionName} {&#13;
-		from ${startState: state} ;&#13;
-		to ${departureState: state} ;&#13;
-		trigger ${signalName: signal} ;	&#13;
+	<template autoinsert="true" id="stat"
+		context="hu.elte.txtuml.xtxtuml.XtxtUML.TUState" deleted="false"
+		description="state with entry and exit activities" enabled="true"
+		name="state_with_activities">
+		state ${name} {&#13;
+			entry { &#13;
+				${cursor}&#13;
+			}&#13;
+			exit {&#13;
+				&#13;
+			}&#13;
 		}
 	</template>
-	<template autoinsert="true" id="tran2" context="hu.elte.txtuml.xtxtuml.XtxtUML.kw_transition" deleted="false" description="simple transition definition" enabled="true" name="transition">
-		transition ${TransitionName} {&#13;
-		from ${startState: state} ;&#13;
-		to ${departureState: state} ;	&#13;
+	<template autoinsert="true" id="tran"
+		context="hu.elte.txtuml.xtxtuml.XtxtUML.kw_transition" deleted="false"
+		description="simple transition definition" enabled="true" name="transition">
+		transition ${TransitionNname} {&#13;
+			from ${startState};&#13;
+			to ${departureState};&#13;
 		}
 	</template>
-	<template autoinsert="true" id="tran3" context="hu.elte.txtuml.xtxtuml.XtxtUML.kw_transition" deleted="false" description="transition definicion with port" enabled="true" name="transition with port">
-		transition ${transitionName} {&#13;
-		from ${State1: state};&#13;
-		to ${State2: state};&#13;
-		port ${ExamplePort: port};&#13;
+	<template autoinsert="true" id="tran2"
+		context="hu.elte.txtuml.xtxtuml.XtxtUML.kw_transition" deleted="false"
+		description="transition definition with trigger" enabled="true"
+		name="transition_with_trigger">
+		transition ${name} {&#13;
+			from ${startState};&#13;
+			to ${departureState};&#13;
+			trigger ${signalName};&#13;
 		}
 	</template>
-	<template autoinsert="true" id="ran4" context="hu.elte.txtuml.xtxtuml.XtxtUML.kw_transition" deleted="false" description="transition definicion with port and trigger" enabled="true" name="transition with port and trigger">
-		transition ${transitionName} {&#13;
-		from ${State1: state};&#13;
-		to ${State2: state};&#13;
-		port ${ExamplePort: port};&#13;
-		trigger ${ExampleSignal: signal}&#13;
+	<template autoinsert="true" id="tran3"
+		context="hu.elte.txtuml.xtxtuml.XtxtUML.kw_transition" deleted="false"
+		description="transition definition with port and trigger" enabled="true"
+		name="transition_with_port_and_trigger">
+		transition ${name} {&#13;
+			from ${state1};&#13;
+			to ${state2};&#13;
+			port ${examplePort};&#13;
+			trigger	${exampleSignal};&#13;
 		}
 	</template>
 </templates>
