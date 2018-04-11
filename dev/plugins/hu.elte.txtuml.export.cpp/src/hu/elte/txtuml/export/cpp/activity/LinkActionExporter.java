@@ -45,7 +45,7 @@ class LinkActionExporter {
 		
 		String readLink = ActivityTemplates
 				.readLinkTemplate(target, otherMember.getName(), otherMember.getAssociation().getName());
-		String collectionType = ActivityTemplates.endCollectionType(otherMember.getName());
+		String collectionType = LinkTemplates.endCollectionType(otherMember.getName());
 		String readVarName = tempVariableExporter.getRealVariableName(readLinkNode.getResult());
 		return ActivityTemplates.addVariableTemplate(collectionType, readVarName, readLink, GenerationTemplates.VariableType.StackStored);
 

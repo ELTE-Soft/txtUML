@@ -48,8 +48,8 @@ public class AssociationEndDescriptorsExproter implements ICppCompilationUnit {
 			Property e1End = assoc.getMemberEnds().get(0);
 			Property e2End = assoc.getMemberEnds().get(1);
 			
-			source.append(GenerationTemplates.forwardDeclaration(e1End.getName(), GenerationTemplates.ClassDeclerationType.AssocDescriptor));
-			source.append(GenerationTemplates.forwardDeclaration(e2End.getName(), GenerationTemplates.ClassDeclerationType.AssocDescriptor));
+			source.append(LinkTemplates.assocEndPreDecl(e1End.getName()));
+			source.append(LinkTemplates.assocEndPreDecl(e2End.getName()));
 			source.append(endDescriptor(e1End, e1End.getName(), e2End.getName()));
 			source.append(endDescriptor(e2End, e1End.getName(), e2End.getName()));
 

@@ -50,9 +50,6 @@ public class LinkTemplates {
 
 	}
 
-	public static String formatAssociationRoleName(String associationName, String role) {
-		return associationName + "_" + role;
-	}
 
 	public static String manyMultiplicityDependency() {
 		return PrivateFunctionalTemplates.include(CollectionNames.Collection);
@@ -69,8 +66,18 @@ public class LinkTemplates {
 				assocName, "", Optional.of(Arrays.asList(endStructDescriptor(leftDescriptor) , endStructDescriptor(rigthDescriptor))), 
 				GenerationTemplates.VariableType.StackStored, false);
 	}
+	
+	public static String assocEndPreDecl(String assocEnd) {
+		return GenerationTemplates.forwardDeclaration(endStructDescriptor(assocEnd), GenerationTemplates.ClassDeclerationType.AssocDescriptor);
+	}
+	
+	public static String endCollectionType(String endName) {
+		return endStructDescriptor(endName) + "::" + CollectionNames.EndCollectionTypeDef;
+	}
 
 	private static String endStructDescriptor(String originalDescriptor) {
 		return originalDescriptor + "End";
 	}
+
+
 }

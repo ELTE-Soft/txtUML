@@ -232,10 +232,6 @@ public class ActivityTemplates {
 				
 	}
 	
-	public static String endCollectionType(String endName) {
-		return endName + "::" + CollectionNames.EndCollectionTypeDef;
-	}
-
 	public static String getRealSignal(String signalType, String signalVariableName) {
 		StringBuilder source = new StringBuilder("");
 		source.append(EventTemplates.eventPtr(signalType) + " ");
