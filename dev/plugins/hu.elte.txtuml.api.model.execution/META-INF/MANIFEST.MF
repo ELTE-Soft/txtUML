@@ -13,7 +13,8 @@ Require-Bundle: hu.elte.txtuml.api.model,
  com.google.guava,
  org.eclipse.ui.console,
  org.eclipse.jdt.launching,
- org.eclipse.core.expressions
+ org.eclipse.core.expressions,
+ hu.elte.txtuml.utils.eclipse
 Export-Package: hu.elte.txtuml.api.model.execution,
  hu.elte.txtuml.api.model.execution.diagnostics,
  hu.elte.txtuml.api.model.execution.diagnostics.protocol,
