@@ -62,7 +62,7 @@ public class ActivityTemplates {
 		
 		return operationCall(LinkTemplates.getLinkFunctionName(linkType),
 				Arrays.asList(roleReadFromAssoc(associationName, endPoint1), firstObjectName, 
-						roleReadFromAssoc(associationName, endPoint2),secondObjectName ));
+						roleReadFromAssoc(associationName, endPoint2),secondObjectName));
 
 	}
 	

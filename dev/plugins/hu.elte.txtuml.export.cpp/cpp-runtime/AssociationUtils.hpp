@@ -59,11 +59,11 @@ public:
 		objects.remove (o);
 	}
 
-	T* selectAny() {
+	T* selectAny() const {
 		return objects.back();
 	}
 
-	typename Container::size_type count() {
+	typename Container::size_type count() const{
 		return objects.size();
 	}
 
@@ -88,11 +88,11 @@ public:
 		}
 	}
 
-	T* selectAny() {
+	T* selectAny() const {
 		return object;
 	}
 
-	int count() {
+	int count() const {
 		return object == nullptr ? 0 : 1;
 	}
 

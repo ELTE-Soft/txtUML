@@ -6,16 +6,16 @@
 namespace CollectionUtils
 {
 
-template<typename E>
-E* select(std::list<E*> elements)
+template<typename E, typename CollectionType>
+E* select(const CollectionType& elements)
 {
-	return elements.front();
+	return elements.selectAny ();
 }
 
-template<typename E>
-int count(std::list<E*> elements)
+template<typename CollectionType>
+int count(const CollectionType& elements)
 {
-	return (int)elements.size();
+	return (int) elements.count ();
 }
 
 }

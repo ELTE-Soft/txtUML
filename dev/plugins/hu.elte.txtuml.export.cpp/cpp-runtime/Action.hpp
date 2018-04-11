@@ -49,7 +49,7 @@ Logs a message.
 */
 	
 template<typename L, typename LE, typename R, typename RE>
-void link (L* leftObject, LE* leftEnd, R* rightObject, RE* rightEnd);
+void link (LE* leftEnd, L* leftObject, RE* rightEnd, R* rightObject);
 /**<
 Links two model objects through the specified association.
 It has no effect if the objects are already linked through the specified association.
@@ -61,7 +61,7 @@ It has no effect if the objects are already linked through the specified associa
 
 	
 template<typename LeftEnd, typename RightEnd>
-void unlink (L* leftObject, LE* leftEnd, R* rightObject, RE* rightEnd);
+void unlink (LE* leftEnd, L* leftObject, RE* rightEnd, R* rightObject);
 /**<
 Unlinks two model objects through the specified association.
 It has no effect if the objects are not linked through the specified association.
@@ -74,13 +74,13 @@ It has no effect if the objects are not linked through the specified association
 
 
 template<typename L, typename LE, typename R, typename RE>
-void link (L* leftObject, LE* leftEnd, R* rightObject, RE* rightEnd)
+void link (LE* leftEnd, L* leftObject, RE* rightEnd, R* rightObject)
 {
 	leftEnd->association->link (leftObject, leftEnd, rightObject, rightEnd);
 }
 
 template<typename L, typename LE, typename R, typename RE>
-void unlink (L* leftObject, LE* leftEnd, R* rightObject, RE* rightEnd);
+void unlink (LE* leftEnd, L* leftObject, RE* rightEnd, R* rightObject)
 {
 	leftEnd->association->unlink (leftObject, leftEnd, rightObject, rightEnd);
 
