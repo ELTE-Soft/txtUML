@@ -25,9 +25,8 @@ class SmartClock extends Clock {
 		timeLeft = 0;
 	}
 
-	/*
-	 * States
-	 */
+	// States
+
 	initial Init;
 
 	state Stopped;
@@ -48,9 +47,8 @@ class SmartClock extends Clock {
 
 	state Interrupted; // While the door is open
 
-	/*
-	 * Transitions
-	 */
+	// Transitions
+
 	transition Initialize {
 		from Init;
 		to Stopped;
@@ -143,4 +141,3 @@ class SmartClock extends Clock {
 	}
 
 }
-

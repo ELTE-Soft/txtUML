@@ -61,8 +61,8 @@ public class UIWithSmartClock extends UI {
 		return slider;
 	}
 
-	// additional signal handler
-	
+	// Additional signal handler
+
 	@SignalHandler
 	public void tick(ClockTicked sig) {
 		slider.setValueIsAdjusting(true);

@@ -2,16 +2,11 @@ package microwave.model;
 
 import hu.elte.txtuml.api.stdlib.world.SignalToWorld;
 
-
 // signals sent to the view
 signal ClockTicked extends SignalToWorld;
-
 signal DoorOpened extends SignalToWorld;
-
 signal DoorClosed extends SignalToWorld;
-
 signal OvenIsOn extends SignalToWorld;
-
 signal OvenIsOff extends SignalToWorld;
 
 /**
@@ -26,4 +21,3 @@ class View {
 	}
 
 }
-

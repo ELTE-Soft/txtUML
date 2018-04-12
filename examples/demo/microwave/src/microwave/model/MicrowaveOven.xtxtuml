@@ -4,7 +4,6 @@ import hu.elte.txtuml.api.stdlib.timers.Timer;
 import hu.elte.txtuml.api.stdlib.world.World;
 
 signal SwitchOn;
-
 signal SwitchOff;
 
 class MicrowaveOven {
@@ -12,9 +11,7 @@ class MicrowaveOven {
 	private int timeLeft;
 
 	initial Init;
-
 	state Ready;
-
 	state Cooking;
 
 	transition Initialize {
@@ -39,5 +36,5 @@ class MicrowaveOven {
 			send new OvenIsOff() to World.get(View.id());
 		}
 	}
-}
 
+}

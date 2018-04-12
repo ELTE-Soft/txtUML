@@ -1,7 +1,6 @@
 package microwave.model;
 
 signal Interrupt;
-
 signal Reset;
 
 /**
@@ -13,4 +12,3 @@ class Clock {
 	protected Clock() {}
 
 }
-

@@ -4,7 +4,6 @@ import hu.elte.txtuml.api.stdlib.timers.Timer;
 import hu.elte.txtuml.api.stdlib.world.World;
 
 signal Start;
-
 signal Stop;
 
 /**
@@ -14,9 +13,8 @@ signal Stop;
  */
 class SimpleClock extends Clock {
 
-	/*
-	 * States
-	 */
+	// States
+
 	initial Init;
 
 	state Stopped;
@@ -35,9 +33,8 @@ class SimpleClock extends Clock {
 
 	state Interrupted; // While the door is open
 
-	/*
-	 * Transitions
-	 */
+	// Transitions
+
 	transition Initialize {
 		from Init;
 		to Stopped;
@@ -83,4 +80,3 @@ class SimpleClock extends Clock {
 	}
 
 }
-

@@ -7,9 +7,7 @@ signal OpenOrClose;
 class Door {
 
 	initial Init;
-
 	state Closed;
-
 	state Opened;
 
 	transition Initialize {
@@ -42,4 +40,3 @@ class Door {
 	}
 
 }
-

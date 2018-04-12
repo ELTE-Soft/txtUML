@@ -20,6 +20,7 @@ import microwave.model.OvenIsOn;
 import microwave.model.View;
 
 public class UI extends SwingWorldObjectListener implements Runnable {
+
 	protected JLabel ovenClosedImage;
 	protected JLabel ovenOpenImage;
 	protected JLabel ovenCookingImage;

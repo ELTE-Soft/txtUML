@@ -12,9 +12,9 @@ import microwave.model.SimpleClock;
 import microwave.model.SmartClock;
 
 public class MicrowaveClassDiagram extends ClassDiagram {
-	@Spacing(0.5)
 	@TopMost(MicrowaveOven.class)
 	@Row({Door.class, SimpleClock.class, SmartClock.class})
 	@Show(Clock.class)
+	@Spacing(0.5)
 	class MicrowaveLayout extends Layout {}
 }
