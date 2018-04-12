@@ -11,11 +11,10 @@
 	<script src="lib/backbone-min.js"></script>
 	<script src="lib/joint.js"></script>
 	<script src="lib/svg-pan-zoom.min.js"></script>
-	
+
 	<!-- global variables -->
 	<script src="globals.js"></script>
-	
-	
+
 	<!-- visualizer libraries -->
 	<script src="visualizer/utils.js"></script>
 	<script src="visualizer/fonts.js"></script>
@@ -26,42 +25,41 @@
 	<script src="visualizer/linkholders.js"></script>
 	<script src="visualizer/visualizers.js"></script>
 	<script src="visualizer/grid.js"></script>
-
 </head>
 <body>
 	<input type="checkbox" class="toggle-checkbox" id="toggle-diagram-selector-checkbox" checked>
 	<div id="diagram-selector">
 	<!-- selector link holder -->
 	<table id="selector-container">
-			<thead>
-					<tr>
-						<th colspan="2">Visualized diagrams</th>
-					</tr>
-					<tr>
-						<th>Class</th>
-						<th>State machine</th>
-					</tr>		
-			</thead>
+		<thead>
+				<tr>
+					<th colspan="2">Visualized diagrams</th>
+				</tr>
+				<tr>
+					<th>Class</th>
+					<th>State machine</th>
+				</tr>
+		</thead>
 		<tbody id="selector"></tbody>
 	</table>
 	</div>
 	<label for="toggle-diagram-selector-checkbox" id="diagram-selector-label" class="button control label">Toggle diagram list</label>
-	
+
 	<!-- diagram holder -->
 	<div class="content">
 		<div id="paper"></div>
-	
+
 		<!-- input -->
 		<script src="input.js"></script>
-	
+
 		<!-- visualizing script -->
 		<script src="visualizer.js"></script>
-		
+
 		<!-- resize selector label -->
 		<script>
 		$("#diagram-selector-label").width($("#diagram-selector").innerWidth());
 		</script>
-		
+
 		<!-- add pan and zoom -->
 		<input type="checkbox" class="toggle-checkbox" id="toggle-control-checkbox" checked>
 		<div id="pan-and-zoom-control-container">
@@ -79,7 +77,7 @@
 			<input type="checkbox" class="toggle-checkbox" id="toggle-wheel-zoom-checkbox" checked>
 			<label for="toggle-wheel-zoom-checkbox" class="button control toggle" id="toggle-wheel-zoom">Wheel zoom</label>
 		</div>
-		
+
 		<label id="pan-and-zoom-toggle-label" for="toggle-control-checkbox" class="button control label">Toggle controls</label>
 		<!-- resize control label -->
 		<script>
@@ -87,7 +85,7 @@
 		</script>	
 		<script src="panAndZoom.js"></script>
 	</div>	
-	
+
 	<div class="footer">
 		The source and licensing details of the 3rd party libraries used by this page can be found at their respective websites:
 		<div class="middle-container">

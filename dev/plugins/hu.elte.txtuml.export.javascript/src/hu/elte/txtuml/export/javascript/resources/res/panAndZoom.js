@@ -22,15 +22,15 @@ canvas.removeAttr("height");
 
 //attach zoom controls
 document.getElementById('zoom-in').addEventListener('click', function(ev){
-    svgZoom.zoomIn()
+	svgZoom.zoomIn()
 });
 
 document.getElementById('zoom-out').addEventListener('click', function(ev){
-    svgZoom.zoomOut()
+	svgZoom.zoomOut()
 });
 
 document.getElementById('reset-view').addEventListener('click', function(ev){
-    svgZoom.reset()
+	svgZoom.reset()
 });
 
 //center diagram
@@ -39,22 +39,22 @@ svgZoom.center();
 
 //add mouse pan and wheel zoom toggle control
 document.getElementById('toggle-pan').addEventListener('click', function(ev){
-    if(panEnabled){
-    	svgZoom.disablePan();
-    }
-    else{
-    	svgZoom.enablePan()
-    }
+	if(panEnabled){
+		svgZoom.disablePan();
+	}
+	else{
+		svgZoom.enablePan()
+	}
 	panEnabled = !panEnabled;
 });
 
 var wheelZoomEnabled = true;
 document.getElementById('toggle-wheel-zoom').addEventListener('click', function(ev){
-    if(wheelZoomEnabled){
-    	svgZoom.disableMouseWheelZoom();
-    }
-    else{
-    	svgZoom.enableMouseWheelZoom()
-    }
-    wheelZoomEnabled = !wheelZoomEnabled;
+	if(wheelZoomEnabled){
+		svgZoom.disableMouseWheelZoom();
+	}
+	else{
+		svgZoom.enableMouseWheelZoom()
+	}
+	wheelZoomEnabled = !wheelZoomEnabled;
 });
