@@ -21,9 +21,6 @@
                   checkEnabled="true">
                <with
                      variable="activeMenuSelection">
-                  <count
-                        value="1">
-                  </count>
                   <iterate
                         ifEmpty="false"
                         operator="and">
@@ -48,9 +45,6 @@
                   checkEnabled="true">
                <with
                      variable="activeMenuSelection">
-                  <count
-                        value="1">
-                  </count>
                   <iterate
                         ifEmpty="false"
                         operator="and">

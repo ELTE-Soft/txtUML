@@ -1,9 +1,7 @@
 package hu.elte.txtuml.api.model.execution.handlers;
 
 import java.lang.reflect.Constructor;
-import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -13,18 +11,14 @@ import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.runtime.IAdaptable;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jdt.core.ICompilationUnit;
-import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.ITypeHierarchy;
 import org.eclipse.jdt.core.JavaModelException;
-import org.eclipse.jdt.launching.JavaRuntime;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.widgets.Display;
@@ -46,7 +40,7 @@ import hu.elte.txtuml.api.model.execution.ModelExecutor;
 import hu.elte.txtuml.api.model.execution.SequenceDiagramExecutor;
 import hu.elte.txtuml.api.model.execution.seqdiag.error.MessageError;
 import hu.elte.txtuml.api.model.seqdiag.SequenceDiagram;
-import hu.elte.txtuml.utils.Logger;
+import hu.elte.txtuml.utils.eclipse.ClassLoaderProvider;
 import hu.elte.txtuml.utils.eclipse.Dialogs;
 
 public class RunSelectedSequenceDiagramHandler extends AbstractHandler {
@@ -57,28 +51,38 @@ public class RunSelectedSequenceDiagramHandler extends AbstractHandler {
 			
 			@Override
 			protected IStatus run(IProgressMonitor monitor) {
+				monitor.beginTask("Execution", IProgressMonitor.UNKNOWN);
+				MessageConsole console = findConsole();
+				console.clearConsole();
 				ISelection selection = HandlerUtil.getCurrentSelection(event);
 				IStructuredSelection strSelection = (IStructuredSelection) selection;
 	
-				ICompilationUnit selectedCompilationUnit = ((IAdaptable)strSelection.getFirstElement()).getAdapter(ICompilationUnit.class);
-				try {
-					IType[] types = selectedCompilationUnit.getTypes();
-					List<IType> sequenceDiagrams = Stream.of(types).filter(type -> {
-						ITypeHierarchy tyHierarchy = null;
-						try {
-							tyHierarchy = type.newSupertypeHierarchy(null);
-						} catch (JavaModelException ex) {
-							return false;
+				for (Object selected : strSelection.toArray()) {		
+					ICompilationUnit selectedCompilationUnit = ((IAdaptable)selected).getAdapter(ICompilationUnit.class);
+					try {
+						IType[] types = selectedCompilationUnit.getTypes();
+						List<IType> sequenceDiagrams = Stream.of(types).filter(type -> {
+							ITypeHierarchy tyHierarchy = null;
+							try {
+								tyHierarchy = type.newSupertypeHierarchy(null);
+							} catch (JavaModelException ex) {
+								return false;
+							}
+							return Stream.of(tyHierarchy.getAllSupertypes(type))
+									.anyMatch(superTy -> superTy.getFullyQualifiedName().equals(SequenceDiagram.class.getCanonicalName()));
+						}).collect(Collectors.toList());
+						for (IType sequenceDiagram : sequenceDiagrams) {
+							runSequenceDiagram(sequenceDiagram, console, monitor);
 						}
-						return Stream.of(tyHierarchy.getAllSupertypes(type))
-								.anyMatch(superTy -> superTy.getFullyQualifiedName().equals(SequenceDiagram.class.getCanonicalName()));
-					}).collect(Collectors.toList());
-					for (IType sequenceDiagram : sequenceDiagrams) {
-						runSequenceDiagram(sequenceDiagram, monitor);
+					} catch (InterruptedException e) {
+						return Status.CANCEL_STATUS;
+					} catch (Exception e) {
+						Display.getDefault().syncExec(() -> {
+							Dialogs.errorMsgb("Error",
+									"Error occured during sequence diagram execution.", e);
+						});
+						return Status.CANCEL_STATUS;
 					}
-				} catch (Exception e) {
-					Logger.sys.error(e.getMessage());
-					return Status.CANCEL_STATUS;
 				}
 				return Status.OK_STATUS;
 			}	
@@ -90,20 +94,11 @@ public class RunSelectedSequenceDiagramHandler extends AbstractHandler {
 	}
 
 	@SuppressWarnings("unchecked")
-	private void runSequenceDiagram(IType sequenceDiagramType, IProgressMonitor monitor) throws Exception {
-		IJavaProject project = sequenceDiagramType.getJavaProject();
-		String[] classPathEntries = JavaRuntime.computeDefaultRuntimeClassPath(project);
-		List<URL> urlList = new ArrayList<URL>();
-		for (int i = 0; i < classPathEntries.length; i++) {
-			String entry = classPathEntries[i];
-			IPath path = new Path(entry);
-			URL url = path.toFile().toURI().toURL();
-			urlList.add(url);
-		}
-		URL[] urls = (URL[]) urlList.toArray(new URL[urlList.size()]);
-		URLClassLoader classLoader = new URLClassLoader(urls, this.getClass().getClassLoader());
+	private void runSequenceDiagram(IType sequenceDiagramType, MessageConsole console, IProgressMonitor monitor) throws Exception {
+		monitor.subTask("Execution of " + sequenceDiagramType.getElementName());
+		String projectName = sequenceDiagramType.getJavaProject().getElementName();
+		URLClassLoader classLoader = ClassLoaderProvider.getClassLoaderForProject(projectName, this.getClass().getClassLoader());
 		Class<? extends SequenceDiagram> myClass = (Class<? extends SequenceDiagram>) classLoader.loadClass(sequenceDiagramType.getFullyQualifiedName());
-
 		SequenceDiagramExecutor executor = SequenceDiagramExecutor.create();
 		Constructor<? extends SequenceDiagram> constructor = myClass.getDeclaredConstructor();
 		
@@ -120,7 +115,7 @@ public class RunSelectedSequenceDiagramHandler extends AbstractHandler {
 			}
 		}
 		classLoader.close();
-		writeToConsole(executor.getErrors());
+		writeToConsole(console, executor.getErrors(), sequenceDiagramType.getElementName());
 	}
 
 	private MessageConsole findConsole() {
@@ -140,9 +135,8 @@ public class RunSelectedSequenceDiagramHandler extends AbstractHandler {
 		}
 	}
 	
-	private void writeToConsole(List<MessageError> errors) {
+	private void writeToConsole(MessageConsole console, List<MessageError> errors, String sequenceDiagramClassName) {
 		Display.getDefault().syncExec(() -> {
-			MessageConsole console = findConsole();
 			MessageConsoleStream out = console.newMessageStream();
 			IWorkbench wb = PlatformUI.getWorkbench();
 			IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
@@ -156,6 +150,8 @@ public class RunSelectedSequenceDiagramHandler extends AbstractHandler {
 					Dialogs.errorMsgb("Error",
 							"Error occured while trying to open output console.", e);
 				}
+			out.println("-------------" + sequenceDiagramClassName + "-------------");
+			out.println();
 			errors.stream().forEach(error -> out.println(error.getMessage()));
 			
 			if (errors.size() != 0) {
