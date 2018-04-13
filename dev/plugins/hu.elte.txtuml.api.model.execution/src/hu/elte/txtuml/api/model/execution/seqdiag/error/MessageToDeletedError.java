@@ -3,6 +3,10 @@ package hu.elte.txtuml.api.model.execution.seqdiag.error;
 import hu.elte.txtuml.api.model.execution.impl.seqdiag.Message;
 import hu.elte.txtuml.api.model.impl.SequenceDiagramRelated;
 
+/**
+ * Invalid message error, which occurs when a message is sent to a deleted
+ * target.
+ */
 @SequenceDiagramRelated
 public class MessageToDeletedError extends InvalidMessageError {
 

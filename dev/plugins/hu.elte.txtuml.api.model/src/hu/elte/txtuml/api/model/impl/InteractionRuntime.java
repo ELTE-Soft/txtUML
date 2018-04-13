@@ -4,7 +4,6 @@ import hu.elte.txtuml.api.model.ImplRelated;
 import hu.elte.txtuml.api.model.ModelClass;
 import hu.elte.txtuml.api.model.Signal;
 import hu.elte.txtuml.api.model.error.NotSeqDiagExecutorThreadError;
-import hu.elte.txtuml.api.model.seqdiag.CombinedFragmentType;
 import hu.elte.txtuml.api.model.seqdiag.Interaction;
 import hu.elte.txtuml.api.model.seqdiag.Sequence;
 
@@ -35,18 +34,14 @@ public interface InteractionRuntime extends Wrapper<Interaction>, ImplRelated {
 	 */
 	void messageFromActor(Signal signal, ModelClass target);
 
-	default void startFragment(CombinedFragmentType type, String fragmentName) {
-		// TODO fix or remove (old syntax, doesn't work (never did))
-	}
-
-	default void endFragment() {
-		// TODO fix or remove (old syntax, doesn't work (never did))
-	}
-
 	/**
 	 * Called by {@link Sequence#par(Interaction...)}. Read semantics there.
 	 */
 	void par(Interaction[] operands);
 
+	/**
+	 * Called by {@link Sequence#assertState(ModelClass, Class)}. Read semantics
+	 * there.
+	 */
 	void assertState(ModelClass instance, Class<?> state);
 }

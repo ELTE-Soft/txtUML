@@ -2,6 +2,9 @@ package hu.elte.txtuml.api.model.execution.seqdiag.error;
 
 import hu.elte.txtuml.api.model.impl.SequenceDiagramRelated;
 
+/**
+ * General sequence diagram error.
+ */
 @SequenceDiagramRelated
 public class SequenceDiagramProblem extends RuntimeException {
 

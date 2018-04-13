@@ -3,6 +3,9 @@ package hu.elte.txtuml.api.model.execution.seqdiag.error;
 import hu.elte.txtuml.api.model.execution.impl.seqdiag.Message;
 import hu.elte.txtuml.api.model.impl.SequenceDiagramRelated;
 
+/**
+ * General invalid message error.
+ */
 @SequenceDiagramRelated
 public class InvalidMessageError extends MessageError {
 

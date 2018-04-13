@@ -2,6 +2,10 @@ package hu.elte.txtuml.api.model.execution.seqdiag.error;
 
 import hu.elte.txtuml.api.model.impl.SequenceDiagramRelated;
 
+/**
+ * Assertion error, which occurs when the actual state of a model class does not
+ * match with the expected state.
+ */
 @SequenceDiagramRelated
 public class ModelStateAssertError extends SequenceDiagramProblem {
 

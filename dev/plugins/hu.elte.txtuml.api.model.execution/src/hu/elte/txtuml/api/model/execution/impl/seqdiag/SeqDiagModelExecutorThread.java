@@ -86,6 +86,11 @@ class SeqDiagModelExecutorThread extends FIFOExecutorThread implements ExecutorT
 		}
 	}
 
+	/**
+	 * Verifies that the {@code ModelClass} instance is currently in the given
+	 * state. If the assertion fails, a {@link ModelStateAssertError} will be
+	 * added.
+	 */
 	public void assertState(ModelClass instance, Class<?> state) {
 		Class<?> currentState = ((SeqDiagModelClassRuntime) ((DefaultSeqDiagRuntime) getModelRuntime())
 				.getRuntimeOf(instance)).getCurrentState();

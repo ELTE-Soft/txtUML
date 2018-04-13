@@ -4,7 +4,6 @@ import hu.elte.txtuml.api.model.API;
 import hu.elte.txtuml.api.model.ModelClass;
 import hu.elte.txtuml.api.model.Signal;
 import hu.elte.txtuml.api.model.impl.InteractionRuntime;
-import hu.elte.txtuml.api.model.impl.SeqDiagThread;
 import hu.elte.txtuml.api.model.impl.SequenceDiagramRelated;
 
 @SequenceDiagramRelated
@@ -57,63 +56,6 @@ public abstract class Sequence {
 	}
 
 	/**
-	 * Manually deactivate a lifeline. Only used when generating plantUML
-	 * output.
-	 * 
-	 * @param lifeline
-	 *            the lifeline to deactivate
-	 */
-	public static void deactivate(ModelClass lifeline) {
-		SeqDiagThread.requirePresence();
-	}
-
-	/**
-	 * Manually activate a lifeline. Only used when generating plantUML output.
-	 * 
-	 * @param lifeline
-	 *            the lifeline to activate
-	 */
-	public static void activate(ModelClass lifeline) {
-		SeqDiagThread.requirePresence();
-	}
-
-	/**
-	 * Method used to create unnamed in-line fragments like Seq, Strict, Pars.
-	 * 
-	 * @param type
-	 *            fragment's type
-	 * @see Sequence#startFragment(CombinedFragmentType, String)
-	 */
-	/* public */ static void startFragment(CombinedFragmentType type) {
-		// TODO fix or remove (old syntax, doesn't work (never did))
-
-		Sequence.startFragment(type, null);
-	}
-
-	/**
-	 * Method used to create in-line fragments like Seq, Strict, Pars.
-	 * 
-	 * @param type
-	 *            fragment's type
-	 * @param fragmentName
-	 *            the name of the fragment
-	 */
-	/* public */ static void startFragment(CombinedFragmentType type, String fragmentName) {
-		// TODO fix or remove (old syntax, doesn't work (never did))
-
-		InteractionRuntime.current().startFragment(type, fragmentName);
-	}
-
-	/**
-	 * Used to mark the end of in-line fragments.
-	 */
-	/* public */ static void endFragment() {
-		// TODO fix or remove (old syntax, doesn't work (never did))
-
-		InteractionRuntime.current().endFragment();
-	}
-
-	/**
 	 * The given operands are executed in an arbitrary order, their execution
 	 * may even overlap. However, it is still insured that during the execution
 	 * of the sequence diagram, only one of the operands is running at any given
@@ -124,10 +66,21 @@ public abstract class Sequence {
 		InteractionRuntime.current().par(operands);
 	}
 
+	/**
+	 * Verifies that the {@code ModelClass} instance is currently in the given
+	 * state. If the assertion fails, an error will be added to the execution
+	 * results.
+	 * <p>
+	 * Note that the state of the model <b>does not</b> change as a result of
+	 * calling this method.
+	 */
 	public static void assertState(ModelClass instance, Class<?> state) {
 		InteractionRuntime.current().assertState(instance, state);
 	}
 
+	/**
+	 * Logs the given message.
+	 */
 	public static void log(String message) {
 		API.log(message);
 	}

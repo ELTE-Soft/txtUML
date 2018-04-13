@@ -7,6 +7,9 @@ import hu.elte.txtuml.api.model.Signal;
 import hu.elte.txtuml.api.model.execution.impl.seqdiag.Message;
 import hu.elte.txtuml.api.model.impl.SequenceDiagramRelated;
 
+/**
+ * General message sending related error.
+ */
 @SequenceDiagramRelated
 public class MessageError extends SequenceDiagramProblem {
 
