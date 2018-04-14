@@ -156,11 +156,11 @@ class GuardExporter extends Exporter<MethodDeclaration, IMethodBinding, Constrai
 				val leftCode = asString(expr.leftOperand)
 				val rightCode = asString(expr.rightOperand)
 
-				return leftCode + expr.operator + rightCode
+				return leftCode + " " + expr.operator + " " + rightCode
 			}
 
 			ParenthesizedExpression: {
-				return asString(expr.expression)
+				return "(" + asString(expr.expression) + ")"
 			}
 
 			PrefixExpression: {
@@ -172,7 +172,7 @@ class GuardExporter extends Exporter<MethodDeclaration, IMethodBinding, Constrai
 				if (invName == "getTrigger") {
 					return "trigger"
 				} else if (invName == "Else") {
-					return "else()";
+					return "else";
 				}
 
 				val targetExpr = expr.expression
@@ -181,10 +181,10 @@ class GuardExporter extends Exporter<MethodDeclaration, IMethodBinding, Constrai
 				var operationCode = expr.name.identifier
 				var paramCodes = ""
 				for (param : expr.arguments) {
-					paramCodes += asString(param as Expression) + ","
+					paramCodes += asString(param as Expression) + ", "
 				}
 				if (!paramCodes.empty) {
-					paramCodes = paramCodes.substring(0, paramCodes.length - 1)
+					paramCodes = paramCodes.substring(0, paramCodes.length - 2)
 				}
 
 				operationCode += "(" + paramCodes + ")"
