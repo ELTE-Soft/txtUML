@@ -21,7 +21,7 @@ import hu.elte.txtuml.export.plantuml.wizards.PlantUMLVisualizeWizard;
 import hu.elte.txtuml.utils.eclipse.wizards.VisualizeTxtUMLPage;
 
 public class PlantUMLVisualizeSelectedDiagramsHandler extends AbstractHandler {
-	
+
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		PlantUMLVisualizeWizard wizard = new PlantUMLVisualizeWizard();

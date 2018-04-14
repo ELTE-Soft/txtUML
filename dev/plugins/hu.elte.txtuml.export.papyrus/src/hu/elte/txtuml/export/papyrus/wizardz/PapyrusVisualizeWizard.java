@@ -6,6 +6,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -37,20 +38,21 @@ import hu.elte.txtuml.utils.eclipse.wizards.VisualizeTxtUMLPage;
  * Wizard for visualization of txtUML models
  */
 public class PapyrusVisualizeWizard extends TxtUMLVisualizeWizard {
-	
+
 	public PapyrusVisualizeWizard() {
 		super();
 		setNeedsProgressMonitor(true);
 	}
-	
+
 	@Override
 	public String getWindowTitle() {
 		return "Create Papyrus model from txtUML model";
 	}
-	
+
 	@Override
 	public void addPages() {
-		selectTxtUmlPage = new VisualizeTxtUMLPage(false, true, StateMachineDiagram.class, ClassDiagram.class, CompositeDiagram.class);
+		selectTxtUmlPage = new VisualizeTxtUMLPage(false, true, StateMachineDiagram.class, ClassDiagram.class,
+				CompositeDiagram.class);
 		addPage(selectTxtUmlPage);
 	}
 
@@ -96,12 +98,11 @@ public class PapyrusVisualizeWizard extends TxtUMLVisualizeWizard {
 						monitor.subTask("Exporting txtUML Model to UML2 model...");
 						try {
 							TxtUMLToUML2.exportModel(txtUMLProjectName, txtUMLModelName,
-									txtUMLProjectName + "/" + generatedFolderName,
-									ExportMode.ErrorHandlingNoActions, "gen");
+									txtUMLProjectName + "/" + generatedFolderName, ExportMode.ErrorHandlingNoActions,
+									"gen");
 							monitor.worked(10);
 						} catch (Exception e) {
-							Dialogs.errorMsgb("txtUML export Error", "Error occured during the UML2 exportation.",
-									e);
+							Dialogs.errorMsgb("txtUML export Error", "Error occured during the UML2 exportation.", e);
 							return Status.CANCEL_STATUS;
 						}
 
@@ -121,10 +122,10 @@ public class PapyrusVisualizeWizard extends TxtUMLVisualizeWizard {
 							if (warnings.size() != 0) {
 								StringBuilder warningMessages = new StringBuilder(
 										"Warnings:" + System.lineSeparator() + System.lineSeparator() + "- ");
-								warningMessages.append(String
-										.join(System.lineSeparator() + System.lineSeparator() + "- ", warnings));
-								warningMessages.append(System.lineSeparator() + System.lineSeparator()
-								+ "Do you want to continue?");
+								warningMessages.append(
+										String.join(System.lineSeparator() + System.lineSeparator() + "- ", warnings));
+								warningMessages.append(
+										System.lineSeparator() + System.lineSeparator() + "Do you want to continue?");
 
 								if (!Dialogs.WarningConfirm("Warnings about layout description",
 										warningMessages.toString())) {

@@ -10,20 +10,16 @@ import hu.elte.txtuml.export.plantuml.wizards.PlantUMLVisualizeWizard;
 /**
  * Handles the call to txtUML Visualization
  */
-public class PlantUMLVisualizeHandler  extends AbstractHandler {
+public class PlantUMLVisualizeHandler extends AbstractHandler {
 
 	/**
 	 * Opens a TxtUMLVisuzalize wizard
 	 */
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
-
-
-		WizardDialog wizardDialog = new WizardDialog( null,
-	      new PlantUMLVisualizeWizard());
-		
+		WizardDialog wizardDialog = new WizardDialog(null, new PlantUMLVisualizeWizard());
 		wizardDialog.open();
 		return null;
 	}
-	
+
 }

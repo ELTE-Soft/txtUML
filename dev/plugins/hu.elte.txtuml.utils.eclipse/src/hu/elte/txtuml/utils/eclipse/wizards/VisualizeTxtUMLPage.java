@@ -84,7 +84,7 @@ public class VisualizeTxtUMLPage extends WizardPage {
 					public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
 						createPage(parent, monitor);
 					}
-					
+
 				}, ResourcesPlugin.getWorkspace().getRoot());
 			} catch (InvocationTargetException | InterruptedException e) {
 				Logger.sys.error(e.getMessage());
@@ -230,11 +230,11 @@ public class VisualizeTxtUMLPage extends WizardPage {
 			}
 		}
 	}
-	
+
 	private void createPage(Composite parent, IProgressMonitor monitor) {
 		if (monitor != null)
 			monitor.beginTask("Creating dialog", 100);
-		
+
 		sc = new ScrolledComposite(parent, SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER);
 		container = new Composite(sc, SWT.NONE);
 
@@ -311,7 +311,7 @@ public class VisualizeTxtUMLPage extends WizardPage {
 		CheckboxTreeViewer tree = new CheckboxTreeViewer(treeComposite, SWT.NONE);
 		IContentProvider cp = new WorkbenchContentProvider() {
 			private int projectNum;
-			
+
 			@Override
 			public Object[] getChildren(Object element) {
 				if (element instanceof IWorkspaceRoot) {
@@ -321,7 +321,8 @@ public class VisualizeTxtUMLPage extends WizardPage {
 					for (IProject pr : allProjects) {
 						try {
 							IJavaProject javaProject = ProjectUtils.findJavaProject(pr.getName());
-							if (directSuperClasses && WizardUtils.containsClassesWithDirectSuperTypes(javaProject, diagramTypes)) {
+							if (directSuperClasses
+									&& WizardUtils.containsClassesWithDirectSuperTypes(javaProject, diagramTypes)) {
 								javaProjects.add(ProjectUtils.findJavaProject(pr.getName()));
 							} else if (WizardUtils.containsClassesWithSuperTypes(javaProject, diagramTypes)) {
 								javaProjects.add(ProjectUtils.findJavaProject(pr.getName()));
@@ -346,15 +347,15 @@ public class VisualizeTxtUMLPage extends WizardPage {
 				}
 				if (monitor != null)
 					monitor.worked(20 / projectNum);
-				
+
 				return new Object[0];
 			}
-	
+
 			@Override
 			public Object[] getElements(Object inputElement) {
 				return getChildren(inputElement);
 			}
-	
+
 			@Override
 			public Object getParent(Object element) {
 				if (element instanceof IResource) {
@@ -362,7 +363,7 @@ public class VisualizeTxtUMLPage extends WizardPage {
 				}
 				return null;
 			}
-	
+
 			@Override
 			public boolean hasChildren(Object element) {
 				try {
@@ -372,7 +373,7 @@ public class VisualizeTxtUMLPage extends WizardPage {
 				}
 			}
 		};
-	
+
 		tree.getTree().addListener(SWT.Selection, event -> selectionHandler(event));
 		tree.setContentProvider(cp);
 		tree.setLabelProvider(WizardUtils.getPostQualifiedLabelProvider());

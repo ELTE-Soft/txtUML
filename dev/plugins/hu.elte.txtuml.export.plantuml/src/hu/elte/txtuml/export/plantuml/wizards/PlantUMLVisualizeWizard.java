@@ -32,12 +32,12 @@ public class PlantUMLVisualizeWizard extends TxtUMLVisualizeWizard {
 		super();
 		setNeedsProgressMonitor(true);
 	}
-	
+
 	@Override
 	public String getWindowTitle() {
 		return "Create PlantUML diagram from txtUML sequence diagram";
 	}
-	
+
 	@Override
 	public void addPages() {
 		selectTxtUmlPage = new VisualizeTxtUMLPage(true, false, SequenceDiagram.class, Interaction.class);
@@ -52,24 +52,22 @@ public class PlantUMLVisualizeWizard extends TxtUMLVisualizeWizard {
 
 			String generatedFolderName = PreferencesManager
 					.getString(PreferencesManager.TXTUML_VISUALIZE_DESTINATION_FOLDER);
-	
+
 			List<String> diagramNames = new ArrayList<>();
-			layoutConfigs.get(model).forEach(
-					layout -> diagramNames.add(layout.getFullyQualifiedName()));
-			
+			layoutConfigs.get(model).forEach(layout -> diagramNames.add(layout.getFullyQualifiedName()));
+
 			List<String> fullyQualifiedNames = txtUMLLayout.stream().map(IType::getFullyQualifiedName)
 					.collect(Collectors.toList());
 			boolean saveSucceeded = SaveUtils.saveAffectedFiles(getShell(), txtUMLProjectName, txtUMLModelName,
 					fullyQualifiedNames);
 			if (!saveSucceeded)
 				return false;
-			
+
 			try {
 				checkNoLayoutDescriptionsSelected();
 
 				IProgressService progressService = PlatformUI.getWorkbench().getProgressService();
-				PlantUmlExporter exp = new PlantUmlExporter(txtUMLProjectName, generatedFolderName,
-						diagramNames);
+				PlantUmlExporter exp = new PlantUmlExporter(txtUMLProjectName, generatedFolderName, diagramNames);
 
 				if (exp.hasSequenceDiagram()) {
 					progressService.runInUI(progressService, new IRunnableWithProgress() {
