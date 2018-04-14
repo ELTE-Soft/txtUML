@@ -27,19 +27,18 @@ import org.eclipse.jdt.core.dom.ThisExpression
 import org.eclipse.jdt.core.dom.FieldAccess
 
 class GuardExporter extends Exporter<MethodDeclaration, IMethodBinding, Constraint> {
-	
-	
+
 	new(BaseExporter<?, ?, ?> parent) {
 		super(parent)
 	}
 
 	override create(IMethodBinding access) { factory.createConstraint }
-	
+
 	override exportContents(MethodDeclaration source) {
 		val opaqueExpr = factory.createOpaqueExpression
 		result.specification = opaqueExpr
 		result.name = "guard_specification"
-		if(exportActions) {
+		if (exportActions) {
 			opaqueExpr.behavior = exportSMActivity(source) [
 			(result.owner as Transition).container.getSM.ownedBehaviors += it
 			]
@@ -48,195 +47,178 @@ class GuardExporter extends Exporter<MethodDeclaration, IMethodBinding, Constrai
 		opaqueExpr.languages += "JAVA"
 		opaqueExpr.bodies += createFlatGuardExpressionCode(source.body)	
 	}
-	
+
 	def String createFlatGuardExpressionCode(Block block) {
-		
 		val localVariables = new HashMap<String,Expression>()
 		val blockStatements = block.statements
-		
+
 		var guardExpressionSource = "?"
-		var c = blockStatements.stream.filter[s | !(s instanceof VariableDeclarationStatement) && 
-			 !(s instanceof ExpressionStatement) && 
-			 !(s instanceof ReturnStatement)].count	
-		if(c > 0) {
-			 	return guardExpressionSource
-			 }
-		
-		blockStatements.stream.filter[s | s instanceof VariableDeclarationStatement].forEach[
-				val varDecl = it as VariableDeclarationStatement;
-				varDecl.fragments.forEach[
-					val decl = it as VariableDeclarationFragment
-					localVariables.put(decl.name.identifier, decl.initializer);
-					
-				]
-		]
-		
-		blockStatements.stream.filter[s | s instanceof ExpressionStatement && 
-			(s as ExpressionStatement).expression instanceof Assignment].
-			forEach[
-				val assignment = (it as ExpressionStatement).expression as Assignment;		
-				val leftExpr = assignment.leftHandSide
-				val rigthExpr = assignment.rightHandSide
-				if(leftExpr instanceof SimpleName && ElementTypeTeller.isVariable(leftExpr)) {
-					val leftVarName = leftExpr as SimpleName
-					if(localVariables.containsKey(leftVarName.identifier)) {
-						localVariables.put(leftVarName.identifier, rigthExpr)			
-					}
-				}
-				
-		]
-		
-		for(expr : localVariables.entrySet) {
-			if(expr.value instanceof Assignment) {
-				return guardExpressionSource
-			}
+		if (blockStatements.exists[!(it instanceof VariableDeclarationStatement
+				|| it instanceof ExpressionStatement || it instanceof ReturnStatement)]) {
+			return guardExpressionSource
 		}
-		
-		
+
+		blockStatements.forEach[
+			if (it instanceof VariableDeclarationStatement) {
+				fragments.forEach[
+					val decl = it as VariableDeclarationFragment
+					localVariables.put(decl.name.identifier, decl.initializer)
+				]
+			}
+		]
+
+		blockStatements.filter[s | s instanceof ExpressionStatement
+			&& (s as ExpressionStatement).expression instanceof Assignment
+		].forEach[
+			val assignment = (it as ExpressionStatement).expression as Assignment;
+			val leftExpr = assignment.leftHandSide
+			val rigthExpr = assignment.rightHandSide
+			if (leftExpr instanceof SimpleName && ElementTypeTeller.isVariable(leftExpr)) {
+				val leftVarName = leftExpr as SimpleName
+				if (localVariables.containsKey(leftVarName.identifier)) {
+					localVariables.put(leftVarName.identifier, rigthExpr)
+				}
+			}
+		]
+
+		if (localVariables.entrySet.exists[value instanceof Assignment]) {
+			return guardExpressionSource
+		}
+
 		val retExpr = blockStatements.findFirst[it instanceof ReturnStatement] as ReturnStatement
 		guardExpressionSource = asString(updateExpression(retExpr.expression, localVariables))
-			
-		
-		guardExpressionSource
+
+		return guardExpressionSource
 	}
 
 	def Expression updateExpression(Expression expr, Map<String,Expression> varCodes) {
 		var resultExpr = expr
 		switch resultExpr {
-			SimpleName :
-				if(varCodes.containsKey(resultExpr.identifier)) {
-					return updateExpression(varCodes.get(resultExpr.identifier), varCodes)
-				}
-				
-			 ParenthesizedExpression:
-				return updateExpression(resultExpr.expression,varCodes)
-				
+			SimpleName case varCodes.containsKey(resultExpr.identifier):
+				return updateExpression(varCodes.get(resultExpr.identifier), varCodes)
+
+			ParenthesizedExpression:
+				return updateExpression(resultExpr.expression, varCodes)
+
 			InfixExpression: {
-				val updatedLeft =  updateExpression(resultExpr.leftOperand, varCodes)
-				val updadtedRight = updateExpression(resultExpr.rightOperand, varCodes)	
-				if(updatedLeft != null && updatedLeft.parent != resultExpr) { 
+				val updatedLeft = updateExpression(resultExpr.leftOperand, varCodes)
+				val updatedRight = updateExpression(resultExpr.rightOperand, varCodes)
+				if (updatedLeft != null && updatedLeft.parent != resultExpr) {
 					updatedLeft.delete
 					resultExpr.leftOperand = updatedLeft
 				}
-				if(updadtedRight != null && updadtedRight.parent != resultExpr) {
-					updadtedRight.delete
-					resultExpr.rightOperand = updadtedRight
-				
-				}			
+				if (updatedRight != null && updatedRight.parent != resultExpr) {
+					updatedRight.delete
+					resultExpr.rightOperand = updatedRight
+				}
 			}
+
 			PrefixExpression: {
-				val updatedExpr = updateExpression(resultExpr.operand, varCodes)		
-				if(updatedExpr?.parent != resultExpr) {
+				val updatedExpr = updateExpression(resultExpr.operand, varCodes)
+				if (updatedExpr?.parent != resultExpr) {
 					updatedExpr?.delete
 					resultExpr.operand = updatedExpr
 				}
-				
 			}
 			
 			MethodInvocation: {
 				val updatedExpr = updateExpression(resultExpr.expression, varCodes)
-				if(updatedExpr?.parent != resultExpr) {
+				if (updatedExpr?.parent != resultExpr) {
 					updatedExpr?.delete
 					resultExpr.expression = updatedExpr
 				}
-				
-				val invArguments =  resultExpr.arguments		
+
+				val invArguments = resultExpr.arguments
 				invArguments.forEach[arg, idx |
 					var updatedArgument = updateExpression(arg as Expression, varCodes)
 					if (updatedArgument?.parent != expr) {
-					updatedArgument?.delete
-					invArguments.set(idx, updatedArgument)
-				}
+						updatedArgument?.delete
+						invArguments.set(idx, updatedArgument)
+					}
 				]
 			}
-			
+
 			FieldAccess: {
 				val updatedExpr = updateExpression(resultExpr.expression, varCodes)
-				if(updatedExpr?.parent != resultExpr) {
+				if (updatedExpr?.parent != resultExpr) {
 					updatedExpr?.delete
 					resultExpr.expression = updatedExpr
 				}
-				
-				
 			}
-			
-					
 		}
-		
+
 		return resultExpr
-				
 	}
-	
+
 	def String asString(Expression expr) {
-		
 		switch expr {
 			InfixExpression: {
-					val leftCode = asString(expr.leftOperand)
-					val rigthCode = asString(expr.rightOperand)
-			
-			 		return leftCode + expr.operator + rigthCode
+				val leftCode = asString(expr.leftOperand)
+				val rightCode = asString(expr.rightOperand)
+
+				return leftCode + expr.operator + rightCode
 			}
-			
+
 			ParenthesizedExpression: {
 				return asString(expr.expression)
 			}
+
 			PrefixExpression: {
-				return expr.operator + 	asString(expr.operand)	 
+				return expr.operator + asString(expr.operand)
 			}
+
 			MethodInvocation: {
 				val invName = expr.resolveMethodBinding.name
-				if(invName == "getTrigger") {
-					 return "trigger"
-				} else if(invName == "Else") {
-				 	return "else()";
+				if (invName == "getTrigger") {
+					return "trigger"
+				} else if (invName == "Else") {
+					return "else()";
 				}
-			
+
 				val targetExpr = expr.expression
 				var targetCode = targetExpressionAsString(targetExpr)
-			
+
 				var operationCode = expr.name.identifier
 				var paramCodes = ""
-				for(param : expr.arguments) {
+				for (param : expr.arguments) {
 					paramCodes += asString(param as Expression) + ","
 				}
-				if(!paramCodes.empty) {
-					paramCodes = paramCodes.substring(0, paramCodes.length-1)
+				if (!paramCodes.empty) {
+					paramCodes = paramCodes.substring(0, paramCodes.length - 1)
 				}
-						
+
 				operationCode += "(" + paramCodes + ")"
-			
+
 				return targetCode + operationCode
 			}
+
 			ThisExpression: {
 				return "this"
 			}
+
 			FieldAccess: {
-				var targetCode = targetExpressionAsString(expr.expression)			
+				var targetCode = targetExpressionAsString(expr.expression)
 				return targetCode + expr.name.identifier
 			}
-						
-						
 		}
-		
-		return expr.toString		
-		
+
+		return expr.toString
 	}
 
 	def String targetExpressionAsString(Expression target) {
 		var targetCode = ""
-		if(target != null) {
-			if(!(target instanceof ThisExpression)) {
+		if (target != null) {
+			if (!(target instanceof ThisExpression)) {
 				targetCode = asString(target)
 			}
-			if(!targetCode.empty) {
+			if (!targetCode.empty) {
 				targetCode += "."
 			}
-
 		}
-		
+
 		return targetCode
 	}
-	
+
 	def StateMachine getSM(Region reg) { reg.stateMachine ?: reg.state.container.getSM() }
 
 }
