@@ -97,9 +97,12 @@ class GuardExporter extends Exporter<MethodDeclaration, IMethodBinding, Constrai
 			SimpleName case varCodes.containsKey(resultExpr.identifier):
 				return updateExpression(varCodes.get(resultExpr.identifier), varCodes)
 
-			ParenthesizedExpression:
-				return updateExpression(resultExpr.expression, varCodes)
-
+			ParenthesizedExpression: {
+				val updatedChild = updateExpression(resultExpr.expression, varCodes)
+				if(updatedChild?.parent != resultExpr) {
+					resultExpr.expression = updatedChild
+				}
+			}
 			InfixExpression: {
 				val updatedLeft = updateExpression(resultExpr.leftOperand, varCodes)
 				val updatedRight = updateExpression(resultExpr.rightOperand, varCodes)
