@@ -60,9 +60,9 @@ public class ActivityTemplates {
 			secondTemplateArgument = endPoint2;
 		}
 		
-		return operationCall(LinkTemplates.getLinkFunctionName(linkType),
+		return blockStatement(operationCall(LinkTemplates.getLinkFunctionName(linkType),
 				Arrays.asList(roleReadFromAssoc(associationName, endPoint1), firstObjectName, 
-						roleReadFromAssoc(associationName, endPoint2),secondObjectName));
+						roleReadFromAssoc(associationName, endPoint2),secondObjectName)));
 
 	}
 	

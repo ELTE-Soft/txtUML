@@ -6,6 +6,7 @@
 
 #include <list>
 #include <map>
+#include "ModelObject.hpp"
 
 template<class FirstClassRole, class SecondClassRole>
 class Association : public FirstClassRole , public SecondClassRole {
@@ -16,22 +17,22 @@ public:
 		SecondClassRole::association = this;
 	}
 
-	void link(typename FirstClassRole::RoleType* first, FirstClassRole*, typename SecondClassRole::RoleType* second, SecondClassRole*) {
+        void link(typename FirstClassRole::RoleType* first, FirstClassRole*, typename SecondClassRole::RoleType* second, SecondClassRole*) {
 		LeftRoleTable[first].add(second);
 		RigthRoleTable[second].add(first);
 	}
 
-	void link(typename SecondClassRole::RoleType* first, SecondClassRole*, typename FirstClassRole::RoleType* second, FirstClassRole*) {
+        void link(typename SecondClassRole::RoleType* first, SecondClassRole*, typename FirstClassRole::RoleType* second, FirstClassRole*) {
 		RigthRoleTable[first].add(second);
 		LeftRoleTable[second].add(first);
 	}
 
-	void unlink (typename FirstClassRole::RoleType* first, FirstClassRole*, typename SecondClassRole::RoleType* second, SecondClassRole*) {
+        void unlink (typename FirstClassRole::RoleType* first, FirstClassRole*, typename SecondClassRole::RoleType* second, SecondClassRole*) {
 		LeftRoleTable[first].remove (second);
 		RigthRoleTable[second].remove (first);
 	}
 
-	void unlink (typename SecondClassRole::RoleType* first, SecondClassRole*, typename FirstClassRole::RoleType* second, FirstClassRole*) {
+        void unlink (typename SecondClassRole::RoleType* first, SecondClassRole*, typename FirstClassRole::RoleType* second, FirstClassRole*) {
 		RigthRoleTable[first].remove (second);
 		LeftRoleTable[second].remove (first);
 	}
@@ -44,9 +45,17 @@ public:
 		return RigthRoleTable[rigth];
 	}
 
+        const typename SecondClassRole::CollectionType& get(ES::ModelObject* left, SecondClassRole* r)  {
+            return get(static_cast<typename FirstClassRole::RoleType*>(left), r);
+        }
+
+        const typename FirstClassRole::CollectionType& get(ES::ModelObject* rigth, FirstClassRole* r) {
+            return get(static_cast<typename SecondClassRole::RoleType*>(rigth), r);
+        }
+
 private:
-	std::map<typename FirstClassRole::RoleType*, typename SecondClassRole::CollectionType> LeftRoleTable;
-	std::map<typename SecondClassRole::RoleType*, typename FirstClassRole::CollectionType> RigthRoleTable;
+        std::map<typename FirstClassRole::RoleType*, typename SecondClassRole::CollectionType> LeftRoleTable;
+        std::map<typename SecondClassRole::RoleType*, typename FirstClassRole::CollectionType> RigthRoleTable;
 
 };
 

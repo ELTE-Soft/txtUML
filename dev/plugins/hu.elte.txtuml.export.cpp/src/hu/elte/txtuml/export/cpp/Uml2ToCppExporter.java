@@ -54,7 +54,6 @@ public class Uml2ToCppExporter {
 
 	private static final String RUNTIME_DIR_PREFIX = RuntimeTemplates.RTPath;
 	private static final String RUNTIME_LIB_NAME = "libsmrt";
-	private static final String DEFAULT_ASSOCIATIONS_NAME = "associations";
 	private static final String PROJECT_NAME = "hu.elte.txtuml.export.cpp";
 	private static final String CPP_FILES_FOLDER_NAME = "cpp-runtime";
 
@@ -259,9 +258,9 @@ public class Uml2ToCppExporter {
 		List<String> sourceNames = new ArrayList<String>();
 		sourceNames.add(DEFAULT_TARGET_EXECUTABLE);
 		sourceNames.add(DEPLOYMENT_NAME);
-		sourceNames.add(DEFAULT_ASSOCIATIONS_NAME);
 		sourceNames.add(INIT_MACHINE_NAME);
 		sourceNames.add(ENVIRONMENT_INITIALIZER);
+		sourceNames.add(GenerationNames.AssociationNames.AssociationInstancesUnitName);
 		sourceNames.addAll(classNames);
 		cmake.addExecutableTarget(DEFAULT_TARGET_EXECUTABLE, sourceNames, "");
 		cmake.writeOutCMakeLists();

@@ -14,7 +14,7 @@ public:
 
         template<typename Role>
         const auto& assoc(Role* role) {
-		return role->association->get(static_cast<typename Role::RoleType*>(this), role);
+                return role->association->get(this, role);
 	}
 };
 }
