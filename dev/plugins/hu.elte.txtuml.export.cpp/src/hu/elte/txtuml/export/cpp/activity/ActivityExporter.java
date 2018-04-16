@@ -33,6 +33,7 @@ import org.eclipse.uml2.uml.UMLPackage;
 import hu.elte.txtuml.export.cpp.ActivityExportResult;
 import hu.elte.txtuml.export.cpp.CppExporterUtils;
 import hu.elte.txtuml.export.cpp.IDependencyCollector;
+import hu.elte.txtuml.export.cpp.templates.GenerationNames;
 import hu.elte.txtuml.export.cpp.templates.activity.ActivityTemplates;
 
 //import hu.elte.txtuml.utils.Logger;
@@ -80,10 +81,13 @@ public class ActivityExporter {
 		} else if (node.eClass().equals(UMLPackage.Literals.CREATE_OBJECT_ACTION)) {
 			source.append(objectActionExporter.createCreateObjectActionCode((CreateObjectAction) node));
 		} else if (node.eClass().equals(UMLPackage.Literals.CREATE_LINK_ACTION)) {
+			addAssociationInstancesDependency();
 			source.append(linkActionExporter.createLinkActionCode((CreateLinkAction) node));
 		} else if (node.eClass().equals(UMLPackage.Literals.DESTROY_LINK_ACTION)) {
+			addAssociationInstancesDependency();
 			source.append(linkActionExporter.createDestroyLinkActionCode((DestroyLinkAction) node));
 		} else if (node.eClass().equals(UMLPackage.Literals.READ_LINK_ACTION)) {
+			addAssociationInstancesDependency();
 			source.append(linkActionExporter.createReadLinkActionCode((ReadLinkAction) node));
 		} else if (node.eClass().equals(UMLPackage.Literals.SEND_OBJECT_ACTION)) {
 			source.append(objectActionExporter.createSendSignalActionCode((SendObjectAction) node));
@@ -235,6 +239,12 @@ public class ActivityExporter {
 							.getOperationFromType(asfva.getStructuralFeature().isMultivalued(), asfva.isReplaceAll()));
 
 		return source;
+	}
+	
+	private void addAssociationInstancesDependency() {
+		if(exportUser.isPresent()) {
+			exportUser.get().addCppOnlyDependency(GenerationNames.AssociationNames.AssociationInstancesUnitName);
+		}
 	}
 	
 

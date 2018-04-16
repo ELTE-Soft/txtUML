@@ -6,8 +6,8 @@
 namespace CollectionUtils
 {
 
-template<typename E, typename CollectionType>
-E* select(const CollectionType& elements)
+template<typename CollectionType>
+auto* select(const CollectionType& elements)
 {
 	return elements.selectAny ();
 }

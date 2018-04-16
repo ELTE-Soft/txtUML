@@ -60,7 +60,7 @@ It has no effect if the objects are already linked through the specified associa
 */
 
 	
-template<typename LeftEnd, typename RightEnd>
+template<typename L, typename LE, typename R, typename RE>
 void unlink (LE* leftEnd, L* leftObject, RE* rightEnd, R* rightObject);
 /**<
 Unlinks two model objects through the specified association.

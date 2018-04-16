@@ -4,6 +4,8 @@
 #ifndef ASSOCIATION_UTILS_H
 #define ASSOCIATION_UTILS_H
 
+#include <list>
+#include <map>
 
 template<class FirstClassRole, class SecondClassRole>
 class Association : public FirstClassRole , public SecondClassRole {
@@ -34,11 +36,11 @@ public:
 		LeftRoleTable[second].remove (first);
 	}
 
-	const typename SecondClassRole::CollectionType& get(typename FirstClassRole::RoleType* left, SecondClassRole*)  {
+        const typename SecondClassRole::CollectionType& get(typename FirstClassRole::RoleType* left, SecondClassRole*)  {
 		return LeftRoleTable[left];
 	}
 
-	const typename FirstClassRole::CollectionType& get(typename SecondClassRole::RoleType* rigth, FirstClassRole*) {
+        const typename FirstClassRole::CollectionType& get(typename SecondClassRole::RoleType* rigth, FirstClassRole*) {
 		return RigthRoleTable[rigth];
 	}
 
@@ -112,7 +114,7 @@ public:
 
 template<typename FirstClassRole, class SecondClassRole, class EndType, int lowMul, int upMul>
 struct AssocEnd : public AssocOwner<FirstClassRole, SecondClassRole> {
-	typedef Property<typename EndType, lowMul, upMul> CollectionType;
+        typedef Property<EndType, lowMul, upMul> CollectionType;
 	typedef EndType RoleType;
 };
 
