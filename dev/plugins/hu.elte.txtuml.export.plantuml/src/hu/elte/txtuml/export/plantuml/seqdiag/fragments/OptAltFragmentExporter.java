@@ -5,31 +5,26 @@ import org.eclipse.jdt.core.dom.Expression;
 import org.eclipse.jdt.core.dom.IfStatement;
 import org.eclipse.jdt.core.dom.Statement;
 
-import hu.elte.txtuml.export.plantuml.generator.PlantUmlPreCompiler;
 import hu.elte.txtuml.export.plantuml.generator.PlantUmlCompiler;
 
 /**
- * This class handles the OPT and ALT fragments
+ * Exporter implementation, which is responsible for exporting OPT and ALT
+ * combined fragments.
  */
-public class OptAltFragment extends CombinedFragmentExporter<IfStatement> {
+public class OptAltFragmentExporter extends CombinedFragmentExporter<IfStatement> {
 
-	protected PlantUmlPreCompiler walker;
-
-	public OptAltFragment(PlantUmlCompiler compiler) {
+	public OptAltFragmentExporter(final PlantUmlCompiler compiler) {
 		super(compiler);
 	}
 
 	@Override
 	public boolean validElement(ASTNode node) {
 		boolean validElement = super.validElement(node);
-		boolean isIfStatement = node.getNodeType() == ASTNode.IF_STATEMENT;
-
-		return validElement && isIfStatement;
+		return validElement && node.getNodeType() == ASTNode.IF_STATEMENT;
 	}
 
 	@Override
 	public boolean preNext(IfStatement curElement) {
-
 		Statement thenStatement = curElement.getThenStatement();
 		Statement elseStatement = curElement.getElseStatement();
 		Expression condition = curElement.getExpression();
@@ -66,4 +61,5 @@ public class OptAltFragment extends CombinedFragmentExporter<IfStatement> {
 			}
 		}
 	}
+
 }

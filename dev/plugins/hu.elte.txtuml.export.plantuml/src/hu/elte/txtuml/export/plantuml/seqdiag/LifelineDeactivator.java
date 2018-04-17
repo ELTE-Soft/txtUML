@@ -7,11 +7,12 @@ import org.eclipse.jdt.core.dom.MethodDeclaration;
 import hu.elte.txtuml.export.plantuml.generator.PlantUmlCompiler;
 
 /**
- * Class responsible for deactivating all remaining active lifelines
+ * Exporter implementation, which is responsible for deactivating all remaining
+ * active lifelines at the end of the sequence diagram description.
  */
-public class LifelineDeactivator extends BaseSeqdiagExporter<Block> {
+public class LifelineDeactivator extends ExporterBase<Block> {
 
-	public LifelineDeactivator(PlantUmlCompiler compiler) {
+	public LifelineDeactivator(final PlantUmlCompiler compiler) {
 		super(compiler);
 	}
 
@@ -19,11 +20,8 @@ public class LifelineDeactivator extends BaseSeqdiagExporter<Block> {
 	public boolean validElement(ASTNode curElement) {
 		ASTNode parent = curElement.getParent();
 		if (parent instanceof MethodDeclaration) {
-			if (((MethodDeclaration) parent).getName().toString().equals("run")) {
-				return true;
-			}
+			return ((MethodDeclaration) parent).getName().toString().equals("run");
 		}
-
 		return false;
 	}
 
@@ -36,4 +34,5 @@ public class LifelineDeactivator extends BaseSeqdiagExporter<Block> {
 	public void afterNext(Block curElement) {
 		compiler.deactivateAllLifelines();
 	}
+
 }

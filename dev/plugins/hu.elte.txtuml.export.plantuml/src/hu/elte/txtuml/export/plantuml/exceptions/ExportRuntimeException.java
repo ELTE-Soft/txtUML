@@ -1,5 +1,8 @@
 package hu.elte.txtuml.export.plantuml.exceptions;
 
+/**
+ * Runtime exception during sequence diagram export.
+ */
 public class ExportRuntimeException extends RuntimeException {
 
 	private static final long serialVersionUID = -3558735956015246327L;
@@ -9,7 +12,7 @@ public class ExportRuntimeException extends RuntimeException {
 	}
 
 	public ExportRuntimeException(String message, Exception cause) {
-		super(message,cause);
+		super(message, cause);
 	}
 
 }

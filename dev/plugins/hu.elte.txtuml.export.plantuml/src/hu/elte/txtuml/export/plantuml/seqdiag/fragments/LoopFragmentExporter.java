@@ -14,26 +14,23 @@ import org.eclipse.jdt.core.dom.WhileStatement;
 import hu.elte.txtuml.export.plantuml.generator.PlantUmlCompiler;
 
 /**
- * All looptypes handled by this compiler(While,do - While, for and foreach)
+ * Exporter implementation, which is responsible for exporting LOOP fragments.
+ * Supported types: while, for, foreach, do-while.
  */
-public class LoopFragment extends CombinedFragmentExporter<Statement> {
+public class LoopFragmentExporter extends CombinedFragmentExporter<Statement> {
 
-	public LoopFragment(PlantUmlCompiler compiler) {
+	public LoopFragmentExporter(final PlantUmlCompiler compiler) {
 		super(compiler);
 	}
 
 	@Override
 	public boolean validElement(ASTNode curElement) {
-
 		boolean validElement = super.validElement(curElement);
-		boolean isLoopStatement = false;
-
 		if (curElement instanceof WhileStatement || curElement instanceof ForStatement
 				|| curElement instanceof EnhancedForStatement || curElement instanceof DoStatement) {
-			isLoopStatement = true;
+			return validElement;
 		}
-
-		return validElement && isLoopStatement;
+		return false;
 	}
 
 	@Override
@@ -73,7 +70,6 @@ public class LoopFragment extends CombinedFragmentExporter<Statement> {
 				initName = ((Assignment) init).getLeftHandSide().toString();
 				initValue = ((Assignment) init).getRightHandSide().resolveConstantExpressionValue().toString();
 			}
-
 		}
 
 		if (statement.updaters().size() == 1) {
@@ -88,25 +84,21 @@ public class LoopFragment extends CombinedFragmentExporter<Statement> {
 		if (updater.toString().equals("++i") || updater.toString().equals("i++")) {
 			return "i+1";
 		}
-
 		return updater.toString();
 	}
 
 	protected void exportWhile(WhileStatement statement) {
 		Expression condition = statement.getExpression();
-
 		compiler.println("loop while " + condition.toString());
 	}
 
 	protected void exportForEach(EnhancedForStatement statement) {
 		Expression loopVar = statement.getExpression();
-
 		compiler.println("loop for each " + loopVar.toString());
 	}
 
 	protected void exportDoWhileStatement(DoStatement statement) {
 		Expression condition = statement.getExpression();
-
 		compiler.println("loop while " + condition.toString());
 	}
 
