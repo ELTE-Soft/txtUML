@@ -12,7 +12,7 @@ import hu.elte.txtuml.utils.Logger;
  * This interface provides the simplest API to execute txtUML models. Its sole
  * abstract method is used as the {@linkplain #initialization} of the model
  * execution. That is, it contains the model code which creates, links and
- * starts the model class instances that should exist at that beginning of the
+ * starts the model class instances that should exist at the beginning of the
  * execution.
  * <p>
  * After the {@linkplain #initialization} method is implemented, there are three

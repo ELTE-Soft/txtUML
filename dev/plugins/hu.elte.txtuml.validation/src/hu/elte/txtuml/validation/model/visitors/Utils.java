@@ -20,8 +20,8 @@ public class Utils {
 
 	public static void checkTypeParameter(ProblemCollector collector, TypeDeclaration elem) {
 		if (elem.typeParameters().size() > 0) {
-			collector.report(
-					INVALID_TYPE_PARAMETER.create(collector.getSourceInfo(), (TypeParameter) (elem.typeParameters().get(0))));
+			collector.report(INVALID_TYPE_PARAMETER.create(collector.getSourceInfo(),
+					(TypeParameter) (elem.typeParameters().get(0))));
 		}
 	}
 

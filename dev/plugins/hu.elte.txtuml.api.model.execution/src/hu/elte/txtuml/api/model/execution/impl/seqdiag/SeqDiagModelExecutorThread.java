@@ -6,7 +6,9 @@ import hu.elte.txtuml.api.model.execution.impl.base.AbstractModelClassRuntime;
 import hu.elte.txtuml.api.model.execution.impl.base.AbstractModelExecutor;
 import hu.elte.txtuml.api.model.execution.impl.base.FIFOExecutorThread;
 import hu.elte.txtuml.api.model.execution.impl.base.SignalWrapper;
+import hu.elte.txtuml.api.model.execution.seqdiag.error.ErrorLevel;
 import hu.elte.txtuml.api.model.execution.seqdiag.error.InvalidMessageError;
+import hu.elte.txtuml.api.model.execution.seqdiag.error.ModelStateAssertError;
 import hu.elte.txtuml.api.model.impl.ExecutorThread;
 import hu.elte.txtuml.api.model.impl.SequenceDiagramRelated;
 import hu.elte.txtuml.api.model.seqdiag.ExecMode;
@@ -14,8 +16,8 @@ import hu.elte.txtuml.api.model.seqdiag.ExecMode;
 /**
  * Class for the single model executor thread in a sequence diagram executor.
  * <p>
- * See the documentation of this package for an overview about the threads used
- * in the sequence diagram executor.
+ * See the documentation of this package for an overview of the threads used in
+ * the sequence diagram executor.
  */
 @SequenceDiagramRelated
 class SeqDiagModelExecutorThread extends FIFOExecutorThread implements ExecutorThread {
@@ -80,7 +82,21 @@ class SeqDiagModelExecutorThread extends FIFOExecutorThread implements ExecutorT
 		 * automatically accepted. Otherwise, we show an error.
 		 */
 		if (!result && mode == ExecMode.STRICT) {
-			root.getExecutor().addError(new InvalidMessageError(actual));
+			root.getExecutor().addError(new InvalidMessageError(actual, ErrorLevel.ERROR));
+		}
+	}
+
+	/**
+	 * Verifies that the {@code ModelClass} instance is currently in the given
+	 * state. If the assertion fails, a {@link ModelStateAssertError} will be
+	 * added.
+	 */
+	public void assertState(ModelClass instance, Class<?> state) {
+		Class<?> currentState = ((SeqDiagModelClassRuntime) ((DefaultSeqDiagRuntime) getModelRuntime())
+				.getRuntimeOf(instance)).getCurrentState();
+		if (!currentState.equals(state)) {
+			root.getExecutor()
+					.addError(new ModelStateAssertError(state.getCanonicalName(), currentState.getCanonicalName()));
 		}
 	}
 }

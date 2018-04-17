@@ -4,7 +4,6 @@ import java.lang.reflect.Method;
 
 import hu.elte.txtuml.api.model.ModelClass;
 import hu.elte.txtuml.api.model.ModelClass.Port;
-import hu.elte.txtuml.api.model.execution.impl.singlethread.SingleThreadModelClassRuntime;
 import hu.elte.txtuml.api.model.execution.impl.singlethread.SingleThreadModelRuntime;
 import hu.elte.txtuml.api.model.execution.impl.singlethread.SingleThreadPortRuntime;
 import hu.elte.txtuml.api.model.impl.SequenceDiagramRelated;
@@ -18,8 +17,7 @@ import hu.elte.txtuml.api.model.seqdiag.SequenceDiagram;
  * thread.
  */
 @SequenceDiagramRelated
-public class DefaultSeqDiagRuntime
-		extends SingleThreadModelRuntime<SingleThreadModelClassRuntime, SingleThreadPortRuntime> {
+public class DefaultSeqDiagRuntime extends SingleThreadModelRuntime<SeqDiagModelClassRuntime, SingleThreadPortRuntime> {
 
 	private final SeqDiagModelExecutorThread modelThread;
 
@@ -38,7 +36,7 @@ public class DefaultSeqDiagRuntime
 		 * The root interaction thread that will execute the diagram itself as
 		 * an interaction.
 		 */
-		InteractionThread rootInteraction = new InteractionThread(executor, diagram);
+		InteractionThread rootInteraction = new InteractionThread(this, diagram);
 
 		modelThread = new SeqDiagModelExecutorThread(this, executor, rootInteraction, mode, () -> {
 			// The initialization of the model executor thread.
@@ -67,8 +65,8 @@ public class DefaultSeqDiagRuntime
 	}
 
 	@Override
-	public SingleThreadModelClassRuntime createModelClassRuntime(ModelClass object) {
-		return new SingleThreadModelClassRuntime(object, modelThread);
+	public SeqDiagModelClassRuntime createModelClassRuntime(ModelClass object) {
+		return new SeqDiagModelClassRuntime(object, modelThread);
 	}
 
 	@Override
@@ -81,4 +79,7 @@ public class DefaultSeqDiagRuntime
 		modelThread.start();
 	}
 
+	SeqDiagModelExecutorThread getModelThread() {
+		return modelThread;
+	}
 }

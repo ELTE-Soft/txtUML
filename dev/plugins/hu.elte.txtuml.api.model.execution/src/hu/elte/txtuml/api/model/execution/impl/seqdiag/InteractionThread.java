@@ -1,6 +1,6 @@
 package hu.elte.txtuml.api.model.execution.impl.seqdiag;
 
-import static com.google.common.util.concurrent.Uninterruptibles.*;
+import static com.google.common.util.concurrent.Uninterruptibles.takeUninterruptibly;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -25,8 +25,8 @@ import hu.elte.txtuml.utils.Logger;
 /**
  * The thread which executes an interaction.
  * <p>
- * See the documentation of this package for an overview about the threads used
- * in the sequence diagram executor.
+ * See the documentation of this package for an overview of the threads used in
+ * the sequence diagram executor.
  * <p>
  * This class keeps the invariants stated in the package documentation using its
  * inner invariants described at {@link #currentMessage}.
@@ -93,6 +93,7 @@ public class InteractionThread extends AbstractModelExecutor.OwnedThread<Default
 
 	private final Interaction wrapped;
 	private final InteractionThread parent;
+	private final DefaultSeqDiagRuntime runtime;
 
 	/**
 	 * The presence of this termination blocker shows that this thread is
@@ -122,14 +123,13 @@ public class InteractionThread extends AbstractModelExecutor.OwnedThread<Default
 	 * An interaction thread may be in four situations when
 	 * {@link #awaitThisWaiting()} is called:
 	 * <ul>
-	 * <li>In a terminal state ({@link State#KILLED} or
-	 * {@link State#TERMINATED}). See {@link #doRun}, {@link #kill},
-	 * {@link #setExpected}.</li>
+	 * <li>In a terminal state ({@link State#KILLED} or {@link State#TERMINATED}
+	 * ). See {@link #doRun}, {@link #kill}, {@link #setExpected}.</li>
 	 * <li>Waiting on the result thread after a message has been put into this
 	 * queue ({@link State#ACTIVE} and non-empty Optional in this queue). See
 	 * {@link #setExpected} and {@link #testActual}.</li>
-	 * <li>Waiting for its children to finish
-	 * ({@link State#WAITING_FOR_CHILDREN}). See {@link #par},
+	 * <li>Waiting for its children to finish (
+	 * {@link State#WAITING_FOR_CHILDREN}). See {@link #par},
 	 * {@link #unregister}, {@link #doRun}.</li>
 	 * <li>Heading for one of the above.</li>
 	 * </ul>
@@ -176,16 +176,17 @@ public class InteractionThread extends AbstractModelExecutor.OwnedThread<Default
 
 	// constructor
 
-	public InteractionThread(DefaultSeqDiagExecutor executor, Interaction interaction) {
-		this(executor, null, interaction);
+	public InteractionThread(DefaultSeqDiagRuntime runtime, Interaction interaction) {
+		this(runtime, null, interaction);
 	}
 
-	public InteractionThread(DefaultSeqDiagExecutor executor, InteractionThread parent, Interaction interaction) {
-		super("Interaction-" + count.getAndIncrement(), executor);
+	public InteractionThread(DefaultSeqDiagRuntime runtime, InteractionThread parent, Interaction interaction) {
+		super("Interaction-" + count.getAndIncrement(), runtime.getExecutor());
 		this.parent = parent;
 		this.wrapped = interaction;
 		this.state = State.ACTIVE;
-		executor.addTerminationBlocker(terminationBlocker);
+		runtime.getExecutor().addTerminationBlocker(terminationBlocker);
+		this.runtime = runtime;
 	}
 
 	@Override
@@ -245,7 +246,7 @@ public class InteractionThread extends AbstractModelExecutor.OwnedThread<Default
 			state = State.WAITING_FOR_CHILDREN;
 			currentMessage.offer(Optional.empty()); // Becomes inactive.
 			for (Interaction interaction : operands) {
-				children.add(new InteractionThread(getExecutor(), this, interaction));
+				children.add(new InteractionThread(runtime, this, interaction));
 			}
 			copy = new ArrayList<>(children);
 			copy.forEach(InteractionThread::start);
@@ -487,6 +488,11 @@ public class InteractionThread extends AbstractModelExecutor.OwnedThread<Default
 	@Override
 	public InteractionRuntime getCurrentInteraction() {
 		return this;
+	}
+
+	@Override
+	public void assertState(ModelClass instance, Class<?> state) {
+		runtime.getModelThread().assertState(instance, state);
 	}
 
 }

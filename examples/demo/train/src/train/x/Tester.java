@@ -15,12 +15,12 @@ import train.x.model.Lamp;
 import train.x.model.SwitchLight;
 
 public class Tester implements Execution {
-	
+
 	@Override
 	public void configure(Settings s) {
 		s.logLevel = LogLevel.TRACE;
 	}
-	
+
 	Gearbox g;
 	Engine e;
 	Lamp l;
@@ -63,7 +63,7 @@ public class Tester implements Execution {
 		} catch (InterruptedException e) {
 		}
 	}
-	
+
 	public static void main(String[] args) throws Exception {
 		new Tester().run();
 	}
