@@ -50,7 +50,7 @@ public class UI implements Controlled {
 
 	private UI() {
 		Model model = new Model();
-		new Glue(this).register(model.start(), View.id());
+		new Glue(this).register(model.start().get(), View.id());
 
 		control = model;
 

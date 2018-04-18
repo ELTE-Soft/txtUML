@@ -1,5 +1,7 @@
 package hu.elte.txtuml.api.model.execution.log;
 
+import java.util.Optional;
+
 import hu.elte.txtuml.api.model.ModelClass;
 import hu.elte.txtuml.api.model.Signal;
 import hu.elte.txtuml.api.model.StateMachine.Transition;
@@ -22,8 +24,8 @@ public class TraceLogger extends LoggerBase implements TraceListener {
 	}
 
 	@Override
-	public void processingSignal(ModelClass object, Signal signal) {
-		trace(object + " processes " + signal);
+	public void processingSignal(ModelClass object, Signal signal, Optional<ModelClass> sender) {
+		trace(object + " processes " + signal + sender.map(s -> " sent by " + sender).orElse(""));
 	}
 
 	@Override

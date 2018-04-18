@@ -1,5 +1,6 @@
 package hu.elte.txtuml.api.model.execution.impl.base;
 
+import hu.elte.txtuml.api.model.execution.LogLevel;
 import hu.elte.txtuml.api.model.execution.ModelExecutor;
 import hu.elte.txtuml.api.model.execution.diagnostics.DiagnosticsService;
 import hu.elte.txtuml.api.model.execution.log.ErrorLogger;
@@ -16,11 +17,14 @@ public enum SwitchOnLogging {
 	DEFAULT_LOGGING {
 		@Override
 		public void switchOnFor(ModelExecutor executor) {
-			if (executor.traceLogging()) {
-				executor.addTraceListener(new TraceLogger(executor.getName()));
+			LogLevel logLevel = executor.getLogLevel();
+			if (logLevel.isAtLeast(LogLevel.WARNING)) {
+				executor.addWarningListener(new WarningLogger(executor.getName()));
+				if (logLevel.isAtLeast(LogLevel.TRACE)) {
+					executor.addTraceListener(new TraceLogger(executor.getName()));
+				}
 			}
 			executor.addErrorListener(new ErrorLogger(executor.getName()));
-			executor.addWarningListener(new WarningLogger(executor.getName()));
 		}
 	},
 	DIAGNOSTICS_SERVICE {

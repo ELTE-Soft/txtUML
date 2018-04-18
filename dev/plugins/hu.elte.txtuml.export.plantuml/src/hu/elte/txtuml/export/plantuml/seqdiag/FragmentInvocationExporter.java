@@ -9,12 +9,8 @@ import hu.elte.txtuml.api.model.seqdiag.CombinedFragmentType;
 import hu.elte.txtuml.export.plantuml.generator.PlantUmlCompiler;
 
 /**
- * 
  * Class handling the fragment invocations( asking the compiler to be as kind as
  * to compile the needed fragment)
- * 
- * @author Zoli
- *
  */
 public class FragmentInvocationExporter extends MethodInvocationExporter {
 
