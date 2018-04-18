@@ -89,7 +89,7 @@ struct AssemblyConnection : public IConnection
 	AssemblyConnection (ES::IPortRef<ProvidedInf, RequiredInf> port_) : port(port_) {}
 	virtual void fowardSendedMessageToConnectedPort (ES::EventRef signal)
 	{
-		port->reciveAny(signal);
+		port->receiveAny(signal);
 	}
 	
 private:
@@ -147,7 +147,7 @@ class BehaviorPortImpl : public BehaviorPort <ProvidedInf, RequiredInf>
 			}
         }
 
-        virtual void reciveAny (ES::EventRef signal)
+        virtual void receiveAny (ES::EventRef signal)
         {
 			//assert(BehaviorPort <ProvidedInf, RequiredInf>::owner != nullptr && "The owner of behavior port should not be null");
 			signal->setPortType(BehaviorPort <ProvidedInf, RequiredInf>::type);
@@ -175,11 +175,11 @@ protected:
 		}
 	}
 
-	virtual void reciveAny(ES::EventRef signal)
+	virtual void receiveAny(ES::EventRef signal)
 	{
 		if (Port <ProvidedInf, RequiredInf>::connectionToInnerPort != nullptr)
 		{
-			Port <ProvidedInf, RequiredInf>::connectionToInnerPort->reciveAny(signal);
+			Port <ProvidedInf, RequiredInf>::connectionToInnerPort->receiveAny(signal);
 		}
 	}
 

@@ -143,7 +143,7 @@ public class GenerationNames {
 		public static final String SendReceptionName = "send";
 		public static final String ReciveReceptionName = "recive";
 		public static final String CommonSendAnySignalName = "sendAny";
-		public static final String CommonReciveAnySignalName = "reciveAny";
+		public static final String CommonReciveAnySignalName = "receiveAny";
 		public static final String IntegratedBaseTemplateName = "IntegratedInf";
 		public static final String EmptyInfName = "EmptyInf";
 
