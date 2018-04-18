@@ -11,7 +11,6 @@ int main()
   Env::initEnvironment();
   UsedRuntimePtr rt = UsedRuntimeType::getRuntimeInstance();
 
-
   Model::Game game;
   Action::start (&game);
   Action::send (&game, Model::BallPtr(new Model::Ball_EC (4)));

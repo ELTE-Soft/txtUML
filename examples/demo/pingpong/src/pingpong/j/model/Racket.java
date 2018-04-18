@@ -66,6 +66,7 @@ public class Racket extends ModelClass {
 
 		@Override
 		public boolean guard() {
+			//return Else(); not supported yet in export
 			return getTrigger(Ball.class).countdown <= 0;
 		}
 

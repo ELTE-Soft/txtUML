@@ -139,7 +139,7 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 		publicParts.append(LinkTemplates.templateLinkFunctionGeneralDef(LinkTemplates.LinkFunctionType.Link));
 		publicParts.append(LinkTemplates.templateLinkFunctionGeneralDef(LinkTemplates.LinkFunctionType.Unlink));
 
-		publicParts.append(portExporter.crearePortRelatedCodes());
+		publicParts.append(portExporter.createPortRelatedCodes());
 
 		collectModelBaseClasses();
 		if (CppExporterUtils.isStateMachineOwner(structuredElement)) {

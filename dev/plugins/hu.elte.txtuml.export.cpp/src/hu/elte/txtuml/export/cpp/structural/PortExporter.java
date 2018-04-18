@@ -46,7 +46,7 @@ public class PortExporter {
 		return usedInterfaces;
 	}
 	
-	public String crearePortRelatedCodes() {
+	public String createPortRelatedCodes() {
 		StringBuilder source = new StringBuilder("");
 		source.append(createPortClassType());
 		source.append(createPortDeclerations());
@@ -77,7 +77,7 @@ public class PortExporter {
 	}
 	
 	public String createPortDeclerations() {
-		return ports.stream().map(p -> createinterfacePortCode(p)).reduce("", (d1,d2) -> d1 + d2);
+		return ports.stream().map(p -> createInterfacePortCode(p)).reduce("", (d1,d2) -> d1 + d2);
 	}
 	
 	public String createInitPortsCode() {
@@ -106,7 +106,7 @@ public class PortExporter {
 				Optional.of(Arrays.asList(interfaces.getFirst(),interfaces.getSecond())), 
 				port.getName(), Optional.of(parameters), true);
 	}
-	private String createinterfacePortCode(Port port) {
+	private String createInterfacePortCode(Port port) {
 		assert(port != null && isInterfacePort(port));
 		String portTypeName = getPortTypeName(port, false);
 		Pair<String,String> interfaces = getPortActualInterfaceTypes(port);
