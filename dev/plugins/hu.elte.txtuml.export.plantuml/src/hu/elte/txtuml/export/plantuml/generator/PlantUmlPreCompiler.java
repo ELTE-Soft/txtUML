@@ -9,9 +9,6 @@ import hu.elte.txtuml.api.model.ModelClass;
 import hu.elte.txtuml.utils.jdt.SharedUtils;
 
 /**
- * 
- * 
- * 
  * The PreCompiler classes primary role is to gather preliminary data for the
  * compilation process.<br>
  * This data includes:
@@ -20,10 +17,7 @@ import hu.elte.txtuml.utils.jdt.SharedUtils;
  * <li>Lifelines declared in the class and it's superClasses</li>
  * <li>The name of the superClass of the current class</li>
  * </ul>
- * <br>
  * The generation stops if an error occurs!
- * 
- * @author Zoli
  */
 public class PlantUmlPreCompiler extends ASTVisitor {
 

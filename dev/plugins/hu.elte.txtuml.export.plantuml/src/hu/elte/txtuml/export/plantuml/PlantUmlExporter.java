@@ -37,15 +37,10 @@ import hu.elte.txtuml.export.plantuml.generator.PlantUmlGenerator;
 import hu.elte.txtuml.utils.jdt.SharedUtils;
 
 /**
- * 
- * @author Zoli
- *
- *         PlantUml exporter class
- *         <p>
- *         Exports sequence diagrams to plantuml textual output into the gen
- *         folder filenames are the same as the sequence diagram class names
- *         </p>
- *
+ * PlantUml exporter class
+ * <p>
+ * Exports sequence diagrams to plantuml textual output into the gen folder
+ * filenames are the same as the sequence diagram class names
  */
 public class PlantUmlExporter {
 

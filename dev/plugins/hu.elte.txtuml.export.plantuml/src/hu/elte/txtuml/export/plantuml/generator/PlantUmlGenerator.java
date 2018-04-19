@@ -17,9 +17,6 @@ import hu.elte.txtuml.export.plantuml.exceptions.SequenceDiagramStructuralExcept
  * 
  * This Class combines the compiler and the preCompiler and runs them. Provides
  * the required utility functions for them
- * 
- * @author Zoli
- *
  */
 public class PlantUmlGenerator {
 

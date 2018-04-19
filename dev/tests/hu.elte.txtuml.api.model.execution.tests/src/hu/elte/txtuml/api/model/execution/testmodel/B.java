@@ -2,14 +2,13 @@ package hu.elte.txtuml.api.model.execution.testmodel;
 
 import hu.elte.txtuml.api.model.Action;
 import hu.elte.txtuml.api.model.From;
-import hu.elte.txtuml.api.model.ModelClass;
 import hu.elte.txtuml.api.model.To;
 import hu.elte.txtuml.api.model.Trigger;
 import hu.elte.txtuml.api.model.execution.testmodel.signals.Sig1;
 import hu.elte.txtuml.api.model.execution.testmodel.signals.Sig2;
 import hu.elte.txtuml.api.model.execution.testmodel.signals.Sig3;
 
-public class B extends ModelClass {
+public class B extends ClassWithOwnLog {
 
 	public boolean value = true;
 
@@ -20,11 +19,13 @@ public class B extends ModelClass {
 		@Override
 		public void entry() {
 			Action.log("entry");
+			addToOwnLog("entry");
 		}
 
 		@Override
 		public void exit() {
 			Action.log("exit");
+			addToOwnLog("exit");
 		}
 	}
 

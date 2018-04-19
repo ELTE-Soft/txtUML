@@ -1,7 +1,7 @@
 package hu.elte.txtuml.api.model.error;
 
 import hu.elte.txtuml.api.model.GeneralCollection;
-import hu.elte.txtuml.api.model.utils.Collections;
+import hu.elte.txtuml.api.model.external.Collections;
 
 /**
  * Thrown when the upper bound of a txtUML API collection is offended.

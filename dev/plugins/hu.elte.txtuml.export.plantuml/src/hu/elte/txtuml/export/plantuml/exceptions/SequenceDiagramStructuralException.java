@@ -1,12 +1,7 @@
 package hu.elte.txtuml.export.plantuml.exceptions;
 
 /**
- * 
- * @author Zoli
- * 
- *         Structural error exception for the case when there is some internal
- *         error
- *
+ * Structural error exception for the case when there is some internal error
  */
 public class SequenceDiagramStructuralException extends SequenceDiagramExportException {
 

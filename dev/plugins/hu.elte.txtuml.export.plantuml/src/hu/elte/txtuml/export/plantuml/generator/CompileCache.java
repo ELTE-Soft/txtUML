@@ -4,9 +4,6 @@ import java.util.List;
 
 /**
  * Compilation cache for Combined fragment compiler.
- * 
- * @author Zoli
- *
  */
 public class CompileCache {
 	private String compiledOutput;

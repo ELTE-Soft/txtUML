@@ -1,0 +1,18 @@
+package microwave.model;
+
+import hu.elte.txtuml.api.stdlib.timers.Timer;
+
+composition ClockOfOven {
+	container MicrowaveOven oven;
+	1 Clock clock;
+}
+
+composition DoorOfOven {
+	container MicrowaveOven oven;
+	1 Door door;
+}
+
+association TimerOfClock {
+	hidden 0..1 Clock clock;
+	0..1 Timer timer;
+}

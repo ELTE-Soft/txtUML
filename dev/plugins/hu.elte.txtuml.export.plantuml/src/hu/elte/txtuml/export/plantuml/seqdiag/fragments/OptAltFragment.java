@@ -10,9 +10,6 @@ import hu.elte.txtuml.export.plantuml.generator.PlantUmlCompiler;
 
 /**
  * This class handles the OPT and ALT fragments
- * 
- * @author Zoli
- *
  */
 public class OptAltFragment extends CombinedFragmentExporter<IfStatement> {
 
