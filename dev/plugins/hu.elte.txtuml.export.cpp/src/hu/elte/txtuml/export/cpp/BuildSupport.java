@@ -1,6 +1,7 @@
 package hu.elte.txtuml.export.cpp;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -28,18 +29,17 @@ public class BuildSupport implements IRunnableWithProgress {
 				monitor.worked(1);
 				
 				if(!build(directory, environment).equals(0)){
-					// TODO get error message
-					Dialogs.MessageBox("Error", "Error occured while building environment " + environment);
+					throw new IOException("Throw test exception"); // This is not throwed
 				}
 			}
-		} catch (Exception e) {
+		} catch (IOException e) {
 			Dialogs.errorMsgb("txtUML export environment build error", e.getClass() + ":" + System.lineSeparator() + e.getMessage(), e);
 		} finally {
 			monitor.done();
 		}
 	}
 
-	private static Integer build(String directory, String environment) throws Exception {
+	private static Integer build(String directory, String environment) throws IOException, InterruptedException {
 		String buildDir = directory + File.separator + "build_" + environment;
 		File buildDirFile = new File(buildDir);
 		buildDirFile.mkdir();
