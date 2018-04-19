@@ -1,6 +1,10 @@
 package hu.elte.txtuml.export.cpp.wizardz;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -49,6 +53,7 @@ public class TxtUMLToCppWizard extends Wizard {
 			boolean addRuntimeOption = createCppCodePage.getAddRuntimeOptionSelection();
 			boolean overWriteMainFileOption = createCppCodePage.getOverWriteMainFileSelection();
 			List<String> buildEnvironments = createCppOptionsPage.getSelectedBuildEnvironments();
+			String mainForOverride = createCppOptionsPage.getMainForOverride();
 
 			Pair<String, String> model;
 			try {
@@ -76,10 +81,19 @@ public class TxtUMLToCppWizard extends Wizard {
 			String outputDirectory = projectFolder + File.separator + Uml2ToCppExporter.GENERATED_CPP_FOLDER_NAME
 					+ File.separator + txtUMLModel;
 
+			if(mainForOverride != null && !mainForOverride.isEmpty()){
+				File file = new File(mainForOverride);
+				if(file.exists() && !file.isDirectory()){
+					Files.copy(Paths.get(mainForOverride), Paths.get(outputDirectory + "/main.cpp"), StandardCopyOption.REPLACE_EXISTING);
+				}
+				else {
+					throw new FileNotFoundException(mainForOverride + " file not found!");
+				}
+			}
+			
 			if (buildEnvironments != null && buildEnvironments.size() > 0) {
 				getContainer().run(true, true, new BuildSupport(outputDirectory, buildEnvironments));
 			}
-
 		} catch (Exception e) {
 			Dialogs.errorMsgb("C++ code generation error", e.getMessage(), e);
 			return false;

@@ -155,4 +155,8 @@ public class TxtUMLToCppOptionsPage extends WizardPage {
     public List<String> getSelectedBuildEnvironments() {
     	return buildEnvironments;
     }
+    
+    public String getMainForOverride() {
+    	return mainCppText.getText();
+    }
 }
