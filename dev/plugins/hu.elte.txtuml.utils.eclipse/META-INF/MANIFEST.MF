@@ -18,7 +18,10 @@ Require-Bundle: hu.elte.txtuml.api.model,
  org.eclipse.ui.ide,
  org.eclipse.jdt.launching,
  org.eclipse.jdt.ui,
- org.eclipse.ui.workbench
+ org.eclipse.ui.workbench,
+ hu.elte.txtuml.export.uml2,
+ hu.elte.txtuml.layout.export,
+ org.eclipse.uml2.uml
 Import-Package: org.eclipse.ui.preferences
 Bundle-ActivationPolicy: lazy
 Bundle-Activator: hu.elte.txtuml.utils.eclipse.Activator

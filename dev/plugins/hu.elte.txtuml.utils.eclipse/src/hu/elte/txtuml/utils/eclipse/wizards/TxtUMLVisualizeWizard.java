@@ -21,6 +21,7 @@ import org.eclipse.swt.widgets.Display;
 import hu.elte.txtuml.utils.Logger;
 import hu.elte.txtuml.utils.Pair;
 import hu.elte.txtuml.utils.eclipse.Dialogs;
+import hu.elte.txtuml.utils.eclipse.SaveUtils;
 import hu.elte.txtuml.utils.eclipse.WizardUtils;
 import hu.elte.txtuml.utils.eclipse.preferences.PreferencesManager;
 
@@ -49,6 +50,11 @@ public abstract class TxtUMLVisualizeWizard extends Wizard {
 	 */
 	@Override
 	public boolean performFinish() {
+		try {
+			this.checkNoLayoutDescriptionsSelected();
+		} catch (InterruptedException e1) {
+			return false;
+		}
 		List<IType> txtUMLLayout = selectTxtUmlPage.getTxtUmlLayouts();
 		Map<Pair<String, String>, List<IType>> layoutConfigs = new HashMap<>();
 		List<String> invalidLayouts = new ArrayList<>();
@@ -95,11 +101,19 @@ public abstract class TxtUMLVisualizeWizard extends Wizard {
 				cleanBeforeVisualization(layoutConfigs.keySet());
 			} catch (CoreException | IOException e) {
 				Dialogs.errorMsgb("txtUML export Error - cleaning resources",
-						"Error occured when cleaning resources.", e);
+						"Error occured while cleaning resources.", e);
 			}
 		});
 		
-		return exportDiagrams(layoutConfigs, txtUMLLayout);
+		for(Map.Entry<Pair<String, String>, List<IType>> config : layoutConfigs.entrySet()){
+			if(!saveOpenEditors(config)){
+				Dialogs.errorMsgb("txtUML export Error - saving open editors",
+						"Error occured while saving open editors.",new Exception());
+				return false;
+			}
+		}
+		
+		return exportDiagrams(layoutConfigs);
 	}
 
 	
@@ -107,7 +121,7 @@ public abstract class TxtUMLVisualizeWizard extends Wizard {
 	/**
 	 * Abstract method for diagram export.
 	 */
-	protected abstract boolean exportDiagrams(Map<Pair<String, String>, List<IType>> layoutConfigs, List<IType> txtUMLLayout);
+	protected abstract boolean exportDiagrams(Map<Pair<String, String>, List<IType>> layoutConfigs);
 	
 	/**
 	 * Abstract method for cleanup.
@@ -130,6 +144,21 @@ public abstract class TxtUMLVisualizeWizard extends Wizard {
 	 * 
 	 */
 	protected abstract void cleanBeforeVisualization(Set<Pair<String, String>> layouts) throws CoreException, IOException ;
+	
+	/**
+	 * Saves dirty editors for all files included in the layout config
+	 * 
+	 * @param config
+	 * 			the layout config to save
+	 */
+	protected boolean saveOpenEditors(Map.Entry<Pair<String, String>, List<IType>> config){
+			String txtUMLModelName = config.getKey().getFirst();
+			String txtUMLProjectName = config.getKey().getSecond();
+			List<String> fullyQualifiedNames = config.getValue().stream().map(IType::getFullyQualifiedName)
+					.collect(Collectors.toList());
+
+			return SaveUtils.saveAffectedFiles(getShell(), txtUMLProjectName, txtUMLModelName, fullyQualifiedNames);
+	}
 
 	protected void checkNoLayoutDescriptionsSelected() throws InterruptedException {
 		if (selectTxtUmlPage.getTxtUmlLayouts().isEmpty()) {
