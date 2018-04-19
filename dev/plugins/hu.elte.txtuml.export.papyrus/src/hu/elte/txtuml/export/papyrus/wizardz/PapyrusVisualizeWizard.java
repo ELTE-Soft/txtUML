@@ -25,7 +25,6 @@ import hu.elte.txtuml.export.papyrus.papyrusmodelmanagers.TxtUMLPapyrusModelMana
 import hu.elte.txtuml.layout.export.TxtUMLLayoutDescriptor;
 import hu.elte.txtuml.utils.Pair;
 import hu.elte.txtuml.utils.eclipse.Dialogs;
-import hu.elte.txtuml.utils.eclipse.preferences.PreferencesManager;
 import hu.elte.txtuml.utils.eclipse.wizards.UML2VisualizeWizard;
 import hu.elte.txtuml.utils.eclipse.wizards.VisualizeTxtUMLPage;
 
@@ -87,26 +86,25 @@ public class PapyrusVisualizeWizard extends UML2VisualizeWizard {
 	@Override
 	protected void cleanBeforeVisualization(Set<Pair<String, String>> layouts) throws CoreException, IOException {
 		for (Pair<String, String> model : layouts) {
-			String txtUMLModelName = model.getFirst();
-			String txtUMLProjectName = model.getSecond();
+			final String txtUMLModelName = model.getFirst();
+			final String txtUMLProjectName = model.getSecond();
 			
-			String generatedFolderName = PreferencesManager
-					.getString(PreferencesManager.TXTUML_VISUALIZE_DESTINATION_FOLDER);
-			
-			String projectAbsLocation = ResourcesPlugin.getWorkspace().getRoot().getProject(txtUMLProjectName).getLocation()
+			final String projectAbsLocation = ResourcesPlugin.getWorkspace().getRoot().getProject(txtUMLProjectName).getLocation()
 					.toFile().getAbsolutePath();
 	
-			Path notationFilePath = Paths.get(projectAbsLocation, generatedFolderName, txtUMLModelName + ".di");
-			Path mappingFilePath = Paths.get(projectAbsLocation, generatedFolderName, txtUMLModelName + ".mapping");
-			Path diFilePath = Paths.get(projectAbsLocation, generatedFolderName, txtUMLModelName + ".notation");
-			Path umlFilePath = Paths.get(projectAbsLocation, generatedFolderName, txtUMLModelName + ".uml");
-			Path profileFilePath = Paths.get(projectAbsLocation, generatedFolderName, txtUMLModelName + ".profile.uml");
+			Path notationFilePath = Paths.get(projectAbsLocation, getGeneratedFolderName(), txtUMLModelName + ".di");
+			Path mappingFilePath = Paths.get(projectAbsLocation, getGeneratedFolderName(), txtUMLModelName + ".mapping");
+			Path diFilePath = Paths.get(projectAbsLocation, getGeneratedFolderName(), txtUMLModelName + ".notation");
+			Path umlFilePath = Paths.get(projectAbsLocation, getGeneratedFolderName(), txtUMLModelName + ".uml");
+			Path profileFilePath = Paths.get(projectAbsLocation, getGeneratedFolderName(), txtUMLModelName + ".profile.uml");
 			
 			profileFilePath.toFile().delete();
 			mappingFilePath.toFile().delete();
 			umlFilePath.toFile().delete();
 			diFilePath.toFile().delete();
 			notationFilePath.toFile().delete();
+			
+			refreshGeneratedFolder(txtUMLProjectName);
 		}
 	}
 }

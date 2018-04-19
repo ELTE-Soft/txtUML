@@ -6,7 +6,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jface.operation.IRunnableWithProgress;
@@ -23,6 +25,9 @@ import hu.elte.txtuml.utils.Pair;
 import hu.elte.txtuml.utils.eclipse.Dialogs;
 import hu.elte.txtuml.utils.eclipse.preferences.PreferencesManager;
 
+/**
+ * Abstract class for {@link TxtUMLVisualizeWizard} which first exports UML2 then uses that for the visualization.
+ */
 public abstract class UML2VisualizeWizard extends TxtUMLVisualizeWizard {
 
 	public UML2VisualizeWizard() {
@@ -54,7 +59,7 @@ public abstract class UML2VisualizeWizard extends TxtUMLVisualizeWizard {
 						try {
 							TxtUMLToUML2.exportModel(txtUMLProjectName, txtUMLModelName,
 									txtUMLProjectName + "/" + generatedFolderName, ExportMode.ErrorHandlingNoActions,
-									"gen");
+									generatedFolderName);
 							monitor.worked(10);
 						} catch (Exception e) {
 							Dialogs.errorMsgb("txtUML export Error", "Error occured during the UML2 exportation.", e);
@@ -94,16 +99,33 @@ public abstract class UML2VisualizeWizard extends TxtUMLVisualizeWizard {
 				Logger.sys.error(e.getMessage());
 				return false;
 			}
+			try {
+				refreshGeneratedFolder(txtUMLProjectName);
+			} catch (CoreException e) {
+				Logger.sys.error(e.getMessage());
+				Dialogs.errorMsgb("txtUML visualization Error",
+						"Error occured during refreshing generated folder.", e);
+			}
 		}
 		return true;
 	}
 	
 	
-	//TODO: doc
+	/**
+	 * Export a single model's diagrams 
+	 * @param layoutDescriptor the model's layout descriptor
+	 * @param monitor for filling the progress bar
+	 * @throws Exception
+	 */
 	protected abstract void exportDiagram(TxtUMLLayoutDescriptor layoutDescriptor, IProgressMonitor monitor) throws Exception;
 	
-	//TODO: doc
-	protected TxtUMLLayoutDescriptor makeLayoutDescriptor(Map.Entry<Pair<String, String>, List<IType>> layout) throws InterruptedException{
+	/**
+	 * Returns the layout of a single model 
+	 * @param layout the model to export
+	 * @return the layout description
+	 * @throws Exception
+	 */
+	protected TxtUMLLayoutDescriptor makeLayoutDescriptor(Map.Entry<Pair<String, String>, List<IType>> layout) throws Exception{
 		TxtUMLLayoutDescriptor res = null;
 		final String txtUMLModelName = layout.getKey().getFirst();
 		final String txtUMLProjectName = layout.getKey().getSecond();
@@ -118,8 +140,7 @@ public abstract class UML2VisualizeWizard extends TxtUMLVisualizeWizard {
 		try {
 			res = exporter.exportTxtUMLLayout();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw e;
 		}
 
 		List<String> warnings = new LinkedList<String>();
@@ -149,6 +170,10 @@ public abstract class UML2VisualizeWizard extends TxtUMLVisualizeWizard {
 	
 	protected static String getGeneratedFolderName(){
 		return PreferencesManager.getString(PreferencesManager.TXTUML_VISUALIZE_DESTINATION_FOLDER);		
+	}
+	
+	protected static void refreshGeneratedFolder(String txtUMLProjectName) throws CoreException{
+		ResourcesPlugin.getWorkspace().getRoot().getProject(txtUMLProjectName).getFolder(getGeneratedFolderName()).refreshLocal(IResource.DEPTH_INFINITE, null);
 	}
 	
 }

@@ -11,7 +11,11 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.eclipse.core.runtime.CoreException;
+
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
@@ -170,6 +174,12 @@ public abstract class TxtUMLVisualizeWizard extends Wizard {
 							+ "Do you want to continue without diagram descriptions?");
 			if (!answer)
 				throw new InterruptedException();
+		}
+	}
+	
+	protected static void deleteFolderRecursively(Path modelFolderPath) throws IOException {
+		if (modelFolderPath.toFile().exists()) {
+			Files.walk(modelFolderPath).map(Path::toFile).sorted((o1, o2) -> -o1.compareTo(o2)).forEach(File::delete);
 		}
 	}
 	
