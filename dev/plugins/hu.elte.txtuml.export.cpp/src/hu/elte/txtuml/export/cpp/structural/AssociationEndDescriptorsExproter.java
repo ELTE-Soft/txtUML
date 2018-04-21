@@ -4,10 +4,10 @@ import java.util.List;
 
 import org.eclipse.uml2.uml.Association;
 import org.eclipse.uml2.uml.Property;
+import org.eclipse.uml2.uml.UMLPackage;
 
 import hu.elte.txtuml.export.cpp.ICppCompilationUnit;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames;
-import hu.elte.txtuml.export.cpp.templates.GenerationTemplates;
 import hu.elte.txtuml.export.cpp.templates.PrivateFunctionalTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.LinkTemplates;
 
@@ -46,12 +46,8 @@ public class AssociationEndDescriptorsExproter implements ICppCompilationUnit {
 
 		for (Association assoc : associations) {
 			Property e1End = assoc.getMemberEnds().get(0);
-			Property e2End = assoc.getMemberEnds().get(1);
-			
-			source.append(LinkTemplates.assocEndPreDecl(e1End.getName()));
-			source.append(LinkTemplates.assocEndPreDecl(e2End.getName()));
-			source.append(endDescriptor(e1End, e1End.getName(), e2End.getName()));
-			source.append(endDescriptor(e2End, e1End.getName(), e2End.getName()));
+			Property e2End = assoc.getMemberEnds().get(1);		
+			source.append(assocEndDescriptors(assoc.getName(), e1End, e2End));
 
 		}
 
@@ -60,10 +56,27 @@ public class AssociationEndDescriptorsExproter implements ICppCompilationUnit {
 	
 	private String endDescriptor(Property end, String leftEndPointName, String rigthEndPointName) {
 		String type = end.getType().getName();
-		String name = end.getName();		
-		dependencies.addHeaderOnlyDependency(type);
+		String name = end.getName();
+		if(end.getType().eClass().equals(UMLPackage.Literals.INTERFACE)) {
+			dependencies.addHeaderOnlyIncludeDependency(type);
+		} else {
+			dependencies.addHeaderOnlyDependency(type);
+		}
+		
 		
 		return LinkTemplates.createEndPointClass(type, name, leftEndPointName, rigthEndPointName, end.getLower(), end.getUpper());
+	}
+	
+	private String assocEndDescriptors(String assocName, Property leftDescriptor, Property rightDescriptor) {
+		StringBuilder descriptors = new StringBuilder("");
+		
+		descriptors.append(LinkTemplates.assocEndPreDecl(leftDescriptor.getName()));
+		descriptors.append(LinkTemplates.assocEndPreDecl(rightDescriptor.getName()));
+		descriptors.append(endDescriptor(leftDescriptor, leftDescriptor.getName(), rightDescriptor.getName()));
+		descriptors.append(endDescriptor(rightDescriptor, leftDescriptor.getName(), rightDescriptor.getName()));
+		
+		
+		return LinkTemplates.createAssociationDescriptor(assocName, descriptors.toString());
 	}
 
 	@Override

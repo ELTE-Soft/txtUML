@@ -16,13 +16,13 @@ public class ObjectDeclDefTemplates {
 	public static String variableDecl(String typeName, String variableName, String defaultValue, Optional<List<String>> templateParameters, GenerationTemplates.VariableType varType, boolean isStatic) {
 		StringBuilder source = new StringBuilder("");
 		String type = "";
-		type = PrivateFunctionalTemplates.cppType(typeName, varType);
+		String actualTypeName = typeName + CppExporterUtils.createTemplateParametersCode(templateParameters);
+		type = PrivateFunctionalTemplates.cppType(actualTypeName, varType);
 	
 		if(isStatic) {
 			source.append(ModifierNames.StaticModifier + " ");
 		}
 		source.append(type);
-		source.append(CppExporterUtils.createTemplateParametersCode(templateParameters));
 		source.append(" ");
 		source.append(variableName);
 		if (defaultValue != "" && defaultValue != null) {
@@ -33,7 +33,7 @@ public class ObjectDeclDefTemplates {
 	}
 
 	public static String variableDecl(String typeName, String variableName) {
-		return variableDecl(typeName, variableName, "", Optional.empty(), GenerationTemplates.VariableType.Default, false);
+		return variableDecl(typeName, variableName, "", Optional.empty(), GenerationTemplates.VariableType.RawPointerType, false);
 	}
 
 	public static String variableDecl(String typeName, String variableName, GenerationTemplates.VariableType varType) {
@@ -45,7 +45,7 @@ public class ObjectDeclDefTemplates {
 	}
 	
 	public static String propertyDecl(String typeName, String variableName, String defaultValue) {
-		return variableDecl(typeName, variableName, defaultValue,Optional.empty(), GenerationTemplates.VariableType.Default, false);
+		return variableDecl(typeName, variableName, defaultValue,Optional.empty(), GenerationTemplates.VariableType.RawPointerType, false);
 	}
 
 	public static String createObject(String typeName, String objName, boolean sharedObject) {

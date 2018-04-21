@@ -161,7 +161,7 @@ class CallOperationExporter {
 		StringBuilder declerations = new StringBuilder("");
 		for (OutputPin outPin : outParamaterPins) {
 			declerations.append(ObjectDeclDefTemplates.variableDecl(outPin.getType().getName(),
-					tempVariableExporter.getRealVariableName(outPin), GenerationTemplates.VariableType.Default));
+					tempVariableExporter.getRealVariableName(outPin), GenerationTemplates.VariableType.RawPointerType));
 		}
 
 		return declerations.toString();
@@ -190,7 +190,7 @@ class CallOperationExporter {
 			return ActivityTemplates.simpleSetValue(var, value);
 		} else {
 			declaredTempVariables.add(var);
-			return ActivityTemplates.addVariableTemplate(type, var, value, GenerationTemplates.VariableType.Default);
+			return ActivityTemplates.addVariableTemplate(type, var, value, GenerationTemplates.VariableType.RawPointerType);
 
 		}
 	}

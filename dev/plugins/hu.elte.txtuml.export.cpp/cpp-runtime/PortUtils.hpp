@@ -112,6 +112,12 @@ private:
 	ES::PortRef<ProvidedInf, RequiredInf> port;
 };
 
+
+enum class ConnectorKind {
+	Delegation,
+	Assemembly
+};
+
 template<class AssoctaionType, ConnectorKind k>
 class Connector {
 

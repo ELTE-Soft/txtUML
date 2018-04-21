@@ -53,7 +53,7 @@ public class PrivateFunctionalTemplates {
 			return "";
 		StringBuilder source = new StringBuilder("");
 		for (Pair<String, String> item : params) {
-			source.append(PrivateFunctionalTemplates.cppType(item.getFirst(),  GenerationTemplates.VariableType.Default) + " "
+			source.append(PrivateFunctionalTemplates.cppType(item.getFirst(),  GenerationTemplates.VariableType.RawPointerType) + " "
 					+ GenerationNames.formatIncomingParamName(item.getSecond()) + ",");
 		}
 		return source.substring(0, source.length() - 1);
@@ -76,7 +76,7 @@ public class PrivateFunctionalTemplates {
 			return "";
 		StringBuilder source = new StringBuilder("");
 		for (String item : params) {
-			source.append(cppType(item, GenerationTemplates.VariableType.Default) + ",");
+			source.append(cppType(item, GenerationTemplates.VariableType.RawPointerType) + ",");
 		}
 		return source.substring(0, source.length() - 1);
 	}
@@ -141,7 +141,7 @@ public class PrivateFunctionalTemplates {
 				default:
 					String mappedType = mapUMLClassToCppClass(typeName);
 					switch(varType) {
-					case  Default:
+					case  RawPointerType:
 						cppType = GenerationNames.pointerType(mappedType);
 						break;
 					case EventPtr:
@@ -151,8 +151,10 @@ public class PrivateFunctionalTemplates {
 						cppType = GenerationNames.sharedPtrType(mappedType);
 						break;
 					case StackStored:
+					case OriginalType:
 						cppType = mappedType;
 						break;
+					
 					default:
 						break;
 					}

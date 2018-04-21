@@ -20,12 +20,12 @@ public class FunctionTemplates {
 	}
 
 	public static String simpleFunctionDecl(String returnType, String functionName) {
-		return PrivateFunctionalTemplates.cppType(returnType,GenerationTemplates.VariableType.Default) + " " + functionName + "()";
+		return PrivateFunctionalTemplates.cppType(returnType,GenerationTemplates.VariableType.RawPointerType) + " " + functionName + "()";
 	}
 
 	public static String functionDecl(String returnTypeName, String functionName, List<String> params, String modifier,
 			boolean isPureVirtual) {
-		String mainDecl = PrivateFunctionalTemplates.cppType(returnTypeName, GenerationTemplates.VariableType.Default) + " " + functionName + "("
+		String mainDecl = PrivateFunctionalTemplates.cppType(returnTypeName, GenerationTemplates.VariableType.RawPointerType) + " " + functionName + "("
 				+ PrivateFunctionalTemplates.paramTypeList(params) + ")";
 		if (modifier != "") {
 			return modifier + " " + mainDecl + (isPureVirtual ? "= 0" : "") + ";\n";
@@ -54,7 +54,7 @@ public class FunctionTemplates {
 
 	public static String functionDef(String className, String returnTypeName, String functionName,
 			List<Pair<String, String>> params, String body) {
-		String mainDef = PrivateFunctionalTemplates.cppType(returnTypeName, GenerationTemplates.VariableType.Default) + " " + className + "::" + functionName
+		String mainDef = PrivateFunctionalTemplates.cppType(returnTypeName, GenerationTemplates.VariableType.RawPointerType) + " " + className + "::" + functionName
 				+ "(" + PrivateFunctionalTemplates.paramList(params) + ")\n{\n";
 		return mainDef + body + "}\n\n";
 

@@ -104,7 +104,7 @@ public class ConstructorTemplates {
 	private static String subStateMachineSharedConstructor(String className, String parentClassName, 
 			Multimap<TransitionConditions, Pair<String, String>> machine, String body) {
 		String parentParamName = GenerationNames.formatIncomingParamName(HierarchicalStateMachineNames.ParentSmName);
-		return className + "::" + className + "(" + PrivateFunctionalTemplates.cppType(parentClassName, GenerationTemplates.VariableType.Default)
+		return className + "::" + className + "(" + PrivateFunctionalTemplates.cppType(parentClassName, GenerationTemplates.VariableType.RawPointerType)
 		+ " " + parentParamName + "):" + HierarchicalStateMachineNames.ParentSmMemberName + "(" + parentParamName + ")"
 		+ "\n{\n" + body
 		+ "}\n\n";

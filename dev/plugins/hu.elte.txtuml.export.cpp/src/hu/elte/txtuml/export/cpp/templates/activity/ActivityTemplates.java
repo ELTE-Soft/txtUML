@@ -176,7 +176,7 @@ public class ActivityTemplates {
 
 	public static String foreachCycle(String conatinedType, String paramName, String collection, String body,
 			String inits) {
-		return inits + "for (" + PrivateFunctionalTemplates.cppType(conatinedType, GenerationTemplates.VariableType.Default) + " " + paramName + " :" + collection
+		return inits + "for (" + PrivateFunctionalTemplates.cppType(conatinedType, GenerationTemplates.VariableType.RawPointerType) + " " + paramName + " :" + collection
 				+ ")\n{\n" + body + "\n}\n";
 	}
 

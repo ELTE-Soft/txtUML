@@ -38,18 +38,21 @@ public class LinkTemplates {
 		}	
 
 	}
-
+	public static String createAssociationDescriptor(String assocName, String endDescriptors) {	
+		return GenerationNames.TypeDelcreationKeywords.AssociationEndDescriptor + " " + assocDescriptor(assocName) + "{" + endDescriptors + "};";
+		
+	}
+	
 	public static String createEndPointClass(String endPointType, String endPointName, String leftEndPointName, String rightEndPointName, 
 			Integer lowMultiplicity, Integer upMultiplicity) {
-
+		String endPointCppType = PrivateFunctionalTemplates.cppType(endPointType, GenerationTemplates.VariableType.OriginalType);
 		return GenerationNames.TypeDelcreationKeywords.AssociationEndDescriptor + " " + endStructDescriptor(endPointName) + ": public " + "AssocEnd" 
 				+ CppExporterUtils.createTemplateParametersCode(Optional.of(
 						Arrays.asList(endStructDescriptor(leftEndPointName), 
-								endStructDescriptor(rightEndPointName), endPointType, lowMultiplicity.toString(), upMultiplicity.toString()))) + "{" +
+								endStructDescriptor(rightEndPointName), endPointCppType, lowMultiplicity.toString(), upMultiplicity.toString()))) + "{" +
 				ObjectDeclDefTemplates.propertyDecl(endStructDescriptor(endPointName), endPointName, GenerationNames.PointerAndMemoryNames.Self) + "};";	
 
 	}
-
 
 	public static String manyMultiplicityDependency() {
 		return PrivateFunctionalTemplates.include(CollectionNames.Collection);
@@ -57,13 +60,13 @@ public class LinkTemplates {
 	
 	public static String associationDecl(String assocName, String leftDescriptor, String rigthDescriptor) {
 		return "extern " + ObjectDeclDefTemplates.variableDecl(GenerationNames.AssociationNames.AssociationClassName, 
-				assocName, "", Optional.of(Arrays.asList(endStructDescriptor(leftDescriptor), endStructDescriptor(rigthDescriptor))), 
+				assocName, "", Optional.of(Arrays.asList(endStructDescriptorReference(assocName,leftDescriptor), endStructDescriptorReference(assocName,rigthDescriptor))), 
 				GenerationTemplates.VariableType.StackStored, false);
 	}
 	
 	public static String associationDef(String assocName, String leftDescriptor, String rigthDescriptor) {
 		return ObjectDeclDefTemplates.variableDecl(GenerationNames.AssociationNames.AssociationClassName, 
-				assocName, "", Optional.of(Arrays.asList(endStructDescriptor(leftDescriptor) , endStructDescriptor(rigthDescriptor))), 
+				assocName, "", Optional.of(Arrays.asList(endStructDescriptorReference(assocName, leftDescriptor) , endStructDescriptorReference(assocName, rigthDescriptor))), 
 				GenerationTemplates.VariableType.StackStored, false);
 	}
 	
@@ -71,12 +74,20 @@ public class LinkTemplates {
 		return GenerationTemplates.forwardDeclaration(endStructDescriptor(assocEnd), GenerationTemplates.ClassDeclerationType.AssocDescriptor);
 	}
 	
-	public static String endCollectionType(String endName) {
-		return endStructDescriptor(endName) + "::" + CollectionNames.EndCollectionTypeDef;
+	public static String endCollectionType(String assocName, String endName) {
+		return endStructDescriptorReference(assocName,endName) + "::" + CollectionNames.EndCollectionTypeDef;
 	}
 
 	private static String endStructDescriptor(String originalDescriptor) {
 		return originalDescriptor + "End";
+	}
+	
+	private static String endStructDescriptorReference(String assocName, String originalDescriptor) {
+		return assocDescriptor(assocName) + "::" + endStructDescriptor(originalDescriptor);
+	}
+	
+	private static String assocDescriptor(String originalAssocName) {
+		return originalAssocName + "Descriptor";
 	}
 
 

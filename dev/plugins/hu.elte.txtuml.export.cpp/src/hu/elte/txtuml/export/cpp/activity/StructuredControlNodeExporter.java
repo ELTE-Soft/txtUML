@@ -137,7 +137,7 @@ class StructuredControlNodeExporter {
 		}
 		userVariableExporter.exportNewVariable(variable);
 		GenerationTemplates.VariableType varType = variable.getType().eClass().equals(UMLPackage.Literals.SIGNAL) ?
-				GenerationTemplates.VariableType.EventPtr : GenerationTemplates.VariableType.Default;
+				GenerationTemplates.VariableType.EventPtr : GenerationTemplates.VariableType.RawPointerType;
 		return ObjectDeclDefTemplates.variableDecl(type, userVariableExporter.getRealVariableName(variable),varType);
 	}
 }

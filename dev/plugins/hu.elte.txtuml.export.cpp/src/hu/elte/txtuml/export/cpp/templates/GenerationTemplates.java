@@ -31,10 +31,11 @@ public class GenerationTemplates {
 	}
 	
 	public enum VariableType {
-		Default,
+		RawPointerType,
 		StackStored,
 		EventPtr,
-		SharedPtr
+		SharedPtr,
+		OriginalType
 	}
 	
 	
