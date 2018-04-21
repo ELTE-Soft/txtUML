@@ -148,20 +148,22 @@ public:
 
 };
 
-template<typename R1, typename R2, typename Prov, typename Req>
-void assemblyConnect(R1* r1, ES::IPortRef<Prov,Req> p1,
-					 R2* r2, ES::IPortRef <Req, Prov> p2)
+template<typename R1, typename R2, typename R1PortType, typename R2PortType>
+void assemblyConnect(R1* r1, R1PortType p1,
+					 R2* r2, R2PortType p2)
 {
-	
-	(static_cast<Connector<typename r1::AssocType, ConnectorKind::Assembly>*>(r->connector))->connect<Prov,Req>(r1, p1, r2, p2);
+	p1->setAssemblyConnectedPort(p2);
+	p2->setAssemblyConnectedPort(p1);
+	//(static_cast<Connector<typename r1::AssocType, ConnectorKind::Assembly>*>(r->connector))->connect<Prov,Req>(r1, p1, r2, p2);
 }
 
-template<typename CE, typename Prov, typename Req>
-void delegateConnect(
-ES::PortRef <Prov, Req> parentPort,
-CE* childEnd, ES::IPortRef<Prov, Req> childPort)
+template<typename CE, typename ParentType, typename ChildType>
+void delegateConnect(ParentType parentPort,
+CE* childEnd, ChildType childPort)
 {
-	(static_cast<Connector<childEnd::AssocType,ConnectorKind::Delegation>*>(r->connector))->connect<Prov,Req>(parentPort, childEnd, childPort);
+	childPort->setDelgationConnectedPort(parentPort);
+	parentPort->setInnerConnection(childPort);
+	//(static_cast<Connector<childEnd::AssocType,ConnectorKind::Delegation>*>(r->connector))->connect<Prov,Req>(parentPort, childEnd, childPort);
 }
 
 

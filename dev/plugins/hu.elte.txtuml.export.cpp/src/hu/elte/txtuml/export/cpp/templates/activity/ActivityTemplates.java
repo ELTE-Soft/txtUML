@@ -52,17 +52,23 @@ public class ActivityTemplates {
 	}
 
 	public static String linkObjects(String firstObjectName, String secondObjectName, String associationName,
-			String endPoint1, String endPoint2, LinkFunctionType linkType) {
+			Optional<String> endPoint1, String endPoint2, LinkFunctionType linkType) {
 		
-		String secondTemplateArgument = "typename " + associationName + "::" + endPoint2;
+		/*String secondTemplateArgument = "typename " + associationName + "::" + endPoint2;
 
 		if(linkType == LinkFunctionType.DelegeateConnect) {
 			secondTemplateArgument = endPoint2;
-		}
+		}*/
+		ArrayList<String> parameters = new ArrayList<>();
+		parameters.add(firstObjectName);
+		parameters.add(roleReadFromAssoc(associationName, endPoint2));
+		parameters.add(secondObjectName);
 		
-		return blockStatement(operationCall(LinkTemplates.getLinkFunctionName(linkType),
-				Arrays.asList(roleReadFromAssoc(associationName, endPoint1), firstObjectName, 
-						roleReadFromAssoc(associationName, endPoint2),secondObjectName)));
+		if(endPoint1.isPresent()) {
+			parameters.ensureCapacity(4);
+			parameters.add(0, roleReadFromAssoc(associationName, endPoint1.get()));
+		}
+		return blockStatement(operationCall(LinkTemplates.getLinkFunctionName(linkType),parameters));
 
 	}
 	
