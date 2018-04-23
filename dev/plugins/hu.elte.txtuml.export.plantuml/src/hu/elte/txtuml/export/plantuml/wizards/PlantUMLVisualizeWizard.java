@@ -53,8 +53,8 @@ public class PlantUMLVisualizeWizard extends TxtUMLVisualizeWizard {
 			String generatedFolderName = PreferencesManager
 					.getString(PreferencesManager.TXTUML_VISUALIZE_DESTINATION_FOLDER);
 
-			List<String> diagramNames = new ArrayList<>();
-			layoutConfigs.get(model).forEach(layout -> diagramNames.add(layout.getFullyQualifiedName()));
+			List<IType> diagrams = new ArrayList<>();
+			layoutConfigs.get(model).forEach(layout -> diagrams.add(layout));
 
 			List<String> fullyQualifiedNames = txtUMLLayout.stream().map(IType::getFullyQualifiedName)
 					.collect(Collectors.toList());
@@ -67,7 +67,7 @@ public class PlantUMLVisualizeWizard extends TxtUMLVisualizeWizard {
 				checkNoLayoutDescriptionsSelected();
 
 				IProgressService progressService = PlatformUI.getWorkbench().getProgressService();
-				PlantUmlExporter exp = new PlantUmlExporter(txtUMLProjectName, generatedFolderName, diagramNames);
+				PlantUmlExporter exp = new PlantUmlExporter(txtUMLProjectName, generatedFolderName, diagrams);
 
 				if (exp.hasSequenceDiagram()) {
 					progressService.runInUI(progressService, new IRunnableWithProgress() {

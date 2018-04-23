@@ -22,8 +22,12 @@ public class PlantUmlGenerator {
 
 	private PlantUmlPreCompiler preCompiler;
 	private PlantUmlCompiler compiler;
-
+	private final String seqDiagramName;
 	private CompilationUnit source;
+
+	public PlantUmlGenerator(String seqDiagramName) {
+		this.seqDiagramName = seqDiagramName;
+	}
 
 	/**
 	 * Processes the source, then generates PlantUML output to the given target
@@ -37,7 +41,7 @@ public class PlantUmlGenerator {
 	}
 
 	private void preCompile() throws PreCompilationError {
-		preCompiler = new PlantUmlPreCompiler();
+		preCompiler = new PlantUmlPreCompiler(seqDiagramName);
 		source.accept(preCompiler);
 		if (!preCompiler.getErrors().isEmpty()) {
 			StringBuilder messages = new StringBuilder();
@@ -51,6 +55,7 @@ public class PlantUmlGenerator {
 		Type superClass = preCompiler.getSuperClass();
 		while (superClass != null) {
 			CompilationUnit cu = getSuperClassCU(superClass);
+			preCompiler.setSeqDiagramName(superClass.resolveBinding().getName());
 			cu.accept(preCompiler);
 			superClass = preCompiler.getSuperClass();
 		}

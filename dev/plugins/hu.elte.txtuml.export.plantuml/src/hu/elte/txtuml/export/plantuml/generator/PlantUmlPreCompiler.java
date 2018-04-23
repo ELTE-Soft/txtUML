@@ -31,27 +31,33 @@ public class PlantUmlPreCompiler extends ASTVisitor {
 	private List<Lifeline> lifelines;
 	private Type superClass;
 	private List<Exception> errorList;
+	private String seqDiagramName;
 
-	public PlantUmlPreCompiler() {
+	public PlantUmlPreCompiler(String seqDiagramName) {
 		super();
 		errorList = new ArrayList<Exception>();
 		lifelines = new ArrayList<>();
+		this.seqDiagramName = seqDiagramName;
 	}
 
 	@Override
 	public boolean visit(TypeDeclaration decl) {
-		superClass = null;
-		Type sc = decl.getSuperclassType();
+		if (decl.getName().toString().equals(seqDiagramName)) {
+			superClass = null;
+			Type sc = decl.getSuperclassType();
 
-		if (sc != null) {
-			String scName = sc.resolveBinding().getQualifiedName().toString();
+			if (sc != null) {
+				String scName = sc.resolveBinding().getQualifiedName().toString();
 
-			if (!scName.equals("hu.elte.txtuml.api.model.seqdiag.Interaction")
-					&& !scName.equals("hu.elte.txtuml.api.model.seqdiag.SequenceDiagram")) {
-				superClass = sc;
+				if (!scName.equals("hu.elte.txtuml.api.model.seqdiag.Interaction")
+						&& !scName.equals("hu.elte.txtuml.api.model.seqdiag.SequenceDiagram")) {
+					superClass = sc;
+				}
 			}
+			return true;
+		} else {
+			return false;
 		}
-		return true;
 	}
 
 	@Override
@@ -88,6 +94,10 @@ public class PlantUmlPreCompiler extends ASTVisitor {
 
 	private void addLifeline(int position, FieldDeclaration lifeline) {
 		lifelines.add(new Lifeline(new LifelineDeclaration(lifeline, position)));
+	}
+
+	public void setSeqDiagramName(String seqDiagramName) {
+		this.seqDiagramName = seqDiagramName;
 	}
 
 }
