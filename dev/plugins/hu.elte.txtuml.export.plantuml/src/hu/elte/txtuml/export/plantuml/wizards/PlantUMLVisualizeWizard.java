@@ -69,25 +69,24 @@ public class PlantUMLVisualizeWizard extends TxtUMLVisualizeWizard {
 				IProgressService progressService = PlatformUI.getWorkbench().getProgressService();
 				PlantUmlExporter exp = new PlantUmlExporter(txtUMLProjectName, generatedFolderName, diagrams);
 
-				if (exp.hasSequenceDiagram()) {
-					progressService.runInUI(progressService, new IRunnableWithProgress() {
+				progressService.runInUI(progressService, new IRunnableWithProgress() {
 
-						@Override
-						public void run(IProgressMonitor monitor) throws InterruptedException {
-							monitor.beginTask("Sequence Diagram Export", 100);
-							try {
-								exp.generatePlantUmlOutput(monitor);
-							} catch (CoreException | SequenceDiagramExportException e) {
-								Dialogs.errorMsgb("txtUML export Error",
-										"Error occured during the PlantUml exportation.", e);
-								monitor.done();
-								throw new InterruptedException();
-							}
+					@Override
+					public void run(IProgressMonitor monitor) throws InterruptedException {
+						monitor.beginTask("Sequence Diagram Export", 100);
+						try {
+							exp.generatePlantUmlOutput(monitor);
+						} catch (CoreException | SequenceDiagramExportException e) {
+							Dialogs.errorMsgb("txtUML export Error", "Error occured during the PlantUml exportation.",
+									e);
+							monitor.done();
+							throw new InterruptedException();
 						}
+					}
 
-					}, ResourcesPlugin.getWorkspace().getRoot());
-				}
+				}, ResourcesPlugin.getWorkspace().getRoot());
 			} catch (InterruptedException | InvocationTargetException e) {
+				e.printStackTrace();
 				Logger.sys.error(e.getMessage());
 				return false;
 			}

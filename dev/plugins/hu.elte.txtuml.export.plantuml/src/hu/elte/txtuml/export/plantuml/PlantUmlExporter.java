@@ -70,6 +70,7 @@ public class PlantUmlExporter {
 		project = txtUMLProject;
 		projectName = txtUMLProject.getName();
 		genFolderName = generatedFolderName;
+		this.seqDiagrams = seqDiagrams;
 	}
 
 	/**
@@ -122,7 +123,7 @@ public class PlantUmlExporter {
 				monitor.worked(100 / (seqDiagrams.size() * 2));
 			}
 
-			generator.generate(cu, targetFile);
+			generator.generate(cu, targetFile, simpleName);
 			project.refreshLocal(IProject.DEPTH_INFINITE, null);
 
 			if (PlatformUI.isWorkbenchRunning()) {
@@ -163,10 +164,6 @@ public class PlantUmlExporter {
 
 	public String getErrorMessage() {
 		return errorMessage;
-	}
-
-	public boolean hasSequenceDiagram() {
-		return seqDiagrams.size() > 0;
 	}
 
 }

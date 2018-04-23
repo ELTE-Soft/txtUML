@@ -32,13 +32,15 @@ public class PlantUmlCompiler extends ASTVisitor {
 	private List<ASTNode> errors;
 	private String currentClassFullyQualifiedName;
 	private List<Lifeline> orderedLifelines;
+	private final String seqDiagramName;
 
 	private StringBuilder compiledOutput;
 
-	public PlantUmlCompiler(final List<Lifeline> orderedLifelines) {
+	public PlantUmlCompiler(final List<Lifeline> orderedLifelines, String seqDiagramName) {
 		errors = new ArrayList<ASTNode>();
 		exporterQueue = new Stack<ExporterBase<? extends ASTNode>>();
 		this.orderedLifelines = orderedLifelines;
+		this.seqDiagramName = seqDiagramName;
 
 		compiledOutput = new StringBuilder();
 	}
@@ -52,7 +54,7 @@ public class PlantUmlCompiler extends ASTVisitor {
 
 	@Override
 	public boolean preVisit2(ASTNode node) {
-		ExporterBase<?> exp = ExporterBase.createExporter(node, this);
+		ExporterBase<?> exp = ExporterBase.createExporter(node, this, seqDiagramName);
 		if (exp != null) {
 			return exp.visit(node);
 		}
@@ -65,9 +67,13 @@ public class PlantUmlCompiler extends ASTVisitor {
 	 */
 	@Override
 	public boolean visit(TypeDeclaration decl) {
-		currentClassFullyQualifiedName = decl.resolveBinding().getQualifiedName().toString();
-		orderedLifelines.stream().map(Lifeline::getLifelineDeclaration).forEach(lifeline -> lifeline.accept(this));
-		return true;
+		if (decl.resolveBinding().getName().equals(seqDiagramName)) {
+			currentClassFullyQualifiedName = decl.resolveBinding().getQualifiedName().toString();
+			orderedLifelines.stream().map(Lifeline::getLifelineDeclaration).forEach(lifeline -> lifeline.accept(this));
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	/**
@@ -89,7 +95,7 @@ public class PlantUmlCompiler extends ASTVisitor {
 	@Override
 	public void postVisit(ASTNode node) {
 		if (!exporterQueue.isEmpty()) {
-			ExporterBase<?> expt = ExporterBase.createExporter(node, this);
+			ExporterBase<?> expt = ExporterBase.createExporter(node, this, seqDiagramName);
 			if (expt != null && !expt.skippedStatement(node)) {
 				ExporterBase<?> exp = exporterQueue.peek();
 				if (expt.getClass().isInstance(exp)) {
