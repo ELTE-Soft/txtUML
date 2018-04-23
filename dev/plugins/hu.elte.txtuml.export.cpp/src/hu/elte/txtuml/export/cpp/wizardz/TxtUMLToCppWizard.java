@@ -92,7 +92,9 @@ public class TxtUMLToCppWizard extends Wizard {
 			}
 			
 			if (buildEnvironments != null && buildEnvironments.size() > 0) {
-				getContainer().run(true, true, new BuildSupport(outputDirectory, buildEnvironments));
+				BuildSupport buildSupport = new BuildSupport(outputDirectory, buildEnvironments);
+				getContainer().run(true, true, buildSupport);
+				buildSupport.handleErrors();
 			}
 		} catch (Exception e) {
 			Dialogs.errorMsgb("C++ code generation error", e.getMessage(), e);

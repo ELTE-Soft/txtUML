@@ -2,6 +2,7 @@ package hu.elte.txtuml.export.cpp;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -14,10 +15,12 @@ public class BuildSupport implements IRunnableWithProgress {
 
 	private String directory;
 	private List<String> environments;
+	private List<String> unavailableEnvironments;
 
 	public BuildSupport(String directory, List<String> environments) {
 		this.directory = directory;
 		this.environments = environments;
+		this.unavailableEnvironments = new ArrayList<String>();
 	}
 
 	@Override
@@ -29,13 +32,25 @@ public class BuildSupport implements IRunnableWithProgress {
 				monitor.worked(1);
 				
 				if(!build(directory, environment).equals(0)){
-					throw new IOException("Throw test exception"); // This is not throwed
+					unavailableEnvironments.add(environment);
 				}
 			}
 		} catch (IOException e) {
-			Dialogs.errorMsgb("txtUML export environment build error", e.getClass() + ":" + System.lineSeparator() + e.getMessage(), e);
+			Dialogs.errorMsgb("txtUML export environment build error", e.getClass() + ":" 
+					+ System.lineSeparator() + e.getMessage(), e);
 		} finally {
 			monitor.done();
+		}
+	}
+	
+	public void handleErrors() throws Exception {
+		if(unavailableEnvironments.size() > 0) {
+			StringBuilder sBuilder = new StringBuilder();
+			  sBuilder.append("The following environments are not builded:\n");
+			  for(String environment : environments){
+				  sBuilder.append(environment + "\n");
+			  }
+			throw new EnvironmentNotFoundException(sBuilder.toString());
 		}
 	}
 
