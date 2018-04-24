@@ -13,6 +13,7 @@ import org.eclipse.jdt.core.IType;
 import org.eclipse.jface.wizard.Wizard;
 
 import hu.elte.txtuml.export.cpp.BuildSupport;
+import hu.elte.txtuml.export.cpp.EnvironmentNotFoundException;
 import hu.elte.txtuml.export.cpp.Uml2ToCppExporter;
 import hu.elte.txtuml.utils.Pair;
 import hu.elte.txtuml.utils.eclipse.Dialogs;
@@ -94,7 +95,13 @@ public class TxtUMLToCppWizard extends Wizard {
 			if (buildEnvironments != null && buildEnvironments.size() > 0) {
 				BuildSupport buildSupport = new BuildSupport(outputDirectory, buildEnvironments);
 				getContainer().run(true, true, buildSupport);
-				buildSupport.handleErrors();
+				try {
+					buildSupport.handleErrors();
+				} catch(EnvironmentNotFoundException e) {
+					Dialogs.errorMsgb("C++ build environment generation error", "Not supported build enviornments selected!", e);
+					return false;
+
+				}
 			}
 		} catch (Exception e) {
 			Dialogs.errorMsgb("C++ code generation error", e.getMessage(), e);
