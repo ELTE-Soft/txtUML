@@ -1,1 +1,1 @@
-model-package pingpong.x.model as "PingPong";
+model-package pingpong.x.model as "XPingPong";

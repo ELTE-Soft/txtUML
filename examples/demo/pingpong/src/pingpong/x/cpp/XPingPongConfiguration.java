@@ -10,6 +10,6 @@ import pingpong.x.model.Racket;
 
 @Group(contains = { Player.class, Game.class, Racket.class })
 @Runtime(RuntimeType.SINGLE)
-public class PingPongConfiguration extends Configuration {
+public class XPingPongConfiguration extends Configuration {
 
 }
