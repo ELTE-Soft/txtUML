@@ -2,29 +2,30 @@ package hu.elte.txtuml.export.uml2.statemachine
 
 import hu.elte.txtuml.export.uml2.BaseExporter
 import hu.elte.txtuml.export.uml2.Exporter
-import org.eclipse.jdt.core.dom.IMethodBinding
-import org.eclipse.jdt.core.dom.MethodDeclaration
-import org.eclipse.uml2.uml.Constraint
-import org.eclipse.uml2.uml.Transition
-import org.eclipse.uml2.uml.Region
-import org.eclipse.uml2.uml.StateMachine
-import org.eclipse.jdt.core.dom.Block
-import java.util.HashMap
-import org.eclipse.jdt.core.dom.Assignment
-import org.eclipse.jdt.core.dom.VariableDeclarationStatement
-import org.eclipse.jdt.core.dom.VariableDeclarationFragment
 import hu.elte.txtuml.utils.jdt.ElementTypeTeller
-import org.eclipse.jdt.core.dom.ReturnStatement
+import java.util.HashMap
 import java.util.Map
+import org.eclipse.jdt.core.dom.Assignment
+import org.eclipse.jdt.core.dom.Block
 import org.eclipse.jdt.core.dom.Expression
+import org.eclipse.jdt.core.dom.ExpressionStatement
+import org.eclipse.jdt.core.dom.FieldAccess
+import org.eclipse.jdt.core.dom.IMethodBinding
 import org.eclipse.jdt.core.dom.InfixExpression
-import org.eclipse.jdt.core.dom.SimpleName
-import org.eclipse.jdt.core.dom.PrefixExpression
+import org.eclipse.jdt.core.dom.MethodDeclaration
 import org.eclipse.jdt.core.dom.MethodInvocation
 import org.eclipse.jdt.core.dom.ParenthesizedExpression
-import org.eclipse.jdt.core.dom.ExpressionStatement
+import org.eclipse.jdt.core.dom.PrefixExpression
+import org.eclipse.jdt.core.dom.ReturnStatement
+import org.eclipse.jdt.core.dom.SimpleName
 import org.eclipse.jdt.core.dom.ThisExpression
-import org.eclipse.jdt.core.dom.FieldAccess
+import org.eclipse.jdt.core.dom.TypeLiteral
+import org.eclipse.jdt.core.dom.VariableDeclarationFragment
+import org.eclipse.jdt.core.dom.VariableDeclarationStatement
+import org.eclipse.uml2.uml.Constraint
+import org.eclipse.uml2.uml.Region
+import org.eclipse.uml2.uml.StateMachine
+import org.eclipse.uml2.uml.Transition
 
 class GuardExporter extends Exporter<MethodDeclaration, IMethodBinding, Constraint> {
 
@@ -92,17 +93,19 @@ class GuardExporter extends Exporter<MethodDeclaration, IMethodBinding, Constrai
 	}
 
 	def Expression updateExpression(Expression expr, Map<String,Expression> varCodes) {
-		var resultExpr = expr
+		val resultExpr = expr
 		switch resultExpr {
-			SimpleName case varCodes.containsKey(resultExpr.identifier):
+			SimpleName case varCodes.containsKey(resultExpr.identifier): {
 				return updateExpression(varCodes.get(resultExpr.identifier), varCodes)
+			}
 
 			ParenthesizedExpression: {
 				val updatedChild = updateExpression(resultExpr.expression, varCodes)
-				if(updatedChild?.parent != resultExpr) {
+				if (updatedChild?.parent != resultExpr) {
 					resultExpr.expression = updatedChild
 				}
 			}
+
 			InfixExpression: {
 				val updatedLeft = updateExpression(resultExpr.leftOperand, varCodes)
 				val updatedRight = updateExpression(resultExpr.rightOperand, varCodes)
@@ -133,7 +136,7 @@ class GuardExporter extends Exporter<MethodDeclaration, IMethodBinding, Constrai
 
 				val invArguments = resultExpr.arguments
 				invArguments.forEach[arg, idx |
-					var updatedArgument = updateExpression(arg as Expression, varCodes)
+					val updatedArgument = updateExpression(arg as Expression, varCodes)
 					if (updatedArgument?.parent != expr) {
 						updatedArgument?.delete
 						invArguments.set(idx, updatedArgument)
@@ -171,23 +174,37 @@ class GuardExporter extends Exporter<MethodDeclaration, IMethodBinding, Constrai
 			}
 
 			MethodInvocation: {
-				val invName = expr.resolveMethodBinding.name
-				if (invName == "getTrigger") {
+				val methodBinding = expr.resolveMethodBinding
+				val methodName = methodBinding.declaringClass.qualifiedName
+					+ "::" + methodBinding.name
+
+				if (methodName == hu.elte.txtuml.api.model.StateMachine.Transition.canonicalName
+						+ "::getTrigger") {
 					return "trigger"
-				} else if (invName == "Else") {
+				} else if (methodName == hu.elte.txtuml.api.model.StateMachine.canonicalName
+						+ ".TransitionBase::Else") {
 					return "else";
 				}
 
 				val targetExpr = expr.expression
 				var targetCode = targetExpressionAsString(targetExpr)
-
 				var operationCode = expr.name.identifier
+				if (methodName == hu.elte.txtuml.api.model.ModelClass.canonicalName + "::assoc") {
+					targetCode = if (targetCode.empty) {
+						"this->"
+					} else {
+						targetCode.substring(0, targetCode.length - ".".length) + "->"
+					}
+					operationCode = ""
+				}
+
+				val paramSeparator = ", "
 				var paramCodes = ""
 				for (param : expr.arguments) {
-					paramCodes += asString(param as Expression) + ", "
+					paramCodes += asString(param as Expression) + paramSeparator
 				}
 				if (!paramCodes.empty) {
-					paramCodes = paramCodes.substring(0, paramCodes.length - 2)
+					paramCodes = paramCodes.substring(0, paramCodes.length - paramSeparator.length)
 				}
 
 				operationCode += "(" + paramCodes + ")"
@@ -200,8 +217,13 @@ class GuardExporter extends Exporter<MethodDeclaration, IMethodBinding, Constrai
 			}
 
 			FieldAccess: {
-				var targetCode = targetExpressionAsString(expr.expression)
+				val targetCode = targetExpressionAsString(expr.expression)
 				return targetCode + expr.name.identifier
+			}
+
+			TypeLiteral: {
+				val literal = expr.toString;
+				return literal.substring(0, literal.length - ".class".length);
 			}
 		}
 
