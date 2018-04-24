@@ -81,7 +81,7 @@ public class PortExporter {
 	}
 	
 	public String createInitPortsCode() {
-		return ports.stream().map(p -> crteaInterfacePortDefinitionCode(p)).reduce("", (d1,d2) -> d1 + d2);
+		return ports.stream().map(p -> createInterfacePortDefinitionCode(p)).reduce("", (d1,d2) -> d1 + d2);
 	}
 	
 	public String createPortTypeInfoDefinitions() {
@@ -93,7 +93,7 @@ public class PortExporter {
 		return source.toString();
 	}
 	
-	private String crteaInterfacePortDefinitionCode(Port port) {
+	private String createInterfacePortDefinitionCode(Port port) {
 		assert(port != null && isInterfacePort(port));
 		String portTypeName = getPortTypeName(port, true);
 		Pair<String,String> interfaces = getPortActualInterfaceTypes(port);

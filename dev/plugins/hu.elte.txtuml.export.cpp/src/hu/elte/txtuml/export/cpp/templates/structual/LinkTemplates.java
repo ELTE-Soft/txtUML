@@ -6,7 +6,7 @@ import hu.elte.txtuml.export.cpp.templates.GenerationNames.CollectionNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.FileNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.ModifierNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.PointerAndMemoryNames;
-import hu.elte.txtuml.export.cpp.templates.GenerationNames.TypeDelcreationKeywords;
+import hu.elte.txtuml.export.cpp.templates.GenerationNames.TypeDeclarationKeywords;
 import hu.elte.txtuml.export.cpp.templates.PrivateFunctionalTemplates;
 
 public class LinkTemplates {
@@ -125,7 +125,7 @@ public class LinkTemplates {
 	public static String createAssociationStructure(String associationName, String E1, String E2, String endPoint1,
 			String endPoint2) {
 		StringBuilder source = new StringBuilder("");
-		source.append(TypeDelcreationKeywords.AssociationStructure + " " + associationName);
+		source.append(TypeDeclarationKeywords.AssociationStructure + " " + associationName);
 		source.append("{\n");
 		source.append(createEndPointClass(E1, endPoint1));
 		source.append(createEndPointClass(E2, endPoint2));
@@ -135,7 +135,7 @@ public class LinkTemplates {
 
 	public static String createEndPointClass(String classType, String endPointName) {
 
-		return GenerationNames.TypeDelcreationKeywords.AssociationStructure + " " + endPointName + "{typedef " + PrivateFunctionalTemplates.mapUMLClassToCppClass(classType) + " " + GenerationNames.EdgeType
+		return GenerationNames.TypeDeclarationKeywords.AssociationStructure + " " + endPointName + "{typedef " + PrivateFunctionalTemplates.mapUMLClassToCppClass(classType) + " " + GenerationNames.EdgeType
 				+ ";};\n";
 	}
 

@@ -114,7 +114,7 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 				CppExporterUtils.isStateMachineOwner(structuredElement)));
 		source.append(CppExporterUtils.isStateMachineOwner(structuredElement)
 				? ConstructorTemplates.destructorDef(name, true) : ConstructorTemplates.destructorDef(name, false));
-		source.append(FunctionTemplates.functionDef(name, GenerationNames.InitiliazetFixFunctionNames.InitPorts,
+		source.append(FunctionTemplates.functionDef(name, GenerationNames.InitializerFixFunctionNames.InitPorts,
 				portExporter.createInitPortsCode()));
 		source.append(portExporter.createPortTypeInfoDefinitions());
 

@@ -65,9 +65,9 @@ public class ConstructorTemplates {
 		source.append(PrivateFunctionalTemplates.paramList(params) + ")");
 
 		source.append("\n{\n");
-		source.append(GenerationNames.InitiliazetFixFunctionNames.InitPorts + "();\n");
+		source.append(GenerationNames.InitializerFixFunctionNames.InitPorts + "();\n");
 		if (stateMachine) {
-			source.append(GenerationNames.InitiliazetFixFunctionNames.InitStateMachine + "();\n");
+			source.append(GenerationNames.InitializerFixFunctionNames.InitStateMachine + "();\n");
 		}
 		source.append(body + "\n");
 		source.append("}\n");

@@ -8,7 +8,7 @@ import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.SignalEvent;
 
 import hu.elte.txtuml.export.cpp.templates.GenerationNames;
-import hu.elte.txtuml.export.cpp.templates.GenerationNames.TypeDelcreationKeywords;
+import hu.elte.txtuml.export.cpp.templates.GenerationNames.TypeDeclarationKeywords;
 import hu.elte.txtuml.export.cpp.templates.GenerationTemplates;
 import hu.elte.txtuml.export.cpp.templates.PrivateFunctionalTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.HeaderTemplates;
@@ -32,7 +32,7 @@ public class EventTemplates {
 	public static String eventClass(String className, List<Pair<String, String>> params, String constructorBody,
 			List<Property> properites) {
 		StringBuilder source = new StringBuilder(
-				TypeDelcreationKeywords.ClassType + " " + GenerationNames.eventClassName(className) + ":public "
+				TypeDeclarationKeywords.ClassType + " " + GenerationNames.eventClassName(className) + ":public "
 						+ EventTemplates.EventBaseName + "\n{\n" + GenerationNames.ModifierNames.PublicModifier + ":\n" + 
 						GenerationNames.eventClassName(className) + "(");
 		String paramList = PrivateFunctionalTemplates.paramList(params);

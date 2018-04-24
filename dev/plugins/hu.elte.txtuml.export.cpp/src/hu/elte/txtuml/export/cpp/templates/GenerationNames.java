@@ -126,7 +126,7 @@ public class GenerationNames {
 		public static final String FinalizeFunctionName = "finalize";
 	}
 
-	public static class TypeDelcreationKeywords {
+	public static class TypeDeclarationKeywords {
 		public static final String ClassType = "class";
 		public static final String DataType = "struct";
 		public static final String AssociationStructure = "struct";
@@ -141,7 +141,7 @@ public class GenerationNames {
 	public static class InterfaceNames {
 
 		public static final String SendReceptionName = "send";
-		public static final String ReciveReceptionName = "recive";
+		public static final String ReciveReceptionName = "receive";
 		public static final String CommonSendAnySignalName = "sendAny";
 		public static final String CommonReciveAnySignalName = "receiveAny";
 		public static final String IntegratedBaseTemplateName = "IntegratedInf";
@@ -149,7 +149,7 @@ public class GenerationNames {
 
 	}
 
-	public static class InitiliazetFixFunctionNames {
+	public static class InitializerFixFunctionNames {
 		public static final String InitPorts = "initPorts";
 		public static final String InitStateMachine = "initStateMachine";
 
@@ -260,7 +260,7 @@ public class GenerationNames {
 	}
 
 	public static String friendClassDecl(String className) {
-		return "friend " + TypeDelcreationKeywords.ClassType + " " + className + ";\n";
+		return "friend " + TypeDeclarationKeywords.ClassType + " " + className + ";\n";
 	}
 
 	public static String actionCallerDef(String className) {
