@@ -12,17 +12,15 @@ import hu.elte.txtuml.export.plantuml.generator.PlantUmlCompiler;
  * {@link SequenceDiagram} and {@link Interaction} classes.
  */
 public class InteractionExporter extends ExporterBase<TypeDeclaration> {
-	private final String seqDiagramName;
 
-	public InteractionExporter(final PlantUmlCompiler compiler, String seqDiagramName) {
+	public InteractionExporter(final PlantUmlCompiler compiler) {
 		super(compiler);
-		this.seqDiagramName = seqDiagramName;
 	}
 
 	@Override
 	public boolean validElement(ASTNode curElement) {
 		return (curElement.getNodeType() == ASTNode.TYPE_DECLARATION)
-				&& (((TypeDeclaration) curElement).getName().toString().equals(seqDiagramName));
+				&& (((TypeDeclaration) curElement).getName().toString().equals(compiler.getSeqDiagramName()));
 	}
 
 	@Override

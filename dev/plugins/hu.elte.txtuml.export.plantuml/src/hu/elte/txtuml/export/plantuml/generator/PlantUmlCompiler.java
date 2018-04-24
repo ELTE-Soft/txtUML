@@ -54,7 +54,7 @@ public class PlantUmlCompiler extends ASTVisitor {
 
 	@Override
 	public boolean preVisit2(ASTNode node) {
-		ExporterBase<?> exp = ExporterBase.createExporter(node, this, seqDiagramName);
+		ExporterBase<?> exp = ExporterBase.createExporter(node, this);
 		if (exp != null) {
 			return exp.visit(node);
 		}
@@ -95,7 +95,7 @@ public class PlantUmlCompiler extends ASTVisitor {
 	@Override
 	public void postVisit(ASTNode node) {
 		if (!exporterQueue.isEmpty()) {
-			ExporterBase<?> expt = ExporterBase.createExporter(node, this, seqDiagramName);
+			ExporterBase<?> expt = ExporterBase.createExporter(node, this);
 			if (expt != null && !expt.skippedStatement(node)) {
 				ExporterBase<?> exp = exporterQueue.peek();
 				if (expt.getClass().isInstance(exp)) {
@@ -210,6 +210,13 @@ public class PlantUmlCompiler extends ASTVisitor {
 			println("participant " + elem.getName());
 			elem.processed();
 		});
+	}
+
+	/**
+	 * Returns the name of the sequence diagram which is being exported
+	 */
+	public String getSeqDiagramName() {
+		return seqDiagramName;
 	}
 
 }

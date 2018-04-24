@@ -90,11 +90,10 @@ public abstract class ExporterBase<T extends ASTNode> {
 	 *            The node type which is parsed by the exporter.
 	 */
 	@SuppressWarnings("unchecked")
-	public static <T extends ASTNode> ExporterBase<T> createExporter(T curElement, PlantUmlCompiler compiler,
-			String seqDiagramName) {
+	public static <T extends ASTNode> ExporterBase<T> createExporter(T curElement, PlantUmlCompiler compiler) {
 		switch (curElement.getNodeType()) {
 		case ASTNode.TYPE_DECLARATION:
-			return (ExporterBase<T>) new InteractionExporter(compiler, seqDiagramName);
+			return (ExporterBase<T>) new InteractionExporter(compiler);
 		case ASTNode.METHOD_INVOCATION:
 			return (ExporterBase<T>) MethodInvocationExporter.createExporter(curElement, compiler);
 		case ASTNode.WHILE_STATEMENT:
