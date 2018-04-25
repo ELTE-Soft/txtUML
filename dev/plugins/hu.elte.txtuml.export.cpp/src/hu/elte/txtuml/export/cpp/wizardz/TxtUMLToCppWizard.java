@@ -1,5 +1,6 @@
 package hu.elte.txtuml.export.cpp.wizardz;
 
+import java.awt.Desktop;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.nio.file.Files;
@@ -45,6 +46,7 @@ public class TxtUMLToCppWizard extends Wizard {
 
 	@Override
 	public boolean performFinish() {
+		String outputDirectory = "";
 		try {
 			IType threadManagementDescription = createCppCodePage.getThreadDescription();
 			String descriptionProjectName = threadManagementDescription.getJavaProject().getElementName();
@@ -79,7 +81,7 @@ public class TxtUMLToCppWizard extends Wizard {
 			String projectFolder = ResourcesPlugin.getWorkspace().getRoot().getProject(txtUMLProject).getLocation()
 					.toFile().getAbsolutePath();
 
-			String outputDirectory = projectFolder + File.separator + Uml2ToCppExporter.GENERATED_CPP_FOLDER_NAME
+			outputDirectory = projectFolder + File.separator + Uml2ToCppExporter.GENERATED_CPP_FOLDER_NAME
 					+ File.separator + txtUMLModel;
 
 			if(mainForOverride != null && !mainForOverride.isEmpty()){
@@ -98,11 +100,13 @@ public class TxtUMLToCppWizard extends Wizard {
 				try {
 					buildSupport.handleErrors();
 				} catch(EnvironmentNotFoundException e) {
-					Dialogs.errorMsgb("C++ build environment generation error", "Not supported build enviornments selected!", e);
+					Dialogs.errorMsgb("C++ build environment generation error", "Not supported build environments selected!", e);
 					return false;
 
 				}
 			}
+			
+			Desktop.getDesktop().open(new File(outputDirectory));
 		} catch (Exception e) {
 			Dialogs.errorMsgb("C++ code generation error", e.getMessage(), e);
 			return false;
