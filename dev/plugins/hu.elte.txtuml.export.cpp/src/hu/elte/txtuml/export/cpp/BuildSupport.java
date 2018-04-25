@@ -47,7 +47,7 @@ public class BuildSupport implements IRunnableWithProgress {
 		if(unavailableEnvironments.size() > 0) {
 			StringBuilder sBuilder = new StringBuilder();
 			  sBuilder.append("The following environments are not builded:\n");
-			  for(String environment : environments){
+			  for(String environment : unavailableEnvironments){
 				  sBuilder.append(environment + "\n");
 			  }
 			throw new EnvironmentNotFoundException(sBuilder.toString());
