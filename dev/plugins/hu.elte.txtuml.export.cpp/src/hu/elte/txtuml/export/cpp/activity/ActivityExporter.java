@@ -30,7 +30,6 @@ import org.eclipse.uml2.uml.StartClassifierBehaviorAction;
 import org.eclipse.uml2.uml.StartObjectBehaviorAction;
 import org.eclipse.uml2.uml.TestIdentityAction;
 import org.eclipse.uml2.uml.UMLPackage;
-
 import hu.elte.txtuml.export.cpp.ActivityExportResult;
 import hu.elte.txtuml.export.cpp.CppExporterUtils;
 import hu.elte.txtuml.export.cpp.IDependencyCollector;
@@ -77,9 +76,7 @@ public class ActivityExporter {
 			source.append(controlNodeExporter.createSequenceNodeCode((SequenceNode) node));
 		} else if (node.eClass().equals(UMLPackage.Literals.ADD_STRUCTURAL_FEATURE_VALUE_ACTION)) {
 			AddStructuralFeatureValueAction asfva = (AddStructuralFeatureValueAction) node;
-			source.append(ActivityTemplates.generalSetValue(activityExportResolver.getTargetFromASFVA(asfva),
-					activityExportResolver.getTargetFromInputPin(asfva.getValue(), false), ActivityTemplates
-							.getOperationFromType(asfva.getStructuralFeature().isMultivalued(), asfva.isReplaceAll())));
+			source.append(createAddStructuralFeatureActionCode(asfva));
 		} else if (node.eClass().equals(UMLPackage.Literals.CREATE_OBJECT_ACTION)) {
 			source.append(objectActionExporter.createCreateObjectActionCode((CreateObjectAction) node));
 		} else if (node.eClass().equals(UMLPackage.Literals.CREATE_LINK_ACTION)) {
@@ -227,5 +224,19 @@ public class ActivityExporter {
 		}
 		return nextNodes;
 	}
+
+	
+	private String createAddStructuralFeatureActionCode(AddStructuralFeatureValueAction asfva) {
+		String source = "";
+		String target = activityExportResolver.getTargetFromASFVA(asfva);
+		String value = activityExportResolver.getTargetFromInputPin(asfva.getValue(), false);
+
+			source = ActivityTemplates.generalSetValue(target,value, ActivityTemplates
+							.getOperationFromType(asfva.getStructuralFeature().isMultivalued(), asfva.isReplaceAll()));
+
+		return source;
+	}
+	
+
 
 }

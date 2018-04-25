@@ -61,12 +61,15 @@ public class ConstructorTemplates {
 		StringBuilder source = new StringBuilder("");
 		source.append(ModifierNames.NoReturn + " ");
 		source.append(className + "::" + GenerationNames.initFunctionName(className) + "(");
+		
 		source.append(PrivateFunctionalTemplates.paramList(params) + ")");
 
-		source.append("\n{\n" + body + "\n");
+		source.append("\n{\n");
+		source.append(GenerationNames.InitializerFixFunctionNames.InitPorts + "();\n");
 		if (stateMachine) {
-			source.append(GenerationNames.InitStateMachine + "();\n");
+			source.append(GenerationNames.InitializerFixFunctionNames.InitStateMachine + "();\n");
 		}
+		source.append(body + "\n");
 		source.append("}\n");
 
 		return source.toString();

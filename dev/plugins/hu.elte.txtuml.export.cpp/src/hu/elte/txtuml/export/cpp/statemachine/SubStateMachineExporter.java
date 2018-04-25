@@ -65,6 +65,11 @@ public class SubStateMachineExporter extends StateMachineExporterBase implements
 		dependencyExporter.addCppOnlyDependency(type);
 		
 	}
+	
+	@Override
+	public void addHeaderOnlyIncludeDependency(String type) {
+		dependencyExporter.addHeaderOnlyIncludeDependency(type);		
+	}
 
 
 	@Override
@@ -163,6 +168,8 @@ public class SubStateMachineExporter extends StateMachineExporterBase implements
 	public String getDestination() {
 		return subMachineCodeDest;
 	}
+
+
 
 
 

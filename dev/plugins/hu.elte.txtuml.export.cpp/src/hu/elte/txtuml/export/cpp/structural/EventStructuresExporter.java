@@ -70,6 +70,7 @@ public class EventStructuresExporter implements ICppCompilationUnit {
 		StringBuilder source = new StringBuilder("");
 		StringBuilder eventClasses = new StringBuilder("");
 		StringBuilder events = new StringBuilder("");
+		StringBuilder typeDefinitions = new StringBuilder("");
 		List<Pair<String, String>> allParam = new LinkedList<Pair<String, String>>();
 		for (Entry<Signal, Operation> signal : eventListWithConstructors.entrySet()) {
 			List<Pair<String, String>> currentParams = getSignalParams(signal);
@@ -79,16 +80,17 @@ public class EventStructuresExporter implements ICppCompilationUnit {
 			eventClasses.append(EventTemplates.eventClass(signal.getKey().getName(), currentParams,
 					ctrBody.getActivitySource(), signal.getKey().getOwnedAttributes()));
 			events.append(signal.getKey().getName() + ENUM_EXTENSION + ",");
+			typeDefinitions.append(EventTemplates.eventPtrTypeDef(signal.getKey().getName()));
 		}
 
 		dependencyExporter = new DependencyExporter();
 		for (Pair<String, String> param : allParam) {
-			dependencyExporter.addDependency(param.getSecond());
+			dependencyExporter.addDependency(param.getFirst());
 		}
 
 		source.append("enum Events {" + CppExporterUtils.cutOffTheLastCharacter(events.toString()) + "};\n");
 		source.append(eventClasses);
-
+		source.append(typeDefinitions);
 		return source.toString();
 	}
 
