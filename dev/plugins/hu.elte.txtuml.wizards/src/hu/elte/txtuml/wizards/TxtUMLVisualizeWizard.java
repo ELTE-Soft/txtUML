@@ -1,4 +1,4 @@
-package hu.elte.txtuml.utils.eclipse.wizards;
+package hu.elte.txtuml.wizards;
 
 import java.util.ArrayList;
 import java.util.Arrays;

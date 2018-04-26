@@ -23,8 +23,8 @@ import hu.elte.txtuml.utils.Logger;
 import hu.elte.txtuml.utils.Pair;
 import hu.elte.txtuml.utils.eclipse.Dialogs;
 import hu.elte.txtuml.utils.eclipse.preferences.PreferencesManager;
-import hu.elte.txtuml.utils.eclipse.wizards.TxtUMLVisualizeWizard;
-import hu.elte.txtuml.utils.eclipse.wizards.VisualizeTxtUMLPage;
+import hu.elte.txtuml.wizards.TxtUMLVisualizeWizard;
+import hu.elte.txtuml.wizards.VisualizeTxtUMLPage;
 
 public class PlantUMLVisualizeWizard extends TxtUMLVisualizeWizard {
 

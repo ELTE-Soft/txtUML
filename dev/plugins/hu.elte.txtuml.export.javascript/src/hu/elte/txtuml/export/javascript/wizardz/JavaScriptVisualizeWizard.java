@@ -15,8 +15,8 @@ import hu.elte.txtuml.api.layout.StateMachineDiagram;
 import hu.elte.txtuml.export.javascript.Exporter;
 import hu.elte.txtuml.layout.export.TxtUMLLayoutDescriptor;
 import hu.elte.txtuml.utils.Pair;
-import hu.elte.txtuml.utils.eclipse.wizards.UML2VisualizeWizard;
-import hu.elte.txtuml.utils.eclipse.wizards.VisualizeTxtUMLPage;
+import hu.elte.txtuml.wizards.UML2VisualizeWizard;
+import hu.elte.txtuml.wizards.VisualizeTxtUMLPage;
 
 /**
  * Wizard for visualization of txtUML models
