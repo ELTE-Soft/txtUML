@@ -7,7 +7,7 @@ import org.eclipse.jface.wizard.Wizard;
 
 import hu.elte.txtuml.utils.Pair;
 import hu.elte.txtuml.utils.eclipse.Dialogs;
-import hu.elte.txtuml.utils.eclipse.SaveUtils;
+import hu.elte.txtuml.utils.eclipse.EditorUtils;
 import hu.elte.txtuml.utils.eclipse.WizardUtils;
 
 public class TxtUMLToCppWizard extends Wizard {
@@ -52,7 +52,7 @@ public class TxtUMLToCppWizard extends Wizard {
 			String txtUMLModel = model.getFirst();
 			String txtUMLProject = model.getSecond();
 
-			boolean saveSucceeded = SaveUtils.saveAffectedFiles(getShell(), txtUMLProject, txtUMLModel,
+			boolean saveSucceeded = EditorUtils.saveAffectedFiles(getShell(), txtUMLProject, txtUMLModel,
 					threadManagementDescription.getFullyQualifiedName());
 			if (!saveSucceeded)
 				return false;

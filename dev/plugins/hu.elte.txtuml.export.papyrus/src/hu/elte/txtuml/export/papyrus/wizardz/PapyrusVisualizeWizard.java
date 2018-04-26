@@ -25,6 +25,7 @@ import hu.elte.txtuml.export.papyrus.papyrusmodelmanagers.TxtUMLPapyrusModelMana
 import hu.elte.txtuml.layout.export.TxtUMLLayoutDescriptor;
 import hu.elte.txtuml.utils.Pair;
 import hu.elte.txtuml.utils.eclipse.Dialogs;
+import hu.elte.txtuml.utils.eclipse.EditorUtils;
 import hu.elte.txtuml.wizards.UML2VisualizeWizard;
 import hu.elte.txtuml.wizards.VisualizeTxtUMLPage;
 
@@ -50,37 +51,36 @@ public class PapyrusVisualizeWizard extends UML2VisualizeWizard {
 	}
 	
 	@Override
-	protected void exportDiagram(TxtUMLLayoutDescriptor layoutDescriptor, IProgressMonitor monitor) throws Exception{
-			Job job = new Job("Diagram Visualization") {
+	protected void exportDiagram(TxtUMLLayoutDescriptor layoutDescriptor, IProgressMonitor monitor) throws Exception{	
+		Job job = new Job("Diagram Visualization") {
 
-				@Override
-				protected IStatus run(IProgressMonitor innerMonitor) {
+			@Override
+			protected IStatus run(IProgressMonitor monitor) {
 
-					URI umlFileURI = URI.createFileURI(layoutDescriptor.projectName + "/" + getGeneratedFolderName() + "/" + layoutDescriptor.modelName + ".uml");
-					URI UmlFileResURI = CommonPlugin.resolve(umlFileURI);
-					IFile UmlFile = ResourcesPlugin.getWorkspace().getRoot()
-							.getFile(new org.eclipse.core.runtime.Path(UmlFileResURI.toFileString()));
+				URI umlFileURI = URI.createFileURI(layoutDescriptor.projectName + "/" + getGeneratedFolderName() + "/" + layoutDescriptor.modelName + ".uml");
+				URI UmlFileResURI = CommonPlugin.resolve(umlFileURI);
+				IFile UmlFile = ResourcesPlugin.getWorkspace().getRoot()
+						.getFile(new org.eclipse.core.runtime.Path(UmlFileResURI.toFileString()));
 
-					PapyrusVisualizer pv = new PapyrusVisualizer(layoutDescriptor.projectName , getGeneratedFolderName() + "/" + layoutDescriptor.modelName,
-							UmlFile.getRawLocationURI().toString(), layoutDescriptor);
-					pv.registerPayprusModelManager(TxtUMLPapyrusModelManager.class);
+				PapyrusVisualizer pv = new PapyrusVisualizer(layoutDescriptor.projectName , getGeneratedFolderName() + "/" + layoutDescriptor.modelName,
+						UmlFile.getRawLocationURI().toString(), layoutDescriptor);
+				pv.registerPayprusModelManager(TxtUMLPapyrusModelManager.class);
 
-					Display.getDefault().syncExec(() -> {
-						try {
-							pv.run(SubMonitor.convert(monitor, 70));
-						} catch (Exception e) {
-							Dialogs.errorMsgb("txtUML visualization Error",
-									"Error occured during the visualization process.", e);
-						}
-					});
-					monitor.done();
-					innerMonitor.done();
-					return Status.OK_STATUS;
-				}
+				Display.getDefault().syncExec(() -> {
+					try {
+						pv.run(SubMonitor.convert(monitor, 70));
+					} catch (Exception e) {
+						Dialogs.errorMsgb("txtUML visualization Error",
+								"Error occured during the visualization process.", e);
+					}
+				});
+				monitor.done();
+				return Status.OK_STATUS;
+			}
 
-			};
-			job.setUser(true);
-			job.schedule();
+		};
+		job.setUser(true);
+		job.schedule();
 	}
 	
 	@Override
@@ -97,6 +97,8 @@ public class PapyrusVisualizeWizard extends UML2VisualizeWizard {
 			Path diFilePath = Paths.get(projectAbsLocation, getGeneratedFolderName(), txtUMLModelName + ".notation");
 			Path umlFilePath = Paths.get(projectAbsLocation, getGeneratedFolderName(), txtUMLModelName + ".uml");
 			Path profileFilePath = Paths.get(projectAbsLocation, getGeneratedFolderName(), txtUMLModelName + ".profile.uml");
+			
+			EditorUtils.closeEditorByPath(notationFilePath);
 			
 			profileFilePath.toFile().delete();
 			mappingFilePath.toFile().delete();

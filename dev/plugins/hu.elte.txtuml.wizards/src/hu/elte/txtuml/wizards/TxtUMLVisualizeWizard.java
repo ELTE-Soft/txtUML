@@ -20,12 +20,11 @@ import java.nio.file.Path;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jface.wizard.Wizard;
-import org.eclipse.swt.widgets.Display;
 
 import hu.elte.txtuml.utils.Logger;
 import hu.elte.txtuml.utils.Pair;
 import hu.elte.txtuml.utils.eclipse.Dialogs;
-import hu.elte.txtuml.utils.eclipse.SaveUtils;
+import hu.elte.txtuml.utils.eclipse.EditorUtils;
 import hu.elte.txtuml.utils.eclipse.WizardUtils;
 import hu.elte.txtuml.utils.eclipse.preferences.PreferencesManager;
 
@@ -100,14 +99,12 @@ public abstract class TxtUMLVisualizeWizard extends Wizard {
 				layoutConfigs.values().stream().flatMap(c -> c.stream())
 				.map(layout -> layout.getJavaProject().getElementName()).collect(Collectors.toList()));
 
-		Display.getDefault().syncExec(() -> {
-			try {
-				cleanBeforeVisualization(layoutConfigs.keySet());
-			} catch (CoreException | IOException e) {
-				Dialogs.errorMsgb("txtUML export Error - cleaning resources",
-						"Error occured while cleaning resources.", e);
-			}
-		});
+		try {
+			cleanBeforeVisualization(layoutConfigs.keySet());
+		} catch (CoreException | IOException e) {
+			Dialogs.errorMsgb("txtUML export Error - cleaning resources",
+					"Error occured while cleaning resources.", e);
+		}
 		
 		for(Map.Entry<Pair<String, String>, List<IType>> config : layoutConfigs.entrySet()){
 			if(!saveOpenEditors(config)){
@@ -161,7 +158,7 @@ public abstract class TxtUMLVisualizeWizard extends Wizard {
 			List<String> fullyQualifiedNames = config.getValue().stream().map(IType::getFullyQualifiedName)
 					.collect(Collectors.toList());
 
-			return SaveUtils.saveAffectedFiles(getShell(), txtUMLProjectName, txtUMLModelName, fullyQualifiedNames);
+			return EditorUtils.saveAffectedFiles(getShell(), txtUMLProjectName, txtUMLModelName, fullyQualifiedNames);
 	}
 
 	protected void checkNoLayoutDescriptionsSelected() throws InterruptedException {
