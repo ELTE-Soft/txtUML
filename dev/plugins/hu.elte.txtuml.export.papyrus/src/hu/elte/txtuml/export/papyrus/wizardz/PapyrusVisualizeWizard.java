@@ -52,10 +52,13 @@ public class PapyrusVisualizeWizard extends UML2VisualizeWizard {
 	
 	@Override
 	protected void exportDiagram(TxtUMLLayoutDescriptor layoutDescriptor, IProgressMonitor monitor) throws Exception{	
+		monitor.beginTask("Visualizing "+ layoutDescriptor.projectName + "/" + layoutDescriptor.modelName +".",100);
+
 		Job job = new Job("Diagram Visualization") {
 
 			@Override
-			protected IStatus run(IProgressMonitor monitor) {
+			protected IStatus run(IProgressMonitor innerMonitor) {
+				innerMonitor.beginTask("visualizing "+ layoutDescriptor.projectName + "/" + layoutDescriptor.modelName, 100);
 
 				URI umlFileURI = URI.createFileURI(layoutDescriptor.projectName + "/" + getGeneratedFolderName() + "/" + layoutDescriptor.modelName + ".uml");
 				URI UmlFileResURI = CommonPlugin.resolve(umlFileURI);
@@ -65,22 +68,25 @@ public class PapyrusVisualizeWizard extends UML2VisualizeWizard {
 				PapyrusVisualizer pv = new PapyrusVisualizer(layoutDescriptor.projectName , getGeneratedFolderName() + "/" + layoutDescriptor.modelName,
 						UmlFile.getRawLocationURI().toString(), layoutDescriptor);
 				pv.registerPayprusModelManager(TxtUMLPapyrusModelManager.class);
+				
+				innerMonitor.worked(5);
 
 				Display.getDefault().syncExec(() -> {
 					try {
-						pv.run(SubMonitor.convert(monitor, 70));
+						pv.run(SubMonitor.convert(innerMonitor, 95));
+						innerMonitor.done();
 					} catch (Exception e) {
 						Dialogs.errorMsgb("txtUML visualization Error",
 								"Error occured during the visualization process.", e);
 					}
 				});
-				monitor.done();
 				return Status.OK_STATUS;
 			}
 
 		};
 		job.setUser(true);
 		job.schedule();
+		monitor.done();
 	}
 	
 	@Override

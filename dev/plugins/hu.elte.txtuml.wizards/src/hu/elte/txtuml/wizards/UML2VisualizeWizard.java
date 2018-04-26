@@ -10,6 +10,7 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.ui.PlatformUI;
@@ -37,25 +38,24 @@ public abstract class UML2VisualizeWizard extends TxtUMLVisualizeWizard {
 
 	@Override
 	protected boolean exportDiagrams(Map<Pair<String, String>, List<IType>> layoutConfigs) {
-		
-		final String generatedFolderName = getGeneratedFolderName();
-		
-		for(Map.Entry<Pair<String, String>, List<IType>> layout : layoutConfigs.entrySet()){
-			final String txtUMLModelName = layout.getKey().getFirst();
-			final String txtUMLProjectName = layout.getKey().getSecond();
-			Map<String, String> layouts = new HashMap<String, String>();
-			layout.getValue().forEach(
-					type -> layouts.put(type.getFullyQualifiedName(), type.getJavaProject().getElementName()));
+		try {
+			IProgressService progressService = PlatformUI.getWorkbench().getProgressService();
+			progressService.runInUI(progressService, new IRunnableWithProgress() {
+				@Override
+				public void run(IProgressMonitor monitor) throws InterruptedException {
+					
+					monitor.beginTask("Visualization", 100*layoutConfigs.size());
+			
+					final String generatedFolderName = getGeneratedFolderName();
+					
+					for(Map.Entry<Pair<String, String>, List<IType>> layout : layoutConfigs.entrySet()){
+						final String txtUMLModelName = layout.getKey().getFirst();
+						final String txtUMLProjectName = layout.getKey().getSecond();
+						Map<String, String> layouts = new HashMap<String, String>();
+						layout.getValue().forEach(
+								type -> layouts.put(type.getFullyQualifiedName(), type.getJavaProject().getElementName()));	
 
-
-			try {
-				IProgressService progressService = PlatformUI.getWorkbench().getProgressService();
-				progressService.runInUI(progressService, new IRunnableWithProgress() {
-					@Override
-					public void run(IProgressMonitor monitor) throws InterruptedException {
-						monitor.beginTask("Visualization", 100);
-
-						monitor.subTask("Exporting txtUML Model to UML2 model...");
+						monitor.subTask("Exporting "+ txtUMLProjectName + "/" + txtUMLModelName +" to UML2 model...");
 						try {
 							TxtUMLToUML2.exportModel(txtUMLProjectName, txtUMLModelName,
 									txtUMLProjectName + "/" + generatedFolderName, ExportMode.ErrorHandlingNoActions,
@@ -83,29 +83,30 @@ public abstract class UML2VisualizeWizard extends TxtUMLVisualizeWizard {
 							}
 						}	
 						
-						monitor.subTask("Exporting diagrams for visualization...");
+						monitor.subTask("Exporting for visualization...");
 						try {
-							exportDiagram(layoutDescriptor, monitor);
+							exportDiagram(layoutDescriptor, SubMonitor.convert(monitor, 70));
 						} catch (Exception e) {
 							Dialogs.errorMsgb("txtUML visualization Error",
 									"Error occured during the visualization process.", e);
 							monitor.done();
 							throw new InterruptedException();
 						}
-						monitor.done();
+						try {
+							refreshGeneratedFolder(txtUMLProjectName);
+						} catch (CoreException e) {
+							Logger.sys.error(e.getMessage());
+							Dialogs.errorMsgb("txtUML visualization Error",
+									"Error occured during refreshing generated folder.", e);
+						}
 					}
-				}, ResourcesPlugin.getWorkspace().getRoot());
-			} catch (InvocationTargetException | InterruptedException e) {
-				Logger.sys.error(e.getMessage());
-				return false;
-			}
-			try {
-				refreshGeneratedFolder(txtUMLProjectName);
-			} catch (CoreException e) {
-				Logger.sys.error(e.getMessage());
-				Dialogs.errorMsgb("txtUML visualization Error",
-						"Error occured during refreshing generated folder.", e);
-			}
+					monitor.done();
+				}
+				
+		}, ResourcesPlugin.getWorkspace().getRoot());
+		} catch (InvocationTargetException | InterruptedException e) {
+			Logger.sys.error(e.getMessage());
+			return false;
 		}
 		return true;
 	}

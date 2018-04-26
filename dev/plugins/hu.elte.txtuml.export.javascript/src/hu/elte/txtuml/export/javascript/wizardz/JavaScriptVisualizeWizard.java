@@ -41,6 +41,7 @@ public class JavaScriptVisualizeWizard extends UML2VisualizeWizard {
 
 	@Override
 	protected void exportDiagram(TxtUMLLayoutDescriptor layoutDescriptor, IProgressMonitor monitor) throws Exception{
+		monitor.beginTask("Visualizing "+ layoutDescriptor.projectName + "/" + layoutDescriptor.modelName +".",100);
 		Exporter ex = new Exporter(layoutDescriptor, layoutDescriptor.modelName);
 		ex.export();
 		monitor.done();
