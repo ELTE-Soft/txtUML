@@ -97,17 +97,18 @@ public class TxtUMLToCppWizard extends Wizard {
 			if (buildEnvironments != null && buildEnvironments.size() > 0) {
 				BuildSupport buildSupport = new BuildSupport(outputDirectory, buildEnvironments);
 				getContainer().run(true, true, buildSupport);
-				try {
-					buildSupport.handleErrors();
-				} catch(EnvironmentNotFoundException e) {
-					Dialogs.errorMsgb("C++ build environment generation error", "Not supported build environments selected!", e);
-					return false;
-
-				}
+				buildSupport.handleErrors();
+		
 			}
 			
 			Desktop.getDesktop().open(new File(outputDirectory));
-		} catch (Exception e) {
+		} catch(FileNotFoundException e) {
+			Dialogs.errorMsgb("C++ file copying error", "Unable to copy selected file", e);		
+			return false;
+		} catch (EnvironmentNotFoundException e) {		
+			Dialogs.errorMsgb("C++ build environment generation error", "Not supported build environments selected", e);		
+			return false;
+		} catch (Exception  e) {
 			Dialogs.errorMsgb("C++ code generation error", e.getMessage(), e);
 			return false;
 		}

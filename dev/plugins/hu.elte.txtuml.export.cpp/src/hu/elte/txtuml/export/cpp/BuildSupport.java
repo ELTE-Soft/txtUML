@@ -9,13 +9,13 @@ import java.util.List;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 
-import hu.elte.txtuml.utils.eclipse.Dialogs;
 
 public class BuildSupport implements IRunnableWithProgress {
 
 	private String directory;
 	private List<String> environments;
 	private List<String> unavailableEnvironments;
+	IOException buildIOFail;
 
 	public BuildSupport(String directory, List<String> environments) {
 		this.directory = directory;
@@ -36,17 +36,19 @@ public class BuildSupport implements IRunnableWithProgress {
 				}
 			}
 		} catch (IOException e) {
-			Dialogs.errorMsgb("txtUML export environment build error", e.getClass() + ":" 
-					+ System.lineSeparator() + e.getMessage(), e);
+			buildIOFail = e;
 		} finally {
 			monitor.done();
 		}
 	}
 	
 	public void handleErrors() throws Exception {
+		if(buildIOFail != null) {
+			throw buildIOFail;
+		}		
 		if(unavailableEnvironments.size() > 0) {
 			StringBuilder sBuilder = new StringBuilder();
-			  sBuilder.append("The following environments are not builded:\n");
+			  sBuilder.append("The following build environments are not supported:\n");
 			  for(String environment : unavailableEnvironments){
 				  sBuilder.append(environment + "\n");
 			  }
