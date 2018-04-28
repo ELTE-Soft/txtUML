@@ -5,6 +5,7 @@
 
 namespace Action 
 {
+
 	void send(ES::ModelObject* target, ES::EventRef signal)
 	{
 		target->send(signal);

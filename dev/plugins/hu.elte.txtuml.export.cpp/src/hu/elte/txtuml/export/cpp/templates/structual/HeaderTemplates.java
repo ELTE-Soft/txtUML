@@ -52,6 +52,7 @@ public class HeaderTemplates {
 			return Collections.emptyList();
 		}
 
+
 		@Override
 		public Boolean hasExecutionInterface() {
 			return false;
@@ -199,6 +200,7 @@ public class HeaderTemplates {
 				this.hierarchical = hierarchical;
 			}
 
+
 			Boolean isHierarhicalStateMachine() {
 				return hierarchical;
 			}
@@ -256,17 +258,18 @@ public class HeaderTemplates {
 
 		public String getFixPrivateParts() {
 			StringBuilder fixPrivateParts = new StringBuilder("");
-			if (headerType.hasStateMachine()) {
-				fixPrivateParts.append(
-						"//Simple Machine Parts\n" + FunctionTemplates.functionDecl(GenerationNames.InitStateMachine)
-								+ "\n" + GenerationNames.SetStateDecl + EntryExitNames.EntryDecl
-								+ EntryExitNames.ExitDecl + "\n" + "int " + GenerationNames.CurrentStateName + ";\n");
-
-				if (headerType.hasHierarchicalStateMachine()) {
-					fixPrivateParts
-							.append("//Hierarchical Machine Parts\n" + HierarchicalStateMachineNames.ActionCallerDecl
-									+ HierarchicalStateMachineNames.CurrentMachine
-									+ HierarchicalStateMachineNames.CompositeStateMap);
+			if(headerType.hasStateMachine()) {
+				fixPrivateParts.append("//Simple Machine Parts\n" + FunctionTemplates.functionDecl(GenerationNames.InitializerFixFunctionNames.InitStateMachine) + "\n" + 
+						GenerationNames.SetStateDecl + EntryExitNames.EntryDecl + EntryExitNames.ExitDecl + 
+						"\n" + "int " + GenerationNames.CurrentStateName + ";\n");
+				
+				if(headerType.hasHierarchicalStateMachine()) {
+					fixPrivateParts.append("//Hierarchical Machine Parts\n" 
+							+ HierarchicalStateMachineNames.ActionCallerDecl 
+							+ HierarchicalStateMachineNames.CurrentMachine
+							+ HierarchicalStateMachineNames.CompositeStateMap); 	
+				
+					
 
 				}
 
@@ -275,6 +278,7 @@ public class HeaderTemplates {
 			return fixPrivateParts.toString();
 		}
 	}
+
 
 	public static String headerGuard(String source, String className) {
 		return "#ifndef __" + className.toUpperCase() + "_" + FileNames.HeaderExtension.toUpperCase() + "__\n"
@@ -285,8 +289,9 @@ public class HeaderTemplates {
 
 	public static String classHeader(List<String> baseClassNames, List<String> pureInfBaseNames, String publicPart,
 			String protectedPart, String privatePart, HeaderInfo headerInfo) {
+
 		StringBuilder classDeclaration = new StringBuilder("");
-		classDeclaration.append(GenerationNames.ClassType + " " + headerInfo.getOwnerClassName());
+		classDeclaration.append(GenerationNames.TypeDeclarationKeywords.ClassType + " " + headerInfo.getOwnerClassName());
 
 		List<String> objectBase = new LinkedList<>();
 		if (pureInfBaseNames != null) {

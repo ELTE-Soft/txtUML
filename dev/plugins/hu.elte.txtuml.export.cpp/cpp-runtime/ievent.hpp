@@ -34,9 +34,14 @@ public:
 		return static_cast<const DerivedBase*>(this)->t;
 	}
 
-	int getPortType() const
+        PortType getPortType() const
 	{
-		return static_cast<const DerivedBase*>(this)->p;
+                return static_cast<const DerivedBase*>(this)->pType;
+	}
+	
+	void setPortType(PortType portType)
+	{
+		static_cast<DerivedBase*>(this)->pType = portType;
 	}
 
 	SpecialSignalType getSpecialType() const
@@ -67,15 +72,15 @@ public:
 class EventBase : public IEvent<EventBase>
 {
 public:
-	EventBase(int t_, SpecialSignalType extermalType_ = SpecialSignalType::NoSpecial) :
+	EventBase(int t_, SpecialSignalType extermalType_ = SpecialSignalType::NoSpecial, PortType pType_ = PortType::AnyPort) :
 		t(t_),
 		specialType(extermalType_),
-		p(1) {}
+                pType(pType_) {}
 
 	ES::StateMachineRef targetSM;
 	int t;
 	SpecialSignalType specialType;
-	int p;
+	PortType pType;
 
 };
 
