@@ -9,6 +9,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Set;
 
 import hu.elte.txtuml.api.deployment.RuntimeType;
@@ -20,6 +21,7 @@ import hu.elte.txtuml.export.cpp.templates.RuntimeTemplates;
 import hu.elte.txtuml.export.cpp.templates.activity.ActivityTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.FunctionTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.HeaderTemplates;
+import hu.elte.txtuml.export.cpp.templates.structual.ObjectDeclDefTemplates;
 import hu.elte.txtuml.export.cpp.thread.ThreadPoolConfiguration.LinearFunction;
 import hu.elte.txtuml.utils.Pair;
 
@@ -124,7 +126,7 @@ public class ThreadHandlingManager {
 			parameters.add(new Integer(pool.getMaxThread()).toString());
 
 			source.append(insertToConfiguration(pool.getId(),
-					GenerationTemplates.allocateObject(ConfigurationStructName, parameters, true)));
+					ObjectDeclDefTemplates.allocateObject(ConfigurationStructName, Optional.of(parameters), true)));
 		}
 
 		return source.toString();
@@ -142,12 +144,12 @@ public class ThreadHandlingManager {
 		params.add(new Integer(function.getConstant()).toString());
 		params.add(new Double(function.getGradient()).toString());
 
-		return GenerationTemplates.allocateObject(FunctionName, params, true);
+		return ObjectDeclDefTemplates.allocateObject(FunctionName, Optional.of(params), true);
 	}
 
 	private String allocatePoolObject(ThreadPoolConfiguration pool) {
 		List<String> params = new ArrayList<String>();
-		return GenerationTemplates.allocateObject(ThreadPoolClassName, params, true);
+		return ObjectDeclDefTemplates.allocateObject(ThreadPoolClassName, Optional.of(params), true);
 	}
 	
 	private String getRuntimeTypeName(RuntimeType runtimeType) {
