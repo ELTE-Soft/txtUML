@@ -46,6 +46,7 @@ public abstract class StateMachineExporterBase {
 	protected SubStateMachineExporter subStateMachineExporter;
 	protected ICppCompilationUnit ownerClassUnit;
 
+
 	
 	protected StateMachineExporterBase(Region region, ICppCompilationUnit owner) {
 		this.stateMachineRegion = region;
@@ -183,7 +184,9 @@ public abstract class StateMachineExporterBase {
 					if (se != null) {
 						List<Port> ports = tri.getPorts();
 						assert (ports.size() == 0 || ports.size() == 1);
-						String port = ports.size() == 0 ? PortTemplates.NO_PORT : ports.get(0).getName();
+						String port = ports.size() == 0 ? PortTemplates.ANY_PORT : 
+							getActualCompilationUnit().getUnitName() + "::" 
+								+ PortTemplates.portTypeInfoName(ports.get(0).getName(), getActualCompilationUnit().getUnitName());
 						transitionCondition = new TransitionConditions(se.getSignal().getName(),
 								item.getSource().getName(), port);
 
@@ -202,6 +205,6 @@ public abstract class StateMachineExporterBase {
 				}
 				stateMachineMap.put(transitionCondition, guardTransitionPair);
 			}
-		}
+}
 	}
 }

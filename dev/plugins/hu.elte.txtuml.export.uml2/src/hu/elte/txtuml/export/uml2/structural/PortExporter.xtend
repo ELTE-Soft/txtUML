@@ -7,9 +7,9 @@ import org.eclipse.jdt.core.dom.TypeDeclaration
 import org.eclipse.uml2.uml.Interface
 import org.eclipse.uml2.uml.Port
 import hu.elte.txtuml.export.uml2.BaseExporter
-import java.util.Optional
+import hu.elte.txtuml.api.model.Interface.Empty
 
-class PortExporter extends Exporter<TypeDeclaration, ITypeBinding, Port> {
+public class PortExporter extends Exporter<TypeDeclaration, ITypeBinding, Port> {
 
 	new(BaseExporter<?, ?, ?> parent) {
 		super(parent)
@@ -23,33 +23,29 @@ class PortExporter extends Exporter<TypeDeclaration, ITypeBinding, Port> {
 			ElementTypeTeller.isBehavioralPort(source), source.name.identifier)
 	}
 
-	def Optional<Interface> exportPortType(ITypeBinding iface) {
-		if (iface.qualifiedName == hu.elte.txtuml.api.model.Interface.Empty.canonicalName) {
-			Optional.empty
-		} else {
-			Optional.of(fetchType(iface) as Interface)
-		}
+	def Interface exportPortType(ITypeBinding iface) {
+		fetchType(iface) as Interface
 	}
 
-	def exportWithInterfaces(Optional<Interface> provided, Optional<Interface> required, boolean isBehavior,
+	def exportWithInterfaces(Interface provided, Interface required, boolean isBehavior,
 		String portName) {
+		result.name = portName
 		result.isBehavior = isBehavior;
+		
 		val dummyProvided = factory.createInterface
 		dummyProvided.name = '''provided interface for «portName»'''
-		provided.ifPresent [
-			val dummyInherit = factory.createGeneralization
-			dummyInherit.specific = dummyProvided
-			dummyInherit.general = it
-		]
+		
+		val dummyInherit = factory.createGeneralization
+		dummyInherit.specific = dummyProvided
+		dummyInherit.general = provided
+		
 		result.type = dummyProvided
 		storePackaged(dummyProvided)
-		required.ifPresent [
-			val providedRequired = factory.createUsage
-			providedRequired.clients += dummyProvided
-			providedRequired.suppliers += it
-			storePackaged(providedRequired)
-		]
-		result.name = portName
+		val providedRequired = factory.createUsage
+		providedRequired.clients += dummyProvided
+		providedRequired.suppliers += required
+		storePackaged(providedRequired)
+		
 	}
 
 }
@@ -66,7 +62,7 @@ class InPortExporter extends PortExporter {
 
 	override exportContents(TypeDeclaration source) {
 		val typeArguments = source.resolveBinding.superclass.typeArguments
-		exportWithInterfaces(exportPortType(typeArguments.get(0)), Optional.empty,
+		exportWithInterfaces(exportPortType(typeArguments.get(0)), getImportedElement(Empty.canonicalName) as Interface,
 			ElementTypeTeller.isBehavioralPort(source), source.name.identifier)
 	}
 }
@@ -83,7 +79,7 @@ class OutPortExporter extends PortExporter {
 
 	override exportContents(TypeDeclaration source) {
 		val typeArguments = source.resolveBinding.superclass.typeArguments
-		exportWithInterfaces(Optional.empty, exportPortType(typeArguments.get(0)),
+		exportWithInterfaces(getImportedElement(Empty.canonicalName) as Interface, exportPortType(typeArguments.get(0)),
 			ElementTypeTeller.isBehavioralPort(source), source.name.identifier)
 	}
 }

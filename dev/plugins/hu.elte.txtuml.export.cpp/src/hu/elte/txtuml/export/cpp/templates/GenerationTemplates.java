@@ -5,6 +5,7 @@ import java.util.List;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.FileNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.HierarchicalStateMachineNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.PointerAndMemoryNames;
+import hu.elte.txtuml.export.cpp.templates.GenerationNames.TypeDeclarationKeywords;
 
 public class GenerationTemplates {
 
@@ -20,8 +21,9 @@ public class GenerationTemplates {
 	}
 
 	public static String dataType(String datatTypeName, String attributes) {
-		return GenerationNames.DataType + " " + datatTypeName + "\n" + "{\n" + attributes + "}";
+		return TypeDeclarationKeywords.DataType + " " + datatTypeName + "\n" + "{\n" + attributes + "}";
 	}
+	
 
 	public static String generatedAbstractClassName(String className) {
 		return "Abstract" + className;
@@ -37,8 +39,7 @@ public class GenerationTemplates {
 	}
 
 	public static String forwardDeclaration(String className) {
-
-		return GenerationNames.ClassType + " " + PrivateFunctionalTemplates.mapUMLClassToCppClass(className) + ";\n";
+		return GenerationNames.TypeDeclarationKeywords.ClassType + " " + PrivateFunctionalTemplates.mapUMLClassToCppClass(className) + ";\n";
 	}
 
 	public static String putNamespace(String source, String namespace) {
@@ -48,6 +49,7 @@ public class GenerationTemplates {
 	public static String formatSubSmFunctions(String source) {
 		return source.replaceAll(PointerAndMemoryNames.Self, HierarchicalStateMachineNames.ParentSmMemberName);
 	}
+
 
 	public static String createObject(String typeName, String objName, boolean sharedObject) {
 		return createObject(typeName, objName, null, null, sharedObject);
