@@ -17,6 +17,7 @@ import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.ui.IEditorDescriptor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
@@ -26,10 +27,11 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.FileEditorInput;
 
+import hu.elte.txtuml.api.model.seqdiag.SequenceDiagram;
 import hu.elte.txtuml.export.plantuml.exceptions.ExportRuntimeException;
-import hu.elte.txtuml.export.plantuml.exceptions.PreCompilationError;
-import hu.elte.txtuml.export.plantuml.exceptions.SequenceDiagramStructuralException;
+import hu.elte.txtuml.export.plantuml.exceptions.SequenceDiagramExportException;
 import hu.elte.txtuml.export.plantuml.generator.PlantUmlGenerator;
+import hu.elte.txtuml.utils.jdt.ElementTypeTeller;
 
 /**
  * <b>PlantUML exporter class.</b>
@@ -78,11 +80,10 @@ public class PlantUmlExporter {
 	 * project so the newly created resource shows up.
 	 * 
 	 * @throws CoreException
-	 * @throws SequenceDiagramStructuralException
-	 * @throws PreCompilationError
+	 * @throws SequenceDiagramExportException
 	 */
 	public void generatePlantUmlOutput(final IProgressMonitor monitor)
-			throws CoreException, SequenceDiagramStructuralException, PreCompilationError {
+			throws CoreException, SequenceDiagramExportException {
 		for (IType sequenceDiagram : seqDiagrams) {
 			String simpleName = sequenceDiagram.getElementName();
 
@@ -94,6 +95,14 @@ public class PlantUmlExporter {
 			parser.setSource(element);
 
 			CompilationUnit cu = (CompilationUnit) parser.createAST(null);
+
+			TypeDeclaration seqeunceDiagramDeclaration = getSequenceDiagramTypeDeclaration(
+					sequenceDiagram.getFullyQualifiedName(), cu);
+
+			if (!ElementTypeTeller.hasSuperClass(seqeunceDiagramDeclaration.resolveBinding(),
+					SequenceDiagram.class.getCanonicalName()))
+				throw new SequenceDiagramExportException(
+						sequenceDiagram.getElementName() + " is not a sequence diagram.");
 
 			URI targetURI = CommonPlugin
 					.resolve(URI.createFileURI(projectName + "/" + genFolderName + "/" + simpleName + ".txt"));
@@ -139,6 +148,13 @@ public class PlantUmlExporter {
 				monitor.worked(100 / (seqDiagrams.size() * 2));
 			}
 		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private TypeDeclaration getSequenceDiagramTypeDeclaration(String sequenceDiagramName, CompilationUnit cu) {
+		List<TypeDeclaration> declarations = cu.types();
+		return declarations.stream()
+				.filter(decl -> decl.resolveBinding().getQualifiedName().equals(sequenceDiagramName)).findFirst().get();
 	}
 
 	protected void cleanupWorkbench(IFile targetFile, IWorkbenchPage page) throws CoreException {
