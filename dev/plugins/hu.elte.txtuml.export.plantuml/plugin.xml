@@ -27,7 +27,7 @@
                      <adapt
                            type="org.eclipse.jdt.core.ICompilationUnit">
                         <test
-                              property="hu.elte.txtuml.seqdiag.execution.hasDescriptionType">
+                              property="hu.elte.txtuml.seqdiag.hasDescriptionType">
                         </test>
                      </adapt>
                   </iterate>
