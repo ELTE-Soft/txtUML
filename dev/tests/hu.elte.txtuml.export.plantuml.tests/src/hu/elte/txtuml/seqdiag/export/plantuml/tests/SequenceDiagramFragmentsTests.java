@@ -1,4 +1,4 @@
-package hu.elte.txtuml.export.plantuml.tests;
+package hu.elte.txtuml.seqdiag.export.plantuml.tests;
 
 import java.util.ArrayList;
 import java.util.Scanner;
