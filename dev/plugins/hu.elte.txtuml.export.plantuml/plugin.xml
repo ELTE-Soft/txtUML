@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.eclipse.ui.commands">
+      <command
+            defaultHandler="hu.elte.txtuml.seqdiag.handlers.RunSelectedSequenceDiagramHandler"
+            id="hu.elte.txtuml.seqdiag.runSelectedSequenceDiagramCommand"
+            name="runSelectedSequenceDiagramCommand">
+      </command>
+   </extension>
+   <extension
+         point="org.eclipse.ui.menus">
+      <menuContribution
+            locationURI="popup:org.eclipse.ui.navigator.ProjectExplorer#PopupMenu?before=additions">
+         <command
+               commandId="hu.elte.txtuml.seqdiag.runSelectedSequenceDiagramCommand"
+               label="Run sequence diagram"
+               style="push">
+            <visibleWhen
+                  checkEnabled="true">
+               <with
+                     variable="activeMenuSelection">
+                  <iterate
+                        ifEmpty="false"
+                        operator="and">
+                     <adapt
+                           type="org.eclipse.jdt.core.ICompilationUnit">
+                        <test
+                              property="hu.elte.txtuml.seqdiag.execution.hasDescriptionType">
+                        </test>
+                     </adapt>
+                  </iterate>
+               </with>
+            </visibleWhen>
+         </command>
+      </menuContribution>
+      <menuContribution
+            locationURI="popup:org.eclipse.jdt.ui.PackageExplorer?before=additions">
+         <command
+               commandId="hu.elte.txtuml.seqdiag.runSelectedSequenceDiagramCommand"
+               label="Run sequence diagram"
+               style="push">
+            <visibleWhen
+                  checkEnabled="true">
+               <with
+                     variable="activeMenuSelection">
+                  <iterate
+                        ifEmpty="false"
+                        operator="and">
+                     <adapt
+                           type="org.eclipse.jdt.core.ICompilationUnit">
+                        <test
+                              property="hu.elte.txtuml.seqdiag.hasDescriptionType">
+                        </test>
+                     </adapt>
+                  </iterate>
+               </with>
+            </visibleWhen>
+         </command>
+      </menuContribution>
+   </extension>
+   <extension
+         point="org.eclipse.core.expressions.propertyTesters">
+      <propertyTester
+            class="hu.elte.txtuml.seqdiag.handlers.SequenceDiagramDescriptionTester"
+            id="hu.elte.txtuml.seqdiag.SequenceDiagramDescriptionTester"
+            namespace="hu.elte.txtuml.seqdiag"
+            properties="hasDescriptionType"
+            type="org.eclipse.jdt.core.ICompilationUnit">
+      </propertyTester>
+   </extension>
+
+</plugin>

@@ -13,7 +13,7 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import hu.elte.txtuml.export.plantuml.PlantUmlExporter;
+import hu.elte.txtuml.seqdiag.export.plantuml.PlantUmlExporter;
 
 public class FileManagementTests {
 	private static PlantUmlExporter exporter;

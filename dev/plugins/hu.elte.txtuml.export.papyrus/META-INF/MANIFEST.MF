@@ -12,7 +12,7 @@ Require-Bundle:
  hu.elte.txtuml.api.layout,
  hu.elte.txtuml.utils,
  hu.elte.txtuml.export.uml2,
- hu.elte.txtuml.export.plantuml,
+ hu.elte.txtuml.seqdiag,
  org.eclipse.gmf.tooling.runtime,
  org.eclipse.debug.ui,
  org.eclipse.jdt.core,
