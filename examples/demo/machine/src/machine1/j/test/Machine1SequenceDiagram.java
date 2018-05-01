@@ -1,4 +1,4 @@
-package machine1.j.tests;
+package machine1.j.test;
 
 import hu.elte.txtuml.api.model.Action;
 import hu.elte.txtuml.api.model.seqdiag.ExecMode;

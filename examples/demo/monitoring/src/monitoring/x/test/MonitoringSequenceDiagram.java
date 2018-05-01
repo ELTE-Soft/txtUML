@@ -1,4 +1,4 @@
-package monitoring.x;
+package monitoring.x.test;
 
 import hu.elte.txtuml.api.model.Action;
 import hu.elte.txtuml.api.model.seqdiag.Position;
@@ -17,17 +17,17 @@ import monitoring.x.model.ToAlert;
 import monitoring.x.model.Write;
 import monitoring.x.model.WriteError;
 
-public class MonitoringSequenceDiagram extends SequenceDiagram{
-	
+public class MonitoringSequenceDiagram extends SequenceDiagram {
+
 	@Position(1)
 	Alert alert;
-	
+
 	@Position(2)
 	ResourceMonitor monitor;
-	
+
 	@Position(3)
 	Aggregator aggregator;
-	
+
 	@Override
 	public void initialize() {
 		monitor = Action.create(ResourceMonitor.class);
@@ -39,32 +39,32 @@ public class MonitoringSequenceDiagram extends SequenceDiagram{
 		Action.start(aggregator);
 		Action.start(alert);
 	}
-	
+
 	@Override
 	public void run() {
 		Sequence.fromActor(new Read(), monitor);
 		Sequence.send(monitor, new OK(), alert);
-		
+
 		for (int i = 0; i < 4; ++i) {
 			Sequence.fromActor(new Write(), monitor);
 			Sequence.send(monitor, new WriteError(), aggregator);
 			Sequence.send(monitor, new Error(), alert);
 		}
-		
+
 		Sequence.fromActor(new Close(), monitor);
 		Sequence.send(monitor, new OK(), alert);
-		
+
 		Sequence.fromActor(new Write(), monitor);
 		Sequence.send(monitor, new OK(), alert);
 		Sequence.fromActor(new Write(), monitor);
 		Sequence.send(monitor, new OK(), alert);
-		
+
 		for (int i = 0; i < 4; ++i) {
 			Sequence.fromActor(new Read(), monitor);
 			Sequence.send(monitor, new ReadError(), aggregator);
 			Sequence.send(monitor, new Error(), alert);
 		}
-		
+
 		Sequence.fromActor(new Write(), monitor);
 		Sequence.send(monitor, new OK(), alert);
 	}

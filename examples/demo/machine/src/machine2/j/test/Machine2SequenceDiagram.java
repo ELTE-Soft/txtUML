@@ -1,22 +1,24 @@
-package machine3.j.tests;
+package machine2.j.test;
 
+import static hu.elte.txtuml.api.model.seqdiag.Sequence.assertState;
 import static hu.elte.txtuml.api.model.seqdiag.Sequence.fromActor;
-import static hu.elte.txtuml.api.model.seqdiag.Sequence.send;
 
 import hu.elte.txtuml.api.model.Action;
 import hu.elte.txtuml.api.model.seqdiag.ExecMode;
 import hu.elte.txtuml.api.model.seqdiag.ExecutionMode;
 import hu.elte.txtuml.api.model.seqdiag.Position;
-//import static hu.elte.txtuml.api.model.seqdiag.Sequence.assertState;
+import hu.elte.txtuml.api.model.seqdiag.Sequence;
 import hu.elte.txtuml.api.model.seqdiag.SequenceDiagram;
-import machine3.j.model.Machine;
-import machine3.j.model.User;
-import machine3.j.model.associations.Usage;
-import machine3.j.model.signals.ButtonPress;
-import machine3.j.model.signals.DoTasks;
-import machine3.j.model.signals.DoYourWork;
+import machine2.j.model.Machine;
+import machine2.j.model.Machine.Off;
+import machine2.j.model.Machine.On;
+import machine2.j.model.User;
+import machine2.j.model.associations.Usage;
+import machine2.j.model.signals.ButtonPress;
+import machine2.j.model.signals.DoTasks;
+import machine2.j.model.signals.DoYourWork;
 
-public class Machine3SequenceDiagram extends SequenceDiagram {
+public class Machine2SequenceDiagram extends SequenceDiagram {
 
 	@Position(2)
 	Machine m;
@@ -24,6 +26,7 @@ public class Machine3SequenceDiagram extends SequenceDiagram {
 	@Position(1)
 	User u1;
 
+	@Position(3)
 	User u2;
 
 	@Override
@@ -32,11 +35,6 @@ public class Machine3SequenceDiagram extends SequenceDiagram {
 		u1 = Action.create(User.class);
 		u2 = Action.create(User.class);
 
-		u1.name = "user1";
-		u2.name = "user2";
-		u1.id = 1;
-		u2.id = 2;
-
 		Action.link(Usage.usedMachine.class, m, Usage.userOfMachine.class, u1);
 		Action.link(Usage.usedMachine.class, m, Usage.userOfMachine.class, u2);
 
@@ -44,23 +42,21 @@ public class Machine3SequenceDiagram extends SequenceDiagram {
 		Action.start(m);
 		Action.start(u1);
 		Action.start(u2);
-
-		Action.log("One of the users is starting to do his or her work.");
 	}
 
 	@Override
 	@ExecutionMode(ExecMode.LENIENT)
 	public void run() {
 		fromActor(new DoYourWork(), u1);
-//		assertState(u1, NotWorking.class);
-//		assertState(m, Off.class);
+		assertState(m, Off.class);
 
-		send(u1, new ButtonPress(), m);
-		send(u1, new DoTasks(4), m);
-//		assertState(m, On.Active.class);
-		
-		// proposal
-//		send(new ButtonPress(), m);	// from Timer
+		Sequence.send(u1, new ButtonPress(), m);
+		assertState(m, On.Active.class);
+
+		for (int i = 0; i < 3; ++i) {
+			Sequence.send(u1, new DoTasks(1), m);
+			assertState(m, On.Active.class);
+		}
 	}
 
 }
