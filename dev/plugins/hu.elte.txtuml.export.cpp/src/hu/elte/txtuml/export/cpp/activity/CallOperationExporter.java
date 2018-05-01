@@ -24,7 +24,7 @@ import hu.elte.txtuml.export.cpp.IDependencyCollector;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.FileNames;
 import hu.elte.txtuml.export.cpp.templates.activity.ActivityTemplates;
 import hu.elte.txtuml.export.cpp.templates.activity.OperatorTemplates;
-import hu.elte.txtuml.export.cpp.templates.structual.VariableTemplates;
+import hu.elte.txtuml.export.cpp.templates.structual.ObjectDeclDefTemplates;
 
 class CallOperationExporter {
 
@@ -159,8 +159,8 @@ class CallOperationExporter {
 	private String declareAllOutTempParameters(EList<OutputPin> outParamaterPins) {
 		StringBuilder declerations = new StringBuilder("");
 		for (OutputPin outPin : outParamaterPins) {
-			declerations.append(VariableTemplates.variableDecl(outPin.getType().getName(),
-					tempVariableExporter.getRealVariableName(outPin), false));
+			declerations.append(ObjectDeclDefTemplates.variableDecl(outPin.getType().getName(),
+					tempVariableExporter.getRealVariableName(outPin), ObjectDeclDefTemplates.VariableType.Default));
 		}
 
 		return declerations.toString();

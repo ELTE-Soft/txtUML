@@ -95,7 +95,7 @@ public class VisualizeTxtUMLPage extends WizardPage {
 	}
 
 	/**
-	 * Returns the plantUML model layout classes
+	 * Returns the txtUML model layout classes
 	 * 
 	 * @return
 	 */

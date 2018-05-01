@@ -5,6 +5,7 @@ import java.util.List;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.BasicTypeNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.ClassUtilsNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.FileNames;
+import hu.elte.txtuml.export.cpp.templates.GenerationNames.InterfaceNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.ModifierNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.PointerAndMemoryNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.TimerNames;
@@ -14,12 +15,13 @@ import hu.elte.txtuml.utils.Pair;
 
 public class PrivateFunctionalTemplates {
 
+
 	public static String signalType(String type) {
 		return type + GenerationNames.EventClassTypeId;
 	}
-
+		
 	public static String include(String className) {
-		return "#include \"" + mapUMLClassToCppClass(className) + "." + FileNames.HeaderExtension + "\"\n";
+		return "#include \"" + getClassPath(mapUMLClassToCppClass(className)) + "\"\n";
 	}
 
 	public static String typedefs(String className) {
@@ -45,9 +47,6 @@ public class PrivateFunctionalTemplates {
 		return transitionTableType(className) + " " + className + "::" + GenerationNames.TransitionTableName + ";\n";
 	}
 
-	public static String pointerBaseType(String typeName) {
-		return typeName.substring(0, typeName.indexOf("*"));
-	}
 
 	public static String paramList(List<Pair<String, String>> params) {
 		if (params == null || params.size() == 0)
@@ -96,9 +95,21 @@ public class PrivateFunctionalTemplates {
 	public static String mapUMLClassToCppClass(String className) {
 		switch(className) {
 			case UMLStdLibNames.ModelClassName:
-				return ClassUtilsNames.BaseClassName;				
+				return ClassUtilsNames.BaseClassName;
+			case UMLStdLibNames.EmptyInfName :
+				return InterfaceNames.EmptyInfName;
 			default:
 				return className;
+		}
+	}
+	
+	private static String getClassPath(String className) {
+		switch(className) {
+		case InterfaceNames.EmptyInfName :
+			return FileNames.InterfaceUtilsPath + "." + FileNames.HeaderExtension;
+		default:
+			return className +  "." + FileNames.HeaderExtension;
+			
 		}
 	}
 	

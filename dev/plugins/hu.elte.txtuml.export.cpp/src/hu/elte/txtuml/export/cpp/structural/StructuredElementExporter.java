@@ -9,6 +9,7 @@ import org.eclipse.uml2.uml.Operation;
 import org.eclipse.uml2.uml.OperationOwner;
 import org.eclipse.uml2.uml.Parameter;
 import org.eclipse.uml2.uml.Property;
+import org.eclipse.uml2.uml.UMLPackage;
 import org.eclipse.uml2.uml.VisibilityKind;
 
 import hu.elte.txtuml.export.cpp.ActivityExportResult;
@@ -18,7 +19,7 @@ import hu.elte.txtuml.export.cpp.IDependencyCollector;
 import hu.elte.txtuml.export.cpp.activity.ActivityExporter;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames;
 import hu.elte.txtuml.export.cpp.templates.structual.FunctionTemplates;
-import hu.elte.txtuml.export.cpp.templates.structual.VariableTemplates;
+import hu.elte.txtuml.export.cpp.templates.structual.ObjectDeclDefTemplates;
 
 public abstract class StructuredElementExporter<StructuredElement extends OperationOwner & AttributeOwner> implements ICppCompilationUnit, IDependencyCollector {
 
@@ -129,6 +130,9 @@ public abstract class StructuredElementExporter<StructuredElement extends Operat
 	private String createAttributes(VisibilityKind modifyer) {
 		StringBuilder source = new StringBuilder("");
 		for (Property attribute : structuredElement.getOwnedAttributes()) {
+			if(attribute.getType().eClass().equals(UMLPackage.Literals.INTERFACE)) {
+				continue;
+			}
 			if (attribute.getVisibility().equals(modifyer)) {
 				String type = UKNOWN_TYPE;
 				if (attribute.getType() != null) {
@@ -137,7 +141,7 @@ public abstract class StructuredElementExporter<StructuredElement extends Operat
 
 				if (isSimpleAttribute(attribute)) {
 
-					source.append(VariableTemplates.propertyDecl(type, attribute.getName(), attribute.getDefault()));
+					source.append(ObjectDeclDefTemplates.propertyDecl(type, attribute.getName(), attribute.getDefault()));
 				} else {
 					dependencyExporter.addDependency(type);
 				}
@@ -178,6 +182,12 @@ public abstract class StructuredElementExporter<StructuredElement extends Operat
 	@Override
 	public void addCppOnlyDependency(String dependency) {
 		dependencyExporter.addCppOnlyDependency(dependency);
+	}
+	
+	@Override
+	public void addHeaderOnlyIncludeDependency(String type) {
+		dependencyExporter.addHeaderOnlyIncludeDependency(type);
+		
 	}
 	
 	@Override
