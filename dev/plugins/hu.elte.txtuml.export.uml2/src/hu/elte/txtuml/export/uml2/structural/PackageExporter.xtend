@@ -15,6 +15,7 @@ import org.eclipse.jdt.core.dom.TypeDeclaration
 import org.eclipse.uml2.uml.Class
 import org.eclipse.uml2.uml.Package
 import org.eclipse.uml2.uml.PackageableElement
+import java.util.List
 
 abstract class AbstractPackageExporter<S, T extends Package> extends Exporter<S, S, T> {
 
@@ -26,13 +27,63 @@ abstract class AbstractPackageExporter<S, T extends Package> extends Exporter<S,
 		super(parent);
 	}
 
-	def exportPackageFragment(IPackageFragment packageFragment) {
-		packageFragment.children.forEach[exportCompUnit(it as ICompilationUnit)]
-		val packageRoot = packageFragment.parent as IPackageFragmentRoot
-		val subPackages = packageRoot.children.map[it as IPackageFragment].filter [
-			elementName.startsWith(packageFragment.elementName + ".")
+	def exportPackageFragment(List<IPackageFragment> packageFragments) {
+		if(packageFragments.empty) {
+			return
+		}
+			
+		packageFragments.forEach[packageFragment | 
+			packageFragment.children.forEach[exportCompUnit(it as ICompilationUnit)]
 		]
-		subPackages.forEach[exportPackage[result.nestedPackages += it]]
+		
+		if(packageFragments.size == 1) {
+			val packageFregement = packageFragments.get(0)
+				val subPackages = getSubPackages(packageFregement)
+				subPackages.forEach[p | exportPackage(#[p])[result.nestedPackages += it]]
+				
+		} else if(packageFragments.size == 2) {
+			val subPackages1 = getSubPackages(packageFragments.get(0))
+			val subPackages2 = getSubPackages(packageFragments.get(1))	
+							
+			var i = 0
+			var j = 0			
+			while(i < subPackages1.size || j < subPackages2.size) {
+				
+				if(j >= subPackages2.size || 
+					(i < subPackages1.size && subPackages1.get(i).elementName < subPackages2.get(j).elementName)
+				) {
+					val packageFragment1 = subPackages1.get(i)
+					exportPackage(#[packageFragment1])[result.nestedPackages += it]
+					i++
+				}
+				else if(i >= subPackages1.size || 
+					(j < subPackages2.size && subPackages1.get(i).elementName > subPackages2.get(j).elementName)
+				) {
+					val packageFragment2 = subPackages2.get(j)
+					exportPackage(#[packageFragment2])[result.nestedPackages += it]
+					j++
+					
+				} else if(i < subPackages1.size && j < subPackages2.size && 
+					subPackages1.get(i).elementName == subPackages2.get(j).elementName
+				) {
+					val packageFragment1 = subPackages1.get(i)
+					val packageFragment2 = subPackages2.get(j)
+					exportPackage(#[packageFragment1, packageFragment2])[result.nestedPackages += it]
+					i++
+					j++
+				}
+			}
+		}
+
+		
+	}
+	
+	def List<IPackageFragment> getSubPackages(IPackageFragment packageFregement) {
+			val packageRoot = packageFregement.parent as IPackageFragmentRoot
+			val subPackages = packageRoot.children.map[it as IPackageFragment].filter [
+					elementName.startsWith(packageFregement.elementName + ".")
+			]
+			subPackages.toList
 	}
 
 	def exportCompUnit(ICompilationUnit compUnit) {
@@ -94,16 +145,16 @@ abstract class AbstractPackageExporter<S, T extends Package> extends Exporter<S,
 	}
 }
 
-class PackageExporter extends AbstractPackageExporter<IPackageFragment, Package> {
+class PackageExporter extends AbstractPackageExporter<List<IPackageFragment>, Package> {
 
 	new(BaseExporter<?, ?, ?> parent) {
 		super(parent)
 	}
 
-	override create(IPackageFragment pf) { factory.createPackage }
+	override create(List<IPackageFragment> pf) { if(!pf.empty) factory.createPackage }
 
-	override exportContents(IPackageFragment s) {
-		result.name = s.elementName.split(Pattern.quote(".")).last
+	override exportContents(List<IPackageFragment> s) {
+		result.name = s.get(0).elementName.split(Pattern.quote(".")).last
 		exportPackageFragment(s)
 	}
 }
