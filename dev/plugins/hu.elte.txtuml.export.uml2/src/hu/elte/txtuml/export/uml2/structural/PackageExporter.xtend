@@ -37,9 +37,9 @@ abstract class AbstractPackageExporter<S, T extends Package> extends Exporter<S,
 		]
 		
 		if(packageFragments.size == 1) {
-			val packageFregement = packageFragments.get(0)
-				val subPackages = getSubPackages(packageFregement)
-				subPackages.forEach[p | exportPackage(#[p])[result.nestedPackages += it]]
+			val packageFregement = packageFragments.head
+			val subPackages = getSubPackages(packageFregement)
+			subPackages.forEach[p | exportPackage(#[p])[result.nestedPackages += it]]
 				
 		} else if(packageFragments.size == 2) {
 			val subPackages1 = getSubPackages(packageFragments.get(0))
@@ -154,7 +154,7 @@ class PackageExporter extends AbstractPackageExporter<List<IPackageFragment>, Pa
 	override create(List<IPackageFragment> pf) { if(!pf.empty) factory.createPackage }
 
 	override exportContents(List<IPackageFragment> s) {
-		result.name = s.get(0).elementName.split(Pattern.quote(".")).last
+		result.name = s.head.elementName.split(Pattern.quote(".")).last
 		exportPackageFragment(s)
 	}
 }
