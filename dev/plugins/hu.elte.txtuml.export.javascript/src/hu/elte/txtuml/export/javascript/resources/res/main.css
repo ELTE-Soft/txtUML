@@ -431,3 +431,42 @@ body {
 		top:0;
 	}
 }*/
+
+/* JointJS animation*/
+
+@keyframes blinking-body {
+	from {
+		fill: #20ac59;
+	}
+  
+	to {
+		fill: transparent;
+	}
+}
+
+@keyframes blinking-text {
+	from {
+		fill: black;
+		text-shadow: 0 0 5px white;
+	}
+  
+	to {
+		fill: rgb(0, 0, 0);
+	}
+}
+
+#paper g[active] path,
+#paper g[active] rect,
+#paper g[active] circle,
+#paper g[active] ellipse,
+#paper g[active] line,
+#paper g[active] polyline,
+#paper g[active] polygon,
+#paper g[active] mesh{
+	animation: blinking-body 0.5s ease-in-out infinite alternate;
+}
+
+#paper g[active] text{
+	animation: blinking-text 0.5s ease-in-out infinite alternate;
+	font-weight: bold;
+}
