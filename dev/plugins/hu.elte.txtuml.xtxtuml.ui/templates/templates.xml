@@ -1,11 +1,26 @@
 <?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Guidelines:
+  - only use attributes 'id', 'name', 'description' and 'context', unless necessary
+  - template names should start with the corresponding keyword, if possible
+  - use 'cursor' exactly in places of omittable content
+  - avoid keyword variable names, e.g. 'port'
+-->
 <templates>
 <template
-	id="signal"
-	name="signal"
-	description="signal"
-	context="hu.elte.txtuml.xtxtuml.XtxtUML.TUSignal"
-	>signal ${name} {
+	id="class"
+	name="class"
+	description="class"
+	context="hu.elte.txtuml.xtxtuml.XtxtUML.TUClass"
+	>class ${name} {
+	${cursor}
+}</template>
+<template
+	id="class_with_superclass"
+	name="class_with_superclass"
+	description="class with superclass"
+	context="hu.elte.txtuml.xtxtuml.XtxtUML.TUClass"
+	>class ${name} extends ${superclass} {
 	${cursor}
 }</template>
 <template
@@ -17,13 +32,120 @@
 	${multiplicityA} ${classA} ${endAName};
 	${multiplicityB} ${classB} ${endBName};
 }</template>
-<!-- TODO the second 'cursor' is ignored in template 'state_with_activities' -->
+<template
+	id="composition"
+	name="composition"
+	description="composition"
+	context="hu.elte.txtuml.xtxtuml.XtxtUML.TUAssociation"
+	>composition ${name} {
+	container ${containerClass} ${containerEndName};
+	${containedMultiplicity} ${containedClass} ${containedEndName};
+}</template>
+<template
+	id="signal"
+	name="signal"
+	description="signal"
+	context="hu.elte.txtuml.xtxtuml.XtxtUML.TUSignal"
+	>signal ${name} {
+	${cursor}
+}</template>
+<template
+	id="signal_with_supersignal"
+	name="signal_with_supersignal"
+	description="signal with supersignal"
+	context="hu.elte.txtuml.xtxtuml.XtxtUML.TUSignal"
+	>signal ${name} extends ${supersignal} {
+	${cursor}
+}</template>
+<template
+	id="interface"
+	name="interface"
+	description="interface"
+	context="hu.elte.txtuml.xtxtuml.XtxtUML.TUInterface"
+	>interface ${name} {
+	reception ${receptionSignal};
+}</template>
+<template
+	id="connector_assembly"
+	name="connector_assembly"
+	description="assembly connector"
+	context="hu.elte.txtuml.xtxtuml.XtxtUML.TUConnector"
+	>connector ${name} {
+	${roleA}->${portA} ${endAName};
+	${roleB}->${portB} ${endBName};
+}</template>
+<template
+	id="delegation_connector"
+	name="delegation_connector"
+	description="delegation connector"
+	context="hu.elte.txtuml.xtxtuml.XtxtUML.TUConnector"
+	>delegation ${name} {
+	${containerRole}->${containerPort} ${containerEndName};
+	${containedRole}->${containedPort} ${containedEndName};
+}</template>
+<template
+	id="enumeration"
+	name="enumeration"
+	description="enumeration"
+	context="hu.elte.txtuml.xtxtuml.XtxtUML.TUEnumeration"
+	>enum ${name} {
+	${cursor}
+}</template>
+<template
+	id="operation"
+	name="operation"
+	description="operation"
+	context="hu.elte.txtuml.xtxtuml.XtxtUML.TUClassMember"
+	>${visibility} ${returnType} ${name}(${parameters}) {
+	${cursor}
+}</template>
+<template
+	id="state"
+	name="state"
+	description="state"
+	context="hu.elte.txtuml.xtxtuml.XtxtUML.TUState"
+	>state ${name} {
+	${cursor}
+}</template>
+<template
+	id="composite_state"
+	name="composite_state"
+	description="composite state"
+	context="hu.elte.txtuml.xtxtuml.XtxtUML.TUState"
+	>composite ${name} {
+	${cursor}
+}</template>
+<template
+	id="choice_pseudostate"
+	name="choice_pseudostate"
+	description="choice pseudostate"
+	context="hu.elte.txtuml.xtxtuml.XtxtUML.TUState"
+	>choice ${name} {
+	${cursor}
+}</template>
+<!--
+TODO the second 'cursor' is ignored in templates 'state_with_activities'
+and 'composite_state_with_activities'
+-->
 <template
 	id="state_with_activities"
 	name="state_with_activities"
 	description="state with entry and exit activities"
 	context="hu.elte.txtuml.xtxtuml.XtxtUML.TUState"
 	>state ${name} {
+	entry {
+		${cursor}
+	}
+	exit {
+		${cursor}
+	}
+}</template>
+<template
+	id="composite_state_with_activities"
+	name="composite_state_with_activities"
+	description="composite state with entry and exit activities"
+	context="hu.elte.txtuml.xtxtuml.XtxtUML.TUState"
+	>composite ${name} {
 	entry {
 		${cursor}
 	}
@@ -39,27 +161,36 @@
 	>transition ${name} {
 	from ${sourceState};
 	to ${targetState};
-	trigger ${signal};
+	trigger ${triggerSignal};
+	guard ( ${guardExpression} );
+	effect {
+		${cursor}
+	}
 }</template>
 <template
-	id="transition_without_trigger"
-	name="transition_without_trigger"
-	description="transition without trigger"
+	id="transition_without_guard_and_effect"
+	name="transition_without_guard_and_effect"
+	description="transition without guard and effect"
 	context="hu.elte.txtuml.xtxtuml.XtxtUML.TUTransition"
 	>transition ${name} {
 	from ${sourceState};
 	to ${targetState};
+	trigger ${triggerSignal};
 }</template>
 <template
-	id="transition_with_port"
-	name="transition_with_port"
-	description="transition with port"
+	id="transition_with_port_restriction"
+	name="transition_with_port_restriction"
+	description="transition with port restriction"
 	context="hu.elte.txtuml.xtxtuml.XtxtUML.TUTransition"
 	>transition ${name} {
 	from ${sourceState};
 	to ${targetState};
-	trigger	${signal};
-	port ${port};
+	trigger	${triggerSignal};
+	port ${sourcePort};
+	guard ( ${guardExpression} );
+	effect {
+		${cursor}
+	}
 }</template>
 <template
 	id="port"
