@@ -32,6 +32,10 @@ public class GenerationTemplates {
 	public static String generatedErrorMessage(String functionName) {
 		return " Not implemented external method: " + functionName + "\n";
 	}
+	
+	public static String generatedExternalInclude(String className, String functionName){
+		return " " + className + "_" + functionName + "_impl.hpp\n";
+	}
 
 	public static String paramName(String paramName) {
 

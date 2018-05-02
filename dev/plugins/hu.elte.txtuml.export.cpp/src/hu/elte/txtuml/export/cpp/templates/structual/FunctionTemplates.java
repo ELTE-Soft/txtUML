@@ -63,9 +63,11 @@ public class FunctionTemplates {
 	public static String abstractFunctionDef(String className, String returnTypeName, String functionName,
 			List<Pair<String, String>> params, Boolean testing) {
 		StringBuilder body = new StringBuilder("");
-		body.append(GenerationNames.Comments.ToDoMessage);
+		//body.append(GenerationNames.Comments.ToDoMessage);
 		if(!testing) {
-			body.append(GenerationNames.Macros.ErrorMacro + GenerationTemplates.generatedErrorMessage(functionName));
+			//body.append(GenerationNames.Macros.ErrorMacro + GenerationTemplates.generatedErrorMessage(functionName));
+			body.append(GenerationNames.Macros.IncludeMacro + 
+					GenerationTemplates.generatedExternalInclude(className, functionName));
 		}
 		return functionDef(className, returnTypeName, functionName, params, body.toString());
 	}
