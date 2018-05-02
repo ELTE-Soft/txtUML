@@ -142,9 +142,14 @@ public class CppExporterUtils {
 	public static void writeOutSource(String path, String fileName, String source)
 			throws FileNotFoundException, UnsupportedEncodingException {
 		try {
-			File file = new File(path);
-			if (!file.exists()) {
-				file.mkdirs();
+			File directory = new File(path);
+			if (!directory.exists()) {
+				directory.mkdirs();
+			}
+			
+			File file = new File(path + File.separator + fileName);
+			if(!file.exists()) {
+				file.createNewFile();
 			}
 
 		} catch (Exception e) {
