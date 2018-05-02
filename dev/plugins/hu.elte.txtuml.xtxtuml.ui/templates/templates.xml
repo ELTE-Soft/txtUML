@@ -1,96 +1,82 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <templates>
 <template
-	autoinsert="true" id="asss"
-	context="hu.elte.txtuml.xtxtuml.XtxtUML.TUModelElement"
-	deleted="false"
-	description="association between two classes"
-	enabled="true"
-	name="association">association ${name} {&#13;
-		${multiplicityA} ${classA} ${nameA};&#13;
-		${multiplicityB} ${classB} ${nameB};&#13;
-}</template>
-<template
-	autoinsert="true"
-	id="bport"
-	context="hu.elte.txtuml.xtxtuml.XtxtUML.TUTransitionPort" 
-	deleted="false"
-	description="behaviour port"
-	enabled="true"
-	name="behaviour_port">behavior port ${name} {&#13;
-		provided ${interface1};&#13;
-		required ${interface2};&#13;
-}</template>
-<template
-	autoinsert="true"
-	id="port"
-	context="hu.elte.txtuml.xtxtuml.XtxtUML.TUClassMember"
-	deleted="false"
-	description="port"
-	enabled="true"
-	name="port">port ${name} {&#13;
-		provided ${interface1};&#13;
-		required ${interface2};&#13;
-}</template>
-<template
-	autoinsert="true"
-	id="sig"
-	context="hu.elte.txtuml.xtxtuml.XtxtUML.TUModelElement"
-	deleted="false"
+	id="signal"
+	name="signal"
 	description="signal"
-	enabled="true"
-	name="signal">signal ${name} {&#13;
-		${cursor};&#13;
+	context="hu.elte.txtuml.xtxtuml.XtxtUML.TUSignal"
+	>signal ${name} {
+	${cursor}
 }</template>
 <template
-	autoinsert="true"
-	id="stat"
-	context="hu.elte.txtuml.xtxtuml.XtxtUML.TUState"
-	deleted="false"
+	id="association"
+	name="association"
+	description="association"
+	context="hu.elte.txtuml.xtxtuml.XtxtUML.TUAssociation"
+	>association ${name} {
+	${multiplicityA} ${classA} ${endAName};
+	${multiplicityB} ${classB} ${endBName};
+}</template>
+<!-- TODO the second 'cursor' is ignored in template 'state_with_activities' -->
+<template
+	id="state_with_activities"
+	name="state_with_activities"
 	description="state with entry and exit activities"
-	enabled="true"
-	name="state_with_activities">state ${name} {&#13;
-		entry { &#13;
-			${cursor}&#13;
-		}&#13;
-		exit {&#13;
-			${cursor}&#13;
-		}&#13;
+	context="hu.elte.txtuml.xtxtuml.XtxtUML.TUState"
+	>state ${name} {
+	entry {
+		${cursor}
+	}
+	exit {
+		${cursor}
+	}
 }</template>
 <template
-	autoinsert="true"
-	id="tran"
-	context="hu.elte.txtuml.xtxtuml.XtxtUML.TUTransitionMember"
-	deleted="false"
-	description="simple transition"
-	enabled="true"
-	name="transition">transition ${name} {&#13;
-		from ${startState};&#13;
-		to ${departureState};&#13;
+	id="transition"
+	name="transition"
+	description="transition"
+	context="hu.elte.txtuml.xtxtuml.XtxtUML.TUTransition"
+	>transition ${name} {
+	from ${sourceState};
+	to ${targetState};
+	trigger ${signal};
 }</template>
 <template
-	autoinsert="true" 
-	id="tran2"
-	context="hu.elte.txtuml.xtxtuml.XtxtUML.TUTransitionMember"
-	deleted="false"
-	description="transition with trigger"
-	enabled="true"
-	name="transition_with_trigger">transition ${name} {&#13;
-		from ${startState};&#13;
-		to ${departureState};&#13;
-		trigger ${signalName};&#13;
+	id="transition_without_trigger"
+	name="transition_without_trigger"
+	description="transition without trigger"
+	context="hu.elte.txtuml.xtxtuml.XtxtUML.TUTransition"
+	>transition ${name} {
+	from ${sourceState};
+	to ${targetState};
 }</template>
 <template
-	autoinsert="true"
-	id="tran3"
-	context="hu.elte.txtuml.xtxtuml.XtxtUML.TUTransitionMember"
-	deleted="false"
-	description="transition with port and trigger"
-	enabled="true"
-	name="transition_with_port_and_trigger">transition ${name} {&#13;
-		from ${state1};&#13;
-		to ${state2};&#13;
-		port ${examplePort};&#13;
-		trigger	${exampleSignal};&#13;
+	id="transition_with_port"
+	name="transition_with_port"
+	description="transition with port"
+	context="hu.elte.txtuml.xtxtuml.XtxtUML.TUTransition"
+	>transition ${name} {
+	from ${sourceState};
+	to ${targetState};
+	trigger	${signal};
+	port ${port};
+}</template>
+<template
+	id="port"
+	name="port"
+	description="port"
+	context="hu.elte.txtuml.xtxtuml.XtxtUML.TUPort"
+	>port ${name} {
+	provided ${providedInterface};
+	required ${requiredInterface};
+}</template>
+<template
+	id="behavior_port"
+	name="behavior_port"
+	description="behavior port"
+	context="hu.elte.txtuml.xtxtuml.XtxtUML.TUPort"
+	>behavior port ${name} {
+	provided ${providedInterface};
+	required ${requiredInterface};
 }</template>
 </templates>
