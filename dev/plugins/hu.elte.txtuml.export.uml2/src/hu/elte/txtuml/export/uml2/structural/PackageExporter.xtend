@@ -16,6 +16,7 @@ import org.eclipse.uml2.uml.Class
 import org.eclipse.uml2.uml.Package
 import org.eclipse.uml2.uml.PackageableElement
 import java.util.List
+import java.util.Collections
 
 abstract class AbstractPackageExporter<S, T extends Package> extends Exporter<S, S, T> {
 
@@ -43,7 +44,10 @@ abstract class AbstractPackageExporter<S, T extends Package> extends Exporter<S,
 				
 		} else if(packageFragments.size == 2) {
 			val subPackages1 = getSubPackages(packageFragments.get(0))
-			val subPackages2 = getSubPackages(packageFragments.get(1))	
+			val subPackages2 = getSubPackages(packageFragments.get(1))
+			Collections.sort(subPackages1, [p1, p2 | p1.elementName.compareTo(p2.elementName)])
+			Collections.sort(subPackages2, [p1, p2 | p1.elementName.compareTo(p2.elementName)])	
+				
 							
 			var i = 0
 			var j = 0			
