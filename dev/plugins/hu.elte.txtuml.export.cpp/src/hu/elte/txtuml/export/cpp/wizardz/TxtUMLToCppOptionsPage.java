@@ -35,6 +35,21 @@ public class TxtUMLToCppOptionsPage extends WizardPage {
     private Button buildEnvironmentSelector;
     private List<String> buildEnvironments;
     
+    private static List<String> initEnvironments = Arrays.asList(
+			"Visual Studio 15 2017",
+			"Visual Studio 14 2015",
+			"Visual Studio 12 2013",
+			"MinGW Makefiles",
+			"Unix Makefiles",
+			"Ninja",
+			"CodeBlocks - MinGW Makefile",
+			"CodeBlocks - Ninja",
+			"CodeBlocks - Unix Makefiles",
+			"Eclipse CDT4 - MinGW Makefiles",
+			"Eclipse CDT4 - Ninja",
+			"Eclipse CDT4 - Unix Makefiles"
+	);
+    
     public TxtUMLToCppOptionsPage() {
         super("Generate C++ Code Page");
         setTitle("Generate C++ Code Page");
@@ -56,6 +71,7 @@ public class TxtUMLToCppOptionsPage extends WizardPage {
         
         GridData mainCppGridData = new GridData(GridData.FILL_HORIZONTAL);
         mainCppText.setLayoutData(mainCppGridData);
+        mainCppText.setEnabled(false);
 
         mainCppBrowser = new Button(composite, SWT.NONE);
         mainCppBrowser.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false));
@@ -94,6 +110,7 @@ public class TxtUMLToCppOptionsPage extends WizardPage {
         
         buildEnvironmentText = new Text(composite, SWT.BORDER | SWT.SINGLE);
         buildEnvironmentText.setText("");
+        buildEnvironmentText.setEnabled(false);
         
         GridData buildEnvironmentGridData = new GridData(GridData.FILL_HORIZONTAL);
         buildEnvironmentText.setLayoutData(buildEnvironmentGridData);
@@ -105,7 +122,7 @@ public class TxtUMLToCppOptionsPage extends WizardPage {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				ListSelectionDialog dialog = 
-						   new ListSelectionDialog(parent.getShell(), initBuildEnvironments(), ArrayContentProvider.getInstance(),
+						   new ListSelectionDialog(parent.getShell(), initEnvironments, ArrayContentProvider.getInstance(),
 						            new LabelProvider(), "Build environments");
 
 						dialog.setTitle("Build Environment Selection Dialog");
@@ -125,7 +142,7 @@ public class TxtUMLToCppOptionsPage extends WizardPage {
     }
     
     private String setBuildEnvironmentText(Object[] environments){
-    	String result = "";
+    	StringBuilder result = new StringBuilder();
     	String actualEnvironment = "";
     	buildEnvironments = new ArrayList<String>();
     	
@@ -133,30 +150,14 @@ public class TxtUMLToCppOptionsPage extends WizardPage {
 			actualEnvironment = environments[i].toString();
 			buildEnvironments.add(actualEnvironment);
 			if(i == 0) {
-				result += actualEnvironment;
+				result.append(actualEnvironment);
 				continue;
 			}
-			result += "; " + actualEnvironment;
+			result.append("; ");
+			result.append(actualEnvironment);
 		}
 		
-		return result;
-    }
-    
-    private List<String> initBuildEnvironments() {
-    	return Arrays.asList(
-    			"Visual Studio 15 2017",
-				"Visual Studio 14 2015",
-				"Visual Studio 12 2013",
-				"MinGW Makefiles",
-				"Unix Makefiles",
-				"Ninja",
-				"CodeBlocks - MinGW Makefile",
-				"CodeBlocks - Ninja",
-				"CodeBlocks - Unix Makefiles",
-				"Eclipse CDT4 - MinGW Makefiles",
-				"Eclipse CDT4 - Ninja",
-				"Eclipse CDT4 - Unix Makefiles"
-    	);
+		return result.toString();
     }
     
     public List<String> getSelectedBuildEnvironments() {
