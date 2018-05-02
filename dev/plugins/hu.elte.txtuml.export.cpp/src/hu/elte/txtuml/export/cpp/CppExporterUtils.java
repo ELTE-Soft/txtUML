@@ -2,6 +2,7 @@ package hu.elte.txtuml.export.cpp;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
@@ -336,4 +337,23 @@ public class CppExporterUtils {
 		}
 		return originalString.substring(0, originalLeght - 1);
 	}
+	
+	public static int executeCommand(String directory, List<String> strings, Map<String, String> environment, String fileNameToRedirect)
+			throws IOException, InterruptedException {
+		ProcessBuilder processBuilder = new ProcessBuilder(strings);
+		if (environment != null) {
+			processBuilder.environment().putAll(environment);
+		}
+					
+		processBuilder.inheritIO();
+		processBuilder.directory(new File(directory));
+		
+		if(fileNameToRedirect != null){
+			processBuilder = processBuilder.redirectOutput(new File(directory + "/" + fileNameToRedirect));
+		}
+
+		Process process = processBuilder.start();
+		return process.waitFor();
+	}
+
 }
