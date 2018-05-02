@@ -52,7 +52,7 @@ import org.eclipse.uml2.uml.Reception
 import hu.elte.txtuml.export.uml2.structural.ReceptionExporter
 import hu.elte.txtuml.export.uml2.structural.ConnectorTypeEndExporter
 import hu.elte.txtuml.export.uml2.structural.ConnectorTypeExporter
-import hu.elte.txtuml.export.uml2.structural.PortProvidedInfExporter
+import java.util.List
 
 /**
  * Base class for exporters, methods to export different kinds of elements using specific exporters.
@@ -75,7 +75,7 @@ abstract class BaseExporter<S, A, R extends Element> {
 
 	abstract def Element getImportedElement(String name)
 
-	def exportPackage(IPackageFragment pf, Consumer<Package> store) {
+	def exportPackage(List<IPackageFragment> pf, Consumer<Package> store) {
 		cache.export(new PackageExporter(this), pf, pf, store)
 	}
 
