@@ -117,7 +117,7 @@ This Agreement is governed by the laws of the State of New York and the intellec
       <import feature="org.eclipse.xtext.xbase.lib" version="2.10.0.v201605250459" match="perfect"/>
       <import feature="org.eclipse.xtext.ui" version="2.10.0.v201605250459" match="perfect"/>
       <import feature="org.eclipse.xtext.xtext.ui" version="2.10.0.v201605250459" match="perfect"/>
-      <import feature="net.sourceforge.plantuml.feature" version="1.1.8.8047" match="equivalent"/>     
+      <import feature="net.sourceforge.plantuml.feature" version="1.1.8.8047" match="equivalent"/>
       <import feature="org.eclipse.cdt" version="9.2.0.201612061315" match="equivalent"/>
       <import feature="org.eclipse.persistence.moxy" version="2.6.4.v20160829-44060b6" match="perfect"/>
    </requires>
@@ -256,11 +256,10 @@ This Agreement is governed by the laws of the State of New York and the intellec
          unpack="false"/>
 
    <plugin
-         id="hu.elte.txtuml.export.plantuml"
+         id="hu.elte.txtuml.seqdiag"
          download-size="0"
          install-size="0"
          version="0.0.0"
          unpack="false"/>
 
 </feature>
-
