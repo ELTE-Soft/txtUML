@@ -104,6 +104,7 @@ public class GenerationNames {
 
 	public static class Macros {
 		public static final String ErrorMacro = "#error";
+		public static final String IncludeMacro = "#include";
 	}
 
 	public static class Comments {
