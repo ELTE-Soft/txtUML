@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: txtUml Plantuml generator
-Bundle-SymbolicName: hu.elte.txtuml.export.plantuml
+Bundle-SymbolicName: hu.elte.txtuml.export.plantuml;singleton:=true
 Bundle-Version: 0.6.0.qualifier
 Require-Bundle: hu.elte.txtuml.api.model,
  hu.elte.txtuml.utils,
@@ -14,7 +14,9 @@ Require-Bundle: hu.elte.txtuml.api.model,
  org.eclipse.ui.ide,
  org.eclipse.ui.editors,
  org.eclipse.ui.workbench,
- org.eclipse.emf.ecore
+ org.eclipse.emf.ecore,
+ org.eclipse.ui,
+ org.eclipse.core.expressions
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-Vendor: ELTE
 Export-Package: hu.elte.txtuml.export.plantuml,

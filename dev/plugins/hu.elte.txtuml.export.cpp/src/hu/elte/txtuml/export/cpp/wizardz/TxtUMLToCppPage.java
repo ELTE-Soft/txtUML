@@ -147,7 +147,7 @@ public class TxtUMLToCppPage extends WizardPage {
 							for (IProject pr : allProjects) {
 								try {
 									IJavaProject javaProject = ProjectUtils.findJavaProject(pr.getName());
-									if (WizardUtils.containsClassesWithSuperTypes(javaProject, Configuration.class)) {
+									if (WizardUtils.containsClassesWithDirectSuperTypes(javaProject, Configuration.class)) {
 										javaProjects.add(javaProject);
 									}
 								} catch (NotFoundException e) {
@@ -163,7 +163,7 @@ public class TxtUMLToCppPage extends WizardPage {
 							} catch (JavaModelException ex) {
 							}
 							List<IType> configTypes = packageFragments.stream()
-									.flatMap(pf -> WizardUtils.getTypesBySuperclass(pf, Configuration.class).stream())
+									.flatMap(pf -> WizardUtils.getTypesByDirectSuperclass(pf, Configuration.class).stream())
 									.collect(Collectors.toList());
 							return configTypes.toArray();
 						}
