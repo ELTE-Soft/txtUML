@@ -1,5 +1,6 @@
 package hu.elte.txtuml.export.cpp.templates;
 
+import java.io.File;
 import java.util.List;
 
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.FileNames;
@@ -33,8 +34,8 @@ public class GenerationTemplates {
 		return " Not implemented external method: " + functionName + "\n";
 	}
 	
-	public static String generatedExternalInclude(String className, String functionName){
-		return " " + className + "_" + functionName + "_impl.hpp\n";
+	public static String generatedExternalInclude(String directory, String className, String functionName, String tail) {
+		return " \"" + directory + File.separator + className + "_" + functionName + tail + "\"\n";
 	}
 
 	public static String paramName(String paramName) {

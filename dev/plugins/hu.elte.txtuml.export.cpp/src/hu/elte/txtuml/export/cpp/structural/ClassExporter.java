@@ -99,7 +99,7 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 	}
 
 	@Override
-	public String createUnitCppCode() {
+	public String createUnitCppCode() throws FileNotFoundException, UnsupportedEncodingException {
 		StringBuilder source = new StringBuilder("");
 		List<StateMachine> smList = new ArrayList<StateMachine>();
 		CppExporterUtils.getTypedElements(smList, UMLPackage.Literals.STATE_MACHINE,

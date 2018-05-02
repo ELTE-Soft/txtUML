@@ -16,7 +16,7 @@ public interface ICppCompilationUnit {
 
 	String getUnitNamespace();
 
-	String createUnitCppCode();
+	String createUnitCppCode() throws FileNotFoundException, UnsupportedEncodingException;
 
 	String createUnitHeaderCode();
 

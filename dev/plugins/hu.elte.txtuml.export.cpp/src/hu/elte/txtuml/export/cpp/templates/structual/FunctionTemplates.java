@@ -1,15 +1,22 @@
 package hu.elte.txtuml.export.cpp.templates.structual;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.ModifierNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationTemplates;
+import hu.elte.txtuml.export.cpp.CppExporterUtils;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames;
 import hu.elte.txtuml.export.cpp.templates.PrivateFunctionalTemplates;
 import hu.elte.txtuml.export.cpp.templates.activity.ActivityTemplates;
 import hu.elte.txtuml.utils.Pair;
 
 public class FunctionTemplates {
+	
+	public static String externalDirName = "external";
+	public static String externalFileNameTail = "_body_impl.hpp";
 
 	public static String functionDecl(String functionName) {
 		return FunctionTemplates.functionDecl(functionName, null);
@@ -61,13 +68,19 @@ public class FunctionTemplates {
 	}
 
 	public static String abstractFunctionDef(String className, String returnTypeName, String functionName,
-			List<Pair<String, String>> params, Boolean testing) {
+			List<Pair<String, String>> params, Boolean testing, String destination) throws FileNotFoundException, UnsupportedEncodingException {
 		StringBuilder body = new StringBuilder("");
-		//body.append(GenerationNames.Comments.ToDoMessage);
 		if(!testing) {
-			//body.append(GenerationNames.Macros.ErrorMacro + GenerationTemplates.generatedErrorMessage(functionName));
 			body.append(GenerationNames.Macros.IncludeMacro + 
-					GenerationTemplates.generatedExternalInclude(className, functionName));
+					GenerationTemplates.generatedExternalInclude(externalDirName, className, functionName, externalFileNameTail));
+			
+			String directoryPath = destination + File.separator + externalDirName;
+			
+			String fileName = className + "_" + functionName + externalFileNameTail;
+			String fileContent = GenerationNames.Comments.ToDoMessage + 
+	        		GenerationNames.Macros.ErrorMacro + GenerationTemplates.generatedErrorMessage(functionName);
+			
+			CppExporterUtils.writeOutSource(directoryPath, fileName, fileContent);
 		}
 		return functionDef(className, returnTypeName, functionName, params, body.toString());
 	}
