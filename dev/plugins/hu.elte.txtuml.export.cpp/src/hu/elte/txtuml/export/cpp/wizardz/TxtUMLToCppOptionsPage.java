@@ -19,6 +19,8 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.dialogs.ListSelectionDialog;
 
+import hu.elte.txtuml.utils.eclipse.Dialogs;
+
 public class TxtUMLToCppOptionsPage extends WizardPage {
 
 	private static final String browseButtonText = "Browse...";
@@ -66,7 +68,12 @@ public class TxtUMLToCppOptionsPage extends WizardPage {
 		        fd.setFilterPath("C:/");
 		        fd.setFilterExtensions(new String[] { "*.cpp"});
 		        String selected = fd.open();
-		        mainCppText.setText(selected);
+	        	mainCppText.setText(selected);
+
+		        if(!selected.contains("main.cpp") && 
+		        	!Dialogs.WarningConfirm("File selector warning", "Your file's name is not 'main.cpp'!\nPlease make sure that it contains main function!\nWould you like to override main with this file?")) {
+		        		mainCppText.setText("");
+		        }
 			}
 
 			@Override
