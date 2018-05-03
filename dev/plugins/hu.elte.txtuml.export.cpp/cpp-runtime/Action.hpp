@@ -1,10 +1,12 @@
 /** @file Action.hpp
 */
 
-#ifndef ACTION_HPP
-#define ACTION_HPP
+#ifndef __ACTION_HPP__
+#define __ACTION_HPP__
 
 #include "ESRoot/Types.hpp"
+#include "PortUtils.hpp"
+
 namespace ES
 {
 class ModelObject;
@@ -12,10 +14,19 @@ class ModelObject;
 namespace Action 
 {
 	
+
 void send(ES::ModelObject* target, ES::EventRef signal);
 /**<
 Sends a message to a model object.
 @param target The target object where the signal has to be sent. 
+@param signal The signal to be sent.
+*/
+	
+template <typename T, typename S>
+void send(T target, S signal);
+/**<
+Sends a message to a port.
+@param port The port object where the signal has to be sent. 
 @param signal The signal to be sent.
 */
 
@@ -74,6 +85,12 @@ void unlink(typename LeftEnd::EdgeType* e1, typename RightEnd::EdgeType* e2)
 {
 	e1->template unlink<RightEnd>(e2);
 	e2->template unlink<LeftEnd>(e1);
+}
+	
+template <typename T, typename S>
+void send(T target, S signal)
+{
+	target->send(signal);
 }
 
 }

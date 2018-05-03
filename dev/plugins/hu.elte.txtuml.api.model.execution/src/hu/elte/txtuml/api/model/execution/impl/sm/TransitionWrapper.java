@@ -20,7 +20,7 @@ public interface TransitionWrapper extends Wrapper<Transition> {
 	 * @param port
 	 *            the port through which the signal arrived (might be
 	 *            {@code null} in case the signal did not arrive through a port)
-	 * @return true if the signal does triggers the specified transition, false
+	 * @return true if the signal triggers the specified transition, false
 	 *         otherwise
 	 */
 	boolean applicableTrigger(Signal signal, Port<?, ?> port);

@@ -22,4 +22,3 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-Vendor: ELTE
 Export-Package: hu.elte.txtuml.export.plantuml,
  hu.elte.txtuml.export.plantuml.exceptions
-Bundle-ActivationPolicy: lazy

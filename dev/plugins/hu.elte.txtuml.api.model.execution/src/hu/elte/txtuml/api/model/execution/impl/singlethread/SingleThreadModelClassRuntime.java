@@ -157,7 +157,7 @@ public class SingleThreadModelClassRuntime extends AbstractModelClassRuntime {
 
 		if (getModelRuntime().getCheckLevel().isAtLeast(CheckLevel.OPTIONAL) && !assocEnd.checkLowerBound()) {
 			getThread().addDelayedAction(() -> {
-				if (!assocEnd.checkLowerBound()) {
+				if (!assocEnd.checkLowerBound() && !isDeleted()) {
 					getModelRuntime().error(x -> x.lowerBoundOfMultiplicityOffended(getWrapped(), otherEnd));
 				}
 			});

@@ -22,7 +22,9 @@ class InterfaceExporter extends Exporter<TypeDeclaration, ITypeBinding, Interfac
 	override exportContents(TypeDeclaration typeDecl) {
 		val typeBnd = typeDecl.resolveBinding
 		typeBnd.declaredFields.forEach[exportField[result.ownedAttributes += it]]
-		typeDecl.methods.forEach[exportOperation[result.ownedOperations += it]]
+		typeDecl.methods.filter[!ElementTypeTeller.isReception(it)].forEach[exportOperation[result.ownedOperations += it]]
+		typeDecl.methods.filter[ElementTypeTeller.isReception(it)].forEach[exportReception[result.ownedReceptions += it]]
+		
 		if (typeDecl.superclassType != null &&
 			typeDecl.superclassType.resolveBinding.qualifiedName != ModelClass.canonicalName) {
 			result.createGeneralization(fetchType(typeDecl.superclassType.resolveBinding) as Classifier)

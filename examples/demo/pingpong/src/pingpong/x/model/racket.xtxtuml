@@ -51,7 +51,8 @@ class Racket {
 	transition CannotHit {
 		from Check;
 		to Waiting;
-		guard (else)
+		guard (trigger.countdown <= 0)
+			// should be 'else', but this is not supported by the C++ exporter yet
 
 		effect {
 			send new MissedTheBall() to this->(Racket.HitOrMissPort);

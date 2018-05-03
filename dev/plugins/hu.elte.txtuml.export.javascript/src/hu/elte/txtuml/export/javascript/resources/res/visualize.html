@@ -1,5 +1,4 @@
-﻿<!-- saved from url=(0014)about:internet -->
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
 	<!-- 3rd party stylesheets -->
@@ -11,7 +10,11 @@
 	<script src="lib/lodash.min.js"></script>
 	<script src="lib/backbone-min.js"></script>
 	<script src="lib/joint.js"></script>
-	
+	<script src="lib/svg-pan-zoom.min.js"></script>
+
+	<!-- global variables -->
+	<script src="globals.js"></script>
+
 	<!-- visualizer libraries -->
 	<script src="visualizer/utils.js"></script>
 	<script src="visualizer/fonts.js"></script>
@@ -22,41 +25,78 @@
 	<script src="visualizer/linkholders.js"></script>
 	<script src="visualizer/visualizers.js"></script>
 	<script src="visualizer/grid.js"></script>
-
 </head>
 <body>
+	<input type="checkbox" class="toggle-checkbox" id="toggle-diagram-selector-checkbox" checked>
+	<div id="diagram-selector">
 	<!-- selector link holder -->
 	<table id="selector-container">
-			<thead>
-					<tr>
-						<th colspan="2">Visualized diagrams</th>
-					</tr>
-					<tr>
-						<th>Class</th>
-						<th>State machine</th>
-					</tr>
-			</thead>
+		<thead>
+				<tr>
+					<th colspan="2">Visualized diagrams</th>
+				</tr>
+				<tr>
+					<th>Class</th>
+					<th>State machine</th>
+				</tr>
+		</thead>
 		<tbody id="selector"></tbody>
 	</table>
-	
+	</div>
+	<label for="toggle-diagram-selector-checkbox" id="diagram-selector-label" class="button control label">Toggle diagram list</label>
+
 	<!-- diagram holder -->
-	<div id="paper"></div>
-	
-	<!-- input -->
-	<script src="input.js"></script>
-	
-	<!-- visualizing script -->
-	<script src="visualizer.js"></script>
-	
-	
-	<div>
+	<div class="content">
+		<div id="paper"></div>
+
+		<!-- input -->
+		<script src="input.js"></script>
+
+		<!-- visualizing script -->
+		<script src="visualizer.js"></script>
+
+		<!-- resize selector label -->
+		<script>
+		$("#diagram-selector-label").width($("#diagram-selector").innerWidth());
+		</script>
+
+		<!-- add pan and zoom -->
+		<input type="checkbox" class="toggle-checkbox" id="toggle-control-checkbox" checked>
+		<div id="pan-and-zoom-control-container">
+			<div id="zoom-control-container">
+				<div class="button control" id="zoom-in">+</div>
+				<div class="button control" id="zoom-out">-</div>
+			</div>
+			<div class="button control" id="reset-view">reset view</div>
+			<input type="checkbox" class="toggle-checkbox" id="toggle-pan-checkbox" checked>
+			<label for="toggle-pan-checkbox" class="button switch" id="toggle-pan">
+				<div class="switch-left switch-content">Edit</div>
+				<div class="switch-right switch-content">Pan</div>
+				<div class="switch-border"></div>
+			</label>
+			<input type="checkbox" class="toggle-checkbox" id="toggle-wheel-zoom-checkbox" checked>
+			<label for="toggle-wheel-zoom-checkbox" class="button control toggle" id="toggle-wheel-zoom">Wheel zoom</label>
+		</div>
+
+		<label id="pan-and-zoom-toggle-label" for="toggle-control-checkbox" class="button control label">Toggle controls</label>
+		<!-- resize control label -->
+		<script>
+		$("#pan-and-zoom-toggle-label").width($("#pan-and-zoom-control-container").innerHeight());
+		</script>	
+		<script src="panAndZoom.js"></script>
+	</div>	
+
+	<div class="footer">
 		The source and licensing details of the 3rd party libraries used by this page can be found at their respective websites:
+		<div class="middle-container">
 		<ul>
-			<li><a href="http://jointjs.com/opensource">JointJS</a></li>
-			<li><a href="https://jquery.com/">jQuery</a></li>
-			<li><a href="https://lodash.com/">Lodash</a></li>
-			<li><a href="http://backbonejs.org">Backbone.js</a></li>
+			<li class="button"><a href="http://jointjs.com/opensource">JointJS</a></li>
+			<li class="button"><a href="https://jquery.com/">jQuery</a></li>
+			<li class="button"><a href="https://lodash.com/">Lodash</a></li>
+			<li class="button"><a href="http://backbonejs.org">Backbone.js</a></li>
+			<li class="button"><a href="https://github.com/ariutta/svg-pan-zoom">svg-pan-zoom</a></li>
 		</ul>
+		</div>
 	</div>
 </body>
 </html>

@@ -25,8 +25,8 @@ import hu.elte.txtuml.utils.Logger;
 /**
  * The thread which executes an interaction.
  * <p>
- * See the documentation of this package for an overview about the threads used
- * in the sequence diagram executor.
+ * See the documentation of this package for an overview of the threads used in
+ * the sequence diagram executor.
  * <p>
  * This class keeps the invariants stated in the package documentation using its
  * inner invariants described at {@link #currentMessage}.

@@ -47,7 +47,7 @@ public abstract class TxtUMLVisualizeWizard extends Wizard {
 	 */
 	@Override
 	public abstract void addPages();
-	
+
 	/**
 	 * Collects the selected diagrams and calls the export method.
 	 */
@@ -89,7 +89,7 @@ public abstract class TxtUMLVisualizeWizard extends Wizard {
 		if (!invalidLayouts.isEmpty()) {
 			Dialogs.MessageBox("Invalid layouts", "The following diagram descriptions have no txtUML model attached"
 					+ ", hence no diagram is generated for them:" + System.lineSeparator() + invalidLayouts.stream()
-					.map(s -> " - ".concat(s)).collect(Collectors.joining(System.lineSeparator())));
+							.map(s -> " - ".concat(s)).collect(Collectors.joining(System.lineSeparator())));
 		}
 
 		PreferencesManager.setValue(PreferencesManager.TXTUML_VISUALIZE_TXTUML_LAYOUT, layoutConfigs.values().stream()
@@ -97,7 +97,7 @@ public abstract class TxtUMLVisualizeWizard extends Wizard {
 
 		PreferencesManager.setValue(PreferencesManager.TXTUML_VISUALIZE_TXTUML_LAYOUT_PROJECTS,
 				layoutConfigs.values().stream().flatMap(c -> c.stream())
-				.map(layout -> layout.getJavaProject().getElementName()).collect(Collectors.toList()));
+						.map(layout -> layout.getJavaProject().getElementName()).collect(Collectors.toList()));
 
 		try {
 			cleanBeforeVisualization(layoutConfigs.keySet());
@@ -117,8 +117,6 @@ public abstract class TxtUMLVisualizeWizard extends Wizard {
 		return exportDiagrams(layoutConfigs);
 	}
 
-	
-	
 	/**
 	 * Abstract method for diagram export.
 	 */

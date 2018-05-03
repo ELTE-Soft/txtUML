@@ -28,7 +28,7 @@ import hu.elte.txtuml.utils.Pair;
 
 public class StateMachineTemplates {
 
-	public static final String InitStateMachineProcedureName = GenerationNames.InitStateMachine;
+	public static final String InitStateMachineProcedureName = GenerationNames.InitializerFixFunctionNames.InitStateMachine;
 	public static final String StateMachineBaseHeader = GenerationNames.StatemachineBaseHeaderName + "."
 			+ FileNames.HeaderExtension;
 	public static final String InitTransitionTable = "initTransitionTable";
@@ -235,13 +235,13 @@ public class StateMachineTemplates {
 	}
 	public static String stateMachineInitializationDefinition(String className, Integer poolId, Optional<Map<String, String>> optionalSubMachines) {
 		if(!optionalSubMachines.isPresent()) {
-			return FunctionTemplates.functionDef(className, GenerationNames.InitStateMachine, stateMachineInitializationSharedBody(true, poolId));
+			return FunctionTemplates.functionDef(className, GenerationNames.InitializerFixFunctionNames.InitStateMachine, stateMachineInitializationSharedBody(true, poolId));
 		} else {
 			Map<String, String> subMachines = optionalSubMachines.get();
 			StringBuilder body = new StringBuilder("");
 			body.append(HierarchicalStateMachineNames.CurrentMachineName + " = " + PointerAndMemoryNames.NullPtr + ";\n");
 			body.append(hierarchicalStateMachineClassConstructorSharedBody(subMachines, true, poolId));
-			return FunctionTemplates.functionDef(className, GenerationNames.InitStateMachine, body.toString());
+			return FunctionTemplates.functionDef(className, GenerationNames.InitializerFixFunctionNames.InitStateMachine, body.toString());
 		}
 	}
 	

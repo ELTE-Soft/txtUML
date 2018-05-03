@@ -38,15 +38,16 @@ public class PapyrusVisualizeWizard extends UML2VisualizeWizard {
 		super();
 		setNeedsProgressMonitor(true);
 	}
-	
+
 	@Override
 	public String getWindowTitle() {
 		return "Create Papyrus model from txtUML model";
 	}
-	
+
 	@Override
 	public void addPages() {
-		selectTxtUmlPage = new VisualizeTxtUMLPage(true, StateMachineDiagram.class, ClassDiagram.class, CompositeDiagram.class);
+		selectTxtUmlPage = new VisualizeTxtUMLPage(false, true, StateMachineDiagram.class, ClassDiagram.class,
+				CompositeDiagram.class);
 		addPage(selectTxtUmlPage);
 	}
 	

@@ -32,15 +32,15 @@ public class PlantUMLVisualizeWizard extends TxtUMLVisualizeWizard {
 		super();
 		setNeedsProgressMonitor(true);
 	}
-	
+
 	@Override
 	public String getWindowTitle() {
 		return "Create PlantUML diagram from txtUML sequence diagram";
 	}
-	
+
 	@Override
 	public void addPages() {
-		selectTxtUmlPage = new VisualizeTxtUMLPage(false, SequenceDiagram.class, Interaction.class);
+		selectTxtUmlPage = new VisualizeTxtUMLPage(true, false, SequenceDiagram.class, Interaction.class);
 		addPage(selectTxtUmlPage);
 	}
 
