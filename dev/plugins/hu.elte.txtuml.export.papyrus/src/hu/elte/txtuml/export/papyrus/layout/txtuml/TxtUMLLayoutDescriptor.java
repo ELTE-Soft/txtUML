@@ -1,4 +1,4 @@
-package hu.elte.txtuml.layout.export;
+package hu.elte.txtuml.export.papyrus.layout.txtuml;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -6,6 +6,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import hu.elte.txtuml.layout.export.DiagramExportationReport;
 import hu.elte.txtuml.utils.Pair;
 
 /**

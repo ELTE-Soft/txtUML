@@ -19,11 +19,11 @@ import hu.elte.txtuml.export.javascript.json.JSONExporter;
 import hu.elte.txtuml.export.javascript.json.model.ExportationModel;
 import hu.elte.txtuml.export.javascript.json.model.cd.UnexpectedEndException;
 import hu.elte.txtuml.export.javascript.resources.ResourceHandler;
+import hu.elte.txtuml.export.papyrus.elementsarrangers.ArrangeException;
+import hu.elte.txtuml.export.papyrus.layout.txtuml.TxtUMLLayoutDescriptor;
 import hu.elte.txtuml.export.uml2.mapping.ModelMapException;
 import hu.elte.txtuml.export.uml2.mapping.ModelMapProvider;
 import hu.elte.txtuml.layout.export.DiagramExportationReport;
-import hu.elte.txtuml.layout.export.TxtUMLLayoutDescriptor;
-import hu.elte.txtuml.layout.visualizer.exceptions.ArrangeException;
 import hu.elte.txtuml.utils.Pair;
 
 /**

@@ -41,7 +41,6 @@
 		<module>../../plugins/hu.elte.txtuml.xtxtuml</module>
 		<module>../../plugins/hu.elte.txtuml.xtxtuml.lib</module>
 		<module>../../plugins/hu.elte.txtuml.xtxtuml.ui</module>
-		<module>../../plugins/hu.elte.txtuml.wizards</module>
 
 		<module>../../tests/hu.elte.txtuml.api.model.execution.tests</module>
 		<module>../../tests/hu.elte.txtuml.diagnostics.tests</module>

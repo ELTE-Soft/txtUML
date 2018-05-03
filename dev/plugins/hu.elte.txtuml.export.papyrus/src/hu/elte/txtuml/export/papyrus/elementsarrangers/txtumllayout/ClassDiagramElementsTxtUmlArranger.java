@@ -11,8 +11,8 @@ import org.eclipse.papyrus.uml.diagram.clazz.edit.parts.AssociationMultiplicityT
 import org.eclipse.papyrus.uml.diagram.clazz.edit.parts.AssociationNameEditPart;
 
 import hu.elte.txtuml.export.papyrus.api.DiagramElementsModifier;
+import hu.elte.txtuml.export.papyrus.elementsarrangers.ArrangeException;
 import hu.elte.txtuml.export.papyrus.layout.txtuml.TxtUMLElementsRegistry;
-import hu.elte.txtuml.layout.visualizer.exceptions.ArrangeException;
 
 /**
  * Controls the arranging of a ClassDiagram with txtUML algorithm

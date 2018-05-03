@@ -3,8 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: txtUML Layout Visualizer
 Bundle-SymbolicName: hu.elte.txtuml.layout.visualizer
 Bundle-Version: 0.6.0.qualifier
-Export-Package: hu.elte.txtuml.layout.visualizer,
- hu.elte.txtuml.layout.visualizer.algorithms;uses:="hu.elte.txtuml.layout.visualizer.model,hu.elte.txtuml.layout.visualizer.statements,hu.elte.txtuml.layout.visualizer.algorithms.bellmanfordhelpers",
+Export-Package: hu.elte.txtuml.layout.visualizer.algorithms;uses:="hu.elte.txtuml.layout.visualizer.model,hu.elte.txtuml.layout.visualizer.statements,hu.elte.txtuml.layout.visualizer.algorithms.bellmanfordhelpers",
  hu.elte.txtuml.layout.visualizer.exceptions,
  hu.elte.txtuml.layout.visualizer.helpers;uses:="hu.elte.txtuml.layout.visualizer.model,hu.elte.txtuml.layout.visualizer.statements",
  hu.elte.txtuml.layout.visualizer.model,
@@ -12,5 +11,4 @@ Export-Package: hu.elte.txtuml.layout.visualizer,
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-Vendor: ELTE
 Require-Bundle: hu.elte.txtuml.utils,
- com.google.guava,
- org.eclipse.equinox.registry
+ com.google.guava

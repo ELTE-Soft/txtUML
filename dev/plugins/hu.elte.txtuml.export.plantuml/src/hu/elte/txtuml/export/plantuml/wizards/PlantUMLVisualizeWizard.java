@@ -1,10 +1,9 @@
 package hu.elte.txtuml.export.plantuml.wizards;
 
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -22,9 +21,10 @@ import hu.elte.txtuml.export.plantuml.exceptions.SequenceDiagramExportException;
 import hu.elte.txtuml.utils.Logger;
 import hu.elte.txtuml.utils.Pair;
 import hu.elte.txtuml.utils.eclipse.Dialogs;
+import hu.elte.txtuml.utils.eclipse.SaveUtils;
 import hu.elte.txtuml.utils.eclipse.preferences.PreferencesManager;
-import hu.elte.txtuml.wizards.TxtUMLVisualizeWizard;
-import hu.elte.txtuml.wizards.VisualizeTxtUMLPage;
+import hu.elte.txtuml.utils.eclipse.wizards.TxtUMLVisualizeWizard;
+import hu.elte.txtuml.utils.eclipse.wizards.VisualizeTxtUMLPage;
 
 public class PlantUMLVisualizeWizard extends TxtUMLVisualizeWizard {
 
@@ -45,22 +45,29 @@ public class PlantUMLVisualizeWizard extends TxtUMLVisualizeWizard {
 	}
 
 	@Override
-	protected boolean exportDiagrams(Map<Pair<String, String>, List<IType>> layoutConfigs) {
-		String generatedFolderName = PreferencesManager
-				.getString(PreferencesManager.TXTUML_VISUALIZE_DESTINATION_FOLDER);
-
+	protected boolean exportDiagrams(Map<Pair<String, String>, List<IType>> layoutConfigs, List<IType> txtUMLLayout) {
 		for (Pair<String, String> model : layoutConfigs.keySet()) {
-			
-			String txtUMLProjectName = model.getSecond();	
-			List<String> fullyQualifiedNames = layoutConfigs.get(model).stream().map(IType::getFullyQualifiedName)
+			String txtUMLModelName = model.getFirst();
+			String txtUMLProjectName = model.getSecond();
+
+			String generatedFolderName = PreferencesManager
+					.getString(PreferencesManager.TXTUML_VISUALIZE_DESTINATION_FOLDER);
+
+			List<String> diagramNames = new ArrayList<>();
+			layoutConfigs.get(model).forEach(layout -> diagramNames.add(layout.getFullyQualifiedName()));
+
+			List<String> fullyQualifiedNames = txtUMLLayout.stream().map(IType::getFullyQualifiedName)
 					.collect(Collectors.toList());
-			
+			boolean saveSucceeded = SaveUtils.saveAffectedFiles(getShell(), txtUMLProjectName, txtUMLModelName,
+					fullyQualifiedNames);
+			if (!saveSucceeded)
+				return false;
+
 			try {
 				checkNoLayoutDescriptionsSelected();
 
 				IProgressService progressService = PlatformUI.getWorkbench().getProgressService();
-				PlantUmlExporter exp = new PlantUmlExporter(txtUMLProjectName, generatedFolderName,
-						fullyQualifiedNames);
+				PlantUmlExporter exp = new PlantUmlExporter(txtUMLProjectName, generatedFolderName, diagramNames);
 
 				if (exp.hasSequenceDiagram()) {
 					progressService.runInUI(progressService, new IRunnableWithProgress() {
@@ -86,11 +93,6 @@ public class PlantUMLVisualizeWizard extends TxtUMLVisualizeWizard {
 			}
 		}
 		return true;
-	}
-
-	@Override
-	protected void cleanBeforeVisualization(Set<Pair<String, String>> layouts) throws CoreException, IOException {
-		// no cleanup
 	}
 
 }

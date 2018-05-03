@@ -15,8 +15,8 @@ import org.eclipse.papyrus.uml.diagram.composite.edit.parts.ClassCompositeEditPa
 import org.eclipse.papyrus.uml.diagram.composite.edit.parts.PropertyPartEditPartCN;
 
 import hu.elte.txtuml.export.papyrus.api.DiagramElementsModifier;
+import hu.elte.txtuml.export.papyrus.elementsarrangers.ArrangeException;
 import hu.elte.txtuml.export.papyrus.layout.txtuml.TxtUMLElementsRegistry;
-import hu.elte.txtuml.layout.visualizer.exceptions.ArrangeException;
 
 public class CompositeDiagramElementsTxtUmlArranger extends AbstractDiagramElementsTxtUmlArranger {
 
