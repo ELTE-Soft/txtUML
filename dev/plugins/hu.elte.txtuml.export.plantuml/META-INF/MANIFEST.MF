@@ -16,7 +16,8 @@ Require-Bundle: hu.elte.txtuml.api.model,
  org.eclipse.ui.workbench,
  org.eclipse.emf.ecore,
  org.eclipse.ui,
- org.eclipse.core.expressions
+ org.eclipse.core.expressions,
+ hu.elte.txtuml.wizards;bundle-version="0.6.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-Vendor: ELTE
 Export-Package: hu.elte.txtuml.export.plantuml,
