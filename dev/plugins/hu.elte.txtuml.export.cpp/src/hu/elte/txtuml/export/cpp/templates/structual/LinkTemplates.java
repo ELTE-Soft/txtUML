@@ -5,9 +5,9 @@ import java.util.Optional;
 
 import hu.elte.txtuml.export.cpp.CppExporterUtils;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames;
-import hu.elte.txtuml.export.cpp.templates.GenerationTemplates;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.ActionNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.CollectionNames;
+import hu.elte.txtuml.export.cpp.templates.GenerationTemplates;
 import hu.elte.txtuml.export.cpp.templates.PrivateFunctionalTemplates;
 
 public class LinkTemplates {
@@ -39,14 +39,13 @@ public class LinkTemplates {
 
 	}
 	public static String createAssociationDescriptor(String assocName, String endDescriptors) {	
-		return GenerationNames.TypeDelcreationKeywords.AssociationEndDescriptor + " " + assocDescriptor(assocName) + "{" + endDescriptors + "};";
-		
+		return GenerationNames.TypeDeclarationKeywords.AssociationEndDescriptor + " " + assocDescriptor(assocName) + "{" + endDescriptors + "};";
 	}
 	
 	public static String createEndPointClass(String endPointType, String endPointName, String leftEndPointName, String rightEndPointName, 
 			Integer lowMultiplicity, Integer upMultiplicity) {
 		String endPointCppType = PrivateFunctionalTemplates.cppType(endPointType, GenerationTemplates.VariableType.OriginalType);
-		return GenerationNames.TypeDelcreationKeywords.AssociationEndDescriptor + " " + endStructDescriptor(endPointName) + ": public " + "AssocEnd" 
+		return GenerationNames.TypeDeclarationKeywords.AssociationEndDescriptor + " " + endStructDescriptor(endPointName) + ": public " + "AssocEnd" 
 				+ CppExporterUtils.createTemplateParametersCode(Optional.of(
 						Arrays.asList(endStructDescriptor(leftEndPointName), 
 								endStructDescriptor(rightEndPointName), endPointCppType, lowMultiplicity.toString(), upMultiplicity.toString()))) + "{" +

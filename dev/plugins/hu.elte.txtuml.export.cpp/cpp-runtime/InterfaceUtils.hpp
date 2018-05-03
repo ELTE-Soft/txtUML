@@ -11,15 +11,21 @@ public:
 	using ProvidedInfType = ReciveInf;
 };
 
-class EmptyReqInf {
-
+class RequiredInterfaceBase {
 protected:
 	virtual void sendAny(ES::EventRef s) = 0;
 };
 
-class EmptyProvInf {
+class ProvidedInterfaceBase {
 protected:
-	virtual void reciveAny(ES::EventRef s) = 0;
+	virtual void receiveAny(ES::EventRef s) = 0;
+};
+
+class EmptyReqInf : public RequiredInterfaceBase {
+
+};
+
+class EmptyProvInf : public ProvidedInterfaceBase {
 };
 
 using EmptyInf = IntegratedInf<EmptyReqInf, EmptyProvInf>;

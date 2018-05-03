@@ -49,9 +49,10 @@ class TransitionExporter extends Exporter<TypeDeclaration, ITypeBinding, Transit
 				(it as MethodDeclaration).name.identifier == "effect"
 			].forEach[exportSMActivity(it as MethodDeclaration)[result.effect = it]]
 
-			source.bodyDeclarations.filter[it instanceof MethodDeclaration].map[it as MethodDeclaration].filter [
+		}
+		
+		source.bodyDeclarations.filter[it instanceof MethodDeclaration].map[it as MethodDeclaration].filter [
 				name.identifier == "guard"
 			].forEach[exportGuard[result.guard = it]]
-		}
 	}
 }

@@ -25,7 +25,6 @@ import hu.elte.txtuml.export.cpp.templates.structual.ConstructorTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.FunctionTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.HeaderTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.HeaderTemplates.HeaderInfo;
-import hu.elte.txtuml.export.cpp.templates.structual.LinkTemplates;
 import hu.elte.txtuml.utils.Pair;
 
 public class ClassExporter extends StructuredElementExporter<Class> {
@@ -111,7 +110,7 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 				CppExporterUtils.isStateMachineOwner(structuredElement)));
 		source.append(CppExporterUtils.isStateMachineOwner(structuredElement)
 				? ConstructorTemplates.destructorDef(name, true) : ConstructorTemplates.destructorDef(name, false));
-		source.append(FunctionTemplates.functionDef(name, GenerationNames.InitiliazetFixFunctionNames.InitPorts,
+		source.append(FunctionTemplates.functionDef(name, GenerationNames.InitializerFixFunctionNames.InitPorts,
 				portExporter.createInitPortsCode()));
 		source.append(portExporter.createPortTypeInfoDefinitions());
 
@@ -133,7 +132,7 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 
 
 
-		publicParts.append(portExporter.crearePortRelatedCodes());
+		publicParts.append(portExporter.createPortRelatedCodes());
 
 		collectModelBaseClasses();
 		if (CppExporterUtils.isStateMachineOwner(structuredElement)) {

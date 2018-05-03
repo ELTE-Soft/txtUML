@@ -12,7 +12,7 @@ public class PortTemplates {
 	public final static String ANY_PORT = "PortType::AnyPort";
 	public static final String PORT_FILE_NAME = "ports";
 	public final static String PORT_HEADER = PORT_FILE_NAME + "." + FileNames.HeaderExtension;
-	public static final String PORTS_INITIALIZER_FUNCTION_NAME = GenerationNames.InitiliazetFixFunctionNames.InitPorts;
+	public static final String PORTS_INITIALIZER_FUNCTION_NAME = GenerationNames.InitializerFixFunctionNames.InitPorts;
 	public static final String PORT_TYPE_CLASS_INFO_NAME = "PortType";
 	
 	public static String portHeaderGuard (String source) {

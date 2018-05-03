@@ -5,7 +5,7 @@ import java.util.List;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.FileNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.HierarchicalStateMachineNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.PointerAndMemoryNames;
-import hu.elte.txtuml.export.cpp.templates.GenerationNames.TypeDelcreationKeywords;
+import hu.elte.txtuml.export.cpp.templates.GenerationNames.TypeDeclarationKeywords;
 
 public class GenerationTemplates {
 
@@ -14,8 +14,8 @@ public class GenerationTemplates {
 	
 	
 	public enum ClassDeclerationType {
-		Class(GenerationNames.TypeDelcreationKeywords.ClassType),
-		AssocDescriptor(GenerationNames.TypeDelcreationKeywords.AssociationEndDescriptor);
+		Class(GenerationNames.TypeDeclarationKeywords.ClassType),
+		AssocDescriptor(GenerationNames.TypeDeclarationKeywords.AssociationEndDescriptor);
 		
 		private String typeString;
 		
@@ -48,7 +48,7 @@ public class GenerationTemplates {
 	}
 
 	public static String dataType(String datatTypeName, String attributes) {
-		return TypeDelcreationKeywords.DataType + " " + datatTypeName + "\n" + "{\n" + attributes + "}";
+		return TypeDeclarationKeywords.DataType + " " + datatTypeName + "\n" + "{\n" + attributes + "}";
 	}
 	
 
@@ -68,8 +68,8 @@ public class GenerationTemplates {
 	public static String forwardDeclaration(String className, ClassDeclerationType type) {
 		
 		return type.getTypeDeclerationString() + " " + PrivateFunctionalTemplates.mapUMLClassToCppClass(className) + ";\n";
-	}
 
+	}
 	public static String putNamespace(String source, String namespace) {
 		return "namespace " + namespace + "\n{\n" + source + "\n}\n";
 	}

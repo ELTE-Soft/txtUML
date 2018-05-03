@@ -259,7 +259,7 @@ public class HeaderTemplates {
 		public String getFixPrivateParts() {
 			StringBuilder fixPrivateParts = new StringBuilder("");
 			if(headerType.hasStateMachine()) {
-				fixPrivateParts.append("//Simple Machine Parts\n" + FunctionTemplates.functionDecl(GenerationNames.InitiliazetFixFunctionNames.InitStateMachine) + "\n" + 
+				fixPrivateParts.append("//Simple Machine Parts\n" + FunctionTemplates.functionDecl(GenerationNames.InitializerFixFunctionNames.InitStateMachine) + "\n" + 
 						GenerationNames.SetStateDecl + EntryExitNames.EntryDecl + EntryExitNames.ExitDecl + 
 						"\n" + "int " + GenerationNames.CurrentStateName + ";\n");
 				
@@ -291,7 +291,7 @@ public class HeaderTemplates {
 			String protectedPart, String privatePart, HeaderInfo headerInfo) {
 
 		StringBuilder classDeclaration = new StringBuilder("");
-		classDeclaration.append(GenerationNames.TypeDelcreationKeywords.ClassType + " " + headerInfo.getOwnerClassName());
+		classDeclaration.append(GenerationNames.TypeDeclarationKeywords.ClassType + " " + headerInfo.getOwnerClassName());
 
 		List<String> objectBase = new LinkedList<>();
 		if (pureInfBaseNames != null) {

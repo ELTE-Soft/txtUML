@@ -103,7 +103,7 @@ public final class SharedUtils {
 		return null;
 	}
 	
-	public static IAnnotationBinding obatinAnnotationBinding(BodyDeclaration declaration, Class<?> annotationClass) {
+	public static IAnnotationBinding obtainAnnotationBinding(BodyDeclaration declaration, Class<?> annotationClass) {
 		for (Object mod : declaration.modifiers()) {
 			IExtendedModifier modifier = (IExtendedModifier) mod;
 			if (modifier.isAnnotation()) {
@@ -116,7 +116,7 @@ public final class SharedUtils {
 		return null;
 	}
 	
-	public static ITypeBinding obatinTypeBindingFromExpression(Expression expr) {
+	public static ITypeBinding obtainTypeBindingFromExpression(Expression expr) {
 		if(expr instanceof TypeLiteral) {
 			return ((TypeLiteral) expr).getType().resolveBinding();
 		}
@@ -126,14 +126,14 @@ public final class SharedUtils {
 	
 	public static ITypeBinding obtainTypeLiteralAnnotation(BodyDeclaration declaration, Class<?> annotationClass) {
 		Expression expr = obtainSingleMemberAnnotationValue(declaration, annotationClass);
-		return obatinTypeBindingFromExpression(expr);
+		return obtainTypeBindingFromExpression(expr);
 
 		
 	}
 	
 	public static ITypeBinding obtainTypeLiteralAnnotation(BodyDeclaration declaration, Class<?> annotationClass, String name) {
 		//TODO NA: need a better solution instead of string literals..
-		IAnnotationBinding annot = obatinAnnotationBinding(declaration, annotationClass);
+		IAnnotationBinding annot = obtainAnnotationBinding(declaration, annotationClass);
 		if (annot != null) {
 			for(IMemberValuePairBinding annotValue : annot.getAllMemberValuePairs()) {
 				if(annotValue.getName().equals(name)) {

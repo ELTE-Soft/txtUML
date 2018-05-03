@@ -128,7 +128,7 @@ void ConfiguredThreadedRT::setConfiguration(ESContainer::FixedArray<ES::SharedPt
 }
 
 
-// Constans
+// Constants
 
 int Model::PortType::portIdCounter = 1;
 Model::PortType Model::PortType::AnyPort;

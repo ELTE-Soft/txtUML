@@ -30,6 +30,7 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import hu.elte.txtuml.export.cpp.CppExporterUtils;
 import hu.elte.txtuml.export.cpp.Uml2ToCppExporter;
 import hu.elte.txtuml.utils.Logger;
 
@@ -72,7 +73,7 @@ public class CompileTests {
 			new Config("producer_consumer", "producer_consumer.j.model",
 					"producer_consumer.j.cpp.ProducerConsumerConfiguration", DemoExpectedLines.PRODUCER_CONSUMER.getLines(), false, "main.cpp"),
 			new Config("train", "train.j.model", "train.j.cpp.TrainConfiguration", DemoExpectedLines.TRAIN.getLines(), false, "mainTest.cpp"),
-			new Config("pingpong", "pingpong.j.model", "pingpong.j.cpp.PingPongConf", DemoExpectedLines.PINGPONG.getLines(), true, "main.cpp")};
+			new Config("pingpong", "pingpong.j.model", "pingpong.j.cpp.PingPongConfiguration", DemoExpectedLines.PINGPONG.getLines(), true, "main.cpp")};
 	
 	private static final String EXPORT_TEST_PROJECT_PREFIX = "exportTest_";
 	private static final String COMPILE_TEST_PROJECT_PREFIX = "compileTest_";
@@ -105,8 +106,8 @@ public class CompileTests {
 		int clangRet = -1;
 		int clangxxRet = -1;
 		try {
-			cmakeRet = executeCommand(testWorkspace, Arrays.asList("cmake", "--version"), null, null);
-			ninjaRet = executeCommand(testWorkspace, Arrays.asList("ninja", "--version"), null, null);
+			cmakeRet = CppExporterUtils.executeCommand(testWorkspace, Arrays.asList("cmake", "--version"), null, null);
+			ninjaRet = CppExporterUtils.executeCommand(testWorkspace, Arrays.asList("ninja", "--version"), null, null);
 		} catch (IOException | InterruptedException e) {
 		}
 		if (cmakeRet != 0 || ninjaRet != 0) {
@@ -116,11 +117,11 @@ public class CompileTests {
 		}
 
 		try {
-			gccRet = executeCommand(testWorkspace, Arrays.asList("gcc", "--version"), null, null);
-			gccxxRet = executeCommand(testWorkspace, Arrays.asList("g++", "--version"), null, null);
+			gccRet = CppExporterUtils.executeCommand(testWorkspace, Arrays.asList("gcc", "--version"), null, null);
+			gccxxRet = CppExporterUtils.executeCommand(testWorkspace, Arrays.asList("g++", "--version"), null, null);
 			if(!isWindowsOS()){
-				clangRet = executeCommand(testWorkspace, Arrays.asList("clang", "--version"), null, null);
-				clangxxRet = executeCommand(testWorkspace, Arrays.asList("clang++", "--version"), null, null);
+				clangRet = CppExporterUtils.executeCommand(testWorkspace, Arrays.asList("clang", "--version"), null, null);
+				clangxxRet = CppExporterUtils.executeCommand(testWorkspace, Arrays.asList("clang++", "--version"), null, null);
 			}
 		} catch (IOException | InterruptedException e) {
 		}
@@ -199,22 +200,7 @@ public class CompileTests {
 		}
 	}
 
-	private static int executeCommand(String directory, List<String> strings, Map<String, String> environment, String fileNameToRedirect)
-			throws IOException, InterruptedException {
-		ProcessBuilder processBuilder = new ProcessBuilder(strings);
-		if (environment != null) {
-			processBuilder.environment().putAll(environment);
-		}
-					
-		processBuilder.inheritIO();
-		processBuilder.directory(new File(directory));
-		
-		if(fileNameToRedirect != null){
-			processBuilder = processBuilder.redirectOutput(new File(directory + "/" + fileNameToRedirect));//Files.Files.createFile(Paths.get(directory + "/run.txt")));
-		}
-		Process process = processBuilder.start();
-		return process.waitFor();
-	}
+	
 
 	private static String generateCPP(Config config, String testPrefix, boolean addRuntime, boolean overWriteMainFile)
 			throws Exception {
@@ -256,7 +242,8 @@ public class CompileTests {
 			}
 		}
 
-		cppgen.uml2ToCpp(testProject, config.model, config.deployment, testProject, addRuntime, overWriteMainFile);
+		cppgen.uml2ToCpp(testProject, config.model, config.deployment, testProject, 
+				addRuntime, overWriteMainFile, null);
 
 		project.close(null);
 		project.delete(false, false, null);
@@ -308,17 +295,17 @@ public class CompileTests {
 				}
 			}
 			
-			int cmakeRetCode = executeCommand(buildDir,
+			int cmakeRetCode = CppExporterUtils.executeCommand(buildDir,
 					Arrays.asList("cmake", "-G", "Ninja", "-DCMAKE_BUILD_TYPE=" + modeStr, ".."), compileEnv, null);
 			assertThat(cmakeRetCode, is(0));
-			int ninjaRetCode = executeCommand(buildDir, Arrays.asList("ninja", "-v"), compileEnv, null);
+			int ninjaRetCode = CppExporterUtils.executeCommand(buildDir, Arrays.asList("ninja", "-v"), compileEnv, null);
 			assertThat(ninjaRetCode, is(0));
 			
 			String bash = isWindowsOS() ? "cmd.exe" : "/bin/bash";
 			String mainBinary = isWindowsOS() ? "main.exe" : "./main";
 			String c = isWindowsOS() ? "/c" : "-c";
 			
-			int mainRetCode = executeCommand(buildDir, Arrays.asList(bash, c, mainBinary), compileEnv, MAIN_OUTPUT_FILE);
+			int mainRetCode = CppExporterUtils.executeCommand(buildDir, Arrays.asList(bash, c, mainBinary), compileEnv, MAIN_OUTPUT_FILE);
 			assertThat(mainRetCode, is(0));
 				
 			System.out.println("***************** CPP Compilation Test successful on " + testProjectName + " "
