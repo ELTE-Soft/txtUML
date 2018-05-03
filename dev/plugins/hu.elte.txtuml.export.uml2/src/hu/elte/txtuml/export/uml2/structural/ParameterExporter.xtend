@@ -5,7 +5,7 @@ import org.eclipse.jdt.core.dom.IVariableBinding
 import org.eclipse.uml2.uml.Parameter
 import org.eclipse.uml2.uml.ParameterDirectionKind
 
-class ParameterExporter extends TypedNamedExporter<Parameter> {
+class ParameterExporter extends TypedNamedMultipliedExporter<Parameter> {
 
 	new(BaseExporter<?, ?, ?> parent) {
 		super(parent)
