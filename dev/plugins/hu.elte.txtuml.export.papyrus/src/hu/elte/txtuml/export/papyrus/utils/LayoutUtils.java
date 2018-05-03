@@ -1,4 +1,4 @@
-package hu.elte.txtuml.layout.export.utils;
+package hu.elte.txtuml.export.papyrus.utils;
 
 import java.net.URLClassLoader;
 

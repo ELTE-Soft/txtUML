@@ -21,8 +21,8 @@ import org.eclipse.uml2.uml.Element;
 
 import hu.elte.txtuml.export.papyrus.api.DiagramElementsModifier;
 import hu.elte.txtuml.export.papyrus.api.StateMachineDiagramElementsController;
+import hu.elte.txtuml.export.papyrus.elementsarrangers.ArrangeException;
 import hu.elte.txtuml.export.papyrus.layout.txtuml.TxtUMLElementsRegistry;
-import hu.elte.txtuml.layout.visualizer.exceptions.ArrangeException;
 import hu.elte.txtuml.layout.visualizer.model.LineAssociation;
 
 /**

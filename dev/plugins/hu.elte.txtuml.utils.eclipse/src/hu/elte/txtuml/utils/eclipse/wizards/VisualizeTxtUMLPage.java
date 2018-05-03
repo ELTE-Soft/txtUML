@@ -1,4 +1,4 @@
-package hu.elte.txtuml.wizards;
+package hu.elte.txtuml.utils.eclipse.wizards;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;

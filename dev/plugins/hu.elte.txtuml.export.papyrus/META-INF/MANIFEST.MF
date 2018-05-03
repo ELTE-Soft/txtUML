@@ -7,6 +7,7 @@ Bundle-Vendor: ELTE
 Require-Bundle: 
  hu.elte.txtuml.layout.visualizer,
  hu.elte.txtuml.layout.export,
+ hu.elte.txtuml.api.model,
  hu.elte.txtuml.api.layout,
  hu.elte.txtuml.utils,
  hu.elte.txtuml.export.uml2,
@@ -26,6 +27,7 @@ Require-Bundle:
  org.eclipse.papyrus.uml.diagram.composite,
  org.eclipse.papyrus.infra.core.log,
  org.eclipse.ui.ide,
+ org.eclipse.uml2.uml,
  org.eclipse.papyrus.uml.diagram.menu,
  org.eclipse.papyrus.editor,
  org.eclipse.papyrus.infra.gmfdiag.css,
@@ -33,8 +35,7 @@ Require-Bundle:
  org.eclipse.jdt.ui,
  com.google.guava,
  hu.elte.txtuml.utils.eclipse,
- org.eclipse.core.expressions,
- hu.elte.txtuml.wizards;bundle-version="0.6.0"
+ org.eclipse.core.expressions
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Export-Package: hu.elte.txtuml.export.papyrus,
@@ -48,6 +49,5 @@ Export-Package: hu.elte.txtuml.export.papyrus,
  hu.elte.txtuml.export.papyrus.papyrusmodelmanagers,
  hu.elte.txtuml.export.papyrus.preferences,
  hu.elte.txtuml.export.papyrus.wizardz
-Import-Package: hu.elte.txtuml.export.papyrus,
- hu.elte.txtuml.utils.diagrams,
+Import-Package: hu.elte.txtuml.utils.diagrams,
  hu.elte.txtuml.utils.eclipse
