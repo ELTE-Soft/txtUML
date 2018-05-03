@@ -5,6 +5,8 @@ import hu.elte.txtuml.export.uml2.activity.ActionExporter
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment
 import org.eclipse.jdt.core.dom.VariableDeclarationStatement
 import org.eclipse.uml2.uml.Action
+import hu.elte.txtuml.utils.jdt.ElementTypeTeller
+import hu.elte.txtuml.export.uml2.utils.MultiplicityProvider
 
 class VariableDeclarationExporter extends ActionExporter<VariableDeclarationStatement, Action> {
 	
@@ -17,7 +19,16 @@ class VariableDeclarationExporter extends ActionExporter<VariableDeclarationStat
 	override exportContents(VariableDeclarationStatement source) {
 		source.fragments.forEach[ 
 			val variable = factory.createVariable
-			variable.type = fetchType(source.type.resolveBinding)
+			val sourceTypeBinding = source.type.resolveBinding
+			if(ElementTypeTeller.isCollection(sourceTypeBinding)) {
+				variable.lower = MultiplicityProvider.getLowerBound(sourceTypeBinding);
+				variable.upper = MultiplicityProvider.getUpperBound(sourceTypeBinding);
+				variable.type = fetchType(sourceTypeBinding.typeArguments.get(0))
+				
+			} else {
+				variable.type = fetchType(sourceTypeBinding)
+			}
+			
 			val decl = it as VariableDeclarationFragment
 			variable.name = decl.name.identifier
 			storeVariable(variable)
