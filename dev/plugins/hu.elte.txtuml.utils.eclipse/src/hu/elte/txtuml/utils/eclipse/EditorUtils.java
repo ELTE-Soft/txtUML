@@ -1,10 +1,12 @@
 package hu.elte.txtuml.utils.eclipse;
 
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.jdt.core.IJavaElement;
@@ -19,12 +21,13 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.IEditorReference;
 import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.ListSelectionDialog;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
 
-public final class SaveUtils {
+public final class EditorUtils {
 	public static HashSet<String> getPackageElements(String projectName, String modelName,
 			Iterable<String> descriptions) {
 		HashSet<String> packageElements = new HashSet<String>();
@@ -168,6 +171,16 @@ public final class SaveUtils {
 		NullProgressMonitor monitor = new NullProgressMonitor();
 		for (T e : editors) {
 			((IEditorPart) e).doSave(monitor);
+		}
+	}
+	
+	public static void closeEditorByPath(Path path){
+		final IEditorReference[] editors = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getEditorReferences();
+		for(IEditorReference e : editors){
+			IPath editedResource = ((IFileEditorInput)e.getEditor(true).getEditorInput().getPersistable()).getFile().getLocation();
+			if(editedResource.toString().equals(path.toString())){
+				PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().closeEditor(e.getEditor(false), false);
+			}
 		}
 	}
 }

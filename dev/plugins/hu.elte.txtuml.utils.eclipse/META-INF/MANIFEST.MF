@@ -7,7 +7,6 @@ Bundle-Vendor: ELTE
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Export-Package: hu.elte.txtuml.utils.eclipse,
  hu.elte.txtuml.utils.eclipse.preferences,
- hu.elte.txtuml.utils.eclipse.wizards,
  hu.elte.txtuml.utils.jdt
 Require-Bundle: hu.elte.txtuml.api.model,
  org.eclipse.jdt.core,

@@ -1,4 +1,4 @@
-package hu.elte.txtuml.export.papyrus.elementsarrangers;
+package hu.elte.txtuml.layout.visualizer.exceptions;
 
 /**
  * An exception for any arrangement error

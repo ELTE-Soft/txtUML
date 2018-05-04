@@ -18,7 +18,7 @@ import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.ui.handlers.HandlerUtil;
 
 import hu.elte.txtuml.export.javascript.wizardz.JavaScriptVisualizeWizard;
-import hu.elte.txtuml.utils.eclipse.wizards.VisualizeTxtUMLPage;
+import hu.elte.txtuml.wizards.VisualizeTxtUMLPage;
 
 public class JavaScriptVisualizeSelectedDiagramsHandler extends AbstractHandler {
 
