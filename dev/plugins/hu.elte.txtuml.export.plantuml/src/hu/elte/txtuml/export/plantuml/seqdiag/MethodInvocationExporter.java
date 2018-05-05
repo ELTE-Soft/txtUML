@@ -3,6 +3,7 @@ package hu.elte.txtuml.export.plantuml.seqdiag;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.MethodInvocation;
 
+import hu.elte.txtuml.api.model.seqdiag.Sequence;
 import hu.elte.txtuml.export.plantuml.generator.PlantUmlCompiler;
 import hu.elte.txtuml.export.plantuml.seqdiag.fragments.ParFragmentExporter;
 
@@ -28,14 +29,17 @@ public abstract class MethodInvocationExporter extends ExporterBase<MethodInvoca
 	 *            The node type which is parsed by the exporter.
 	 */
 	@SuppressWarnings("unchecked")
-	public static <T extends ASTNode> ExporterBase<T> createExporter(T curElement,
-			PlantUmlCompiler compiler) {
-		MethodInvocationExporter exp = new SequenceExporter(compiler);
-		if (exp.validElement(curElement)) {
-			return (ExporterBase<T>) exp;
-		} else {
+	public static <T extends ASTNode> ExporterBase<T> createExporter(T curElement, PlantUmlCompiler compiler) {
+		if (curElement.getNodeType() != ASTNode.METHOD_INVOCATION) {
+			return null;
+		}
+
+		if (ExporterUtils.isCommunication(curElement)) {
+			return (ExporterBase<T>) new SequenceExporter(compiler);
+		} else if (ExporterUtils.isParFragment(curElement)) {
 			return (ExporterBase<T>) new ParFragmentExporter(compiler);
 		}
+		return (ExporterBase<T>) new UserMethodInvocationExporter(compiler);
 	}
 
 }

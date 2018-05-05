@@ -39,7 +39,6 @@ public class PlantUmlCompiler extends ASTVisitor {
 		errors = new ArrayList<ASTNode>();
 		exporterQueue = new Stack<ExporterBase<? extends ASTNode>>();
 		this.orderedLifelines = orderedLifelines;
-
 		compiledOutput = new StringBuilder();
 	}
 

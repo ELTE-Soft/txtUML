@@ -19,12 +19,7 @@ public class SequenceExporter extends MethodInvocationExporter {
 
 	@Override
 	public boolean validElement(ASTNode curElement) {
-		if (super.validElement(curElement)) {
-			String fullName = ExporterUtils.getFullyQualifiedName((MethodInvocation) curElement);
-			return fullName.equals("hu.elte.txtuml.api.model.seqdiag.Sequence.send")
-					|| fullName.equals("hu.elte.txtuml.api.model.seqdiag.Sequence.fromActor");
-		}
-		return false;
+		return super.validElement(curElement) && ExporterUtils.isCommunication(curElement);
 	}
 
 	@Override
@@ -46,7 +41,7 @@ public class SequenceExporter extends MethodInvocationExporter {
 
 		Expression signal = (Expression) curElement.arguments().get(1);
 		String signalExpr = signal.resolveTypeBinding().getQualifiedName();
-		
+
 		compiler.println(senderName + "->" + targetName + " : " + signalExpr);
 		compiler.activateLifeline(senderName);
 		compiler.activateLifeline(targetName);

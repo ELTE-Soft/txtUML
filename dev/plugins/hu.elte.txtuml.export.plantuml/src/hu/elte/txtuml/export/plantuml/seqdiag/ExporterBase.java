@@ -95,7 +95,7 @@ public abstract class ExporterBase<T extends ASTNode> {
 		case ASTNode.TYPE_DECLARATION:
 			return (ExporterBase<T>) new InteractionExporter(compiler);
 		case ASTNode.METHOD_INVOCATION:
-			return (ExporterBase<T>) MethodInvocationExporter.createExporter(curElement, compiler);
+			return MethodInvocationExporter.createExporter(curElement, compiler);
 		case ASTNode.WHILE_STATEMENT:
 		case ASTNode.FOR_STATEMENT:
 		case ASTNode.ENHANCED_FOR_STATEMENT:

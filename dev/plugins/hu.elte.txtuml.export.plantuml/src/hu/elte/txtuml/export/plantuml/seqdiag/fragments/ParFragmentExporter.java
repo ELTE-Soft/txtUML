@@ -22,8 +22,7 @@ public class ParFragmentExporter extends CombinedFragmentExporter<MethodInvocati
 	@Override
 	public boolean validElement(ASTNode curElement) {
 		if (super.validElement(curElement)) {
-			String fullName = ExporterUtils.getFullyQualifiedName((MethodInvocation) curElement);
-			return fullName.equals("hu.elte.txtuml.api.model.seqdiag.Sequence.par");
+			return ExporterUtils.isParFragment(curElement);
 		}
 		return false;
 	}
