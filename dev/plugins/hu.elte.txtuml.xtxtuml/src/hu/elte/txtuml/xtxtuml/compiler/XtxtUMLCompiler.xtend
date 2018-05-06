@@ -5,6 +5,7 @@ import hu.elte.txtuml.api.model.Action
 import hu.elte.txtuml.api.model.ModelClass.Port
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAssociationEnd
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUClassPropertyAccessExpression
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUCreateObjectExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUDeleteObjectExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TULinkExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TULogExpression
@@ -12,6 +13,7 @@ import hu.elte.txtuml.xtxtuml.xtxtUML.TUSendSignalExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUSignalAccessExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUStartObjectExpression
 import org.eclipse.xtext.common.types.JvmType
+import org.eclipse.xtext.xbase.XConstructorCall
 import org.eclipse.xtext.xbase.XExpression
 import org.eclipse.xtext.xbase.compiler.XbaseCompiler
 import org.eclipse.xtext.xbase.compiler.output.ITreeAppendable
@@ -42,6 +44,29 @@ class XtxtUMLCompiler extends XbaseCompiler {
 
 	def dispatch toJavaStatement(TUSignalAccessExpression sigExpr, ITreeAppendable it) {
 		// intentionally left empty
+	}
+
+	override def constructorCallToJavaExpression(XConstructorCall createExpr, ITreeAppendable it) {
+		if(createExpr instanceof TUCreateObjectExpression){
+				val withName = createExpr.objectName != null;
+				if(createExpr.create || withName){
+					append(Action);
+					append('''.create«IF withName»WithName«ENDIF»(''');
+					append('''«createExpr.constructor.simpleName».class«IF withName», "«createExpr.objectName»"«ENDIF»''');
+
+					var i = 0;
+					while(i < createExpr.arguments.size){
+						append(", ");
+						createExpr.arguments.get(i).internalToJavaExpression(it);
+						i++;
+					}
+					append(")");
+				}else{
+					super.constructorCallToJavaExpression(createExpr, it);
+				}
+		}else{
+			super.constructorCallToJavaExpression(createExpr, it);
+		}
 	}
 
 	def dispatch toJavaStatement(TUStartObjectExpression startExpr, ITreeAppendable it) {

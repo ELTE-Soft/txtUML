@@ -354,12 +354,12 @@ XPrimaryExpression returns xbase::XExpression
  *     <li>no XClosure after the parameter list</li>
  * </ul>
  */
-XConstructorCall returns xbase::XExpression :
-	{xbase::XConstructorCall}
-	'new' constructor=[types::JvmConstructor|QualifiedName] (
-		=>'<' typeArguments+=JvmSimpleTypeReference '>'
-	)?
+XConstructorCall returns xbase::XConstructorCall :
+	{TUCreateObjectExpression}
+	(create?='create' | 'new') constructor=[types::JvmConstructor|QualifiedName] (
+		=>'<' typeArguments+=JvmSimpleTypeReference '>')?
 	=>explicitConstructorCall?='(' (arguments+=XExpression (',' arguments+=XExpression)*)? ')'
+	('as' objectName = STRING)?
 ;
 
 /*
