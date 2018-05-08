@@ -126,6 +126,7 @@ import hu.elte.txtuml.export.uml2.activity.expression.PortReferenceExporter
 import hu.elte.txtuml.export.uml2.activity.apicalls.SendToPortActionExporter
 import hu.elte.txtuml.export.uml2.activity.apicalls.AssemblyConnectExporter
 import hu.elte.txtuml.export.uml2.activity.apicalls.DelegationConnectExporter
+import hu.elte.txtuml.export.uml2.activity.apicalls.AddToMultipliedElementExporter
 
 /** An exporter is able to fully or partially export a given element. 
  * Partial export only creates the UML object itself, while full export also creates its contents.
@@ -255,6 +256,7 @@ abstract class Exporter<S, A, R extends Element> extends BaseExporter<S, A, R> {
 					new PortReferenceExporter(this),
 					new AssemblyConnectExporter(this),
 					new DelegationConnectExporter(this),
+					new AddToMultipliedElementExporter(this),
 					new IgnoredAPICallExporter(this)
 				]
 			ConstructorInvocation:

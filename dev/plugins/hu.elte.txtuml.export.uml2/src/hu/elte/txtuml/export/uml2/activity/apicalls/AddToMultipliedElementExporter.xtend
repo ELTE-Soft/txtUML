@@ -1,11 +1,11 @@
 package hu.elte.txtuml.export.uml2.activity.apicalls
 
-import hu.elte.txtuml.export.uml2.activity.ActionExporter
 import org.eclipse.jdt.core.dom.MethodInvocation
 import hu.elte.txtuml.export.uml2.BaseExporter
-import org.eclipse.uml2.uml.AddVariableValueAction
+import hu.elte.txtuml.export.uml2.activity.expression.OperatorExporter
+import org.eclipse.jdt.core.dom.Expression
 
-class AddToMultipliedVariableExporter extends ActionExporter<MethodInvocation, AddVariableValueAction> {
+class AddToMultipliedElementExporter extends OperatorExporter<MethodInvocation> {
 	
 	new(BaseExporter<?, ?, ?> parent) {
 		super(parent)
@@ -15,13 +15,16 @@ class AddToMultipliedVariableExporter extends ActionExporter<MethodInvocation, A
 		if (isApiMethodInvocation(access.resolveMethodBinding) && 
 			access.resolveMethodBinding.name == "add"
 		) {
-			factory.createAddVariableValueAction
+			factory.createSequenceNode
 		}
 	
 	}
 	
 	override exportContents(MethodInvocation source) {
-		throw new UnsupportedOperationException("TODO: auto-generated method stub")
+			assignToExpression(source.expression)[ act |
+			val valueExpr  = exportExpression(source.arguments.get(0) as Expression)	
+			valueExpr
+		]
 	}
 	
 }
