@@ -3,20 +3,21 @@ Bundle-ManifestVersion: 2
 Bundle-Name: txtUml Sequence diagrams
 Bundle-SymbolicName: hu.elte.txtuml.seqdiag;singleton:=true
 Bundle-Version: 0.6.0.qualifier
-Require-Bundle: hu.elte.txtuml.api.model,
+Require-Bundle: hu.elte.txtuml.api.model.execution,
+ hu.elte.txtuml.api.model,
+ hu.elte.txtuml.utils,
  hu.elte.txtuml.utils.eclipse,
  org.eclipse.core.runtime,
  org.eclipse.jdt.core,
  org.eclipse.core.resources,
  org.eclipse.ui.ide,
- org.eclipse.ui.workbench,
  org.eclipse.emf.ecore,
- org.eclipse.ui.console,
- org.eclipse.jface,
- hu.elte.txtuml.api.model.execution,
+ org.eclipse.ui,
  org.eclipse.core.expressions,
+ org.eclipse.ui.console,
  com.google.guava
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-Vendor: ELTE
 Export-Package: hu.elte.txtuml.seqdiag.export.plantuml,
  hu.elte.txtuml.seqdiag.export.plantuml.exceptions
+

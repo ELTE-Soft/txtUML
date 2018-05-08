@@ -1,4 +1,4 @@
-package hu.elte.txtuml.export.papyrus.handlers;
+package hu.elte.txtuml.seqdiag.handlers;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -17,14 +17,14 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.ui.handlers.HandlerUtil;
 
-import hu.elte.txtuml.export.papyrus.wizardz.TxtUMLVisualizeWizard;
-import hu.elte.txtuml.export.papyrus.wizardz.VisualizeTxtUMLPage;
+import hu.elte.txtuml.seqdiag.wizards.PlantUMLVisualizeWizard;
+import hu.elte.txtuml.utils.eclipse.wizards.VisualizeTxtUMLPage;
 
-public class TxtUMLVisualizeSelectedDiagramsHandler extends AbstractHandler {
+public class PlantUMLVisualizeSelectedDiagramsHandler extends AbstractHandler {
 
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
-		TxtUMLVisualizeWizard wizard = new TxtUMLVisualizeWizard();
+		PlantUMLVisualizeWizard wizard = new PlantUMLVisualizeWizard();
 		WizardDialog wizardDialog = new WizardDialog(null, wizard);
 		wizardDialog.create();
 

@@ -37,7 +37,7 @@ import org.eclipse.uml2.uml.Signal;
 
 import hu.elte.txtuml.export.papyrus.UMLModelManager;
 import hu.elte.txtuml.export.papyrus.api.ClassDiagramElementsController;
-import hu.elte.txtuml.export.papyrus.preferences.PreferencesManager;
+import hu.elte.txtuml.utils.eclipse.preferences.PreferencesManager;
 
 /**
  * An abstract class for adding/removing elements to ClassDiagrams.

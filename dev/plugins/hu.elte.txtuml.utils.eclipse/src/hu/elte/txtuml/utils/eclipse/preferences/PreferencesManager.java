@@ -1,4 +1,4 @@
-package hu.elte.txtuml.export.papyrus.preferences;
+package hu.elte.txtuml.utils.eclipse.preferences;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -9,7 +9,7 @@ import java.util.Map.Entry;
 
 import org.eclipse.jface.preference.IPreferenceStore;
 
-import hu.elte.txtuml.export.papyrus.Activator;
+import hu.elte.txtuml.utils.eclipse.Activator;
 
 /**
  * Handles the preferences that are saved by eclipse
