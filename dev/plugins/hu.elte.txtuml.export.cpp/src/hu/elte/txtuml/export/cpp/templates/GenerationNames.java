@@ -1,7 +1,11 @@
 package hu.elte.txtuml.export.cpp.templates;
 
+import java.util.Arrays;
+import java.util.Optional;
+
 import org.eclipse.core.runtime.Path;
 
+import hu.elte.txtuml.export.cpp.CppExporterUtils;
 import hu.elte.txtuml.export.cpp.templates.statemachine.EventTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.PortTemplates;
 
@@ -377,5 +381,10 @@ public class GenerationNames {
 
 	public static String providedInfPartName(String infName) {
 		return infName + "ProvInf";
+	}
+
+	public static String umlVarType(String mappedType, Integer low, Integer up) {
+		return "Variable" + CppExporterUtils.createTemplateParametersCode(Optional
+				.of(Arrays.asList(mappedType, low.toString(), up.toString()))); 
 	}
 }

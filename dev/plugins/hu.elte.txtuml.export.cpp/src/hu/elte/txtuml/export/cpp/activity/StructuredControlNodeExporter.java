@@ -136,8 +136,12 @@ class StructuredControlNodeExporter {
 			type = variable.getType().getName();
 		}
 		userVariableExporter.exportNewVariable(variable);
+		GenerationTemplates.VariableType multyVarType =  GenerationTemplates.VariableType.UMLVariableType;
+		multyVarType.setLowMul(variable.getLower());
+		multyVarType.setUpMul(variable.getUpper());
+		
 		GenerationTemplates.VariableType varType = variable.getType().eClass().equals(UMLPackage.Literals.SIGNAL) ?
-				GenerationTemplates.VariableType.EventPtr : GenerationTemplates.VariableType.RawPointerType;
+				GenerationTemplates.VariableType.EventPtr : multyVarType;
 		return ObjectDeclDefTemplates.variableDecl(type, userVariableExporter.getRealVariableName(variable),varType);
 	}
 }

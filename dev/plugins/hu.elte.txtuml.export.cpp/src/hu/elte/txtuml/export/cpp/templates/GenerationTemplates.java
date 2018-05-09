@@ -30,12 +30,40 @@ public class GenerationTemplates {
 		
 	}
 	
-	public enum VariableType {
+	public enum VariableType {				
 		RawPointerType,
 		StackStored,
 		EventPtr,
 		SharedPtr,
-		OriginalType
+		OriginalType,
+		UMLVariableType;
+		
+		VariableType() {
+			lowMul = 1;
+			upMul = 1;
+		}
+		
+		
+		
+		public int getLowMul() {
+			return lowMul;
+		}
+
+		public int getUpMul() {
+			return upMul;
+		}
+
+
+		public void setLowMul(int lowMul) {
+			this.lowMul = lowMul;
+		}
+
+		public void setUpMul(int upMul) {
+			this.upMul = upMul;
+		}
+
+		int lowMul;
+		int upMul;
 	}
 	
 	

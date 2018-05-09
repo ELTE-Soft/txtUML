@@ -7,108 +7,61 @@
 #include <list>
 #include <map>
 #include "ModelObject.hpp"
+#include "ESRoot/Elements.hpp"
+
+namespace Model
+{
+
 
 template<class FirstClassRole, class SecondClassRole>
-class Association : public FirstClassRole , public SecondClassRole {
+class Association : public FirstClassRole, public SecondClassRole {
 public:
 
-	Association()  {
+	Association() {
 		FirstClassRole::association = this;
 		SecondClassRole::association = this;
 	}
 
-        void link(typename FirstClassRole::RoleType* first, FirstClassRole*, typename SecondClassRole::RoleType* second, SecondClassRole*) {
+	void link(typename FirstClassRole::RoleType* first, FirstClassRole*, typename SecondClassRole::RoleType* second, SecondClassRole*) {
 		LeftRoleTable[first].add(second);
 		RigthRoleTable[second].add(first);
 	}
 
-        void link(typename SecondClassRole::RoleType* first, SecondClassRole*, typename FirstClassRole::RoleType* second, FirstClassRole*) {
+	void link(typename SecondClassRole::RoleType* first, SecondClassRole*, typename FirstClassRole::RoleType* second, FirstClassRole*) {
 		RigthRoleTable[first].add(second);
 		LeftRoleTable[second].add(first);
 	}
 
-        void unlink (typename FirstClassRole::RoleType* first, FirstClassRole*, typename SecondClassRole::RoleType* second, SecondClassRole*) {
-		LeftRoleTable[first].remove (second);
-		RigthRoleTable[second].remove (first);
+	void unlink(typename FirstClassRole::RoleType* first, FirstClassRole*, typename SecondClassRole::RoleType* second, SecondClassRole*) {
+		LeftRoleTable[first].remove(second);
+		RigthRoleTable[second].remove(first);
 	}
 
-        void unlink (typename SecondClassRole::RoleType* first, SecondClassRole*, typename FirstClassRole::RoleType* second, FirstClassRole*) {
-		RigthRoleTable[first].remove (second);
-		LeftRoleTable[second].remove (first);
+	void unlink(typename SecondClassRole::RoleType* first, SecondClassRole*, typename FirstClassRole::RoleType* second, FirstClassRole*) {
+		RigthRoleTable[first].remove(second);
+		LeftRoleTable[second].remove(first);
 	}
 
-        const typename SecondClassRole::CollectionType& get(typename FirstClassRole::RoleType* left, SecondClassRole*)  {
+	const typename SecondClassRole::CollectionType& get(typename FirstClassRole::RoleType* left, SecondClassRole*) {
 		return LeftRoleTable[left];
 	}
 
-        const typename FirstClassRole::CollectionType& get(typename SecondClassRole::RoleType* rigth, FirstClassRole*) {
+	const typename FirstClassRole::CollectionType& get(typename SecondClassRole::RoleType* rigth, FirstClassRole*) {
 		return RigthRoleTable[rigth];
 	}
 
-        const typename SecondClassRole::CollectionType& get(ES::ModelObject* left, SecondClassRole* r)  {
-            return get(static_cast<typename FirstClassRole::RoleType*>(left), r);
-        }
-
-        const typename FirstClassRole::CollectionType& get(ES::ModelObject* rigth, FirstClassRole* r) {
-            return get(static_cast<typename SecondClassRole::RoleType*>(rigth), r);
-        }
-
-private:
-        std::map<typename FirstClassRole::RoleType*, typename SecondClassRole::CollectionType> LeftRoleTable;
-        std::map<typename SecondClassRole::RoleType*, typename FirstClassRole::CollectionType> RigthRoleTable;
-
-};
-
-template<typename T, int low, int up, typename Container = std::list<T*>>
-class Property {
-public:
-	void add(T* o) {
-		objects.push_back(o);
+	const typename SecondClassRole::CollectionType& get(ES::ModelObject* left, SecondClassRole* r) {
+		return get(static_cast<typename FirstClassRole::RoleType*>(left), r);
 	}
 
-	void remove (T* o) {
-		objects.remove (o);
-	}
-
-	T* selectAny() const {
-		return objects.back();
-	}
-
-	typename Container::size_type count() const{
-		return objects.size();
-	}
-
-
-
-private:
-	Container objects;
-};
-
-
-template<typename T, int low>
-class Property<T, low, 1> {
-public:
-	void add(T* o) {
-		object = o;
-	}
-
-	void remove (T* o) {
-		assert (o == object);
-		if (o == object) {
-			object = nullptr;
-		}
-	}
-
-	T* selectAny() const {
-		return object;
-	}
-
-	int count() const {
-		return object == nullptr ? 0 : 1;
+	const typename FirstClassRole::CollectionType& get(ES::ModelObject* rigth, FirstClassRole* r) {
+		return get(static_cast<typename SecondClassRole::RoleType*>(rigth), r);
 	}
 
 private:
-	T * object = nullptr;
+	std::map<typename FirstClassRole::RoleType*, typename SecondClassRole::CollectionType> LeftRoleTable;
+	std::map<typename SecondClassRole::RoleType*, typename FirstClassRole::CollectionType> RigthRoleTable;
+
 };
 
 
@@ -123,10 +76,11 @@ public:
 
 template<typename FirstClassRole, class SecondClassRole, class EndType, int lowMul, int upMul>
 struct AssocEnd : public AssocOwner<FirstClassRole, SecondClassRole> {
-        typedef Property<EndType, lowMul, upMul> CollectionType;
+	typedef Property<EndType, lowMul, upMul> CollectionType;
 	typedef EndType RoleType;
 };
 
+}
 /*
 class A {};
 

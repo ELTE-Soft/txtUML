@@ -150,6 +150,9 @@ public class PrivateFunctionalTemplates {
 					case SharedPtr:
 						cppType = GenerationNames.sharedPtrType(mappedType);
 						break;
+					case UMLVariableType:
+						cppType = GenerationNames.umlVarType(mappedType, varType.getLowMul(), varType.getUpMul());
+						break;
 					case StackStored:
 					case OriginalType:
 						cppType = mappedType;
