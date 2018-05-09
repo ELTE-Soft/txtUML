@@ -31,7 +31,7 @@ class CreateActionExporter extends CreationExporter<MethodInvocation> {
 		val create = createObject(typeBinding.name, createdType)
 
 		val tempVar = result.createVariable("#temp", createdType)
-		tempVar.write(create)
+		tempVar.write(create, true)
 
 		callCtor(typeBinding, source.arguments.tail, tempVar.read)
 		tempVar.read

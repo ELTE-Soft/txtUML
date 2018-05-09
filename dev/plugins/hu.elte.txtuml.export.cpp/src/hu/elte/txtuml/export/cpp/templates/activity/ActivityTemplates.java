@@ -21,7 +21,7 @@ import hu.elte.txtuml.utils.Pair;
 public class ActivityTemplates {
 	public static final String AddSimpleTypeOp = "+=";
 	public static final String ReplaceSimpleTypeOp = "=";
-	public static final String AddCompositTypeOp = ".push_back";
+	public static final String AddCompositTypeOp = ".add";
 	public static final String ReplaceCompositTypeOp = ReplaceSimpleTypeOp;
 	public static final String AccessOperatorForSets = PointerAndMemoryNames.SimpleAccess;
 	public static final String SignalSmartPointerType = PointerAndMemoryNames.EventPtr;

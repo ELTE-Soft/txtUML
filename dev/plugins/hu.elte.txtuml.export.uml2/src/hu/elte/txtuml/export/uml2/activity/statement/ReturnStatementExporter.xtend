@@ -14,7 +14,7 @@ class ReturnStatementExporter extends ControlExporter<ReturnStatement, SequenceN
 
 	override exportContents(ReturnStatement source) {
 		val ret = exportExpression(source.expression)
-		getVariable("return").write(ret)
+		getVariable("return").write(ret, true)
 		result.name = "return " + ret.name
 	}
 

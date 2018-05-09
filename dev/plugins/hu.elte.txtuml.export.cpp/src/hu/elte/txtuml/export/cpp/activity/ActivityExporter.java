@@ -104,6 +104,7 @@ public class ActivityExporter {
 
 		} else if (node.eClass().equals(UMLPackage.Literals.ADD_VARIABLE_VALUE_ACTION)) {
 			AddVariableValueAction avva = (AddVariableValueAction) node;
+			
 			source.append(ActivityTemplates.generalSetValue(
 					userVariableExporter.getRealVariableName(avva.getVariable()),
 					activityExportResolver.getTargetFromInputPin(avva.getValue()),

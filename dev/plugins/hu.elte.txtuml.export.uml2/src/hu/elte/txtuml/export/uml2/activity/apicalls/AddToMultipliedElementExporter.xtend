@@ -21,7 +21,7 @@ class AddToMultipliedElementExporter extends OperatorExporter<MethodInvocation> 
 	}
 	
 	override exportContents(MethodInvocation source) {
-			assignToExpression(source.expression)[ act |
+			assignToExpression(source.expression, false)[ act |
 			val valueExpr  = exportExpression(source.arguments.get(0) as Expression)	
 			valueExpr
 		]
