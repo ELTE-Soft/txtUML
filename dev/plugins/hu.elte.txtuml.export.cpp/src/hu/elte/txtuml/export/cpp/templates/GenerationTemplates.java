@@ -64,6 +64,13 @@ public class GenerationTemplates {
 
 		int lowMul;
 		int upMul;
+		
+		public static VariableType getUMLMultpliedElementType(int low, int up) {
+			VariableType type = UMLVariableType;
+			type.setLowMul(low);
+			type.setUpMul(up);
+			return type;
+		}
 	}
 	
 	

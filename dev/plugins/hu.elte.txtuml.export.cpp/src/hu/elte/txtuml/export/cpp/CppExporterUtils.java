@@ -100,15 +100,47 @@ public class CppExporterUtils {
 
 		return activity;
 	}
+	
+	public static class TypeDescriptor {
+		
+		public TypeDescriptor(String typeName, int upMul, int lowMul) {
+			super();
+			this.typeName = typeName;
+			this.upMul = upMul;
+			this.lowMul = lowMul;
+		}
+		
+		public TypeDescriptor(String typeName) {
+			super();
+			this.typeName = typeName;
+			this.upMul = 1;
+			this.lowMul = 1;
+		}
+		
+		public String getTypeName() {
+			return typeName;
+		}
+		public int getUpMul() {
+			return upMul;
+		}
+		public int getLowMul() {
+			return lowMul;
+		}
 
-	public static List<Pair<String, String>> getOperationParams(Operation operation) {
-		List<Pair<String, String>> operationParameters = new ArrayList<Pair<String, String>>();
+		String typeName;
+		int upMul;
+		int lowMul;
+	}
+	
+	public static List<Pair<TypeDescriptor, String>> getOperationParams(Operation operation) {
+		List<Pair<TypeDescriptor, String>> operationParameters = new ArrayList<>();
 		for (Parameter param : operation.getOwnedParameters()) {
 			if (param != operation.getReturnResult()) {
 				if (param.getType() != null) {
-					operationParameters.add(new Pair<String, String>(param.getType().getName(), param.getName()));
+					operationParameters.add(new Pair<TypeDescriptor, String>(
+							new TypeDescriptor(param.getType().getName(),param.getLower(), param.getUpper()) , param.getName()));
 				} else {
-					operationParameters.add(new Pair<String, String>(UNKNOWN_TYPE, param.getName()));
+					operationParameters.add(new Pair<TypeDescriptor, String>(new TypeDescriptor(UNKNOWN_TYPE), param.getName()));
 				}
 			}
 		}
@@ -127,12 +159,12 @@ public class CppExporterUtils {
 		return operationParameterTypes;
 	}
 
-	public static List<String> getOperationParamTypes(Operation operation) {
-		List<String> operationParameterTypes = new ArrayList<String>();
+	public static List<TypeDescriptor> getOperationParamTypes(Operation operation) {
+		List<TypeDescriptor> operationParameterTypes = new ArrayList<>();
 		for (Parameter param : operation.getOwnedParameters()) {
 			if (param != operation.getReturnResult()) {
 				if (param.getType() != null) {
-					operationParameterTypes.add(param.getType().getName());
+					operationParameterTypes.add(new TypeDescriptor(param.getType().getName(), param.getLower(), param.getUpper()));
 				}
 			}
 		}

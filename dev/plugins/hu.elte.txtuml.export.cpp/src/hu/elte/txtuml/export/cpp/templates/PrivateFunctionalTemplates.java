@@ -2,6 +2,7 @@ package hu.elte.txtuml.export.cpp.templates;
 
 import java.util.List;
 
+import hu.elte.txtuml.export.cpp.CppExporterUtils.TypeDescriptor;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.BasicTypeNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.ClassUtilsNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.FileNames;
@@ -48,12 +49,14 @@ public class PrivateFunctionalTemplates {
 	}
 
 
-	public static String paramList(List<Pair<String, String>> params) {
+	public static String paramList(List<Pair<TypeDescriptor, String>> params) {
 		if (params == null || params.size() == 0)
 			return "";
 		StringBuilder source = new StringBuilder("");
-		for (Pair<String, String> item : params) {
-			source.append(PrivateFunctionalTemplates.cppType(item.getFirst(),  GenerationTemplates.VariableType.RawPointerType) + " "
+		for (Pair<TypeDescriptor, String> item : params) {
+			source.append(PrivateFunctionalTemplates.cppType(item.getFirst().getTypeName(), 
+					GenerationTemplates.VariableType
+					.getUMLMultpliedElementType(item.getFirst().getLowMul(), item.getFirst().getUpMul())) + " "
 					+ GenerationNames.formatIncomingParamName(item.getSecond()) + ",");
 		}
 		return source.substring(0, source.length() - 1);
@@ -71,12 +74,13 @@ public class PrivateFunctionalTemplates {
 
 	}
 
-	public static String paramTypeList(List<String> params) {
+	public static String paramTypeList(List<TypeDescriptor> params) {
 		if (params == null || params.size() == 0)
 			return "";
 		StringBuilder source = new StringBuilder("");
-		for (String item : params) {
-			source.append(cppType(item, GenerationTemplates.VariableType.RawPointerType) + ",");
+		for (TypeDescriptor item : params) {
+			source.append(cppType(item.getTypeName(), GenerationTemplates.VariableType
+					.getUMLMultpliedElementType(item.getLowMul(), item.getUpMul())) + ",");
 		}
 		return source.substring(0, source.length() - 1);
 	}

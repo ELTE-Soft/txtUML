@@ -7,6 +7,7 @@ import java.util.Set;
 import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.SignalEvent;
 
+import hu.elte.txtuml.export.cpp.CppExporterUtils.TypeDescriptor;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.TypeDeclarationKeywords;
 import hu.elte.txtuml.export.cpp.templates.GenerationTemplates;
@@ -26,10 +27,10 @@ public class EventTemplates {
 	public static final String EventPointerType = GenerationNames.PointerAndMemoryNames.EventPtr;
 	
 	public static final List<String> EventParamVarList = Arrays.asList(EventFParamName);
-	public static final List<String> EventParamDeclList = Arrays.asList(EventPointerType);
-	public static final List<Pair<String,String>> EventParamDefList = Arrays.asList(new Pair<>(EventPointerType, EventParamName)); 
+	public static final List<TypeDescriptor> EventParamDeclList = Arrays.asList(new TypeDescriptor(EventPointerType));
+	public static final List<Pair<TypeDescriptor,String>> EventParamDefList = Arrays.asList(new Pair<>(new TypeDescriptor(EventPointerType), EventParamName)); 
 
-	public static String eventClass(String className, List<Pair<String, String>> params, String constructorBody,
+	public static String eventClass(String className, List<Pair<TypeDescriptor, String>> params, String constructorBody,
 			List<Property> properites) {
 		StringBuilder source = new StringBuilder(
 				TypeDeclarationKeywords.ClassType + " " + GenerationNames.eventClassName(className) + ":public "

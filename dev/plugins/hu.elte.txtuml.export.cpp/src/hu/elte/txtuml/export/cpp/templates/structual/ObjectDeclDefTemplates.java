@@ -44,6 +44,10 @@ public class ObjectDeclDefTemplates {
 		return variableDecl(typeName,variableName, defaultValue,templateParameters, varType, false);
 	}
 	
+	public static String propertyDecl(String typeName, String variableName, String defaultValue,  GenerationTemplates.VariableType varType) {
+		return variableDecl(typeName, variableName, defaultValue,Optional.empty(), varType, false);
+	}
+	
 	public static String propertyDecl(String typeName, String variableName, String defaultValue) {
 		return variableDecl(typeName, variableName, defaultValue,Optional.empty(), GenerationTemplates.VariableType.RawPointerType, false);
 	}

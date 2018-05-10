@@ -3,6 +3,7 @@ package hu.elte.txtuml.export.cpp.structural;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.eclipse.uml2.uml.AttributeOwner;
 import org.eclipse.uml2.uml.Operation;
@@ -14,10 +15,12 @@ import org.eclipse.uml2.uml.VisibilityKind;
 
 import hu.elte.txtuml.export.cpp.ActivityExportResult;
 import hu.elte.txtuml.export.cpp.CppExporterUtils;
+import hu.elte.txtuml.export.cpp.CppExporterUtils.TypeDescriptor;
 import hu.elte.txtuml.export.cpp.ICppCompilationUnit;
 import hu.elte.txtuml.export.cpp.IDependencyCollector;
 import hu.elte.txtuml.export.cpp.activity.ActivityExporter;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames;
+import hu.elte.txtuml.export.cpp.templates.GenerationTemplates.VariableType;
 import hu.elte.txtuml.export.cpp.templates.structual.FunctionTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.ObjectDeclDefTemplates;
 
@@ -104,12 +107,12 @@ public abstract class StructuredElementExporter<StructuredElement extends Operat
 		return returnType;
 	}
 
-	protected List<String> getOperationParamTypes(Operation operation) {
-		List<String> ret = new ArrayList<String>();
+	protected List<TypeDescriptor> getOperationParamTypes(Operation operation) {
+		List<TypeDescriptor> ret = new ArrayList<>();
 		for (Parameter param : operation.getOwnedParameters()) {
 			if (param != operation.getReturnResult()) {
 				if (param.getType() != null) {
-					ret.add(param.getType().getName());
+					ret.add(new TypeDescriptor(param.getType().getName(), param.getLower(), param.getUpper()));
 				}
 			}
 		}
@@ -140,8 +143,8 @@ public abstract class StructuredElementExporter<StructuredElement extends Operat
 				}
 
 				if (isSimpleAttribute(attribute)) {
-
-					source.append(ObjectDeclDefTemplates.propertyDecl(type, attribute.getName(), attribute.getDefault()));
+					source.append(ObjectDeclDefTemplates.propertyDecl(type, attribute.getName(), attribute.getDefault(), 
+							VariableType.getUMLMultpliedElementType(attribute.getLower(), attribute.getUpper())));
 				} else {
 					dependencyExporter.addDependency(type);
 				}
@@ -161,7 +164,8 @@ public abstract class StructuredElementExporter<StructuredElement extends Operat
 				if (returnType != null) {
 					dependencyExporter.addDependency(returnType);
 				}
-				dependencyExporter.addDependencies(getOperationParamTypes(operation));
+				dependencyExporter.addDependencies(getOperationParamTypes(operation)
+						.stream().map(t -> t.getTypeName()).collect(Collectors.toList()));
 			}
 		}
 

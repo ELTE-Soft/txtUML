@@ -9,6 +9,7 @@ import org.eclipse.uml2.uml.Behavior;
 import org.eclipse.uml2.uml.State;
 
 import hu.elte.txtuml.export.cpp.ActivityExportResult;
+import hu.elte.txtuml.export.cpp.CppExporterUtils.TypeDescriptor;
 import hu.elte.txtuml.export.cpp.ICppCompilationUnit;
 import hu.elte.txtuml.export.cpp.IDependencyCollector;
 import hu.elte.txtuml.export.cpp.activity.ActivityExporter;
@@ -172,8 +173,8 @@ public class EntryExitFunctionExporter {
 
 	private String createFunctionDecl(FuncTypeEnum funcType) {
 		StringBuilder source = new StringBuilder("");
-		List<String> eventParameter = new LinkedList<String>();
-		eventParameter.add(EventTemplates.EventPointerType);
+		List<TypeDescriptor> eventParameter = new LinkedList<>();
+		eventParameter.add(new TypeDescriptor(EventTemplates.EventPointerType));
 		for (EntryExitFunctionDescription description : getTheProperList(funcType)) {
 			source.append(FunctionTemplates.functionDecl(description.getFunctionName(), eventParameter));
 		}
@@ -183,10 +184,10 @@ public class EntryExitFunctionExporter {
 	private String createFunctionDef(FuncTypeEnum funcType) {
 		StringBuilder source = new StringBuilder("");
 
-		List<Pair<String, String>> hiddenParam = new LinkedList<Pair<String, String>>();
-		List<Pair<String, String>> notHiddenParam = new LinkedList<Pair<String, String>>();
-		hiddenParam.add(new Pair<String, String>(EventTemplates.EventPointerType, ""));
-		notHiddenParam.add(new Pair<String, String>(EventTemplates.EventPointerType, EventTemplates.EventParamName));
+		List<Pair<TypeDescriptor, String>> hiddenParam = new LinkedList<>();
+		List<Pair<TypeDescriptor, String>> notHiddenParam = new LinkedList<>();
+		hiddenParam.add(new Pair<TypeDescriptor, String>(new TypeDescriptor(EventTemplates.EventPointerType), ""));
+		notHiddenParam.add(new Pair<TypeDescriptor, String>(new TypeDescriptor(EventTemplates.EventPointerType), EventTemplates.EventParamName));
 		for (EntryExitFunctionDescription description : getTheProperList(funcType)) {
 			if (description.getContainsSignalAccess()) {
 				source.append(FunctionTemplates.functionDef(owner.getUnitName(), description.getFunctionName(), notHiddenParam,

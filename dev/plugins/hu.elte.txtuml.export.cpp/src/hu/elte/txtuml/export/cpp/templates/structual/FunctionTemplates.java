@@ -4,6 +4,7 @@ import java.util.List;
 
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.ModifierNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationTemplates;
+import hu.elte.txtuml.export.cpp.CppExporterUtils.TypeDescriptor;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames;
 import hu.elte.txtuml.export.cpp.templates.PrivateFunctionalTemplates;
 import hu.elte.txtuml.export.cpp.templates.activity.ActivityTemplates;
@@ -15,7 +16,7 @@ public class FunctionTemplates {
 		return FunctionTemplates.functionDecl(functionName, null);
 	}
 
-	public static String functionDecl(String functionName, List<String> params) {
+	public static String functionDecl(String functionName, List<TypeDescriptor> params) {
 		return FunctionTemplates.functionDecl(ModifierNames.NoReturn, functionName, params, "", false);
 	}
 
@@ -23,7 +24,7 @@ public class FunctionTemplates {
 		return PrivateFunctionalTemplates.cppType(returnType,GenerationTemplates.VariableType.RawPointerType) + " " + functionName + "()";
 	}
 
-	public static String functionDecl(String returnTypeName, String functionName, List<String> params, String modifier,
+	public static String functionDecl(String returnTypeName, String functionName, List<TypeDescriptor> params, String modifier,
 			boolean isPureVirtual) {
 		String mainDecl = PrivateFunctionalTemplates.cppType(returnTypeName, GenerationTemplates.VariableType.RawPointerType) + " " + functionName + "("
 				+ PrivateFunctionalTemplates.paramTypeList(params) + ")";
@@ -35,7 +36,7 @@ public class FunctionTemplates {
 
 	}
 
-	public static String functionDecl(String returnTypeName, String functionName, List<String> params) {
+	public static String functionDecl(String returnTypeName, String functionName, List<TypeDescriptor> params) {
 		return functionDecl(returnTypeName, functionName, params, "", false);
 	}
 
@@ -47,13 +48,13 @@ public class FunctionTemplates {
 		return FunctionTemplates.functionDef(className, returnTypeName, functionName, null, body);
 	}
 
-	public static String functionDef(String className, String functionName, List<Pair<String, String>> params,
+	public static String functionDef(String className, String functionName, List<Pair<TypeDescriptor, String>> params,
 			String body) {
 		return FunctionTemplates.functionDef(className, ModifierNames.NoReturn, functionName, params, body);
 	}
 
 	public static String functionDef(String className, String returnTypeName, String functionName,
-			List<Pair<String, String>> params, String body) {
+			List<Pair<TypeDescriptor, String>> params, String body) {
 		String mainDef = PrivateFunctionalTemplates.cppType(returnTypeName, GenerationTemplates.VariableType.RawPointerType) + " " + className + "::" + functionName
 				+ "(" + PrivateFunctionalTemplates.paramList(params) + ")\n{\n";
 		return mainDef + body + "}\n\n";
@@ -61,7 +62,7 @@ public class FunctionTemplates {
 	}
 
 	public static String abstractFunctionDef(String className, String returnTypeName, String functionName,
-			List<Pair<String, String>> params, Boolean testing) {
+			List<Pair<TypeDescriptor, String>> params, Boolean testing) {
 		StringBuilder body = new StringBuilder("");
 		body.append(GenerationNames.Comments.ToDoMessage);
 		if(!testing) {

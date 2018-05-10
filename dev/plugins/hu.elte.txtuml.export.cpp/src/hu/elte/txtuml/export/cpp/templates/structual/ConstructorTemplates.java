@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import com.google.common.collect.Multimap;
 
+import hu.elte.txtuml.export.cpp.CppExporterUtils.TypeDescriptor;
 import hu.elte.txtuml.export.cpp.statemachine.TransitionConditions;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationTemplates;
@@ -20,7 +21,7 @@ import hu.elte.txtuml.utils.Pair;
 
 public class ConstructorTemplates {
 
-	public static String initDecl(String className, List<String> params) {
+	public static String initDecl(String className, List<TypeDescriptor> params) {
 		StringBuilder source = new StringBuilder("");
 
 		source.append(ModifierNames.NoReturn + " ");
@@ -30,7 +31,7 @@ public class ConstructorTemplates {
 		return source.toString();
 	}
 
-	public static String constructorDecl(String className, List<String> params) {
+	public static String constructorDecl(String className, List<TypeDescriptor> params) {
 		StringBuilder source = new StringBuilder("");
 		source.append(className);
 		source.append("(" + PrivateFunctionalTemplates.paramTypeList(params) + ");\n");
@@ -57,7 +58,7 @@ public class ConstructorTemplates {
 
 	}
 
-	public static String initDef(String className, String body, List<Pair<String, String>> params,
+	public static String initDef(String className, String body, List<Pair<TypeDescriptor, String>> params,
 			Boolean stateMachine) {
 		StringBuilder source = new StringBuilder("");
 		source.append(ModifierNames.NoReturn + " ");
@@ -76,7 +77,7 @@ public class ConstructorTemplates {
 		return source.toString();
 	}
 
-	public static String constructorDef(String className, List<String> paramNames, List<Pair<String, String>> params) {
+	public static String constructorDef(String className, List<String> paramNames, List<Pair<TypeDescriptor, String>> params) {
 
 		return className + "::" + className + "(" + PrivateFunctionalTemplates.paramList(params) + ")" + "{"
 				+ GenerationNames.initFunctionName(className) + "("
