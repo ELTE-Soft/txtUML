@@ -1,20 +1,42 @@
 #ifndef ELEMENTS_HPP
 #define ElEMENTS_HPP
 
+#include "Types.hpp"
+
 namespace Model {
 
-template<typename T, int low, int up, typename Container = std::list<T*>>
+
+template<typename T> isPrimitive {enum {value = false};};
+template<> isPrimitive<int> {enum {value = true};};
+template<> isPrimitive<std::string> {enum {value = true};};
+template<> isPrimitive<double> {enum {value = true};};
+
+template<typename T, bool primitive>
+struct EType
+{
+	typedef T* Type;
+};
+
+template<typename T>
+struct EType<T, true>
+{
+	typedef T Type;
+};
+
+template<typename T, int low, int up, typename Container = std::list<typename EType<T,isPrimitive<T>::value>::Type>>
 class MultipliedElement {
 public:
-	void add(T* o) {
+	using ElementType = typename EType<T,isPrimitive<T>::value>::Type;
+
+	void add(ElementType o) {
 		objects.push_back(o);
 	}
 
-	void remove (T* o) {
+	void remove (ElementType o) {
 		objects.remove (o);
 	}
 
-	T* one() const {
+	ElementType one() const {
 		return objects.back();
 	}
 
@@ -22,57 +44,46 @@ public:
 		return objects.size();
 	}
 
-
-
 private:
 	Container objects;
 };
 
-
-template<typename T>
-struct Type
-{
-	typedef T* P;
-};
-
-template<>
-struct Type<int>
-{
-	typedef int P;
-};
-
-
-
 template<typename T, int low>
 class MultipliedElement<T, low, 1> {
 public:
-
-	MultipliedElement(typename Type<T>::P o = nullptr) : object(o) {}
-	typename Type<T>::P operator->() {
+	using ElementType = typename EType<T,isPrimitive<T>::value>::Type;
+	
+	MultipliedElement(ElementType o) : object(o) {}
+	ElementType operator->() {
 		return object;
 	}
 
-	void add(typename Type<T>::P o) {
+	void add(ElementType o) {
+		assert (!hasValue);
+		
 		object = o;
+		hasValue = true;
 	}
 
-	void remove (typename Type<T>::P o) {
-		assert (o == object);
+	void remove (ElementType o) {
+		assert (hasValue && o == object);
+		
 		if (o == object) {
-			object = nullptr;
+			hasValue = false;
 		}
 	}
 
-	typename Type<T>::P one() const {
+	ElementType one() const {
 		return object;
 	}
 
 	int count() const {
-		return object == nullptr ? 0 : 1;
+		return hasValue ? 1 : 0;
 	}
 
 private:
-	typename Type<T>::P object = nullptr;
+	ElementType object;
+	bool hasValue = false;
 };
 
 template<typename T, int low, int up, typename Container = std::list<T*>>
