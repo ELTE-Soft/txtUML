@@ -27,6 +27,8 @@ import hu.elte.txtuml.utils.NotifierOfTermination;
  * Registers itself as a {@link TraceListener} in a {@link ModelExecutor} and
  * sends information to the DiagnosticsPlugin about events happening. Blocks
  * execution until animation is in progress (will be optional later).
+ * 
+ * Also stores the current active states in a {@link DiagnosticsRegistry} and serves them over HTTP with a {@link DiagnosticsServer}.
  */
 public class DiagnosticsService extends NotifierOfTermination implements TraceListener {
 
@@ -36,12 +38,23 @@ public class DiagnosticsService extends NotifierOfTermination implements TraceLi
 
 	private final int diagnosticsPort;
 	private volatile int faultTolerance = 17;
+	
+	private DiagnosticsRegistry registry;
+	private DiagnosticsServer server;
 
 	/**
 	 * Initiates singleton by signaling the presence of a new DiagnosticsService
 	 * towards the DiagnosticsPlugin. It also does configuration if needed.
 	 */
 	public DiagnosticsService() {
+		this.registry = new DiagnosticsRegistry();
+		this.server = new DiagnosticsServer(this.registry);
+		try {
+			this.server.start();
+		} catch (IOException e) {
+			Logger.sys.error("Error in DiagnosticsServer: ", e);
+		}
+		
 		int rnd;
 		do {
 			rnd = new Random().nextInt();
@@ -78,6 +91,7 @@ public class DiagnosticsService extends NotifierOfTermination implements TraceLi
 
 	public void shutdown() {
 		notifyAllOfTermination();
+		this.registry.clear();
 	}
 
 	@Override
@@ -94,12 +108,15 @@ public class DiagnosticsService extends NotifierOfTermination implements TraceLi
 
 	@Override
 	public void enteringVertex(ModelClass object, Vertex vertex) {
+		this.registry.addEntry(object, vertex);
 		sendNewModelEvent(MessageType.ENTERING_VERTEX, object.getClass().getCanonicalName(), getIdentifierOf(object),
 				vertex.getClass().getCanonicalName());
+		
 	}
 
 	@Override
 	public void leavingVertex(ModelClass object, Vertex vertex) {
+		this.registry.removeEntry(object, vertex);
 		sendNewModelEvent(MessageType.LEAVING_VERTEX, object.getClass().getCanonicalName(), getIdentifierOf(object),
 				vertex.getClass().getCanonicalName());
 	}
