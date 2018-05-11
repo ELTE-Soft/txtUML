@@ -100,7 +100,7 @@ public abstract class StructuredElementExporter<StructuredElement extends Operat
 	}
 
 	protected TypeDescriptor getReturnType(Parameter returnResult) {
-		TypeDescriptor returnType = null;
+		TypeDescriptor returnType = TypeDescriptor.NoReturn;
 		if (returnResult != null) {
 			returnType = new TypeDescriptor(returnResult.getType().getName(),returnResult.getLower(), returnResult.getUpper());
 		}
