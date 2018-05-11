@@ -9,7 +9,7 @@ namespace CollectionUtils
 template<typename CollectionType>
 auto* select(const CollectionType& elements)
 {
-	return elements.selectAny ();
+	return elements.one ();
 }
 
 template<typename CollectionType>

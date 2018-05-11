@@ -384,7 +384,7 @@ public class GenerationNames {
 	}
 
 	public static String umlVarType(String mappedType, Integer low, Integer up) {
-		return "Variable" + CppExporterUtils.createTemplateParametersCode(Optional
+		return "MultipliedElement" + CppExporterUtils.createTemplateParametersCode(Optional
 				.of(Arrays.asList(mappedType, low.toString(), up.toString()))); 
 	}
 }

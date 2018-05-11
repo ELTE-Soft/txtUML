@@ -6,10 +6,10 @@
 namespace Model {
 
 
-template<typename T> isPrimitive {enum {value = false};};
-template<> isPrimitive<int> {enum {value = true};};
-template<> isPrimitive<std::string> {enum {value = true};};
-template<> isPrimitive<double> {enum {value = true};};
+template<typename T> struct isPrimitive {enum {value = false};};
+template<> struct isPrimitive<int> {enum {value = true};};
+template<> struct isPrimitive<std::string> {enum {value = true};};
+template<> struct isPrimitive<double> {enum {value = true};};
 
 template<typename T, bool primitive>
 struct EType
@@ -52,7 +52,8 @@ template<typename T, int low>
 class MultipliedElement<T, low, 1> {
 public:
 	using ElementType = typename EType<T,isPrimitive<T>::value>::Type;
-	
+
+	MultipliedElement() = default;
 	MultipliedElement(ElementType o) : object(o) {}
 	ElementType operator->() {
 		return object;
@@ -86,7 +87,7 @@ private:
 	bool hasValue = false;
 };
 
-template<typename T, int low, int up, typename Container = std::list<T*>>
+/*template<typename T, int low, int up, typename Container = std::list<T*>>
 class Property : public MultipliedElement<T,low,up,Container> {
 	
 };
@@ -94,7 +95,7 @@ class Property : public MultipliedElement<T,low,up,Container> {
 template<typename T, int low, int up, typename Container = std::list<T*>>
 class Variable : public MultipliedElement<T,low,up,Container> {
 	
-};
+};*/
 
 }
 

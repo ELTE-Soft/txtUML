@@ -76,7 +76,7 @@ public:
 
 template<typename FirstClassRole, class SecondClassRole, class EndType, int lowMul, int upMul>
 struct AssocEnd : public AssocOwner<FirstClassRole, SecondClassRole> {
-	typedef Property<EndType, lowMul, upMul> CollectionType;
+	typedef MultipliedElement<EndType, lowMul, upMul> CollectionType;
 	typedef EndType RoleType;
 };
 

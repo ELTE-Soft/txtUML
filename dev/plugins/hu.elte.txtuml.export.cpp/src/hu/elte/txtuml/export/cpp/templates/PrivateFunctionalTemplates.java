@@ -16,13 +16,12 @@ import hu.elte.txtuml.utils.Pair;
 
 public class PrivateFunctionalTemplates {
 
-
 	public static String signalType(String type) {
 		return type + GenerationNames.EventClassTypeId;
 	}
-		
+
 	public static String include(String className) {
-		return "#include \"" + getClassPath(mapUMLClassToCppClass(className)) + "\"\n";
+		return "#include \"" + getClassPath(mapUMLTypeToCppClass(className)) + "\"\n";
 	}
 
 	public static String typedefs(String className) {
@@ -48,16 +47,15 @@ public class PrivateFunctionalTemplates {
 		return transitionTableType(className) + " " + className + "::" + GenerationNames.TransitionTableName + ";\n";
 	}
 
-
 	public static String paramList(List<Pair<TypeDescriptor, String>> params) {
 		if (params == null || params.size() == 0)
 			return "";
 		StringBuilder source = new StringBuilder("");
 		for (Pair<TypeDescriptor, String> item : params) {
-			source.append(PrivateFunctionalTemplates.cppType(item.getFirst().getTypeName(), 
-					GenerationTemplates.VariableType
-					.getUMLMultpliedElementType(item.getFirst().getLowMul(), item.getFirst().getUpMul())) + " "
-					+ GenerationNames.formatIncomingParamName(item.getSecond()) + ",");
+			source.append(PrivateFunctionalTemplates.cppType(item.getFirst().getTypeName(),
+					GenerationTemplates.VariableType.getUMLMultpliedElementType(item.getFirst().getLowMul(),
+							item.getFirst().getUpMul()))
+					+ " " + GenerationNames.formatIncomingParamName(item.getSecond()) + ",");
 		}
 		return source.substring(0, source.length() - 1);
 	}
@@ -79,8 +77,9 @@ public class PrivateFunctionalTemplates {
 			return "";
 		StringBuilder source = new StringBuilder("");
 		for (TypeDescriptor item : params) {
-			source.append(cppType(item.getTypeName(), GenerationTemplates.VariableType
-					.getUMLMultpliedElementType(item.getLowMul(), item.getUpMul())) + ",");
+			source.append(cppType(item.getTypeName(),
+					GenerationTemplates.VariableType.getUMLMultpliedElementType(item.getLowMul(), item.getUpMul()))
+					+ ",");
 		}
 		return source.substring(0, source.length() - 1);
 	}
@@ -95,57 +94,52 @@ public class PrivateFunctionalTemplates {
 		}
 		return source.substring(0, source.length() - 1);
 	}
-	
-	public static String mapUMLClassToCppClass(String className) {
-		switch(className) {
-			case UMLStdLibNames.ModelClassName:
-				return ClassUtilsNames.BaseClassName;
-			case UMLStdLibNames.EmptyInfName :
-				return InterfaceNames.EmptyInfName;
-			default:
-				return className;
+
+	public static String mapUMLTypeToCppClass(String className) {
+		switch (className) {
+		case "Integer":
+			return "int";
+		case "Real":
+			return "double";
+		case "Boolean":
+			return "bool";
+		case "String":
+			return BasicTypeNames.StringTypeName;
+		case TimerNames.TimerClassName:
+			return TimerNames.TimerPtrName;
+		case UMLStdLibNames.ModelClassName:
+			return ClassUtilsNames.BaseClassName;
+		case UMLStdLibNames.EmptyInfName:
+			return InterfaceNames.EmptyInfName;
+		default:
+			return className;
 		}
 	}
-	
+
 	private static String getClassPath(String className) {
-		switch(className) {
-		case InterfaceNames.EmptyInfName :
+		switch (className) {
+		case InterfaceNames.EmptyInfName:
 			return FileNames.InterfaceUtilsPath + "." + FileNames.HeaderExtension;
 		default:
-			return className +  "." + FileNames.HeaderExtension;
-			
+			return className + "." + FileNames.HeaderExtension;
+
 		}
 	}
-	
+
 	public static String cppType(String typeName, GenerationTemplates.VariableType varType) {
 		String cppType = typeName;
 		if (typeName != ModifierNames.NoReturn) {
 			if (typeName != null) {
 				switch (typeName) {
-				case "Integer":
-					cppType = "int";
-					break;
-				case "Real":
-					cppType = "double";
-					break;
-				case "Boolean":
-					cppType = "bool";
-					break;
-				case "String":
-					cppType = BasicTypeNames.StringTypeName;
-					break;
-				case TimerNames.TimerClassName:
-					cppType = TimerNames.TimerPtrName;
-					break;
 				case PointerAndMemoryNames.EventPtr:
 				case RuntimeTemplates.UsingRuntimePtr:
 				case RuntimeTemplates.RuntimePtrType:
 					cppType = typeName;
 					break;
 				default:
-					String mappedType = mapUMLClassToCppClass(typeName);
-					switch(varType) {
-					case  RawPointerType:
+					String mappedType = mapUMLTypeToCppClass(typeName);
+					switch (varType) {
+					case RawPointerType:
 						cppType = GenerationNames.pointerType(mappedType);
 						break;
 					case EventPtr:
@@ -161,7 +155,7 @@ public class PrivateFunctionalTemplates {
 					case OriginalType:
 						cppType = mappedType;
 						break;
-					
+
 					default:
 						break;
 					}

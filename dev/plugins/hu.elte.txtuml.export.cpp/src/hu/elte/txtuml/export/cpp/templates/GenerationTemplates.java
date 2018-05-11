@@ -102,7 +102,7 @@ public class GenerationTemplates {
 
 	public static String forwardDeclaration(String className, ClassDeclerationType type) {
 		
-		return type.getTypeDeclerationString() + " " + PrivateFunctionalTemplates.mapUMLClassToCppClass(className) + ";\n";
+		return type.getTypeDeclerationString() + " " + PrivateFunctionalTemplates.mapUMLTypeToCppClass(className) + ";\n";
 
 	}
 	public static String putNamespace(String source, String namespace) {

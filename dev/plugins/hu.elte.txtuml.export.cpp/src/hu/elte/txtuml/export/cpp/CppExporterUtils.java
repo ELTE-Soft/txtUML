@@ -288,7 +288,7 @@ public class CppExporterUtils {
 	public static String getFirstGeneralClassName(Classifier cls) {
 		if (!cls.getGeneralizations().isEmpty()) {
 			String className = cls.getGeneralizations().get(0).getGeneral().getName();
-			return PrivateFunctionalTemplates.mapUMLClassToCppClass(className);
+			return PrivateFunctionalTemplates.mapUMLTypeToCppClass(className);
 		} else {
 			return GenerationNames.InterfaceNames.EmptyInfName;
 		}
@@ -306,7 +306,7 @@ public class CppExporterUtils {
 			if (infUsage.getSuppliers().isEmpty()) {
 				return GenerationNames.InterfaceNames.EmptyInfName;
 			}
-			return PrivateFunctionalTemplates.mapUMLClassToCppClass(infUsage.getSuppliers().get(0).getName());
+			return PrivateFunctionalTemplates.mapUMLTypeToCppClass(infUsage.getSuppliers().get(0).getName());
 		} else {
 			return GenerationNames.InterfaceNames.EmptyInfName;
 		}
