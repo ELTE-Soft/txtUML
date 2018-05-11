@@ -4,7 +4,7 @@
 #include "deployment.hpp"
 #include "Machine.hpp"
 #include "User.hpp"
-#include "associations.hpp"
+#include "AssociationInstances.hpp"
 #include "runtime/Action.hpp"
 #include "EventStructures.hpp"
 
@@ -17,8 +17,8 @@ int main()
 	Model::User u1;
 	Model::User u2;
 
-	Action::link<typename Model::Usage::usedMachine, typename Model::Usage::userOfMachine>(&m, &u1);
-	Action::link<typename Model::Usage::usedMachine, typename Model::Usage::userOfMachine>(&m, &u2);
+	Action::link(Model::Usage.usedMachine, &m, Model::Usage.userOfMachine,&u1);
+	Action::link(Model::Usage.usedMachine, &m, Model::Usage.userOfMachine, &u2);
 
 	Action::log("Machine and users are starting.");
 	Action::start(&m);
