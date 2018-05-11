@@ -38,6 +38,7 @@ import org.eclipse.uml2.uml.Usage;
 
 import hu.elte.txtuml.export.cpp.templates.GenerationNames;
 import hu.elte.txtuml.export.cpp.templates.PrivateFunctionalTemplates;
+import hu.elte.txtuml.export.cpp.templates.GenerationNames.ModifierNames;
 import hu.elte.txtuml.export.cpp.templates.activity.ActivityTemplates;
 import hu.elte.txtuml.utils.Pair;
 
@@ -102,8 +103,9 @@ public class CppExporterUtils {
 	}
 	
 	public static class TypeDescriptor {
+		public static final TypeDescriptor NoReturn = new TypeDescriptor(ModifierNames.NoReturn);
 		
-		public TypeDescriptor(String typeName, int upMul, int lowMul) {
+		public TypeDescriptor(String typeName, int lowMul, int upMul) {
 			super();
 			this.typeName = typeName;
 			this.upMul = upMul;

@@ -80,7 +80,7 @@ public abstract class StructuredElementExporter<StructuredElement extends Operat
 		StringBuilder source = new StringBuilder("");
 		for (Operation operation : structuredElement.getOwnedOperations()) {
 			if (!CppExporterUtils.isConstructor(operation)) {
-				String returnType = getReturnType(operation.getReturnResult());
+				TypeDescriptor returnType = getReturnType(operation.getReturnResult());
 				if (!operation.isAbstract()) {
 					ActivityExportResult activityResult = activityExporter.createFunctionBody(CppExporterUtils.getOperationActivity(operation));				
 					source.append(FunctionTemplates.functionDef(name, returnType, operation.getName(),
@@ -99,10 +99,10 @@ public abstract class StructuredElementExporter<StructuredElement extends Operat
 		return source.toString();
 	}
 
-	protected String getReturnType(Parameter returnResult) {
-		String returnType = null;
+	protected TypeDescriptor getReturnType(Parameter returnResult) {
+		TypeDescriptor returnType = null;
 		if (returnResult != null) {
-			returnType = returnResult.getType().getName();
+			returnType = new TypeDescriptor(returnResult.getType().getName(),returnResult.getLower(), returnResult.getUpper());
 		}
 		return returnType;
 	}
@@ -120,7 +120,7 @@ public abstract class StructuredElementExporter<StructuredElement extends Operat
 	}
 
 	protected String operationDecl(Operation op) {
-		String returnType = getReturnType(op.getReturnResult());
+		TypeDescriptor returnType = getReturnType(op.getReturnResult());
 		if (op.isAbstract()) {
 			return FunctionTemplates.functionDecl(returnType, op.getName(), getOperationParamTypes(op),
 					GenerationNames.ModifierNames.AbstractModifier, false);
@@ -157,12 +157,12 @@ public abstract class StructuredElementExporter<StructuredElement extends Operat
 		StringBuilder source = new StringBuilder("");
 		for (Operation operation : structuredElement.getOwnedOperations()) {
 			if (operation.getVisibility().equals(modifier)) {
-				String returnType = getReturnType(operation.getReturnResult());
+				TypeDescriptor returnType = getReturnType(operation.getReturnResult());
 				if (!CppExporterUtils.isConstructor(operation)) {
 					source.append(operationDecl(operation));
 				}
 				if (returnType != null) {
-					dependencyExporter.addDependency(returnType);
+					dependencyExporter.addDependency(returnType.getTypeName());
 				}
 				dependencyExporter.addDependencies(getOperationParamTypes(operation)
 						.stream().map(t -> t.getTypeName()).collect(Collectors.toList()));
