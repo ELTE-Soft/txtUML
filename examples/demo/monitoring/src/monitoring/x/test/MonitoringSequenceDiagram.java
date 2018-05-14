@@ -1,8 +1,11 @@
 package monitoring.x.test;
 
+import static hu.elte.txtuml.api.model.seqdiag.Sequence.assertState;
+import static hu.elte.txtuml.api.model.seqdiag.Sequence.fromActor;
+import static hu.elte.txtuml.api.model.seqdiag.Sequence.send;
+
 import hu.elte.txtuml.api.model.Action;
 import hu.elte.txtuml.api.model.seqdiag.Position;
-import hu.elte.txtuml.api.model.seqdiag.Sequence;
 import hu.elte.txtuml.api.model.seqdiag.SequenceDiagram;
 import monitoring.x.model.Aggregator;
 import monitoring.x.model.Alert;
@@ -42,31 +45,31 @@ public class MonitoringSequenceDiagram extends SequenceDiagram {
 
 	@Override
 	public void run() {
-		Sequence.fromActor(new Read(), monitor);
-		Sequence.send(monitor, new OK(), alert);
-
+		fromActor(new Read(), monitor);
+		assertState(monitor, ResourceMonitor.OpenForRead.class);
+		send(monitor, new OK(), alert);
 		for (int i = 0; i < 4; ++i) {
-			Sequence.fromActor(new Write(), monitor);
-			Sequence.send(monitor, new WriteError(), aggregator);
-			Sequence.send(monitor, new Error(), alert);
+			fromActor(new Write(), monitor);
+			send(monitor, new WriteError(), aggregator);
+			send(monitor, new Error(), alert);
 		}
-
-		Sequence.fromActor(new Close(), monitor);
-		Sequence.send(monitor, new OK(), alert);
-
-		Sequence.fromActor(new Write(), monitor);
-		Sequence.send(monitor, new OK(), alert);
-		Sequence.fromActor(new Write(), monitor);
-		Sequence.send(monitor, new OK(), alert);
-
+		assertState(alert, Alert.Critical.class);
+		fromActor(new Close(), monitor);
+		assertState(monitor, ResourceMonitor.Closed.class);
+		send(monitor, new OK(), alert);
+		fromActor(new Write(), monitor);
+		assertState(monitor, ResourceMonitor.OpenForWrite.class);
+		send(monitor, new OK(), alert);
+		fromActor(new Write(), monitor);
+		send(monitor, new OK(), alert);
 		for (int i = 0; i < 4; ++i) {
-			Sequence.fromActor(new Read(), monitor);
-			Sequence.send(monitor, new ReadError(), aggregator);
-			Sequence.send(monitor, new Error(), alert);
+			fromActor(new Read(), monitor);
+			send(monitor, new ReadError(), aggregator);
+			send(monitor, new Error(), alert);
 		}
-
-		Sequence.fromActor(new Write(), monitor);
-		Sequence.send(monitor, new OK(), alert);
+		assertState(alert, Alert.Critical.class);
+		fromActor(new Write(), monitor);
+		send(monitor, new OK(), alert);
 	}
 
 }
