@@ -88,7 +88,7 @@
          <command
                commandId="hu.elte.txtuml.seqdiag.plantUMLVisualizeSelectedDiagram"
                icon="icons/txtUML_sequence.png"
-               label="Visualize Sequence diagram"
+               label="Visualize sequence diagram..."
                style="push">
             <visibleWhen>
                <with
@@ -112,7 +112,7 @@
          <command
                commandId="hu.elte.txtuml.seqdiag.plantUMLVisualizeSelectedDiagram"
                icon="icons/txtUML_sequence.png"
-               label="Visualize Sequence diagram"
+               label="Visualize sequence diagram..."
                style="push">
             <visibleWhen>
                <with

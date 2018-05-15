@@ -5,6 +5,7 @@ import java.net.URLClassLoader;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import org.eclipse.core.commands.AbstractHandler;
@@ -48,7 +49,7 @@ public class RunSelectedSequenceDiagramHandler extends AbstractHandler {
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		Job job = new Job("Sequence diagram execution") {
-			
+
 			@Override
 			protected IStatus run(IProgressMonitor monitor) {
 				monitor.beginTask("Execution", IProgressMonitor.UNKNOWN);
@@ -56,9 +57,10 @@ public class RunSelectedSequenceDiagramHandler extends AbstractHandler {
 				console.clearConsole();
 				ISelection selection = HandlerUtil.getCurrentSelection(event);
 				IStructuredSelection strSelection = (IStructuredSelection) selection;
-	
-				for (Object selected : strSelection.toArray()) {		
-					ICompilationUnit selectedCompilationUnit = ((IAdaptable)selected).getAdapter(ICompilationUnit.class);
+
+				for (Object selected : strSelection.toArray()) {
+					ICompilationUnit selectedCompilationUnit = ((IAdaptable) selected)
+							.getAdapter(ICompilationUnit.class);
 					try {
 						IType[] types = selectedCompilationUnit.getTypes();
 						List<IType> sequenceDiagrams = Stream.of(types).filter(type -> {
@@ -68,8 +70,8 @@ public class RunSelectedSequenceDiagramHandler extends AbstractHandler {
 							} catch (JavaModelException ex) {
 								return false;
 							}
-							return Stream.of(tyHierarchy.getAllSupertypes(type))
-									.anyMatch(superTy -> superTy.getFullyQualifiedName().equals(SequenceDiagram.class.getCanonicalName()));
+							return Stream.of(tyHierarchy.getAllSupertypes(type)).anyMatch(superTy -> superTy
+									.getFullyQualifiedName().equals(SequenceDiagram.class.getCanonicalName()));
 						}).collect(Collectors.toList());
 						for (IType sequenceDiagram : sequenceDiagrams) {
 							runSequenceDiagram(sequenceDiagram, console, monitor);
@@ -78,33 +80,35 @@ public class RunSelectedSequenceDiagramHandler extends AbstractHandler {
 						return Status.CANCEL_STATUS;
 					} catch (Exception e) {
 						Display.getDefault().syncExec(() -> {
-							Dialogs.errorMsgb("Error",
-									"Error occured during sequence diagram execution.", e);
+							Dialogs.errorMsgb("Error", "Error occured during sequence diagram execution.", e);
 						});
 						return Status.CANCEL_STATUS;
 					}
 				}
 				return Status.OK_STATUS;
-			}	
+			}
 		};
-		
+
 		job.setUser(true);
 		job.schedule();
 		return null;
 	}
 
 	@SuppressWarnings("unchecked")
-	private void runSequenceDiagram(IType sequenceDiagramType, MessageConsole console, IProgressMonitor monitor) throws Exception {
+	private void runSequenceDiagram(IType sequenceDiagramType, MessageConsole console, IProgressMonitor monitor)
+			throws Exception {
 		monitor.subTask("Execution of " + sequenceDiagramType.getElementName());
 		String projectName = sequenceDiagramType.getJavaProject().getElementName();
-		URLClassLoader classLoader = ClassLoaderProvider.getClassLoaderForProject(projectName, this.getClass().getClassLoader());
-		Class<? extends SequenceDiagram> myClass = (Class<? extends SequenceDiagram>) classLoader.loadClass(sequenceDiagramType.getFullyQualifiedName());
+		URLClassLoader classLoader = ClassLoaderProvider.getClassLoaderForProject(projectName,
+				this.getClass().getClassLoader());
+		Class<? extends SequenceDiagram> myClass = (Class<? extends SequenceDiagram>) classLoader
+				.loadClass(sequenceDiagramType.getFullyQualifiedName());
 		SequenceDiagramExecutor executor = SequenceDiagramExecutor.create();
 		Constructor<? extends SequenceDiagram> constructor = myClass.getDeclaredConstructor();
-		
+
 		if (!constructor.isAccessible())
 			constructor.setAccessible(true);
-		
+
 		executor.setDiagram(constructor.newInstance());
 		executor.startNoWait().shutdown();
 		while (executor.getStatus().equals(ModelExecutor.Status.ACTIVE)) {
@@ -123,18 +127,17 @@ public class RunSelectedSequenceDiagramHandler extends AbstractHandler {
 		IConsoleManager conMan = plugin.getConsoleManager();
 		IConsole[] existing = conMan.getConsoles();
 		Optional<IConsole> seqConsole = Stream.of(existing)
-				.filter(console -> console.getName().equals("Sequence Diagram Console"))
-				.findFirst();
-		
+				.filter(console -> console.getName().equals("Sequence Diagram Console")).findFirst();
+
 		if (seqConsole.isPresent()) {
 			return (MessageConsole) seqConsole.get();
 		} else {
 			MessageConsole myConsole = new MessageConsole("Sequence Diagram Console", null);
-			conMan.addConsoles(new IConsole[]{myConsole});
+			conMan.addConsoles(new IConsole[] { myConsole });
 			return myConsole;
 		}
 	}
-	
+
 	private void writeToConsole(MessageConsole console, List<MessageError> errors, String sequenceDiagramClassName) {
 		Display.getDefault().syncExec(() -> {
 			MessageConsoleStream out = console.newMessageStream();
@@ -143,24 +146,32 @@ public class RunSelectedSequenceDiagramHandler extends AbstractHandler {
 			IWorkbenchPage page = win.getActivePage();
 			String id = IConsoleConstants.ID_CONSOLE_VIEW;
 			IConsoleView view;
-				try {
-					view = (IConsoleView) page.showView(id);
-					view.display(console);
-				} catch (PartInitException e) {
-					Dialogs.errorMsgb("Error",
-							"Error occured while trying to open output console.", e);
-				}
-			out.println("-------------" + sequenceDiagramClassName + "-------------");
-			out.println();
-			errors.stream().forEach(error -> out.println(error.getMessage()));
-			
-			if (errors.size() != 0) {
-				out.println("-------------End of errors-------------");
-				out.println();
-			} else {
-				out.println("-------------There were no errors-------------");
-				out.println();
+			try {
+				view = (IConsoleView) page.showView(id);
+				view.display(console);
+			} catch (PartInitException e) {
+				Dialogs.errorMsgb("Error", "Error occured while trying to open output console.", e);
 			}
+			out.println("------------- " + sequenceDiagramClassName + " test results -------------");
+			if (errors.isEmpty()) {
+				out.println("PASSED.");
+			} else {
+				out.println("FAILED.");
+			}
+			out.println("Errors:   " + errors.size());
+			out.println("Warnings: 0");
+			out.print("-----------------------------------------");
+			out.println(IntStream.range(0, sequenceDiagramClassName.length()).mapToObj(i -> "-")
+					.collect(Collectors.joining()));
+			out.println();
+			if (!errors.isEmpty()) {
+				out.println("Errors: ");
+			}
+			errors.stream().forEach(error -> {
+				out.println();
+				out.println(Stream.of(error.getMessage().split("\n")).map(line -> "  " + line)
+						.collect(Collectors.joining("\n")));
+			});
 		});
 	}
 }
