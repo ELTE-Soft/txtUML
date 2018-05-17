@@ -198,6 +198,56 @@ body {
 			box-shadow: 0;
 }
 
+#debug-toggle-container{
+	position: absolute;
+	width: 10em;
+	left: -10em;
+	top: 0;
+	font-weight: 800;
+	padding: 0.5em;
+	background: #add8e6;
+	-webkit-transition: all 0.2s ease-in-out;
+	-o-transition: all 0.2s ease-in-out;
+	transition: all 0.2s ease-in-out;
+	-webkit-box-shadow: 0;
+			box-shadow: 0;
+	height: 8em;
+	display:-webkit-box;
+	display:-ms-flexbox;
+	display:flex;
+	-webkit-box-orient:vertical;
+	-webkit-box-direction:normal;
+		-ms-flex-direction:column;
+			flex-direction:column;
+	-ms-flex-pack:distribute;
+		justify-content:space-around;
+}
+
+#debug-toggle-label{
+	position: absolute;
+	left:2em;
+	top:0;
+	padding: 0.5em;
+	width: 8em;
+	-webkit-transform:rotate(90deg);
+		-ms-transform:rotate(90deg);
+			transform:rotate(90deg);
+	-webkit-transform-origin: left top 0;
+		-ms-transform-origin: left top 0;
+			transform-origin: left top 0;
+	-webkit-box-shadow: 0px 2px 5px black;
+			box-shadow: 0px 2px 5px black;
+	border-radius: 0 5px 5px 0 !important;
+	-webkit-transition: all 0.2s ease-in-out;
+	-o-transition: all 0.2s ease-in-out;
+	transition: all 0.2s ease-in-out;
+}
+
+#debug-label{
+	text-align: center;
+	font-size: 80%;
+}
+
 .toggle-checkbox:checked + #pan-and-zoom-control-container{
 	left: 0;
 	-webkit-box-shadow: 2px 2px 5px black;
@@ -205,6 +255,15 @@ body {
 }
 
 .toggle-checkbox:checked ~ #pan-and-zoom-toggle-label{
+	left: 12em;
+}
+
+.toggle-checkbox:checked + #debug-toggle-container{
+	left: 0;
+	-webkit-box-shadow: 2px 2px 5px black;
+			box-shadow: 2px 2px 5px black;
+}
+.toggle-checkbox:checked ~ #debug-toggle-label{
 	left: 12em;
 }
 
@@ -365,6 +424,11 @@ body {
 
 .toggle-checkbox:checked + .switch > .switch-right{
 	background-color: #20ac59;
+	text-shadow: 0 0 5px white;
+}
+
+.toggle-checkbox:checked + .switch > .switch-right#toggle-debug-off{
+	background-color: #e84343;
 	text-shadow: 0 0 5px white;
 }
 

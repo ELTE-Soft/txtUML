@@ -14,6 +14,6 @@ public class GlobalSettings {
 	 * Parameters for service over HTTP
 	 * NOT KEYS, only predefined parameters.
 	 */
-	public static final Integer TXTUML_DIAGNOSTICS_HTTP_PORT = 5252;
+	public static final Integer TXTUML_DIAGNOSTICS_HTTP_PORT = 52525;
 	public static final String TXTUML_DIAGNOSTICS_HTTP_PATH = "activeElements";
 }

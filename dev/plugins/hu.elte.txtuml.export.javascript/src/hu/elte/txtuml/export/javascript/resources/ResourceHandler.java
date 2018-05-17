@@ -65,7 +65,8 @@ public class ResourceHandler {
 			
 			"panAndZoom.js", //adds pan and zoom functionality to the diagram
 			"globals.js", 	 //global variables for interscript communication
-			"animation.js"	 //JointJS debug animation functionality
+			"animation.js",	 //JointJS debug animation functionality
+			"pollingRefresh.js" //polling refresh query of debug information
 	};
 
 	/**
