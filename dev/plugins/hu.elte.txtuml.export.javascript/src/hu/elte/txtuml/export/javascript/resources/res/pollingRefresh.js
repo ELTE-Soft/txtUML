@@ -4,6 +4,11 @@ var alertDisplayed = false;
 
 const ALERT_STRING = "Could not connect to server. Please make sure an execution is in progress.";
 
+/**
+ * Queries the server for diagnostics information.
+ * If successful, updates the diagram with `setActiveElements` from `animation.js`
+ * If not, clears active elements, and alerts the user.
+ */
 function refreshElements(){
 	$.ajax({
 		url: 'http://localhost:' + DIAGNOSTICS_PORT + '/' + DIAGNOSTICS_PATH,
@@ -30,6 +35,7 @@ function pollingRefresh(){
     }
 }
 
+//add event listener to the checkbox
 $("#toggle-debug-checkbox").on("change", function(){
 	if(!this.checked){
 		//on

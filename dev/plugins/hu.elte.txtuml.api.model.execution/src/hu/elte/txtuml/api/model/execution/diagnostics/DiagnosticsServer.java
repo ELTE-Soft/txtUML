@@ -15,6 +15,9 @@ import hu.elte.txtuml.api.model.execution.diagnostics.protocol.GlobalSettings;
  * Serves diagnostics data over HTTP during execution from the {@link DiagnosticsRegistry} passed to the constructor.
  * The resource path and port are defined in {@link GlobalSettings}.
  * 
+ * The set port currently introduces a limitation: if there is already an execution in progress, or the port is
+ * otherwise occupied, the server will not be set up.
+ * 
  * @author szokolai-mate
  *
  */
@@ -38,10 +41,12 @@ public class DiagnosticsServer implements HttpHandler{
 	
 	@Override
     public void handle(HttpExchange t) throws IOException {
+		//Set required headers
 		Headers headers = t.getResponseHeaders();
 		headers.add("Content-type", "application/json");
 		headers.add("Access-Control-Allow-Origin", "*");
 		
+		//Build the payload
         String response = "[";
         Boolean first = true;
         for( DiagnosticsRegistryEntry e : this.registry.getRegistry()){
@@ -51,6 +56,7 @@ public class DiagnosticsServer implements HttpHandler{
         }
         response+= "]";
         
+        //Write response
         t.sendResponseHeaders(200, response.length());
         OutputStream os = t.getResponseBody();
         os.write(response.getBytes());

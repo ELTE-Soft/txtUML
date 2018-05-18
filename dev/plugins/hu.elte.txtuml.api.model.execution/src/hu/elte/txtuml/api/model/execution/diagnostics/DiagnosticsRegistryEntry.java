@@ -4,6 +4,12 @@ import hu.elte.txtuml.api.model.ModelClass;
 import hu.elte.txtuml.api.model.StateMachine.Vertex;
 import hu.elte.txtuml.api.model.external.ModelClasses;
 
+/**
+ * Represents an active vertex in a model class instance.
+ * Used in {@link DiagnosticsRegistry} as collection type.
+ * @author szokolai-mate
+ *
+ */
 public class DiagnosticsRegistryEntry {
 	
 	private ModelClass c;
@@ -32,7 +38,6 @@ public class DiagnosticsRegistryEntry {
 				);
 	}
 
-	
 	protected DiagnosticsRegistryEntry(ModelClass c, Vertex v){
 		this.c = c;
 		this.v = v;
