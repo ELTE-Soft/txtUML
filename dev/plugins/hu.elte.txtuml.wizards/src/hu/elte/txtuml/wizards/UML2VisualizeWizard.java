@@ -27,7 +27,7 @@ import hu.elte.txtuml.utils.eclipse.Dialogs;
 import hu.elte.txtuml.utils.eclipse.preferences.PreferencesManager;
 
 /**
- * Abstract class for {@link TxtUMLVisualizeWizard} which first exports UML2 then uses that for the visualization.
+ * Abstract child class of {@link TxtUMLVisualizeWizard} which first exports UML2 then uses that for the visualization.
  */
 public abstract class UML2VisualizeWizard extends TxtUMLVisualizeWizard {
 

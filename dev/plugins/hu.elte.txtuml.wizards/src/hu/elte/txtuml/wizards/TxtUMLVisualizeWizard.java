@@ -28,6 +28,12 @@ import hu.elte.txtuml.utils.eclipse.EditorUtils;
 import hu.elte.txtuml.utils.eclipse.WizardUtils;
 import hu.elte.txtuml.utils.eclipse.preferences.PreferencesManager;
 
+/**
+ * Abstract class representing a wizard for exporting TxtUML diagrams.
+ * It collects the layout information from the added pages, and performs pre-diagram-generation cleanup.
+ * Both the cleanup and exportation form the layout information are defined in the child classes.
+ *
+ */
 public abstract class TxtUMLVisualizeWizard extends Wizard {
 
 	protected VisualizeTxtUMLPage selectTxtUmlPage;
