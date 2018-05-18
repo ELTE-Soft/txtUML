@@ -47,28 +47,29 @@ public class Utils {
 		}
 	}
 
-	public static boolean isAllowedAttributeType(Type type, boolean isVoidAllowed) {
+	public static boolean isAllowedAttributeType(ITypeBinding type, boolean isVoidAllowed) {
 		if (isBasicType(type, isVoidAllowed)) {
 			return true;
 		}
-		ITypeBinding binding = type.resolveBinding();
-		return !ElementTypeTeller.isExternal(binding)
-				&& (ElementTypeTeller.isDataType(binding) || ElementTypeTeller.isModelEnum(type.resolveBinding()));
+		return !ElementTypeTeller.isExternal(type)
+				&& (ElementTypeTeller.isDataType(type) || ElementTypeTeller.isModelEnum(type) || 
+						(ElementTypeTeller.isCollection(type) && isAllowedAttributeType(type.getTypeArguments()[0], isVoidAllowed)));
 	}
 
-	public static boolean isAllowedParameterType(Type type, boolean isVoidAllowed) {
+	public static boolean isAllowedParameterType(ITypeBinding type, boolean isVoidAllowed) {
 		if (isAllowedAttributeType(type, isVoidAllowed)) {
 			return true;
 		}
 
-		ITypeBinding binding = type.resolveBinding();
-		if (!ElementTypeTeller.isExternal(binding)
-				&& (ElementTypeTeller.isModelClass(binding) || ElementTypeTeller.isSignal(type.resolveBinding()))) {
+		if (!ElementTypeTeller.isExternal(type)
+				&& (ElementTypeTeller.isModelClass(type) || ElementTypeTeller.isSignal(type) || 
+						(ElementTypeTeller.isCollection(type) && isAllowedParameterType(type.getTypeArguments()[0], isVoidAllowed)))) {
 			return true;
 		}
 
 		return false;
 	}
+
 
 	public static boolean isVoid(Type type) {
 		if (type instanceof PrimitiveType) {
@@ -86,13 +87,13 @@ public class Utils {
 		}
 	}
 
-	public static boolean isBasicType(Type type, boolean isVoidAllowed) {
-		if (type.isPrimitiveType()) {
+	public static boolean isBasicType(ITypeBinding type, boolean isVoidAllowed) {
+		if (type.isPrimitive()) {
 			PrimitiveType.Code code = ((PrimitiveType) type).getPrimitiveTypeCode();
 			return (code == PrimitiveType.BOOLEAN || code == PrimitiveType.DOUBLE || code == PrimitiveType.INT
 					|| (code == PrimitiveType.VOID && isVoidAllowed));
 		}
-		if (type.resolveBinding().getQualifiedName().equals(String.class.getCanonicalName())) {
+		if (type.getQualifiedName().equals(String.class.getCanonicalName())) {
 			return true;
 		}
 		return false;
