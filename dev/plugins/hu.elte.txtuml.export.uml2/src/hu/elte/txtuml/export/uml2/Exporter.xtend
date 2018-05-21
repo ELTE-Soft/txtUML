@@ -131,6 +131,7 @@ import org.eclipse.uml2.uml.MultiplicityElement
 import hu.elte.txtuml.utils.jdt.ElementTypeTeller
 import hu.elte.txtuml.export.uml2.utils.MultiplicityProvider
 import org.eclipse.uml2.uml.TypedElement
+import hu.elte.txtuml.export.uml2.activity.apicalls.CollectExporter
 
 /** An exporter is able to fully or partially export a given element. 
  * Partial export only creates the UML object itself, while full export also creates its contents.
@@ -261,6 +262,7 @@ abstract class Exporter<S, A, R extends Element> extends BaseExporter<S, A, R> {
 					new AssemblyConnectExporter(this),
 					new DelegationConnectExporter(this),
 					new AddToMultipliedElementExporter(this),
+					new CollectExporter(this),
 					new IgnoredAPICallExporter(this)
 				]
 			ConstructorInvocation:
