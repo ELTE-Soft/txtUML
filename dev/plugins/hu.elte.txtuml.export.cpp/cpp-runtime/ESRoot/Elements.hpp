@@ -2,6 +2,7 @@
 #define ElEMENTS_HPP
 
 #include "Types.hpp"
+#include <type_traits>
 
 namespace Model {
 
@@ -27,6 +28,22 @@ template<typename T, int low, int up, typename Container = std::list<typename ET
 class MultipliedElement {
 public:
 	using ElementType = typename EType<T,isPrimitive<T>::value>::Type;
+	template<typename T, int oLow, int oUp, typename Container> friend class MultipliedElement;
+
+	MultipliedElement() = default;
+	MultipliedElement(const MultipliedElement& m) = default;
+
+	template<int oLow, int oUp, typename Container> MultipliedElement(const MultipliedElement<T, oLow, oUp, Container>& e) {
+		if (e.count() >= low && (e.count() <= up || up == -1)) {
+				objects = e.objects;
+		}
+	}
+
+	template<int oLow> MultipliedElement(const MultipliedElement<T, oLow, 1>& e) {
+		if (e.count() == 1) {
+			add(e.one());
+		}
+	}
 
 	void add(ElementType o) {
 		objects.push_back(o);
@@ -52,8 +69,17 @@ template<typename T, int low>
 class MultipliedElement<T, low, 1> {
 public:
 	using ElementType = typename EType<T,isPrimitive<T>::value>::Type;
+	template<typename T, int oLow, int oUp, typename Container> friend class MultipliedElement;
 
 	MultipliedElement() = default;
+	MultipliedElement(const MultipliedElement& m) = default;
+
+	template<int oLow, int oUp, typename Container> MultipliedElement(const MultipliedElement<T, oLow, oUp, Container>& e) {
+		if (e.count() >= low && e.count() <= 1) {
+			add(e.one());
+		}
+	}
+
 	MultipliedElement(ElementType o) : object(o) {}
 	ElementType operator->() {
 		return object;
