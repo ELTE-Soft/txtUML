@@ -68,7 +68,7 @@ public class FunctionTemplates {
 	}
 
 	public static String abstractFunctionDef(String className, String returnTypeName, String functionName,
-			List<Pair<String, String>> params, Boolean testing, String destination) throws FileNotFoundException, UnsupportedEncodingException {
+			List<Pair<String, String>> params, Boolean testing, String destination) {
 		StringBuilder body = new StringBuilder("");
 		if(!testing) {
 			body.append(GenerationNames.Macros.IncludeMacro + 
@@ -80,7 +80,11 @@ public class FunctionTemplates {
 			String fileContent = GenerationNames.Comments.ToDoMessage + 
 	        		GenerationNames.Macros.ErrorMacro + GenerationTemplates.generatedErrorMessage(functionName);
 			
-			CppExporterUtils.writeOutSource(directoryPath, fileName, fileContent);
+			try {
+				CppExporterUtils.writeOutSource(directoryPath, fileName, fileContent);
+			} catch (FileNotFoundException | UnsupportedEncodingException e) {
+				e.printStackTrace();
+			}
 		}
 		return functionDef(className, returnTypeName, functionName, params, body.toString());
 	}

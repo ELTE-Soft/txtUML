@@ -1,7 +1,5 @@
 package hu.elte.txtuml.export.cpp.structural;
 
-import java.io.FileNotFoundException;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -75,7 +73,7 @@ public abstract class StructuredElementExporter<StructuredElement extends Operat
 		return createOperationDeclarations(VisibilityKind.PRIVATE_LITERAL);
 	}
 
-	protected String createOperationDefinitions() throws FileNotFoundException, UnsupportedEncodingException {
+	protected String createOperationDefinitions() {
 		StringBuilder source = new StringBuilder("");
 		for (Operation operation : structuredElement.getOwnedOperations()) {
 			if (!CppExporterUtils.isConstructor(operation)) {
