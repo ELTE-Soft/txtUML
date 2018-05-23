@@ -31,8 +31,8 @@ public class SequenceDiagramDescriptionTester extends PropertyTester {
 				} catch (JavaModelException ex) {
 					return false;
 				}
-				return Stream.of(tyHierarchy.getAllSupertypes(ty))
-						.anyMatch(superTy -> superTy.getFullyQualifiedName().equals(SequenceDiagram.class.getCanonicalName()));
+				return Stream.of(tyHierarchy.getAllSupertypes(ty)).anyMatch(
+						superTy -> superTy.getFullyQualifiedName().equals(SequenceDiagram.class.getCanonicalName()));
 			});
 
 			return expectedValue == null ? hasDiagramType : hasDiagramType == ((Boolean) expectedValue).booleanValue();

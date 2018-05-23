@@ -13,7 +13,7 @@ import hu.elte.txtuml.seqdiag.wizards.PlantUMLVisualizeWizard;
 public class PlantUMLVisualizeHandler extends AbstractHandler {
 
 	/**
-	 * Opens a TxtUMLVisuzalize wizard
+	 * Opens a TxtUMLVisualize wizard
 	 */
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {

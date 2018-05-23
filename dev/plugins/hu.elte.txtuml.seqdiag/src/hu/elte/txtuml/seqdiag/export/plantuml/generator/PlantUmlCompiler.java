@@ -12,7 +12,7 @@ import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 
-import hu.elte.txtuml.seqdiag.export.plantuml.BaseSeqdiagExporter;
+import hu.elte.txtuml.seqdiag.export.plantuml.exporters.BaseSeqdiagExporter;
 
 /**
  * Main Compiler Class Only visits the run and initialize methods of the class

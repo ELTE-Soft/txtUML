@@ -1,4 +1,4 @@
-package hu.elte.txtuml.seqdiag.export.plantuml;
+package hu.elte.txtuml.seqdiag.export.plantuml.exporters;
 
 import java.util.List;
 

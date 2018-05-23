@@ -1,4 +1,4 @@
-package hu.elte.txtuml.seqdiag.export.plantuml.fragments;
+package hu.elte.txtuml.seqdiag.export.plantuml.exporters.fragments;
 
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.Assignment;

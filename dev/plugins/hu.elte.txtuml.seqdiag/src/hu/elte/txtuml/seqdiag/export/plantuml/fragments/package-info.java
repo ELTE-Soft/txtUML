@@ -1,1 +1,0 @@
-package hu.elte.txtuml.seqdiag.export.plantuml.fragments;

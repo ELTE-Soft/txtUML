@@ -1,9 +1,9 @@
-package hu.elte.txtuml.seqdiag.export.plantuml;
+package hu.elte.txtuml.seqdiag.export.plantuml.exporters;
 
 import org.eclipse.jdt.core.dom.ASTNode;
 
-import hu.elte.txtuml.seqdiag.export.plantuml.fragments.LoopFragment;
-import hu.elte.txtuml.seqdiag.export.plantuml.fragments.OptAltFragment;
+import hu.elte.txtuml.seqdiag.export.plantuml.exporters.fragments.LoopFragment;
+import hu.elte.txtuml.seqdiag.export.plantuml.exporters.fragments.OptAltFragment;
 import hu.elte.txtuml.seqdiag.export.plantuml.generator.PlantUmlCompiler;
 
 /**
