@@ -25,6 +25,7 @@
             locationURI="popup:org.eclipse.ui.navigator.ProjectExplorer#PopupMenu?before=additions">
          <command
                commandId="hu.elte.txtuml.seqdiag.runSelectedSequenceDiagramCommand"
+               icon="icons/txtUML_sequence.png"
                label="Run sequence diagram"
                style="push">
             <visibleWhen
@@ -49,6 +50,7 @@
             locationURI="popup:org.eclipse.jdt.ui.PackageExplorer?before=additions">
          <command
                commandId="hu.elte.txtuml.seqdiag.runSelectedSequenceDiagramCommand"
+               icon="icons/txtUML_sequence.png"
                label="Run sequence diagram"
                style="push">
             <visibleWhen
