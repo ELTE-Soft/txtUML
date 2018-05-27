@@ -64,43 +64,11 @@ public class SequenceDiagramFragmentsTests extends PlantUmlExportTestBase {
 		expected.add("participant lifeline2");
 		expected.add("par");
 		expected.add("else");
-		expected.add("activate lifeline1");
 		expected.add("lifeline1->lifeline2 : hu.elte.txtuml.export.plantuml.tests.models.testmodel.TestSig");
-		expected.add("activate lifeline2");
 		expected.add("end");
-		expected.add("deactivate lifeline1");
-		expected.add("deactivate lifeline2");
 		expected.add("@enduml");
 
 		assertOutput("ParFragment", expected);
-	}
-
-	// @Test
-	public void testSeqFragment() {
-		List<String> expected = new ArrayList<>();
-		expected.add("@startuml");
-		expected.add("participant lifeline1");
-		expected.add("participant lifeline3");
-		expected.add("participant lifeline2");
-		expected.add("group SEQ");
-		expected.add("end");
-		expected.add("@enduml");
-
-		assertOutput("SeqFragment", expected);
-	}
-
-	// @Test
-	public void testStrictFragment() {
-		List<String> expected = new ArrayList<>();
-		expected.add("@startuml");
-		expected.add("participant lifeline1");
-		expected.add("participant lifeline3");
-		expected.add("participant lifeline2");
-		expected.add("group STRICT");
-		expected.add("end");
-		expected.add("@enduml");
-
-		assertOutput("StrictFragment", expected);
 	}
 
 }
