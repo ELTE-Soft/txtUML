@@ -1,4 +1,4 @@
-#ifndef ELEMENTS_HPP
+#ifndef ElEMENTS_HPP
 #define ElEMENTS_HPP
 
 #include "Types.hpp"
@@ -124,6 +124,8 @@ public:
 		return hasValue ? 1 : 0;
 	}
 
+public:
+
 private:
 	ElementType object;
 	bool hasValue = false;
@@ -173,5 +175,35 @@ template<typename T>
 bool inline operator>(const Model::MultipliedElement<T, 1, 1>& e1, const T& e2) { return e1.one() > e2; }
 template<typename T>
 bool inline operator>(const T& e1, const Model::MultipliedElement<T, 1, 1>& e2) { return e1 > e2.one(); }
+
+
+template<typename T>
+inline T operator+(const Model::MultipliedElement<T, 1, 1>& e1, const Model::MultipliedElement<T, 1, 1>& e2) { return e1.one() + e2.one(); }
+template<typename T>
+T inline operator+(const Model::MultipliedElement<T, 1, 1>& e1, const T& e2) { return e1.one() + e2; }
+template<typename T>
+T inline operator+(const T& e1, const Model::MultipliedElement<T, 1, 1>& e2) { return e1 + e2.one(); }
+
+template<typename T>
+inline T operator-(const Model::MultipliedElement<T, 1, 1>& e1, const Model::MultipliedElement<T, 1, 1>& e2) {return e1.one() - e2.one();}
+template<typename T>
+T inline operator-(const Model::MultipliedElement<T, 1, 1>& e1, const T& e2) { return e1.one() - e2; }
+template<typename T>
+T inline operator-(const T& e1, const Model::MultipliedElement<T, 1, 1>& e2) { return e1 - e2.one(); }
+
+
+template<typename T>
+inline T operator&&(const Model::MultipliedElement<T, 1, 1>& e1, const Model::MultipliedElement<T, 1, 1>& e2) { return e1.one() && e2.one(); }
+template<typename T>
+T inline operator&&(const Model::MultipliedElement<T, 1, 1>& e1, const T& e2) { return e1.one() && e2; }
+template<typename T>
+T inline operator&&(const T& e1, const Model::MultipliedElement<T, 1, 1>& e2) { return e1 && e2.one(); }
+
+template<typename T>
+inline bool operator||(const Model::MultipliedElement<T, 1, 1>& e1, const Model::MultipliedElement<T, 1, 1>& e2) { return e1.one() || e2.one(); }
+template<typename T>
+bool inline operator||(const Model::MultipliedElement<T, 1, 1>& e1, const T& e2) { return e1.one() || e2; }
+template<typename T>
+bool inline operator||(const T& e1, const Model::MultipliedElement<T, 1, 1>& e2) { return e1 || e2.one(); }
 
 #endif

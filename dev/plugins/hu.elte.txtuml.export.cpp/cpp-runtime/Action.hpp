@@ -52,7 +52,7 @@ Logs a message.
 */
 	
 template<typename L, typename LE, typename R, typename RE>
-void link (LE* leftEnd, Model::MultipliedElement<L,1,1> leftObject, RE* rightEnd, Model::MultipliedElement<R,1,1> rightObject);
+void link (LE* leftEnd, L leftObject, RE* rightEnd, R rightObject);
 /**<
 Links two model objects through the specified association.
 It has no effect if the objects are already linked through the specified association.
@@ -64,7 +64,7 @@ It has no effect if the objects are already linked through the specified associa
 
 	
 template<typename L, typename LE, typename R, typename RE>
-void unlink (LE* leftEnd, Model::MultipliedElement<L, 1, 1> leftObject, RE* rightEnd, Model::MultipliedElement<R, 1, 1> rightObject);
+void unlink (LE* leftEnd, L leftObject, RE* rightEnd, R rightObject);
 /**<
 Unlinks two model objects through the specified association.
 It has no effect if the objects are not linked through the specified association.
@@ -75,17 +75,26 @@ It has no effect if the objects are not linked through the specified association
 */
 
 
+template<typename T>
+T* getPointer(T* p) {
+	return p;
+}
 
-template<typename L, typename LE, typename R, typename RE>
-void link (LE* leftEnd, Model::MultipliedElement<L, 1, 1> leftObject, RE* rightEnd, Model::MultipliedElement<R, 1, 1> rightObject)
-{
-	leftEnd->association->link (leftObject.one(), leftEnd, rightObject.one(), rightEnd);
+template<typename T>
+T* getPointer(Model::MultipliedElement<T,1,1> multiPtr) {
+	return multiPtr.one();
 }
 
 template<typename L, typename LE, typename R, typename RE>
-void unlink (LE* leftEnd, Model::MultipliedElement<L, 1, 1> leftObject, RE* rightEnd, Model::MultipliedElement<R, 1, 1> rightObject)
+void link (LE* leftEnd, L leftObject, RE* rightEnd, R rightObject)
 {
-	leftEnd->association->unlink (leftObject.one(), leftEnd, rightObject.one(), rightEnd);
+	leftEnd->association->link (getPointer(leftObject), leftEnd, getPointer(rightObject), rightEnd);
+}
+
+template<typename L, typename LE, typename R, typename RE>
+void unlink (LE* leftEnd, L leftObject, RE* rightEnd, R rightObject)
+{
+	leftEnd->association->unlink (getPointer(leftObject), leftEnd, getPointer(rightObject), rightEnd);
 
 }
 	
