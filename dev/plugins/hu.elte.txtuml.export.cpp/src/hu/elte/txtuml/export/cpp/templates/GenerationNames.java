@@ -37,6 +37,8 @@ public class GenerationNames {
 		public static final String PortUtilsPath = RuntimeTemplates.RTPath + "PortUtils";
 		public static final String InterfaceUtilsPath = RuntimeTemplates.RTPath + "InterfaceUtils";
 		public static final String AssociationUtilsPath = RuntimeTemplates.RTPath + "AssociationUtils";
+		public static final String ElementFileName = "Elements";
+		public static final String ElementsFilePath = ESRootPath + ElementFileName;
 
 		public static final String TimerInterfaceHeader = RuntimeTemplates.RTPath
 				+ TimerNames.TimerInterFaceName.toLowerCase();

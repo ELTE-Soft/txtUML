@@ -189,6 +189,8 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 		} else if (type == UnitType.Header) {
 			dependencyExporter.addHeaderOnlyIncludeDependency(GenerationNames.FileNames.TypesFilePath);
 			dependencyExporter.addHeaderOnlyIncludeDependency(GenerationNames.FileNames.PortUtilsPath);
+			dependencyExporter.addHeaderOnlyIncludeDependency(GenerationNames.FileNames.ElementsFilePath);
+
 
 
 			source.append(

@@ -6,11 +6,14 @@
 
 #include "ESRoot/Types.hpp"
 #include "PortUtils.hpp"
+#include "ESRoot/Elements.hpp"
 
 namespace ES
 {
 class ModelObject;
 }
+
+
 namespace Action 
 {
 	
@@ -49,7 +52,7 @@ Logs a message.
 */
 	
 template<typename L, typename LE, typename R, typename RE>
-void link (LE* leftEnd, L* leftObject, RE* rightEnd, R* rightObject);
+void link (LE* leftEnd, Model::MultipliedElement<L,1,1> leftObject, RE* rightEnd, Model::MultipliedElement<R,1,1> rightObject);
 /**<
 Links two model objects through the specified association.
 It has no effect if the objects are already linked through the specified association.
@@ -61,7 +64,7 @@ It has no effect if the objects are already linked through the specified associa
 
 	
 template<typename L, typename LE, typename R, typename RE>
-void unlink (LE* leftEnd, L* leftObject, RE* rightEnd, R* rightObject);
+void unlink (LE* leftEnd, Model::MultipliedElement<L, 1, 1> leftObject, RE* rightEnd, Model::MultipliedElement<R, 1, 1> rightObject);
 /**<
 Unlinks two model objects through the specified association.
 It has no effect if the objects are not linked through the specified association.
@@ -74,15 +77,15 @@ It has no effect if the objects are not linked through the specified association
 
 
 template<typename L, typename LE, typename R, typename RE>
-void link (LE* leftEnd, L* leftObject, RE* rightEnd, R* rightObject)
+void link (LE* leftEnd, Model::MultipliedElement<L, 1, 1> leftObject, RE* rightEnd, Model::MultipliedElement<R, 1, 1> rightObject)
 {
-	leftEnd->association->link (leftObject, leftEnd, rightObject, rightEnd);
+	leftEnd->association->link (leftObject.one(), leftEnd, rightObject.one(), rightEnd);
 }
 
 template<typename L, typename LE, typename R, typename RE>
-void unlink (LE* leftEnd, L* leftObject, RE* rightEnd, R* rightObject)
+void unlink (LE* leftEnd, Model::MultipliedElement<L, 1, 1> leftObject, RE* rightEnd, Model::MultipliedElement<R, 1, 1> rightObject)
 {
-	leftEnd->association->unlink (leftObject, leftEnd, rightObject, rightEnd);
+	leftEnd->association->unlink (leftObject.one(), leftEnd, rightObject.one(), rightEnd);
 
 }
 	

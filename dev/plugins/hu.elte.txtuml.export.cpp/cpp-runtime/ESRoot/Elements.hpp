@@ -3,14 +3,15 @@
 
 #include "Types.hpp"
 #include <type_traits>
+#include <list>
+
+template<typename T> struct isPrimitive { enum { value = false }; };
+template<> struct isPrimitive<int> { enum { value = true }; };
+template<> struct isPrimitive<std::string> { enum { value = true }; };
+template<> struct isPrimitive<double> { enum { value = true }; };
+template<> struct isPrimitive<bool> { enum { value = true }; };
 
 namespace Model {
-
-
-template<typename T> struct isPrimitive {enum {value = false};};
-template<> struct isPrimitive<int> {enum {value = true};};
-template<> struct isPrimitive<std::string> {enum {value = true};};
-template<> struct isPrimitive<double> {enum {value = true};};
 
 template<typename T, bool primitive>
 struct EType
@@ -73,6 +74,21 @@ public:
 
 	MultipliedElement() = default;
 	MultipliedElement(const MultipliedElement& m) = default;
+	MultipliedElement& operator=(const MultipliedElement& m) = default;
+
+
+	MultipliedElement(const ElementType& e) {
+		add(e);
+	}
+
+	MultipliedElement& operator=(const ElementType& e) {
+		if (count() > 0) {
+			remove(e);
+		}
+
+		add(e);
+		return *this;
+	}
 
 	template<int oLow, int oUp, typename Container> MultipliedElement(const MultipliedElement<T, oLow, oUp, Container>& e) {
 		if (e.count() >= low && e.count() <= 1) {
@@ -80,7 +96,7 @@ public:
 		}
 	}
 
-	MultipliedElement(ElementType o) : object(o) {}
+
 	ElementType operator->() {
 		return object;
 	}
@@ -113,17 +129,49 @@ private:
 	bool hasValue = false;
 };
 
-/*template<typename T, int low, int up, typename Container = std::list<T*>>
-class Property : public MultipliedElement<T,low,up,Container> {
-	
-};
-
-template<typename T, int low, int up, typename Container = std::list<T*>>
-class Variable : public MultipliedElement<T,low,up,Container> {
-	
-};*/
-
 }
 
+template<typename T>
+bool inline operator<(const Model::MultipliedElement<T,1,1>& e1, const Model::MultipliedElement<T, 1, 1>& e2) {return e1.one() < e2.one();}
+template<typename T>
+bool inline operator<(const Model::MultipliedElement<T, 1, 1>& e1, const T& e2) {return e1.one() < e2;}
+template<typename T>
+bool inline operator<(const T& e1, const Model::MultipliedElement<T, 1, 1>& e2) {return e1 < e2.one(); }
+
+
+template<typename T>
+inline bool operator==(const Model::MultipliedElement<T, 1, 1>& e1, const Model::MultipliedElement<T, 1, 1>& e2) { return e1.one() == e2.one(); }
+template<typename T>
+bool inline operator==(const Model::MultipliedElement<T, 1, 1>& e1, const T& e2) { return e1.one() == e2; }
+template<typename T>
+bool inline operator==(const T& e1, const Model::MultipliedElement<T, 1, 1>& e2) { return e1 == e2.one(); }
+
+template<typename T>
+inline bool operator!=(const Model::MultipliedElement<T, 1, 1>& e1, const Model::MultipliedElement<T, 1, 1>& e2) { return e1.one() != e2.one(); }
+template<typename T>
+bool inline operator!=(const Model::MultipliedElement<T, 1, 1>& e1, const T& e2) { return e1.one() != e2; }
+template<typename T>
+bool inline operator!=(const T& e1, const Model::MultipliedElement<T, 1, 1>& e2) { return e1 != e2.one(); }
+
+template<typename T>
+inline bool operator<=(const Model::MultipliedElement<T, 1, 1>& e1, const Model::MultipliedElement<T, 1, 1>& e2) { return  e1.one() <= e2.one(); }
+template<typename T>
+bool inline operator<=(const Model::MultipliedElement<T, 1, 1>& e1, const T& e2) { return e1.one() <= e2; }
+template<typename T>
+bool inline operator<=(const T& e1, const Model::MultipliedElement<T, 1, 1>& e2) { return e1 <= e2.one(); }
+
+template<typename T>
+inline bool operator>=(const Model::MultipliedElement<T, 1, 1>& e1, const Model::MultipliedElement<T, 1, 1>& e2) { return e1.one() >= e2.one(); }
+template<typename T>
+bool inline operator>=(const Model::MultipliedElement<T, 1, 1>& e1, const T& e2) { return e1.one() >= e2; }
+template<typename T>
+bool inline operator>=(const T& e1, const Model::MultipliedElement<T, 1, 1>& e2) { return e1 >= e2.one(); }
+
+template<typename T>
+inline bool operator>(const Model::MultipliedElement<T, 1, 1>& e1, const Model::MultipliedElement<T, 1, 1>& e2) { return e1.one() > e2.one(); }
+template<typename T>
+bool inline operator>(const Model::MultipliedElement<T, 1, 1>& e1, const T& e2) { return e1.one() > e2; }
+template<typename T>
+bool inline operator>(const T& e1, const Model::MultipliedElement<T, 1, 1>& e2) { return e1 > e2.one(); }
 
 #endif
