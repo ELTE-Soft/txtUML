@@ -3,6 +3,9 @@ package hu.elte.txtuml.validation.model.visitors;
 import static hu.elte.txtuml.validation.model.ModelErrors.INVALID_MODIFIER;
 import static hu.elte.txtuml.validation.model.ModelErrors.INVALID_TYPE_PARAMETER;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.function.Predicate;
 
 import org.eclipse.jdt.core.dom.BodyDeclaration;
@@ -17,7 +20,13 @@ import hu.elte.txtuml.utils.jdt.ElementTypeTeller;
 import hu.elte.txtuml.validation.common.ProblemCollector;
 
 public class Utils {
-
+	
+	private static Set<String> AllowdBasicTypes = new HashSet<String>(Arrays.asList(
+			int.class.getCanonicalName(),
+			boolean.class.getCanonicalName(),
+			double.class.getCanonicalName(),
+			String.class.getCanonicalName()));
+	
 	public static void checkTypeParameter(ProblemCollector collector, TypeDeclaration elem) {
 		if (elem.typeParameters().size() > 0) {
 			collector.report(INVALID_TYPE_PARAMETER.create(collector.getSourceInfo(), (TypeParameter) (elem.typeParameters().get(0))));
@@ -88,15 +97,9 @@ public class Utils {
 	}
 
 	public static boolean isBasicType(ITypeBinding type, boolean isVoidAllowed) {
-		if (type.isPrimitive()) {
-			PrimitiveType.Code code = ((PrimitiveType) type).getPrimitiveTypeCode();
-			return (code == PrimitiveType.BOOLEAN || code == PrimitiveType.DOUBLE || code == PrimitiveType.INT
-					|| (code == PrimitiveType.VOID && isVoidAllowed));
-		}
-		if (type.getQualifiedName().equals(String.class.getCanonicalName())) {
-			return true;
-		}
-		return false;
+		
+		String qualifedName = type.getQualifiedName();
+		return AllowdBasicTypes.contains(qualifedName) || (qualifedName.equals(void.class.getCanonicalName()) && isVoidAllowed);
 	}
 
 }

@@ -45,7 +45,7 @@ public class EventTemplates {
 		StringBuilder body = new StringBuilder("\n{\n" + constructorBody + "}\n");
 
 		for (Property property : properites) {
-			body.append(ObjectDeclDefTemplates.variableDecl(property.getType().getName(), property.getName()));
+			body.append(ObjectDeclDefTemplates.variableDecl(property.getType().getName(), property.getName(), GenerationTemplates.VariableType.getUMLMultpliedElementType(property.getLower(), property.getUpper())));
 		}
 		source.append(body).append("};\n\n");
 		body.setLength(0);

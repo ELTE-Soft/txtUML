@@ -110,6 +110,7 @@ public class CppExporterUtils {
 			this.typeName = typeName;
 			this.upMul = upMul;
 			this.lowMul = lowMul;
+			isRawType = false;
 		}
 		
 		public TypeDescriptor(String typeName) {
@@ -117,6 +118,7 @@ public class CppExporterUtils {
 			this.typeName = typeName;
 			this.upMul = 1;
 			this.lowMul = 1;
+			isRawType = true;
 		}
 		
 		public String getTypeName() {
@@ -128,10 +130,15 @@ public class CppExporterUtils {
 		public int getLowMul() {
 			return lowMul;
 		}
+		
+		public boolean isTawType() {
+			return upMul == 1 && lowMul == 1 && isRawType;
+		}
 
 		String typeName;
 		int upMul;
 		int lowMul;
+		boolean isRawType;
 	}
 	
 	public static List<Pair<TypeDescriptor, String>> getOperationParams(Operation operation) {

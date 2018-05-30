@@ -77,9 +77,9 @@ public class PrivateFunctionalTemplates {
 			return "";
 		StringBuilder source = new StringBuilder("");
 		for (TypeDescriptor item : params) {
-			source.append(cppType(item.getTypeName(),
-					GenerationTemplates.VariableType.getUMLMultpliedElementType(item.getLowMul(), item.getUpMul()))
-					+ ",");
+			GenerationTemplates.VariableType varType = item.isTawType() ? GenerationTemplates.VariableType.RawPointerType 
+					: GenerationTemplates.VariableType.getUMLMultpliedElementType(item.getLowMul(), item.getUpMul());
+			source.append(cppType(item.getTypeName(),varType)+ ",");
 		}
 		return source.substring(0, source.length() - 1);
 	}

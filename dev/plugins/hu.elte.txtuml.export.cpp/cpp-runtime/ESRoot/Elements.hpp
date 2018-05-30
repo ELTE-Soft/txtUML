@@ -4,6 +4,8 @@
 #include "Types.hpp"
 #include <type_traits>
 #include <list>
+#include <ostream>
+#include <assert.h>
 
 template<typename T> struct isPrimitive { enum { value = false }; };
 template<> struct isPrimitive<int> { enum { value = true }; };
@@ -124,8 +126,6 @@ public:
 		return hasValue ? 1 : 0;
 	}
 
-public:
-
 private:
 	ElementType object;
 	bool hasValue = false;
@@ -205,5 +205,8 @@ template<typename T>
 bool inline operator||(const Model::MultipliedElement<T, 1, 1>& e1, const T& e2) { return e1.one() || e2; }
 template<typename T>
 bool inline operator||(const T& e1, const Model::MultipliedElement<T, 1, 1>& e2) { return e1 || e2.one(); }
+
+template<typename T>
+std::ostream& operator<<(std::ostream& out, const Model::MultipliedElement<T, 1, 1>& e) { return out << e.one(); }
 
 #endif

@@ -2,13 +2,12 @@
 
 #include "Env.hpp"
 #include "deployment.hpp"
-#include "associations.hpp"
+#include "AssociationInstances.hpp"
 #include "Action.hpp"
 #include "EventStructures.hpp"
 #include "Storage.hpp"
 #include "Producer.hpp"
 #include "Consumer.hpp"
-#include "AssociationInstances.hpp"
 
 
 int main()

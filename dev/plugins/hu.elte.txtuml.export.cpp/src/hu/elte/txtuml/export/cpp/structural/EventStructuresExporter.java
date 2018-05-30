@@ -89,6 +89,10 @@ public class EventStructuresExporter implements ICppCompilationUnit {
 		for (Pair<TypeDescriptor, String> param : allParam) {
 			dependencyExporter.addDependency(param.getFirst().getTypeName());
 		}
+		if(!allParam.isEmpty()) {
+			dependencyExporter.addHeaderOnlyIncludeDependency(GenerationNames.FileNames.ElementsFilePath);
+		}
+
 
 		source.append("enum Events {" + CppExporterUtils.cutOffTheLastCharacter(events.toString()) + "};\n");
 		source.append(eventClasses);
@@ -98,8 +102,8 @@ public class EventStructuresExporter implements ICppCompilationUnit {
 
 	@Override
 	public String getUnitDependencies(UnitType type) {
-		return RuntimeTemplates.eventHeaderInclude()
-				+ dependencyExporter.createDependencyHeaderIncludeCode(GenerationNames.Namespaces.ModelNamespace);
+		return RuntimeTemplates.eventHeaderInclude() + 
+				dependencyExporter.createDependencyHeaderIncludeCode(GenerationNames.Namespaces.ModelNamespace);
 	}
 
 	@Override

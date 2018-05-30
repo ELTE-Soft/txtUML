@@ -16,30 +16,25 @@ class ModelObject;
 
 namespace Action 
 {
-	
 
-void send(ES::ModelObject* target, ES::EventRef signal);
-/**<
-Sends a message to a model object.
-@param target The target object where the signal has to be sent. 
-@param signal The signal to be sent.
-*/
 	
 template <typename T, typename S>
 void send(T target, S signal);
 /**<
-Sends a message to a port.
-@param port The port object where the signal has to be sent. 
+Sends a message to a port or model object.
+@param port The target (port or statemachine) object where the signal has to be sent. 
 @param signal The signal to be sent.
 */
 
-void start(ES::ModelObject* sm);
+template<typename T>
+void start(T sm);
 /**<
 Starts the state machine of a model object.
 @param sm The state machine to be started. 
 */
 
-void deleteObject(ES::ModelObject* modelObject);
+template<typename T>
+void deleteObject(T modelObject);
 /**<
 Dispose a model object reference.
 @param modelObject The object to be deleted.
@@ -102,6 +97,18 @@ template <typename T, typename S>
 void send(T target, S signal)
 {
 	target->send(signal);
+}
+
+template<typename T>
+void start(T sm) 
+{
+	sm->start();
+}
+
+template<typename T>
+void deleteObject(T modelObject)
+{
+	modelObject->deleteObject();
 }
 
 }
