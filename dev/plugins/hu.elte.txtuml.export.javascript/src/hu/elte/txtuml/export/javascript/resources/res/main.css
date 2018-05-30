@@ -248,22 +248,22 @@ body {
 	font-size: 80%;
 }
 
-.toggle-checkbox:checked + #pan-and-zoom-control-container{
+#toggle-control-checkbox:checked + #pan-and-zoom-control-container{
 	left: 0;
 	-webkit-box-shadow: 2px 2px 5px black;
 			box-shadow: 2px 2px 5px black;
 }
 
-.toggle-checkbox:checked ~ #pan-and-zoom-toggle-label{
+#toggle-control-checkbox:checked ~ #pan-and-zoom-toggle-label{
 	left: 12em;
 }
 
-.toggle-checkbox:checked + #debug-toggle-container{
+#toggle-debug-container-checkbox:checked + #debug-toggle-container{
 	left: 0;
 	-webkit-box-shadow: 2px 2px 5px black;
 			box-shadow: 2px 2px 5px black;
 }
-.toggle-checkbox:checked ~ #debug-toggle-label{
+#toggle-debug-container-checkbox:checked ~ #debug-toggle-label{
 	left: 12em;
 }
 
