@@ -8,6 +8,7 @@
 #include "Storage.hpp"
 #include "Producer.hpp"
 #include "Consumer.hpp"
+#include "AssociationInstances.hpp"
 
 
 int main()
@@ -21,11 +22,11 @@ int main()
   Model::Consumer* c1 = new Model::Consumer(2);
   Model::Consumer* c2 = new Model::Consumer(2);
   Model::Consumer* c3 = new Model::Consumer(2);
-  Action::link<typename Model::Production::producer, typename Model::Production::storage>(p1, storage);
-  Action::link<typename Model::Production::producer, typename Model::Production::storage>(p2, storage);
-  Action::link<typename Model::Consumption::consumer, typename Model::Consumption::storage>(c1, storage);
-  Action::link<typename Model::Consumption::consumer, typename Model::Consumption::storage>(c2, storage);
-  Action::link<typename Model::Consumption::consumer, typename Model::Consumption::storage>(c3, storage);
+  Action::link(Model::Production.producer, p1, Model::Production.storage, storage);
+  Action::link(Model::Production.producer, p2, Model::Production.storage, storage);
+  Action::link(Model::Consumption.consumer, c1, Model::Consumption.storage, storage);
+  Action::link(Model::Consumption.consumer, c2, Model::Consumption.storage, storage);
+  Action::link(Model::Consumption.consumer, c3, Model::Consumption.storage, storage);
   Action::start(storage);
   Action::start(p1);
   Action::start(p2);

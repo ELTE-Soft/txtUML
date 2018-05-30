@@ -83,7 +83,7 @@ public:
 
 	MultipliedElement& operator=(const ElementType& e) {
 		if (count() > 0) {
-			remove(e);
+			hasValue = false;
 		}
 
 		add(e);
