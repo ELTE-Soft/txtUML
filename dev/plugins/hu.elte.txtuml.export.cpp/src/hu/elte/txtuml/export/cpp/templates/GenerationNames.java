@@ -85,7 +85,7 @@ public class GenerationNames {
 	public static class CollectionNames {
 
 		public static final String Collection = "std::list";
-		public static final String SelectAnyFunctionName = "selectAny";
+		public static final String SelectAnyFunctionName = "one";
 		public static final String SelectAllFunctionName = "selectAll";
 		public static final String EndCollectionTypeDef = "CollectionType";
 
@@ -389,4 +389,9 @@ public class GenerationNames {
 		return "MultipliedElement" + CppExporterUtils.createTemplateParametersCode(Optional
 				.of(Arrays.asList(mappedType, low.toString(), up.toString()))); 
 	}
+	
+	public static String eType(String typeName) {
+		return "typename EType<" + typeName+ ",isPrimitive<" + typeName + ">::value>::Type";
+	}
+	
 }

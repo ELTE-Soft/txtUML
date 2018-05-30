@@ -72,7 +72,7 @@ public class EntryExitFunctionExporter {
 
 	EntryExitFunctionExporter(ICppCompilationUnit owner, IDependencyCollector ownerDependencyCollector, List<State> stateList) {
 		this.owner = owner;
-		activityExporter = new ActivityExporter(Optional.of(ownerDependencyCollector));
+		activityExporter = new ActivityExporter(Optional.of(ownerDependencyCollector), false);
 		this.stateList = stateList;
 	}
 

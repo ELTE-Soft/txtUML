@@ -151,6 +151,9 @@ public class PrivateFunctionalTemplates {
 					case UMLVariableType:
 						cppType = GenerationNames.umlVarType(mappedType, varType.getLowMul(), varType.getUpMul());
 						break;
+					case EType:
+						cppType = GenerationNames.eType(mappedType);
+						break;
 					case StackStored:
 					case OriginalType:
 						cppType = mappedType;

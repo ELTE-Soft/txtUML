@@ -36,7 +36,8 @@ public class GenerationTemplates {
 		EventPtr,
 		SharedPtr,
 		OriginalType,
-		UMLVariableType;
+		UMLVariableType,
+		EType;
 		
 		VariableType() {
 			lowMul = 1;

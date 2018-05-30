@@ -34,7 +34,7 @@ public class EventStructuresExporter implements ICppCompilationUnit {
 	public EventStructuresExporter(Map<Signal, Operation> eventListWithConstructors, String outputDirectory) {
 		this.eventListWithConstructors = eventListWithConstructors;
 
-		activityExporter = new ActivityExporter(Optional.empty());
+		activityExporter = new ActivityExporter(Optional.empty(), false);
 		dependencyExporter = new DependencyExporter();
 
 		this.outputDirectory = outputDirectory;

@@ -249,8 +249,8 @@ public class ActivityTemplates {
 		return source.toString();
 	}
 
-	public static String returnTemplates(String variable) {
-		return "return " + variable + ";\n";
+	public static String returnTemplates(String variable, boolean singleReturn) {
+		return "return " + variable + (singleReturn ? "." + GenerationNames.CollectionNames.SelectAnyFunctionName + "()"  : "") +  ";\n"; 
 	}
 
 	public static String getOperationFromType(boolean isMultivalued, boolean isReplace) {

@@ -56,9 +56,11 @@ public class ActivityExporter {
 	private ActivityExportResult activityExportResult;
 	
 	private Optional<IDependencyCollector> exportUser;
+	private final boolean isSingleReturn;
 	
-	public ActivityExporter(Optional<IDependencyCollector> exportUser) {
+	public ActivityExporter(Optional<IDependencyCollector> exportUser, boolean isSingleReturn) {
 		this.exportUser = exportUser;
+		this.isSingleReturn = isSingleReturn;
 	}
 
 	public ActivityExportResult createFunctionBody(Behavior behavior) {
@@ -160,7 +162,7 @@ public class ActivityExporter {
 		objectMap = new HashMap<CreateObjectAction, String>();
 		activityExportResolver = new ActivityNodeResolver(objectMap, returnOutputsToCallActions, tempVariableExporter,
 				userVariableExporter);
-		returnNodeExporter = new ReturnNodeExporter(activityExportResolver);
+		returnNodeExporter = new ReturnNodeExporter(activityExportResolver, isSingleReturn);
 		callOperationExporter = new CallOperationExporter(tempVariableExporter, returnOutputsToCallActions,
 				activityExportResolver, exportUser);
 		linkActionExporter = new LinkActionExporter(tempVariableExporter, activityExportResolver);

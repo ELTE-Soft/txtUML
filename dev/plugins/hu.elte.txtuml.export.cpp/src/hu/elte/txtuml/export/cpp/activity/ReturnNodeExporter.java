@@ -16,11 +16,13 @@ public class ReturnNodeExporter {
 	private ActivityNode returnNode;
 	private ActivityNodeResolver activityExportResolver;
 	private boolean containsReturnNode;
+	private final boolean singleReturn;
 
-	ReturnNodeExporter(ActivityNodeResolver activityExportResolver) {
+	ReturnNodeExporter(ActivityNodeResolver activityExportResolver, boolean singleReturn) {
 
 		this.activityExportResolver = activityExportResolver;
 		containsReturnNode = false;
+		this.singleReturn = singleReturn;
 	}
 
 	public void searchReturnNode(List<ActivityEdge> edges) {
@@ -43,7 +45,7 @@ public class ReturnNodeExporter {
 
 	public String createReturnParamaterCode() {
 		if (containsReturnNode) {
-			return ActivityTemplates.returnTemplates(activityExportResolver.getTargetFromActivityNode(returnNode));
+			return ActivityTemplates.returnTemplates(activityExportResolver.getTargetFromActivityNode(returnNode), singleReturn);
 		} else {
 			return "";
 		}

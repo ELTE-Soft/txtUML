@@ -49,7 +49,7 @@ public abstract class StructuredElementExporter<StructuredElement extends Operat
 
 	protected void init() {
 		dependencyExporter = new DependencyExporter();
-		activityExporter = new ActivityExporter(Optional.of(this));
+		activityExporter = new ActivityExporter(Optional.of(this), false);
 	}
 
 	protected String createPublicAttributes() {
