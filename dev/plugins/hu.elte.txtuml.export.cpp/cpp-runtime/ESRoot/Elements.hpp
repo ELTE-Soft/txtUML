@@ -31,12 +31,12 @@ template<typename T, int low, int up, typename Container = std::list<typename ET
 class MultipliedElement {
 public:
 	using ElementType = typename EType<T,isPrimitive<T>::value>::Type;
-	template<typename T, int oLow, int oUp, typename Container> friend class MultipliedElement;
+	template<typename S, int oLow, int oUp, typename OContainer> friend class MultipliedElement;
 
 	MultipliedElement() = default;
 	MultipliedElement(const MultipliedElement& m) = default;
 
-	template<int oLow, int oUp, typename Container> MultipliedElement(const MultipliedElement<T, oLow, oUp, Container>& e) {
+	template<int oLow, int oUp, typename OContainer> MultipliedElement(const MultipliedElement<T, oLow, oUp, OContainer>& e) {
 		if (e.count() >= low && (e.count() <= up || up == -1)) {
 				objects = e.objects;
 		}
@@ -72,7 +72,7 @@ template<typename T, int low>
 class MultipliedElement<T, low, 1> {
 public:
 	using ElementType = typename EType<T,isPrimitive<T>::value>::Type;
-	template<typename T, int oLow, int oUp, typename Container> friend class MultipliedElement;
+	template<typename S, int oLow, int oUp, typename OContainer> friend class MultipliedElement;
 
 	MultipliedElement() = default;
 	MultipliedElement(const MultipliedElement& m) = default;
@@ -92,7 +92,7 @@ public:
 		return *this;
 	}
 
-	template<int oLow, int oUp, typename Container> MultipliedElement(const MultipliedElement<T, oLow, oUp, Container>& e) {
+	template<int oLow, int oUp, typename OContainer> MultipliedElement(const MultipliedElement<T, oLow, oUp, OContainer>& e) {
 		if (e.count() >= low && e.count() <= 1) {
 			add(e.one());
 		}
