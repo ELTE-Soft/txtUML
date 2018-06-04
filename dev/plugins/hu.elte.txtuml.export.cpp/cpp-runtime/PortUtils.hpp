@@ -113,7 +113,7 @@ private:
 };
 
 
-enum class ConnectorKind {
+/*enum class ConnectorKind {
 	Delegation,
 	Assemembly
 };
@@ -146,7 +146,7 @@ public:
 		p2->setAssemblyConnectedPort (p1);
 	}
 
-};
+};*/
 
 template<typename R1, typename R2, typename R1PortType, typename R2PortType>
 void assemblyConnect(R1* r1, R1PortType p1,
