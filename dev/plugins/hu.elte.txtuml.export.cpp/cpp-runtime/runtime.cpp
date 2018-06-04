@@ -11,9 +11,6 @@
 
 namespace Execution {
 
-template<>
-ES::RuntimePtr<SingleThreadRT> IRuntime<SingleThreadRT>::instance = nullptr;
-
 SingleThreadRT::SingleThreadRT() :_messageQueue(new ES::MessageQueueType()) {}
 
 void SingleThreadRT::setupObjectSpecificRuntime(ES::StateMachineRef sm)
@@ -50,80 +47,13 @@ void SingleThreadRT::start()
 
 }
 
-void SingleThreadRT::setConfiguration(ESContainer::FixedArray<ES::SharedPtr<Configuration>>) {}
+void SingleThreadRT::setConfiguration(std::array<ES::SharedPtr<Configuration>, 0>) {}
 
 void SingleThreadRT::stopUponCompletion() {}
 
 void SingleThreadRT::removeObject(ES::StateMachineRef) {}
 
 
-
-//********************************ConfiguratedThreadedRT************************************
-
-template<>
-ES::RuntimePtr<ConfiguredThreadedRT> IRuntime<ConfiguredThreadedRT>::instance = nullptr;
-
-ConfiguredThreadedRT::ConfiguredThreadedRT() : 
-	poolManager(new ThreadPoolManager()), 
-	worker(new ES::AtomicCounter()),
-	messages(new ES::AtomicCounter()) {}
-
-ConfiguredThreadedRT::~ConfiguredThreadedRT() {}
-
-void ConfiguredThreadedRT::start()
-{
-	assert(isConfigurated() && "The configurated threaded runtime should be configured before starting.");
-
-	if (isConfigurated())
-	{
-		for (int i = 0; i < poolManager->getNumberOfConfigurations(); i++)
-		{
-			ES::SharedPtr<StateMachineThreadPool> pool = poolManager->getPool(i);
-			pool->setWorkersCounter(worker);
-			pool->setMessageCounter(messages);
-			pool->setStopReqest(&stop_request_cond);
-			pool->startPool(poolManager->calculateNOfThreads(i, numberOfObjects[i]));
-		}
-	}
-}
-
-void ConfiguredThreadedRT::removeObject(ES::StateMachineRef sm)
-{
-	int objectId = sm->getPoolId();
-	numberOfObjects[objectId]--;
-	poolManager->recalculateThreads(objectId, numberOfObjects[objectId]);
-}
-
-void ConfiguredThreadedRT::stopUponCompletion()
-{
-	for (int i = 0; i < poolManager->getNumberOfConfigurations(); i++)
-	{
-		poolManager->getPool(i)->stopUponCompletion();
-	}
-}
-
-void ConfiguredThreadedRT::setupObjectSpecificRuntime(ES::StateMachineRef sm)
-{
-
-	sm->setMessageCounter(messages);
-	int objectId = sm->getPoolId();
-	ES::SharedPtr<StateMachineThreadPool> matchedPool = poolManager->getPool(objectId);
-	sm->setPool(matchedPool);
-	numberOfObjects[objectId]++;
-	poolManager->recalculateThreads(objectId, numberOfObjects[objectId]);
-}
-
-bool ConfiguredThreadedRT::isConfigurated()
-{
-	return poolManager->isConfigurated();
-}
-
-void ConfiguredThreadedRT::setConfiguration(ESContainer::FixedArray<ES::SharedPtr<Configuration>> conf)
-{
-	poolManager->setConfiguration(conf);
-	int numberOfConfigurations = poolManager->getNumberOfConfigurations();
-	numberOfObjects = ESContainer::FixedArray<int>(numberOfConfigurations, 0);
-}
 
 }
 
