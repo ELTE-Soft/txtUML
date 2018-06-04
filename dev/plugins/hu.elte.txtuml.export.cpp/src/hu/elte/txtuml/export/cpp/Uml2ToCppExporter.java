@@ -249,7 +249,6 @@ public class Uml2ToCppExporter {
 		librarySourceClasses.add("StateMachineOwner");
 		librarySourceClasses.add("NotStateMachineOwner");
 		librarySourceClasses.add("threadpool");
-		librarySourceClasses.add("threadpoolmanager");
 		librarySourceClasses.add("threadcontainer");
 		librarySourceClasses.add("timer");
 		librarySourceClasses.add("itimer");

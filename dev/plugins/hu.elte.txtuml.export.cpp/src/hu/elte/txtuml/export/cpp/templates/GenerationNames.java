@@ -20,6 +20,7 @@ public class GenerationNames {
 		public static final String CollectionUtilsNamespace = "CollectionUtils";
 		public static final String ContainerNamespace = "ESContainer";
 		public static final String ExecutionNamesapce = "Execution";
+		public static final String StandardNamesapce = "std";
 	}
 
 	public static class FileNames {
@@ -123,7 +124,7 @@ public class GenerationNames {
 	}
 
 	public static class Containers {
-		public static final String FixContainer = Namespaces.ContainerNamespace + "::" + "FixedArray";
+		public static final String FixContainer = Namespaces.StandardNamesapce + "::" + "array";
 	}
 
 	public static class StateMachineMethodNames {
