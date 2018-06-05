@@ -27,7 +27,6 @@ public:
 	void 									recalculateThreads(int, int);
 	int 									calculateNOfThreads(int, int);
 	void 									enqueueObject(ES::StateMachineRef);
-	int 									getNumberOfConfigurations();
 	void 									setConfiguration(std::array<ES::SharedPtr<Configuration>, NC>);
 	bool 									isConfigurated();
 
@@ -72,16 +71,6 @@ void ThreadPoolManager<NC>::enqueueObject (ES::StateMachineRef sm)
 
 	int objectId = sm->getPoolId ();
 	configurations[objectId]->getThreadPool ()->enqueueObject (sm);
-}
-
-template<int NC>
-int ThreadPoolManager<NC>::getNumberOfConfigurations ()
-{
-	if (!isConfigurated ()) {
-		abort ();
-	}
-
-	return (configurations.getSize ());
 }
 
 template<int NC>

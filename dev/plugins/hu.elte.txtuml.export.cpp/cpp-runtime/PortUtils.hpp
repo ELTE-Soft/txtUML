@@ -149,8 +149,8 @@ public:
 };*/
 
 template<typename R1, typename R2, typename R1PortType, typename R2PortType>
-void assemblyConnect(R1* r1, R1PortType p1,
-					 R2* r2, R2PortType p2)
+void assemblyConnect(R1* /*r1*/, R1PortType p1,
+					 R2* /*r2*/, R2PortType p2)
 {
 	p1->setAssemblyConnectedPort(p2);
 	p2->setAssemblyConnectedPort(p1);
@@ -159,7 +159,7 @@ void assemblyConnect(R1* r1, R1PortType p1,
 
 template<typename CE, typename ParentType, typename ChildType>
 void delegateConnect(ParentType parentPort,
-CE* childEnd, ChildType childPort)
+CE* /*childEnd*/, ChildType childPort)
 {
         childPort->setDelegationConnectedPort(parentPort);
 	parentPort->setInnerConnection(childPort);

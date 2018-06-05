@@ -220,7 +220,7 @@ void ConfiguredThreadedRT<NC>::start ()
 
 	if (isConfigurated ())
 	{
-		for (int i = 0; i < poolManager->getNumberOfConfigurations (); i++)
+		for (int i = 0; i < NC; i++)
 		{
 			ES::SharedPtr<StateMachineThreadPool> pool = poolManager->getPool (i);
 			pool->setWorkersCounter (worker);
@@ -242,7 +242,7 @@ void ConfiguredThreadedRT<NC>::removeObject (ES::StateMachineRef sm)
 template<int NC>
 void ConfiguredThreadedRT<NC>::stopUponCompletion ()
 {
-	for (int i = 0; i < poolManager->getNumberOfConfigurations (); i++)
+	for (int i = 0; i < NC; i++)
 	{
 		poolManager->getPool (i)->stopUponCompletion ();
 	}
