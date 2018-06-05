@@ -13,16 +13,16 @@ namespace Execution
 class LinearFunction
 {
 public:
-	LinearFunction(int constant, double gradient) :
+	LinearFunction(unsigned constant, double gradient) :
 		_constant(constant),
 		_gradient(gradient) {}
 
-	int operator()(int n)
+	unsigned operator()(unsigned n)
 	{
-		return (int)round(_gradient * n) + _constant;
+		return (unsigned)round(_gradient * n) + _constant;
 	}
 private:
-	int _constant;
+	unsigned _constant;
 	double _gradient;
 };
 
@@ -32,19 +32,19 @@ class Configuration
 {
 public:
 
-	Configuration(ES::SharedPtr<StateMachineThreadPool> threadPool, ES::SharedPtr<LinearFunction> function, int max) :
+	Configuration(ES::SharedPtr<StateMachineThreadPool> threadPool, ES::SharedPtr<LinearFunction> function, unsigned max) :
 		_threadPool(threadPool), _function(function), _max(max) {}
 	virtual ~Configuration() {}
 
 	ES::SharedPtr<StateMachineThreadPool> getThreadPool() const { return _threadPool; }
 	ES::SharedPtr<LinearFunction> getFunction() const { return _function; }
-	int getMax() { return _max; }
+	unsigned getMax() { return _max; }
 
 private:
 
 	ES::SharedPtr<StateMachineThreadPool> _threadPool;
 	ES::SharedPtr<LinearFunction> _function;
-	int _max;
+	unsigned _max;
 };
 
 }

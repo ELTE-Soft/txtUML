@@ -26,8 +26,8 @@ public:
 	void enqueueObject(ES::StateMachineRef);
 	void stopPool();
 	void stopUponCompletion();
-	void startPool(int);
-	void modifyThreads(int);
+	void startPool(unsigned);
+	void modifyThreads(unsigned);
 
 	void setWorkersCounter(ES::SharedPtr<ES::AtomicCounter> counter) { nOfWorkerThreads = counter; }
 	void setMessageCounter(ES::SharedPtr<ES::AtomicCounter> counter) { nOfAllMessages = counter;   }

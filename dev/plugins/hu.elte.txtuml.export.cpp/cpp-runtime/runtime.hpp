@@ -122,6 +122,7 @@ private:
 template<int NC>
 class ConfiguredThreadedRT : public IRuntime<ConfiguredThreadedRT<NC>,NC>
 {
+	typedef typename std::array<unsigned, NC>::size_type id_type;
 public:
 	virtual ~ConfiguredThreadedRT();
 	/*!
@@ -138,7 +139,7 @@ public:
 private:
 	ConfiguredThreadedRT();
 	ES::SharedPtr<ThreadPoolManager<NC>> poolManager;
-	std::array<int, NC> numberOfObjects;
+	std::array<unsigned, NC> numberOfObjects;
 
 	ES::SharedPtr<ES::AtomicCounter> worker;
 	ES::SharedPtr<ES::AtomicCounter> messages;
@@ -220,13 +221,13 @@ void ConfiguredThreadedRT<NC>::start ()
 
 	if (isConfigurated ())
 	{
-		for (int i = 0; i < NC; i++)
+		for (id_type i = 0; i < (id_type)NC; i++)
 		{
 			ES::SharedPtr<StateMachineThreadPool> pool = poolManager->getPool (i);
 			pool->setWorkersCounter (worker);
 			pool->setMessageCounter (messages);
 			pool->setStopReqest (&stop_request_cond);
-			pool->startPool (poolManager->calculateNOfThreads (i, numberOfObjects[i]));
+			pool->startPool (poolManager->calculateNOfThreads (i,numberOfObjects[i]));
 		}
 	}
 }
@@ -234,7 +235,7 @@ void ConfiguredThreadedRT<NC>::start ()
 template<int NC>
 void ConfiguredThreadedRT<NC>::removeObject (ES::StateMachineRef sm)
 {
-	int objectId = sm->getPoolId ();
+	id_type objectId = (id_type) sm->getPoolId ();
 	numberOfObjects[objectId]--;
 	poolManager->recalculateThreads (objectId, numberOfObjects[objectId]);
 }
@@ -244,7 +245,7 @@ void ConfiguredThreadedRT<NC>::stopUponCompletion ()
 {
 	for (int i = 0; i < NC; i++)
 	{
-		poolManager->getPool (i)->stopUponCompletion ();
+		poolManager->getPool ((id_type)i)->stopUponCompletion ();
 	}
 }
 
@@ -253,7 +254,7 @@ void ConfiguredThreadedRT<NC>::setupObjectSpecificRuntime (ES::StateMachineRef s
 {
 
 	sm->setMessageCounter (messages);
-	int objectId = sm->getPoolId ();
+	id_type objectId = (id_type)sm->getPoolId ();
 	ES::SharedPtr<StateMachineThreadPool> matchedPool = poolManager->getPool (objectId);
 	sm->setPool (matchedPool);
 	numberOfObjects[objectId]++;
@@ -270,7 +271,7 @@ template<int NC>
 void ConfiguredThreadedRT<NC>::setConfiguration (std::array<ES::SharedPtr<Configuration>, NC> conf)
 {
 	poolManager->setConfiguration (conf);
-	for (unsigned i = 0; i < numberOfObjects.size (); ++i) {
+	for (id_type i = 0; i < numberOfObjects.size (); ++i) {
 		numberOfObjects[i] = 0;
 	}
 }
