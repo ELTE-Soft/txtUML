@@ -7,5 +7,5 @@ import hu.elte.txtuml.api.model.AssociationEnd;
 
 @Target(ElementType.TYPE)
 public @interface FMUAssociationEnd {
-	Class<? extends AssociationEnd<?, ?>> fmuAssociationEnd();
+	Class<? extends AssociationEnd<?>> fmuAssociationEnd();
 }

@@ -3,6 +3,7 @@ package hu.elte.txtuml.export.cpp.templates;
 import org.eclipse.core.runtime.Path;
 
 import hu.elte.txtuml.export.cpp.templates.statemachine.EventTemplates;
+import hu.elte.txtuml.export.cpp.templates.structual.PortTemplates;
 
 public class GenerationNames {
 
@@ -18,6 +19,7 @@ public class GenerationNames {
 	}
 
 	public static class FileNames {
+
 		public static final String ESRootFolderName = "ESRoot";
 		public static final String ESRootPath = RuntimeTemplates.RTPath + ESRootFolderName + Path.SEPARATOR;
 		public static final String FileNameTypes = "Types";
@@ -28,6 +30,12 @@ public class GenerationNames {
 		public static final String StringUtilsPath = ESRootPath + FileNamesStringUtilsHeaderName;
 		public static final String FileNamesCollectionUtilsHeaderName = "CollectionUtils";
 		public static final String CollectionUtilsPath = ESRootPath + FileNamesCollectionUtilsHeaderName;
+		public static final String PortUtilsPath = RuntimeTemplates.RTPath + "PortUtils";
+		public static final String InterfaceUtilsPath = RuntimeTemplates.RTPath + "InterfaceUtils";
+
+		public static final String TimerInterfaceHeader = RuntimeTemplates.RTPath
+				+ TimerNames.TimerInterFaceName.toLowerCase();
+		public static final String TimerHeader = RuntimeTemplates.RTPath + TimerNames.TimerClassName.toLowerCase();
 
 		public static final String HeaderExtension = "hpp";
 		public static final String SourceExtension = "cpp";
@@ -38,9 +46,12 @@ public class GenerationNames {
 		public static final String ActionFunctionsNamespace = "Action";
 		public static final String SendSignal = ActionFunctionsNamespace + "::" + "send";
 		public static final String ActionStart = ActionFunctionsNamespace + "::" + "start";
+		public static final String ActionDelete = ActionFunctionsNamespace + "::" + "deleteObject";
 		public static final String LinkActionName = ActionFunctionsNamespace + "::" + "link";
 		public static final String UnLinkActionName = ActionFunctionsNamespace + "::" + "unlink";
 		public static final String Log = ActionFunctionsNamespace + "::" + "log";
+		public static final String AssemblyConnect = "assemblyConnect";
+		public static final String DelegateConnect = "delegateConnect";
 
 	}
 
@@ -55,7 +66,6 @@ public class GenerationNames {
 	public static class PointerAndMemoryNames {
 
 		public static final String MemoryAllocator = "new";
-		public static final String DeleteObject = "delete";
 		public static final String SimpleAccess = ".";
 		public static final String PointerAccess = "->";
 		public static final String NullPtr = "nullptr";
@@ -87,12 +97,20 @@ public class GenerationNames {
 		public static final String NoReturn = "void";
 		// Modifies
 		public static final String StaticModifier = "static";
+		public static final String AbstractModifier = "virtual";
+		public static final String PublicModifier = "public";
 
 	}
 
+	public static class Macros {
+		public static final String ErrorMacro = "#error";
+	}
+
+	public static class Comments {
+		public static final String ToDoMessage = comment("TODO: Add your source code here\n");
+	}
+
 	public static class GeneralFunctionNames {
-		public static final String GeneralLinkFunction = "link";
-		public static final String GeneralUnlinkFunction = "unlink";
 		public static final String InitFunctionName = "init";
 	}
 
@@ -101,27 +119,87 @@ public class GenerationNames {
 	}
 
 	public static class StateMachineMethodNames {
-		public static final String DeleteStatemachine = "deleteSM";
+
+		public static final String InitFunctionName = "init";
 		public static final String ProcessEventFName = "process_event";
 		public static final String InitializeFunctionName = "initialize";
 		public static final String FinalizeFunctionName = "finalize";
 	}
-	
+
+	public static class TypeDeclarationKeywords {
+		public static final String ClassType = "class";
+		public static final String DataType = "struct";
+		public static final String AssociationStructure = "struct";
+		public static final String EnumType = "enum";
+		public static final String InterfacType = "class";
+		public static final String PublicPartSign = "public:";
+		public static final String ProtectedPartSign = "protected:";
+		public static final String PrivatePartSign = "private:";
+
+	}
+
+	public static class InterfaceNames {
+
+		public static final String SendReceptionName = "send";
+		public static final String ReciveReceptionName = "receive";
+		public static final String CommonSendAnySignalName = "sendAny";
+		public static final String CommonReciveAnySignalName = "receiveAny";
+		public static final String IntegratedBaseTemplateName = "IntegratedInf";
+		public static final String EmptyInfName = "EmptyInf";
+
+	}
+
+	public static class InitializerFixFunctionNames {
+		public static final String InitPorts = "initPorts";
+		public static final String InitStateMachine = "initStateMachine";
+
+	}
+
 	public static class EntryExitNames {
 
 		public static final String EntryName = "entry";
 		public static final String ExitName = "exit";
 		public static final String EntryDecl = GenerationNames.ModifierNames.NoReturn + " " + EntryName + "("
-		+ EventTemplates.EventPointerType + " " + EventTemplates.EventFParamName + ");\n";
+				+ EventTemplates.EventPointerType + " " + EventTemplates.EventFParamName + ");\n";
 		public static final String ExitDecl = GenerationNames.ModifierNames.NoReturn + " " + ExitName + "("
-		+ EventTemplates.EventPointerType + " " + EventTemplates.EventFParamName + ");\n";
+				+ EventTemplates.EventPointerType + " " + EventTemplates.EventFParamName + ");\n";
 		public static final String EntryInvoke = EntryName + "(" + EventTemplates.EventFParamName + ");";
 		public static final String ExitInvoke = ExitName + "(" + EventTemplates.EventFParamName + ");";
-		
 	}
 
-	public static final String ClassType = "struct";
-	public static final String DataType = "struct";
+	public static class ClassUtilsNames {
+		public static final String BaseClassName = Namespaces.RootNamespace + "::" + "ModelObject";
+		public static final String StateMachineOwnerBaseName = "StateMachineOwner";
+		public static final String NotStateMachineOwnerBaseName = "NotStateMachineOwner";
+		public static final String SubStateMachineBase = "SubStateMachine";
+	}
+
+	public static class UMLStdLibNames {
+		public static final String ModelClassName = "hu.elte.txtuml.api.model.ModelClass";
+		public static final String EmptyInfName = "hu.elte.txtuml.api.model.Interface.Empty";
+		public static final String UMLInteger = "Integer";
+		public static final String UMLString = "String";
+		public static final String UMLReal = "Real";
+		public static final String UMLBoolean = "Boolean";
+	}
+
+	public static class HierarchicalStateMachineNames {
+		public static final String ParentSmName = "pSm";
+		public static final String CompositeStateMapName = "_compSates";
+		public static final String CurrentMachineName = "_cM";
+		public static final String ParentSmMemberName = "_" + ParentSmName;
+		public static final String CompositeStateMapSmType = sharedPtrType(
+				GenerationNames.ClassUtilsNames.SubStateMachineBase);
+		public static final String CompositeStateMap = "std::unordered_map<int," + CompositeStateMapSmType + " > "
+				+ CompositeStateMapName + ";\n";
+		public static final String CurrentMachine = pointerType(GenerationNames.ClassUtilsNames.SubStateMachineBase)
+				+ " " + CurrentMachineName + ";\n";
+		public static final String ActionCallerFName = "action_caller";
+		public static final String ActionCallerDecl = "bool " + ActionCallerFName + "("
+				+ EventTemplates.EventPointerType + " " + EventTemplates.EventFParamName + ");\n";
+
+	}
+
 	public static final String EnumName = "enum";
 
 	// NDEBUG is the only thing guaranteed, DEBUG and _DEBUG is non-standard
@@ -149,36 +227,20 @@ public class GenerationNames {
 			+ GenerationNames.StateParamName + ");\n";
 	public static final String SetInitialStateName = "setInitialState";
 	public static final String SetInitialStateDecl = ModifierNames.NoReturn + " " + SetInitialStateName + "();";
-	public static final String StatemachineBaseName = "StateMachineBase";
 	public static final String StatemachineBaseHeaderName = "statemachinebase";
 	public static final String DefaultGuardName = "defaultGuard";
-	// hierarchical state machine
-	public static final String ParentSmPointerName = "_parentSm";
-	public static final String CompositeStateMapName = "_compSates";
-	public static final String CurrentMachineName = "_cM";
-	public static final String CompositeStateMapSmType = PointerAndMemoryNames.SmartPtr + "<" + StatemachineBaseName
-			+ ">";
-	public static final String CompositeStateMap = "std::unordered_map<int," + CompositeStateMapSmType + " > "
-			+ CompositeStateMapName + ";\n";
-	public static final String CurrentMachine = pointerType(StatemachineBaseName) + " " + CurrentMachineName + ";\n";
-	public static final String ActionCallerFName = "action_caller";
-	public static final String ActionCallerDecl = "bool " + ActionCallerFName + "(" + EventTemplates.EventPointerType
-			+ " " + EventTemplates.EventFParamName + ");\n";
-	public static final String ParentSmName = "pSm";
-	public static final String ParentSmMemberName = "_" + ParentSmName;
-
 	public static final String AssocMultiplicityDataStruct = "AssociationEnd";
 	public static final String AssociationClassName = "Association";
 	public static final String AssocationHeaderName = "association";
 	public static final String DeploymentHeaderName = "deployment";
-
-	public static final String InitStateMachine = "initStateMachine";
 
 	public static final String PoolIdSetter = "setPoolId";
 
 	public static final String AssigmentOperator = "=";
 	public static final String AddAssocToAssocationFunctionName = "addAssoc";
 	public static final String RemoveAssocToAssocationFunctionName = "removeAssoc";
+	public static final String LinkMemberFunctionName = "link";
+	public static final String UnlinkMemberFunctionName = "unlink";
 	public static final String AssocParameterName = "object";
 	public static final String LinkAddition = "link";
 	public static final String TemplateDecl = "template";
@@ -189,24 +251,22 @@ public class GenerationNames {
 	public static final String AssociationsHeaderName = "associations";
 	public static final String EdgeType = "EdgeType";
 
-	public static final String DefaultParentSmInicialization = GenerationNames.ParentSmMemberName + "("
-			+ GenerationNames.ParentSmPointerName + ")";
+	public static String comment(String text) {
+		return "//" + text;
+	}
 
 	public static String initFunctionName(String className) {
 		return GeneralFunctionNames.InitFunctionName + className;
 	}
 
 	public static String friendClassDecl(String className) {
-		return "friend " + GenerationNames.ClassType + " " + className + ";\n";
-	}
-
-	public static final String parentSmPointerNameDef(String parentType) {
-		return pointerType(parentType) + " " + ParentSmPointerName;
+		return "friend " + TypeDeclarationKeywords.ClassType + " " + className + ";\n";
 	}
 
 	public static String actionCallerDef(String className) {
-		return "bool " + className + "::" + ActionCallerFName + "(" + EventTemplates.EventPointerType + " "
-				+ EventTemplates.EventFParamName + ")\n" + simpleProcessEventDefBody();
+		return "bool " + className + "::" + HierarchicalStateMachineNames.ActionCallerFName + "("
+				+ EventTemplates.EventPointerType + " " + EventTemplates.EventFParamName + ")\n"
+				+ simpleProcessEventDefBody();
 	}
 
 	public static String simpleProcessEventDef(String className) {
@@ -218,10 +278,11 @@ public class GenerationNames {
 	public static String hierachicalProcessEventDef(String className) {
 		return "bool " + className + "::" + StateMachineMethodNames.ProcessEventFName + "("
 				+ EventTemplates.EventPointerType + " " + EventTemplates.EventFParamName + ")\n" + "{\n"
-				+ "bool handled=false;\n" + "if(" + CurrentMachineName + ")\n" + "{\n" + "if(" + CurrentMachineName
-				+ "->" + StateMachineMethodNames.ProcessEventFName + "(" + EventTemplates.EventFParamName + "))\n"
-				+ "{\n" + "handled=true;\n" + "}\n" + "}\n" + "if(!handled)\n" + "{\n" + "handled=handled || "
-				+ ActionCallerFName + "(" + EventTemplates.EventFParamName + ");\n"
+				+ "bool handled=false;\n" + "if(" + HierarchicalStateMachineNames.CurrentMachineName + ")\n" + "{\n"
+				+ "if(" + HierarchicalStateMachineNames.CurrentMachineName + "->"
+				+ StateMachineMethodNames.ProcessEventFName + "(" + EventTemplates.EventFParamName + "))\n" + "{\n"
+				+ "handled=true;\n" + "}\n" + "}\n" + "if(!handled)\n" + "{\n" + "handled=handled || "
+				+ HierarchicalStateMachineNames.ActionCallerFName + "(" + EventTemplates.EventFParamName + ");\n"
 				+ "}\n//else unhandled event in this state\n" + "return handled;\n" + "}\n";
 	}
 
@@ -229,11 +290,17 @@ public class GenerationNames {
 		return "{\n" + "bool handled=false;\n" + "auto range = " + TransitionTableName + ".equal_range(EventState("
 				+ EventTemplates.EventFParamName + GenerationNames.PointerAndMemoryNames.PointerAccess + "getType(),"
 				+ CurrentStateName + "," + EventTemplates.EventFParamName
-				+ GenerationNames.PointerAndMemoryNames.PointerAccess + "getPortType()));\n" + "if(range.first!="
-				+ TransitionTableName + ".end())\n" + "{\n" + "for(auto it=range.first;it!=range.second;++it)\n" + "{\n"
-				+ "if((it->second).first(*this," + EventTemplates.EventFParamName + "))//Guard call\n" + "{\n"
-				+ EntryExitNames.ExitInvoke + "(it->second).second(*this," + EventTemplates.EventFParamName + ");//Action Call\n"
-				+ EntryExitNames.EntryInvoke + "handled=true;\n" + "break;\n" + "}\n" + "}\n" + "}\n" + "return handled;\n" + "}\n";
+				+ GenerationNames.PointerAndMemoryNames.PointerAccess + "getPortType()));\n" + "if (range.first == "
+				+ TransitionTableName + ".end () && e_" + GenerationNames.PointerAndMemoryNames.PointerAccess
+				+ "getPortType () != " + PortTemplates.ANY_PORT + "){" + "range =" + TransitionTableName // TODO its only a quickfix, handle different when the port dimension can be a list.. 
+				+ ".equal_range(EventState(" + EventTemplates.EventFParamName
+				+ GenerationNames.PointerAndMemoryNames.PointerAccess + "getType()," + CurrentStateName + ","
+				+ PortTemplates.ANY_PORT + "));}" + "if(range.first!=" + TransitionTableName + ".end())\n" + "{\n"
+				+ "for(auto it=range.first;it!=range.second;++it)\n" + "{\n" + "if((it->second).first(*this,"
+				+ EventTemplates.EventFParamName + "))//Guard call\n" + "{\n" + EntryExitNames.ExitInvoke
+				+ "(it->second).second(*this," + EventTemplates.EventFParamName + ");//Action Call\n"
+				+ EntryExitNames.EntryInvoke + "handled=true;\n" + "break;\n" + "}\n" + "}\n" + "}\n"
+				+ "return handled;\n" + "}\n";
 	}
 
 	private static final String setStateFunctionDefSharedHeaderPart(String className) {
@@ -250,12 +317,15 @@ public class GenerationNames {
 	}
 
 	public static String hierachicalSetStateDef(String className) {
-		return setStateFunctionDefSharedHeaderPart(className) + "\n" + "{\n" + "auto it=" + CompositeStateMapName
-				+ ".find(" + GenerationNames.StateParamName + ");\n" + "if(it!=" + CompositeStateMapName + ".end())\n"
-				+ "{\n" + CurrentMachineName + "=(it->second).get();\n" + CurrentMachineName + "->"
-				+ SetInitialStateName + "();//restarting from initial state\n" + "}\n" + "else\n" + "{\n"
-				+ CurrentMachineName + "=" + PointerAndMemoryNames.NullPtr + ";\n" + "}\n" + CurrentStateName + "="
-				+ GenerationNames.StateParamName + ";\n" + "}\n";
+
+		return setStateFunctionDefSharedHeaderPart(className) + "\n" + "{\n" + "auto it="
+				+ HierarchicalStateMachineNames.CompositeStateMapName + ".find(" + GenerationNames.StateParamName
+				+ ");\n" + "if(it!=" + HierarchicalStateMachineNames.CompositeStateMapName + ".end())\n" + "{\n"
+				+ HierarchicalStateMachineNames.CurrentMachineName + "=(it->second).get();\n"
+				+ HierarchicalStateMachineNames.CurrentMachineName + "->" + SetInitialStateName
+				+ "();//restarting from initial state\n" + "}\n" + "else\n" + "{\n"
+				+ HierarchicalStateMachineNames.CurrentMachineName + "=" + PointerAndMemoryNames.NullPtr + ";\n" + "}\n"
+				+ CurrentStateName + "=" + GenerationNames.StateParamName + ";\n" + "}\n";
 	}
 
 	public static String eventClassName(String eventName) {
@@ -292,5 +362,13 @@ public class GenerationNames {
 	public static String sharedPtrType(String typeName) {
 
 		return PointerAndMemoryNames.SmartPtr + "<" + typeName + ">";
+	}
+
+	public static String requiredInfPartName(String infName) {
+		return infName + "ReqInf";
+	}
+
+	public static String providedInfPartName(String infName) {
+		return infName + "ProvInf";
 	}
 }

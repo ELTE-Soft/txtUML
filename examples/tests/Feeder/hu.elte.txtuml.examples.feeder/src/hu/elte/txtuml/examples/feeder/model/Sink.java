@@ -47,7 +47,7 @@ public class Sink extends ModelClass {
 			Action.log("RECEIVED " + requested + " MESSAGES");
 			++requested;
 			remaining = requested;
-			Action.send(new RequestSignal(requested), assoc(SinkEnvAssoc.source.class).selectAny());
+			Action.send(new RequestSignal(requested), assoc(SinkEnvAssoc.source.class).one());
 		}
 	}
 
@@ -72,7 +72,7 @@ public class Sink extends ModelClass {
 	public void start() {
 		++requested;
 		remaining = requested;
-		Action.send(new RequestSignal(requested), assoc(SinkEnvAssoc.source.class).selectAny());
+		Action.send(new RequestSignal(requested), assoc(SinkEnvAssoc.source.class).one());
 	}
 
 }

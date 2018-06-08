@@ -15,6 +15,8 @@ import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.internal.ui.wizards.TypedElementSelectionValidator;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
@@ -62,7 +64,7 @@ public class TxtUMLToCppPage extends WizardPage {
 	protected TxtUMLToCppPage() {
 		super("Generate C++ Code Page");
 		setTitle("Generate C++ Code Page");
-		super.setDescription("Browse your txtUML project, model and configuration to generate C++ code!");
+		super.setDescription("Browse your txtUML project, model and configuration and set specific options to generate C++ code!");
 	}
 
 	@Override
@@ -77,6 +79,12 @@ public class TxtUMLToCppPage extends WizardPage {
 
 		threadManagerDescriptionText = new Text(composite, SWT.BORDER | SWT.SINGLE);
 		threadManagerDescriptionText.setText(DESCRIPTION_NAME);
+		threadManagerDescriptionText.addModifyListener(new ModifyListener() {
+			@Override
+			public void modifyText(ModifyEvent e) {
+				setPageComplete(!threadManagerDescriptionText.getText().equals(""));
+			}
+		});
 
 		descriptionBrowser = new Button(composite, SWT.NONE);
 		descriptionBrowser.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false));
@@ -167,7 +175,7 @@ public class TxtUMLToCppPage extends WizardPage {
 		overWriteMainFle.setText("Overwrite main file if it exists");
 
 		setControl(composite);
-		setPageComplete(true);
+		setPageComplete(!threadManagerDescriptionText.getText().trim().equals(""));
 	}
 
 	public IType getThreadDescription() {
@@ -206,7 +214,8 @@ public class TxtUMLToCppPage extends WizardPage {
 							for (IProject pr : allProjects) {
 								try {
 									IJavaProject javaProject = ProjectUtils.findJavaProject(pr.getName());
-									if (WizardUtils.containsClassesWithSuperTypes(javaProject, searchedClass)) {
+									if (WizardUtils.containsClassesWithDirectSuperTypes(javaProject, searchedClass)) {
+
 										javaProjects.add(javaProject);
 									}
 								} catch (NotFoundException e) {
@@ -222,7 +231,8 @@ public class TxtUMLToCppPage extends WizardPage {
 							} catch (JavaModelException ex) {
 							}
 							List<IType> configTypes = packageFragments.stream()
-									.flatMap(pf -> WizardUtils.getTypesBySuperclass(pf, searchedClass).stream())
+									.flatMap(pf -> WizardUtils.getTypesByDirectSuperclass(pf, searchedClass).stream())
+
 									.collect(Collectors.toList());
 							return configTypes.toArray();
 						}

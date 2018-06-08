@@ -18,7 +18,7 @@ class Player {
 		provided BallIfc;
 	}
 
-	behavior port ShoutPort {
+	port ShoutPort {
 		required HitOrMissIfc;
 	}
 
@@ -67,7 +67,7 @@ class Player {
 		trigger Ball;
 		effect {
 			log(name + ": \"I'll serve now...!\"");
-			send trigger to this->(PlayerOwnsRacket.racket).selectAny();
+			send trigger to this->(PlayerOwnsRacket.racket).one();
 		}
 	}	
 }

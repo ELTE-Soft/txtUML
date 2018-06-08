@@ -1,6 +1,6 @@
 #include "timer.hpp"
 
-#include "istatemachine.hpp"
+#include "StateMachineOwner.hpp"
 
 namespace ES
 {

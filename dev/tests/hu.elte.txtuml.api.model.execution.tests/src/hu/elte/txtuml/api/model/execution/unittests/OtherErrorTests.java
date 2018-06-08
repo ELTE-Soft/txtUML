@@ -7,23 +7,24 @@ import hu.elte.txtuml.api.model.Action;
 import hu.elte.txtuml.api.model.error.ObjectCreationError;
 import hu.elte.txtuml.api.model.execution.testmodel.A;
 import hu.elte.txtuml.api.model.execution.testmodel.assoc.A_B;
-import hu.elte.txtuml.api.model.execution.util.MutableBoolean;
 
 public class OtherErrorTests extends UnitTestsBase {
 	@Test
 	public void testModelObjectCreationFailure() {
 
-		MutableBoolean bool = new MutableBoolean(false);
+		boolean[] bool = new boolean[] { false };
 
 		executor.run(() -> {
 			try {
 				Action.create(A.class, 100);
 			} catch (ObjectCreationError e) {
-				bool.value = true;
+				bool[0] = true;
 			}
 		});
 
-		Assert.assertTrue(bool.value);
+		Assert.assertTrue(bool[0]);
+		assertNoErrors();
+		assertNoWarnings();
 	}
 
 	@Test
@@ -34,7 +35,8 @@ public class OtherErrorTests extends UnitTestsBase {
 			Action.unlink(A_B.a.class, a, A_B.b.class, b);
 		});
 
-		executionAsserter.assertWarnings(x -> x.unlinkingNonExistingAssociation(A_B.a.class, a, A_B.b.class, b));
+		assertNoErrors();
+		assertWarnings(x -> x.unlinkingNonExistingAssociation(A_B.a.class, a, A_B.b.class, b));
 	}
 
 }

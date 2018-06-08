@@ -30,13 +30,13 @@ public class Storage extends ModelClass {
 
 		@Override
 		public boolean guard() {
-			int count = Storage.this.assoc(InStore.item.class).count();
+			int count = Storage.this.assoc(InStore.item.class).size();
 			return count < Storage.this.capacity;
 		}
 
 		@Override
 		public void effect() {
-			Producer producer = Storage.this.assoc(Offer.producer.class).selectAny();
+			Producer producer = Storage.this.assoc(Offer.producer.class).one();
 			Action.unlink(Offer.producer.class, producer, Offer.storage.class, Storage.this);
 			Item item = producer.produce();
 			Action.link(InStore.storage.class, Storage.this, InStore.item.class, item);
@@ -48,7 +48,7 @@ public class Storage extends ModelClass {
 
 		@Override
 		public boolean guard() {
-			int count = Storage.this.assoc(InStore.item.class).count();
+			int count = Storage.this.assoc(InStore.item.class).size();
 			return count >= Storage.this.capacity;
 		}
 
@@ -63,15 +63,15 @@ public class Storage extends ModelClass {
 
 		@Override
 		public boolean guard() {
-			int count = Storage.this.assoc(InStore.item.class).count();
+			int count = Storage.this.assoc(InStore.item.class).size();
 			return count > 0;
 		}
 
 		@Override
 		public void effect() {
-			Consumer consumer = Storage.this.assoc(Request.consumer.class).selectAny();
+			Consumer consumer = Storage.this.assoc(Request.consumer.class).one();
 			Action.unlink(Request.storage.class, Storage.this, Request.consumer.class, consumer);
-			Item item = Storage.this.assoc(InStore.item.class).selectAny();
+			Item item = Storage.this.assoc(InStore.item.class).one();
 			Action.unlink(InStore.storage.class, Storage.this, InStore.item.class, item);
 			consumer.consume(item);
 		}
@@ -82,7 +82,7 @@ public class Storage extends ModelClass {
 
 		@Override
 		public boolean guard() {
-			int count = Storage.this.assoc(InStore.item.class).count();
+			int count = Storage.this.assoc(InStore.item.class).size();
 			return count <= 0;
 		}
 

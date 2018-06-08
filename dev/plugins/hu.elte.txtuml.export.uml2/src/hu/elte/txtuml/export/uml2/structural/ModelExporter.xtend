@@ -85,7 +85,8 @@ class ModelExporter extends AbstractPackageExporter<List<IPackageFragment>, Mode
 		addPackageImport(STDPROF_URI)
 		addProfileApplication(getImportedElement(STD_PROF_NAME) as Profile)
 		result.importedMembers.forEach[importCache.put(it.name, it)]
-		super.exportPackageFragment(getActiveSourceDir(rootFragments))
+		exportPackageFragment(rootFragments)
+		//rootFragments.forEach[super.exportPackageFragment(it)]
 	}
 
 	def setupResourceSet(IJavaProject project, String packageName) {

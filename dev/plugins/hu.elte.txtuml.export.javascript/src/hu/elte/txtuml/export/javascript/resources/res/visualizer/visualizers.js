@@ -42,7 +42,12 @@ visualizer.visualizers.Visualizer.prototype.visualize = function (holder) {
 			},
 			// initial size must be bigger then the diagram it will contain (will be scaled down)
 			'width': 999999999999999999,
-			'height': 999999999999999999
+			'height': 999999999999999999,
+			// make interaction toggleable
+			interactive: function(cellView){
+				//panEnabled is global
+				return !panEnabled;
+			}
 
 		});
 
@@ -52,6 +57,8 @@ visualizer.visualizers.Visualizer.prototype.visualize = function (holder) {
 	_.each(this._nodes, function (node) {
 		// add node to graph
 		this._graph.addCell(node.getNode());
+		// add modifier CSS classes
+		node.addModifierClasses(paper);
 	}, this);
 
 	_.each(this._links, function (relation) {

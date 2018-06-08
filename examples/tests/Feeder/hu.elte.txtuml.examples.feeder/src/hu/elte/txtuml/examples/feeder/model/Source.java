@@ -35,7 +35,7 @@ public class Source extends ModelClass {
 		public void effect() {
 			RequestSignal trigger = getTrigger(RequestSignal.class);
 			for (int i = 0; i < trigger.amount; i++) {
-				Action.send(new ResponseSignal(3), assoc(SourceEnvAssoc.sink.class).selectAny());
+				Action.send(new ResponseSignal(3), assoc(SourceEnvAssoc.sink.class).one());
 			}
 		}
 	}

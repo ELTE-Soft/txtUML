@@ -1,32 +1,58 @@
 package hu.elte.txtuml.utils;
 
-public class Pair<F, S> {
+import java.util.Objects;
 
-	private final F first;
-	private final S second;
+/**
+ * Immutable pair type to store two objects of (possibly) different types.
+ *
+ * @param <T1>
+ *            First type.
+ * @param <T2>
+ *            Second type.
+ */
+public class Pair<T1, T2> {
 
-	public static <F, S> Pair<F, S> of(F first, S second) {
-		return new Pair<F, S>(first, second);
+	private final T1 first;
+	private final T2 second;
+
+	/**
+	 * Create new Pair.
+	 * 
+	 * @param first
+	 *            First value.
+	 * @param second
+	 *            Second value.
+	 */
+	public static <T1, T2> Pair<T1, T2> of(T1 first, T2 second) {
+		return new Pair<T1, T2>(first, second);
 	}
-	
-	public Pair(F first, S second) {
+
+	/**
+	 * Create new Pair.
+	 * 
+	 * @param first
+	 *            First value.
+	 * @param second
+	 *            Second value.
+	 */
+	public Pair(T1 first, T2 second) {
 		this.first = first;
 		this.second = second;
 	}
 
-	public F getFirst() {
+	public T1 getFirst() {
 		return first;
 	}
 
-	public S getSecond() {
+	public T2 getSecond() {
 		return second;
 	}
 
 	@Override
 	public int hashCode() {
 		final int prime = 10007;
-		int result = prime + ((first == null) ? 0 : first.hashCode());
-		result = prime * result + ((second == null) ? 0 : second.hashCode());
+		int result = prime + Objects.hashCode(first);
+		result = prime * result + Objects.hashCode(second);
 		return result;
 	}
 
@@ -39,15 +65,7 @@ public class Pair<F, S> {
 			return false;
 		}
 		Pair<?, ?> other = (Pair<?, ?>) obj;
-		if (first == null ? other.first != null : !first
-				.equals(other.first)) {
-			return false;
-		}
-		if (second == null ? other.second != null : !second
-				.equals(other.second)) {
-			return false;
-		}
-		return true;
+		return Objects.equals(first, other.first) && Objects.equals(second, other.second);
 	}
 
 	@Override

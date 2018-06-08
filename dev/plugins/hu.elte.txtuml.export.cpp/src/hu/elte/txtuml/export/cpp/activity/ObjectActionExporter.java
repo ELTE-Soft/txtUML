@@ -1,9 +1,8 @@
 package hu.elte.txtuml.export.cpp.activity;
 
-import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
-import org.eclipse.uml2.uml.Class;
 import org.eclipse.uml2.uml.CreateObjectAction;
 import org.eclipse.uml2.uml.DestroyObjectAction;
 import org.eclipse.uml2.uml.SendObjectAction;
@@ -11,25 +10,24 @@ import org.eclipse.uml2.uml.StartClassifierBehaviorAction;
 import org.eclipse.uml2.uml.StartObjectBehaviorAction;
 import org.eclipse.uml2.uml.UMLPackage;
 
-import hu.elte.txtuml.export.cpp.CppExporterUtils;
+import hu.elte.txtuml.export.cpp.IDependencyCollector;
 import hu.elte.txtuml.export.cpp.templates.activity.ActivityTemplates;
 import hu.elte.txtuml.export.cpp.templates.activity.ActivityTemplates.CreateObjectType;
-import hu.elte.txtuml.utils.Logger;
 
 class ObjectActionExporter {
 
 	private Map<CreateObjectAction, String> objectMap;
 	private OutVariableExporter tempVariableExporter;
 	private ActivityNodeResolver activityExportResolver;
-	private List<String> createdObjectsDependencies;
+	private Optional<IDependencyCollector> exportUser;
 
 	ObjectActionExporter(OutVariableExporter tempVariableExporter, Map<CreateObjectAction, String> objectMap,
-			ActivityNodeResolver activityExportResolver, List<String> createdObjectsDependencies) {
+			ActivityNodeResolver activityExportResolver, Optional<IDependencyCollector> exportUser) {
 
 		this.tempVariableExporter = tempVariableExporter;
 		this.activityExportResolver = activityExportResolver;
 		this.objectMap = objectMap;
-		this.createdObjectsDependencies = createdObjectsDependencies;
+		this.exportUser = exportUser;
 	}
 
 	public String createCreateObjectActionCode(CreateObjectAction createObjectActionNode) {
@@ -40,26 +38,20 @@ class ObjectActionExporter {
 			objectType = ActivityTemplates.CreateObjectType.Signal;
 		} else {
 			objectType = CreateObjectType.Class;
-			createdObjectsDependencies.add(type);
+			if (exportUser.isPresent()) {
+				exportUser.get().addCppOnlyDependency(type);
+			}
 		}
 
 		tempVariableExporter.exportOutputPinToMap(createObjectActionNode.getResult());
 		String name = tempVariableExporter.getRealVariableName(createObjectActionNode.getResult());
 		objectMap.put(createObjectActionNode, name);
-		
+
 		return ActivityTemplates.createObject(type, name, objectType);
 	}
 
 	public String createDestroyObjectActionCode(DestroyObjectAction node) {
-		try {
-			Class cls = (Class) node.getTarget().getType();
-			return ActivityTemplates.deleteObject(activityExportResolver.getTargetFromInputPin(node.getTarget()), 
-					CppExporterUtils.isStateMachineOwner(cls));
-		} catch (ClassCastException e) {
-			Logger.sys.error("Delete object: Cannot cast target type");
-			return "";
-		}
-
+		return ActivityTemplates.deleteObject(activityExportResolver.getTargetFromInputPin(node.getTarget()));
 	}
 
 	public String createStartObjectActionCode(StartClassifierBehaviorAction node) {

@@ -30,6 +30,8 @@ public class ProjectCreator {
 	public static final String[] PROJECT_NATURE_IDS = new String[] { TxtUMLProjectNature.NATURE_ID, JavaCore.NATURE_ID,
 			XtextProjectHelper.NATURE_ID };
 
+	public static final Path STDLIB_PATH = new Path("/hu.elte.txtuml.api.stdlib");
+	
 	public static class ProjectSettings {
 		public String executionEnviromentID;
 		public IFolder output;
@@ -99,7 +101,7 @@ public class ProjectCreator {
 		}
 	}
 
-	public static void addProjectSettings(IProject project, ProjectSettings settings) throws JavaModelException {
+	public static void addProjectSettings(IProject project, ProjectSettings settings, boolean includeStdLib) throws JavaModelException {
 		IJavaProject javaProject = JavaCore.create(project);
 
 		List<IClasspathEntry> entries = new ArrayList<IClasspathEntry>();
@@ -116,8 +118,10 @@ public class ProjectCreator {
 
 		IPackageFragmentRoot packageRootSrcGen = javaProject.getPackageFragmentRoot(settings.sourcegen);
 
-		IClasspathEntry containerEntry = JavaCore.newContainerEntry(RuntimeLibraryContainerInitializer.LIBRARY_PATH);
-		entries.add(containerEntry);
+		entries.add(JavaCore.newContainerEntry(RuntimeLibraryContainerInitializer.LIBRARY_PATH));
+		if (includeStdLib) {
+			entries.add(JavaCore.newSourceEntry(STDLIB_PATH));
+		}
 		entries.add(JavaCore.newSourceEntry(packageRoot.getPath()));
 		entries.add(JavaCore.newSourceEntry(packageRootSrcGen.getPath()));
 

@@ -32,7 +32,7 @@ class Drink {
 	}
 
 	private void updateMessage(String msg) {
-		this->(Serve.theMachine).selectAny().updateMessage(msg);
+		this->(Serve.theMachine).one().updateMessage(msg);
 	}
 
 	// state machine states
@@ -48,14 +48,14 @@ class Drink {
 		entry {
 			quantity--;
 			updateMessage("Done! Take your " + name);
-			Timer.start(this, new Done(), delay);
+			Timer.start(new Done(), this, delay);
 		}
 	}
 
 	state Refilling {
 		entry {
 			updateMessage("Refilling " + name);
-			Timer.start(this, new Done(), delay);
+			Timer.start(new Done(), this, delay);
 		}
 	}
 
@@ -63,9 +63,9 @@ class Drink {
 		entry {
 			if (quantity <= 0) {
 				quantity = 0;
-				Timer.start(this, new Empty(), delay);
+				Timer.start(new Empty(), this, delay);
 			} else {
-				Timer.start(this, new Done(), delay);
+				Timer.start(new Done(), this, delay);
 			}
 		}
 	}
@@ -73,7 +73,7 @@ class Drink {
 	state NotGiving {
 		entry {
 			updateMessage("Out of stock");
-			Timer.start(this, new Done(), delay);
+			Timer.start(new Done(), this, delay);
 		}
 	}
 
@@ -106,7 +106,7 @@ class Drink {
 		to IsThereMore;
 		trigger Done;
 		effect {
-			CashRegister register = this->(Serve.theMachine).selectAny()->(WorkTogether.theCashRegister).selectAny();
+			CashRegister register = this->(Serve.theMachine).one()->(WorkTogether.theCashRegister).one();
 			send new GiveBackCash(price) to register;
 		}
 	}

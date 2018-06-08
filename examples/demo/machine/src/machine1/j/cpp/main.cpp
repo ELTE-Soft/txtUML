@@ -6,7 +6,7 @@
 #include "User.hpp"
 #include "associations.hpp"
 #include "runtime/Action.hpp"
-#include "event.hpp"
+#include "EventStructures.hpp"
 
 int main()
 {
@@ -26,6 +26,8 @@ int main()
 	Action::start(&u2);
 
 	Action::send(&u1, ES::SharedPtr<Model::DoYourWork_EC>(new Model::DoYourWork_EC()));
+
 	rt->startRT(); // in case of single runtime, process all current messages
+	m.printSwitchOnLog();
 	return 0;
 }

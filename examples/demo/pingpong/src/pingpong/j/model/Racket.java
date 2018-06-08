@@ -66,7 +66,8 @@ public class Racket extends ModelClass {
 
 		@Override
 		public boolean guard() {
-			return Else();
+			return getTrigger(Ball.class).countdown <= 0;
+				// should be 'return Else();', but this is not supported by the C++ exporter yet
 		}
 
 		@Override

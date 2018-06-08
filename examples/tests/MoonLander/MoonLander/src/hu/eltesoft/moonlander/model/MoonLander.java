@@ -41,7 +41,7 @@ public class MoonLander extends ModelClass {
 		
 		@Override
 		public void effect() {
-			FMUEnvironment world = assoc(LanderWorld.world.class).selectAny();
+			FMUEnvironment world = assoc(LanderWorld.world.class).one();
 			Action.send(new OutputSignal(0), world);
 		}
 	}
@@ -59,7 +59,7 @@ public class MoonLander extends ModelClass {
 		@Override
 		public void effect() {
 			InputSignal signal = getTrigger(InputSignal.class);
-			FMUEnvironment world = assoc(LanderWorld.world.class).selectAny();
+			FMUEnvironment world = assoc(LanderWorld.world.class).one();
 			// better because of rounding in generated code
 			Action.send(new OutputSignal(signal.v*signal.h*signal.h/500000 - (-signal.v*signal.h/1000) - signal.v/2), world);
 		}
@@ -81,7 +81,7 @@ public class MoonLander extends ModelClass {
 		@Override
 		public void effect() {
 			InputSignal signal = getTrigger(InputSignal.class);
-			FMUEnvironment world = assoc(LanderWorld.world.class).selectAny();
+			FMUEnvironment world = assoc(LanderWorld.world.class).one();
 			// better because of rounding in generated code
 			Action.send(new OutputSignal(signal.v*signal.h*signal.h/500000 - (-signal.v*signal.h/1000) - signal.v/2), world);
 		}
@@ -99,7 +99,7 @@ public class MoonLander extends ModelClass {
 		
 		@Override
 		public void effect() {
-			FMUEnvironment world = assoc(LanderWorld.world.class).selectAny();
+			FMUEnvironment world = assoc(LanderWorld.world.class).one();
 			Action.send(new OutputSignal(0), world);
 		}
 	}
@@ -120,7 +120,7 @@ public class MoonLander extends ModelClass {
 		
 		@Override
 		public void effect() {
-			FMUEnvironment world = assoc(LanderWorld.world.class).selectAny();
+			FMUEnvironment world = assoc(LanderWorld.world.class).one();
 			Action.send(new OutputSignal(0), world);
 		}
 	}

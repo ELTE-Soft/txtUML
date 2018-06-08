@@ -54,13 +54,14 @@ class XtxtUMLTypeComputerTests {
 			class A {
 				void foo() {
 					this->(AA.a1);
+					this->(AA.a2);
 					this->(P);
 				}
 				port P {}
 			}
 			association AA {
 				A a1;
-				A a2;
+				* A a2;
 			}
 		'''.parse;
 
@@ -68,10 +69,13 @@ class XtxtUMLTypeComputerTests {
 		val op = class.members.head as TUOperation;
 		val block = op.body as XBlockExpression;
 
-		val assocEndAccess = block.expressions.head as TUClassPropertyAccessExpression;
-		assertEquals("hu.elte.txtuml.api.model.Collection<test.model.A>", assocEndAccess.resolvedTypeId);
+		val assocEndAccess1 = block.expressions.head as TUClassPropertyAccessExpression;
+		assertEquals("hu.elte.txtuml.api.model.One<test.model.A>", assocEndAccess1.resolvedTypeId);
 
-		val portAccess = block.expressions.get(1) as TUClassPropertyAccessExpression;
+		val assocEndAccess2 = block.expressions.get(1) as TUClassPropertyAccessExpression;
+		assertEquals("hu.elte.txtuml.api.model.Any<test.model.A>", assocEndAccess2.resolvedTypeId);
+
+		val portAccess = block.expressions.get(2) as TUClassPropertyAccessExpression;
 		assertEquals("test.model.A$P", portAccess.resolvedTypeId);
 	}
 

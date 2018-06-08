@@ -1,5 +1,7 @@
 package hu.elte.txtuml.api.model.execution;
 
+import java.util.Optional;
+
 import hu.elte.txtuml.api.model.Model;
 import hu.elte.txtuml.api.model.ModelClass;
 import hu.elte.txtuml.api.model.Signal;
@@ -17,7 +19,7 @@ public interface TraceListener {
 	default void executionStarted() {
 	}
 
-	default void processingSignal(ModelClass object, Signal signal) {
+	default void processingSignal(ModelClass object, Signal signal, Optional<ModelClass> sender) {
 	}
 
 	default void usingTransition(ModelClass object, Transition transition) {

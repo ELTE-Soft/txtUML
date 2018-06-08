@@ -1,7 +1,28 @@
 package hu.elte.txtuml.validation;
 
+import static hu.elte.txtuml.validation.model.ModelErrors.INVALID_ATTRIBUTE_TYPE;
+import static hu.elte.txtuml.validation.model.ModelErrors.INVALID_CHILDREN_ELEMENT;
+import static hu.elte.txtuml.validation.model.ModelErrors.INVALID_DATA_TYPE_FIELD;
+import static hu.elte.txtuml.validation.model.ModelErrors.INVALID_MODEL_CLASS_ELEMENT;
+import static hu.elte.txtuml.validation.model.ModelErrors.INVALID_MODIFIER;
+import static hu.elte.txtuml.validation.model.ModelErrors.INVALID_PARAMETER_TYPE;
+import static hu.elte.txtuml.validation.model.ModelErrors.INVALID_SIGNAL_CONTENT;
+import static hu.elte.txtuml.validation.model.ModelErrors.INVALID_TYPE_IN_MODEL;
+import static hu.elte.txtuml.validation.model.ModelErrors.MISSING_TRANSITION_SOURCE;
+import static hu.elte.txtuml.validation.model.ModelErrors.MISSING_TRANSITION_TARGET;
+import static hu.elte.txtuml.validation.model.ModelErrors.MISSING_TRANSITION_TRIGGER;
+import static hu.elte.txtuml.validation.model.ModelErrors.MUTABLE_DATA_TYPE_FIELD;
+import static hu.elte.txtuml.validation.model.ModelErrors.STATE_METHOD_PARAMETERS;
+import static hu.elte.txtuml.validation.model.ModelErrors.TRANSITION_METHOD_PARAMETERS;
+import static hu.elte.txtuml.validation.model.ModelErrors.TRIGGER_ON_INITIAL_TRANSITION;
+import static hu.elte.txtuml.validation.model.ModelErrors.UNKNOWN_CLASS_IN_STATE;
+import static hu.elte.txtuml.validation.model.ModelErrors.UNKNOWN_STATE_METHOD;
+import static hu.elte.txtuml.validation.model.ModelErrors.UNKNOWN_TRANSITION_METHOD;
+import static hu.elte.txtuml.validation.model.ModelErrors.WRONG_COMPOSITION_ENDS;
+import static hu.elte.txtuml.validation.model.ModelErrors.WRONG_NUMBER_OF_ASSOCIATION_ENDS;
+import static hu.elte.txtuml.validation.model.ModelErrors.WRONG_TYPE_IN_ASSOCIATION;
 import static org.mockito.Matchers.anyInt;
-import static org.mockito.Matchers.isA;
+import static org.mockito.Matchers.argThat;
 import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -12,35 +33,24 @@ import static org.mockito.Mockito.when;
 import java.io.File;
 import java.io.IOException;
 
+import org.eclipse.core.resources.IResource;
+import org.eclipse.jdt.core.JavaModelException;
+import org.eclipse.jdt.core.compiler.ReconcileContext;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.hamcrest.Description;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentMatcher;
 
 import hu.elte.txtuml.utils.jdt.SharedUtils;
-import hu.elte.txtuml.validation.problems.association.WrongCompositionEnds;
-import hu.elte.txtuml.validation.problems.association.WrongNumberOfAssociationEnds;
-import hu.elte.txtuml.validation.problems.association.WrongTypeInAssociation;
-import hu.elte.txtuml.validation.problems.datatype.InvalidDataTypeField;
-import hu.elte.txtuml.validation.problems.datatype.MutableDataTypeField;
-import hu.elte.txtuml.validation.problems.general.InvalidChildrenElement;
-import hu.elte.txtuml.validation.problems.general.InvalidModifier;
-import hu.elte.txtuml.validation.problems.general.InvalidParameterType;
-import hu.elte.txtuml.validation.problems.general.InvalidTypeInModel;
-import hu.elte.txtuml.validation.problems.modelclass.InvalidAttributeType;
-import hu.elte.txtuml.validation.problems.modelclass.InvalidModelClassElement;
-import hu.elte.txtuml.validation.problems.signal.InvalidSignalContent;
-import hu.elte.txtuml.validation.problems.state.StateMethodParameters;
-import hu.elte.txtuml.validation.problems.state.UnknownClassInState;
-import hu.elte.txtuml.validation.problems.state.UnknownStateMethod;
-import hu.elte.txtuml.validation.problems.transition.MissingTransitionSource;
-import hu.elte.txtuml.validation.problems.transition.MissingTransitionTarget;
-import hu.elte.txtuml.validation.problems.transition.MissingTransitionTrigger;
-import hu.elte.txtuml.validation.problems.transition.TransitionMethodParameters;
-import hu.elte.txtuml.validation.problems.transition.TriggerOnInitialTransition;
-import hu.elte.txtuml.validation.problems.transition.UnknownTransitionMethod;
-import hu.elte.txtuml.validation.visitors.ModelVisitor;
+import hu.elte.txtuml.validation.common.ProblemCollector;
+import hu.elte.txtuml.validation.common.SourceInfo;
+import hu.elte.txtuml.validation.model.JtxtUMLModelCompilationParticipant;
+import hu.elte.txtuml.validation.model.ModelErrors;
+import hu.elte.txtuml.validation.model.ModelValidationError;
+import hu.elte.txtuml.validation.model.visitors.ModelVisitor;
 
 public class ModelTest {
 
@@ -57,7 +67,7 @@ public class ModelTest {
 
 	@Before
 	public void before() {
-		mockCollector = mock(ProblemCollector.class);
+		mockCollector = mock(ModelProblemCollector.class);
 		SourceInfo sourceInfo = mock(SourceInfo.class);
 		when(mockCollector.getSourceInfo()).thenReturn(sourceInfo);
 		when(sourceInfo.getOriginatingFileName()).thenReturn("");
@@ -70,7 +80,7 @@ public class ModelTest {
 
 		compilationUnit.accept(new ModelVisitor(mockCollector));
 
-		verify(mockCollector).report(isA(InvalidTypeInModel.class));
+		verify(mockCollector).report(is(INVALID_TYPE_IN_MODEL));
 
 		checkNoOtherErrorRaised();
 	}
@@ -81,7 +91,7 @@ public class ModelTest {
 
 		compilationUnit.accept(new ModelVisitor(mockCollector));
 
-		verify(mockCollector, times(2)).report(isA(InvalidParameterType.class));
+		verify(mockCollector, times(4)).report(is(INVALID_PARAMETER_TYPE));
 
 		checkNoOtherErrorRaised();
 	}
@@ -92,7 +102,7 @@ public class ModelTest {
 
 		compilationUnit.accept(new ModelVisitor(mockCollector));
 
-		verify(mockCollector).report(isA(InvalidAttributeType.class));
+		verify(mockCollector).report(is(INVALID_ATTRIBUTE_TYPE));
 
 		checkNoOtherErrorRaised();
 	}
@@ -103,18 +113,27 @@ public class ModelTest {
 
 		compilationUnit.accept(new ModelVisitor(mockCollector));
 
-		verify(mockCollector, times(2)).report(isA(InvalidModifier.class));
+		verify(mockCollector, times(2)).report(is(INVALID_MODIFIER));
 
 		checkNoOtherErrorRaised();
 	}
 
+	@Test
+	public void testExternalsAreOmitted() throws Exception {
+		CompilationUnit compilationUnit = prepareAST("ExternalsAreOmitted.java");
+
+		compilationUnit.accept(new ModelVisitor(mockCollector));
+
+		checkNoOtherErrorRaised();
+	}
+	
 	@Test
 	public void testFieldType() throws Exception {
 		CompilationUnit compilationUnit = prepareAST("InvalidFieldType.java");
 
 		compilationUnit.accept(new ModelVisitor(mockCollector));
 
-		verify(mockCollector, times(2)).report(isA(InvalidAttributeType.class));
+		verify(mockCollector, times(3)).report(is(INVALID_ATTRIBUTE_TYPE));
 
 		checkNoOtherErrorRaised();
 	}
@@ -125,7 +144,7 @@ public class ModelTest {
 
 		compilationUnit.accept(new ModelVisitor(mockCollector));
 
-		verify(mockCollector, times(2)).report(isA(InvalidAttributeType.class));
+		verify(mockCollector, times(2)).report(is(INVALID_ATTRIBUTE_TYPE));
 
 		checkNoOtherErrorRaised();
 	}
@@ -136,7 +155,7 @@ public class ModelTest {
 
 		compilationUnit.accept(new ModelVisitor(mockCollector));
 
-		verify(mockCollector, times(2)).report(isA(InvalidModelClassElement.class));
+		verify(mockCollector, times(2)).report(is(INVALID_MODEL_CLASS_ELEMENT));
 
 		checkNoOtherErrorRaised();
 	}
@@ -147,7 +166,7 @@ public class ModelTest {
 
 		compilationUnit.accept(new ModelVisitor(mockCollector));
 
-		verify(mockCollector, times(1)).report(isA(InvalidSignalContent.class));
+		verify(mockCollector, times(1)).report(is(INVALID_SIGNAL_CONTENT));
 
 		checkNoOtherErrorRaised();
 	}
@@ -158,7 +177,7 @@ public class ModelTest {
 
 		compilationUnit.accept(new ModelVisitor(mockCollector));
 
-		verify(mockCollector, times(3)).report(isA(WrongNumberOfAssociationEnds.class));
+		verify(mockCollector, times(3)).report(is(WRONG_NUMBER_OF_ASSOCIATION_ENDS));
 
 		checkNoOtherErrorRaised();
 	}
@@ -169,7 +188,7 @@ public class ModelTest {
 
 		compilationUnit.accept(new ModelVisitor(mockCollector));
 
-		verify(mockCollector, times(2)).report(isA(WrongTypeInAssociation.class));
+		verify(mockCollector, times(2)).report(is(WRONG_TYPE_IN_ASSOCIATION));
 
 		checkNoOtherErrorRaised();
 	}
@@ -180,7 +199,7 @@ public class ModelTest {
 
 		compilationUnit.accept(new ModelVisitor(mockCollector));
 
-		verify(mockCollector, times(2)).report(isA(WrongCompositionEnds.class));
+		verify(mockCollector, times(2)).report(is(WRONG_COMPOSITION_ENDS));
 
 		checkNoOtherErrorRaised();
 	}
@@ -191,9 +210,9 @@ public class ModelTest {
 
 		compilationUnit.accept(new ModelVisitor(mockCollector));
 
-		verify(mockCollector).report(isA(InvalidChildrenElement.class));
-		verify(mockCollector).report(isA(UnknownStateMethod.class));
-		verify(mockCollector).report(isA(StateMethodParameters.class));
+		verify(mockCollector).report(is(INVALID_CHILDREN_ELEMENT));
+		verify(mockCollector).report(is(UNKNOWN_STATE_METHOD));
+		verify(mockCollector).report(is(STATE_METHOD_PARAMETERS));
 
 		checkNoOtherErrorRaised();
 	}
@@ -204,8 +223,8 @@ public class ModelTest {
 
 		compilationUnit.accept(new ModelVisitor(mockCollector));
 
-		verify(mockCollector, times(3)).report(isA(InvalidChildrenElement.class));
-		verify(mockCollector).report(isA(UnknownClassInState.class));
+		verify(mockCollector, times(3)).report(is(INVALID_CHILDREN_ELEMENT));
+		verify(mockCollector).report(is(UNKNOWN_CLASS_IN_STATE));
 
 		checkNoOtherErrorRaised();
 	}
@@ -216,8 +235,8 @@ public class ModelTest {
 
 		compilationUnit.accept(new ModelVisitor(mockCollector));
 
-		verify(mockCollector).report(isA(UnknownTransitionMethod.class));
-		verify(mockCollector).report(isA(TransitionMethodParameters.class));
+		verify(mockCollector).report(is(UNKNOWN_TRANSITION_METHOD));
+		verify(mockCollector).report(is(TRANSITION_METHOD_PARAMETERS));
 
 		checkNoOtherErrorRaised();
 	}
@@ -228,32 +247,32 @@ public class ModelTest {
 
 		compilationUnit.accept(new ModelVisitor(mockCollector));
 
-		verify(mockCollector).report(isA(TriggerOnInitialTransition.class));
-		verify(mockCollector).report(isA(MissingTransitionSource.class));
-		verify(mockCollector).report(isA(MissingTransitionTarget.class));
-		verify(mockCollector).report(isA(MissingTransitionTrigger.class));
+		verify(mockCollector).report(is(TRIGGER_ON_INITIAL_TRANSITION));
+		verify(mockCollector).report(is(MISSING_TRANSITION_SOURCE));
+		verify(mockCollector).report(is(MISSING_TRANSITION_TARGET));
+		verify(mockCollector).report(is(MISSING_TRANSITION_TRIGGER));
 
 		checkNoOtherErrorRaised();
 	}
-	
+
 	@Test
 	public void testDataTypeFieldNotFinal() throws Exception {
 		CompilationUnit compilationUnit = prepareAST("DataTypeFieldNotFinal.java");
 
 		compilationUnit.accept(new ModelVisitor(mockCollector));
 
-		verify(mockCollector).report(isA(MutableDataTypeField.class));
+		verify(mockCollector).report(is(MUTABLE_DATA_TYPE_FIELD));
 
 		checkNoOtherErrorRaised();
 	}
-	
+
 	@Test
 	public void testDataTypeInvalidFieldType() throws Exception {
 		CompilationUnit compilationUnit = prepareAST("DataTypeInvalidFieldType.java");
 
 		compilationUnit.accept(new ModelVisitor(mockCollector));
 
-		verify(mockCollector, times(2)).report(isA(InvalidDataTypeField.class));
+		verify(mockCollector, times(2)).report(is(INVALID_DATA_TYPE_FIELD));
 
 		checkNoOtherErrorRaised();
 	}
@@ -283,6 +302,32 @@ public class ModelTest {
 		parser.setEnvironment(classpath, sourcepath, encodings, true);
 
 		return (CompilationUnit) parser.createAST(null);
+	}
+
+	private static ModelValidationError is(ModelErrors type) {
+		return argThat(new ArgumentMatcher<ModelValidationError>() {
+			@Override
+			public void describeTo(Description description) {
+				description.appendText("Model error of type " + type + " required.");
+			}
+
+			@Override
+			public boolean matches(Object argument) {
+				return ((ModelValidationError) argument).getType() == type;
+			}
+		});
+	}
+
+	public static class ModelProblemCollector extends ProblemCollector {
+
+		public ModelProblemCollector(CompilationUnit unit, IResource resource) throws JavaModelException {
+			super(JtxtUMLModelCompilationParticipant.JTXTUML_MODEL_MARKER_TYPE, unit, resource);
+		}
+
+		public ModelProblemCollector(ReconcileContext context) throws JavaModelException {
+			super(JtxtUMLModelCompilationParticipant.JTXTUML_MODEL_MARKER_TYPE, context);
+		}
+
 	}
 
 }

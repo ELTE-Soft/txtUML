@@ -8,7 +8,7 @@ package hu.elte.txtuml.api.model.error;
  * overview on modeling in JtxtUML.
  */
 @SuppressWarnings("serial")
-public class ObjectCreationError extends Error {
+public class ObjectCreationError extends ModelError {
 
 	public ObjectCreationError(Throwable cause) {
 		super("The creation of a model object was impossible with the given arguments.", cause);

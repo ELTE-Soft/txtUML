@@ -26,14 +26,14 @@ public class StateMachineErrorTests extends UnitTestsBase {
 			Action.send(new Sig0(), overlappingFromChoice);
 		});
 
-		boolean msg1 = executionAsserter
-				.checkErrors(x -> x.guardsOfTransitionsAreOverlapping(overlappingFromChoice.new T1(),
-						overlappingFromChoice.new T2(), overlappingFromChoice.new C()));
-		boolean msg2 = executionAsserter
-				.checkErrors(x -> x.guardsOfTransitionsAreOverlapping(overlappingFromChoice.new T2(),
-						overlappingFromChoice.new T1(), overlappingFromChoice.new C()));
+		boolean msg1 = hasErrors(x -> x.guardsOfTransitionsAreOverlapping(overlappingFromChoice.new T1(),
+				overlappingFromChoice.new T2(), overlappingFromChoice.new C()));
+		boolean msg2 = hasErrors(x -> x.guardsOfTransitionsAreOverlapping(overlappingFromChoice.new T2(),
+				overlappingFromChoice.new T1(), overlappingFromChoice.new C()));
 
 		Assert.assertTrue(msg1 || msg2);
+
+		assertNoWarnings();
 	}
 
 	@Test
@@ -45,13 +45,14 @@ public class StateMachineErrorTests extends UnitTestsBase {
 			Action.send(new Sig0(), overlapping);
 		});
 
-		boolean msg1 = executionAsserter.checkErrors(x -> x.guardsOfTransitionsAreOverlapping(overlapping.new T1(),
-				overlapping.new T2(), overlapping.new S1()));
-		boolean msg2 = executionAsserter.checkErrors(x -> x.guardsOfTransitionsAreOverlapping(overlapping.new T2(),
-				overlapping.new T1(), overlapping.new S1()));
+		boolean msg1 = hasErrors(x -> x.guardsOfTransitionsAreOverlapping(overlapping.new T1(), overlapping.new T2(),
+				overlapping.new S1()));
+		boolean msg2 = hasErrors(x -> x.guardsOfTransitionsAreOverlapping(overlapping.new T2(), overlapping.new T1(),
+				overlapping.new S1()));
 
 		Assert.assertTrue(msg1 || msg2);
 
+		assertNoWarnings();
 	}
 
 	@Test
@@ -63,7 +64,8 @@ public class StateMachineErrorTests extends UnitTestsBase {
 			Action.send(new Sig0(2), noTransitionFromChoice);
 		});
 
-		executionAsserter.assertErrors(x -> x.noTransitionFromChoice(noTransitionFromChoice.new C()));
+		assertErrors(x -> x.noTransitionFromChoice(noTransitionFromChoice.new C()));
+		assertNoWarnings();
 	}
 
 	@Test
@@ -75,8 +77,8 @@ public class StateMachineErrorTests extends UnitTestsBase {
 			Action.send(new Sig0(), multipleElse);
 		});
 
-		executionAsserter.assertErrors(x -> x.moreThanOneElseTransitionsFromChoice(multipleElse.new C()));
-
+		assertErrors(x -> x.moreThanOneElseTransitionsFromChoice(multipleElse.new C()));
+		assertNoWarnings();
 	}
 
 }

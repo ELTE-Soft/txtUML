@@ -30,7 +30,7 @@ public class Consumer extends ModelClass {
 
 		@Override
 		public void entry() {
-			Storage storage = Consumer.this.assoc(Consumption.storage.class).selectAny();
+			Storage storage = Consumer.this.assoc(Consumption.storage.class).one();
 			Action.unlink(Consumption.consumer.class, Consumer.this, Consumption.storage.class, storage);
 			Action.delete(Consumer.this);
 		}
@@ -55,7 +55,7 @@ public class Consumer extends ModelClass {
 
 		@Override
 		public void effect() {
-			Storage storage = Consumer.this.assoc(Consumption.storage.class).selectAny();
+			Storage storage = Consumer.this.assoc(Consumption.storage.class).one();
 			Action.link(Request.storage.class, storage, Request.consumer.class, Consumer.this);
 			Action.send(new RequestNotification(), storage);
 		}

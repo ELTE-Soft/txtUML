@@ -1,5 +1,5 @@
 #include "runtime.hpp"
-#include "istatemachine.hpp"
+#include "StateMachineOwner.hpp"
 #include "ESRoot/Types.hpp"
 #include "ievent.hpp"
 
@@ -126,4 +126,10 @@ void ConfiguredThreadedRT::setConfiguration(ESContainer::FixedArray<ES::SharedPt
 }
 
 }
+
+
+// Constants
+
+int Model::PortType::portIdCounter = 1;
+Model::PortType Model::PortType::AnyPort;
 

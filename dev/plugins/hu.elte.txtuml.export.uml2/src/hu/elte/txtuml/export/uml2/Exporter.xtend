@@ -123,6 +123,10 @@ import org.eclipse.uml2.uml.PackageableElement
 import org.eclipse.uml2.uml.PrimitiveType
 import org.eclipse.uml2.uml.Type
 import org.eclipse.uml2.uml.VisibilityKind
+import hu.elte.txtuml.export.uml2.activity.expression.PortReferenceExporter
+import hu.elte.txtuml.export.uml2.activity.apicalls.SendToPortActionExporter
+import hu.elte.txtuml.export.uml2.activity.apicalls.AssemblyConnectExporter
+import hu.elte.txtuml.export.uml2.activity.apicalls.DelegationConnectExporter
 
 /** An exporter is able to fully or partially export a given element. 
  * Partial export only creates the UML object itself, while full export also creates its contents.
@@ -241,6 +245,7 @@ abstract class Exporter<S, A, R extends Element> extends BaseExporter<S, A, R> {
 					new LogActionExporter(this),
 					new CreateLinkActionExporter(this),
 					new SendActionExporter(this),
+					new SendToPortActionExporter(this),
 					new UnlinkActionExporter(this),
 					new CreateActionExporter(this),
 					new DeleteActionExporter(this),
@@ -248,6 +253,9 @@ abstract class Exporter<S, A, R extends Element> extends BaseExporter<S, A, R> {
 					new SelectionExporter(this),
 					new CountExporter(this),
 					new GetSignalExporter(this),
+					new PortReferenceExporter(this),
+					new AssemblyConnectExporter(this),
+					new DelegationConnectExporter(this),
 					new IgnoredAPICallExporter(this)
 				]
 			ConstructorInvocation:
@@ -350,7 +358,7 @@ abstract class Exporter<S, A, R extends Element> extends BaseExporter<S, A, R> {
 
 	def getUnlimitedNaturalType() { getImportedElement("UnlimitedNatural") as PrimitiveType }
 
-	def getCollectionType() { getImportedElement("Collection") as Class }
+	def getCollectionType() { getImportedElement("GeneralCollection") as Class }
 
 	override def Element getImportedElement(String name) { parent.getImportedElement(name) }
 

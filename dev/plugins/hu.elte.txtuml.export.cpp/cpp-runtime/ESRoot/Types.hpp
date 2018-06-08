@@ -8,7 +8,7 @@
 
 namespace Model
 {
-class IStateMachine;
+class StateMachineOwner;
 
 }
 
@@ -38,6 +38,24 @@ class ThreadSafeQueue;
 template<typename T, typename Compare>
 class SpecialPriorityQueue;
 
+class ModelObject;
+
+}
+
+namespace Model
+{
+
+template<typename ProvidedInf, typename RequiredInf>
+class IPort;
+
+template <typename ProvidedInf, typename RequiredInf>
+class Port;
+
+template <typename ProvidedInf, typename RequiredInf>
+class BehaviorPort;
+
+
+
 }
 
 
@@ -53,8 +71,15 @@ namespace ES
 	using EventRef = SharedPtr<Model::IEvent<Model::EventBase>>;
 	using EventConstRef = SharedPtr<const Model::IEvent<Model::EventBase>>;
 
-	using StateMachineRef = Model::IStateMachine*;
-	using StateMachineConstRef = Model::IStateMachine const *;
+	using StateMachineRef = Model::StateMachineOwner*;
+	using StateMachineConstRef = Model::StateMachineOwner const *;
+	using ModelObjectRef = ES::ModelObject*;
+
+    template<typename ProvidedInf, typename RequiredInf>
+    using IPortRef = ES::SharedPtr<Model::IPort<ProvidedInf,RequiredInf>>;
+
+    template<typename ProvidedInf, typename RequiredInf>
+    using PortRef = ES::SharedPtr<Model::Port<ProvidedInf,RequiredInf>>;
 
 	template<typename RuntimeType>
 	using RuntimePtr = SharedPtr<Execution::IRuntime<RuntimeType>>;
@@ -65,6 +90,31 @@ namespace ES
 
 	using TimerPtr = SharedPtr<Timer>;
 
+}
+
+namespace Model 
+{
+	struct IConnection;
+	using ConnectionPtr = ES::SharedPtr<Model::IConnection>;
+	
+	class PortType {
+	public:
+		static int portIdCounter;
+		static PortType AnyPort;
+
+	public:
+		PortType () : portTypeId (portIdCounter++) {}
+		PortType (const PortType& o) = default;
+		PortType& operator=(const PortType& o) = default;
+
+		int getPortTypeId () const { return portTypeId; }
+		bool operator==(const PortType& o) const { return portTypeId == o.getPortTypeId (); }
+		bool operator!=(const PortType& o) const { return !(portTypeId == o.getPortTypeId ()); }
+
+	private:
+		int portTypeId;
+
+	};
 
 }
 

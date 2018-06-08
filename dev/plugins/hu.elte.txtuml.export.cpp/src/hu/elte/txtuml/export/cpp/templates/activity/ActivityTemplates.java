@@ -1,9 +1,10 @@
 package hu.elte.txtuml.export.cpp.templates.activity;
 
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 import hu.elte.txtuml.export.cpp.templates.GenerationNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.ActionNames;
@@ -12,6 +13,7 @@ import hu.elte.txtuml.export.cpp.templates.GenerationNames.PointerAndMemoryNames
 import hu.elte.txtuml.export.cpp.templates.PrivateFunctionalTemplates;
 import hu.elte.txtuml.export.cpp.templates.statemachine.EventTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.LinkTemplates;
+import hu.elte.txtuml.export.cpp.templates.structual.ObjectDeclDefTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.LinkTemplates.LinkFunctionType;
 import hu.elte.txtuml.utils.Pair;
 
@@ -50,8 +52,15 @@ public class ActivityTemplates {
 
 	public static String linkObjects(String firstObjectName, String secondObjectName, String associationName,
 			String endPoint1, String endPoint2, LinkFunctionType linkType) {
-		return ActionNames.ActionFunctionsNamespace + "::" + LinkTemplates.getLinkFunctionName(linkType) + "<"
-				+ "typename " + associationName + "::" + endPoint1 + ",typename " + associationName + "::" + endPoint2
+		
+		String secondTemplateArgument = "typename " + associationName + "::" + endPoint2;
+
+		if(linkType == LinkFunctionType.DelegeateConnect) {
+			secondTemplateArgument = endPoint2;
+		}
+		
+		return  LinkTemplates.getLinkFunctionName(linkType) + "<"
+				+ "typename " + associationName + "::" + endPoint1 + "," + secondTemplateArgument
 				+ ">" + "(" + firstObjectName + "," + secondObjectName + ");\n";
 	}
 
@@ -125,18 +134,10 @@ public class ActivityTemplates {
 	public static String startObject(String objectVariable) {
 		return ActionNames.ActionStart + "(" + objectVariable + ");\n";
 	}
-
-	public static String deleteObject(String objectVariable, Boolean isStateMachineOwner) {
-		StringBuilder source = new StringBuilder("");
-		if (!isStateMachineOwner) {
-			source.append(PointerAndMemoryNames.DeleteObject + " " + objectVariable + ";\n");
-
-		} else {
-			source.append(operationCallOnPointerVariable(objectVariable, 
-					GenerationNames.StateMachineMethodNames.DeleteStatemachine, Collections.emptyList()));
-		}
+	
+	public static String deleteObject(String objectVariable) {
+		return blockStatement(operationCall(ActionNames.ActionDelete, Arrays.asList(objectVariable)));
 		
-		return source.toString();
 	}
 
 	public static String simpleCondControlStruct(String control, String cond, String body) {
@@ -181,7 +182,7 @@ public class ActivityTemplates {
 			List<String> parameters) {
 
 		if (objectType.equals(CreateObjectType.Signal)) {
-			return GenerationNames.signalPointerType(typeName) + " " + objName + ";\n";
+			return EventTemplates.eventPtr(typeName) + " " + objName + ";\n";
 		} else {
 			return GenerationNames.pointerType(typeName) + " " + objName + " " + ReplaceSimpleTypeOp + " "
 					+ PointerAndMemoryNames.NullPtr + ";\n";
@@ -192,13 +193,13 @@ public class ActivityTemplates {
 	public static String constructorCall(String ownerName, String typeName, CreateObjectType objectType,
 			List<String> parameters) {
 		if (objectType.equals(CreateObjectType.Signal)) {
-			return ownerName + ReplaceSimpleTypeOp + GenerationNames.signalPointerType(typeName) + "("
-					+ PointerAndMemoryNames.MemoryAllocator + " " + PrivateFunctionalTemplates.signalType(typeName)
-					+ "(" + operationCallParamList(parameters) + "))";
+			return ownerName + ReplaceSimpleTypeOp + EventTemplates.eventPtr(typeName) + "("
+					+ PointerAndMemoryNames.MemoryAllocator + " " + EventTemplates.signalType(typeName) + "("
+					+ operationCallParamList(parameters) + "))";
 		} else {
 			if (ownerName != PointerAndMemoryNames.Self) {
-				return ownerName + ReplaceSimpleTypeOp + PointerAndMemoryNames.MemoryAllocator + " " + typeName + "("
-						+ operationCallParamList(parameters) + ")";
+				return ObjectDeclDefTemplates.setAllocatedObjectToObjectVariable(typeName, Optional.empty(),
+						ownerName, Optional.of(parameters), false);
 			} else {
 				return ownerName + PointerAndMemoryNames.PointerAccess + GenerationNames.initFunctionName(typeName)
 						+ "(" + operationCallParamList(parameters) + ")";
@@ -230,12 +231,11 @@ public class ActivityTemplates {
 
 	public static String getRealSignal(String signalType, String signalVariableName) {
 		StringBuilder source = new StringBuilder("");
-		source.append(GenerationNames.signalPointerType(signalType) + " ");
+		source.append(EventTemplates.eventPtr(signalType) + " ");
 		source.append(signalVariableName + " = ");
-		source.append(GenerationNames.signalPointerType(signalType) + "(");
-		source.append(PointerAndMemoryNames.MemoryAllocator + " " + PrivateFunctionalTemplates.signalType(signalType));
-		source.append(
-				"(*" + GenerationNames.StaticCast + "<" + PrivateFunctionalTemplates.signalType(signalType) + "*>");
+		source.append(EventTemplates.eventPtr(signalType) + "(");
+		source.append(PointerAndMemoryNames.MemoryAllocator + " " + EventTemplates.signalType(signalType));
+		source.append("(*" + GenerationNames.StaticCast + "<" + EventTemplates.signalType(signalType) + "*>");
 		source.append("(" + EventTemplates.EventFParamName + ".get())));\n");
 		return source.toString();
 	}

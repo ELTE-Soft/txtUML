@@ -5,8 +5,8 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 
-import hu.elte.txtuml.export.papyrus.preferences.PreferencesManager;
 import hu.elte.txtuml.export.papyrus.preferences.PreferencesUI;
+import hu.elte.txtuml.utils.eclipse.preferences.PreferencesManager;
 
 /**
  * A PreferencesPage for the visualization wizard.

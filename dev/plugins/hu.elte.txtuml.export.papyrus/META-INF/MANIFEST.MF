@@ -4,7 +4,6 @@ Bundle-Name: txtUML Papyrus Visualizer
 Bundle-SymbolicName: hu.elte.txtuml.export.papyrus;singleton:=true
 Bundle-Version: 0.6.0.qualifier
 Bundle-Vendor: ELTE
-Bundle-Activator: hu.elte.txtuml.export.papyrus.Activator
 Require-Bundle: 
  hu.elte.txtuml.layout.visualizer,
  hu.elte.txtuml.layout.export,

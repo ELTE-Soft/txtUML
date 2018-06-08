@@ -3,6 +3,8 @@ package airport.xmodel;
 import hu.elte.txtuml.api.model.Collection
 import java.util.Iterator
 import hu.elte.txtuml.api.stdlib.timers.Timer
+import hu.elte.txtuml.api.model.Any;
+import hu.elte.txtuml.api.model.OneToAny;
 
 class Tower {
 	private int id;
@@ -58,7 +60,7 @@ class Tower {
 		effect {			
 			// Check taking off
 			if(checkWeather()) {
-				Plane firstPlane = Tower.this->(TheFirstWaitingTakingOffPlane.thePlane).selectAny();
+				Plane firstPlane = Tower.this->(TheFirstWaitingTakingOffPlane.thePlane).one();
 				
 				while(firstPlane != null) {
 					
@@ -76,7 +78,7 @@ class Tower {
 					
 					unlink(TheFirstWaitingTakingOffPlane.thePlane, thePlane, TheFirstWaitingTakingOffPlane.theTower, this);
 					
-					Plane nextPlane = thePlane->(TheNextWaitingTakingOffPlane.toPlane).selectAny();
+					Plane nextPlane = thePlane->(TheNextWaitingTakingOffPlane.toPlane).one();
 					if(nextPlane != null) {
 						unlink(TheNextWaitingTakingOffPlane.fromPlane, thePlane, TheNextWaitingTakingOffPlane.toPlane, nextPlane);
 						link(TheFirstWaitingTakingOffPlane.thePlane, nextPlane, TheFirstWaitingTakingOffPlane.theTower, this);
@@ -92,7 +94,7 @@ class Tower {
 			// Check landing
 			if(searchFirstFreeRunway() != null) {
 			
-				Plane firstPlane = Tower.this->(TheFirstWaitingLandingPlane.thePlane).selectAny();
+				Plane firstPlane = Tower.this->(TheFirstWaitingLandingPlane.thePlane).one();
 				
 				if(firstPlane != null) {
 					
@@ -112,7 +114,7 @@ class Tower {
 					
 					unlink(TheFirstWaitingLandingPlane.thePlane, thePlane, TheFirstWaitingLandingPlane.theTower, this);
 					
-					Plane nextPlane = thePlane->(TheNextWaitingLandingPlane.toPlane).selectAny();
+					Plane nextPlane = thePlane->(TheNextWaitingLandingPlane.toPlane).one();
 					if(nextPlane != null) {
 						unlink(TheNextWaitingLandingPlane.fromPlane, thePlane, TheNextWaitingLandingPlane.toPlane, nextPlane);
 						link(TheFirstWaitingLandingPlane.thePlane, nextPlane, TheFirstWaitingLandingPlane.theTower, this);
@@ -121,7 +123,7 @@ class Tower {
 			}
 
 			// And repeat it
-			Timer.start(this, new SignalTowerWorks(), 50); // It send a signal in every 30 sec
+			Timer.start(new SignalTowerWorks(), this, 50); // It send a signal in every 30 sec
 		}
 	}
 	
@@ -135,7 +137,7 @@ class Tower {
 			send new SignalPleaseWait() to thePlane;
 			
 			// New version
-			Plane firstPlane = Tower.this->(TheFirstWaitingLandingPlane.thePlane).selectAny();
+			Plane firstPlane = Tower.this->(TheFirstWaitingLandingPlane.thePlane).one();
 			
 			if(firstPlane == null) {
 				// There isn't any waiting landing planes
@@ -149,7 +151,7 @@ class Tower {
 				
 				while(nextPlane != null) {
 					actPlane = nextPlane;
-					nextPlane = actPlane->(TheNextWaitingLandingPlane.toPlane).selectAny();
+					nextPlane = actPlane->(TheNextWaitingLandingPlane.toPlane).one();
 				}
 				
 				Plane lastPlane = actPlane;
@@ -174,7 +176,7 @@ class Tower {
 			send new SignalPleaseWait() to thePlane;
 			
 			// New version
-			Plane firstPlane = Tower.this->(TheFirstWaitingTakingOffPlane.thePlane).selectAny();
+			Plane firstPlane = Tower.this->(TheFirstWaitingTakingOffPlane.thePlane).one();
 			
 			if(firstPlane == null) {
 				// There isn't any waiting landing planes
@@ -188,7 +190,7 @@ class Tower {
 				
 				while(nextPlane != null) {
 					actPlane = nextPlane;
-					nextPlane = actPlane->(TheNextWaitingTakingOffPlane.toPlane).selectAny();
+					nextPlane = actPlane->(TheNextWaitingTakingOffPlane.toPlane).one();
 				}
 				
 				Plane lastPlane = actPlane;
@@ -263,7 +265,7 @@ class Tower {
 			
 			Plane thePlane = findThePlane(trigger.id);
 			
-			Plane firstPlane = Tower.this->(TheFirstWaitingLandingPlane.thePlane).selectAny();	
+			Plane firstPlane = Tower.this->(TheFirstWaitingLandingPlane.thePlane).one();	
 			
 			// Find the plane
 			Plane previousPlane = null;
@@ -271,11 +273,11 @@ class Tower {
 			
 			while(actualPlane != thePlane) {
 				previousPlane = actualPlane;
-				actualPlane = actualPlane->(TheNextWaitingLandingPlane.toPlane).selectAny();
+				actualPlane = actualPlane->(TheNextWaitingLandingPlane.toPlane).one();
 			}
 			
 			
-			Plane nextPlane = actualPlane->(TheNextWaitingLandingPlane.toPlane).selectAny();
+			Plane nextPlane = actualPlane->(TheNextWaitingLandingPlane.toPlane).one();
 				
 			
 			if(actualPlane == firstPlane) {
@@ -312,7 +314,7 @@ class Tower {
 			
 			Plane thePlane = findThePlane(trigger.id);
 			
-			Plane firstPlane = Tower.this->(TheFirstWaitingTakingOffPlane.thePlane).selectAny();	
+			Plane firstPlane = Tower.this->(TheFirstWaitingTakingOffPlane.thePlane).one();	
 			
 			// Find the plane
 			Plane previousPlane = null;
@@ -320,11 +322,11 @@ class Tower {
 			
 			while(actualPlane != thePlane) {
 				previousPlane = actualPlane;
-				actualPlane = actualPlane->(TheNextWaitingTakingOffPlane.toPlane).selectAny();
+				actualPlane = actualPlane->(TheNextWaitingTakingOffPlane.toPlane).one();
 			}
 			
 			
-			Plane nextPlane = actualPlane->(TheNextWaitingTakingOffPlane.toPlane).selectAny();
+			Plane nextPlane = actualPlane->(TheNextWaitingTakingOffPlane.toPlane).one();
 				
 			
 			if(actualPlane == firstPlane) {
@@ -371,7 +373,7 @@ class Tower {
 			
 			if(oldWeatherStatus == true && checkWeather() == false) {
 				// Warn the planes
-				Collection<Plane> allPlane = Tower.this->(PlaneTowerUsage.thePlane);
+				Any<Plane> allPlane = Tower.this->(PlaneTowerUsage.thePlane);
 			
 				for(Plane a : allPlane) {
 					send new SignalDenyTakingOff() to a;	
@@ -399,7 +401,7 @@ class Tower {
 		private Plane findThePlane(int id) {
 			Plane ret;
 			
-			Collection<Plane> allPlane = Tower.this->(PlaneTowerUsage.thePlane);
+			Any<Plane> allPlane = Tower.this->(PlaneTowerUsage.thePlane);
 			
 			for(Plane a : allPlane) {
 				if(a.getId() == id) {
@@ -417,7 +419,7 @@ class Tower {
 		private Runway searchFirstFreeRunway() {
 			Runway ret = null;
 			
-			Collection<Runway> allRunWay = Tower.this->(TowerRunwayUsage.theRunway);
+			OneToAny<Runway> allRunWay = Tower.this->(TowerRunwayUsage.theRunway);
 			for (Runway runway : allRunWay) {
 				if(runway.getIsFree()) {
 					ret = runway;	
@@ -425,13 +427,13 @@ class Tower {
 			}
 			return ret;
 		}
-		
+
 		
 		// It searches the runway, where the id is = 'planeId'
 		private Runway searchTheRunway(int planeId) {
 			Runway ret = null;
 			
-			Collection<Runway> allRunWay = Tower.this->(TowerRunwayUsage.theRunway);
+			OneToAny<Runway> allRunWay = Tower.this->(TowerRunwayUsage.theRunway);
 			for (Runway runway : allRunWay) {
 				if(runway.getPlaneId() == planeId) {
 					ret = runway;	

@@ -7,29 +7,45 @@ import java.util.Map;
 
 import hu.elte.txtuml.api.model.From;
 import hu.elte.txtuml.api.model.ModelClass;
+import hu.elte.txtuml.api.model.StateMachine;
 import hu.elte.txtuml.api.model.StateMachine.CompositeState;
 import hu.elte.txtuml.api.model.StateMachine.Initial;
 import hu.elte.txtuml.api.model.StateMachine.Transition;
 import hu.elte.txtuml.api.model.StateMachine.Vertex;
+import hu.elte.txtuml.api.model.execution.impl.util.WrapperBuilder;
 import hu.elte.txtuml.api.model.To;
 import hu.elte.txtuml.utils.InstanceCreator;
 
+/**
+ * Parses a whole state machine and creates the required
+ * {@link TransitionWrapper}s and {@link VertexWrapper}s.
+ */
 public final class StateMachineParser {
 
-	private final ModelClass owner;
+	private final StateMachine owner;
 	private final Map<Class<?>, VertexWrapperBuilder> vertices = new HashMap<>();
 	private final List<TransitionWrapperBuilder> transitions = new ArrayList<>();
 
 	private VertexWrapperBuilder initial = null;
 
-	public static VertexWrapper parse(ModelClass owner) {
+	/**
+	 * Parses the whole state machine of the given owner object.
+	 * 
+	 * @return the wrapper of the initial state of the state machine
+	 */
+	public static VertexWrapper parse(StateMachine owner) {
 		return new StateMachineParser(owner).parse();
 	}
 
-	private StateMachineParser(ModelClass owner) {
+	private StateMachineParser(StateMachine owner) {
 		this.owner = owner;
 	}
 
+	/**
+	 * Parses the whole state machine of the given owner object.
+	 * 
+	 * @return the wrapper of the initial state of the state machine
+	 */
 	private VertexWrapper parse() {
 		for (Class<?> cls = owner.getClass(); cls != ModelClass.class; cls = cls.getSuperclass()) {
 			parsePartOfSM(owner, cls.getDeclaredClasses(), null);
@@ -57,6 +73,9 @@ public final class StateMachineParser {
 	}
 
 	/**
+	 * Parses a part of the sm which is either the whole state machine or the
+	 * inside of a composite state.
+	 * 
 	 * @param parent
 	 *            the parent of the sm part to parse
 	 * @param container
@@ -68,6 +87,9 @@ public final class StateMachineParser {
 	}
 
 	/**
+	 * Parses a part of the sm which is either the whole state machine or the
+	 * inside of a composite state.
+	 * 
 	 * @param parent
 	 *            the parent of the sm part to parse
 	 * @param innerClasses

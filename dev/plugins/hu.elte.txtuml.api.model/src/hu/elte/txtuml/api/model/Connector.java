@@ -11,9 +11,9 @@ import hu.elte.txtuml.api.model.ConnectorBase.ConnectorEnd;
  * <b>Usage:</b>
  * <p>
  * 
- * An assembly connector in the model is a subclass of <code>Connector</code>, having two
- * inner classes which both extend {@link ConnectorEnd}. These two inner classes
- * will represent the two ends of this connector.
+ * An assembly connector in the model is a subclass of <code>Connector</code>,
+ * having two inner classes which both extend {@link ConnectorEnd}. These two
+ * inner classes will represent the two ends of this connector.
  * 
  * <p>
  * <b>Java restrictions:</b>
