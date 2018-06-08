@@ -3,12 +3,12 @@
 
 #include "fmi2Functions.h"
 #include "statemachinebase.hpp"
-#include "istatemachine.hpp"
+#include "StateMachineOwner.hpp"
 #include "associations.hpp"
 
 namespace Model {
 
-class FMUEnvironment : public StateMachineBase, public IStateMachine {
+class FMUEnvironment : public StateMachineOwner {
   public:
     bool process_event(ES::EventRef) = 0;
     void setInitialState() = 0;
