@@ -6,16 +6,21 @@ import hu.elte.txtuml.api.model.ModelClass
 import hu.elte.txtuml.api.model.ModelClass.Port
 import hu.elte.txtuml.api.model.ModelEnum
 import hu.elte.txtuml.api.model.Signal
+import hu.elte.txtuml.xtxtuml.common.XtxtUMLConnectiveHelper
 import hu.elte.txtuml.xtxtuml.common.XtxtUMLExternalityHelper
 import hu.elte.txtuml.xtxtuml.common.XtxtUMLUtils
-import hu.elte.txtuml.xtxtuml.xtxtUML.TUAssociationEnd
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUAssociation
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAttributeOrOperationDeclarationPrefix
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUBindExpression
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUBindType
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUClass
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUClassPropertyAccessExpression
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUConnectiveEnd
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUConnector
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUDeleteObjectExpression
-import hu.elte.txtuml.xtxtuml.xtxtUML.TULinkExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TULogExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUOperation
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUPort
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUSendSignalExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUSignalAttribute
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUStartObjectExpression
@@ -26,17 +31,20 @@ import org.eclipse.xtext.common.types.JvmFormalParameter
 import org.eclipse.xtext.common.types.JvmTypeReference
 import org.eclipse.xtext.common.types.TypesPackage
 import org.eclipse.xtext.naming.IQualifiedNameProvider
+import org.eclipse.xtext.naming.QualifiedName
 import org.eclipse.xtext.validation.Check
 import org.eclipse.xtext.xbase.XExpression
 import org.eclipse.xtext.xbase.jvmmodel.IJvmModelAssociations
 
 import static hu.elte.txtuml.xtxtuml.validation.XtxtUMLIssueCodes.*
 import static hu.elte.txtuml.xtxtuml.xtxtUML.XtxtUMLPackage.Literals.*
+import hu.elte.txtuml.xtxtuml.compiler.XtxtUMLBindExpressionAdapter
 
 class XtxtUMLTypeValidator extends XtxtUMLUniquenessValidator {
 
 	@Inject extension IJvmModelAssociations;
 	@Inject extension IQualifiedNameProvider;
+	@Inject extension XtxtUMLConnectiveHelper;
 	@Inject extension XtxtUMLExternalityHelper;
 	@Inject extension XtxtUMLUtils;
 
@@ -116,81 +124,99 @@ class XtxtUMLTypeValidator extends XtxtUMLUniquenessValidator {
 	}
 
 	@Check
-	def checkLinkExpressionTypes(TULinkExpression linkExpr) {
+	def checkBindExpressionTypes(TUBindExpression bindExpr) {
+		val inferredEnds = bindExpr.eAdapters.filter(XtxtUMLBindExpressionAdapter).head ?: {
+			val newAdapter = new XtxtUMLBindExpressionAdapter;
+			bindExpr.eAdapters.add(newAdapter);
+			newAdapter
+		}
+
 		/* Do not allow any exceptions below as the compiler could fail otherwise. */
 
-		if (!linkExpr.areLinkExpressionEndsValid) {
+		if (!bindExpr.isBindExpressionConnectiveValid || !bindExpr.areBindExpressionEndsValid) {
 			return;
 		}
 
-		val remainingObjects = newHashSet(linkExpr.leftObject, linkExpr.rightObject);
-		val Set<TUAssociationEnd> remainingEnds = newHashSet(linkExpr.association.ends);
+		val remainingParticipants = newHashSet(bindExpr.leftParticipant, bindExpr.rightParticipant);
+		val Set<TUConnectiveEnd> remainingEnds = newHashSet(bindExpr.connective.connectiveEnds);
 
-		val sides = newLinkedList(linkExpr.leftObject -> linkExpr.leftEnd -> TU_LINK_EXPRESSION__LEFT_END,
-			linkExpr.rightObject -> linkExpr.rightEnd -> TU_LINK_EXPRESSION__RIGHT_END);
-		if (linkExpr.leftEnd == null && linkExpr.rightEnd != null
-				|| linkExpr.leftEnd == null && linkExpr.rightEnd == null
-					&& remainingEnds.filter[linkExpr.leftObject.isCompatibleWith(it)].size > 1) {
+		val sides = newLinkedList(bindExpr.leftParticipant -> bindExpr.leftEnd -> TU_BIND_EXPRESSION__LEFT_END,
+			bindExpr.rightParticipant -> bindExpr.rightEnd -> TU_BIND_EXPRESSION__RIGHT_END);
+		if (bindExpr.leftEnd == null && bindExpr.rightEnd != null
+				|| bindExpr.leftEnd == null && bindExpr.rightEnd == null
+					&& remainingEnds.filter[bindExpr.leftParticipant.isCompatibleWith(it)].size > 1) {
 			sides.reverse;
 		}
 
-		sides.forEach[ objectToEndToFeature |
-			val givenObject = objectToEndToFeature.key.key;
-			val givenEnd = objectToEndToFeature.key.value;
-			val currentFeature = objectToEndToFeature.value;
+		sides.forEach[ participantToEndToFeature |
+			val givenParticipant = participantToEndToFeature.key.key;
+			val givenEnd = participantToEndToFeature.key.value;
+			val currentFeature = participantToEndToFeature.value;
 
-			val registerMatchWith = [ TUAssociationEnd actualEnd |
-				remainingObjects.remove(givenObject);
+			val registerMatchWith = [ TUConnectiveEnd actualEnd |
+				remainingParticipants.remove(givenParticipant);
 				remainingEnds.remove(actualEnd);
-
-				if (linkExpr.leftEnd == null && currentFeature == TU_LINK_EXPRESSION__LEFT_END) {
-					linkExpr.leftEnd = actualEnd;
-				} else if (linkExpr.rightEnd == null && currentFeature == TU_LINK_EXPRESSION__RIGHT_END) {
-					linkExpr.rightEnd = actualEnd;
-				}
+				inferredEnds.put(currentFeature, actualEnd)
 			];
 
 			if (givenEnd != null) {
 				registerMatchWith.apply(givenEnd);
-				if (!givenObject.isCompatibleWith(givenEnd)) {
-					reportEndTypeMismatch(givenObject, givenEnd);
+				if (!givenParticipant.isCompatibleWith(givenEnd)) {
+					reportEndTypeMismatch(givenParticipant, givenEnd);
 				}
 			} else {
-				val compatibleEnds = remainingEnds.filter[givenObject.isCompatibleWith(it)];
+				val compatibleEnds = remainingEnds.filter[givenParticipant.isCompatibleWith(it)];
 				if (compatibleEnds.size == 1) {
 					registerMatchWith.apply(compatibleEnds.head);
 				}
 			}
 		];
 
-		if (remainingObjects.size == 1) {
-			reportEndTypeMismatch(remainingObjects.head, remainingEnds.head);
-		} else if (remainingObjects.size > 1) {
-			error("Cannot infer association ends – please use the 'as' specifier at least on one side",
-				linkExpr, null, AMBIGUOUS_LINK_EXPRESSION);
+		if (remainingParticipants.size == 1) {
+			reportEndTypeMismatch(remainingParticipants.head, remainingEnds.head);
+		} else if (remainingParticipants.size > 1) {
+			error("Cannot infer connective ends – please use the 'as' specifier at least on one side",
+				bindExpr, null, AMBIGUOUS_BIND_EXPRESSION);
 		}
 	}
 
-	def private areLinkExpressionEndsValid(TULinkExpression it) {
-		if (association == null || association.ends.size != 2 || association.ends.exists[endClass == null]
-				|| #[leftEnd, rightEnd].exists[it != null && endClass == null]) {
+	def private isBindExpressionConnectiveValid(TUBindExpression it) {
+		if (connective == null) {
+			// syntax error is raised elsewhere
+			return false;
+		}
+
+		if ((type == TUBindType.LINK || type == TUBindType.UNLINK) && !(connective instanceof TUAssociation)
+				|| type == TUBindType.CONNECT && !(connective instanceof TUConnector)) {
+			val expectedConnectiveKind = switch type {
+				case TUBindType.LINK, case TUBindType.UNLINK: "an association"
+				case TUBindType.CONNECT: "a connector"
+			};
+
+			error("Connective " + connective.connectiveName + " is not " + expectedConnectiveKind,
+					it, TU_BIND_EXPRESSION__CONNECTIVE, CONNECTIVE_KIND_MISMATCH_IN_BIND_EXPRESSION);
+			return false;
+		}
+
+		return true;
+	}
+
+	def private areBindExpressionEndsValid(TUBindExpression it) {
+		if (connective.connectiveEnds.size != 2 || connective.connectiveEnds.exists[endEntity == null]
+				|| #[leftEnd, rightEnd].exists[it != null && endEntity == null]) {
 			// syntax error is raised elsewhere
 			return false;
 		}
 
 		var result = true;
 
-		if (leftEnd == null && rightEnd == null
-				&& association.ends.head.endClass.fullyQualifiedName == association.ends.last.endClass.fullyQualifiedName) {
-			error("Cannot infer ends in case of a reflexive association – please use the 'as' specifier at least on one side",
-				it, null, UNSPECIFIED_REFLEXIVE_ENDS);
-			result = false;
-		}
+		result = result && #[leftEnd -> TU_BIND_EXPRESSION__LEFT_END, rightEnd -> TU_BIND_EXPRESSION__RIGHT_END].forall[ endToFeature |
+			val currentEnd = endToFeature.key;
+			val currentFeature = endToFeature.value;
 
-		result = result && #[leftEnd -> TU_LINK_EXPRESSION__LEFT_END, rightEnd -> TU_LINK_EXPRESSION__RIGHT_END].forall[ endToFeature |
-			if (endToFeature.key != null && !association.ends.exists[fullyQualifiedName == endToFeature.key.fullyQualifiedName]) {
-				error("End " + endToFeature.key.name + " does not belong to association " + association.name,
-					it, endToFeature.value, END_MISMATCH_IN_LINK_EXPRESSION);
+			if (currentEnd != null && !connective.connectiveEnds.exists[fullyQualifiedName == currentEnd.fullyQualifiedName]) {
+				error("End " + currentEnd.connectiveEndName + " does not belong to connective " + connective.connectiveName,
+					it, currentFeature, END_MISMATCH_IN_BIND_EXPRESSION);
 				return false;
 			}
 
@@ -198,8 +224,9 @@ class XtxtUMLTypeValidator extends XtxtUMLUniquenessValidator {
 		];
 
 		if (leftEnd != null && rightEnd != null && leftEnd.fullyQualifiedName == rightEnd.fullyQualifiedName) {
-			#[leftEnd -> TU_LINK_EXPRESSION__LEFT_END, rightEnd -> TU_LINK_EXPRESSION__RIGHT_END].forEach[ endToFeature |
-				error("Duplicate association end " + endToFeature.key.name, it, endToFeature.value, DUPLICATE_END_IN_LINK_EXPRESSION);
+			#[leftEnd -> TU_BIND_EXPRESSION__LEFT_END, rightEnd -> TU_BIND_EXPRESSION__RIGHT_END].forEach[ endToFeature |
+				error("Duplicate connective end " + endToFeature.key.connectiveEndName, it, endToFeature.value,
+					DUPLICATE_END_IN_BIND_EXPRESSION);
 			];
 
 			result = false;
@@ -208,23 +235,32 @@ class XtxtUMLTypeValidator extends XtxtUMLUniquenessValidator {
 		return result;
 	}
 
-	def private isCompatibleWith(XExpression actualObject, TUAssociationEnd expectedEnd) {
+	def private isCompatibleWith(XExpression actualParticipant, TUConnectiveEnd expectedEnd) {
 		// do not use getPrimaryJvmElement here, see 8c7a70b
-		val actualClass = actualObject.actualType.type.getPrimarySourceElement;
-		val expectedClassName = expectedEnd.endClass.fullyQualifiedName;
-		return !actualObject.nullLiteral && actualClass instanceof TUClass && (actualClass as TUClass).travelClassHierarchy[fullyQualifiedName == expectedClassName];
+		val actualSource = actualParticipant.actualType.type.getPrimarySourceElement;
+		val expectedName = expectedEnd.endEntity?.fullyQualifiedName;
+		return !actualParticipant.nullLiteral && internalIsCompatibleWith(actualSource, expectedName);
 	}
 
-	def private reportEndTypeMismatch(XExpression actualObject, TUAssociationEnd expectedEnd) {
-		val endClass = expectedEnd.endClass;
-		val actualType = actualObject.actualType;
-		val actualToExpected = if (actualType.humanReadableName == endClass.name) {
-				actualType.identifier + " to " + endClass.fullyQualifiedName
+	def private dispatch internalIsCompatibleWith(TUClass actualClass, QualifiedName expectedName) {
+		actualClass.travelClassHierarchy[fullyQualifiedName == expectedName];
+	}
+
+	def private dispatch internalIsCompatibleWith(TUPort actualPort, QualifiedName expectedName) {
+		actualPort.fullyQualifiedName == expectedName;
+	}
+
+	def private reportEndTypeMismatch(XExpression actualParticipant, TUConnectiveEnd expectedEnd) {
+		val endEntity = expectedEnd.endEntity;
+		val endEntityName = endEntity?.fullyQualifiedName.lastSegment
+		val actualType = actualParticipant.actualType;
+		val actualToExpected = if (actualType.humanReadableName.split("\\.").last == endEntityName) {
+				actualType.identifier.replace('$', '.') + " to " + endEntity?.fullyQualifiedName
 			} else {
-				actualType.humanReadableName + " to " + endClass.name
+				actualType.humanReadableName + " to " + endEntityName
 			};
 
-		error("Type mismatch: cannot convert from " + actualToExpected, actualObject, null, TYPE_MISMATCH);
+		error("Type mismatch: cannot convert from " + actualToExpected, actualParticipant, null, TYPE_MISMATCH);
 	}
 
 	def protected isAllowedParameterType(JvmTypeReference typeRef, boolean isVoidAllowed) {

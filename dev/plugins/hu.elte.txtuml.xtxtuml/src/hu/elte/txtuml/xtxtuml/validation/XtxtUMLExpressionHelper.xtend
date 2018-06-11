@@ -1,8 +1,8 @@
 package hu.elte.txtuml.xtxtuml.validation;
 
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUBindExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUClassPropertyAccessExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUDeleteObjectExpression
-import hu.elte.txtuml.xtxtuml.xtxtUML.TULinkExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TULogExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUSendSignalExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUSignalAccessExpression
@@ -20,7 +20,7 @@ class XtxtUMLExpressionHelper extends XExpressionHelper {
 			TUStartObjectExpression,
 			TUDeleteObjectExpression,
 			TULogExpression,
-			TULinkExpression,
+			TUBindExpression,
 			TUSendSignalExpression:
 				true
 			TUSignalAccessExpression,

@@ -4,6 +4,7 @@ import hu.elte.txtuml.xtxtuml.xtxtUML.TUAssociation
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAssociationEnd
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAttribute
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAttributeOrOperationDeclarationPrefix
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUBindExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUClass
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUClassPropertyAccessExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUComposition
@@ -16,7 +17,6 @@ import hu.elte.txtuml.xtxtuml.xtxtUML.TUEnumeration
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUExecution
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUFile
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUInterface
-import hu.elte.txtuml.xtxtuml.xtxtUML.TULinkExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TULogExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUModelDeclaration
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUModifiers
@@ -123,7 +123,7 @@ class XtxtUMLFormatter extends XbaseFormatter {
 
 	def dispatch void format(TUConnectorEnd it, extension IFormattableDocument document) {
 		regionFor.keyword('->').surround[noSpace];
-		regionFor.feature(TU_CONNECTOR_END__NAME).prepend[oneSpace].append[noSpace];
+		regionFor.feature(TU_CONNECTIVE_END__NAME).prepend[oneSpace].append[noSpace];
 	}
 
 	def dispatch void format(TUSignalAttribute it, extension IFormattableDocument document) {
@@ -224,7 +224,7 @@ class XtxtUMLFormatter extends XbaseFormatter {
 		multiplicity.append[oneSpace];
 
 		regionFor.keyword('container').append[oneSpace];
-		regionFor.feature(TU_CLASS_PROPERTY__NAME).prepend[oneSpace].append[noSpace];
+		regionFor.feature(TU_CONNECTIVE_END__NAME).prepend[oneSpace].append[noSpace];
 
 		format(multiplicity, document);
 	}
@@ -256,14 +256,14 @@ class XtxtUMLFormatter extends XbaseFormatter {
 		format(log, document);
 	}
 
-	def dispatch void format(TULinkExpression it, extension IFormattableDocument document) {
-		regionFor.keyword('link').append[oneSpace];
+	def dispatch void format(TUBindExpression it, extension IFormattableDocument document) {
+		regionFor.feature(TU_BIND_EXPRESSION__TYPE).append[oneSpace];
 		regionFor.keyword(',').prepend[noSpace].append[oneSpace];
 		regionFor.keyword('via').surround[oneSpace];
 		regionFor.keywords('as').forEach[surround[oneSpace]];
 
-		format(leftObject, document);
-		format(rightObject, document);
+		format(leftParticipant, document);
+		format(rightParticipant, document);
 	}
 
 	override dispatch void format(XBlockExpression it, extension IFormattableDocument document) {

@@ -5,11 +5,11 @@ import hu.elte.txtuml.api.model.AssociationEnd
 import hu.elte.txtuml.api.model.ModelClass.Port
 import hu.elte.txtuml.api.model.Signal
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAssociationEnd
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUBindExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUClass
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUClassPropertyAccessExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUDeleteObjectExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUEntryOrExitActivity
-import hu.elte.txtuml.xtxtuml.xtxtUML.TULinkExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TULogExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUPort
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUSendSignalExpression
@@ -232,12 +232,12 @@ class XtxtUMLTypeComputer extends XbaseWithAnnotationsTypeComputer {
 		childState.computeTypes(sendExpr.target);
 	}
 	
-	def dispatch computeTypes(TULinkExpression linkExpr, ITypeComputationState state) {
+	def dispatch computeTypes(TUBindExpression bindExpr, ITypeComputationState state) {
 		state.acceptActualType(state.getPrimitiveVoid);
 		val childState = state.withoutRootExpectation;
 
-		childState.computeTypes(linkExpr.leftObject);
-		childState.computeTypes(linkExpr.rightObject);
+		childState.computeTypes(bindExpr.leftParticipant);
+		childState.computeTypes(bindExpr.rightParticipant);
 	}
 
 	/**

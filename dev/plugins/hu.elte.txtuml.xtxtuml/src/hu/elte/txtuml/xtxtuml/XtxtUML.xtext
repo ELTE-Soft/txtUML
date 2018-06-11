@@ -246,18 +246,27 @@ TULogExpression returns xbase::XExpression:
 	('log' | error?='log-error') log=XExpression
 ;
 
-TULinkExpression returns xbase::XExpression :
-	{TULinkExpression}
-	('link' | unlink?='unlink') leftObject=XMemberFeatureCall ('as' leftEnd=[TUAssociationEnd|QualifiedName])? ','
-		rightObject=XMemberFeatureCall ('as' rightEnd=[TUAssociationEnd|QualifiedName])?
-		'via' association=[TUAssociation|QualifiedName]
+TUBindExpression returns xbase::XExpression :
+	{TUBindExpression}
+	type=TUBindType leftParticipant=XMemberFeatureCall ('as' leftEnd=[TUConnectiveEnd|QualifiedName])? ','
+		rightParticipant=XMemberFeatureCall ('as' rightEnd=[TUConnectiveEnd|QualifiedName])?
+		'via' connective=[TUConnective|QualifiedName]
 ;
 
-TUConnectExpression returns xbase::XExpression :
-	{TUConnectExpression}
-	'connect' leftPort=XMemberFeatureCall ('as' leftEnd=[TUConnectorEnd|QualifiedName])? ','
-		rightPort=XMemberFeatureCall ('as' rightEnd=[TUConnectorEnd|QualifiedName])?
-		'via' connector=[TUConnector|QualifiedName]
+enum TUBindType :
+	LINK = 'link' | UNLINK = 'unlink' | CONNECT = 'connect'
+;
+
+TUConnectiveEnd :
+	// it is inevitable to include 'TUPort' here
+	// otherwise 'TUAssociationEnd' would derive both from 'TUClassProperty' and 'TUConnectiveEnd'
+	// which would result in a duplicate 'name' feature in it, rendering the grammar incorrect
+	// by not flattening 'TUClassProperty', at least the implementation of '->' could remain intact
+	TUClassProperty | TUConnectorEnd
+;
+
+TUConnective :
+	TUAssociation | TUConnector
 ;
 
 TUSignalAccessExpression returns xbase::XExpression :
@@ -284,8 +293,7 @@ TUStatementSemicolonNeeded returns xbase::XExpression
 	| TUStartObjectExpression
 	| TULogExpression
 	| TUDeleteObjectExpression
-	| TUConnectExpression
-	| TULinkExpression
+	| TUBindExpression
 ;
 
 // Overridden Xbase rules

@@ -3,11 +3,14 @@ package hu.elte.txtuml.xtxtuml.compiler;
 import com.google.inject.Inject
 import hu.elte.txtuml.api.model.Action
 import hu.elte.txtuml.api.model.ModelClass.Port
+import hu.elte.txtuml.xtxtuml.common.XtxtUMLConnectiveHelper
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAssociationEnd
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUBindExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUClassPropertyAccessExpression
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUConnectiveEnd
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUConnectorEnd
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUCreateObjectExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUDeleteObjectExpression
-import hu.elte.txtuml.xtxtuml.xtxtUML.TULinkExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TULogExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUSendSignalExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUSignalAccessExpression
@@ -22,13 +25,14 @@ import org.eclipse.xtext.xbase.jvmmodel.IJvmModelAssociations
 class XtxtUMLCompiler extends XbaseCompiler {
 
 	@Inject extension IJvmModelAssociations;
+	@Inject extension XtxtUMLConnectiveHelper;
 
 	override protected doInternalToJavaStatement(XExpression obj, ITreeAppendable builder, boolean isReferenced) {
 		switch (obj) {
 			TUClassPropertyAccessExpression,
 			TUStartObjectExpression,
 			TUDeleteObjectExpression,
-			TULinkExpression,
+			TUBindExpression,
 			TULogExpression,
 			TUSendSignalExpression,
 			TUSignalAccessExpression:
@@ -93,20 +97,34 @@ class XtxtUMLCompiler extends XbaseCompiler {
 		append(");");
 	}
 
-	def dispatch toJavaStatement(TULinkExpression linkExpr, ITreeAppendable it) {
+	def dispatch toJavaStatement(TUBindExpression bindExpr, ITreeAppendable it) {
 		newLine;
 		append(Action);
-		append('''.«IF linkExpr.unlink»un«ENDIF»link(''');
+		append('''.«bindExpr.type.toString»(''');
 
-		val compileSide = [ Pair<TUAssociationEnd, XExpression> side |
-			append(side.key.getPrimaryJvmElement as JvmType);
+		val compileSide = [ TUConnectiveEnd end, XExpression participant |
+			append(end.getPrimaryJvmElement as JvmType);
 			append(".class, ");
-			side.value.internalToJavaExpression(it);
+			participant.internalToJavaExpression(it);
 		];
 
-		compileSide.apply(linkExpr.leftEnd -> linkExpr.leftObject);
-		append(", ");
-		compileSide.apply(linkExpr.rightEnd -> linkExpr.rightObject);
+		val inferredEnds = bindExpr.eAdapters.filter(XtxtUMLBindExpressionAdapter).head;
+		if (bindExpr.connective.isDelegationConnector) {
+			val sides = newLinkedList(inferredEnds.leftEnd -> bindExpr.leftParticipant,
+				inferredEnds.rightEnd -> bindExpr.rightParticipant);
+			if ((inferredEnds.rightEnd as TUConnectorEnd).role.container) {
+				sides.reverse;
+			}
+
+			sides.head.value.internalToJavaExpression(it);
+			append(", ");
+			compileSide.apply(sides.last.key, sides.last.value);
+		} else {
+			compileSide.apply(inferredEnds.leftEnd, bindExpr.leftParticipant);
+			append(", ");
+			compileSide.apply(inferredEnds.rightEnd, bindExpr.rightParticipant);
+		}
+
 		append(");");
 	}
 
