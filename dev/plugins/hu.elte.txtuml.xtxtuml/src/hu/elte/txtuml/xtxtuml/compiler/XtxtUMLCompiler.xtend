@@ -69,7 +69,7 @@ class XtxtUMLCompiler extends XbaseCompiler {
 		newLine;
 		append(Action);
 		append('''.log«IF logExpr.error»Error«ENDIF»(''');
-		logExpr.log.internalToJavaExpression(it);
+		logExpr.message.internalToJavaExpression(it);
 		append(");");
 	}
 

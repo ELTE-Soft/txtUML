@@ -221,7 +221,7 @@ class XtxtUMLTypeComputer extends XbaseWithAnnotationsTypeComputer {
 
 	def dispatch computeTypes(TULogExpression logExpr, ITypeComputationState state) {
 		state.acceptActualType(state.getPrimitiveVoid);
-		state.withoutRootExpectation.computeTypes(logExpr.log);
+		state.withoutRootExpectation.computeTypes(logExpr.message);
 	}
 
 	def dispatch computeTypes(TUSendSignalExpression sendExpr, ITypeComputationState state) {

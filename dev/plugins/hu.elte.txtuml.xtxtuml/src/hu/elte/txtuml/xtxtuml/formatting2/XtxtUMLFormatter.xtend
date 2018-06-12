@@ -253,8 +253,8 @@ class XtxtUMLFormatter extends XbaseFormatter {
 	}
 
 	def dispatch void format(TULogExpression it, extension IFormattableDocument document) {
-		log.prepend[oneSpace];
-		format(log, document);
+		message.prepend[oneSpace];
+		format(message, document);
 	}
 
 	def dispatch void format(TUBindExpression it, extension IFormattableDocument document) {

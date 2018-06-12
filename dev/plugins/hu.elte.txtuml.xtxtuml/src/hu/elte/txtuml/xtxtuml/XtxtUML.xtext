@@ -243,7 +243,7 @@ TUStartObjectExpression returns xbase::XExpression :
 
 TULogExpression returns xbase::XExpression:
 	{TULogExpression}
-	('log' | error?='log-error') log=XExpression
+	('log' | error?='log-error') message=XExpression
 ;
 
 TUBindExpression returns xbase::XExpression :

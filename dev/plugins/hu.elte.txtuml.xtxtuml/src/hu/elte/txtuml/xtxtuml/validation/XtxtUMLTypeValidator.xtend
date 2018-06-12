@@ -111,8 +111,8 @@ class XtxtUMLTypeValidator extends XtxtUMLUniquenessValidator {
 
 	@Check
 	def checkLogExpressionType(TULogExpression logExpr) {
-		if (!logExpr.log.isConformantWith(String, false)) {
-			typeMismatch("String", logExpr, TU_LOG_EXPRESSION__LOG)
+		if (!logExpr.message.isConformantWith(String, false)) {
+			typeMismatch("String", logExpr, TU_LOG_EXPRESSION__MESSAGE)
 		}
 	}
 
