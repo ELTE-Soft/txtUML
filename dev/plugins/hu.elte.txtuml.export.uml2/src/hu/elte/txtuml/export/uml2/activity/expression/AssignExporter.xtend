@@ -17,7 +17,7 @@ class AssignExporter extends OperatorExporter<Assignment> {
 	override create(Assignment access) { factory.createSequenceNode }
 	
 	override exportContents(Assignment source) {
-		assignToExpression(source.leftHandSide)[ act |
+		assignToExpression(source.leftHandSide, true)[ act |
 			val right = exportExpression(source.rightHandSide)
 			generateRhs(source.operator, act, right)
 		]

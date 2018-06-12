@@ -27,7 +27,7 @@ public class GuardExporter extends ActivityExporter {
 	private int guardCount;
 
 	public GuardExporter(Optional<IDependencyCollector> exportUser) {
-		super(exportUser);
+		super(exportUser, true);
 		constratintFunctionMap = new HashMap<Constraint, String>();
 		guardCount = 0;
 	}

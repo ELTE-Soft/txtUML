@@ -27,6 +27,7 @@ import org.eclipse.uml2.uml.ValueSpecification;
 import org.eclipse.uml2.uml.ValueSpecificationAction;
 
 import hu.elte.txtuml.export.cpp.CppExporterUtils;
+import hu.elte.txtuml.export.cpp.templates.GenerationNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationTemplates;
 import hu.elte.txtuml.export.cpp.templates.activity.ActivityTemplates;
 import hu.elte.txtuml.utils.Logger;
@@ -201,7 +202,7 @@ class ActivityNodeResolver {
 			source = ((Boolean) ((LiteralBoolean) valueSpec).isValue()).toString();
 		} else if (valueSpec.eClass().equals(UMLPackage.Literals.LITERAL_STRING)) {
 			source =  ((LiteralString) valueSpec).getValue();			
-			source = "\"" + CppExporterUtils.escapeQuates(source) + "\"";
+			source = GenerationNames.BasicTypeNames.StringTypeName + "(" + "\"" + CppExporterUtils.escapeQuates(source) + "\"" + ")";
 		
 		} else if(valueSpec.eClass().equals(UMLPackage.Literals.LITERAL_NULL)) {
 			source = ActivityTemplates.NullPtrLiteral;

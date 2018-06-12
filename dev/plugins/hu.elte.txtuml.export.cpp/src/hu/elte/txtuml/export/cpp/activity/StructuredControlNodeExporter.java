@@ -12,6 +12,8 @@ import org.eclipse.uml2.uml.SequenceNode;
 import org.eclipse.uml2.uml.UMLPackage;
 import org.eclipse.uml2.uml.Variable;
 
+import hu.elte.txtuml.export.cpp.templates.GenerationTemplates;
+import hu.elte.txtuml.export.cpp.templates.GenerationTemplates.VariableType;
 import hu.elte.txtuml.export.cpp.templates.activity.ActivityTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.ObjectDeclDefTemplates;
 
@@ -135,8 +137,9 @@ class StructuredControlNodeExporter {
 			type = variable.getType().getName();
 		}
 		userVariableExporter.exportNewVariable(variable);
-		ObjectDeclDefTemplates.VariableType varType = variable.getType().eClass().equals(UMLPackage.Literals.SIGNAL) ?
-				ObjectDeclDefTemplates.VariableType.EventPtr : ObjectDeclDefTemplates.VariableType.Default;
+		
+		GenerationTemplates.VariableType varType = variable.getType().eClass().equals(UMLPackage.Literals.SIGNAL) ?
+				GenerationTemplates.VariableType.EventPtr : VariableType.getUMLMultpliedElementType(variable.getLower(), variable.getUpper());
 		return ObjectDeclDefTemplates.variableDecl(type, userVariableExporter.getRealVariableName(variable),varType);
 	}
 }

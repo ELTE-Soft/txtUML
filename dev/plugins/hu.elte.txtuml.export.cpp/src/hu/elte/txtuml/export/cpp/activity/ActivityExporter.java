@@ -33,6 +33,7 @@ import org.eclipse.uml2.uml.UMLPackage;
 import hu.elte.txtuml.export.cpp.ActivityExportResult;
 import hu.elte.txtuml.export.cpp.CppExporterUtils;
 import hu.elte.txtuml.export.cpp.IDependencyCollector;
+import hu.elte.txtuml.export.cpp.templates.GenerationNames;
 import hu.elte.txtuml.export.cpp.templates.activity.ActivityTemplates;
 
 //import hu.elte.txtuml.utils.Logger;
@@ -55,9 +56,11 @@ public class ActivityExporter {
 	private ActivityExportResult activityExportResult;
 	
 	private Optional<IDependencyCollector> exportUser;
+	private final boolean isSingleReturn;
 	
-	public ActivityExporter(Optional<IDependencyCollector> exportUser) {
+	public ActivityExporter(Optional<IDependencyCollector> exportUser, boolean isSingleReturn) {
 		this.exportUser = exportUser;
+		this.isSingleReturn = isSingleReturn;
 	}
 
 	public ActivityExportResult createFunctionBody(Behavior behavior) {
@@ -80,10 +83,13 @@ public class ActivityExporter {
 		} else if (node.eClass().equals(UMLPackage.Literals.CREATE_OBJECT_ACTION)) {
 			source.append(objectActionExporter.createCreateObjectActionCode((CreateObjectAction) node));
 		} else if (node.eClass().equals(UMLPackage.Literals.CREATE_LINK_ACTION)) {
+			addAssociationInstancesDependency();
 			source.append(linkActionExporter.createLinkActionCode((CreateLinkAction) node));
 		} else if (node.eClass().equals(UMLPackage.Literals.DESTROY_LINK_ACTION)) {
+			addAssociationInstancesDependency();
 			source.append(linkActionExporter.createDestroyLinkActionCode((DestroyLinkAction) node));
 		} else if (node.eClass().equals(UMLPackage.Literals.READ_LINK_ACTION)) {
+			addAssociationInstancesDependency();
 			source.append(linkActionExporter.createReadLinkActionCode((ReadLinkAction) node));
 		} else if (node.eClass().equals(UMLPackage.Literals.SEND_OBJECT_ACTION)) {
 			source.append(objectActionExporter.createSendSignalActionCode((SendObjectAction) node));
@@ -100,6 +106,7 @@ public class ActivityExporter {
 
 		} else if (node.eClass().equals(UMLPackage.Literals.ADD_VARIABLE_VALUE_ACTION)) {
 			AddVariableValueAction avva = (AddVariableValueAction) node;
+			
 			source.append(ActivityTemplates.generalSetValue(
 					userVariableExporter.getRealVariableName(avva.getVariable()),
 					activityExportResolver.getTargetFromInputPin(avva.getValue()),
@@ -155,7 +162,7 @@ public class ActivityExporter {
 		objectMap = new HashMap<CreateObjectAction, String>();
 		activityExportResolver = new ActivityNodeResolver(objectMap, returnOutputsToCallActions, tempVariableExporter,
 				userVariableExporter);
-		returnNodeExporter = new ReturnNodeExporter(activityExportResolver);
+		returnNodeExporter = new ReturnNodeExporter(activityExportResolver, isSingleReturn);
 		callOperationExporter = new CallOperationExporter(tempVariableExporter, returnOutputsToCallActions,
 				activityExportResolver, exportUser);
 		linkActionExporter = new LinkActionExporter(tempVariableExporter, activityExportResolver);
@@ -235,6 +242,12 @@ public class ActivityExporter {
 							.getOperationFromType(asfva.getStructuralFeature().isMultivalued(), asfva.isReplaceAll()));
 
 		return source;
+	}
+	
+	private void addAssociationInstancesDependency() {
+		if(exportUser.isPresent()) {
+			exportUser.get().addCppOnlyDependency(GenerationNames.AssociationNames.AssociationInstancesUnitName);
+		}
 	}
 	
 

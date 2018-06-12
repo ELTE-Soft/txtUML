@@ -12,6 +12,7 @@ import org.eclipse.uml2.uml.Transition;
 import com.google.common.collect.Multimap;
 
 import hu.elte.txtuml.export.cpp.CppExporterUtils;
+import hu.elte.txtuml.export.cpp.CppExporterUtils.TypeDescriptor;
 import hu.elte.txtuml.export.cpp.statemachine.TransitionConditions;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.EntryExitNames;
@@ -41,19 +42,19 @@ public class StateMachineTemplates {
 	}
 
 	public static String transitionActionDecl(String transitionActionName) {
-		List<String> params = new LinkedList<String>();
-		params.add(EventTemplates.EventPointerType);
+		List<TypeDescriptor> params = new LinkedList<>();
+		params.add(new TypeDescriptor(EventTemplates.EventPointerType));
 
 		return FunctionTemplates.functionDecl(transitionActionName, params);
 	}
 
 	public static String transitionActionDef(String className, String transitionFunctionName,
 			String transitionActionName, String body, boolean singalAcces) {
-		List<Pair<String, String>> params = new LinkedList<Pair<String, String>>();
+		List<Pair<TypeDescriptor, String>> params = new LinkedList<>();
 		if (singalAcces) {
-			params.add(new Pair<String, String>(EventTemplates.EventPointerType, EventTemplates.EventParamName));
+			params.add(new Pair<TypeDescriptor, String>(new TypeDescriptor(EventTemplates.EventPointerType), EventTemplates.EventParamName));
 		} else {
-			params.add(new Pair<String, String>(EventTemplates.EventPointerType, ""));
+			params.add(new Pair<TypeDescriptor, String>(new TypeDescriptor(EventTemplates.EventPointerType), ""));
 
 		}
 
