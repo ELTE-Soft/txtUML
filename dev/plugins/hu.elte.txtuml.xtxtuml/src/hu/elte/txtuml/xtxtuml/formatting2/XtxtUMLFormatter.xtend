@@ -11,6 +11,7 @@ import hu.elte.txtuml.xtxtuml.xtxtUML.TUComposition
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUConnector
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUConnectorEnd
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUConstructor
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUCreateObjectExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUDeleteObjectExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUEntryOrExitActivity
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUEnumeration
@@ -264,6 +265,11 @@ class XtxtUMLFormatter extends XbaseFormatter {
 
 		format(leftParticipant, document);
 		format(rightParticipant, document);
+	}
+
+	def dispatch void format(TUCreateObjectExpression it, extension IFormattableDocument document) {
+		regionFor.keyword('as').surround[oneSpace];
+		super._format(it, document);
 	}
 
 	override dispatch void format(XBlockExpression it, extension IFormattableDocument document) {

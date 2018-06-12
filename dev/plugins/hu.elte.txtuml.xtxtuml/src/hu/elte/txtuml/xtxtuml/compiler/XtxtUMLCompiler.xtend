@@ -16,7 +16,6 @@ import hu.elte.txtuml.xtxtuml.xtxtUML.TUSendSignalExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUSignalAccessExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUStartObjectExpression
 import org.eclipse.xtext.common.types.JvmType
-import org.eclipse.xtext.xbase.XConstructorCall
 import org.eclipse.xtext.xbase.XExpression
 import org.eclipse.xtext.xbase.compiler.XbaseCompiler
 import org.eclipse.xtext.xbase.compiler.output.ITreeAppendable
@@ -48,29 +47,6 @@ class XtxtUMLCompiler extends XbaseCompiler {
 
 	def dispatch toJavaStatement(TUSignalAccessExpression sigExpr, ITreeAppendable it) {
 		// intentionally left empty
-	}
-
-	override def constructorCallToJavaExpression(XConstructorCall createExpr, ITreeAppendable it) {
-		if(createExpr instanceof TUCreateObjectExpression){
-				val withName = createExpr.objectName != null;
-				if(createExpr.create || withName){
-					append(Action);
-					append('''.create«IF withName»WithName«ENDIF»(''');
-					append('''«createExpr.constructor.simpleName».class«IF withName», "«createExpr.objectName»"«ENDIF»''');
-
-					var i = 0;
-					while(i < createExpr.arguments.size){
-						append(", ");
-						createExpr.arguments.get(i).internalToJavaExpression(it);
-						i++;
-					}
-					append(")");
-				}else{
-					super.constructorCallToJavaExpression(createExpr, it);
-				}
-		}else{
-			super.constructorCallToJavaExpression(createExpr, it);
-		}
 	}
 
 	def dispatch toJavaStatement(TUStartObjectExpression startExpr, ITreeAppendable it) {
@@ -147,6 +123,7 @@ class XtxtUMLCompiler extends XbaseCompiler {
 	override protected internalToConvertedExpression(XExpression obj, ITreeAppendable it) {
 		switch (obj) {
 			TUClassPropertyAccessExpression,
+			TUCreateObjectExpression,
 			TUSignalAccessExpression:
 				obj.toJavaExpression(it)
 			default:
@@ -171,6 +148,29 @@ class XtxtUMLCompiler extends XbaseCompiler {
 		append("getTrigger(");
 		append(sigExpr.lightweightType);
 		append(".class)");
+	}
+
+	def dispatch toJavaExpression(TUCreateObjectExpression createExpr, ITreeAppendable it) {
+		val nameSpecified = createExpr.objectName != null;
+		if (createExpr.^new && !nameSpecified) {
+			super._toJavaExpression(createExpr, it);
+			return;
+		}
+
+		append(Action);
+		append('''.create«IF nameSpecified»WithName«ENDIF»(''');
+		appendConstructedTypeName(createExpr, it);
+		append(".class");
+		if (nameSpecified) {
+			append(''', "«createExpr.objectName»"''');
+		}
+
+		createExpr.arguments.forEach [ arg |
+			append(", ");
+			arg.internalToConvertedExpression(it)
+		]
+
+		append(")");
 	}
 
 }

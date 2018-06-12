@@ -365,10 +365,9 @@ XPrimaryExpression returns xbase::XExpression
  */
 XConstructorCall returns xbase::XConstructorCall :
 	{TUCreateObjectExpression}
-	(create?='create' | 'new') constructor=[types::JvmConstructor|QualifiedName] (
-		=>'<' typeArguments+=JvmSimpleTypeReference '>')?
-	=>explicitConstructorCall?='(' (arguments+=XExpression (',' arguments+=XExpression)*)? ')'
-	('as' objectName = STRING)?
+	(new?='new' | 'create') constructor=[types::JvmConstructor|QualifiedName]
+		=>explicitConstructorCall?='(' (arguments+=XExpression (',' arguments+=XExpression)*)? ')'
+	('as' objectName=STRING)?
 ;
 
 /*
