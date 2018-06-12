@@ -11,6 +11,8 @@ import org.eclipse.xtext.junit4.util.ParseHelper
 import org.eclipse.xtext.junit4.validation.ValidationTestHelper
 import org.eclipse.xtext.xbase.XAbstractFeatureCall
 import org.eclipse.xtext.xbase.XBlockExpression
+import org.eclipse.xtext.xbase.XExpression
+import org.eclipse.xtext.xbase.XVariableDeclaration
 import org.junit.Test
 import org.junit.runner.RunWith
 
@@ -29,15 +31,15 @@ class XtxtUMLScopingTests {
 			package test.model;
 			class C {
 				void foo() {
-					A a = new A();
-					B b = new B();
-					log("message");
-					start(a);
-					start(b);
-					link(CAB.a, a, CAB.b, b);
-					connect(a->(A.P), DAB.bp, b->(B.P));
+					A a = ^create(A);
+					B b = ^create(B);
+					^log("message");
+					^start(a);
+					^start(b);
+					^link(CAB.a, a, CAB.b, b);
+					^connect(a->(A.P), DAB.bp, b->(B.P));
 					^send(new S(), a);
-					unlink(CAB.a, a, CAB.b, b);
+					^unlink(CAB.a, a, CAB.b, b);
 					^delete(a);
 					^delete(b);
 				}
@@ -71,10 +73,18 @@ class XtxtUMLScopingTests {
 		val op = c.members.head as TUOperation;
 		val block = op.body as XBlockExpression;
 
-		assertTrue(block.expressions.drop(2).forall [
-			it instanceof XAbstractFeatureCall &&
-				(it as XAbstractFeatureCall).feature.identifier.startsWith("hu.elte.txtuml.api.model.Action")
+		val isActionCall = [ XExpression expr |
+			expr instanceof XAbstractFeatureCall &&
+				(expr as XAbstractFeatureCall).feature.identifier
+					.startsWith("hu.elte.txtuml.api.model.Action")
+		];
+
+		assertTrue(block.expressions.take(2).forall [
+			it instanceof XVariableDeclaration &&
+				isActionCall.apply((it as XVariableDeclaration).right)
 		]);
+
+		assertTrue(block.expressions.drop(2).forall[isActionCall.apply(it)]);
 	}
 
 }

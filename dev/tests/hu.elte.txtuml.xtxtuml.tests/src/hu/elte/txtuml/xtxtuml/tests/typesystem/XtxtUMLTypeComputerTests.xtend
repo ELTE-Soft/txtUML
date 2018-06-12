@@ -31,9 +31,31 @@ class XtxtUMLTypeComputerTests {
 			package test.model;
 			class A {
 				void foo() {
+					start this;
+					log "message";
+					link this as AA.e, this via AA;
+					unlink this as AA.e, this via AA;
+					connect this->(PA) as CA3.e, this->(PA) via CA3;
 					send new S() to this;
 					delete this;
 				}
+				port PA {}
+			}
+			association AA {
+				A e;
+				A f;
+			}
+			composition CA1 {
+				container C c;
+				A a;
+			}
+			composition CA2 {
+				container C c;
+				A a;
+			}
+			connector CA3 {
+				CA1.a->A.PA e;
+				CA2.a->A.pA f;
 			}
 			signal S;
 		'''.parse;
@@ -43,8 +65,9 @@ class XtxtUMLTypeComputerTests {
 		val block = op.body as XBlockExpression;
 
 		assertEquals("void", block.resolvedTypeId);
-		assertEquals("void", block.expressions.head.resolvedTypeId);
-		assertEquals("void", block.expressions.get(1).resolvedTypeId);
+		block.expressions.forEach [
+			assertEquals("void", resolvedTypeId);
+		]
 	}
 
 	@Test
