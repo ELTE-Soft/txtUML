@@ -35,12 +35,12 @@ public:
 	void dequeue(ValueType& ret)
 	{
 	  std::unique_lock<std::mutex> mlock(_mutex);
-	  while (_queue.empty() && !_stop)
+	  if (_queue.empty() && !_stop)
 	  {
 	    _cond->wait(mlock);
 	  }
 
-	  if (!_stop)
+	  if (!_queue.empty() && !_stop)
 	  {
 			ret = _queue.front();
 			_queue.pop();
