@@ -28,8 +28,7 @@
                icon="icons/txtUML_sequence.png"
                label="Run sequence diagram"
                style="push">
-            <visibleWhen
-                  checkEnabled="true">
+            <visibleWhen>
                <with
                      variable="activeMenuSelection">
                   <iterate
@@ -53,8 +52,7 @@
                icon="icons/txtUML_sequence.png"
                label="Run sequence diagram"
                style="push">
-            <visibleWhen
-                  checkEnabled="true">
+            <visibleWhen>
                <with
                      variable="activeMenuSelection">
                   <iterate
@@ -143,6 +141,12 @@
             properties="hasDescriptionType"
             type="org.eclipse.jdt.core.ICompilationUnit">
       </propertyTester>
+   </extension>
+   <extension
+         point="org.eclipse.ui.startup">
+      <startup
+            class="hu.elte.txtuml.seqdiag.handlers.Startup">
+      </startup>
    </extension>
 
 </plugin>
