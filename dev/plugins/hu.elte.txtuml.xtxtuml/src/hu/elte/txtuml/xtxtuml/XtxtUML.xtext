@@ -248,9 +248,10 @@ TULogExpression returns xbase::XExpression:
 
 TUBindExpression returns xbase::XExpression :
 	{TUBindExpression}
-	type=TUBindType leftParticipant=XMemberFeatureCall ('as' leftEnd=[TUConnectiveEnd|QualifiedName])? ','
-		rightParticipant=XMemberFeatureCall ('as' rightEnd=[TUConnectiveEnd|QualifiedName])?
-		'via' connective=[TUConnective|QualifiedName]
+	type=TUBindType leftParticipant=XMemberFeatureCall (leftAs='as' leftEnd=[TUConnectiveEnd|QualifiedName]?)? ','
+		rightParticipant=XMemberFeatureCall (rightAs='as' rightEnd=[TUConnectiveEnd|QualifiedName]?)?
+		via='via' connective=[TUConnective|QualifiedName]?
+			// features 'leftAs', 'rightAs' and 'via' are for error markers
 ;
 
 enum TUBindType :

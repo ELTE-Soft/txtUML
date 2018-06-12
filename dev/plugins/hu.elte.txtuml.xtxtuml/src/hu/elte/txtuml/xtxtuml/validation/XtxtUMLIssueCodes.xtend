@@ -45,6 +45,8 @@ class XtxtUMLIssueCodes {
 	public static val CONNECTIVE_KIND_MISMATCH_IN_BIND_EXPRESSION = ISSUE_CODE_PREFIX + "connective_kind_mismatch_in_bind_expression";
 	public static val DUPLICATE_END_IN_BIND_EXPRESSION = ISSUE_CODE_PREFIX + "duplicate_end_in_bind_expression";
 	public static val END_MISMATCH_IN_BIND_EXPRESSION = ISSUE_CODE_PREFIX + "end_mismatch_in_bind_expression";
+	public static val MISSING_CONNECTIVE_IN_BIND_EXPRESSION = ISSUE_CODE_PREFIX + "missing_connective_in_bind_expression";
+	public static val MISSING_END_IN_BIND_EXPRESSION = ISSUE_CODE_PREFIX + "missing_end_in_bind_expression";
 
 	// File-related issues
 

@@ -13,6 +13,7 @@ import hu.elte.txtuml.xtxtuml.common.XtxtUMLUtils
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAssociation
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAssociationEnd
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAttributeOrOperationDeclarationPrefix
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUBindExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUClass
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUClassPropertyAccessExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUComposition
@@ -29,7 +30,6 @@ import hu.elte.txtuml.xtxtuml.xtxtUML.TUTransition
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUTransitionPort
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUTransitionTrigger
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUTransitionVertex
-import hu.elte.txtuml.xtxtuml.xtxtUML.XtxtUMLPackage
 import org.eclipse.emf.ecore.EObject
 import org.eclipse.emf.ecore.EReference
 import org.eclipse.jface.text.contentassist.ICompletionProposal
@@ -51,6 +51,8 @@ import org.eclipse.xtext.xbase.typesystem.references.StandardTypeReferenceOwner
 import org.eclipse.xtext.xbase.typesystem.util.CommonTypeComputationServices
 import org.eclipse.xtext.xbase.ui.contentassist.MultiNameDescription
 import org.eclipse.xtext.xbase.ui.contentassist.XbaseReferenceProposalCreator
+
+import static hu.elte.txtuml.xtxtuml.xtxtUML.XtxtUMLPackage.Literals.*
 
 class XtxtUMLReferenceProposalCreator extends XbaseReferenceProposalCreator {
 
@@ -93,22 +95,28 @@ class XtxtUMLReferenceProposalCreator extends XbaseReferenceProposalCreator {
 	 */
 	override queryScope(IScope scope, EObject model, EReference ref, Predicate<IEObjectDescription> filter) {
 		switch (ref) {
-			case XtxtUMLPackage::eINSTANCE.TUConnectorEnd_Role:
+			case TU_CONNECTOR_END__ROLE:
 				scope.selectCompositionEnds(model)
-			case XtxtUMLPackage::eINSTANCE.TUConnectorEnd_Port:
+			case TU_CONNECTOR_END__PORT:
 				scope.selectOwnedPorts(model)
-			case XtxtUMLPackage::eINSTANCE.TUTransitionPort_Port:
+			case TU_TRANSITION_PORT__PORT:
 				scope.selectOwnedBehaviorPorts(model)
-			case XtxtUMLPackage::eINSTANCE.TUTransitionTrigger_Trigger:
+			case TU_TRANSITION_TRIGGER__TRIGGER:
 				scope.selectApplicableTriggers(model)
-			case XtxtUMLPackage::eINSTANCE.TUTransitionVertex_Vertex:
+			case TU_TRANSITION_VERTEX__VERTEX:
 				scope.selectOwnedStates(model)
-			case XtxtUMLPackage::eINSTANCE.TUClassPropertyAccessExpression_Right:
+			case TU_CLASS_PROPERTY_ACCESS_EXPRESSION__RIGHT:
 				scope.selectNavigableClassProperties(model)
-			case XtxtUMLPackage::eINSTANCE.TUSignal_SuperSignal:
+			case TU_SIGNAL__SUPER_SIGNAL:
 				scope.selectExtendableSignals(model)
-			case XtxtUMLPackage::eINSTANCE.TUClass_SuperClass:
+			case TU_CLASS__SUPER_CLASS:
 				scope.selectExtendableClasses(model)
+			case TU_BIND_EXPRESSION__CONNECTIVE:
+				scope.selectMatchingConnectives(model)
+			case TU_BIND_EXPRESSION__LEFT_END:
+				scope.selectMatchingConnectiveEnds(model, TU_BIND_EXPRESSION__RIGHT_END)
+			case TU_BIND_EXPRESSION__RIGHT_END:
+				scope.selectMatchingConnectiveEnds(model, TU_BIND_EXPRESSION__LEFT_END)
 			case XbasePackage::eINSTANCE.XAbstractFeatureCall_Feature:
 				scope.selectAllowedFeatures(model, ref, filter)
 			case TypesPackage::eINSTANCE.jvmParameterizedTypeReference_Type:
@@ -216,6 +224,40 @@ class XtxtUMLReferenceProposalCreator extends XbaseReferenceProposalCreator {
 			return scope.allElements.filter [
 				qualifiedName != selfName
 			]
+		}
+	}
+
+	def private selectMatchingConnectives(IScope scope, EObject model) {
+		if (model instanceof TUBindExpression) {
+			return scope.allElements.filter [
+				switch model.type {
+					case LINK,
+					case UNLINK:
+						EObjectOrProxy instanceof TUAssociation
+					case CONNECT:
+						EObjectOrProxy instanceof TUConnector
+				}
+			];
+		}
+	}
+
+	def private selectMatchingConnectiveEnds(IScope scope, EObject model, EReference otherEndFeature) {
+		if (model instanceof TUBindExpression) {
+			return scope.allElements.filter[
+				val locallyMatching = if (model.connective != null) {
+					EContainerDescription?.qualifiedName == model.connective.fullyQualifiedName
+				} else {
+					switch model.type {
+						case LINK,
+						case UNLINK:
+							EObjectOrProxy instanceof TUAssociationEnd
+						case CONNECT:
+							EObjectOrProxy instanceof TUConnectorEnd
+					}
+				};
+
+				locallyMatching && qualifiedName != (model.eGet(otherEndFeature) as EObject)?.fullyQualifiedName
+			];
 		}
 	}
 

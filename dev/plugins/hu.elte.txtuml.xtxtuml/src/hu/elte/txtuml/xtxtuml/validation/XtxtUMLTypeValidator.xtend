@@ -181,8 +181,9 @@ class XtxtUMLTypeValidator extends XtxtUMLUniquenessValidator {
 	}
 
 	def private isBindExpressionConnectiveValid(TUBindExpression it) {
-		if (connective == null) {
-			// syntax error is raised elsewhere
+		if (connective == null || connective.connectiveEnds.size != 2
+				|| connective.connectiveEnds.exists[endEntity == null]) {
+			// error is raised elsewhere
 			return false;
 		}
 
@@ -202,9 +203,8 @@ class XtxtUMLTypeValidator extends XtxtUMLUniquenessValidator {
 	}
 
 	def private areBindExpressionEndsValid(TUBindExpression it) {
-		if (connective.connectiveEnds.size != 2 || connective.connectiveEnds.exists[endEntity == null]
-				|| #[leftEnd, rightEnd].exists[it != null && endEntity == null]) {
-			// syntax error is raised elsewhere
+		if (#[leftEnd, rightEnd].exists[it != null && endEntity == null]) {
+			// error is raised elsewhere
 			return false;
 		}
 

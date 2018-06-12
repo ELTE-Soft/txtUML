@@ -194,6 +194,25 @@ class XtxtUMLExpressionValidator extends XtxtUMLTypeValidator {
 		}
 	}
 
+	@Check
+	def checkBindExpressionPartIsNotMissing(TUBindExpression bindExpr) {
+		if (bindExpr.via != null && bindExpr.connective == null) {
+			error("Missing connective", bindExpr, TU_BIND_EXPRESSION__VIA, MISSING_CONNECTIVE_IN_BIND_EXPRESSION);
+		}
+
+		#[bindExpr.leftAs -> bindExpr.leftEnd -> TU_BIND_EXPRESSION__LEFT_AS,
+				bindExpr.rightAs -> bindExpr.rightEnd -> TU_BIND_EXPRESSION__RIGHT_AS]
+		.forEach[ asToEndToFeature |
+			val currentAs = asToEndToFeature.key.key;
+			val currentEnd = asToEndToFeature.key.value;
+			val currentFeature = asToEndToFeature.value;
+
+			if (currentAs != null && currentEnd == null) {
+				error("Missing connective end", bindExpr, currentFeature, MISSING_CONNECTIVE_IN_BIND_EXPRESSION);
+			}
+		]
+	}
+
 	/*
 	 * TODO modify ExtensionScopeHelper
 	 */
