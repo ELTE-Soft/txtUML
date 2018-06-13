@@ -67,7 +67,7 @@ class UserVariableExporter {
 		return variableTable.values();
 	}
 
-	public String getRealVariableName(Variable var) {
+	public String getRealVariableReference(Variable var) {
 		if (variableTable.get(var) != null) {
 			return variableTable.get(var).getName();
 		} else {

@@ -48,6 +48,16 @@ public:
 		}
 	}
 
+	MultipliedElement (const ElementType& e) {
+		add (e);
+	}
+
+	MultipliedElement& operator=(const ElementType& e) {
+		objects.clear ();
+		add (e);
+		return *this;
+	}
+
 	void add(ElementType o) {
 		objects.push_back(o);
 	}
@@ -205,6 +215,9 @@ template<typename T>
 bool inline operator||(const Model::MultipliedElement<T, 1, 1>& e1, const T& e2) { return e1.one() || e2; }
 template<typename T>
 bool inline operator||(const T& e1, const Model::MultipliedElement<T, 1, 1>& e2) { return e1 || e2.one(); }
+
+template<typename T>
+bool inline operator!(const Model::MultipliedElement<T, 1, 1>& e) { return !e.one (); }
 
 template<typename T>
 std::ostream& operator<<(std::ostream& out, const Model::MultipliedElement<T, 1, 1>& e) { return out << e.one(); }
