@@ -32,10 +32,7 @@ public:
 	*/
 	static ES::RuntimePtr<RuntimeType,NC> getRuntimeInstance()
 	{
-		if (instance == nullptr)
-		{
-			instance = RuntimeType::createRuntime();
-		}
+		std::call_once (runtimeInstanceInitFlag, initRuntime);
 		return instance;
 	}
 
@@ -92,8 +89,16 @@ public:
 
 
 protected:
-	static ES::RuntimePtr<RuntimeType,NC> instance;
-	IRuntime() {}
+	IRuntime () {}
+
+private:
+	static void initRuntime ()
+	{
+		instance = RuntimeType::createRuntime ();
+
+	}
+	static ES::RuntimePtr<RuntimeType, NC> instance;
+	static std::once_flag				   runtimeInstanceInitFlag;
 };
 
 template<int NC>
@@ -112,9 +117,9 @@ public:
 	void setConfiguration(std::array<ES::SharedPtr<Configuration>,NC>);
 	bool isConfigurated();
 	void stopUponCompletion();
-	static ES::RuntimePtr<SingleThreadRT,NC> createRuntime() { return ES::RuntimePtr<SingleThreadRT<NC>,NC>(new SingleThreadRT<NC>()); }
+	static ES::RuntimePtr<SingleThreadRT, NC> createRuntime () { return ES::RuntimePtr<SingleThreadRT<NC>, NC> (new SingleThreadRT<NC> ()); }
 private:
-	SingleThreadRT();
+	SingleThreadRT ();
 	ES::SharedPtr<ES::MessageQueueType> _messageQueue;
 
 };
@@ -135,9 +140,9 @@ public:
 	void setConfiguration(std::array<ES::SharedPtr<Configuration>, NC>);
 	bool isConfigurated();
 	void stopUponCompletion();
-	static ES::RuntimePtr<ConfiguredThreadedRT,NC> createRuntime() { return ES::RuntimePtr<ConfiguredThreadedRT<NC>,NC>(new ConfiguredThreadedRT<NC>()); }
+	static ES::RuntimePtr<ConfiguredThreadedRT, NC> createRuntime () { return ES::RuntimePtr<ConfiguredThreadedRT<NC>, NC> (new ConfiguredThreadedRT<NC> ()); }
 private:
-	ConfiguredThreadedRT();
+	ConfiguredThreadedRT ();
 	ES::SharedPtr<ThreadPoolManager<NC>> poolManager;
 	std::array<unsigned, NC> numberOfObjects;
 
@@ -151,7 +156,8 @@ private:
 
 template<typename RuntimeType, int NC>
 ES::RuntimePtr<RuntimeType,NC> IRuntime<RuntimeType, NC>::instance = nullptr;
-
+template<typename RuntimeType, int NC>
+std::once_flag				 IRuntime<RuntimeType, NC>::runtimeInstanceInitFlag;
 
 // SingleThreadRT
 template<int NC>
