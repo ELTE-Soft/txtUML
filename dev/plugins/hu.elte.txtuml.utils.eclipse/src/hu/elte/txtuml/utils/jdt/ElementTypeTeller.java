@@ -441,6 +441,10 @@ public final class ElementTypeTeller {
 	public static boolean isCollection(TypeDeclaration binding) {
 		return SharedUtils.typeIsAssignableFrom(binding, GeneralCollection.class);
 	}
+	
+	public static boolean isCollection(ITypeBinding bnd) {
+		return SharedUtils.typeIsAssignableFrom(bnd, GeneralCollection.class);
+	}
 
 	public static boolean isFMUEnvironment(ITypeBinding binding) {
 	  	return SharedUtils.typeIsAssignableFrom(binding, FMUEnvironment.class);

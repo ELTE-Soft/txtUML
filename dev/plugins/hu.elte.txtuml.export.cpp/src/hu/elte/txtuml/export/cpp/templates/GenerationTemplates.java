@@ -11,7 +11,70 @@ public class GenerationTemplates {
 
 	public static final String StandardIOinclude = GenerationNames.StandardIOInclude;
 	public static final String DeploymentHeader = GenerationNames.DeploymentHeaderName;
+	
+	
+	public enum ClassDeclerationType {
+		Class(GenerationNames.TypeDeclarationKeywords.ClassType),
+		AssocDescriptor(GenerationNames.TypeDeclarationKeywords.AssociationEndDescriptor);
+		
+		private String typeString;
+		
+		ClassDeclerationType(String typeString) {
+			this.typeString = typeString;
+		}
+		
+		String getTypeDeclerationString() {
+			return typeString;
+		}
+		
+		
+	}
+	
+	public enum VariableType {				
+		RawPointerType,
+		StackStored,
+		EventPtr,
+		SharedPtr,
+		OriginalType,
+		UMLVariableType,
+		EType;
+		
+		VariableType() {
+			lowMul = 1;
+			upMul = 1;
+		}
+		
+		
+		
+		public int getLowMul() {
+			return lowMul;
+		}
 
+		public int getUpMul() {
+			return upMul;
+		}
+
+
+		public void setLowMul(int lowMul) {
+			this.lowMul = lowMul;
+		}
+
+		public void setUpMul(int upMul) {
+			this.upMul = upMul;
+		}
+
+		int lowMul;
+		int upMul;
+		
+		public static VariableType getUMLMultpliedElementType(int low, int up) {
+			VariableType type = UMLVariableType;
+			type.setLowMul(low);
+			type.setUpMul(up);
+			return type;
+		}
+	}
+	
+	
 	public static String headerName(String className) {
 		return className + "." + FileNames.HeaderExtension;
 	}
@@ -38,10 +101,11 @@ public class GenerationTemplates {
 		return GenerationNames.formatIncomingParamName(paramName);
 	}
 
-	public static String forwardDeclaration(String className) {
-		return GenerationNames.TypeDeclarationKeywords.ClassType + " " + PrivateFunctionalTemplates.mapUMLClassToCppClass(className) + ";\n";
-	}
+	public static String forwardDeclaration(String className, ClassDeclerationType type) {
+		
+		return type.getTypeDeclerationString() + " " + PrivateFunctionalTemplates.mapUMLTypeToCppClass(className) + ";\n";
 
+	}
 	public static String putNamespace(String source, String namespace) {
 		return "namespace " + namespace + "\n{\n" + source + "\n}\n";
 	}

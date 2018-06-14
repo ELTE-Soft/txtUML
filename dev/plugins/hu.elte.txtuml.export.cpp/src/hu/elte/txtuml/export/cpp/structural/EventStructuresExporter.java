@@ -14,6 +14,7 @@ import org.eclipse.uml2.uml.Signal;
 
 import hu.elte.txtuml.export.cpp.ActivityExportResult;
 import hu.elte.txtuml.export.cpp.CppExporterUtils;
+import hu.elte.txtuml.export.cpp.CppExporterUtils.TypeDescriptor;
 import hu.elte.txtuml.export.cpp.ICppCompilationUnit;
 import hu.elte.txtuml.export.cpp.activity.ActivityExporter;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames;
@@ -33,18 +34,19 @@ public class EventStructuresExporter implements ICppCompilationUnit {
 	public EventStructuresExporter(Map<Signal, Operation> eventListWithConstructors, String outputDirectory) {
 		this.eventListWithConstructors = eventListWithConstructors;
 
-		activityExporter = new ActivityExporter(Optional.empty());
+		activityExporter = new ActivityExporter(Optional.empty(), false);
 		dependencyExporter = new DependencyExporter();
 
 		this.outputDirectory = outputDirectory;
 	}
 
-	private List<Pair<String, String>> getSignalParams(Entry<Signal, Operation> signal) {
-		List<Pair<String, String>> ret = new ArrayList<Pair<String, String>>();
+	private List<Pair<TypeDescriptor, String>> getSignalParams(Entry<Signal, Operation> signal) {
+		List<Pair<TypeDescriptor, String>> ret = new ArrayList<>();
 		List<Parameter> selfFilteredParameters = signal.getValue().getOwnedParameters().stream()
 				.filter(p -> !p.getType().getName().equals(signal.getKey().getName())).collect(Collectors.toList());
 		for (Parameter param : selfFilteredParameters) {
-			ret.add(new Pair<String, String>(param.getType().getName(), param.getName()));
+			ret.add(new Pair<>(new TypeDescriptor(param.getType().getName(), 
+					param.getLower(), param.getUpper()), param.getName()));
 		}
 		return ret;
 	}
@@ -71,9 +73,9 @@ public class EventStructuresExporter implements ICppCompilationUnit {
 		StringBuilder eventClasses = new StringBuilder("");
 		StringBuilder events = new StringBuilder("");
 		StringBuilder typeDefinitions = new StringBuilder("");
-		List<Pair<String, String>> allParam = new LinkedList<Pair<String, String>>();
+		List<Pair<TypeDescriptor, String>> allParam = new LinkedList<>();
 		for (Entry<Signal, Operation> signal : eventListWithConstructors.entrySet()) {
-			List<Pair<String, String>> currentParams = getSignalParams(signal);
+			List<Pair<TypeDescriptor, String>> currentParams = getSignalParams(signal);
 			ActivityExportResult ctrBody = activityExporter
 					.createFunctionBody(CppExporterUtils.getOperationActivity(signal.getValue()));
 			allParam.addAll(currentParams);
@@ -84,9 +86,13 @@ public class EventStructuresExporter implements ICppCompilationUnit {
 		}
 
 		dependencyExporter = new DependencyExporter();
-		for (Pair<String, String> param : allParam) {
-			dependencyExporter.addDependency(param.getFirst());
+		for (Pair<TypeDescriptor, String> param : allParam) {
+			dependencyExporter.addDependency(param.getFirst().getTypeName());
 		}
+		if(!allParam.isEmpty()) {
+			dependencyExporter.addHeaderOnlyIncludeDependency(GenerationNames.FileNames.ElementsFilePath);
+		}
+
 
 		source.append("enum Events {" + CppExporterUtils.cutOffTheLastCharacter(events.toString()) + "};\n");
 		source.append(eventClasses);
@@ -96,8 +102,8 @@ public class EventStructuresExporter implements ICppCompilationUnit {
 
 	@Override
 	public String getUnitDependencies(UnitType type) {
-		return RuntimeTemplates.eventHeaderInclude()
-				+ dependencyExporter.createDependencyHeaderIncludeCode(GenerationNames.Namespaces.ModelNamespace);
+		return RuntimeTemplates.eventHeaderInclude() + 
+				dependencyExporter.createDependencyHeaderIncludeCode(GenerationNames.Namespaces.ModelNamespace);
 	}
 
 	@Override

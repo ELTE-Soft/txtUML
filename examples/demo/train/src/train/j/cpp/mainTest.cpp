@@ -3,7 +3,7 @@
 
 #include "Env.hpp"
 #include "deployment.hpp"
-#include "associations.hpp"
+#include "AssociationInstances.hpp"
 #include "Action.hpp"
 #include "EventStructures.hpp"
 #include "Gearbox.hpp"
@@ -19,9 +19,9 @@ int main()
 	Model::Gearbox g;
 	Model::Engine e;
 	Model::Lamp l;
-	Action::link<typename Model::GE::g, typename Model::GE::e>(&g, &e);
-	Action::link<typename Model::GL::g, typename Model::GL::l>(&g, &l);
-	Action::link<typename Model::LE::l, typename Model::LE::e>(&l, &e);
+	Action::link(Model::GE.g, &g, Model::GE.e, &e);
+	Action::link(Model::GL.g, &g, Model::GL.l, &l);
+	Action::link(Model::LE.l, &l, Model::LE.e, &e);
 	Action::start(&g);
 	Action::start(&e);
 	Action::start(&l);

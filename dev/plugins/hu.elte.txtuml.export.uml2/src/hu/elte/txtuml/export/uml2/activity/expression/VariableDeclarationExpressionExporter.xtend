@@ -23,7 +23,7 @@ class VariableDeclarationExpressionExporter extends ActionExporter<VariableDecla
 			storeVariable(variable)
 			
 			if (decl.initializer != null) {
-				variable.write(exportExpression(decl.initializer))
+				variable.write(exportExpression(decl.initializer), true)
 			}
 		]
 	}

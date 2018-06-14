@@ -25,7 +25,7 @@ class CMakeSupport {
 	private static final String CMAKE_MINIMUM_VERSION = "2.8.12";
 	private static final String CMAKE_FILE_NAME = "CMakeLists.txt";
 
-	private static final String CPP_STANDARD = "c++11";
+	private static final String CPP_STANDARD = "c++14";
 	private static final String STRICTLY_NO_WARNINGS = "-Wall -pedantic -Wextra -Wconversion -Werror";
 	private static final String STRICTLY_NO_WARNINGS_WIN = "/W3 /WX";
 

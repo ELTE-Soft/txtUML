@@ -6,8 +6,9 @@ import org.eclipse.jdt.core.dom.IVariableBinding
 import org.eclipse.uml2.uml.NamedElement
 import org.eclipse.uml2.uml.Property
 import org.eclipse.uml2.uml.TypedElement
+import org.eclipse.uml2.uml.MultiplicityElement
 
-abstract class TypedNamedExporter<T extends TypedElement & NamedElement> extends Exporter<IVariableBinding, IVariableBinding, T> {
+abstract class TypedNamedMultipliedExporter<T extends TypedElement & NamedElement & MultiplicityElement> extends Exporter<IVariableBinding, IVariableBinding, T> {
 
 	new(BaseExporter<?, ?, ?> parent) {
 		super(parent);
@@ -15,12 +16,12 @@ abstract class TypedNamedExporter<T extends TypedElement & NamedElement> extends
 
 	override exportContents(IVariableBinding binding) {
 		result.name = binding.name
-		result.type = fetchType(binding.type)
+		fillElementTypeAndBounds(binding.type, result)
 		result.visibility = getVisibility(binding.getModifiers)
 	}
 }
 
-class FieldExporter extends TypedNamedExporter<Property> {
+class FieldExporter extends TypedNamedMultipliedExporter<Property> {
 
 	new(BaseExporter<?, ?, ?> parent) {
 		super(parent)

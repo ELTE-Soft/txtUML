@@ -18,12 +18,12 @@ void StateMachineThreadPool::stopPool()
 
 }
 
-void StateMachineThreadPool::startPool(int n)
+void StateMachineThreadPool::startPool(unsigned n)
 {
 	_stateMachines.startQueue();
 	_stop = false;
 	modifyThreads(n);
-	for(int i = 0; i < n; ++i)
+	for(unsigned i = 0; i < n; ++i)
 	{
 		workers.addThread(new std::thread(&StateMachineThreadPool::task, this));
 	}
@@ -105,11 +105,11 @@ void StateMachineThreadPool::task()
 
 }
 
-void StateMachineThreadPool::modifyThreads(int n)
+void StateMachineThreadPool::modifyThreads(unsigned n)
 {
 	if (!_stop)
 	{
-		workers.setExpectedThreads(n);
+		workers.setExpectedThreads((int)n);
 	}
 }
 

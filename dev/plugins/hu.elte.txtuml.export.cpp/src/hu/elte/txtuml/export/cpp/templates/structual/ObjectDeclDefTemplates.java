@@ -7,38 +7,18 @@ import hu.elte.txtuml.export.cpp.CppExporterUtils;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.ModifierNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.PointerAndMemoryNames;
+import hu.elte.txtuml.export.cpp.templates.GenerationTemplates;
 import hu.elte.txtuml.export.cpp.templates.PrivateFunctionalTemplates;
 import hu.elte.txtuml.export.cpp.templates.activity.ActivityTemplates;
-import hu.elte.txtuml.export.cpp.templates.statemachine.EventTemplates;
 
 public class ObjectDeclDefTemplates {
-	public enum VariableType {
-		Default,
-		StackStored,
-		EventPtr,
-		SharedPtr
-	}
-	public static String variableDecl(String typeName, String variableName, String defaultValue, VariableType varType, boolean isStatic) {
+
+	public static String variableDecl(String typeName, String variableName, String defaultValue, Optional<List<String>> templateParameters, GenerationTemplates.VariableType varType, boolean isStatic) {
 		StringBuilder source = new StringBuilder("");
 		String type = "";
-		switch(varType) {
-		case Default:
-			type = PrivateFunctionalTemplates.cppType(typeName);
-			break;
-		case EventPtr:
-			type = EventTemplates.eventPtr(typeName);
-			break;
-		case SharedPtr:
-			type = GenerationNames.sharedPtrType(typeName);
-			break;
-		case StackStored:
-			type = typeName;
-			break;
-		default:
-			assert(false);
-			break;
-		
-		}
+		String actualTypeName = typeName + CppExporterUtils.createTemplateParametersCode(templateParameters);
+		type = PrivateFunctionalTemplates.cppType(actualTypeName, varType);
+	
 		if(isStatic) {
 			source.append(ModifierNames.StaticModifier + " ");
 		}
@@ -53,21 +33,23 @@ public class ObjectDeclDefTemplates {
 	}
 
 	public static String variableDecl(String typeName, String variableName) {
-		return variableDecl(typeName, variableName, "", VariableType.Default, false);
+		return variableDecl(typeName, variableName, "", Optional.empty(), GenerationTemplates.VariableType.RawPointerType, false);
 	}
 
-	public static String variableDecl(String typeName, String variableName, VariableType varType) {
-		return variableDecl(typeName, variableName, "", varType, false);
+	public static String variableDecl(String typeName, String variableName, GenerationTemplates.VariableType varType) {
+		return variableDecl(typeName, variableName, "", Optional.empty(), varType, false);
 	}
-
-	public static String propertyDecl(String typeName, String variableName, String defaultValue, Optional<List<String>> templateParameters, VariableType varType) {
-		return variableDecl(typeName + 
-				CppExporterUtils.createTemplateParametersCode(templateParameters), 
-				variableName, defaultValue, varType, false);
+	
+	public static String propertyDecl(String typeName, String variableName, String defaultValue, Optional<List<String>> templateParameters, GenerationTemplates.VariableType varType) {
+		return variableDecl(typeName,variableName, defaultValue,templateParameters, varType, false);
+	}
+	
+	public static String propertyDecl(String typeName, String variableName, String defaultValue,  GenerationTemplates.VariableType varType) {
+		return variableDecl(typeName, variableName, defaultValue,Optional.empty(), varType, false);
 	}
 	
 	public static String propertyDecl(String typeName, String variableName, String defaultValue) {
-		return variableDecl(typeName, variableName, defaultValue, VariableType.Default, false);
+		return variableDecl(typeName, variableName, defaultValue,Optional.empty(), GenerationTemplates.VariableType.RawPointerType, false);
 	}
 
 	public static String createObject(String typeName, String objName, boolean sharedObject) {
@@ -119,7 +101,7 @@ public class ObjectDeclDefTemplates {
 	}
 
 	public static String staticPropertyDecl(String typeName, String variableName) {
-		return variableDecl(typeName, variableName, "", VariableType.StackStored, true);
+		return variableDecl(typeName, variableName, "",Optional.empty(), GenerationTemplates.VariableType.StackStored, true);
 	}
 	
 	public static String staticPropertyDef(String typeName, String ownerClassName, String propertyName, Optional<String> value) {
