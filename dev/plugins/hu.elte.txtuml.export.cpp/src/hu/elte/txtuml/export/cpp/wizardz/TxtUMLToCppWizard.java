@@ -100,8 +100,9 @@ public class TxtUMLToCppWizard extends Wizard {
 				buildSupport.handleErrors();
 		
 			}
-			
-			Desktop.getDesktop().open(new File(outputDirectory));
+			if(System.getProperty("os.name").startsWith("WIN") && Desktop.isDesktopSupported()) { //TODO hotfix only, desktop not working on linux currently
+				Desktop.getDesktop().open(new File(outputDirectory));
+			}
 		} catch(FileNotFoundException e) {
 			Dialogs.errorMsgb("C++ file copying error", "Unable to copy selected file", e);		
 			return false;
