@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.eclipse.core.runtime.Path;
 
+import hu.elte.txtuml.export.cpp.CppExporterUtils.TypeDescriptor;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.PointerAndMemoryNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.StateMachineMethodNames;
 import hu.elte.txtuml.export.cpp.templates.statemachine.EventTemplates;
@@ -41,13 +42,13 @@ public class RuntimeTemplates {
 	
 	public static String processEventVirtualDecl() {	
 		return "virtual" + " " + FunctionTemplates.functionDecl(EventTemplates.ProcessEventFunctionName, 
-				Arrays.asList(GenerationNames.PointerAndMemoryNames.EventPtr));
+				Arrays.asList(new TypeDescriptor(GenerationNames.PointerAndMemoryNames.EventPtr)));
 	}
 
 	public static String processEventVirtual(String className) {
 		String eventName = "event";
-		List<Pair<String,String>> params = new ArrayList<>();
-		params.add(new Pair<String,String>(GenerationNames.PointerAndMemoryNames.EventPtr, eventName));
+		List<Pair<TypeDescriptor,String>> params = new ArrayList<>();
+		params.add(new Pair<TypeDescriptor,String>(new TypeDescriptor(GenerationNames.PointerAndMemoryNames.EventPtr), eventName));
 		return FunctionTemplates.functionDef(className, 
 				EventTemplates.ProcessEventFunctionName, 
 				params, StateMachineMethodNames.ProcessEventFName + "(" + GenerationNames.formatIncomingParamName(eventName) + ");");
@@ -55,13 +56,13 @@ public class RuntimeTemplates {
 	
 	public static String processInitTransitionDecl() {
 		return "virtual" + " " + FunctionTemplates.functionDecl(StateMachineTemplates.ProcessInitTransitionFunctionName, 
-				Arrays.asList(GenerationNames.PointerAndMemoryNames.EventPtr)); 
+				Arrays.asList(new TypeDescriptor(GenerationNames.PointerAndMemoryNames.EventPtr))); 
 	}
 
 	public static String processInitTransition(String className) {
 		String eventName = "event";
-		List<Pair<String,String>> params = new ArrayList<>();
-		params.add(new Pair<String,String>(GenerationNames.PointerAndMemoryNames.EventPtr, eventName));
+		List<Pair<TypeDescriptor,String>> params = new ArrayList<>();
+		params.add(new Pair<TypeDescriptor,String>(new TypeDescriptor(GenerationNames.PointerAndMemoryNames.EventPtr), eventName));
 		return FunctionTemplates.functionDef(className, 
 				StateMachineTemplates.ProcessInitTransitionFunctionName, 
 				params, StateMachineMethodNames.InitializeFunctionName + "(" + GenerationNames.formatIncomingParamName(eventName) + ");");

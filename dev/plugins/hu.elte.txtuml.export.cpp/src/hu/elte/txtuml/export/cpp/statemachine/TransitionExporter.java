@@ -32,7 +32,7 @@ public class TransitionExporter {
 		this.owner = owner;
 		this.transitions = transitions;
 		this.guardExporter = guardExporter;
-		this.activityExporter = new ActivityExporter(Optional.of(ownerDependencyCollector));
+		this.activityExporter = new ActivityExporter(Optional.of(ownerDependencyCollector), false);
 
 	}
 

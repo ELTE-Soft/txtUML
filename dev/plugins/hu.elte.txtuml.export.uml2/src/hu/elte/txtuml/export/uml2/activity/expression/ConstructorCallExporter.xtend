@@ -21,7 +21,7 @@ class ConstructorCallExporter extends CreationExporter<ClassInstanceCreation> {
 		val create = createObject(ctorBinding.declaringClass.name, createdType)
 
 		val tempVar = result.createVariable("#temp", createdType)
-		tempVar.write(create)
+		tempVar.write(create, true)
 
 		if (ElementTypeTeller.isSignal(ctorBinding.declaringClass)) {
 			val newArgs = new LinkedList(source.arguments.map[exportExpression])
