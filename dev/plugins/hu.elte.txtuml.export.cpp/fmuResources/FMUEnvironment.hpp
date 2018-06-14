@@ -2,24 +2,14 @@
 #define fmuenvironment_hpp
 
 #include "fmi2Functions.h"
-#include "statemachinebase.hpp"
 #include "StateMachineOwner.hpp"
-#include "associations.hpp"
 
 namespace Model {
 
 class FMUEnvironment : public StateMachineOwner {
   public:
     bool process_event(ES::EventRef) = 0;
-    void setInitialState() = 0;
-
-    Model::AssociationEnd<$fmuclass> $fmuassociationend = AssociationEnd< $fmuclass > (1, 1);
-    
-    template<typename EndPointName>
-    void link(typename EndPointName::EdgeType*);
-    
-    template<typename EndPointName>
-    void unlink(typename EndPointName::EdgeType*);
+    void setInitialState() = 0;   
 
 	void processEventVirtual(ES::EventRef event_) {
 		process_event(event_);

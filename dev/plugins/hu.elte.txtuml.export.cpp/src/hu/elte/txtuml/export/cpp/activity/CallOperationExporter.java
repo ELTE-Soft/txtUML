@@ -135,8 +135,7 @@ class CallOperationExporter {
 			
 			
 			if(op.getUpper() == 1 && returnPin != null) {
-				val = ActivityTemplates.operationCall(val, PointerAndMemoryNames.SimpleAccess, 
-						CollectionNames.SelectAnyFunctionName, Collections.emptyList());
+				val = CppExporterUtils.oneReadReference(val);
 			}
 
 

@@ -7,6 +7,7 @@ import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -38,7 +39,9 @@ import org.eclipse.uml2.uml.Usage;
 
 import hu.elte.txtuml.export.cpp.templates.GenerationNames;
 import hu.elte.txtuml.export.cpp.templates.PrivateFunctionalTemplates;
+import hu.elte.txtuml.export.cpp.templates.GenerationNames.CollectionNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.ModifierNames;
+import hu.elte.txtuml.export.cpp.templates.GenerationNames.PointerAndMemoryNames;
 import hu.elte.txtuml.export.cpp.templates.activity.ActivityTemplates;
 import hu.elte.txtuml.utils.Pair;
 
@@ -395,6 +398,11 @@ public class CppExporterUtils {
 
 		Process process = processBuilder.start();
 		return process.waitFor();
+	}
+	
+	public static String oneReadReference(String varName) {
+		return ActivityTemplates.operationCall(varName, PointerAndMemoryNames.SimpleAccess, 
+				CollectionNames.SelectAnyFunctionName, Collections.emptyList());
 	}
 
 }

@@ -16,6 +16,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Platform;
 import org.osgi.framework.Bundle;
 
+import hu.elte.txtuml.export.cpp.CppExporterUtils;
 import hu.elte.txtuml.export.cpp.Uml2ToCppExporter;
 
 public class EnvironmentExporter {
@@ -140,7 +141,8 @@ public class EnvironmentExporter {
 	private String generateSetOutputVariables(List<VariableDefinition> variables) {
 		StringBuilder sb = new StringBuilder();
 		for (VariableDefinition var : variables) {
-			sb.append("vars->").append(var.name).append(" = myevent->").append(var.name).append(";\n");
+			String varOneRef = CppExporterUtils.oneReadReference(var.name);
+			sb.append("vars->").append(var.name).append(" = myevent->").append(varOneRef).append(";\n");
 		}
 		return sb.toString();
 	}

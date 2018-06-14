@@ -62,7 +62,6 @@ public class FMUExportGovernor {
 					if (bind.getQualifiedName().equals(FMU.class.getCanonicalName())) {
 						config.umlClassName = getAnnotValueAsString(annotMod, "fmuClass");
 					} else if (bind.getQualifiedName().equals(FMUAssociationEnd.class.getCanonicalName())) {
-						config.fmuAssociationEndName = getFMUAssociationEndName(annotMod);
 					} else if (bind.getQualifiedName().equals(FMUInput.class.getCanonicalName())) {
 						String inputSignalName = getAnnotValueAsString(annotMod, "inputSignal");
 						config.inputSignalConfig = Optional.of(inputSignalName);
@@ -102,13 +101,6 @@ public class FMUExportGovernor {
 		} else {
 			return annotValue.toString();
 		}
-	}
-
-	private String getFMUAssociationEndName(NormalAnnotation annotMod) {
-		Object assocEndAnnotValue = getAnnotValue(annotMod, "fmuAssociationEnd");
-		ITypeBinding assocEndBinding = ((TypeLiteral) assocEndAnnotValue).getType().resolveBinding();
-		ITypeBinding assocBinding = assocEndBinding.getDeclaringClass();
-		return assocBinding.getName() + "_" + assocEndBinding.getName();
 	}
 
 	private List<VariableDefinition> loadClassMembers(IJavaProject javaProject, String typeName) throws JavaModelException {
