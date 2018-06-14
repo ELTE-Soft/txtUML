@@ -17,7 +17,7 @@ int main()
 	Model::User u1;
 	Model::User u2;
 
-	Action::link(Model::Usage.usedMachine, &m, Model::Usage.userOfMachine,&u1);
+	Action::link(Model::Usage.usedMachine, &m, Model::Usage.userOfMachine, &u1);
 	Action::link(Model::Usage.usedMachine, &m, Model::Usage.userOfMachine, &u2);
 
 	Action::log("Machine and users are starting.");
