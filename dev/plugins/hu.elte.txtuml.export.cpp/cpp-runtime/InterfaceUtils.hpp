@@ -1,3 +1,7 @@
+/** @file InterfaceUtils.hpp
+Contains prewritten interface bases to create an integrated interface width required and provided part.
+*/
+
 #ifndef INTERFACE_UTILS_HPP
 #define INTERFACE_UTILS_HPP
 

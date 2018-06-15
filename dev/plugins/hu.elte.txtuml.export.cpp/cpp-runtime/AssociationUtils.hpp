@@ -1,4 +1,5 @@
 /** @file AssociationUtils.hpp
+Contains classes to create an association structure and instances
 */
 
 #ifndef ASSOCIATION_UTILS_H
@@ -68,9 +69,7 @@ private:
 template<class FirstClassRole, class SecondClassRole>
 class AssocOwner {
 public:
-	using AssocType = Association<FirstClassRole, SecondClassRole>;
-
-	typename AssocOwner<FirstClassRole, SecondClassRole>::AssocType* association = nullptr;
+	typename Association<FirstClassRole, SecondClassRole>* association = nullptr;
 
 };
 
@@ -81,35 +80,5 @@ struct AssocEnd : public AssocOwner<FirstClassRole, SecondClassRole> {
 };
 
 }
-/*
-class A {};
-
-// A a1(1)<->a2(0..1) A
-
-struct a1End;
-struct a2End;
-struct a1End : public AssocEnd<a1End, a2End, A, 1,1
-        //ha tobb van,
-        //akar a collection tipusat is meg lehet adni,
-        //pl: list vagy vector
->
-{
-    a1End * a1 = this;
-};
-
-struct a2End : public AssocEnd<a1End, a2End, A, 0,1> {
-    a2End * a2 = this;
-};
-
-
-
-Association<a1End, a2End> assocName;
-A *a1,*a2;
-Action::link(assocName.a1, a1, assocName.a2, a2);
-Action::unlink(assocName.a1, a1, assocName.a2, a2);
-a2End::CollectionType //a tipus a vegponttol fugg
-a2endCollection = a1.assoc(assocName.a2);
-A* selectA2  = a2endCollection.one(); //count, meg ilyesmik ugyanugy mukodnek
-*/
 
 #endif

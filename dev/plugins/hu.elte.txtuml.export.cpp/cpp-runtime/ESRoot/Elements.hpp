@@ -1,3 +1,7 @@
+/** @file Elements.hpp
+Contains multiplied element class to handle properties and variables multiplicity
+*/
+
 #ifndef ElEMENTS_HPP
 #define ElEMENTS_HPP
 
