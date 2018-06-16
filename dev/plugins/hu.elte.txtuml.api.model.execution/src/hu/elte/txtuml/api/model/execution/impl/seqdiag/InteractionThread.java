@@ -32,7 +32,7 @@ import hu.elte.txtuml.utils.Logger;
  * inner invariants described at {@link #currentMessage}.
  */
 @SequenceDiagramRelated
-public class InteractionThread extends AbstractModelExecutor.OwnedThread<DefaultSeqDiagExecutor>
+class InteractionThread extends AbstractModelExecutor.OwnedThread<DefaultSeqDiagExecutor>
 		implements InteractionRuntime, SeqDiagThread {
 
 	/*

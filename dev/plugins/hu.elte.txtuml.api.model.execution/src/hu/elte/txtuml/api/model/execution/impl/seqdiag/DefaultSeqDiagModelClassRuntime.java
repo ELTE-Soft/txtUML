@@ -11,9 +11,9 @@ import hu.elte.txtuml.api.model.execution.impl.singlethread.SingleThreadModelCla
  * so it may not be used in a multi-threaded executor as it lacks the necessary
  * synchronizations.
  */
-class SeqDiagModelClassRuntime extends SingleThreadModelClassRuntime {
+class DefaultSeqDiagModelClassRuntime extends SingleThreadModelClassRuntime {
 
-	public SeqDiagModelClassRuntime(ModelClass wrapped, AbstractExecutorThread thread) {
+	public DefaultSeqDiagModelClassRuntime(ModelClass wrapped, AbstractExecutorThread thread) {
 		super(wrapped, thread);
 	}
 
