@@ -1,7 +1,8 @@
 package hu.elte.txtuml.export.plantuml.exceptions;
 
 /**
- * Structural error exception for the case when there is some internal error
+ * Structural error exception for the case when there is some internal compiler
+ * error.
  */
 public class SequenceDiagramStructuralException extends SequenceDiagramExportException {
 
@@ -10,4 +11,5 @@ public class SequenceDiagramStructuralException extends SequenceDiagramExportExc
 	public SequenceDiagramStructuralException(String message) {
 		super(message);
 	}
+
 }

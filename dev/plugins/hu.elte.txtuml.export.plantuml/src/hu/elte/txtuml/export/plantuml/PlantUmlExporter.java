@@ -37,13 +37,15 @@ import hu.elte.txtuml.export.plantuml.generator.PlantUmlGenerator;
 import hu.elte.txtuml.utils.jdt.SharedUtils;
 
 /**
- * PlantUml exporter class
+ * <b>PlantUML exporter class.</b>
  * <p>
- * Exports sequence diagrams to plantuml textual output into the gen folder
- * filenames are the same as the sequence diagram class names
+ * Exports sequence diagram descriptions as PlantUML textual output into the gen
+ * folder. Generated file names are the same as the sequence diagram class
+ * names. See {@link #generatePlantUmlOutput(IProgressMonitor)} method.
  */
 public class PlantUmlExporter {
 
+	private PlantUmlGenerator generator;
 	private String projectName;
 	private IProject project;
 	private String genFolderName;
@@ -56,35 +58,35 @@ public class PlantUmlExporter {
 	protected boolean hadErrors = false;
 	protected String errorMessage = null;
 
-	public PlantUmlExporter(String txtUMLProjectName, String generatedFolderName, List<String> SeqDiagramNames) {
+	public PlantUmlExporter(final String txtUMLProjectName, final String generatedFolderName,
+			final List<String> seqDiagramNames) {
 		IProject _project = ResourcesPlugin.getWorkspace().getRoot().getProject(txtUMLProjectName);
 
 		if (_project == null || !_project.exists()) {
-			throw new ExportRuntimeException("Project not found with name:" + txtUMLProjectName);
+			throw new ExportRuntimeException("Project not found with name: " + txtUMLProjectName);
 		}
 
-		initialize(_project, generatedFolderName, SeqDiagramNames);
+		initialize(_project, generatedFolderName, seqDiagramNames);
 		filterDiagramsByType();
 	}
 
-	public PlantUmlExporter(IProject txtUMLProject, String generatedFolderName, List<String> SeqDiagramNames) {
-
-		initialize(txtUMLProject, generatedFolderName, SeqDiagramNames);
+	public PlantUmlExporter(final IProject txtUMLProject, final String generatedFolderName,
+			final List<String> seqDiagramNames) {
+		initialize(txtUMLProject, generatedFolderName, seqDiagramNames);
 		filterDiagramsByType();
 	}
 
-	private void initialize(IProject txtUMLProject, String generatedFolderName, List<String> SeqDiagramNames) {
+	private void initialize(IProject txtUMLProject, String generatedFolderName, List<String> seqDiagramNames) {
+		generator = new PlantUmlGenerator();
 		project = txtUMLProject;
 		projectName = txtUMLProject.getName();
 		genFolderName = generatedFolderName;
-		diagrams = SeqDiagramNames;
+		diagrams = seqDiagramNames;
 		nonExportedCount = diagrams.size();
 	}
 
 	/**
-	 * Filter method to separate sequenceDiagrams from normal Layouts, leave
-	 * normal layouts in remove SequenceDiagrams
-	 * 
+	 * Filter method to separate sequence diagrams from layouts.
 	 */
 	private void filterDiagramsByType() {
 		seqDiagrams = new ArrayList<TypeDeclaration>();
@@ -103,28 +105,27 @@ public class PlantUmlExporter {
 				TypeDeclaration currentType = (TypeDeclaration) cu.types().get(0);
 
 				if (SharedUtils.typeIsAssignableFrom(currentType, Interaction.class)) {
-
 					seqDiagrams.add(currentType);
 					iterator.remove();
 					nonExportedCount--;
 				}
 
 			} catch (ArrayIndexOutOfBoundsException e) {
-				throw new ExportRuntimeException("There was an error while trying to load Class " + e.getMessage()
+				throw new ExportRuntimeException("There was an error while trying to load class " + e.getMessage()
 						+ ", this error originated from the loading of " + diagram + " class", e);
 			}
 		}
 	}
 
 	/**
-	 * Generate the output into the gen folder using JDT. At the end refresh the
-	 * project so the freshly created resource shows up
+	 * Generates the output into the gen folder using JDT. Also refreshes the
+	 * project so the newly created resource shows up.
 	 * 
 	 * @throws CoreException
 	 * @throws SequenceDiagramStructuralException
 	 * @throws PreCompilationError
 	 */
-	public void generatePlantUmlOutput(IProgressMonitor monitor)
+	public void generatePlantUmlOutput(final IProgressMonitor monitor)
 			throws CoreException, SequenceDiagramStructuralException, PreCompilationError {
 		for (TypeDeclaration sequenceDiagram : seqDiagrams) {
 			String fullyQualifiedName = sequenceDiagram.resolveBinding().getQualifiedName().toString();
@@ -169,8 +170,7 @@ public class PlantUmlExporter {
 				monitor.worked(100 / (seqDiagrams.size() * 2));
 			}
 
-			PlantUmlGenerator generator = new PlantUmlGenerator(targetFile, cu);
-			generator.generate();
+			generator.generate(cu, targetFile);
 			project.refreshLocal(IProject.DEPTH_INFINITE, null);
 
 			if (PlatformUI.isWorkbenchRunning()) {
@@ -190,11 +190,9 @@ public class PlantUmlExporter {
 	}
 
 	protected void cleanupWorkbench(IFile targetFile, IWorkbenchPage page) throws CoreException {
-
 		if (targetFile.exists()) {
 			IEditorReference[] refs = page.getEditorReferences();
 			for (IEditorReference ref : refs) {
-
 				IEditorPart part = ref.getEditor(false);
 				if (part != null) {
 					IEditorInput inp = part.getEditorInput();

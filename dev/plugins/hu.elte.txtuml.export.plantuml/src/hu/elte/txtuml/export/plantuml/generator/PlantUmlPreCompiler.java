@@ -1,42 +1,46 @@
 package hu.elte.txtuml.export.plantuml.generator;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 
-import org.eclipse.jdt.core.dom.*;
+import org.eclipse.jdt.core.dom.ASTVisitor;
+import org.eclipse.jdt.core.dom.Annotation;
+import org.eclipse.jdt.core.dom.FieldDeclaration;
+import org.eclipse.jdt.core.dom.SingleMemberAnnotation;
+import org.eclipse.jdt.core.dom.Type;
+import org.eclipse.jdt.core.dom.TypeDeclaration;
 
 import hu.elte.txtuml.api.model.ModelClass;
 import hu.elte.txtuml.utils.jdt.SharedUtils;
 
 /**
- * The PreCompiler classes primary role is to gather preliminary data for the
- * compilation process.<br>
+ * The primary role of the precompiler class is to gather preliminary data for
+ * the compilation process.<br>
  * This data includes:
  * <ul>
- * <li>Combined fragments declared in the class and it's superClasses</li>
- * <li>Lifelines declared in the class and it's superClasses</li>
- * <li>The name of the superClass of the current class</li>
+ * <li>Lifelines declared in the class and in its superclasses.</li>
+ * <li>The superclass of the currently processed user-written sequence diagram.
+ * </li>
  * </ul>
- * The generation stops if an error occurs!
+ * The generation stops if an error occurs.
  */
 public class PlantUmlPreCompiler extends ASTVisitor {
 
-	protected List<MethodDeclaration> fragments;
-	protected ArrayList<FieldDeclaration> lifelines;
-	private String currentClassName;
+	private List<Lifeline> lifelines;
 	private Type superClass;
-	private ArrayList<Exception> errorList;
+	private List<Exception> errorList;
 
 	public PlantUmlPreCompiler() {
 		super();
-		fragments = new ArrayList<MethodDeclaration>();
-		lifelines = new ArrayList<FieldDeclaration>();
 		errorList = new ArrayList<Exception>();
+		lifelines = new ArrayList<>();
 	}
 
+	@Override
 	public boolean visit(TypeDeclaration decl) {
 		superClass = null;
-		currentClassName = decl.resolveBinding().getQualifiedName().toString();
 		Type sc = decl.getSuperclassType();
 
 		if (sc != null) {
@@ -47,40 +51,43 @@ public class PlantUmlPreCompiler extends ASTVisitor {
 				superClass = sc;
 			}
 		}
-
 		return true;
 	}
 
-	public boolean visit(MethodDeclaration decl) {
-		if (decl.resolveBinding().getDeclaringClass().getQualifiedName().toString().equals(currentClassName)
-				&& !decl.getName().toString().equals("run") && !decl.getName().toString().equals("initialize")
-				&& !decl.isConstructor()) {
-			fragments.add(decl);
-		}
-
-		return false;
-	}
-
+	@Override
 	public boolean visit(FieldDeclaration decl) {
-
 		if (SharedUtils.typeIsAssignableFrom(decl.getType().resolveBinding(), ModelClass.class)) {
-			lifelines.add(decl);
-		}
+			List<?> modifiers = decl.modifiers();
+			Optional<Integer> position = modifiers.stream().filter(modifier -> modifier instanceof Annotation)
+					.map(modifier -> (Annotation) modifier)
+					.filter(annot -> annot.getTypeName().getFullyQualifiedName().equals("Position"))
+					.map(annot -> (int) ((SingleMemberAnnotation) annot).getValue().resolveConstantExpressionValue())
+					.findFirst();
 
+			if (position.isPresent()) {
+				addLifeline(position.get(), decl);
+			} else {
+				addLifeline(-1, decl);
+			}
+		}
 		return true;
 	}
 
-	/**
-	 * Get the superClass of the current Type
-	 * 
-	 * @return
-	 */
+	public List<Lifeline> getOrderedLifelines() {
+		lifelines.sort(Comparator.comparing(Lifeline::getPriority));
+		return lifelines;
+	}
+
 	public Type getSuperClass() {
 		return superClass;
 	}
 
 	public List<Exception> getErrors() {
 		return errorList;
-
 	}
+
+	private void addLifeline(int position, FieldDeclaration lifeline) {
+		lifelines.add(new Lifeline(new LifelineDeclaration(lifeline, position)));
+	}
+
 }
