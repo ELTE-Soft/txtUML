@@ -4,14 +4,14 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import hu.elte.txtuml.api.model.execution.SequenceDiagramExecutor;
-import hu.elte.txtuml.api.model.execution.seqdiag.sequences.SequenceAssertErr;
-import hu.elte.txtuml.api.model.execution.seqdiag.sequences.SequenceAssertValid;
+import hu.elte.txtuml.api.model.execution.seqdiag.sequences.SequenceStateAssertErr;
+import hu.elte.txtuml.api.model.execution.seqdiag.sequences.SequenceStateAssertValid;
 
-public class AssertTests {
+public class StateAssertTests {
 
 	@Test
 	public void testValid() {
-		SequenceAssertValid diag = new SequenceAssertValid();
+		SequenceStateAssertValid diag = new SequenceStateAssertValid();
 
 		SequenceDiagramExecutor executor = SequenceDiagramExecutor.create();
 
@@ -22,7 +22,7 @@ public class AssertTests {
 
 	@Test
 	public void testError() {
-		SequenceAssertErr diag = new SequenceAssertErr();
+		SequenceStateAssertErr diag = new SequenceStateAssertErr();
 
 		SequenceDiagramExecutor executor = SequenceDiagramExecutor.create();
 
