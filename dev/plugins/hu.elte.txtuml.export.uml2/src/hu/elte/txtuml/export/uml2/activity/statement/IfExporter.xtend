@@ -21,7 +21,7 @@ class IfExporter extends ControlExporter<IfStatement, SequenceNode> {
 		
 		val condVar = result.createVariable(IF_CONDITION_VAR, booleanType)
 		val testExpr = exportExpression(source.expression)
-		result.nodes += write(condVar, testExpr)
+		result.nodes += write(condVar, testExpr, true)
 		result.name = '''if («testExpr.name»)'''
 
 		exportConditional(source)

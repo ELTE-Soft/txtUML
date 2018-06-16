@@ -28,6 +28,7 @@ public class ResourceHandler {
 			"lib/backbone-min.js", // backbone library (required for jointJS)
 			"lib/joint.js", // jointJS library (used for visualization)
 			"lib/joint.css", // jointJS default css file
+			"lib/svg-pan-zoom.min.js", // pan and zoom library for SVG objects
 
 			// visualizer files
 			"visualize.html", // visualizer main layout file (to be loaded in
@@ -59,8 +60,11 @@ public class ResourceHandler {
 														// names and
 														// multiplicities
 
-			"visualizer/visualizers.js" // holds visualizers for class and
+			"visualizer/visualizers.js", // holds visualizers for class and
 										// statemachine diagrams
+			
+			"panAndZoom.js", //adds pan and zoom functionality to the diagram
+			"globals.js" 	 //global variables for interscript communication
 	};
 
 	/**

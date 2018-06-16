@@ -24,7 +24,7 @@ class SpecialEventChecker;
 
 namespace Execution 
 {
-template<typename RuntimeType>
+template<typename RuntimeType, int NC>
 class IRuntime;
 }
 
@@ -37,6 +37,24 @@ class ThreadSafeQueue;
 
 template<typename T, typename Compare>
 class SpecialPriorityQueue;
+
+class ModelObject;
+
+}
+
+namespace Model
+{
+
+template<typename ProvidedInf, typename RequiredInf>
+class IPort;
+
+template <typename ProvidedInf, typename RequiredInf>
+class Port;
+
+template <typename ProvidedInf, typename RequiredInf>
+class BehaviorPort;
+
+
 
 }
 
@@ -55,9 +73,16 @@ namespace ES
 
 	using StateMachineRef = Model::StateMachineOwner*;
 	using StateMachineConstRef = Model::StateMachineOwner const *;
+	using ModelObjectRef = ES::ModelObject*;
 
-	template<typename RuntimeType>
-	using RuntimePtr = SharedPtr<Execution::IRuntime<RuntimeType>>;
+    template<typename ProvidedInf, typename RequiredInf>
+    using IPortRef = ES::SharedPtr<Model::IPort<ProvidedInf,RequiredInf>>;
+
+    template<typename ProvidedInf, typename RequiredInf>
+    using PortRef = ES::SharedPtr<Model::Port<ProvidedInf,RequiredInf>>;
+
+	template<typename RuntimeType, int NC>
+	using RuntimePtr = SharedPtr<Execution::IRuntime<RuntimeType,NC>>;
 
 	//ThreadSafeQueue types
 	using MessageQueueType = ThreadSafeQueue<SpecialPriorityQueue<EventRef, Model::SpecialEventChecker<Model::EventBase>>>;
@@ -65,6 +90,31 @@ namespace ES
 
 	using TimerPtr = SharedPtr<Timer>;
 
+}
+
+namespace Model 
+{
+	struct IConnection;
+	using ConnectionPtr = ES::SharedPtr<Model::IConnection>;
+	
+	class PortType {
+	public:
+		static int portIdCounter;
+		static PortType AnyPort;
+
+	public:
+		PortType () : portTypeId (portIdCounter++) {}
+		PortType (const PortType& o) = default;
+		PortType& operator=(const PortType& o) = default;
+
+		int getPortTypeId () const { return portTypeId; }
+		bool operator==(const PortType& o) const { return portTypeId == o.getPortTypeId (); }
+		bool operator!=(const PortType& o) const { return !(portTypeId == o.getPortTypeId ()); }
+
+	private:
+		int portTypeId;
+
+	};
 
 }
 

@@ -103,10 +103,7 @@ public abstract class ExporterBase<T extends ASTNode> {
 			return (ExporterBase<T>) new LoopFragmentExporter(compiler);
 		case ASTNode.IF_STATEMENT:
 			return (ExporterBase<T>) new OptAltFragmentExporter(compiler);
-		case ASTNode.BLOCK:
-			return (ExporterBase<T>) new LifelineDeactivator(compiler);
 		}
-
 		return null;
 	}
 

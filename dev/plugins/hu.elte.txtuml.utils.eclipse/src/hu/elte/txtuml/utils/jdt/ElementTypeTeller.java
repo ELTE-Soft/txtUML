@@ -426,9 +426,23 @@ public final class ElementTypeTeller {
 	public static boolean isDelegation(ITypeBinding binding) {
 		return SharedUtils.typeIsAssignableFrom(binding, Delegation.class);
 	}
+	
+	public static boolean isReception(MethodDeclaration methodDecl) {
+		if(!methodDecl.getName().getIdentifier().equals(Interface.RECEPTION_NAME)) {
+			return false;
+		}
+		ITypeBinding[] paeameterTypes = methodDecl.resolveBinding().getParameterTypes();
+		return paeameterTypes.length == 1 && isSignal(paeameterTypes[0]);		
+		
+	}
+	
 
 	public static boolean isCollection(TypeDeclaration binding) {
 		return SharedUtils.typeIsAssignableFrom(binding, GeneralCollection.class);
+	}
+	
+	public static boolean isCollection(ITypeBinding bnd) {
+		return SharedUtils.typeIsAssignableFrom(bnd, GeneralCollection.class);
 	}
 
 }

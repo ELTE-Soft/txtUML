@@ -19,7 +19,8 @@ class ConnectorExporter extends Exporter<TypeDeclaration, ITypeBinding, Connecto
 	
 	override exportContents(TypeDeclaration source) {
 		source.types.forEach[exportConnectorEnd[result.ends += it]]
-		result.name = source.name.identifier
+		result.name = source.name.identifier	
+
 	}
 	
 }
