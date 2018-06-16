@@ -97,8 +97,7 @@ class SeqDiagModelExecutorThread extends FIFOExecutorThread implements ExecutorT
 	 * added.
 	 */
 	public void assertState(ModelClass instance, Class<?> state) {
-		DefaultSeqDiagModelClassRuntime modelClassRuntime = getModelRuntime().getRuntimeOf(instance);
-		Class<?> currentState = modelClassRuntime.getCurrentState();
+		Class<?> currentState = getModelRuntime().getRuntimeOf(instance).getCurrentState();
 		if (!currentState.equals(state)) {
 			root.getExecutor()
 					.addError(new ModelStateAssertError(state.getCanonicalName(), currentState.getCanonicalName()));
