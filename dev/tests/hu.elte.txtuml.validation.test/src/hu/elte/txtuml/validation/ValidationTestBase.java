@@ -1,6 +1,7 @@
 package hu.elte.txtuml.validation;
 
 import static org.mockito.Matchers.anyInt;
+import static org.mockito.Matchers.argThat;
 import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -13,10 +14,15 @@ import java.io.IOException;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.hamcrest.Description;
 import org.junit.Before;
+import org.mockito.ArgumentMatcher;
 
 import hu.elte.txtuml.utils.jdt.SharedUtils;
 import hu.elte.txtuml.validation.ModelTest.ModelProblemCollector;
+import hu.elte.txtuml.validation.common.AbstractValidationError;
+import hu.elte.txtuml.validation.common.IValidationErrorType;
+import hu.elte.txtuml.validation.common.IValidationProblem;
 import hu.elte.txtuml.validation.common.ProblemCollector;
 import hu.elte.txtuml.validation.common.SourceInfo;
 
@@ -67,6 +73,22 @@ public abstract class ValidationTestBase {
 	protected void checkNoOtherErrorRaised() {
 		verify(mockCollector, atLeast(0)).getSourceInfo();
 		verifyNoMoreInteractions(mockCollector);
+	}
+
+	protected static IValidationProblem is(IValidationErrorType type) {
+		return argThat(new ArgumentMatcher<IValidationProblem>() {
+
+			@Override
+			public void describeTo(Description description) {
+				description.appendText("Error of type " + type + " required.");
+			}
+
+			@Override
+			public boolean matches(Object argument) {
+				return ((AbstractValidationError) argument).getType() == type;
+			}
+
+		});
 	}
 
 }

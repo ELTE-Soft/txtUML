@@ -4,7 +4,7 @@ import org.eclipse.jdt.core.dom.ASTNode;
 
 import hu.elte.txtuml.validation.common.MessageLoader;
 import hu.elte.txtuml.validation.common.SourceInfo;
-import hu.elte.txtuml.validation.common.ValidationProblem;
+import hu.elte.txtuml.validation.common.IValidationErrorType;
 
 /**
  * An enumeration to create different problems.
@@ -12,7 +12,7 @@ import hu.elte.txtuml.validation.common.ValidationProblem;
  * Messages are loaded from {@link Messages#LOADER}, after converting names to
  * camel case and appending the "_message" string to them.
  */
-public enum ValidationErrors {
+public enum SequenceErrors implements IValidationErrorType {
 
 	// general problems
 
@@ -23,12 +23,12 @@ public enum ValidationErrors {
 	protected final String message = Messages.LOADER
 			.getAndRemoveMessage(MessageLoader.convertToCamelCase(name(), SUFFIX));
 
-	public ValidationProblem create(SourceInfo sourceInfo, ASTNode node) {
+	public SequenceValidationError create(SourceInfo sourceInfo, ASTNode node) {
 		return create(sourceInfo, node, message);
 	}
 
-	private ValidationProblem create(SourceInfo sourceInfo, ASTNode node, String message) {
-		return new ValidationProblem(sourceInfo, node) {
+	private SequenceValidationError create(SourceInfo sourceInfo, ASTNode node, String message) {
+		return new SequenceValidationError(sourceInfo, node) {
 
 			@Override
 			public int getID() {
@@ -41,14 +41,9 @@ public enum ValidationErrors {
 			}
 
 			@Override
-			public String getMarkerType() {
-				return SequenceDiagramCompilationParticipant.MARKER_TYPE;
+			public IValidationErrorType getType() {
+				return SequenceErrors.this;
 			}
-
-			@Override
-			public boolean isError() {
-				return true;
-			};
 
 			@Override
 			public int getSourceEnd() {

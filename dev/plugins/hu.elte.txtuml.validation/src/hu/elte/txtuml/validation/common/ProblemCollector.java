@@ -14,7 +14,7 @@ import hu.elte.txtuml.utils.Logger;
 
 public class ProblemCollector {
 
-	private final List<ValidationProblem> problems = new ArrayList<>();
+	private final List<IValidationProblem> problems = new ArrayList<>();
 	private final String markerType;
 	private final SourceInfo sourceInfo;
 	private final IResource resource;
@@ -32,7 +32,7 @@ public class ProblemCollector {
 	/**
 	 * Adds a new problem.
 	 */
-	public void report(ValidationProblem problem) {
+	public void report(IValidationProblem problem) {
 		problems.add(problem);
 	}
 
@@ -47,7 +47,7 @@ public class ProblemCollector {
 		}
 		try {
 			resource.deleteMarkers(markerType, true, IResource.DEPTH_ZERO);
-			for (ValidationProblem problem : problems) {
+			for (IValidationProblem problem : problems) {
 				IMarker marker = resource.createMarker(problem.getMarkerType());
 				marker.setAttribute(IMarker.CHAR_START, problem.getSourceStart());
 				marker.setAttribute(IMarker.CHAR_END, problem.getSourceEnd());

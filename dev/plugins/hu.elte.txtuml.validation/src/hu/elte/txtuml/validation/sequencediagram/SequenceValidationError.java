@@ -1,4 +1,4 @@
-package hu.elte.txtuml.validation.model;
+package hu.elte.txtuml.validation.sequencediagram;
 
 import org.eclipse.jdt.core.dom.ASTNode;
 
@@ -6,17 +6,17 @@ import hu.elte.txtuml.validation.common.AbstractValidationError;
 import hu.elte.txtuml.validation.common.SourceInfo;
 
 /**
- * Base class for all JtxtUML model validation errors.
+ * Base class for all sequence diagram description validation errors.
  */
-public abstract class ModelValidationError extends AbstractValidationError {
+public abstract class SequenceValidationError extends AbstractValidationError {
 
-	public ModelValidationError(SourceInfo sourceInfo, ASTNode node) {
+	public SequenceValidationError(SourceInfo sourceInfo, ASTNode node) {
 		super(sourceInfo, node);
 	}
 
 	@Override
 	public String getMarkerType() {
-		return JtxtUMLModelCompilationParticipant.JTXTUML_MODEL_MARKER_TYPE;
+		return SequenceDiagramCompilationParticipant.MARKER_TYPE;
 	}
 
 	@Override

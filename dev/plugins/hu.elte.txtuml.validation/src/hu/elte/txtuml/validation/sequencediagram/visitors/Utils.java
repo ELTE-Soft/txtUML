@@ -32,7 +32,7 @@ import hu.elte.txtuml.api.model.seqdiag.SequenceDiagram;
 import hu.elte.txtuml.utils.Logger;
 import hu.elte.txtuml.utils.jdt.ElementTypeTeller;
 import hu.elte.txtuml.validation.common.ProblemCollector;
-import hu.elte.txtuml.validation.sequencediagram.ValidationErrors;
+import hu.elte.txtuml.validation.sequencediagram.SequenceErrors;
 
 /**
  * Utils for sequence diagram validation.
@@ -69,14 +69,14 @@ public class Utils {
 					}
 					int annotationVal = (int) position.getValue().resolveConstantExpressionValue();
 					if (annotationVal < 0) {
-						collector.report(ValidationErrors.INVALID_POSITION.create(collector.getSourceInfo(), position));
+						collector.report(SequenceErrors.INVALID_POSITION.create(collector.getSourceInfo(), position));
 					}
 
 					// type of annotated field
 					boolean isModelClass = ElementTypeTeller.hasSuperClass(elem.getType().resolveBinding(),
 							ModelClass.class.getCanonicalName());
 					if (!isModelClass) {
-						collector.report(ValidationErrors.INVALID_LIFELINE_DECLARATION.create(collector.getSourceInfo(),
+						collector.report(SequenceErrors.INVALID_LIFELINE_DECLARATION.create(collector.getSourceInfo(),
 								elem.getType()));
 					}
 				}
@@ -119,7 +119,7 @@ public class Utils {
 			});
 
 			if (methodInvocations.isEmpty() || isAllSequenceMethod) {
-				collector.report(ValidationErrors.SEND_EXPECTED.create(collector.getSourceInfo(), node));
+				collector.report(SequenceErrors.SEND_EXPECTED.create(collector.getSourceInfo(), node));
 			}
 			notSequenceInvocations.forEach(inv -> validateInvokedMethod(inv, visitor, collector));
 		}
@@ -134,7 +134,7 @@ public class Utils {
 			isActionCall = false;
 		}
 		if (isActionCall) {
-			collector.report(ValidationErrors.INVALID_ACTION_CALL.create(collector.getSourceInfo(), elem));
+			collector.report(SequenceErrors.INVALID_ACTION_CALL.create(collector.getSourceInfo(), elem));
 		}
 	}
 

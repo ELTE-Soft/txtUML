@@ -21,7 +21,6 @@ import static hu.elte.txtuml.validation.model.ModelErrors.UNKNOWN_TRANSITION_MET
 import static hu.elte.txtuml.validation.model.ModelErrors.WRONG_COMPOSITION_ENDS;
 import static hu.elte.txtuml.validation.model.ModelErrors.WRONG_NUMBER_OF_ASSOCIATION_ENDS;
 import static hu.elte.txtuml.validation.model.ModelErrors.WRONG_TYPE_IN_ASSOCIATION;
-import static org.mockito.Matchers.argThat;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -29,14 +28,10 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.compiler.ReconcileContext;
 import org.eclipse.jdt.core.dom.CompilationUnit;
-import org.hamcrest.Description;
 import org.junit.Test;
-import org.mockito.ArgumentMatcher;
 
 import hu.elte.txtuml.validation.common.ProblemCollector;
 import hu.elte.txtuml.validation.model.JtxtUMLModelCompilationParticipant;
-import hu.elte.txtuml.validation.model.ModelErrors;
-import hu.elte.txtuml.validation.model.ModelValidationError;
 import hu.elte.txtuml.validation.model.visitors.ModelVisitor;
 
 public class ModelTest extends ValidationTestBase {
@@ -249,20 +244,6 @@ public class ModelTest extends ValidationTestBase {
 		verify(mockCollector, times(2)).report(is(INVALID_DATA_TYPE_FIELD));
 
 		checkNoOtherErrorRaised();
-	}
-
-	private static ModelValidationError is(ModelErrors type) {
-		return argThat(new ArgumentMatcher<ModelValidationError>() {
-			@Override
-			public void describeTo(Description description) {
-				description.appendText("Model error of type " + type + " required.");
-			}
-
-			@Override
-			public boolean matches(Object argument) {
-				return ((ModelValidationError) argument).getType() == type;
-			}
-		});
 	}
 
 	public static class ModelProblemCollector extends ProblemCollector {

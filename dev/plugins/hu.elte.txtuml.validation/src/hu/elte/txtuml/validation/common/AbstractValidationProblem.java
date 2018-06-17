@@ -9,14 +9,14 @@ import org.eclipse.jdt.core.dom.ASTNode;
  * By default, {@link #isError}, {@link #isWarning} and {@link isInfo} all
  * return false.
  */
-public abstract class ValidationProblem extends CategorizedProblem {
+public abstract class AbstractValidationProblem extends CategorizedProblem implements IValidationProblem {
 
 	private final SourceInfo sourceInfo;
 	private int sourceStart;
 	private int sourceEnd;
 	private int lineNumber;
 
-	public ValidationProblem(SourceInfo sourceInfo, ASTNode node) {
+	public AbstractValidationProblem(SourceInfo sourceInfo, ASTNode node) {
 		this.sourceInfo = sourceInfo;
 		this.sourceStart = node.getStartPosition();
 		this.sourceEnd = node.getStartPosition() + node.getLength() - 1;
