@@ -38,7 +38,7 @@ class Runway {
 		to Occupied;
 		trigger SignalSetNewPlane;
 		effect {
-			log("The runway ("+ id +") becomes occupied");
+			log "The runway ("+ id +") becomes occupied";
 			isFree = false;				
 			planeId = trigger.planeId;
 		}
@@ -50,7 +50,7 @@ class Runway {
 		to Free;
 		trigger SignalSetFreeTheRunway;
 		effect {
-			log("The runway ("+ id +") becomes free");
+			log "The runway ("+ id +") becomes free";
 			isFree = true;
 		}
 	}

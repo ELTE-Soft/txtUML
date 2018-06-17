@@ -37,7 +37,7 @@ class Alert {
 		trigger Error;
 		guard (level >= max)
 		effect {
-			log("!!! Critical number of errors detected !!!");
+			log "!!! Critical number of errors detected !!!";
 		}
 	}
 	
@@ -46,7 +46,7 @@ class Alert {
 		to Normal;
 		trigger OK;
 		effect {
-			log("+++ Back to normal operation +++");
+			log "+++ Back to normal operation +++";
 			level = 0;
 		}
 	}

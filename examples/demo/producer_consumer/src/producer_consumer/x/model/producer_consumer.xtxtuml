@@ -20,7 +20,7 @@ class Producer {
 	state Passive {
 		entry {
 			Storage storage = Producer.this->(Production.storage).one();
-			unlink(Production.producer, Producer.this, Production.storage, storage);
+			unlink Producer.this, storage via Production;
 			delete Producer.this;
 		}
 	}
@@ -40,7 +40,7 @@ class Producer {
 		guard (Producer.this.toProduce > 0);
 		effect {
 			Storage storage = Producer.this->(Production.storage).one();
-			link(Offer.producer, Producer.this, Offer.storage, storage);
+			link Producer.this, storage via Offer;
 			send new OfferNotification() to storage;
 		}
 	}
@@ -69,7 +69,7 @@ class Consumer {
 	state Passive {
 		entry {
 			Storage storage = Consumer.this->(Consumption.storage).one();
-			unlink(Consumption.consumer, Consumer.this, Consumption.storage, storage);
+			unlink Consumer.this, storage via Consumption;
 			delete Consumer.this;
 		}
 	}
@@ -89,7 +89,7 @@ class Consumer {
 		guard (Consumer.this.toConsume > 0)
 		effect {
 			Storage storage = Consumer.this->(Consumption.storage).one();
-			link(Request.storage, storage, Request.consumer, Consumer.this);
+			link storage, Consumer.this via Request;
 			send new RequestNotification() to storage;
 		}
 	}
@@ -127,9 +127,9 @@ class Storage {
 		guard(Storage.this->(InStore.item).size() < capacity);
 		effect {
 			Producer producer = Storage.this->(Offer.producer).one();
-			unlink(Offer.producer, producer, Offer.storage, Storage.this);
+			unlink producer, Storage.this via Offer;
 			Item item = producer.produce();
-			link(InStore.storage, Storage.this, InStore.item, item);
+			link Storage.this, item via InStore;
 		}
 	}
 	
@@ -151,9 +151,9 @@ class Storage {
 		guard(Storage.this->(InStore.item).size() > 0);
 		effect {
 			Consumer consumer = Storage.this->(Request.consumer).one();
-			unlink(Request.storage, Storage.this, Request.consumer, consumer);
+			unlink Storage.this, consumer via Request;
 			Item item = Storage.this->(InStore.item).one();
-			unlink(InStore.storage, Storage.this, InStore.item, item);
+			unlink Storage.this, item via InStore;
 			consumer.consume(item);
 		}
 	}

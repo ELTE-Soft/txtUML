@@ -38,8 +38,8 @@ class Timer {
 	 * @return a handle object to manage this delayed send operation before it
 	 *         happens
 	 */
-	public static external-body Timer start(Signal sig, ModelClass targetObj, int millisecs) {
-		return create(Timer, sig, targetObj, millisecs);
+	public static external-body Timer ^start(Signal sig, ModelClass targetObj, int millisecs) {
+		return new Timer(sig, targetObj, millisecs);
 	}
 
 	/**

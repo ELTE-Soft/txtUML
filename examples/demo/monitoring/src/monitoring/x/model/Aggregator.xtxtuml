@@ -44,7 +44,7 @@ class Aggregator {
 		to Aggregate;
 		trigger PrintReport;
 		effect {
-			log("# read errors: " + readErrorNum + ", # write errors: " + writeErrorNum);
+			log "# read errors: " + readErrorNum + ", # write errors: " + writeErrorNum;
 		}
 	}
 }

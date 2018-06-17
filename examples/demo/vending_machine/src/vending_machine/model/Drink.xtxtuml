@@ -48,14 +48,14 @@ class Drink {
 		entry {
 			quantity--;
 			updateMessage("Done! Take your " + name);
-			Timer.start(new Done(), this, delay);
+			Timer.^start(new Done(), this, delay);
 		}
 	}
 
 	state Refilling {
 		entry {
 			updateMessage("Refilling " + name);
-			Timer.start(new Done(), this, delay);
+			Timer.^start(new Done(), this, delay);
 		}
 	}
 
@@ -63,9 +63,9 @@ class Drink {
 		entry {
 			if (quantity <= 0) {
 				quantity = 0;
-				Timer.start(new Empty(), this, delay);
+				Timer.^start(new Empty(), this, delay);
 			} else {
-				Timer.start(new Done(), this, delay);
+				Timer.^start(new Done(), this, delay);
 			}
 		}
 	}
@@ -73,7 +73,7 @@ class Drink {
 	state NotGiving {
 		entry {
 			updateMessage("Out of stock");
-			Timer.start(new Done(), this, delay);
+			Timer.^start(new Done(), this, delay);
 		}
 	}
 

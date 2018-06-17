@@ -107,7 +107,7 @@ class Plane {
 			to WaitingLanding;
 			trigger SignalPilotAskLandingPermission;
 			effect {
-				log("The plane (" + id + ") is waiting for the permission to land");
+				log "The plane (" + id + ") is waiting for the permission to land";
 				
 				Tower t = this->(PlaneTowerUsage.theTower).one();
 				send new SignalPlaneSendTheLandingApplicationToTower(this.id) to t;
@@ -134,7 +134,7 @@ class Plane {
 			to AbleToLand;
 			trigger SignalGiveLandingPermission;
 			effect {
-				log("The plane (" + this.id + ") can land to the (" + trigger.runWayId + ") run way");
+				log "The plane (" + this.id + ") can land to the (" + trigger.runWayId + ") run way";
 				status = "AL";
 			}
 		}
@@ -180,7 +180,7 @@ class Plane {
 			to WaitingLanding;
 			trigger SignalPleaseWait;
 			effect {
-				log("Please wait!");
+				log "Please wait!";
 			}
 		}
 	
@@ -191,7 +191,7 @@ class Plane {
 			to WaitingTakingOff;
 			trigger SignalPilotAskTakingOffPermission;
 			effect {
-				log("The plane (" + this.id + ") is waiting for taking off");
+				log "The plane (" + this.id + ") is waiting for taking off";
 				
 				Tower t = Plane.this->(PlaneTowerUsage.theTower).one();
 				send new SignalPlaneSendTheTakingOffApplicationToTower(this.id) to t;
@@ -230,7 +230,7 @@ class Plane {
 			to AbleToTakeOff;
 			trigger SignalGiveTakingOffPermission;
 			effect {
-				log("The plane (" + this.id + ") can take off");
+				log "The plane (" + this.id + ") can take off";
 				status = "AT";
 			}
 		}
@@ -241,7 +241,7 @@ class Plane {
 			to WaitingTakingOff;
 			trigger SignalPleaseWait;
 			effect {
-				log("Please wait!");
+				log "Please wait!";
 			}
 		}
 		
@@ -273,7 +273,7 @@ class Plane {
 			to WaitingTakingOff;
 			trigger SignalDenyTakingOff;
 			effect {
-				log("Sorry, the weather is so bad, you cannot take of, please wait (plane: "+ id +")");
+				log "Sorry, the weather is so bad, you cannot take of, please wait (plane: "+ id +")";
 				
 				Tower t = Plane.this->(PlaneTowerUsage.theTower).one();
 				send new SignalPlaneSendTheTakingOffApplicationToTower(this.id) to t;

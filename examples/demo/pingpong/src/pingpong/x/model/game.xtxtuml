@@ -8,17 +8,17 @@ import pingpong.x.model.signals.Ball;
 class Game {
  
 	public Game() {
-		Player left = create(Player, "Left ");
-		Player right = create(Player, "Right");
+		Player left = create Player("Left ");
+		Player right = create Player("Right");
 
-		link(LeftPlayer.inGame, this, LeftPlayer.player, left);
-		link(RightPlayer.inGame, this, RightPlayer.player, right);
+		link this, left via LeftPlayer;
+		link this, right via RightPlayer;
 
-		connect(Table.left, left->(Player.BallAtPlayerPort), Table.right,
-				right->(Player.BallAtPlayerPort));
+		connect left->(Player.BallAtPlayerPort) as Table.left,
+				right->(Player.BallAtPlayerPort) via Table;
 
-		start(left);
-		start(right);
+		start left;
+		start right;
 		
 	}
 

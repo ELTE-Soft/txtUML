@@ -3,7 +3,7 @@ package hu.elte.txtuml.examples.performance_test.xmodel;
 class Test {				
 	public void test() {
 		A a = create(A, 10000);
-		start(a);
+		start a;
 	}
 }
 

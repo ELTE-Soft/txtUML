@@ -25,13 +25,13 @@ class Player {
 	public Player(String name) {
 		this.name = name;
 
-		Racket racket = create(Racket);
-		link(PlayerOwnsRacket.player, Player.this, PlayerOwnsRacket.racket, racket);
-		connect(this->(Player.BallAtPlayerPort), PlayerUsesRacket.racket,
-				racket->(Racket.BallAtRacketPort));
-		connect(this->(Player.ShoutPort), PlayerHitsOrMisses.withRacket, racket->(Racket.HitOrMissPort));
+		Racket racket = create Racket();
+		link Player.this as PlayerOwnsRacket.player, racket as PlayerOwnsRacket.racket via PlayerOwnsRacket;
+		connect this->(Player.BallAtPlayerPort),
+				racket->(Racket.BallAtRacketPort) via PlayerUsesRacket;
+		connect this->(Player.ShoutPort), racket->(Racket.HitOrMissPort) via  PlayerHitsOrMisses;
 
-		start(racket);
+		start racket;
 	}
 
 	initial Init;
@@ -48,7 +48,7 @@ class Player {
 		to Waiting;
 		trigger HitTheBall;
 		effect {
-			log(name + ": \"HIT!\"");			
+			log name + ": \"HIT!\"";
 		}
 	}
 
@@ -57,7 +57,7 @@ class Player {
 		to Waiting;
 		trigger MissedTheBall;
 		effect {
-			log(name + ": \"MISS! I lost...\"");			
+			log name + ": \"MISS! I lost...\"";
 		}
 	}
 
@@ -66,7 +66,7 @@ class Player {
 		to Waiting;
 		trigger Ball;
 		effect {
-			log(name + ": \"I'll serve now...!\"");
+			log name + ": \"I'll serve now...!\"";
 			send trigger to this->(PlayerOwnsRacket.racket).one();
 		}
 	}	

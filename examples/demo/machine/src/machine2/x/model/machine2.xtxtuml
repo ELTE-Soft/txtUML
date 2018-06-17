@@ -13,33 +13,33 @@ class Machine {
 
 	state Off {
 		entry {
-			log("\tMachine enters state: 'off'");
+			log "\tMachine enters state: 'off'";
 		}
 
 		exit {
-			log("\tMachine exits state: 'off'");
+			log "\tMachine exits state: 'off'";
 		}
 	}
 
 	composite On {
 		entry {
-			log("\tMachine enters state: 'on'");
+			log "\tMachine enters state: 'on'";
 		}
 
 		exit {
-			log("\tMachine exits state: 'on'");
+			log "\tMachine exits state: 'on'";
 		}
 
 		initial Init;
 
 		state Active {
 			entry {
-				log("\tMachine enters state: 'active'");
-				log("\tMachine: tasks to do: " + Machine.this.tasksToDo);
+				log "\tMachine enters state: 'active'";
+				log "\tMachine: tasks to do: " + Machine.this.tasksToDo;
 			}
 
 			exit {
-				log("\tMachine exits state: 'active'");
+				log "\tMachine exits state: 'active'";
 			}
 		}
 		
@@ -56,7 +56,7 @@ class Machine {
 			effect {
 				DoTasks doTasks = trigger;
 				Machine.this.tasksToDo -= doTasks.count;
-				log("\tMachine: becoming active...");
+				log "\tMachine: becoming active...";
 			}
 			
 			guard(Machine.this.tasksToDo > 0);
@@ -68,7 +68,7 @@ class Machine {
 		from Init;
 		to Off;
 		effect {
-			log("\tMachine: initializing...");
+			log "\tMachine: initializing...";
 		}
 	}
 
@@ -78,7 +78,7 @@ class Machine {
 		trigger ButtonPress;
 
 		effect {
-			log("\tMachine: switching on...");
+			log "\tMachine: switching on...";
 		}
 	}
 
@@ -88,7 +88,7 @@ class Machine {
 		trigger ButtonPress;
 		
 		effect {
-			log("\tMachine: switching off...");
+			log "\tMachine: switching off...";
 		}
 
 		guard(Machine.this.tasksToDo <= 0);
@@ -104,7 +104,7 @@ class User {
 		to Ready;
 
 		effect {
-			log("\tUser: initializing...");				
+			log "\tUser: initializing...";
 		}
 	}
 
@@ -114,13 +114,13 @@ class User {
 		trigger DoYourWork;
 		
 		effect {
-			log("\tUser: working...");
+			log "\tUser: working...";
 			doWork();
 		}
 	}
 	
 	void doWork() {
-		log("\tUser: starting to work...");
+		log "\tUser: starting to work...";
 
 		Machine myMachine = User.this->(Usage.usedMachine).one();
 		
@@ -147,7 +147,7 @@ class User {
 		send new DoTasks(1) to myMachine;
 		// This event has no effect, the machine is switched off.
 
-		log("\tUser: work finished...");
+		log "\tUser: work finished...";
 	}
 }
 

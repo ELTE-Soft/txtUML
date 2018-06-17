@@ -50,7 +50,7 @@ class VendingMachine {
 			} else {
 				updateMessage("Out of stock");
 			}
-			Timer.start(new Done(), this, delay);
+			Timer.^start(new Done(), this, delay);
 		}
 	}
 
@@ -64,7 +64,7 @@ class VendingMachine {
 			} else {
 				updateMessage("Please, give more money");
 			}
-			Timer.start(new Done(), this, delay);
+			Timer.^start(new Done(), this, delay);
 		}
 	}
 

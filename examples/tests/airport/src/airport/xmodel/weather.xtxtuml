@@ -43,7 +43,7 @@ class Weather {
 				send new SignalSendTheWeatherValues(temperature, wind, rain) to t;
 			}
 			
-			Timer.start(new SignalWeatherAutoSending(), this, 2000); // It send a signal in every 30 sec
+			Timer.^start(new SignalWeatherAutoSending(), this, 2000); // It send a signal in every 30 sec
 		}
 	}
 	/* 
