@@ -14,6 +14,7 @@ import org.eclipse.jdt.core.IType;
 import org.eclipse.jface.wizard.Wizard;
 
 import hu.elte.txtuml.export.cpp.BuildSupport;
+import hu.elte.txtuml.export.cpp.CppExporterUtils;
 import hu.elte.txtuml.export.cpp.EnvironmentNotFoundException;
 import hu.elte.txtuml.export.cpp.Uml2ToCppExporter;
 import hu.elte.txtuml.utils.Pair;
@@ -100,7 +101,8 @@ public class TxtUMLToCppWizard extends Wizard {
 				buildSupport.handleErrors();
 		
 			}
-			if(System.getProperty("os.name").startsWith("WIN") && Desktop.isDesktopSupported()) { //TODO hotfix only, desktop not working on linux currently
+			//TODO hotfix only, desktop not working on linux currently
+			if(CppExporterUtils.isWindowsOS() && Desktop.isDesktopSupported()) { 
 				Desktop.getDesktop().open(new File(outputDirectory));
 			}
 		} catch(FileNotFoundException e) {

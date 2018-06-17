@@ -46,6 +46,8 @@ public class CppExporterUtils {
 
 	private static String UNKNOWN_TYPE = "UNKNOWN_TYPE";
 	private static String WRITER_ENCODE = "UTF-8";
+	private static final String OPERATING_SYSTEM = System.getProperty("os.name");
+
 
 	@SuppressWarnings("unchecked")
 	public static <ElementTypeT, EClassTypeT> void getTypedElements(Collection<ElementTypeT> dest, EClassTypeT eClass,
@@ -395,6 +397,10 @@ public class CppExporterUtils {
 
 		Process process = processBuilder.start();
 		return process.waitFor();
+	}
+	
+	public static boolean isWindowsOS() {
+		return OPERATING_SYSTEM.toUpperCase().startsWith("WIN");
 	}
 
 }
