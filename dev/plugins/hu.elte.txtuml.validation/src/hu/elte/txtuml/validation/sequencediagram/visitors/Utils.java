@@ -40,12 +40,6 @@ import hu.elte.txtuml.validation.sequencediagram.SequenceErrors;
 @SuppressWarnings("unchecked")
 public class Utils {
 
-	public static boolean isSequenceDiagramDescription(CompilationUnit unit) {
-		List<AbstractTypeDeclaration> types = unit.types();
-		return types.stream().anyMatch(
-				td -> ElementTypeTeller.hasSuperClass(td.resolveBinding(), SequenceDiagram.class.getCanonicalName()));
-	}
-
 	public static void acceptSequenceDiagrams(CompilationUnit node, ASTVisitor visitor) {
 		List<AbstractTypeDeclaration> types = node.types();
 		types.stream()
@@ -156,7 +150,7 @@ public class Utils {
 			MethodDeclaration decl = (MethodDeclaration) cu.findDeclaringNode(binding.getKey());
 			decl.getBody().accept(visitor);
 		} catch (NullPointerException ex) {
-			Logger.sys.debug("Method calling cannot be validated.");
+			Logger.sys.debug("Method call cannot be validated.");
 		}
 	}
 

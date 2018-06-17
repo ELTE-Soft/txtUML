@@ -2,10 +2,10 @@ package hu.elte.txtuml.validation.sequencediagram;
 
 import org.eclipse.jdt.core.dom.CompilationUnit;
 
+import hu.elte.txtuml.utils.jdt.ElementTypeTeller;
 import hu.elte.txtuml.validation.common.AbstractJtxtUMLCompilationParticipant;
 import hu.elte.txtuml.validation.common.ProblemCollector;
 import hu.elte.txtuml.validation.sequencediagram.visitors.SequenceDiagramVisitor;
-import hu.elte.txtuml.validation.sequencediagram.visitors.Utils;
 
 public class SequenceDiagramCompilationParticipant extends AbstractJtxtUMLCompilationParticipant {
 
@@ -18,7 +18,7 @@ public class SequenceDiagramCompilationParticipant extends AbstractJtxtUMLCompil
 
 	@Override
 	protected void validate(CompilationUnit unit, ProblemCollector collector) {
-		if (Utils.isSequenceDiagramDescription(unit)) {
+		if (!ElementTypeTeller.isModelElement(unit)) {
 			unit.accept(new SequenceDiagramVisitor(collector));
 		}
 	}
