@@ -6,6 +6,7 @@ import org.eclipse.jdt.core.dom.ASTNode;
 
 import hu.elte.txtuml.validation.common.MessageLoader;
 import hu.elte.txtuml.validation.common.SourceInfo;
+import hu.elte.txtuml.validation.common.IValidationErrorType;
 
 /**
  * An enumeration to create different problems.
@@ -13,7 +14,7 @@ import hu.elte.txtuml.validation.common.SourceInfo;
  * Messages are loaded from {@link Messages#LOADER}, after converting names to
  * camel case and appending the "_message" string to them.
  */
-public enum ModelErrors {
+public enum ModelErrors implements IValidationErrorType {
 
 	// general problems
 
@@ -85,7 +86,7 @@ public enum ModelErrors {
 			}
 
 			@Override
-			public ModelErrors getType() {
+			public IValidationErrorType getType() {
 				return ModelErrors.this;
 			}
 
