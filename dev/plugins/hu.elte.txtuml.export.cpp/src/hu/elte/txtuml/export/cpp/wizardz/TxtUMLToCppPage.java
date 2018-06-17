@@ -56,7 +56,7 @@ public class TxtUMLToCppPage extends WizardPage {
 	protected TxtUMLToCppPage() {
 		super("Generate C++ Code Page");
 		setTitle("Generate C++ Code Page");
-		super.setDescription("Browse your txtUML project, model and configuration to generate C++ code!");
+		super.setDescription("Browse your txtUML project, model and configuration and set specific options to generate C++ code!");
 	}
 
 	@Override
@@ -147,7 +147,7 @@ public class TxtUMLToCppPage extends WizardPage {
 							for (IProject pr : allProjects) {
 								try {
 									IJavaProject javaProject = ProjectUtils.findJavaProject(pr.getName());
-									if (WizardUtils.containsClassesWithSuperTypes(javaProject, Configuration.class)) {
+									if (WizardUtils.containsClassesWithDirectSuperTypes(javaProject, Configuration.class)) {
 										javaProjects.add(javaProject);
 									}
 								} catch (NotFoundException e) {
@@ -163,7 +163,7 @@ public class TxtUMLToCppPage extends WizardPage {
 							} catch (JavaModelException ex) {
 							}
 							List<IType> configTypes = packageFragments.stream()
-									.flatMap(pf -> WizardUtils.getTypesBySuperclass(pf, Configuration.class).stream())
+									.flatMap(pf -> WizardUtils.getTypesByDirectSuperclass(pf, Configuration.class).stream())
 									.collect(Collectors.toList());
 							return configTypes.toArray();
 						}

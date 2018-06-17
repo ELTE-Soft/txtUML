@@ -24,9 +24,9 @@ import hu.elte.txtuml.export.papyrus.elementsmanagers.CompositeDiagramElementsMa
 import hu.elte.txtuml.export.papyrus.elementsmanagers.StateMachineDiagramElementsManager;
 import hu.elte.txtuml.export.papyrus.layout.txtuml.TxtUMLElementsRegistry;
 import hu.elte.txtuml.export.papyrus.layout.txtuml.TxtUMLLayoutDescriptor;
-import hu.elte.txtuml.export.papyrus.preferences.PreferencesManager;
 import hu.elte.txtuml.layout.export.DiagramType;
 import hu.elte.txtuml.utils.Triple;
+import hu.elte.txtuml.utils.eclipse.preferences.PreferencesManager;
 
 public class TxtUMLPapyrusModelManager extends AbstractPapyrusModelManager {
 

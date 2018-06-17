@@ -7,10 +7,13 @@ import java.util.Set;
 import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.SignalEvent;
 
+import hu.elte.txtuml.export.cpp.CppExporterUtils.TypeDescriptor;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames;
+import hu.elte.txtuml.export.cpp.templates.GenerationNames.TypeDeclarationKeywords;
+import hu.elte.txtuml.export.cpp.templates.GenerationTemplates;
 import hu.elte.txtuml.export.cpp.templates.PrivateFunctionalTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.HeaderTemplates;
-import hu.elte.txtuml.export.cpp.templates.structual.VariableTemplates;
+import hu.elte.txtuml.export.cpp.templates.structual.ObjectDeclDefTemplates;
 import hu.elte.txtuml.utils.Pair;
 
 public class EventTemplates {
@@ -24,14 +27,15 @@ public class EventTemplates {
 	public static final String EventPointerType = GenerationNames.PointerAndMemoryNames.EventPtr;
 	
 	public static final List<String> EventParamVarList = Arrays.asList(EventFParamName);
-	public static final List<String> EventParamDeclList = Arrays.asList(EventPointerType);
-	public static final List<Pair<String,String>> EventParamDefList = Arrays.asList(new Pair<>(EventPointerType, EventParamName)); 
+	public static final List<TypeDescriptor> EventParamDeclList = Arrays.asList(new TypeDescriptor(EventPointerType));
+	public static final List<Pair<TypeDescriptor,String>> EventParamDefList = Arrays.asList(new Pair<>(new TypeDescriptor(EventPointerType), EventParamName)); 
 
-	public static String eventClass(String className, List<Pair<String, String>> params, String constructorBody,
+	public static String eventClass(String className, List<Pair<TypeDescriptor, String>> params, String constructorBody,
 			List<Property> properites) {
 		StringBuilder source = new StringBuilder(
-				GenerationNames.ClassType + " " + GenerationNames.eventClassName(className) + ":public "
-						+ EventTemplates.EventBaseName + "\n{\n" + GenerationNames.eventClassName(className) + "(");
+				TypeDeclarationKeywords.ClassType + " " + GenerationNames.eventClassName(className) + ":public "
+						+ EventTemplates.EventBaseName + "\n{\n" + GenerationNames.ModifierNames.PublicModifier + ":\n" + 
+						GenerationNames.eventClassName(className) + "(");
 		String paramList = PrivateFunctionalTemplates.paramList(params);
 		if (paramList != "") {
 			source.append(paramList);
@@ -41,7 +45,7 @@ public class EventTemplates {
 		StringBuilder body = new StringBuilder("\n{\n" + constructorBody + "}\n");
 
 		for (Property property : properites) {
-			body.append(VariableTemplates.variableDecl(property.getType().getName(), property.getName(), null, false));
+			body.append(ObjectDeclDefTemplates.variableDecl(property.getType().getName(), property.getName(), GenerationTemplates.VariableType.getUMLMultpliedElementType(property.getLower(), property.getUpper())));
 		}
 		source.append(body).append("};\n\n");
 		body.setLength(0);
@@ -69,6 +73,21 @@ public class EventTemplates {
 
 	public static String eventParamName() {
 		return GenerationNames.formatIncomingParamName(EventTemplates.EventParamName);
+	}
+	
+	public static String eventPtrTypeDef(String eventName) {
+		
+		return GenerationTemplates.usingTemplateType(eventPtr(eventName), 
+				GenerationNames.PointerAndMemoryNames.SmartPtr, 
+				Arrays.asList(signalType(eventName)));
+	}
+	
+	public static String eventPtr(String eventName) {
+		return eventName + "Ptr";
+	}
+
+	public static String signalType(String type) {
+		return type + GenerationNames.EventClassTypeId;
 	}
 
 

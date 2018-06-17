@@ -1,0 +1,42 @@
+package microwave.model;
+
+import hu.elte.txtuml.api.stdlib.world.World;
+
+signal OpenOrClose;
+
+class Door {
+
+	initial Init;
+	state Closed;
+	state Opened;
+
+	transition Initialize {
+		from Init;
+		to Closed;
+	}
+
+	transition Opening {
+		from Closed;
+		to Opened;
+		trigger OpenOrClose;
+		effect {
+			Clock clock = this->(DoorOfOven.oven).one()->(ClockOfOven.clock).one();
+
+			send new Interrupt() to clock;
+			send new DoorOpened() to World.get(View.id());
+		}
+	}
+
+	transition Closing {
+		from Opened;
+		to Closed;
+		trigger OpenOrClose;
+		effect {
+			Clock clock = this->(DoorOfOven.oven).one()->(ClockOfOven.clock).one();
+
+			send new Reset() to clock;
+			send new DoorClosed() to World.get(View.id());
+		}
+	}
+
+}

@@ -33,6 +33,11 @@ class SeqDiagModelExecutorThread extends FIFOExecutorThread implements ExecutorT
 	}
 
 	@Override
+	public DefaultSeqDiagRuntime getModelRuntime() {
+		return (DefaultSeqDiagRuntime) super.getModelRuntime();
+	}
+
+	@Override
 	public void doRun() {
 		super.doRun();
 		root.kill();
@@ -92,8 +97,7 @@ class SeqDiagModelExecutorThread extends FIFOExecutorThread implements ExecutorT
 	 * added.
 	 */
 	public void assertState(ModelClass instance, Class<?> state) {
-		Class<?> currentState = ((SeqDiagModelClassRuntime) ((DefaultSeqDiagRuntime) getModelRuntime())
-				.getRuntimeOf(instance)).getCurrentState();
+		Class<?> currentState = getModelRuntime().getRuntimeOf(instance).getCurrentState();
 		if (!currentState.equals(state)) {
 			root.getExecutor()
 					.addError(new ModelStateAssertError(state.getCanonicalName(), currentState.getCanonicalName()));

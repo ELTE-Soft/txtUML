@@ -2,6 +2,7 @@ package hu.elte.txtuml.export.cpp;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
@@ -10,10 +11,12 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import org.eclipse.cdt.core.ToolFactory;
 import org.eclipse.cdt.core.formatter.CodeFormatter;
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.IDocument;
@@ -22,14 +25,20 @@ import org.eclipse.text.edits.TextEdit;
 import org.eclipse.uml2.uml.Activity;
 import org.eclipse.uml2.uml.Behavior;
 import org.eclipse.uml2.uml.Class;
+import org.eclipse.uml2.uml.Classifier;
 import org.eclipse.uml2.uml.Element;
+import org.eclipse.uml2.uml.Interface;
 import org.eclipse.uml2.uml.Operation;
 import org.eclipse.uml2.uml.Parameter;
 import org.eclipse.uml2.uml.Signal;
 import org.eclipse.uml2.uml.StateMachine;
 import org.eclipse.uml2.uml.Stereotype;
 import org.eclipse.uml2.uml.UMLPackage;
+import org.eclipse.uml2.uml.Usage;
 
+import hu.elte.txtuml.export.cpp.templates.GenerationNames;
+import hu.elte.txtuml.export.cpp.templates.PrivateFunctionalTemplates;
+import hu.elte.txtuml.export.cpp.templates.GenerationNames.ModifierNames;
 import hu.elte.txtuml.export.cpp.templates.activity.ActivityTemplates;
 import hu.elte.txtuml.utils.Pair;
 
@@ -92,15 +101,55 @@ public class CppExporterUtils {
 
 		return activity;
 	}
+	
+	public static class TypeDescriptor {
+		public static final TypeDescriptor NoReturn = new TypeDescriptor(ModifierNames.NoReturn);
+		
+		public TypeDescriptor(String typeName, int lowMul, int upMul) {
+			super();
+			this.typeName = typeName;
+			this.upMul = upMul;
+			this.lowMul = lowMul;
+			isRawType = false;
+		}
+		
+		public TypeDescriptor(String typeName) {
+			super();
+			this.typeName = typeName;
+			this.upMul = 1;
+			this.lowMul = 1;
+			isRawType = true;
+		}
+		
+		public String getTypeName() {
+			return typeName;
+		}
+		public int getUpMul() {
+			return upMul;
+		}
+		public int getLowMul() {
+			return lowMul;
+		}
+		
+		public boolean isRawType() {
+			return upMul == 1 && lowMul == 1 && isRawType;
+		}
 
-	public static List<Pair<String, String>> getOperationParams(Operation operation) {
-		List<Pair<String, String>> operationParameters = new ArrayList<Pair<String, String>>();
+		String typeName;
+		int upMul;
+		int lowMul;
+		boolean isRawType;
+	}
+	
+	public static List<Pair<TypeDescriptor, String>> getOperationParams(Operation operation) {
+		List<Pair<TypeDescriptor, String>> operationParameters = new ArrayList<>();
 		for (Parameter param : operation.getOwnedParameters()) {
 			if (param != operation.getReturnResult()) {
 				if (param.getType() != null) {
-					operationParameters.add(new Pair<String, String>(param.getType().getName(), param.getName()));
+					operationParameters.add(new Pair<TypeDescriptor, String>(
+							new TypeDescriptor(param.getType().getName(),param.getLower(), param.getUpper()) , param.getName()));
 				} else {
-					operationParameters.add(new Pair<String, String>(UNKNOWN_TYPE, param.getName()));
+					operationParameters.add(new Pair<TypeDescriptor, String>(new TypeDescriptor(UNKNOWN_TYPE), param.getName()));
 				}
 			}
 		}
@@ -119,12 +168,12 @@ public class CppExporterUtils {
 		return operationParameterTypes;
 	}
 
-	public static List<String> getOperationParamTypes(Operation operation) {
-		List<String> operationParameterTypes = new ArrayList<String>();
+	public static List<TypeDescriptor> getOperationParamTypes(Operation operation) {
+		List<TypeDescriptor> operationParameterTypes = new ArrayList<>();
 		for (Parameter param : operation.getOwnedParameters()) {
 			if (param != operation.getReturnResult()) {
 				if (param.getType() != null) {
-					operationParameterTypes.add(param.getType().getName());
+					operationParameterTypes.add(new TypeDescriptor(param.getType().getName(), param.getLower(), param.getUpper()));
 				}
 			}
 		}
@@ -164,6 +213,21 @@ public class CppExporterUtils {
 
 		return formattedSource;
 	}
+	
+	public static String escapeQuates(String source) {
+		StringBuilder resultSource = new StringBuilder("");
+		
+		for(char ch : source.toCharArray()) {
+			if(ch == '"') {
+				resultSource.append("\\");
+			}
+			resultSource.append(ch);
+		}
+		
+		return resultSource.toString();
+	}
+	
+
 
 	private static Class getSignalFactoryClass(Signal signal, List<Element> elements) {
 		for (Element element : elements) {
@@ -211,20 +275,85 @@ public class CppExporterUtils {
 
 		return signalsToConstructorOperations;
 	}
-
-	public static StateMachine getStateMachine(Class cls) {
+	public static Optional<StateMachine> getStateMachine(Class cls) {
+	
 
 		List<StateMachine> smList = new ArrayList<StateMachine>();
 		getTypedElements(smList, UMLPackage.Literals.STATE_MACHINE, cls.getOwnedElements());
 
 		if (!smList.isEmpty()) {
-			return smList.get(0);
+			return Optional.of(smList.get(0));
 
 		} else {
-			return null;
+			return Optional.empty();
 		}
 	}
 
+	public static boolean isStateMachineOwner(Class cls) {
+		return CppExporterUtils.getStateMachine(cls).isPresent();
+	}
+	
+	
+	public static String getFirstGeneralClassName(Classifier cls) {
+		if (!cls.getGeneralizations().isEmpty()) {
+			String className = cls.getGeneralizations().get(0).getGeneral().getName();
+			return PrivateFunctionalTemplates.mapUMLTypeToCppClass(className);
+		} else {
+			return GenerationNames.InterfaceNames.EmptyInfName;
+		}
+		
+	}
+	
+	public static String getUsedInterfaceName(Interface inf) {
+		EList<Element> modelRoot = inf.getModel().allOwnedElements();
+		List<Usage> usages = new ArrayList<>();
+		CppExporterUtils.getTypedElements(usages, UMLPackage.Literals.USAGE, modelRoot);
+		
+		Optional<Usage> infOptionalUsage = usages.stream().filter(u -> u.getClients().contains(inf)).findFirst();
+		if(infOptionalUsage.isPresent()) {
+			Usage infUsage = infOptionalUsage.get();
+			if (infUsage.getSuppliers().isEmpty()) {
+				return GenerationNames.InterfaceNames.EmptyInfName;
+			}
+			return PrivateFunctionalTemplates.mapUMLTypeToCppClass(infUsage.getSuppliers().get(0).getName());
+		} else {
+			return GenerationNames.InterfaceNames.EmptyInfName;
+		}
+	}
+	
+	public static String createTemplateParametersCode(Optional<List<String>> templateParamOptionalList) {
+		String source = "";
+		if (templateParamOptionalList.isPresent()) {
+			List<String> templateParameters = templateParamOptionalList.get();
+			if (!templateParameters.isEmpty()) {
+				source = "<" + enumerateListElementsCode(templateParameters) + ">";
+			}			
+		}
+		
+		return source.toString();
+	}
+	
+	public static String createParametersCode(Optional<List<String>> optionalParams) {
+		String source = "";
+		if (optionalParams.isPresent()) {
+			List<String> params = optionalParams.get();
+			if (!params.isEmpty()) {
+				source = "(" + enumerateListElementsCode(params) + ")";
+			}			
+		}
+		
+		return source.toString();
+	}
+	
+	public static String enumerateListElementsCode(List<String> list) {
+		assert(list != null);
+		StringBuilder source = new StringBuilder("");
+		for (String elem : list) {
+			source.append(elem + ",");
+		}
+		return cutOffTheLastCharacter(source.toString());
+	}
+	
 	private static boolean isSignalFactoryClass(Class cls, List<Element> elements) {
 		List<Signal> signals = new ArrayList<Signal>();
 		getTypedElements(signals, UMLPackage.Literals.SIGNAL, elements);
@@ -241,9 +370,6 @@ public class CppExporterUtils {
 		return false;
 	}
 
-	public static boolean isStateMachineOwner(Class cls) {
-		return CppExporterUtils.getStateMachine(cls) != null;
-	}
 
 	public static String cutOffTheLastCharacter(String originalString) {
 		int originalLeght = originalString.length();
@@ -252,4 +378,23 @@ public class CppExporterUtils {
 		}
 		return originalString.substring(0, originalLeght - 1);
 	}
+	
+	public static int executeCommand(String directory, List<String> strings, Map<String, String> environment, String fileNameToRedirect)
+			throws IOException, InterruptedException {
+		ProcessBuilder processBuilder = new ProcessBuilder(strings);
+		if (environment != null) {
+			processBuilder.environment().putAll(environment);
+		}
+					
+		processBuilder.inheritIO();
+		processBuilder.directory(new File(directory));
+		
+		if(fileNameToRedirect != null){
+			processBuilder = processBuilder.redirectOutput(new File(directory + "/" + fileNameToRedirect));
+		}
+
+		Process process = processBuilder.start();
+		return process.waitFor();
+	}
+
 }

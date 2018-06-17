@@ -31,7 +31,7 @@ abstract class AbstractOrderedCollection<E, C extends AbstractOrderedCollection<
 	AbstractOrderedCollection(ImmutableList<E> backend) {
 		super(backend);
 	}
-
+	
 	@ExternalBody
 	@Override
 	public final C add(int index, E element) {
@@ -55,6 +55,7 @@ abstract class AbstractOrderedCollection<E, C extends AbstractOrderedCollection<
 				builder.add(element);
 			}
 		});
+		
 	}
 
 	@ExternalBody

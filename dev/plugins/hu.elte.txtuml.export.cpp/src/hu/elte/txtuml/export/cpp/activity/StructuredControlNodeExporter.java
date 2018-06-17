@@ -12,8 +12,10 @@ import org.eclipse.uml2.uml.SequenceNode;
 import org.eclipse.uml2.uml.UMLPackage;
 import org.eclipse.uml2.uml.Variable;
 
+import hu.elte.txtuml.export.cpp.templates.GenerationTemplates;
+import hu.elte.txtuml.export.cpp.templates.GenerationTemplates.VariableType;
 import hu.elte.txtuml.export.cpp.templates.activity.ActivityTemplates;
-import hu.elte.txtuml.export.cpp.templates.structual.VariableTemplates;
+import hu.elte.txtuml.export.cpp.templates.structual.ObjectDeclDefTemplates;
 
 class StructuredControlNodeExporter {
 
@@ -55,7 +57,7 @@ class StructuredControlNodeExporter {
 			}
 
 			String collection = activityExportResolver
-					.getTargetFromActivityNode(node.getInputElements().get(0).getIncomings().get(0).getSource());
+					.getTargetFromActivityNode(node.getInputElements().get(0).getIncomings().get(0).getSource(), false);
 			source = ActivityTemplates.foreachCycle(iterativeVar.getType().getName(), iterativeVar.getName(),
 					collection, body.toString(), inits.toString());
 		}
@@ -89,7 +91,7 @@ class StructuredControlNodeExporter {
 		}
 
 		source.append(
-				ActivityTemplates.whileCycle(activityExportResolver.getTargetFromActivityNode(loopNode.getDecider()),
+				ActivityTemplates.whileCycle(activityExportResolver.getTargetFromActivityNode(loopNode.getDecider(), true),
 						body.toString() + "\n" + recalulcateCondition.toString()));
 
 		return source.toString();
@@ -105,7 +107,7 @@ class StructuredControlNodeExporter {
 				tests.append(activityExporter.createActivityNodeCode(test));
 			}
 
-			String cond = activityExportResolver.getTargetFromActivityNode(clause.getDecider());
+			String cond = activityExportResolver.getTargetFromActivityNode(clause.getDecider(), true);
 			StringBuilder body = new StringBuilder("");
 			for (ExecutableNode node : clause.getBodies()) {
 				body.append(activityExporter.createActivityNodeCode(node));
@@ -135,8 +137,9 @@ class StructuredControlNodeExporter {
 			type = variable.getType().getName();
 		}
 		userVariableExporter.exportNewVariable(variable);
-
-		return VariableTemplates.variableDecl(type, userVariableExporter.getRealVariableName(variable),
-				variable.getType().eClass().equals(UMLPackage.Literals.SIGNAL));
+		
+		GenerationTemplates.VariableType varType = variable.getType().eClass().equals(UMLPackage.Literals.SIGNAL) ?
+				GenerationTemplates.VariableType.EventPtr : VariableType.getUMLMultpliedElementType(variable.getLower(), variable.getUpper());
+		return ObjectDeclDefTemplates.variableDecl(type, userVariableExporter.getRealVariableReference(variable),varType);
 	}
 }

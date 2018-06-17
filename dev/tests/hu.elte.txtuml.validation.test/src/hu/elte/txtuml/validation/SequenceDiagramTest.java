@@ -1,23 +1,23 @@
 package hu.elte.txtuml.validation;
 
-import static org.mockito.Matchers.argThat;
+import static hu.elte.txtuml.validation.sequencediagram.SequenceErrors.INVALID_ACTION_CALL;
+import static hu.elte.txtuml.validation.sequencediagram.SequenceErrors.INVALID_LIFELINE_DECLARATION;
+import static hu.elte.txtuml.validation.sequencediagram.SequenceErrors.INVALID_POSITION;
+import static hu.elte.txtuml.validation.sequencediagram.SequenceErrors.SEND_EXPECTED;
 import static org.mockito.Mockito.verify;
-import static hu.elte.txtuml.validation.sequencediagram.ValidationErrors.SEND_EXPECTED;
-import static hu.elte.txtuml.validation.sequencediagram.ValidationErrors.INVALID_LIFELINE_DECLARATION;
-import static hu.elte.txtuml.validation.sequencediagram.ValidationErrors.INVALID_POSITION;
 
 import java.io.IOException;
 import java.util.Arrays;
 
 import org.eclipse.jdt.core.dom.CompilationUnit;
-import org.hamcrest.Description;
 import org.junit.Test;
-import org.mockito.ArgumentMatcher;
 
-import hu.elte.txtuml.validation.common.ValidationProblem;
-import hu.elte.txtuml.validation.sequencediagram.ValidationErrors;
+import hu.elte.txtuml.validation.sequencediagram.SequenceErrors;
 import hu.elte.txtuml.validation.sequencediagram.visitors.SequenceDiagramVisitor;
 
+/**
+ * Test cases for sequence diagram validation.
+ */
 public class SequenceDiagramTest extends ValidationTestBase {
 
 	private static final String VALIDATION_EXAMPLES_PACKAGE = "/hu/elte/txtuml/examples/validation/sequencediagram/";
@@ -48,6 +48,11 @@ public class SequenceDiagramTest extends ValidationTestBase {
 	}
 
 	@Test
+	public void testInvalidActionCall() throws Exception {
+		assertErrors("InvalidActionCall.java", INVALID_ACTION_CALL);
+	}
+
+	@Test
 	public void testValidDiagram() throws Exception {
 		assertValid("ValidDiagram.java");
 	}
@@ -56,27 +61,11 @@ public class SequenceDiagramTest extends ValidationTestBase {
 		assertErrors(fileName);
 	}
 
-	private void assertErrors(String fileName, ValidationErrors... errorTypes) throws IOException {
+	private void assertErrors(String fileName, SequenceErrors... errorTypes) throws IOException {
 		CompilationUnit compilationUnit = prepareAST(fileName);
 		compilationUnit.accept(new SequenceDiagramVisitor(mockCollector));
 		Arrays.asList(errorTypes).forEach(errorType -> verify(mockCollector).report(is(errorType)));
 		checkNoOtherErrorRaised();
-	}
-
-	private static ValidationProblem is(ValidationErrors type) {
-		return argThat(new ArgumentMatcher<ValidationProblem>() {
-
-			@Override
-			public void describeTo(Description description) {
-				description.appendText("Error of type " + type + " required.");
-			}
-
-			@Override
-			public boolean matches(Object argument) {
-				return ((ValidationProblem) argument).getID() == type.ordinal();
-			}
-
-		});
 	}
 
 }

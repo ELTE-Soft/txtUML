@@ -25,7 +25,7 @@ import hu.elte.txtuml.export.papyrus.elementsmanagers.AbstractDiagramElementsMan
 import hu.elte.txtuml.export.papyrus.elementsmanagers.ActivityDiagramElementsManager;
 import hu.elte.txtuml.export.papyrus.elementsmanagers.ClassDiagramElementsManager;
 import hu.elte.txtuml.export.papyrus.elementsmanagers.StateMachineDiagramElementsManager;
-import hu.elte.txtuml.export.papyrus.preferences.PreferencesManager;
+import hu.elte.txtuml.utils.eclipse.preferences.PreferencesManager;
 
 /**
  *	The Default representation of Papyrus Model manager

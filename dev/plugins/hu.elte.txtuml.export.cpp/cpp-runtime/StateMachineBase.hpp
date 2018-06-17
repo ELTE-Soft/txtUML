@@ -15,11 +15,11 @@ namespace Model
 {
 	
 struct EventState {
-EventState(int e_, int s_, int p_) : event (e_), state (s_), port (p_) {}
+EventState(int e_, int s_, PortType p_) : event (e_), state (s_), port (p_) {}
   
 int event;
 int state;
-int port;
+PortType port;
 };
 
 inline bool operator == (const EventState& a, const EventState& b) {
@@ -39,7 +39,7 @@ namespace std
 	  std::size_t operator ()(const Model::EventState& es_) const
 	  {
 	    hash<int> intHash;
-	    size_t hashValue = (intHash(es_.event) ^ intHash(es_.state) ^ intHash(es_.port) );
+            size_t hashValue = (intHash(es_.event) ^ intHash(es_.state) ^ intHash(es_.port.getPortTypeId()) );
 	    return hashValue;
 	  }
 	};

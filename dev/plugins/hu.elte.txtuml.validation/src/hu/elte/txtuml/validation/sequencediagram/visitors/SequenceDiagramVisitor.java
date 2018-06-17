@@ -5,9 +5,13 @@ import org.eclipse.jdt.core.dom.Block;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
+import org.eclipse.jdt.core.dom.MethodInvocation;
 
 import hu.elte.txtuml.validation.common.ProblemCollector;
 
+/**
+ * Visitor for sequence diagram description validation.
+ */
 public class SequenceDiagramVisitor extends ASTVisitor {
 
 	protected ProblemCollector collector;
@@ -30,12 +34,18 @@ public class SequenceDiagramVisitor extends ASTVisitor {
 
 	@Override
 	public boolean visit(MethodDeclaration elem) {
-		return !elem.getName().getFullyQualifiedName().equals("initialize");
+		return elem.getName().getFullyQualifiedName().equals("run");
+	}
+
+	@Override
+	public boolean visit(MethodInvocation elem) {
+		Utils.checkInvalidActionCall(elem, collector);
+		return false;
 	}
 
 	@Override
 	public boolean visit(Block node) {
-		Utils.checkSendExists(collector, node);
+		Utils.checkSendExists(collector, node, this);
 		return true;
 	}
 

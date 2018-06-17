@@ -29,13 +29,12 @@ public class SequenceExporter extends MethodInvocationExporter {
 
 	@Override
 	public boolean preNext(MethodInvocation curElement) {
+		// Sequence.fromActor call
 		if (curElement.arguments().size() == 2) {
-			Expression target = (Expression) curElement.arguments().get(1);
-			String targetName = target.toString();
-			compiler.activateLifeline(targetName);
 			return true;
 		}
 
+		// Sequence.send call
 		Expression sender = (Expression) curElement.arguments().get(0);
 		String senderName = sender.toString();
 
@@ -46,7 +45,6 @@ public class SequenceExporter extends MethodInvocationExporter {
 		String signalExpr = signal.resolveTypeBinding().getQualifiedName();
 
 		compiler.println(senderName + "->" + targetName + " : " + signalExpr);
-		compiler.activateLifeline(targetName);
 		return true;
 	}
 

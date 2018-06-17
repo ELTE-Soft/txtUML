@@ -26,16 +26,10 @@ public class BasicSeqDiagElementTests extends PlantUmlExportTestBase {
 		expected.add("participant lifeline1");
 		expected.add("participant lifeline3");
 		expected.add("participant lifeline2");
-		expected.add("activate lifeline1");
 		expected.add("lifeline1->lifeline2 : " + project.getName() + ".testmodel.TestSig");
-		expected.add("activate lifeline2");
 		expected.add("lifeline2->lifeline3 : " + project.getName() + ".testmodel.TestSig");
-		expected.add("activate lifeline3");
 		expected.add("lifeline3->lifeline2 : " + project.getName() + ".testmodel.TestSig");
 		expected.add("lifeline2->lifeline1 : " + project.getName() + ".testmodel.TestSig");
-		expected.add("deactivate lifeline1");
-		expected.add("deactivate lifeline3");
-		expected.add("deactivate lifeline2");
 		expected.add("@enduml");
 
 		assertOutput("SequenceMessaging", expected);

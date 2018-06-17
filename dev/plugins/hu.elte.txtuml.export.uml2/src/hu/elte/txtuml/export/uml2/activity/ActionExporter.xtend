@@ -176,10 +176,10 @@ abstract class ActionExporter<S, R extends Element> extends Exporter<S, S, R> {
 
 	def read(Variable variable) { new VariableExpressionExporter(this).readVar(variable) }
 
-	def write(Variable variable, Action newValue) {
+	def write(Variable variable, Action newValue, boolean isReplace) {
 		val write = factory.createAddVariableValueAction
 		write.name = '''«variable.name»=«newValue.name»'''
-		write.isReplaceAll = true
+		write.isReplaceAll = isReplace
 		write.variable = variable
 		newValue.result.objectFlow(write.createValue("new_value", variable.type))
 		storeNode(write)

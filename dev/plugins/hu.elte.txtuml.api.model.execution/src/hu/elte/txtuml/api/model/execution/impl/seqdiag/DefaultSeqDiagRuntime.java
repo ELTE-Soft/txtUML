@@ -17,7 +17,7 @@ import hu.elte.txtuml.api.model.seqdiag.SequenceDiagram;
  * thread.
  */
 @SequenceDiagramRelated
-public class DefaultSeqDiagRuntime extends SingleThreadModelRuntime<SeqDiagModelClassRuntime, SingleThreadPortRuntime> {
+class DefaultSeqDiagRuntime extends SingleThreadModelRuntime<DefaultSeqDiagModelClassRuntime, SingleThreadPortRuntime> {
 
 	private final SeqDiagModelExecutorThread modelThread;
 
@@ -60,13 +60,18 @@ public class DefaultSeqDiagRuntime extends SingleThreadModelRuntime<SeqDiagModel
 	// The required methods of an implementer of the SinglethreadModelRuntime
 
 	@Override
+	protected DefaultSeqDiagModelClassRuntime getRuntimeOf(ModelClass cls) {
+		return (DefaultSeqDiagModelClassRuntime) super.getRuntimeOf(cls);
+	}
+
+	@Override
 	public DefaultSeqDiagExecutor getExecutor() {
 		return (DefaultSeqDiagExecutor) super.getExecutor();
 	}
 
 	@Override
-	public SeqDiagModelClassRuntime createModelClassRuntime(ModelClass object) {
-		return new SeqDiagModelClassRuntime(object, modelThread);
+	public DefaultSeqDiagModelClassRuntime createModelClassRuntime(ModelClass object) {
+		return new DefaultSeqDiagModelClassRuntime(object, modelThread);
 	}
 
 	@Override
@@ -82,4 +87,5 @@ public class DefaultSeqDiagRuntime extends SingleThreadModelRuntime<SeqDiagModel
 	SeqDiagModelExecutorThread getModelThread() {
 		return modelThread;
 	}
+
 }

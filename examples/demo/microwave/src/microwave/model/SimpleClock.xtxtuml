@@ -1,0 +1,82 @@
+package microwave.model;
+
+import hu.elte.txtuml.api.stdlib.timers.Timer;
+import hu.elte.txtuml.api.stdlib.world.World;
+
+signal Start;
+signal Stop;
+
+/**
+ * A simple Clock that has a fixed 10-second timeout
+ * and cannot continue if the door is opened and then closed
+ * during its run. 
+ */
+class SimpleClock extends Clock {
+
+	// States
+
+	initial Init;
+
+	state Stopped;
+
+	state Running {
+		entry {
+			Timer timer = Timer.start(new Stop(), this, 10000);
+			link(TimerOfClock.timer, timer, TimerOfClock.clock, this);
+		}
+		exit {
+			Timer timer = this->(TimerOfClock.timer).one();
+			timer.cancel();
+			unlink(TimerOfClock.timer, timer, TimerOfClock.clock, this);
+		}
+	}
+
+	state Interrupted; // While the door is open
+
+	// Transitions
+
+	transition Initialize {
+		from Init;
+		to Stopped;
+	}
+
+	transition Starting {
+		from Stopped;
+		to Running;
+		trigger Start;
+		effect {
+			send new SwitchOn() to this->(ClockOfOven.oven).one();
+		}
+	}
+
+	transition Stopping {
+		from Running;
+		to Stopped;
+		trigger Stop;
+		effect {
+			send new SwitchOff() to this->(ClockOfOven.oven).one();
+		}
+	}
+
+	transition GetsInterruptedWhileRunning {
+		from Running;
+		to Interrupted;
+		trigger Interrupt;
+		effect {
+			send new SwitchOff() to this->(ClockOfOven.oven).one();
+		}
+	}
+
+	transition GetsInterruptedWhileStopped {
+		from Stopped;
+		to Interrupted;
+		trigger Interrupt;
+	}
+
+	transition Resetting {
+		from Interrupted;
+		to Stopped;
+		trigger Reset;
+	}
+
+}
