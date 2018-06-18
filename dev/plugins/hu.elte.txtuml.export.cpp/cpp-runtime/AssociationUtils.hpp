@@ -69,7 +69,7 @@ private:
 template<class FirstClassRole, class SecondClassRole>
 class AssocOwner {
 public:
-	typename Association<FirstClassRole, SecondClassRole>* association = nullptr;
+	Association<FirstClassRole, SecondClassRole>* association = nullptr;
 
 };
 
