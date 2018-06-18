@@ -28,8 +28,8 @@ class Pendulum {
 		from Init;
 		to Working;
 		effect {
-			Timer timer = Timer.start(new Tick(), this, unit);
-			link(TimerOfPendulum.timer, timer, TimerOfPendulum.pendulum, this);
+			Timer timer = Timer.^start(new Tick(), this, unit);
+			link timer, this via TimerOfPendulum;
 		}
 	}
 

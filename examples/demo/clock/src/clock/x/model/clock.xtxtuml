@@ -17,36 +17,30 @@ import clock.x.model.connectors.Seconds;
 class Clock {
 
 	public Clock(int hour, int minute, int second) {
-		Pendulum pendulum = create(Pendulum);
+		Pendulum pendulum = create Pendulum();
 		Hand secondHand = new Hand(60, second);
 		Hand minuteHand = new Hand(60, minute);
 		Hand hourHand = new Hand(24, hour);
 		Display display = new Display(hour, minute, second);
 
-		link(PendulumInClock.clock, this, PendulumInClock.pendulum, pendulum);
-		link(SecondHand.clock, this, SecondHand.secondHand, secondHand);
-		link(MinuteHand.clock, this, MinuteHand.minuteHand, minuteHand);
-		link(HourHand.clock, this, HourHand.hourHand, hourHand);
-		link(DisplayInClock.clock, this, DisplayInClock.face, display);
+		link this, pendulum via PendulumInClock;
+		link this, secondHand via SecondHand;
+		link this, minuteHand via MinuteHand;
+		link this, hourHand via hourHand;
+		link this, display via DisplayInClock;
 
-		connect(Seconds.pendulum, pendulum->(Pendulum.OutTickPort),
-				Seconds.secondHand, secondHand->(Hand.InTickPort));
-		connect(Minutes.secondHand, secondHand->(Hand.OutTickPort),
-				Minutes.minuteHand, minuteHand->(Hand.InTickPort));
-		connect(Hours.minuteHand, minuteHand->(Hand.OutTickPort),
-				Hours.hourHand, hourHand->(Hand.InTickPort));
-		connect(HourValues.hourHand, hourHand->(Hand.ValuePort),
-				HourValues.face, display->(Display.HourPort));
-		connect(MinuteValues.minuteHand, minuteHand->(Hand.ValuePort),
-				MinuteValues.face, display->(Display.MinutePort));
-		connect(SecondValues.secondHand, secondHand->(Hand.ValuePort),
-				SecondValues.face, display->(Display.SecondPort));
+		connect pendulum->(Pendulum.OutTickPort), secondHand->(Hand.InTickPort) via Seconds;
+		connect secondHand->(Hand.OutTickPort), minuteHand->(Hand.InTickPort) via Minutes;
+		connect minuteHand->(Hand.OutTickPort), hourHand->(Hand.InTickPort) via Hours;
+		connect hourHand->(Hand.ValuePort), display->(Display.HourPort) via HourValues;
+		connect minuteHand->(Hand.ValuePort), display->(Display.MinutePort) via MinuteValues;
+		connect secondHand->(Hand.ValuePort), display->(Display.SecondPort) via SecondValues;
 
-		start(pendulum);
-		start(secondHand);
-		start(minuteHand);
-		start(hourHand);
-		start(display);
+		start pendulum;
+		start secondHand;
+		start minuteHand;
+		start hourHand;
+		start display;
 	}
 
 }
