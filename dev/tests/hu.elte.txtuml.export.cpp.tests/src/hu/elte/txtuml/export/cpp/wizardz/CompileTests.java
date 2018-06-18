@@ -71,7 +71,7 @@ public class CompileTests {
 			new Config("machine", "machine1.j.model", "machine1.j.cpp.Machine1Configuration", DemoExpectedLines.MACHINE.getLines(), true, "main.cpp"),
 			new Config("monitoring", "monitoring.x.model", "monitoring.x.cpp.XMonitoringConfiguration", DemoExpectedLines.MONITORING.getLines(), false, "mainTest.cpp"),
 			new Config("producer_consumer", "producer_consumer.j.model",
-					"producer_consumer.j.cpp.ProducerConsumerConfiguration", DemoExpectedLines.PRODUCER_CONSUMER.getLines(), false, "main.cpp"),
+					"producer_consumer.j.cpp.ProducerTestConsumerConfiguration", DemoExpectedLines.PRODUCER_CONSUMER.getLines(), false, "main.cpp"),
 			new Config("train", "train.j.model", "train.j.cpp.TrainConfiguration", DemoExpectedLines.TRAIN.getLines(), false, "mainTest.cpp"),
 			new Config("pingpong", "pingpong.j.model", "pingpong.j.cpp.PingPongConfiguration", DemoExpectedLines.PINGPONG.getLines(), true, "main.cpp")};
 	
