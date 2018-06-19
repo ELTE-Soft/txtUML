@@ -394,7 +394,6 @@ public class CppExporterUtils {
 		if(fileNameToRedirect != null){
 			processBuilder = processBuilder.redirectOutput(new File(directory + "/" + fileNameToRedirect));
 		}
-
 		Process process = processBuilder.start();
 		return process.waitFor();
 	}

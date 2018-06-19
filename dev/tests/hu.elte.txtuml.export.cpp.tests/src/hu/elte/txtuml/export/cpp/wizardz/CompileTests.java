@@ -68,12 +68,12 @@ public class CompileTests {
 	private static final String PATH_TO_PROJECTS = "../../../examples/demo/";
 
 	private static final Config[] TEST_PROJECTS = {
-			new Config("machine", "machine1.j.model", "machine1.j.cpp.Machine1Configuration", DemoExpectedLines.MACHINE.getLines(), true, "main.cpp"),
-			new Config("monitoring", "monitoring.x.model", "monitoring.x.cpp.XMonitoringConfiguration", DemoExpectedLines.MONITORING.getLines(), false, "mainTest.cpp"),
+			//new Config("machine", "machine1.j.model", "machine1.j.cpp.Machine1Configuration", DemoExpectedLines.MACHINE.getLines(), true, "main.cpp"),
+			//new Config("monitoring", "monitoring.x.model", "monitoring.x.cpp.XMonitoringConfiguration", DemoExpectedLines.MONITORING.getLines(), false, "mainTest.cpp"),
 			new Config("producer_consumer", "producer_consumer.j.model",
-					"producer_consumer.j.cpp.ProducerTestConsumerConfiguration", DemoExpectedLines.PRODUCER_CONSUMER.getLines(), false, "main.cpp"),
-			new Config("train", "train.j.model", "train.j.cpp.TrainConfiguration", DemoExpectedLines.TRAIN.getLines(), false, "mainTest.cpp"),
-			new Config("pingpong", "pingpong.j.model", "pingpong.j.cpp.PingPongConfiguration", DemoExpectedLines.PINGPONG.getLines(), true, "main.cpp")};
+					"producer_consumer.j.cpp.ProducerConsumerConfiguration", DemoExpectedLines.PRODUCER_CONSUMER.getLines(), false, "main.cpp")/*,*/
+			//new Config("train", "train.j.model", "train.j.cpp.TrainConfiguration", DemoExpectedLines.TRAIN.getLines(), false, "mainTest.cpp"),
+			/*new Config("pingpong", "pingpong.j.model", "pingpong.j.cpp.PingPongConfiguration", DemoExpectedLines.PINGPONG.getLines(), true, "main.cpp")*/};
 	
 	private static final String EXPORT_TEST_PROJECT_PREFIX = "exportTest_";
 	private static final String COMPILE_TEST_PROJECT_PREFIX = "compileTest_";
@@ -249,12 +249,12 @@ public class CompileTests {
 
 	private static void compileCPP(String testProjectName, Config config) throws Exception {
 		List<Map<String, String>> compileEnvironments = new ArrayList<Map<String, String>>();
-		if (compilerGCCPresent) {
+		/*if (compilerGCCPresent) {
 			Map<String, String> env = new TreeMap<String, String>();
 			env.put("CC", "gcc");
 			env.put("CXX", "g++");
 			compileEnvironments.add(env);
-		}
+		}*/
 		if (compilerClangPresent && !CppExporterUtils.isWindowsOS()) {
 			Map<String, String> env = new TreeMap<String, String>();
 			env.put("CC", "clang");

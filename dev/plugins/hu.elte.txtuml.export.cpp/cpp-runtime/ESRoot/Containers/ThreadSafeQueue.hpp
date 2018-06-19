@@ -37,7 +37,7 @@ public:
 	  std::unique_lock<std::mutex> mlock(_mutex);
 	  if (_queue.empty() && !_stop)
 	  {
-	    _cond->wait(mlock);
+		  _cond->wait(mlock, [this] {return !_queue.empty() || _stop || this->exitFromWaitingCondition(); });
 	  }
 
 	  if (!_queue.empty() && !_stop)
@@ -83,13 +83,16 @@ public:
 
 	ThreadSafeQueue(const ThreadSafeQueue&) = delete;            // disable copying
 	ThreadSafeQueue& operator=(const ThreadSafeQueue&) = delete; // disable assignment
-
+protected:
+	virtual bool exitFromWaitingCondition() { return false; }
 private:
 	QueueType _queue;
 
 	std::mutex _mutex;
 	std::shared_ptr<std::condition_variable> _cond;
 	std::atomic_bool _stop;
+
+
 };
 
 
