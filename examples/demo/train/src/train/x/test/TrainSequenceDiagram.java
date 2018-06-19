@@ -1,4 +1,4 @@
-package train.j.test;
+package train.x.test;
 
 import static hu.elte.txtuml.api.model.seqdiag.Sequence.assertState;
 import static hu.elte.txtuml.api.model.seqdiag.Sequence.fromActor;
@@ -9,18 +9,18 @@ import hu.elte.txtuml.api.model.seqdiag.ExecMode;
 import hu.elte.txtuml.api.model.seqdiag.ExecutionMode;
 import hu.elte.txtuml.api.model.seqdiag.Position;
 import hu.elte.txtuml.api.model.seqdiag.SequenceDiagram;
-import train.j.model.Engine;
-import train.j.model.Gearbox;
-import train.j.model.Lamp;
-import train.j.model.associations.GE;
-import train.j.model.associations.GL;
-import train.j.model.associations.LE;
-import train.j.model.signals.Backward;
-import train.j.model.signals.EngineOff;
-import train.j.model.signals.EngineOn;
-import train.j.model.signals.Forward;
-import train.j.model.signals.LightOff;
-import train.j.model.signals.SwitchLight;
+import train.x.model.Backward;
+import train.x.model.Engine;
+import train.x.model.EngineOff;
+import train.x.model.EngineOn;
+import train.x.model.Forward;
+import train.x.model.GE;
+import train.x.model.GL;
+import train.x.model.Gearbox;
+import train.x.model.LE;
+import train.x.model.Lamp;
+import train.x.model.LightOff;
+import train.x.model.SwitchLight;
 
 public class TrainSequenceDiagram extends SequenceDiagram {
 
