@@ -1,7 +1,6 @@
 package hu.elte.txtuml.validation.sequencediagram.visitors;
 
 import org.eclipse.jdt.core.dom.ASTVisitor;
-import org.eclipse.jdt.core.dom.Block;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
@@ -41,12 +40,6 @@ public class SequenceDiagramVisitor extends ASTVisitor {
 	public boolean visit(MethodInvocation elem) {
 		Utils.checkInvalidActionCall(elem, collector);
 		return false;
-	}
-
-	@Override
-	public boolean visit(Block node) {
-		Utils.checkSendExists(collector, node, this);
-		return true;
 	}
 
 }
