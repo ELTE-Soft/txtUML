@@ -46,6 +46,9 @@ import hu.elte.txtuml.utils.eclipse.Dialogs;
 
 public class RunSelectedSequenceDiagramHandler extends AbstractHandler {
 
+	/**
+	 * Finds the selected sequence diagrams and executes them.
+	 */
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		Job job = new Job("Sequence diagram execution") {
@@ -94,6 +97,13 @@ public class RunSelectedSequenceDiagramHandler extends AbstractHandler {
 		return null;
 	}
 
+	/**
+	 * Loads the the given sequence diagram with URLClassloader, runs it with a
+	 * {@link SequenceDiagramExecutor}, waits for it's termination and writes
+	 * the result to the given console.
+	 * <p>
+	 * The user can cancel the execution.
+	 */
 	@SuppressWarnings("unchecked")
 	private void runSequenceDiagram(IType sequenceDiagramType, MessageConsole console, IProgressMonitor monitor)
 			throws Exception {
@@ -122,6 +132,11 @@ public class RunSelectedSequenceDiagramHandler extends AbstractHandler {
 		writeToConsole(console, executor.getErrors(), sequenceDiagramType.getElementName());
 	}
 
+	/**
+	 * Searches for a console with the name "Sequence Diagram Console" and
+	 * returns it if it was found. If the console was not found creates a new
+	 * one and returns it.
+	 */
 	private MessageConsole findConsole() {
 		ConsolePlugin plugin = ConsolePlugin.getDefault();
 		IConsoleManager conMan = plugin.getConsoleManager();
@@ -138,6 +153,9 @@ public class RunSelectedSequenceDiagramHandler extends AbstractHandler {
 		}
 	}
 
+	/**
+	 * Writes the results into a console.
+	 */
 	private void writeToConsole(MessageConsole console, List<MessageError> errors, String sequenceDiagramClassName) {
 		Display.getDefault().syncExec(() -> {
 			MessageConsoleStream out = console.newMessageStream();
