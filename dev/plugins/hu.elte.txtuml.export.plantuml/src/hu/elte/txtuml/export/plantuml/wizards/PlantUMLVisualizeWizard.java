@@ -86,7 +86,6 @@ public class PlantUMLVisualizeWizard extends TxtUMLVisualizeWizard {
 
 				}, ResourcesPlugin.getWorkspace().getRoot());
 			} catch (InterruptedException | InvocationTargetException e) {
-				e.printStackTrace();
 				Logger.sys.error(e.getMessage());
 				return false;
 			}
