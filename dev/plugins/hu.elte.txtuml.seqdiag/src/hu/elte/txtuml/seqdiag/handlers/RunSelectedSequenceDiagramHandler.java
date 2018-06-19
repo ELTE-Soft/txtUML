@@ -99,8 +99,8 @@ public class RunSelectedSequenceDiagramHandler extends AbstractHandler {
 
 	/**
 	 * Loads the the given sequence diagram with URLClassloader, runs it with a
-	 * {@link SequenceDiagramExecutor}, waits for it's termination and writes
-	 * the result to the given console.
+	 * {@link SequenceDiagramExecutor}, waits for its termination and writes the
+	 * result to the given console.
 	 * <p>
 	 * The user can cancel the execution.
 	 */
@@ -138,18 +138,19 @@ public class RunSelectedSequenceDiagramHandler extends AbstractHandler {
 	 * one and returns it.
 	 */
 	private MessageConsole findConsole() {
+		final String seqDiagConsoleName = "Sequence Diagram Console";
 		ConsolePlugin plugin = ConsolePlugin.getDefault();
 		IConsoleManager conMan = plugin.getConsoleManager();
 		IConsole[] existing = conMan.getConsoles();
 		Optional<IConsole> seqConsole = Stream.of(existing)
-				.filter(console -> console.getName().equals("Sequence Diagram Console")).findFirst();
+				.filter(console -> console.getName().equals(seqDiagConsoleName)).findFirst();
 
 		if (seqConsole.isPresent()) {
 			return (MessageConsole) seqConsole.get();
 		} else {
-			MessageConsole myConsole = new MessageConsole("Sequence Diagram Console", null);
-			conMan.addConsoles(new IConsole[] { myConsole });
-			return myConsole;
+			MessageConsole newSeqConsole = new MessageConsole(seqDiagConsoleName, null);
+			conMan.addConsoles(new IConsole[] { newSeqConsole });
+			return newSeqConsole;
 		}
 	}
 
@@ -160,8 +161,8 @@ public class RunSelectedSequenceDiagramHandler extends AbstractHandler {
 		Display.getDefault().syncExec(() -> {
 			MessageConsoleStream out = console.newMessageStream();
 			IWorkbench wb = PlatformUI.getWorkbench();
-			IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
-			IWorkbenchPage page = win.getActivePage();
+			IWorkbenchWindow window = wb.getActiveWorkbenchWindow();
+			IWorkbenchPage page = window.getActivePage();
 			String id = IConsoleConstants.ID_CONSOLE_VIEW;
 			IConsoleView view;
 			try {
