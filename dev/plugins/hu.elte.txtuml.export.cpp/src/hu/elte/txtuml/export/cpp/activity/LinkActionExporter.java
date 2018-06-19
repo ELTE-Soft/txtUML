@@ -1,11 +1,12 @@
 package hu.elte.txtuml.export.cpp.activity;
 
 
+import java.util.Optional;
+
 import org.eclipse.uml2.uml.ActivityNode;
 import org.eclipse.uml2.uml.Class;
 import org.eclipse.uml2.uml.CreateLinkAction;
 import org.eclipse.uml2.uml.DestroyLinkAction;
-import org.eclipse.uml2.uml.Interface;
 import org.eclipse.uml2.uml.LinkEndData;
 import org.eclipse.uml2.uml.Port;
 import org.eclipse.uml2.uml.Property;
@@ -13,7 +14,8 @@ import org.eclipse.uml2.uml.ReadLinkAction;
 import org.eclipse.uml2.uml.ReadStructuralFeatureAction;
 import org.eclipse.uml2.uml.UMLPackage;
 
-import hu.elte.txtuml.export.cpp.CppExporterUtils;
+
+import hu.elte.txtuml.export.cpp.templates.GenerationTemplates;
 import hu.elte.txtuml.export.cpp.templates.activity.ActivityTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.LinkTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.LinkTemplates.LinkFunctionType;
@@ -41,19 +43,27 @@ class LinkActionExporter {
 		String target = readLinkNode.getInputValues().size() > 0
 				? activityExportResolver.getTargetFromInputPin(readLinkNode.getInputValues().get(0))
 				: ActivityTemplates.SelfLiteral;
+		
+		String readLink = ActivityTemplates
+				.readLinkTemplate(target, otherMember.getName(), otherMember.getAssociation().getName());
+		String collectionType = LinkTemplates.endCollectionType(otherMember.getAssociation().getName() ,otherMember.getName());
+		String readVarName = tempVariableExporter.getRealVariableName(readLinkNode.getResult());
+		return ActivityTemplates.addVariableTemplate(collectionType, readVarName, readLink, GenerationTemplates.VariableType.StackStored);
 
-		return ActivityTemplates.defineAndAddToCollection(otherMember.getType().getName(),
-				tempVariableExporter.getRealVariableName(readLinkNode.getResult()), ActivityTemplates
-						.selectAllTemplate(target, otherMember.getAssociation().getName(), otherMember.getName()));
 	}
 
 	public String createLinkActionCode(CreateLinkAction node) {
 		LinkEndData firstLinkEnd = node.getEndData().get(0);
 		LinkEndData secondLinkEnd = node.getEndData().get(1);
-		String secindLinkEndName = secondLinkEnd.getEnd().getName();
+		
+		Optional<String> optionalFirstEndName = Optional.of(firstLinkEnd.getEnd().getName());
+		String secondLinkEndName = secondLinkEnd.getEnd().getName();
+		
 		
 		String firstEndObject = activityExportResolver.getTargetFromInputPin(firstLinkEnd.getValue());
 		String secondEndObject = activityExportResolver.getTargetFromInputPin(secondLinkEnd.getValue());
+		
+		
 		
 		LinkFunctionType linkType = LinkTemplates.LinkFunctionType.Link;
 		
@@ -61,16 +71,19 @@ class LinkActionExporter {
 			Port p1 =  (Port) ((ReadStructuralFeatureAction) (firstLinkEnd.getValue().getIncomings().get(0).getSource())).getStructuralFeature();
 			Port p2 =  (Port) ((ReadStructuralFeatureAction) (secondLinkEnd.getValue().getIncomings().get(0).getSource())).getStructuralFeature();
 			switch(getRelation(p1, p2)) {
-			case Child:
+			case Child:			
+				secondLinkEndName = optionalFirstEndName.get();
+				optionalFirstEndName = Optional.empty();
+				linkType = LinkTemplates.LinkFunctionType.DelegeateConnect;
+				//secondLinkEndName = CppExporterUtils.getUsedInterfaceName((Interface) p1.getType());
+				break;
+			case Parent:
 				String firstTmp = firstEndObject;
 				firstEndObject = secondEndObject;
 				secondEndObject = firstTmp;
+				
 				linkType = LinkTemplates.LinkFunctionType.DelegeateConnect;
-				secindLinkEndName = CppExporterUtils.getUsedInterfaceName((Interface) p1.getType());
-				break;
-			case Parent:
-				linkType = LinkTemplates.LinkFunctionType.DelegeateConnect;
-				secindLinkEndName = CppExporterUtils.getUsedInterfaceName((Interface) p1.getType());
+				//secondLinkEndName = CppExporterUtils.getUsedInterfaceName((Interface) p1.getType());
 				break;
 			case Sublings:
 				linkType = LinkTemplates.LinkFunctionType.AssemblyConnect;
@@ -82,8 +95,7 @@ class LinkActionExporter {
 			
 		}
 		return ActivityTemplates.linkObjects(firstEndObject, secondEndObject,
-					firstLinkEnd.getEnd().getAssociation().getName(), firstLinkEnd.getEnd().getName(),
-					secindLinkEndName, linkType);
+					firstLinkEnd.getEnd().getAssociation().getName(), optionalFirstEndName, secondLinkEndName, linkType);
 
 		
 	}
@@ -129,7 +141,7 @@ class LinkActionExporter {
 		String secondEndObject = activityExportResolver.getTargetFromInputPin(secondLinkEnd.getValue());
 
 		return ActivityTemplates.linkObjects(firstEndObject, secondEndObject,
-				firstLinkEnd.getEnd().getAssociation().getName(), firstLinkEnd.getEnd().getName(),
+				firstLinkEnd.getEnd().getAssociation().getName(), Optional.of(firstLinkEnd.getEnd().getName()),
 				secondLinkEnd.getEnd().getName(), LinkTemplates.LinkFunctionType.Unlink);
 	}
 }

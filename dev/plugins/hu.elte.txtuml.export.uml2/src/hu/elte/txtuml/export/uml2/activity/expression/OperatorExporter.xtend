@@ -21,15 +21,15 @@ abstract class OperatorExporter<S> extends ControlExporter<S, SequenceNode> {
 		super(parent)
 	}
 
-	def assignToExpression(Expression modified, Function<Supplier<Action>, Action> assigned) {
-		assignToExpression(modified, assigned, false)
+	def assignToExpression(Expression modified,boolean isReplace, Function<Supplier<Action>, Action> assigned) {
+		assignToExpression(modified, assigned, false, isReplace)
 	}
 
 	def assignToExpressionDelayed(Expression modified, Function<Supplier<Action>, Action> assigned) {
-		assignToExpression(modified, assigned, true)
+		assignToExpression(modified, assigned, true, true)
 	}
 
-	def assignToExpression(Expression modified, Function<Supplier<Action>, Action> assigned, boolean delayed) {
+	def assignToExpression(Expression modified, Function<Supplier<Action>, Action> assigned, boolean delayed, boolean isReplace) {
 		if (ElementTypeTeller.isFieldAccess(modified)) {
 			// operators that modify a field
 			val fieldName = switch modified {
@@ -51,7 +51,7 @@ abstract class OperatorExporter<S> extends ControlExporter<S, SequenceNode> {
 			delayWhen(delayed, [new SimpleFieldAccessExporter(this).createFieldAccess(base, field)]) [
 				val rhs = assigned.apply([it])
 				val write = factory.createAddStructuralFeatureValueAction
-				write.isReplaceAll = true
+				write.isReplaceAll = isReplace
 				write.structuralFeature = field
 				storeNode(write)
 				base.result.objectFlow(write.createObject("base", base.result.type))
@@ -65,7 +65,7 @@ abstract class OperatorExporter<S> extends ControlExporter<S, SequenceNode> {
 			val variable = getVariable(variableName)
 			delayWhen(delayed, [variable.read]) [
 				val rhs = assigned.apply([it])
-				val write = variable.write(rhs)
+				val write = variable.write(rhs, isReplace)
 				result.name = write.name
 			]
 		}
@@ -78,7 +78,7 @@ abstract class OperatorExporter<S> extends ControlExporter<S, SequenceNode> {
 			val act = access.get
 			temp.name = "#temp"
 			temp.type = act.result.type
-			temp.write(act)
+			temp.write(act, true)
 			operation.accept(access.get)
 			temp.read
 		} else {

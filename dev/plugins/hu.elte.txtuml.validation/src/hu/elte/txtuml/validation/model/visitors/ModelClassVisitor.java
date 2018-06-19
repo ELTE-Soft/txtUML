@@ -49,7 +49,7 @@ public class ModelClassVisitor extends VisitorBase {
 			return false;
 		}
 
-		if (!Utils.isAllowedAttributeType(elem.getType(), false)) {
+		if (!Utils.isAllowedAttributeType(elem.getType().resolveBinding(), false)) {
 			collector.report(INVALID_ATTRIBUTE_TYPE.create(collector.getSourceInfo(), elem.getType()));
 		} else {
 			Utils.checkModifiers(collector, elem);
@@ -64,7 +64,7 @@ public class ModelClassVisitor extends VisitorBase {
 		}
 
 		if (!elem.isConstructor()) {
-			if (elem.getReturnType2() != null && !Utils.isAllowedParameterType(elem.getReturnType2(), true)) {
+			if (elem.getReturnType2() != null && !Utils.isAllowedParameterType(elem.getReturnType2().resolveBinding(), true)) {
 				collector.report(INVALID_PARAMETER_TYPE.create(collector.getSourceInfo(), elem.getReturnType2()));
 			}
 		}
@@ -72,7 +72,7 @@ public class ModelClassVisitor extends VisitorBase {
 		Utils.checkModifiers(collector, elem, m -> m.isStatic());
 		for (Object obj : elem.parameters()) {
 			SingleVariableDeclaration param = (SingleVariableDeclaration) obj;
-			if (!Utils.isAllowedParameterType(param.getType(), false)) {
+			if (!Utils.isAllowedParameterType(param.getType().resolveBinding(), false)) {
 				collector.report(INVALID_PARAMETER_TYPE.create(collector.getSourceInfo(), param.getType()));
 			}
 		}

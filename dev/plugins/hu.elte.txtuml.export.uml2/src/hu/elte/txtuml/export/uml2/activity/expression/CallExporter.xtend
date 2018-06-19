@@ -15,6 +15,7 @@ import org.eclipse.uml2.uml.Action
 import org.eclipse.uml2.uml.CallOperationAction
 import org.eclipse.uml2.uml.Operation
 import org.eclipse.uml2.uml.SequenceNode
+import hu.elte.txtuml.utils.jdt.ElementTypeTeller
 
 abstract class CallExporter<T> extends ActionExporter<T, CallOperationAction> {
 
@@ -65,7 +66,8 @@ abstract class CallExporter<T> extends ActionExporter<T, CallOperationAction> {
 		args.forEach[call.createArgument("p" + i.andIncrement, it.result.type)]
 
 		if (binding.returnType.name != "void") {
-			call.createResult("return", fetchType(binding.returnType))
+			val resType = if(ElementTypeTeller.isCollection(binding.returnType)) fetchType(binding.returnType.typeArguments.get(0)) else fetchType(binding.returnType)
+			call.createResult("return", resType)
 		}
 
 		val argVals = args.map[it.result]

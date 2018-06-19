@@ -3,6 +3,7 @@ package hu.elte.txtuml.export.cpp.thread;
 import java.io.FileNotFoundException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
@@ -32,7 +33,6 @@ public class ThreadHandlingManager {
 	private Set<ThreadPoolConfiguration> pools;
 	
 	private static final String ConfigurationStructName = GenerationNames.Namespaces.ExecutionNamesapce + "::" + "Configuration";
-	private static final String ThreadConfigurationArray = GenerationNames.Containers.FixContainer + "<" + GenerationNames.sharedPtrType(ConfigurationStructName) + ">";
 	private static final String ConfigurationObjectVariableName = "conf";
 	private static final String ConfigurationFile = "deployment";
 	private static final String ThreadPoolClassName = GenerationNames.Namespaces.ExecutionNamesapce + "::" + "StateMachineThreadPool";
@@ -43,7 +43,6 @@ public class ThreadHandlingManager {
 	private static final String SetConfigurationMethod = "configure";
 	private static final String CreatorFunction = "initRuntime";
 
-	int numberOfThreads;
 
 	public ThreadHandlingManager(Pair<RuntimeType, Map<String, ThreadPoolConfiguration>> config) {
 		threadDescription = new HashMap<>();
@@ -51,12 +50,11 @@ public class ThreadHandlingManager {
 			threadDescription.put(conf.getKey(), conf.getValue().getId());
 		}
 		
-		numberOfThreads = threadDescription.size();
 
 		Collection<ThreadPoolConfiguration> poolsCollection = config.getSecond().values();
 		pools = new LinkedHashSet<ThreadPoolConfiguration>();
 		pools.addAll(poolsCollection);
-		runtimeTypeName = getRuntimeTypeName(config.getFirst());
+		runtimeTypeName = getRuntimeTypeName(config.getFirst(), pools.size());
 	}
 
 	public Integer getConfiguratedPoolId(String className) {
@@ -70,8 +68,7 @@ public class ThreadHandlingManager {
 		source.append(PrivateFunctionalTemplates.include(GenerationNames.FileNames.TypesFilePath));
 		source.append("\n\n");
 
-		List<String> templateParams = new ArrayList<String>();
-		templateParams.add(runtimeTypeName);
+		List<String> templateParams = Arrays.asList(runtimeTypeName, new Integer(pools.size()).toString());
 		source.append(GenerationTemplates.usingTemplateType(RuntimeTemplates.UsingRuntimePtr,
 				RuntimeTemplates.RuntimePtrType, templateParams));
 		source.append(GenerationTemplates.usingTemplateType(RuntimeTemplates.UsingRuntimeType,
@@ -117,7 +114,7 @@ public class ThreadHandlingManager {
 		StringBuilder source = new StringBuilder("");
 		List<String> parameters = new ArrayList<String>();
 		parameters.add(new Integer(pools.size()).toString());
-		source.append(ThreadConfigurationArray + " " +  ConfigurationObjectVariableName + "(" + new Integer(pools.size()).toString() + ");\n");
+		source.append(getThreadConfArray() + " " +  ConfigurationObjectVariableName + ";\n");
 
 		for (ThreadPoolConfiguration pool : pools) {
 			parameters.clear();
@@ -152,14 +149,15 @@ public class ThreadHandlingManager {
 		return ObjectDeclDefTemplates.allocateObject(ThreadPoolClassName, Optional.of(params), true);
 	}
 	
-	private String getRuntimeTypeName(RuntimeType runtimeType) {
+	private String getRuntimeTypeName(RuntimeType runtimeType, Integer numberOgConfigs) {
 		String runtimeTypeName = "MISSING RUNTIME TYPE";
+		String numberOgConfigTemplateParam = "<" + numberOgConfigs + ">";
 		switch (runtimeType) {
 		case SINGLE:
-			runtimeTypeName = SingleRuntimeName;
+			runtimeTypeName = SingleRuntimeName + numberOgConfigTemplateParam;
 			break;
 		case THREADED:
-			runtimeTypeName = ConfiguratedThreadedRuntimeName;
+			runtimeTypeName = ConfiguratedThreadedRuntimeName + numberOgConfigTemplateParam;
 			break;
 		default:
 			assert(false);
@@ -168,6 +166,12 @@ public class ThreadHandlingManager {
 		}
 		
 		return runtimeTypeName;
+	}
+	
+	private String getThreadConfArray() {
+		return GenerationNames.Containers.FixContainer + CppExporterUtils.createTemplateParametersCode(
+				Optional.of(Arrays.asList(GenerationNames.sharedPtrType(ConfigurationStructName),new Integer(pools.size()).toString())));
+
 	}
 
 }

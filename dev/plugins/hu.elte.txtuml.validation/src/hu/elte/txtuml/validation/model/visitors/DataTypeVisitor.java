@@ -31,7 +31,7 @@ public class DataTypeVisitor extends VisitorBase {
 		if (!ElementTypeTeller.isFinal(node)) {
 			collector.report(MUTABLE_DATA_TYPE_FIELD.create(collector.getSourceInfo(), node));
 		}
-		if (!Utils.isAllowedAttributeType(node.getType(), false)) {
+		if (!Utils.isAllowedAttributeType(node.getType().resolveBinding(), false)) {
 			collector.report(INVALID_DATA_TYPE_FIELD.create(collector.getSourceInfo(), node));
 		}
 		return false;
@@ -40,7 +40,7 @@ public class DataTypeVisitor extends VisitorBase {
 	@Override
 	public boolean visit(MethodDeclaration node) {
 		if (!node.isConstructor()) {
-			if (node.getReturnType2() != null && !Utils.isAllowedParameterType(node.getReturnType2(), true)) {
+			if (node.getReturnType2() != null && !Utils.isAllowedParameterType(node.getReturnType2().resolveBinding(), true)) {
 				collector.report(INVALID_PARAMETER_TYPE.create(collector.getSourceInfo(), node.getReturnType2()));
 			}
 		}
@@ -48,7 +48,7 @@ public class DataTypeVisitor extends VisitorBase {
 		Utils.checkModifiers(collector, node);
 		for (Object obj : node.parameters()) {
 			SingleVariableDeclaration param = (SingleVariableDeclaration) obj;
-			if (!Utils.isAllowedParameterType(param.getType(), false)) {
+			if (!Utils.isAllowedParameterType(param.getType().resolveBinding(), false)) {
 				collector.report(INVALID_PARAMETER_TYPE.create(collector.getSourceInfo(), param.getType()));
 			}
 		}
