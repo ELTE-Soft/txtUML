@@ -64,7 +64,7 @@ public class SequenceDiagramFragmentsTests extends PlantUmlExportTestBase {
 		expected.add("participant lifeline2");
 		expected.add("par");
 		expected.add("else");
-		expected.add("lifeline1->lifeline2 : hu.elte.txtuml.export.plantuml.tests.models.testmodel.TestSig");
+		expected.add("lifeline1->lifeline2 : " + project.getName() + ".testmodel.TestSig");
 		expected.add("end");
 		expected.add("@enduml");
 

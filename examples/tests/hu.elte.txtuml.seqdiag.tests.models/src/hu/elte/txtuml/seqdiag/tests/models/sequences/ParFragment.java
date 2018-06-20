@@ -1,7 +1,7 @@
 package hu.elte.txtuml.export.plantuml.tests.models.sequences;
 
 import hu.elte.txtuml.api.model.seqdiag.Sequence;
-import hu.elte.txtuml.export.plantuml.tests.models.testmodel.TestSig;
+import hu.elte.txtuml.seqdiag.tests.models.testmodel.TestSig;
 
 public class ParFragment extends BaseSequence {
 
