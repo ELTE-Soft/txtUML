@@ -19,7 +19,7 @@ import machine3.x.model.Usage;
 import machine3.x.model.User;
 import machine3.x.model.User.NotWorking;
 
-public class Machine3SequenceDiagram extends SequenceDiagram {
+public class XMachine3SequenceDiagram extends SequenceDiagram {
 
 	@Position(2)
 	Machine m;

@@ -20,7 +20,7 @@ import monitoring.x.model.ToAlert;
 import monitoring.x.model.Write;
 import monitoring.x.model.WriteError;
 
-public class MonitoringSequenceDiagram extends SequenceDiagram {
+public class XMonitoringSequenceDiagram extends SequenceDiagram {
 
 	@Position(1)
 	Alert alert;

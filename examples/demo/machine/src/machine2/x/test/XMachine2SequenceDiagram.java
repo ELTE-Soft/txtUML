@@ -18,7 +18,7 @@ import machine2.x.model.Machine.On;
 import machine2.x.model.Usage;
 import machine2.x.model.User;
 
-public class Machine2SequenceDiagram extends SequenceDiagram {
+public class XMachine2SequenceDiagram extends SequenceDiagram {
 
 	@Position(2)
 	Machine m;

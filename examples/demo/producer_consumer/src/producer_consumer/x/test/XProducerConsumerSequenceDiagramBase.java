@@ -15,7 +15,7 @@ import producer_consumer.x.model.Production;
 import producer_consumer.x.model.RequestNotification;
 import producer_consumer.x.model.Storage;
 
-public abstract class ProducerConsumerSequenceDiagramBase extends SequenceDiagram {
+public abstract class XProducerConsumerSequenceDiagramBase extends SequenceDiagram {
 
 	@Position(2)
 	Storage storage;

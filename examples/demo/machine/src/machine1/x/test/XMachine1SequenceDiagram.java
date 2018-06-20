@@ -11,7 +11,7 @@ import machine1.x.model.Machine;
 import machine1.x.model.Usage;
 import machine1.x.model.User;
 
-public class Machine1SequenceDiagram extends SequenceDiagram {
+public class XMachine1SequenceDiagram extends SequenceDiagram {
 
 	Machine m;
 	User u1;

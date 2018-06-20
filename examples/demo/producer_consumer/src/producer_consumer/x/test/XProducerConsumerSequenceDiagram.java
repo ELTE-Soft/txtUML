@@ -4,7 +4,7 @@ import hu.elte.txtuml.api.model.seqdiag.ExecMode;
 import hu.elte.txtuml.api.model.seqdiag.ExecutionMode;
 import hu.elte.txtuml.api.model.seqdiag.Sequence;
 
-public class ProducerConsumerSequenceDiagram extends ProducerConsumerSequenceDiagramBase {
+public class XProducerConsumerSequenceDiagram extends XProducerConsumerSequenceDiagramBase {
 
 	@Override
 	@ExecutionMode(ExecMode.LENIENT)

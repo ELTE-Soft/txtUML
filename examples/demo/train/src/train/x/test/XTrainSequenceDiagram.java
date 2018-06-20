@@ -22,7 +22,7 @@ import train.x.model.Lamp;
 import train.x.model.LightOff;
 import train.x.model.SwitchLight;
 
-public class TrainSequenceDiagram extends SequenceDiagram {
+public class XTrainSequenceDiagram extends SequenceDiagram {
 
 	@Position(1)
 	Lamp lamp;
