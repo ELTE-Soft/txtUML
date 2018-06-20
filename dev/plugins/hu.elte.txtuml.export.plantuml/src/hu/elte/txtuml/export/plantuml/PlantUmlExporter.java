@@ -1,7 +1,5 @@
 package hu.elte.txtuml.export.plantuml;
 
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.core.resources.IFile;
@@ -15,7 +13,7 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.CommonPlugin;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.jdt.core.ICompilationUnit;
-import org.eclipse.jdt.core.JavaCore;
+import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.CompilationUnit;
@@ -29,12 +27,11 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.FileEditorInput;
 
-import hu.elte.txtuml.api.model.seqdiag.Interaction;
+import hu.elte.txtuml.api.model.seqdiag.SequenceDiagram;
 import hu.elte.txtuml.export.plantuml.exceptions.ExportRuntimeException;
-import hu.elte.txtuml.export.plantuml.exceptions.PreCompilationError;
-import hu.elte.txtuml.export.plantuml.exceptions.SequenceDiagramStructuralException;
+import hu.elte.txtuml.export.plantuml.exceptions.SequenceDiagramExportException;
 import hu.elte.txtuml.export.plantuml.generator.PlantUmlGenerator;
-import hu.elte.txtuml.utils.jdt.SharedUtils;
+import hu.elte.txtuml.utils.jdt.ElementTypeTeller;
 
 /**
  * <b>PlantUML exporter class.</b>
@@ -49,72 +46,33 @@ public class PlantUmlExporter {
 	private String projectName;
 	private IProject project;
 	private String genFolderName;
-	private List<String> diagrams;
-	private List<TypeDeclaration> seqDiagrams;
-
-	protected int exportedCount = 0;
-	protected int nonExportedCount = 0;
+	private List<IType> seqDiagrams;
 
 	protected boolean hadErrors = false;
 	protected String errorMessage = null;
 
 	public PlantUmlExporter(final String txtUMLProjectName, final String generatedFolderName,
-			final List<String> seqDiagramNames) {
+			final List<IType> seqDiagrams) {
 		IProject _project = ResourcesPlugin.getWorkspace().getRoot().getProject(txtUMLProjectName);
 
 		if (_project == null || !_project.exists()) {
 			throw new ExportRuntimeException("Project not found with name: " + txtUMLProjectName);
 		}
 
-		initialize(_project, generatedFolderName, seqDiagramNames);
-		filterDiagramsByType();
+		initialize(_project, generatedFolderName, seqDiagrams);
 	}
 
 	public PlantUmlExporter(final IProject txtUMLProject, final String generatedFolderName,
-			final List<String> seqDiagramNames) {
-		initialize(txtUMLProject, generatedFolderName, seqDiagramNames);
-		filterDiagramsByType();
+			final List<IType> seqDiagrams) {
+		initialize(txtUMLProject, generatedFolderName, seqDiagrams);
 	}
 
-	private void initialize(IProject txtUMLProject, String generatedFolderName, List<String> seqDiagramNames) {
+	private void initialize(IProject txtUMLProject, String generatedFolderName, List<IType> seqDiagrams) {
 		generator = new PlantUmlGenerator();
 		project = txtUMLProject;
 		projectName = txtUMLProject.getName();
 		genFolderName = generatedFolderName;
-		diagrams = seqDiagramNames;
-		nonExportedCount = diagrams.size();
-	}
-
-	/**
-	 * Filter method to separate sequence diagrams from layouts.
-	 */
-	private void filterDiagramsByType() {
-		seqDiagrams = new ArrayList<TypeDeclaration>();
-		String diagram = null;
-		for (Iterator<String> iterator = diagrams.iterator(); iterator.hasNext();) {
-			diagram = iterator.next();
-			try {
-				IFile resource = project.getFile("src/" + diagram.replace(".", "/") + ".java");
-
-				ASTParser parser = ASTParser.newParser(AST.JLS8);
-				parser.setResolveBindings(true);
-				parser.setBindingsRecovery(true);
-				parser.setSource((ICompilationUnit) JavaCore.create(resource));
-
-				CompilationUnit cu = (CompilationUnit) parser.createAST(null);
-				TypeDeclaration currentType = (TypeDeclaration) cu.types().get(0);
-
-				if (SharedUtils.typeIsAssignableFrom(currentType, Interaction.class)) {
-					seqDiagrams.add(currentType);
-					iterator.remove();
-					nonExportedCount--;
-				}
-
-			} catch (ArrayIndexOutOfBoundsException e) {
-				throw new ExportRuntimeException("There was an error while trying to load class " + e.getMessage()
-						+ ", this error originated from the loading of " + diagram + " class", e);
-			}
-		}
+		this.seqDiagrams = seqDiagrams;
 	}
 
 	/**
@@ -122,18 +80,14 @@ public class PlantUmlExporter {
 	 * project so the newly created resource shows up.
 	 * 
 	 * @throws CoreException
-	 * @throws SequenceDiagramStructuralException
-	 * @throws PreCompilationError
+	 * @throws SequenceDiagramExportException
 	 */
 	public void generatePlantUmlOutput(final IProgressMonitor monitor)
-			throws CoreException, SequenceDiagramStructuralException, PreCompilationError {
-		for (TypeDeclaration sequenceDiagram : seqDiagrams) {
-			String fullyQualifiedName = sequenceDiagram.resolveBinding().getQualifiedName().toString();
-			String simpleName = sequenceDiagram.getName().toString();
+			throws CoreException, SequenceDiagramExportException {
+		for (IType sequenceDiagram : seqDiagrams) {
+			String simpleName = sequenceDiagram.getElementName();
 
-			IFile resource = project.getFile("src/" + fullyQualifiedName.replace(".", "/") + ".java");
-
-			ICompilationUnit element = (ICompilationUnit) JavaCore.create(resource);
+			ICompilationUnit element = sequenceDiagram.getCompilationUnit();
 
 			ASTParser parser = ASTParser.newParser(AST.JLS8);
 			parser.setResolveBindings(true);
@@ -141,6 +95,14 @@ public class PlantUmlExporter {
 			parser.setSource(element);
 
 			CompilationUnit cu = (CompilationUnit) parser.createAST(null);
+
+			TypeDeclaration seqeunceDiagramDeclaration = getSequenceDiagramTypeDeclaration(
+					sequenceDiagram.getFullyQualifiedName(), cu);
+
+			if (!ElementTypeTeller.hasSuperClass(seqeunceDiagramDeclaration.resolveBinding(),
+					SequenceDiagram.class.getCanonicalName()))
+				throw new SequenceDiagramExportException(
+						sequenceDiagram.getElementName() + " is not a sequence diagram.");
 
 			URI targetURI = CommonPlugin
 					.resolve(URI.createFileURI(projectName + "/" + genFolderName + "/" + simpleName + ".txt"));
@@ -170,7 +132,7 @@ public class PlantUmlExporter {
 				monitor.worked(100 / (seqDiagrams.size() * 2));
 			}
 
-			generator.generate(cu, targetFile);
+			generator.generate(cu, targetFile, simpleName);
 			project.refreshLocal(IProject.DEPTH_INFINITE, null);
 
 			if (PlatformUI.isWorkbenchRunning()) {
@@ -185,8 +147,14 @@ public class PlantUmlExporter {
 			if (monitor != null) {
 				monitor.worked(100 / (seqDiagrams.size() * 2));
 			}
-			exportedCount++;
 		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private TypeDeclaration getSequenceDiagramTypeDeclaration(String sequenceDiagramName, CompilationUnit cu) {
+		List<TypeDeclaration> declarations = cu.types();
+		return declarations.stream()
+				.filter(decl -> decl.resolveBinding().getQualifiedName().equals(sequenceDiagramName)).findFirst().get();
 	}
 
 	protected void cleanupWorkbench(IFile targetFile, IWorkbenchPage page) throws CoreException {
@@ -212,34 +180,6 @@ public class PlantUmlExporter {
 
 	public String getErrorMessage() {
 		return errorMessage;
-	}
-
-	public boolean exportedAll() {
-		return nonExportedCount == 0;
-	}
-
-	public boolean didExport() {
-		return exportedCount > 0;
-	}
-
-	public boolean wasSeqDiagExport() {
-		return exportedAll() && didExport();
-	}
-
-	public int expotedCount() {
-		return exportedCount;
-	}
-
-	public int nonExportedCount() {
-		return nonExportedCount;
-	}
-
-	public boolean hasSequenceDiagram() {
-		return seqDiagrams.size() > 0;
-	}
-
-	public boolean noDiagramLayout() {
-		return diagrams.size() == 0;
 	}
 
 }

@@ -22,22 +22,23 @@ public class PlantUmlGenerator {
 
 	private PlantUmlPreCompiler preCompiler;
 	private PlantUmlCompiler compiler;
-
+	private String seqDiagramName;
 	private CompilationUnit source;
 
 	/**
 	 * Processes the source, then generates PlantUML output to the given target
 	 * file.
 	 */
-	public void generate(final CompilationUnit source, final IFile targetFile)
+	public void generate(final CompilationUnit source, final IFile targetFile, String seqDiagramName)
 			throws SequenceDiagramStructuralException, PreCompilationError {
 		this.source = source;
+		this.seqDiagramName = seqDiagramName;
 		preCompile();
 		compile(targetFile);
 	}
 
 	private void preCompile() throws PreCompilationError {
-		preCompiler = new PlantUmlPreCompiler();
+		preCompiler = new PlantUmlPreCompiler(seqDiagramName);
 		source.accept(preCompiler);
 		if (!preCompiler.getErrors().isEmpty()) {
 			StringBuilder messages = new StringBuilder();
@@ -51,13 +52,14 @@ public class PlantUmlGenerator {
 		Type superClass = preCompiler.getSuperClass();
 		while (superClass != null) {
 			CompilationUnit cu = getSuperClassCU(superClass);
+			preCompiler.setSeqDiagramName(superClass.resolveBinding().getName());
 			cu.accept(preCompiler);
 			superClass = preCompiler.getSuperClass();
 		}
 	}
 
 	private void compile(IFile targetFile) throws SequenceDiagramStructuralException {
-		compiler = new PlantUmlCompiler(preCompiler.getOrderedLifelines());
+		compiler = new PlantUmlCompiler(preCompiler.getOrderedLifelines(), seqDiagramName);
 		source.accept(compiler);
 
 		createTargetFile(compiler.getCompiledOutput(), targetFile);

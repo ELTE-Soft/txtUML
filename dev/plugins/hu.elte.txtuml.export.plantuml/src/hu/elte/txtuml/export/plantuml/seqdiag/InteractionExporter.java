@@ -19,7 +19,8 @@ public class InteractionExporter extends ExporterBase<TypeDeclaration> {
 
 	@Override
 	public boolean validElement(ASTNode curElement) {
-		return curElement.getNodeType() == ASTNode.TYPE_DECLARATION;
+		return (curElement.getNodeType() == ASTNode.TYPE_DECLARATION)
+				&& (((TypeDeclaration) curElement).getName().toString().equals(compiler.getSeqDiagramName()));
 	}
 
 	@Override

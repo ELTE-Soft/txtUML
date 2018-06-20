@@ -32,13 +32,15 @@ public class PlantUmlCompiler extends ASTVisitor {
 	private List<ASTNode> errors;
 	private String currentClassFullyQualifiedName;
 	private List<Lifeline> orderedLifelines;
+	private final String seqDiagramName;
 
 	private StringBuilder compiledOutput;
 
-	public PlantUmlCompiler(final List<Lifeline> orderedLifelines) {
+	public PlantUmlCompiler(final List<Lifeline> orderedLifelines, String seqDiagramName) {
 		errors = new ArrayList<ASTNode>();
 		exporterQueue = new Stack<ExporterBase<? extends ASTNode>>();
 		this.orderedLifelines = orderedLifelines;
+		this.seqDiagramName = seqDiagramName;
 
 		compiledOutput = new StringBuilder();
 	}
@@ -65,9 +67,12 @@ public class PlantUmlCompiler extends ASTVisitor {
 	 */
 	@Override
 	public boolean visit(TypeDeclaration decl) {
-		currentClassFullyQualifiedName = decl.resolveBinding().getQualifiedName().toString();
-		orderedLifelines.stream().map(Lifeline::getLifelineDeclaration).forEach(lifeline -> lifeline.accept(this));
-		return true;
+		if (decl.resolveBinding().getName().equals(seqDiagramName)) {
+			currentClassFullyQualifiedName = decl.resolveBinding().getQualifiedName().toString();
+			orderedLifelines.stream().map(Lifeline::getLifelineDeclaration).forEach(lifeline -> lifeline.accept(this));
+			return true;
+		}
+		return false;
 	}
 
 	/**
@@ -204,6 +209,13 @@ public class PlantUmlCompiler extends ASTVisitor {
 			println("participant " + elem.getName());
 			elem.processed();
 		});
+	}
+
+	/**
+	 * Returns the name of the sequence diagram which is being exported
+	 */
+	public String getSeqDiagramName() {
+		return seqDiagramName;
 	}
 
 }
