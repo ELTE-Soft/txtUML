@@ -86,7 +86,7 @@ namespace ES
 
 	//ThreadSafeQueue types
 	using MessageQueueType = ThreadSafeQueue<SpecialPriorityQueue<EventRef, Model::SpecialEventChecker<Model::EventBase>>>;
-	using PoolQueueType = ThreadSafeQueue<Queue<StateMachineRef>>;
+	//using PoolQueueType = ThreadSafeQueue<Queue<StateMachineRef>>;
 
 	using TimerPtr = SharedPtr<Timer>;
 
