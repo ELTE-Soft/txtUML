@@ -18,7 +18,7 @@ int main()
 	Model::ResourceMonitor monitor;
 	Model::Aggregator aggregator;
 	Model::Alert alert(3);
-	Action::link(Model::ToAggregator.rmonitor, &monitor, Model::ToAggregator.aggregator,&aggregator);
+	Action::link(Model::ToAggregator.rmonitor, &monitor, Model::ToAggregator.aggregator, &aggregator);
 	Action::link(Model::ToAlert.rmonitor, &monitor, Model::ToAlert.alert, &alert);
 	Action::start(&monitor);
 	Action::start(&aggregator);

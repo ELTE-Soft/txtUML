@@ -134,7 +134,7 @@ public class CppExporterUtils {
 			return lowMul;
 		}
 
-		public boolean isTawType() {
+		public boolean isRawType() {
 			return upMul == 1 && lowMul == 1 && isRawType;
 		}
 

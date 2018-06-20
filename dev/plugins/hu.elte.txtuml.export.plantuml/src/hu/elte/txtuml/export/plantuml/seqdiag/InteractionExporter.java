@@ -8,21 +8,18 @@ import hu.elte.txtuml.api.model.seqdiag.SequenceDiagram;
 import hu.elte.txtuml.export.plantuml.generator.PlantUmlCompiler;
 
 /**
- * The class responsible for exporting the {@link SequenceDiagram} and
- * {@link Interaction} classes
+ * Exporter implementation, which is responsible for exporting the
+ * {@link SequenceDiagram} and {@link Interaction} classes.
  */
-public class InteractionExporter extends BaseSeqdiagExporter<TypeDeclaration> {
+public class InteractionExporter extends ExporterBase<TypeDeclaration> {
 
-	public InteractionExporter(PlantUmlCompiler compiler) {
+	public InteractionExporter(final PlantUmlCompiler compiler) {
 		super(compiler);
 	}
 
 	@Override
 	public boolean validElement(ASTNode curElement) {
-		if (curElement.getNodeType() == ASTNode.TYPE_DECLARATION)
-			return true;
-		else
-			return false;
+		return curElement.getNodeType() == ASTNode.TYPE_DECLARATION;
 	}
 
 	@Override
@@ -35,4 +32,5 @@ public class InteractionExporter extends BaseSeqdiagExporter<TypeDeclaration> {
 	public void afterNext(TypeDeclaration curElement) {
 		compiler.println("@enduml");
 	}
+
 }

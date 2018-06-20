@@ -108,7 +108,7 @@ public class ActivityExporter {
 			AddVariableValueAction avva = (AddVariableValueAction) node;
 			
 			source.append(ActivityTemplates.generalSetValue(
-					userVariableExporter.getRealVariableName(avva.getVariable()),
+					userVariableExporter.getRealVariableReference(avva.getVariable()),
 					activityExportResolver.getTargetFromInputPin(avva.getValue()),
 					ActivityTemplates.getOperationFromType(avva.getVariable().isMultivalued(), avva.isReplaceAll())));
 
