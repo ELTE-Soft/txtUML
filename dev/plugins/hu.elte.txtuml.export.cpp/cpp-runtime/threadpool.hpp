@@ -13,12 +13,29 @@
 #include "StateMachineOwner.hpp"
 #include "ESRoot/AtomicCounter.hpp"
 
+namespace Execution {
+	class StateMachineThreadPool;
+}
+
 namespace Execution
 {
+
+
+class PoolQueueType : public ES::ThreadSafeQueue<ES::Queue<ES::StateMachineRef>> {
+public:
+	PoolQueueType(StateMachineThreadPool * ownerPool_);
+protected:
+	virtual bool exitFromWaitingCondition();
+
+private:
+	StateMachineThreadPool * ownerPool;
+};
 
 class StateMachineThreadPool {
 
 public:
+	friend class PoolQueueType;
+
 	using SharedConditionVar = ES::SharedPtr<std::condition_variable>;
 public:
 	StateMachineThreadPool();
@@ -26,8 +43,8 @@ public:
 	void enqueueObject(ES::StateMachineRef);
 	void stopPool();
 	void stopUponCompletion();
-	void startPool(int);
-	void modifyThreads(int);
+	void startPool(unsigned);
+	void modifyThreads(unsigned);
 
 	void setWorkersCounter(ES::SharedPtr<ES::AtomicCounter> counter) { nOfWorkerThreads = counter; }
 	void setMessageCounter(ES::SharedPtr<ES::AtomicCounter> counter) { nOfAllMessages = counter;   }
@@ -40,7 +57,7 @@ private:
 	SharedConditionVar _sharedConditionVar;
 
 	// the task queue
-	ES::PoolQueueType _stateMachines; //must be blocking queue
+	PoolQueueType _stateMachines; //must be blocking queue
 
 	void incrementWorkers();
 	void reduceWorkers();

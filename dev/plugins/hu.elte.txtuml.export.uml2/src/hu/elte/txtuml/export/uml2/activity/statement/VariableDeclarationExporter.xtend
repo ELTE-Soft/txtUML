@@ -17,13 +17,15 @@ class VariableDeclarationExporter extends ActionExporter<VariableDeclarationStat
 	override exportContents(VariableDeclarationStatement source) {
 		source.fragments.forEach[ 
 			val variable = factory.createVariable
-			variable.type = fetchType(source.type.resolveBinding)
+			val sourceTypeBinding = source.type.resolveBinding
+			fillElementTypeAndBounds(sourceTypeBinding, variable)
+				
 			val decl = it as VariableDeclarationFragment
 			variable.name = decl.name.identifier
 			storeVariable(variable)
 			
 			if (decl.initializer != null) {
-				variable.write(exportExpression(decl.initializer))
+				variable.write(exportExpression(decl.initializer), true)
 			}
 		]
 	}

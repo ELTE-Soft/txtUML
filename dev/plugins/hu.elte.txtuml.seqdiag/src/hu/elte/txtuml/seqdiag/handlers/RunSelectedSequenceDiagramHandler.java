@@ -39,7 +39,8 @@ import org.eclipse.ui.handlers.HandlerUtil;
 
 import hu.elte.txtuml.api.model.execution.ModelExecutor;
 import hu.elte.txtuml.api.model.execution.SequenceDiagramExecutor;
-import hu.elte.txtuml.api.model.execution.seqdiag.error.MessageError;
+import hu.elte.txtuml.api.model.execution.seqdiag.error.ErrorLevel;
+import hu.elte.txtuml.api.model.execution.seqdiag.error.SequenceDiagramProblem;
 import hu.elte.txtuml.api.model.seqdiag.SequenceDiagram;
 import hu.elte.txtuml.utils.eclipse.ClassLoaderProvider;
 import hu.elte.txtuml.utils.eclipse.Dialogs;
@@ -157,13 +158,15 @@ public class RunSelectedSequenceDiagramHandler extends AbstractHandler {
 	/**
 	 * Writes the results into a console.
 	 */
-	private void writeToConsole(MessageConsole console, List<MessageError> errors, String sequenceDiagramClassName) {
+	private void writeToConsole(MessageConsole console, List<SequenceDiagramProblem> problems,
+			String sequenceDiagramClassName) {
 		Display.getDefault().syncExec(() -> {
 			MessageConsoleStream out = console.newMessageStream();
 			IWorkbench wb = PlatformUI.getWorkbench();
 			IWorkbenchWindow window = wb.getActiveWorkbenchWindow();
 			IWorkbenchPage page = window.getActivePage();
 			String id = IConsoleConstants.ID_CONSOLE_VIEW;
+
 			IConsoleView view;
 			try {
 				view = (IConsoleView) page.showView(id);
@@ -171,6 +174,12 @@ public class RunSelectedSequenceDiagramHandler extends AbstractHandler {
 			} catch (PartInitException e) {
 				Dialogs.errorMsgb("Error", "Error occured while trying to open output console.", e);
 			}
+
+			List<SequenceDiagramProblem> errors = problems.stream()
+					.filter(pr -> pr.getErrorLevel().equals(ErrorLevel.ERROR)).collect(Collectors.toList());
+			List<SequenceDiagramProblem> warnings = problems.stream()
+					.filter(pr -> pr.getErrorLevel().equals(ErrorLevel.WARNING)).collect(Collectors.toList());
+
 			out.println("------------- " + sequenceDiagramClassName + " test results -------------");
 			if (errors.isEmpty()) {
 				out.println("PASSED.");
@@ -178,17 +187,28 @@ public class RunSelectedSequenceDiagramHandler extends AbstractHandler {
 				out.println("FAILED.");
 			}
 			out.println("Errors:   " + errors.size());
-			out.println("Warnings: 0");
+			out.println("Warnings: " + warnings.size());
 			out.print("-----------------------------------------");
 			out.println(IntStream.range(0, sequenceDiagramClassName.length()).mapToObj(i -> "-")
 					.collect(Collectors.joining()));
-			out.println();
+			
 			if (!errors.isEmpty()) {
+				out.println();
 				out.println("Errors: ");
 			}
 			errors.stream().forEach(error -> {
 				out.println();
 				out.println(Stream.of(error.getMessage().split("\n")).map(line -> "  " + line)
+						.collect(Collectors.joining("\n")));
+			});
+			
+			if (!warnings.isEmpty()) {
+				out.println();
+				out.println("Warnings: ");
+			}
+			warnings.stream().forEach(warning -> {
+				out.println();
+				out.println(Stream.of(warning.getMessage().split("\n")).map(line -> "  " + line)
 						.collect(Collectors.joining("\n")));
 			});
 		});

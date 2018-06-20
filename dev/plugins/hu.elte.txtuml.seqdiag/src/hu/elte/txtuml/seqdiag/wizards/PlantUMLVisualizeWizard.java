@@ -53,8 +53,8 @@ public class PlantUMLVisualizeWizard extends TxtUMLVisualizeWizard {
 			String generatedFolderName = PreferencesManager
 					.getString(PreferencesManager.TXTUML_VISUALIZE_DESTINATION_FOLDER);
 
-			List<String> diagramNames = new ArrayList<>();
-			layoutConfigs.get(model).forEach(layout -> diagramNames.add(layout.getFullyQualifiedName()));
+			List<IType> diagrams = new ArrayList<>();
+			layoutConfigs.get(model).forEach(layout -> diagrams.add(layout));
 
 			List<String> fullyQualifiedNames = txtUMLLayout.stream().map(IType::getFullyQualifiedName)
 					.collect(Collectors.toList());
@@ -67,26 +67,24 @@ public class PlantUMLVisualizeWizard extends TxtUMLVisualizeWizard {
 				checkNoLayoutDescriptionsSelected();
 
 				IProgressService progressService = PlatformUI.getWorkbench().getProgressService();
-				PlantUmlExporter exp = new PlantUmlExporter(txtUMLProjectName, generatedFolderName, diagramNames);
+				PlantUmlExporter exp = new PlantUmlExporter(txtUMLProjectName, generatedFolderName, diagrams);
 
-				if (exp.hasSequenceDiagram()) {
-					progressService.runInUI(progressService, new IRunnableWithProgress() {
+				progressService.runInUI(progressService, new IRunnableWithProgress() {
 
-						@Override
-						public void run(IProgressMonitor monitor) throws InterruptedException {
-							monitor.beginTask("Sequence Diagram Export", 100);
-							try {
-								exp.generatePlantUmlOutput(monitor);
-							} catch (CoreException | SequenceDiagramExportException e) {
-								Dialogs.errorMsgb("txtUML export Error",
-										"Error occured during the PlantUml exportation.", e);
-								monitor.done();
-								throw new InterruptedException();
-							}
+					@Override
+					public void run(IProgressMonitor monitor) throws InterruptedException {
+						monitor.beginTask("Sequence Diagram Export", 100);
+						try {
+							exp.generatePlantUmlOutput(monitor);
+						} catch (CoreException | SequenceDiagramExportException e) {
+							Dialogs.errorMsgb("Sequence diagram export error",
+									"Error occured during PlantUML exportation.", e);
+							monitor.done();
+							throw new InterruptedException();
 						}
+					}
 
-					}, ResourcesPlugin.getWorkspace().getRoot());
-				}
+				}, ResourcesPlugin.getWorkspace().getRoot());
 			} catch (InterruptedException | InvocationTargetException e) {
 				Logger.sys.error(e.getMessage());
 				return false;

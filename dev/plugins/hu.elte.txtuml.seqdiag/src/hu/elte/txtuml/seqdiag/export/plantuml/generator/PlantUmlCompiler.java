@@ -1,200 +1,113 @@
 package hu.elte.txtuml.seqdiag.export.plantuml.generator;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 import java.util.Stack;
 
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTVisitor;
-import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
-import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 
-import hu.elte.txtuml.seqdiag.export.plantuml.exporters.BaseSeqdiagExporter;
+import hu.elte.txtuml.seqdiag.export.plantuml.exporters.ExporterBase;
 
 /**
- * Main Compiler Class Only visits the run and initialize methods of the class
- * fragments are compiled when required.<br>
- * {@link CompileCache} caches the compiled fragment for reuse and the
- * {@link #compile(String) } method compiles it depending on a fully qualified
- * name. Furthermore handles lifeline de-activation and activation. <br>
- * for more information on the compilation see {@link BaseSeqdiagExporter}
+ * <b>Main PlantUML compiler class.</b>
+ * <p>
+ * Visits the run and initialize methods of the sequence diagram description
+ * class. Also responsible for handling the exporters.<br>
+ * Furthermore handles lifeline positions, activation and deactivation. <br>
+ * For more information about the compilation, see {@link ExporterBase}.
  */
 public class PlantUmlCompiler extends ASTVisitor {
-	private List<ASTNode> errors;
-	private Stack<BaseSeqdiagExporter<? extends ASTNode>> expQueue;
-	private List<MethodDeclaration> fragments;
-	private List<FieldDeclaration> lifelines;
-	private List<String> activeLifelines;
-	private String currentClassFullyQualifiedName;
-
-	private HashMap<Integer, FieldDeclaration> fieldDeclarationOrder;
-	private int lastPosFilled;
-
-	private String compiledOutput;
-	private CompiledElementsCache cache;
 
 	/**
-	 * flag to mark if we are compiling a fragment right now
+	 * Preprocessed but not postprocessed subtree roots. If this stack is not
+	 * empty after the compilation, manual postprocessing is needed, for example
+	 * at the end of combined fragments, lifelines and interactions (see
+	 * {@link #postVisit(ASTNode)}).
 	 */
-	private boolean fragmentCompile = false;
+	private Stack<ExporterBase<? extends ASTNode>> exporterQueue;
+	private List<ASTNode> errors;
+	private String currentClassFullyQualifiedName;
+	private List<Lifeline> orderedLifelines;
+	private final String seqDiagramName;
 
-	public PlantUmlCompiler(List<FieldDeclaration> lifelines, List<MethodDeclaration> fragments,
-			boolean fragmentCompile) {
+	private StringBuilder compiledOutput;
+
+	public PlantUmlCompiler(final List<Lifeline> orderedLifelines, String seqDiagramName) {
 		errors = new ArrayList<ASTNode>();
-		this.fragments = fragments;
-		activeLifelines = new ArrayList<String>();
-		expQueue = new Stack<BaseSeqdiagExporter<? extends ASTNode>>();
+		exporterQueue = new Stack<ExporterBase<? extends ASTNode>>();
+		this.orderedLifelines = orderedLifelines;
+		this.seqDiagramName = seqDiagramName;
 
-		compiledOutput = "";
-		cache = new CompiledElementsCache();
-		this.fragmentCompile = fragmentCompile;
-		this.lifelines = lifelines;
-		fieldDeclarationOrder = new HashMap<Integer, FieldDeclaration>();
-		lastPosFilled = 0;
+		compiledOutput = new StringBuilder();
 	}
 
+	/**
+	 * Returns the compiled output.
+	 */
 	public String getCompiledOutput() {
-		return compiledOutput;
+		return compiledOutput.toString();
 	}
 
 	@Override
 	public boolean preVisit2(ASTNode node) {
-
-		BaseSeqdiagExporter<?> exp = BaseSeqdiagExporter.createExporter(node, this);
-
+		ExporterBase<?> exp = ExporterBase.createExporter(node, this);
 		if (exp != null) {
 			return exp.visit(node);
 		}
-
 		return true;
 	};
 
 	/**
 	 * In case we are visiting a TypeDeclaration we need to generate the
-	 * participants too
+	 * participants too.
 	 */
+	@Override
 	public boolean visit(TypeDeclaration decl) {
-		currentClassFullyQualifiedName = decl.resolveBinding().getQualifiedName().toString();
-
-		if (!fragmentCompile) {
-			for (FieldDeclaration sfdecl : lifelines) {
-				sfdecl.accept(this);
-			}
-		}
-
-		return true;
-	}
-
-	/**
-	 * Normally we only need to care if the method is the run or the initialize
-	 * method we can skip the rest.<br>
-	 * In case of fragment compilation we need to compile all method
-	 * declarations( should be only the one we are compiling rigth now)
-	 */
-	public boolean visit(MethodDeclaration decl) {
-		if (decl.resolveBinding().getDeclaringClass().getQualifiedName().toString()
-				.equals(currentClassFullyQualifiedName) && decl.getName().toString().equals("run")
-				|| decl.getName().toString().equals("initialize")) {
-			return true;
-		} else if (fragmentCompile) {
+		if (decl.resolveBinding().getName().equals(seqDiagramName)) {
+			currentClassFullyQualifiedName = decl.resolveBinding().getQualifiedName().toString();
+			orderedLifelines.stream().map(Lifeline::getLifelineDeclaration).forEach(lifeline -> lifeline.accept(this));
 			return true;
 		}
 		return false;
 	}
 
-	/*
-	 * Get fully qualified names of a method
-	 */
-
 	/**
-	 * 
-	 * @param decl
-	 *            the {@link MethodDeclaration} we need the fully qualified name
-	 *            of
-	 * @return
+	 * Normally we only need to care if the method is the run or the initialize
+	 * method, we can skip the rest.
 	 */
-	public static String getFullyQualifiedName(MethodDeclaration decl) {
-		return decl.resolveBinding().getDeclaringClass().getQualifiedName().toString() + "."
-				+ decl.getName().toString();
+	@Override
+	public boolean visit(MethodDeclaration decl) {
+		printLifelines();
+		boolean isInitMethod = decl.getName().toString().equals("initialize");
+		return decl.resolveBinding().getDeclaringClass().getQualifiedName().toString()
+				.equals(currentClassFullyQualifiedName) && (decl.getName().toString().equals("run") || isInitMethod);
 	}
 
 	/**
-	 * 
-	 * @param invoc
-	 *            the {@link MethodInvocation} we need the fully qualified name
-	 *            of
-	 * @return
-	 */
-	public static String getFullyQualifiedName(MethodInvocation invoc) {
-		return invoc.resolveMethodBinding().getDeclaringClass().getQualifiedName().toString() + "."
-				+ invoc.getName().toString();
-	}
-
-	/**
-	 * get a compiled fragment from cache, or if it's not in the cache compile
-	 * it.
-	 * 
-	 * @param fullyQualifiedName
-	 *            the fully qualified name of the fragment we are compiling
-	 * @return
-	 */
-	public String compile(String fullyQualifiedName) {
-
-		if (this.cache.hasCompiledElement(fullyQualifiedName)) {
-			CompileCache cache = this.cache.getCompiledElement(fullyQualifiedName);
-			activeLifelines.addAll(cache.getActiveLifeines());
-			return this.compiledOutput;
-		}
-
-		boolean hasDecl = false;
-		MethodDeclaration declaration = null;
-
-		for (MethodDeclaration decl : fragments) {
-			if (PlantUmlCompiler.getFullyQualifiedName(decl).equals(fullyQualifiedName)) {
-				hasDecl = true;
-				declaration = decl;
-				break;
-			}
-		}
-
-		if (hasDecl) {
-			PlantUmlCompiler compiler = new PlantUmlCompiler(this.lifelines, this.fragments, true);
-			compiler.activeLifelines = activeLifelines;
-			declaration.accept(compiler);
-			this.cache.addCompiledElement(PlantUmlCompiler.getFullyQualifiedName(declaration),
-					compiler.getCompiledOutput(), compiler.activeLifelines);
-			activeLifelines.addAll(compiler.activeLifelines);
-			return compiler.getCompiledOutput();
-		}
-
-		return null;
-	}
-
-	/**
-	 * End of visit actions
+	 * End of visit actions. (For the end of combined fragments, lifelines and
+	 * interactions.)
 	 */
 	@Override
 	public void postVisit(ASTNode node) {
-		BaseSeqdiagExporter<?> expt = BaseSeqdiagExporter.createExporter(node, this);
-
-		if (!expQueue.isEmpty() && expt != null && !expt.skippedStatement(node)) {
-			BaseSeqdiagExporter<?> exp = expQueue.peek();
-
-			if (expt.getClass().isInstance(exp)) {
-				exp.endVisit(node);
-			} else if (!expt.getClass().isInstance(exp) && !expt.skippedStatement(node)) {
-				errors.add(node);
+		if (!exporterQueue.isEmpty()) {
+			ExporterBase<?> expt = ExporterBase.createExporter(node, this);
+			if (expt != null && !expt.skippedStatement(node)) {
+				ExporterBase<?> exp = exporterQueue.peek();
+				if (expt.getClass().isInstance(exp)) {
+					exp.endVisit(node);
+				} else if (!expt.getClass().isInstance(exp) && !expt.skippedStatement(node)) {
+					errors.add(node);
+				}
 			}
 		}
 	}
 
 	/**
-	 * Get the compilation errors
-	 * 
-	 * @return
+	 * Returns the list of compilation errors.
 	 */
 	public List<String> getErrors() {
 		ArrayList<String> errList = new ArrayList<String>();
@@ -202,8 +115,9 @@ public class PlantUmlCompiler extends ASTVisitor {
 			errList.add("Error! Couldn't parse the following statement: " + error.toString() + "\n");
 		}
 
-		if (!expQueue.isEmpty()) {
-			errList.add("There was a total of " + expQueue.size() + "half-processed or badly processed statements");
+		if (!exporterQueue.isEmpty()) {
+			errList.add(
+					"There was a total of " + exporterQueue.size() + " half-processed or badly processed statements.");
 		}
 
 		return errList;
@@ -213,91 +127,95 @@ public class PlantUmlCompiler extends ASTVisitor {
 	 * compile time statement handling
 	 */
 
-	public void preProcessedStatement(BaseSeqdiagExporter<? extends ASTNode> exporter) {
-		expQueue.push(exporter);
+	/**
+	 * Called when a subtree root has been preprocessed.
+	 * 
+	 * @param exporter
+	 *            The subtree root.
+	 */
+	public void preProcessedStatement(ExporterBase<? extends ASTNode> exporter) {
+		exporterQueue.push(exporter);
 	}
 
+	/**
+	 * Called when the recently added subtree root has been postprocessed.
+	 */
 	public void postProcessedStatement() {
-		expQueue.pop();
+		exporterQueue.pop();
 	}
 
 	/**
+	 * Returns a lifeline with the given name.
 	 * 
-	 * checks if lifeline is active (used in exporting)
-	 * 
-	 * @param lifeline
-	 * @return true if the lifeline is activated
+	 * @param lifelineName
+	 *            The name of the lifeline.
+	 * @return The found lifeline if the given name is valid, empty optional
+	 *         otherwise.
 	 */
-	public boolean lifelineIsActive(String lifeline) {
-		return activeLifelines.contains(lifeline);
+	private Optional<Lifeline> getLifelineByName(String lifelineName) {
+		return orderedLifelines.stream().filter(lifeline -> lifeline.getName().equals(lifelineName)).findFirst();
 	}
 
 	/**
-	 * activates lifeline if it currently is not active and does the needed
-	 * supplementary operations
+	 * Activates the given lifeline if it is not currently active.
 	 * 
-	 * @param lifeline
-	 *            lifeline to activate
+	 * @param lifelineName
+	 *            The lifeline to activate.
 	 */
-	public void activateLifeline(String lifeline) {
-		if (!lifelineIsActive(lifeline)) {
-			compiledOutput += "activate " + lifeline + "\n";
-			activeLifelines.add(lifeline);
+	public void activateLifeline(String lifelineName) {
+		Optional<Lifeline> lifeline = getLifelineByName(lifelineName);
+		if (lifeline.isPresent() && !lifeline.get().isActive()) {
+			lifeline.get().activate(true);
+			println("activate " + lifelineName);
 		}
 	}
 
 	/**
-	 * 
-	 * deactivates lifeline and does the needed supplementary operations
-	 * 
-	 * @param lifeline
-	 *            lifeline to deactivate
-	 */
-	public void deactivateLifeline(String lifeline) {
-		if (lifelineIsActive(lifeline)) {
-			activeLifelines.remove(lifeline);
-			compiledOutput += "deactivate " + lifeline + System.lineSeparator();
-		}
-	}
-
-	/**
-	 * deactivates all active lifelines
+	 * Deactivates all active lifelines.
 	 */
 	public void deactivateAllLifelines() {
-		while (activeLifelines.size() > 0) {
-			this.deactivateLifeline(activeLifelines.get(0));
-		}
+		orderedLifelines.forEach(this::deactivateLifeline);
 	}
 
+	/**
+	 * Prints the given message to the compiled output.
+	 * 
+	 * @param message
+	 *            Output message in PlantUML format.
+	 */
 	public void println(String message) {
-		this.compiledOutput += message + System.lineSeparator();
+		compiledOutput.append(message);
+		compiledOutput.append(System.lineSeparator());
 	}
 
-	public String getCurrentClassName() {
-		return this.currentClassFullyQualifiedName;
+	/**
+	 * Deactivates the given lifeline if it is currently active.
+	 * 
+	 * @param lifeline
+	 *            The lifeline to deactivate.
+	 */
+	private void deactivateLifeline(Lifeline lifeline) {
+		if (lifeline.isActive()) {
+			lifeline.activate(false);
+			println("deactivate " + lifeline.getName());
+		}
 	}
 
 	/*
-	 * Lifeline order handling
+	 * Used for lifeline position order handling.
 	 */
-
-	public int lastDeclaredParticipantID() {
-		return this.lastPosFilled;
+	private void printLifelines() {
+		orderedLifelines.stream().filter(elem -> elem.getPriority() != -1).forEach(elem -> {
+			println("participant " + elem.getName());
+			elem.processed();
+		});
 	}
 
-	public void addToWaitingList(int id, FieldDeclaration element) {
-		fieldDeclarationOrder.put(id, element);
+	/**
+	 * Returns the name of the sequence diagram which is being exported
+	 */
+	public String getSeqDiagramName() {
+		return seqDiagramName;
 	}
 
-	public void compiledLifeline(int id) {
-		this.lastPosFilled = id;
-	}
-
-	public void compileWaitingLifelines() {
-		for (int key : fieldDeclarationOrder.keySet()) {
-			if (key == this.lastPosFilled || key == this.lastPosFilled + 1) {
-				fieldDeclarationOrder.get(key).accept(this);
-			}
-		}
-	}
 }

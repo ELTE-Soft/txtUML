@@ -5,7 +5,7 @@
 #include "ResourceMonitor.hpp"
 #include "Aggregator.hpp"
 #include "Alert.hpp"
-#include "associations.hpp"
+#include "AssociationInstances.hpp"
 #include "Action.hpp"
 #include "EventStructures.hpp"
 
@@ -18,8 +18,8 @@ int main()
 	Model::ResourceMonitor monitor;
 	Model::Aggregator aggregator;
 	Model::Alert alert(3);
-	Action::link<typename Model::ToAggregator::rmonitor, typename Model::ToAggregator::aggregator>(&monitor, &aggregator);
-	Action::link<typename Model::ToAlert::rmonitor, typename Model::ToAlert::alert>(&monitor, &alert);
+	Action::link(Model::ToAggregator.rmonitor, &monitor, Model::ToAggregator.aggregator, &aggregator);
+	Action::link(Model::ToAlert.rmonitor, &monitor, Model::ToAlert.alert, &alert);
 	Action::start(&monitor);
 	Action::start(&aggregator);
 	Action::start(&alert);

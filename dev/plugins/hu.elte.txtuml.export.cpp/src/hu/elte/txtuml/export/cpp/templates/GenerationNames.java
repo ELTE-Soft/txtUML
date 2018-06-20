@@ -1,7 +1,11 @@
 package hu.elte.txtuml.export.cpp.templates;
 
+import java.util.Arrays;
+import java.util.Optional;
+
 import org.eclipse.core.runtime.Path;
 
+import hu.elte.txtuml.export.cpp.CppExporterUtils;
 import hu.elte.txtuml.export.cpp.templates.statemachine.EventTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.PortTemplates;
 
@@ -16,6 +20,7 @@ public class GenerationNames {
 		public static final String CollectionUtilsNamespace = "CollectionUtils";
 		public static final String ContainerNamespace = "ESContainer";
 		public static final String ExecutionNamesapce = "Execution";
+		public static final String StandardNamesapce = "std";
 	}
 
 	public static class FileNames {
@@ -32,6 +37,9 @@ public class GenerationNames {
 		public static final String CollectionUtilsPath = ESRootPath + FileNamesCollectionUtilsHeaderName;
 		public static final String PortUtilsPath = RuntimeTemplates.RTPath + "PortUtils";
 		public static final String InterfaceUtilsPath = RuntimeTemplates.RTPath + "InterfaceUtils";
+		public static final String AssociationUtilsPath = RuntimeTemplates.RTPath + "AssociationUtils";
+		public static final String ElementFileName = "Elements";
+		public static final String ElementsFilePath = ESRootPath + ElementFileName;
 
 		public static final String TimerInterfaceHeader = RuntimeTemplates.RTPath
 				+ TimerNames.TimerInterFaceName.toLowerCase();
@@ -78,8 +86,9 @@ public class GenerationNames {
 	public static class CollectionNames {
 
 		public static final String Collection = "std::list";
-		public static final String SelectAnyFunctionName = "getOne";
-		public static final String SelectAllFunctionName = "getAll";
+		public static final String SelectAnyFunctionName = "one";
+		public static final String SelectAllFunctionName = "selectAll";
+		public static final String EndCollectionTypeDef = "CollectionType";
 
 	}
 
@@ -115,7 +124,7 @@ public class GenerationNames {
 	}
 
 	public static class Containers {
-		public static final String FixContainer = Namespaces.ContainerNamespace + "::" + "FixedArray";
+		public static final String FixContainer = Namespaces.StandardNamesapce + "::" + "array";
 	}
 
 	public static class StateMachineMethodNames {
@@ -129,7 +138,7 @@ public class GenerationNames {
 	public static class TypeDeclarationKeywords {
 		public static final String ClassType = "class";
 		public static final String DataType = "struct";
-		public static final String AssociationStructure = "struct";
+		public static final String AssociationEndDescriptor = "struct";
 		public static final String EnumType = "enum";
 		public static final String InterfacType = "class";
 		public static final String PublicPartSign = "public:";
@@ -199,6 +208,14 @@ public class GenerationNames {
 				+ EventTemplates.EventPointerType + " " + EventTemplates.EventFParamName + ");\n";
 
 	}
+	
+	public static class AssociationNames {
+		public static final String AssocMultiplicityDataStruct = "AssociationEnd";
+		public static final String AssociationClassName = "Association";
+		public static final String AssociationInstancesUnitName = "AssociationInstances";		
+		public static final String AssociationEndDescriptorUnitName = "AssoctaionEndDescriptors";
+		public static final String NavigationFunctionName = "assoc";
+	}
 
 	public static final String EnumName = "enum";
 
@@ -229,9 +246,7 @@ public class GenerationNames {
 	public static final String SetInitialStateDecl = ModifierNames.NoReturn + " " + SetInitialStateName + "();";
 	public static final String StatemachineBaseHeaderName = "statemachinebase";
 	public static final String DefaultGuardName = "defaultGuard";
-	public static final String AssocMultiplicityDataStruct = "AssociationEnd";
-	public static final String AssociationClassName = "Association";
-	public static final String AssocationHeaderName = "association";
+
 	public static final String DeploymentHeaderName = "deployment";
 
 	public static final String PoolIdSetter = "setPoolId";
@@ -248,7 +263,6 @@ public class GenerationNames {
 	public static final String TemplateParameterName = "T";
 	public static final String EndPointName = "EndPointName";
 
-	public static final String AssociationsHeaderName = "associations";
 	public static final String EdgeType = "EdgeType";
 
 	public static String comment(String text) {
@@ -371,4 +385,14 @@ public class GenerationNames {
 	public static String providedInfPartName(String infName) {
 		return infName + "ProvInf";
 	}
+
+	public static String umlVarType(String mappedType, Integer low, Integer up) {
+		return "MultipliedElement" + CppExporterUtils.createTemplateParametersCode(Optional
+				.of(Arrays.asList(mappedType, low.toString(), up.toString()))); 
+	}
+	
+	public static String eType(String typeName) {
+		return "typename EType<" + typeName+ ",isPrimitive<" + typeName + ">::value>::Type";
+	}
+	
 }

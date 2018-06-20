@@ -36,7 +36,7 @@ public class FragmentsTests {
 		executor.setDiagram(diag).run();
 
 		Assert.assertFalse(executor.getErrors().isEmpty());
-		Assert.assertEquals(4, executor.getErrors().size());
+		Assert.assertEquals(5, executor.getErrors().size());
 	}
 
 	@Test

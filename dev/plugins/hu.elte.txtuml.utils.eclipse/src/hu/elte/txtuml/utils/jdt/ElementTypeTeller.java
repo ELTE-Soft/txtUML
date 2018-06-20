@@ -4,6 +4,7 @@ import java.util.stream.Stream;
 
 import org.eclipse.jdt.core.IAnnotation;
 import org.eclipse.jdt.core.ICompilationUnit;
+import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IPackageDeclaration;
 import org.eclipse.jdt.core.IPackageFragment;
@@ -18,11 +19,13 @@ import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.IAnnotationBinding;
 import org.eclipse.jdt.core.dom.IBinding;
 import org.eclipse.jdt.core.dom.IExtendedModifier;
+import org.eclipse.jdt.core.dom.IPackageBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.IVariableBinding;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.Modifier;
 import org.eclipse.jdt.core.dom.Name;
+import org.eclipse.jdt.core.dom.PackageDeclaration;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 
 import hu.elte.txtuml.api.model.Association;
@@ -61,11 +64,28 @@ public final class ElementTypeTeller {
 	}
 
 	public static boolean isModelElement(CompilationUnit unit) {
-		if (unit.getPackage() == null) {
+		// careful nullchecking is required below
+		// to prevent the workspace problem window from appearing
+
+		PackageDeclaration packageDeclaration = unit.getPackage();
+		if (packageDeclaration == null) {
 			// the model cannot be in default package
 			return false;
 		}
-		return isModelPackage((IPackageFragment) unit.getPackage().resolveBinding().getJavaElement());
+
+		IPackageBinding packageBinding = packageDeclaration.resolveBinding();
+		if (packageBinding == null) {
+			// wrong package declaration, can't validate
+			return false;
+		}
+
+		IJavaElement javaElement = packageBinding.getJavaElement();
+		if (javaElement == null) {
+			// something went wrong during the lookup, can't validate
+			return false;
+		}
+
+		return isModelPackage((IPackageFragment) javaElement);
 	}
 
 	/**
@@ -439,6 +459,10 @@ public final class ElementTypeTeller {
 
 	public static boolean isCollection(TypeDeclaration binding) {
 		return SharedUtils.typeIsAssignableFrom(binding, GeneralCollection.class);
+	}
+	
+	public static boolean isCollection(ITypeBinding bnd) {
+		return SharedUtils.typeIsAssignableFrom(bnd, GeneralCollection.class);
 	}
 
 }
