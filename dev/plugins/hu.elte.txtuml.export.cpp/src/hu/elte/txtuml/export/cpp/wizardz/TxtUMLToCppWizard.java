@@ -111,7 +111,7 @@ public class TxtUMLToCppWizard extends Wizard {
 		} catch (EnvironmentNotFoundException e) {		
 			Dialogs.errorMsgb("C++ build environment generation error", "Not supported build environments selected", e);		
 			return false;
-		} catch (Exception  e) {
+		} catch (Exception e) {
 			Dialogs.errorMsgb("C++ code generation error", e.getMessage(), e);
 			return false;
 		}

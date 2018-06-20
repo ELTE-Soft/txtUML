@@ -1,5 +1,5 @@
 /** @file ModelObject.hpp
-Contains interface for model classes width the common methods: send, start, delete, assoc
+Contains interface for model classes with the common methods: send, start, delete, assoc
 */
 
 #ifndef OBJECT_HPP
@@ -13,7 +13,7 @@ class ModelObject
 {
 public:
 	/*!
-	Sends a messeage to the object.
+	Sends a message to the object.
 	*/	
 	virtual void send(const EventRef) = 0;
 	
