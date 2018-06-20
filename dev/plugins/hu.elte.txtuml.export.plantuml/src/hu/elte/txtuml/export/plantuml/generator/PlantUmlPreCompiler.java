@@ -55,9 +55,8 @@ public class PlantUmlPreCompiler extends ASTVisitor {
 				}
 			}
 			return true;
-		} else {
-			return false;
 		}
+		return false;
 	}
 
 	@Override

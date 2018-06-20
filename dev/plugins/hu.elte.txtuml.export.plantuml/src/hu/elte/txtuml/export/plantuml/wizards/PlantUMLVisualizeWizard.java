@@ -77,8 +77,8 @@ public class PlantUMLVisualizeWizard extends TxtUMLVisualizeWizard {
 						try {
 							exp.generatePlantUmlOutput(monitor);
 						} catch (CoreException | SequenceDiagramExportException e) {
-							Dialogs.errorMsgb("txtUML export Error", "Error occured during the PlantUml exportation.",
-									e);
+							Dialogs.errorMsgb("Sequence diagram export error",
+									"Error occured during PlantUML exportation.", e);
 							monitor.done();
 							throw new InterruptedException();
 						}

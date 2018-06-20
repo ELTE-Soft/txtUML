@@ -71,9 +71,8 @@ public class PlantUmlCompiler extends ASTVisitor {
 			currentClassFullyQualifiedName = decl.resolveBinding().getQualifiedName().toString();
 			orderedLifelines.stream().map(Lifeline::getLifelineDeclaration).forEach(lifeline -> lifeline.accept(this));
 			return true;
-		} else {
-			return false;
 		}
+		return false;
 	}
 
 	/**
