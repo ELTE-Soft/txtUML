@@ -208,7 +208,7 @@ class XtxtUMLExpressionValidator extends XtxtUMLTypeValidator {
 			val currentFeature = asToEndToFeature.value;
 
 			if (currentAs != null && currentEnd == null) {
-				error("Missing connective end", bindExpr, currentFeature, MISSING_CONNECTIVE_IN_BIND_EXPRESSION);
+				error("Missing connective end", bindExpr, currentFeature, MISSING_END_IN_BIND_EXPRESSION);
 			}
 		]
 	}

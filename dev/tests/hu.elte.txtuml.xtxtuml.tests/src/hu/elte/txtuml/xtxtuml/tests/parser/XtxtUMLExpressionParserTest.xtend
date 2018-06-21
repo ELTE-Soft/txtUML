@@ -86,7 +86,7 @@ class XtxtUMLExpressionParserTest {
 					to TestState;
 					trigger TestSignal;
 					effect {
-						log(trigger.message);
+						log trigger.message;
 					}
 				}
 			}

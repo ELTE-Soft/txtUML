@@ -210,18 +210,18 @@ class XtxtUMLTypeValidator extends XtxtUMLUniquenessValidator {
 
 		var result = true;
 
-		result = result && #[leftEnd -> TU_BIND_EXPRESSION__LEFT_END, rightEnd -> TU_BIND_EXPRESSION__RIGHT_END].forall[ endToFeature |
+		for (endToFeature : #[leftEnd -> TU_BIND_EXPRESSION__LEFT_END, rightEnd -> TU_BIND_EXPRESSION__RIGHT_END]) {
+			// don't use forEach here: it is lazy, but we need the side effects
 			val currentEnd = endToFeature.key;
 			val currentFeature = endToFeature.value;
 
 			if (currentEnd != null && !connective.connectiveEnds.exists[fullyQualifiedName == currentEnd.fullyQualifiedName]) {
 				error("End " + currentEnd.connectiveEndName + " does not belong to connective " + connective.connectiveName,
 					it, currentFeature, END_MISMATCH_IN_BIND_EXPRESSION);
-				return false;
-			}
 
-			return true;
-		];
+				result = false;
+			}
+		}
 
 		if (leftEnd != null && rightEnd != null && leftEnd.fullyQualifiedName == rightEnd.fullyQualifiedName) {
 			#[leftEnd -> TU_BIND_EXPRESSION__LEFT_END, rightEnd -> TU_BIND_EXPRESSION__RIGHT_END].forEach[ endToFeature |
