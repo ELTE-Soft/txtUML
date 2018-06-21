@@ -19,6 +19,7 @@ import hu.elte.txtuml.xtxtuml.xtxtUML.TUExecution
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUExternality
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUFile
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUInterface
+import hu.elte.txtuml.xtxtuml.xtxtUML.TULogExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUModelDeclaration
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUModelElement
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUModifiers
@@ -364,9 +365,14 @@ class XtxtUMLParserTestUtils {
 		assertTrue(expression instanceof TUSignalAccessExpression);
 	}
 
-	def delete(XExpression expression, Procedure1<XExpression> targetCheck) {
+	def log(XExpression expression, Procedure1<XExpression> messageCheck) {
+		assertTrue(expression instanceof TULogExpression);
+		messageCheck.apply((expression as TULogExpression).message);
+	}
+
+	def delete(XExpression expression, Procedure1<XExpression> objectCheck) {
 		assertTrue(expression instanceof TUDeleteObjectExpression);
-		targetCheck.apply((expression as TUDeleteObjectExpression).object);
+		objectCheck.apply((expression as TUDeleteObjectExpression).object);
 	}
 
 	def if_(XExpression expression, Procedure1<XExpression> predicateCheck,

@@ -343,6 +343,71 @@ class XtxtUMLExpressionCompilerTest {
 	}
 
 	@Test
+	def compileCreateObjectExpression() {
+		'''
+			package test.model;
+			class A {
+				A() {}
+				A(int i) {}
+				void f() {
+					new A();
+					new A(0);
+					create A();
+					create A(0);
+					new A() as "a";
+					new A(0) as "a";
+					create A() as "a";
+					create A(0) as "a";
+
+					A a;
+					a = new A();
+					a = new A(0);
+					a = create A();
+					a = create A(0);
+					a = new A() as "a";
+					a = new A(0) as "a";
+					a = create A() as "a";
+					a = create A(0) as "a";
+				}
+			}
+		'''.assertCompilesTo('''
+			package test.model;
+
+			import hu.elte.txtuml.api.model.Action;
+			import hu.elte.txtuml.api.model.ModelClass;
+
+			@SuppressWarnings("all")
+			public class A extends ModelClass {
+			  A() {
+			  }
+			  
+			  A(final int i) {
+			  }
+			  
+			  void f() {
+			    new A();
+			    new A(0);
+			    Action.create(A.class);
+			    Action.create(A.class, 0);
+			    Action.createWithName(A.class, "a");
+			    Action.createWithName(A.class, "a", 0);
+			    Action.createWithName(A.class, "a");
+			    Action.createWithName(A.class, "a", 0);
+			    A a = null;
+			    a = new A();
+			    a = new A(0);
+			    a = Action.create(A.class);
+			    a = Action.create(A.class, 0);
+			    a = Action.createWithName(A.class, "a");
+			    a = Action.createWithName(A.class, "a", 0);
+			    a = Action.createWithName(A.class, "a");
+			    a = Action.createWithName(A.class, "a", 0);
+			  }
+			}
+		''')
+	}
+
+	@Test
 	def compileBindExpression() {
 		'''
 			package test.model;

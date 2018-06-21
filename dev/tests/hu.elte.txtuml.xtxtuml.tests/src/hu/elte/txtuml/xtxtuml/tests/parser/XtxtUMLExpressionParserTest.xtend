@@ -109,11 +109,7 @@ class XtxtUMLExpressionParserTest {
 								[vertex(false, "TestState")],
 								[trigger("TestSignal")],
 								[effect(#[
-									[featureCall(
-										null, "log", #[
-											[featureCall([signalAccess], "message", null)]
-										]
-									)]
+									[log([featureCall([signalAccess], "message", null)])]
 								])]
 							]
 						)]

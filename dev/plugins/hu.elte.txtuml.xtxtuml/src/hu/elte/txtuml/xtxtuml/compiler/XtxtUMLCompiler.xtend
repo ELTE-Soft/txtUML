@@ -16,6 +16,7 @@ import hu.elte.txtuml.xtxtuml.xtxtUML.TUSendSignalExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUSignalAccessExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUStartObjectExpression
 import org.eclipse.xtext.common.types.JvmType
+import org.eclipse.xtext.xbase.XBlockExpression
 import org.eclipse.xtext.xbase.XExpression
 import org.eclipse.xtext.xbase.compiler.XbaseCompiler
 import org.eclipse.xtext.xbase.compiler.output.ITreeAppendable
@@ -29,6 +30,7 @@ class XtxtUMLCompiler extends XbaseCompiler {
 	override protected doInternalToJavaStatement(XExpression obj, ITreeAppendable builder, boolean isReferenced) {
 		switch (obj) {
 			TUClassPropertyAccessExpression,
+			TUCreateObjectExpression,
 			TUStartObjectExpression,
 			TUDeleteObjectExpression,
 			TUBindExpression,
@@ -42,11 +44,22 @@ class XtxtUMLCompiler extends XbaseCompiler {
 	}
 
 	def dispatch toJavaStatement(TUClassPropertyAccessExpression accessExpr, ITreeAppendable it) {
-		// intentionally left empty
+		// can't happen, `->` as a statement is invalid
+	}
+
+	def dispatch toJavaStatement(TUCreateObjectExpression createExpr, ITreeAppendable it) {
+		if (!(createExpr.eContainer instanceof XBlockExpression)) {
+			// for some reason `doInternalToJavaStatement` gets called even for expressions
+			return it;
+		}
+
+		newLine;
+		createExpr.toJavaExpression(it);
+		append(";");
 	}
 
 	def dispatch toJavaStatement(TUSignalAccessExpression sigExpr, ITreeAppendable it) {
-		// intentionally left empty
+		// can't happen, `trigger` as a statement is invalid
 	}
 
 	def dispatch toJavaStatement(TUStartObjectExpression startExpr, ITreeAppendable it) {

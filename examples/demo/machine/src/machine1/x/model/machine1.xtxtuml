@@ -1,14 +1,14 @@
 package machine1.x.model;
 
-import java.time.format.DateTimeFormatter;
+import com.google.common.collect.Lists;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 // classes
 
 class Machine {
-	private external List<String> switchOnLog = new ArrayList<String>();
+	private external List<String> switchOnLog = Lists.newArrayList();
 	private external DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
 
 	private external-body void logSwitchOn() {
