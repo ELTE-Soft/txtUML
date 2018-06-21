@@ -56,7 +56,7 @@ public class XMachine2SequenceDiagram extends SequenceDiagram {
 		for (int i = 0; i < 3; ++i) {
 			Sequence.send(u1, new DoTasks(1), m);
 			assertState(m, On.Active.class);
-		}
+		}Sequence.send(u1, new DoTasks(1), m);
 	}
 
 }
