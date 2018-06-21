@@ -14,5 +14,7 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Export-Package: hu.elte.txtuml.validation.common,
  hu.elte.txtuml.validation.model,
- hu.elte.txtuml.validation.model.visitors
+ hu.elte.txtuml.validation.model.visitors,
+ hu.elte.txtuml.validation.sequencediagram,
+ hu.elte.txtuml.validation.sequencediagram.visitors
 Bundle-Vendor: ELTE

@@ -16,6 +16,7 @@ import org.eclipse.jdt.core.IType;
 import org.eclipse.jface.wizard.Wizard;
 
 import hu.elte.txtuml.export.cpp.BuildSupport;
+import hu.elte.txtuml.export.cpp.CppExporterUtils;
 import hu.elte.txtuml.export.cpp.EnvironmentNotFoundException;
 import hu.elte.txtuml.export.cpp.Uml2ToCppExporter;
 import hu.elte.txtuml.export.fmu.DebuggerExporter;
@@ -128,17 +129,17 @@ public class TxtUMLToCppWizard extends Wizard {
 				buildSupport.handleErrors();
 		
 			}
-			
-			Desktop.getDesktop().open(new File(outputDirectory));
-						
-
+			//TODO hotfix only, desktop not working on linux currently
+			if(CppExporterUtils.isWindowsOS() && Desktop.isDesktopSupported()) { 
+				Desktop.getDesktop().open(new File(outputDirectory));
+			}
 		} catch(FileNotFoundException e) {
 			Dialogs.errorMsgb("C++ file copying error", "Unable to copy selected file", e);		
 			return false;
 		} catch (EnvironmentNotFoundException e) {		
 			Dialogs.errorMsgb("C++ build environment generation error", "Not supported build environments selected", e);		
 			return false;
-		} catch (Exception  e) {
+		} catch (Exception e) {
 			Dialogs.errorMsgb("C++ code generation error", e.getMessage(), e);
 			return false;
 		}

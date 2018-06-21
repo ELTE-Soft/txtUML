@@ -1,3 +1,7 @@
+/** @file PortUtils.hpp
+Contains the port related types and connection functions.
+*/
+
 #include "ievent.hpp"
 #include "ESRoot/Types.hpp"
 #include "InterfaceUtils.hpp"

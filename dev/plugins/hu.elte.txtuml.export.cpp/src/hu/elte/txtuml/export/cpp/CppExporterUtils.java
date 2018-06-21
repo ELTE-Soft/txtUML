@@ -49,6 +49,7 @@ public class CppExporterUtils {
 
 	private static String UNKNOWN_TYPE = "UNKNOWN_TYPE";
 	private static String WRITER_ENCODE = "UTF-8";
+	private static final String OPERATING_SYSTEM = System.getProperty("os.name");
 
 	@SuppressWarnings("unchecked")
 	public static <ElementTypeT, EClassTypeT> void getTypedElements(Collection<ElementTypeT> dest, EClassTypeT eClass,
@@ -104,10 +105,10 @@ public class CppExporterUtils {
 
 		return activity;
 	}
-	
+
 	public static class TypeDescriptor {
 		public static final TypeDescriptor NoReturn = new TypeDescriptor(ModifierNames.NoReturn);
-		
+
 		public TypeDescriptor(String typeName, int lowMul, int upMul) {
 			super();
 			this.typeName = typeName;
@@ -115,7 +116,7 @@ public class CppExporterUtils {
 			this.lowMul = lowMul;
 			isRawType = false;
 		}
-		
+
 		public TypeDescriptor(String typeName) {
 			super();
 			this.typeName = typeName;
@@ -123,17 +124,19 @@ public class CppExporterUtils {
 			this.lowMul = 1;
 			isRawType = true;
 		}
-		
+
 		public String getTypeName() {
 			return typeName;
 		}
+
 		public int getUpMul() {
 			return upMul;
 		}
+
 		public int getLowMul() {
 			return lowMul;
 		}
-		
+
 		public boolean isRawType() {
 			return upMul == 1 && lowMul == 1 && isRawType;
 		}
@@ -143,16 +146,18 @@ public class CppExporterUtils {
 		int lowMul;
 		boolean isRawType;
 	}
-	
+
 	public static List<Pair<TypeDescriptor, String>> getOperationParams(Operation operation) {
 		List<Pair<TypeDescriptor, String>> operationParameters = new ArrayList<>();
 		for (Parameter param : operation.getOwnedParameters()) {
 			if (param != operation.getReturnResult()) {
 				if (param.getType() != null) {
 					operationParameters.add(new Pair<TypeDescriptor, String>(
-							new TypeDescriptor(param.getType().getName(),param.getLower(), param.getUpper()) , param.getName()));
+							new TypeDescriptor(param.getType().getName(), param.getLower(), param.getUpper()),
+							param.getName()));
 				} else {
-					operationParameters.add(new Pair<TypeDescriptor, String>(new TypeDescriptor(UNKNOWN_TYPE), param.getName()));
+					operationParameters
+							.add(new Pair<TypeDescriptor, String>(new TypeDescriptor(UNKNOWN_TYPE), param.getName()));
 				}
 			}
 		}
@@ -176,7 +181,8 @@ public class CppExporterUtils {
 		for (Parameter param : operation.getOwnedParameters()) {
 			if (param != operation.getReturnResult()) {
 				if (param.getType() != null) {
-					operationParameterTypes.add(new TypeDescriptor(param.getType().getName(), param.getLower(), param.getUpper()));
+					operationParameterTypes
+							.add(new TypeDescriptor(param.getType().getName(), param.getLower(), param.getUpper()));
 				}
 			}
 		}
@@ -216,21 +222,19 @@ public class CppExporterUtils {
 
 		return formattedSource;
 	}
-	
+
 	public static String escapeQuates(String source) {
 		StringBuilder resultSource = new StringBuilder("");
-		
-		for(char ch : source.toCharArray()) {
-			if(ch == '"') {
+
+		for (char ch : source.toCharArray()) {
+			if (ch == '"') {
 				resultSource.append("\\");
 			}
 			resultSource.append(ch);
 		}
-		
+
 		return resultSource.toString();
 	}
-	
-
 
 	private static Class getSignalFactoryClass(Signal signal, List<Element> elements) {
 		for (Element element : elements) {
@@ -278,8 +282,8 @@ public class CppExporterUtils {
 
 		return signalsToConstructorOperations;
 	}
+
 	public static Optional<StateMachine> getStateMachine(Class cls) {
-	
 
 		List<StateMachine> smList = new ArrayList<StateMachine>();
 		getTypedElements(smList, UMLPackage.Literals.STATE_MACHINE, cls.getOwnedElements());
@@ -295,8 +299,7 @@ public class CppExporterUtils {
 	public static boolean isStateMachineOwner(Class cls) {
 		return CppExporterUtils.getStateMachine(cls).isPresent();
 	}
-	
-	
+
 	public static String getFirstGeneralClassName(Classifier cls) {
 		if (!cls.getGeneralizations().isEmpty()) {
 			String className = cls.getGeneralizations().get(0).getGeneral().getName();
@@ -304,16 +307,16 @@ public class CppExporterUtils {
 		} else {
 			return GenerationNames.InterfaceNames.EmptyInfName;
 		}
-		
+
 	}
-	
+
 	public static String getUsedInterfaceName(Interface inf) {
 		EList<Element> modelRoot = inf.getModel().allOwnedElements();
 		List<Usage> usages = new ArrayList<>();
 		CppExporterUtils.getTypedElements(usages, UMLPackage.Literals.USAGE, modelRoot);
-		
+
 		Optional<Usage> infOptionalUsage = usages.stream().filter(u -> u.getClients().contains(inf)).findFirst();
-		if(infOptionalUsage.isPresent()) {
+		if (infOptionalUsage.isPresent()) {
 			Usage infUsage = infOptionalUsage.get();
 			if (infUsage.getSuppliers().isEmpty()) {
 				return GenerationNames.InterfaceNames.EmptyInfName;
@@ -323,40 +326,40 @@ public class CppExporterUtils {
 			return GenerationNames.InterfaceNames.EmptyInfName;
 		}
 	}
-	
+
 	public static String createTemplateParametersCode(Optional<List<String>> templateParamOptionalList) {
 		String source = "";
 		if (templateParamOptionalList.isPresent()) {
 			List<String> templateParameters = templateParamOptionalList.get();
 			if (!templateParameters.isEmpty()) {
 				source = "<" + enumerateListElementsCode(templateParameters) + ">";
-			}			
+			}
 		}
-		
+
 		return source.toString();
 	}
-	
+
 	public static String createParametersCode(Optional<List<String>> optionalParams) {
 		String source = "";
 		if (optionalParams.isPresent()) {
 			List<String> params = optionalParams.get();
 			if (!params.isEmpty()) {
 				source = "(" + enumerateListElementsCode(params) + ")";
-			}			
+			}
 		}
-		
+
 		return source.toString();
 	}
-	
+
 	public static String enumerateListElementsCode(List<String> list) {
-		assert(list != null);
+		assert (list != null);
 		StringBuilder source = new StringBuilder("");
 		for (String elem : list) {
 			source.append(elem + ",");
 		}
 		return cutOffTheLastCharacter(source.toString());
 	}
-	
+
 	private static boolean isSignalFactoryClass(Class cls, List<Element> elements) {
 		List<Signal> signals = new ArrayList<Signal>();
 		getTypedElements(signals, UMLPackage.Literals.SIGNAL, elements);
@@ -373,7 +376,6 @@ public class CppExporterUtils {
 		return false;
 	}
 
-
 	public static String cutOffTheLastCharacter(String originalString) {
 		int originalLeght = originalString.length();
 		if (originalLeght == 0) {
@@ -381,21 +383,20 @@ public class CppExporterUtils {
 		}
 		return originalString.substring(0, originalLeght - 1);
 	}
-	
-	public static int executeCommand(String directory, List<String> strings, Map<String, String> environment, String fileNameToRedirect)
-			throws IOException, InterruptedException {
+
+	public static int executeCommand(String directory, List<String> strings, Map<String, String> environment,
+			String fileNameToRedirect) throws IOException, InterruptedException {
 		ProcessBuilder processBuilder = new ProcessBuilder(strings);
 		if (environment != null) {
 			processBuilder.environment().putAll(environment);
 		}
-					
+
 		processBuilder.inheritIO();
 		processBuilder.directory(new File(directory));
-		
-		if(fileNameToRedirect != null){
+
+		if (fileNameToRedirect != null) {
 			processBuilder = processBuilder.redirectOutput(new File(directory + "/" + fileNameToRedirect));
 		}
-
 		Process process = processBuilder.start();
 		return process.waitFor();
 	}
@@ -403,6 +404,10 @@ public class CppExporterUtils {
 	public static String oneReadReference(String varName) {
 		return ActivityTemplates.operationCall(varName, PointerAndMemoryNames.SimpleAccess, 
 				CollectionNames.SelectAnyFunctionName, Collections.emptyList());
+	}
+
+	public static boolean isWindowsOS() {
+		return OPERATING_SYSTEM.toUpperCase().startsWith("WIN");
 	}
 
 }

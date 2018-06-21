@@ -1,4 +1,5 @@
 /** @file AssociationUtils.hpp
+Contains classes to create an association structure and instances
 */
 
 #ifndef ASSOCIATION_UTILS_H
@@ -68,9 +69,7 @@ private:
 template<class FirstClassRole, class SecondClassRole>
 class AssocOwner {
 public:
-	using AssocType = Association<FirstClassRole, SecondClassRole>;
-
-	typename AssocOwner<FirstClassRole, SecondClassRole>::AssocType* association = nullptr;
+	Association<FirstClassRole, SecondClassRole>* association = nullptr;
 
 };
 
