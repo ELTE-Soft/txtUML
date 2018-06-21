@@ -254,7 +254,7 @@ fmi2Status fmi2FreeFMUstate (fmi2Component /*c*/, fmi2FMUstate* /*FMUstate*/) {
   return fmi2Error; // not supported
 }
 
-fmi2Status fmi2SerializedFMUstateSize(fmi2Component /*c*/, fmi2FMUstate /*FMUstate*/, size_t */*size*/) {
+fmi2Status fmi2SerializedFMUstateSize(fmi2Component /*c*/, fmi2FMUstate /*FMUstate*/, size_t* /*size*/) {
   return fmi2Error; // not supported
 }
 
