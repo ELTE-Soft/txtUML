@@ -39,37 +39,30 @@ class XtxtUMLExpressionParserTest {
 			}
 		'''
 		.parse.
-		file(
-			"test.model",
-			null, #[
-				[signal("TestSignal", null, #[])],
-				[class_(
-					"TestClass", null, #[
-						[operation(
-							PACKAGE, false, NON_EXTERNAL, "void", "testOperation", #[], #[
-								[sendSignal(
-									[constructorCall("TestSignal", null, #[])],
-									[this_]
-								)],
-								[sendSignal(
-									[constructorCall("TestSignal", null, #[])],
-									[constructorCall("TestClass", null, #[])]
-								)],
-								[variableDeclaration(
-									"TestSignal", null, "sig",
-									[constructorCall("TestSignal", null, #[])]
-								)],
-								[sendSignal(
-									[variable("sig")],
-									[propertyAccess([this_], "TestPort")]
-								)]
-							]
-						)],
-						[port(false, "TestPort", #[])]
-					]
-				)]
-			]
-		)
+		file("test.model", null, #[
+			[signal("TestSignal", null, #[])],
+			[class_("TestClass", null, #[
+				[operation(PACKAGE, false, NON_EXTERNAL, "void", "testOperation", #[], #[
+					[sendSignal(
+						[new_("TestSignal", null, #[], null)],
+						[this_]
+					)],
+					[sendSignal(
+						[new_("TestSignal", null, #[], null)],
+						[new_("TestClass", null, #[], null)]
+					)],
+					[variableDeclaration(
+						"TestSignal", null, "sig",
+						[new_("TestSignal", null, #[], null)]
+					)],
+					[sendSignal(
+						[variable("sig")],
+						[propertyAccess([this_], "TestPort")]
+					)]
+				])],
+				[port("TestPort", #[])]
+			])]
+		])
 	}
 
 	@Test
@@ -92,31 +85,56 @@ class XtxtUMLExpressionParserTest {
 			}
 		'''
 		.parse.
-		file(
-			"test.model",
-			null, #[
-				[signal(
-					"TestSignal", null, #[
-						[attribute(PUBLIC, "String", "message")]
-					]
-				)],
-				[class_(
-					"TestClass", null, #[
-						[state(PLAIN, "TestState", #[])],
-						[transition(
-							"TestTransition", #[
-								[vertex(true, "TestState")],
-								[vertex(false, "TestState")],
-								[trigger("TestSignal")],
-								[effect(#[
-									[log([featureCall([signalAccess], "message", null)])]
-								])]
-							]
-						)]
-					]
-				)]
-			]
-		)
+		file("test.model", null, #[
+			[signal("TestSignal", null, #[
+				[attribute(PUBLIC, "String", "message")]
+			])],
+			[class_("TestClass", null, #[
+				[state(PLAIN, "TestState", #[])],
+				[transition("TestTransition", #[
+					[from("TestState")],
+					[to("TestState")],
+					[trigger("TestSignal")],
+					[effect(#[
+						[log([featureCall([signalAccess], "message", null)])]
+					])]
+				])]
+			])]
+		])
+	}
+
+	@Test
+	def parseLogExpression() {
+		'''
+			package test.model;
+			class A {
+				void foo() {
+					String m = "message";
+					log m;
+					log "message";
+					log-error m;
+					log-error "message";
+				}
+			}
+		'''
+		.parse.
+		file(null, null, null)
+	}
+
+	@Test
+	def parseStartObjectExpression() {
+		'''
+			package test.model;
+			class A {
+				void foo() {
+					A a = new A();
+					start a;
+					start new A();
+				}
+			}
+		'''
+		.parse.
+		file(null, null, null)
 	}
 
 	@Test
@@ -132,25 +150,18 @@ class XtxtUMLExpressionParserTest {
 			}
 		'''
 		.parse.
-		file(
-			"test.model",
-			null, #[
-				[class_(
-					"A", null, #[
-						[operation(
-							PACKAGE, false, NON_EXTERNAL, "void", "foo", #[], #[
-								[variableDeclaration(
-									"A", null, "a",
-									[constructorCall("A", null, #[])]
-								)],
-								[delete[variable("a")]],
-								[delete[constructorCall("A", null, #[])]]
-							]
-						)]
-					]
-				)]
-			]
-		)
+		file("test.model", null, #[
+			[class_("A", null, #[
+				[operation(PACKAGE, false, NON_EXTERNAL, "void", "foo", #[], #[
+					[variableDeclaration(
+						"A", null, "a",
+						[new_("A", null, #[], null)]
+					)],
+					[delete[variable("a")]],
+					[delete[new_("A", null, #[], null)]]
+				])]
+			])]
+		])
 	}
 
 	@Test
@@ -170,25 +181,91 @@ class XtxtUMLExpressionParserTest {
 			}
 		'''
 		.parse.
-		file(
-			"test.model", #[
-				[importDeclaration(false, "hu.elte.txtuml.api.model.GeneralCollection", false)]
-			], #[
-				[class_(
-					"TestClass", null, #[
-						[operation(
-							PACKAGE, false, NON_EXTERNAL, "void", "testOperation", #[], #[
-								[variableDeclaration("int", null, "i", null)],
-								[variableDeclaration("String", null, "s", [string("test")])],
-								[variableDeclaration("GeneralCollection", "TestClass", "c", null)],
-								[variableDeclaration("TestClass", null, "t", [constructorCall("TestClass", null, #[])]
-								)]
-							]
-						)]
-					]
-				)]
-			]
-		)
+		file("test.model", #[
+			[importDeclaration(false, "hu.elte.txtuml.api.model.GeneralCollection", false)]
+		], #[
+			[class_("TestClass", null, #[
+				[operation(PACKAGE, false, NON_EXTERNAL, "void", "testOperation", #[], #[
+					[variableDeclaration("int", null, "i", null)],
+					[variableDeclaration("String", null, "s", [string("test")])],
+					[variableDeclaration("GeneralCollection", "TestClass", "c", null)],
+					[variableDeclaration("TestClass", null, "t", [new_("TestClass", null, #[], null)])]
+				])]
+			])]
+		])
+	}
+
+	@Test
+	def parseCreateObjectExpression() {
+		'''
+			package test.model;
+			class A {
+				A() {}
+				A(int i) {}
+				void f() {
+					new A();
+					new A(0);
+					create A();
+					create A(0);
+					new A() as "a";
+					new A(0) as "a";
+					create A() as "a";
+					create A(0) as "a";
+					A a;
+					a = new A();
+					a = new A(0);
+					a = create A();
+					a = create A(0);
+					a = new A() as "a";
+					a = new A(0) as "a";
+					a = create A() as "a";
+					a = create A(0) as "a";
+				}
+			}
+		'''
+		.parse.
+		file(null, null, null)
+	}
+
+	@Test
+	def parseBindExpression() {
+		'''
+			package test.model;
+			class A {
+				void f() {
+					B b = new B();
+
+					link this, b via AB;
+					link this as AB.a, b via AB;
+					link this, b as AB.b via AB;
+					link this as AB.a, b as AB.b via AB;
+
+					unlink this, b via AB;
+					unlink this as AB.a, b via AB;
+					unlink this, b as AB.b via AB;
+					unlink this as AB.a, b as AB.b via AB;
+
+					connect this->(P), b->(B.P) via CAB;
+					connect this->(P) as CAB.e, b->(B.P) via CAB;
+					connect this->(P), b->(B.P) as CAB.f via CAB;
+					connect this->(P) as CAB.e, b->(B.P) as CAB.f via CAB;
+				}
+				port P {}
+			}
+			class B {
+				port P {}
+			}
+			association AB {
+				A a;
+				B b;
+			}
+			connector CAB {
+				CA.a->A.P e;
+				CB.b->B.P f;
+			}
+		'''
+		.parse.
+		file(null, null, null)
 	}
 
 	@Test
@@ -214,44 +291,35 @@ class XtxtUMLExpressionParserTest {
 			}
 		'''
 		.parse.
-		file(
-			"test.model",
-			null, #[
-				[class_(
-					"A", null, #[
-						[operation(
-							PACKAGE, false, NON_EXTERNAL, "void", "foo", #[], #[
-								[sendSignal(
-									[constructorCall("S", null, #[])],
-									[propertyAccess([this_], "P")]
-								)],
-								[sendSignal(
-									[constructorCall("S", null, #[])],
-									[featureCall(
-										[propertyAccess([this_], "b")],
-										"one", #[]
-									)]
-								)],
-								[featureCall(
-									[propertyAccess(
-										[constructorCall("B", null, #[])], "a"
-									)], "one", #[]
-								)]
-							]
-						)],
-						[port(false, "P", #[])]
-					]
-				)],
-				[signal("S", null, #[])],
-				[class_("B", null, #[])],
-				[association(
-					false, "AB", #[
-						[associationEnd(PACKAGE, false, null, false, "A", "a")],
-						[associationEnd(PACKAGE, false, null, false, "B", "b")]
-					]
-				)]
-			]
-		)
+		file("test.model", null, #[
+			[class_("A", null, #[
+				[operation(PACKAGE, false, NON_EXTERNAL, "void", "foo", #[], #[
+					[sendSignal(
+						[new_("S", null, #[], null)],
+						[propertyAccess([this_], "P")]
+					)],
+					[sendSignal(
+						[new_("S", null, #[], null)],
+						[featureCall(
+							[propertyAccess([this_], "b")],
+							"one", #[]
+						)]
+					)],
+					[featureCall(
+						[propertyAccess(
+							[new_("B", null, #[], null)], "a"
+						)], "one", #[]
+					)]
+				])],
+				[port("P", #[])]
+			])],
+			[signal("S", null, #[])],
+			[class_("B", null, #[])],
+			[association("AB", #[
+				[associationEnd(PACKAGE, false, null, false, "A", "a")],
+				[associationEnd(PACKAGE, false, null, false, "B", "b")]
+			])]
+		])
 	}
 
 	@Test
@@ -268,25 +336,16 @@ class XtxtUMLExpressionParserTest {
 			}
 		'''
 		.parse.
-		file(
-			"test.model",
-			null, #[
-				[class_(
-					"A", null, #[
-						[operation(
-							PACKAGE, false, NON_EXTERNAL, "void", "foo", #[], #[
-								[variableDeclaration("int", null, "i", [number(0)])],
-								[whileLoop(
-									[binaryOperation(OPERATOR_LESS_THAN, [variable("i")], [number(10)])], #[
-										[postfixOperation(OPERATOR_PLUS_PLUS, [variable("i")])]
-									]
-								)]
-							]
-						)]
-					]
-				)]
-			]
-		)
+		file("test.model", null, #[
+			[class_("A", null, #[
+				[operation(PACKAGE, false, NON_EXTERNAL, "void", "foo", #[], #[
+					[variableDeclaration("int", null, "i", [number(0)])],
+					[whileLoop([binaryOperation(OPERATOR_LESS_THAN, [variable("i")], [number(10)])], #[
+						[postfixOperation(OPERATOR_PLUS_PLUS, [variable("i")])]
+					])]
+				])]
+			])]
+		])
 	}
 
 	@Test
@@ -303,25 +362,16 @@ class XtxtUMLExpressionParserTest {
 			}
 		'''
 		.parse.
-		file(
-			"test.model",
-			null, #[
-				[class_(
-					"A", null, #[
-						[operation(
-							PACKAGE, false, NON_EXTERNAL, "void", "foo", #[], #[
-								[variableDeclaration("int", null, "i", [number(0)])],
-								[doWhileLoop(
-									#[
-										[postfixOperation(OPERATOR_PLUS_PLUS, [variable("i")])]
-									], [binaryOperation(OPERATOR_LESS_THAN, [variable("i")], [number(10)])]
-								)]
-							]
-						)]
-					]
-				)]
-			]
-		)
+		file("test.model", null, #[
+			[class_("A", null, #[
+				[operation(PACKAGE, false, NON_EXTERNAL, "void", "foo", #[], #[
+					[variableDeclaration("int", null, "i", [number(0)])],
+					[doWhileLoop(#[
+						[postfixOperation(OPERATOR_PLUS_PLUS, [variable("i")])]
+					], [binaryOperation(OPERATOR_LESS_THAN, [variable("i")], [number(10)])])]
+				])]
+			])]
+		])
 	}
 
 	@Test
@@ -348,42 +398,26 @@ class XtxtUMLExpressionParserTest {
 			}
 		'''
 		.parse.
-		file(
-			"test.model",
-			null, #[
-				[class_(
-					"A", null, #[
-						[operation(
-							PACKAGE, false, NON_EXTERNAL, "void", "foo", #[], #[
-								[variableDeclaration("int", null, "i", null)],
-								[if_(
-									[bool(true)], #[
-										[postfixOperation(OPERATOR_PLUS_PLUS, [variable("i")])]
-									], null, null
-								)],
-								[if_(
-									[bool(false)], #[
-										[postfixOperation(OPERATOR_MINUS_MINUS, [variable("i")])]
-									], null, #[
-										[postfixOperation(OPERATOR_PLUS_PLUS, [variable("i")])]
-									]
-								)],
-								[if_(
-									[bool(false)], #[
-										[postfixOperation(OPERATOR_MINUS_MINUS, [variable("i")])]
-									],
-									[if_(
-										[bool(true)], #[
-											[postfixOperation(OPERATOR_PLUS_PLUS, [variable("i")])]
-										], null, null
-									)], null
-								)]
-							]
-						)]
-					]
-				)]
-			]
-		)
+		file("test.model", null, #[
+			[class_("A", null, #[
+				[operation(PACKAGE, false, NON_EXTERNAL, "void", "foo", #[], #[
+					[variableDeclaration("int", null, "i", null)],
+					[if_([bool(true)], #[
+							[postfixOperation(OPERATOR_PLUS_PLUS, [variable("i")])]
+					], null, null)],
+					[if_([bool(false)], #[
+						[postfixOperation(OPERATOR_MINUS_MINUS, [variable("i")])]
+					], null, #[
+						[postfixOperation(OPERATOR_PLUS_PLUS, [variable("i")])]
+					])],
+					[if_([bool(false)], #[
+						[postfixOperation(OPERATOR_MINUS_MINUS, [variable("i")])]
+					], [if_([bool(true)], #[
+						[postfixOperation(OPERATOR_PLUS_PLUS, [variable("i")])]
+					], null, null)], null)]
+				])]
+			])]
+		])
 	}
 
 	@Test
@@ -410,36 +444,25 @@ class XtxtUMLExpressionParserTest {
 			}
 		'''
 		.parse.
-		file(
-			"test.model",
-			null, #[
-				[class_(
-					"A", null, #[
-						[operation(
-							PACKAGE, false, NON_EXTERNAL, "void", "foo", #[], #[
-								[variableDeclaration("int", null, "i", null)],
-								[switch_(
-									[variable("i")], #[
-										[case_([number(0)], #[])]
-									], #[
-										[postfixOperation(OPERATOR_PLUS_PLUS, [variable("i")])]
-									]
-								)],
-								[switch_(
-									[variable("i")], #[
-										[case_([number(0)], #[])],
-										[case_([number(1)], null)],
-										[case_([number(2)], #[
-											[postfixOperation(OPERATOR_MINUS_MINUS, [variable("i")])]
-										])]
-									], null
-								)]
-							]
-						)]
-					]
-				)]
-			]
-		)
+		file("test.model", null, #[
+			[class_("A", null, #[
+				[operation(PACKAGE, false, NON_EXTERNAL, "void", "foo", #[], #[
+					[variableDeclaration("int", null, "i", null)],
+					[switch_([variable("i")], #[
+						[case_([number(0)], #[])]
+					], #[
+						[postfixOperation(OPERATOR_PLUS_PLUS, [variable("i")])]
+					])],
+					[switch_([variable("i")], #[
+						[case_([number(0)], #[])],
+						[case_([number(1)], null)],
+						[case_([number(2)], #[
+							[postfixOperation(OPERATOR_MINUS_MINUS, [variable("i")])]
+						])]
+					], null)]
+				])]
+			])]
+		])
 	}
 
 	@Test
@@ -462,35 +485,22 @@ class XtxtUMLExpressionParserTest {
 			}
 		'''
 		.parse.
-		file(
-			"test.model",
-			null, #[
-				[class_(
-					"A", null, #[
-						[operation(
-							PACKAGE, false, NON_EXTERNAL, "void", "foo", #[], #[
-								[forEachLoop(
-									[parameter("B", "b")], [propertyAccess([this_], "b")], #[
-										[featureCall([variable("b")], "bar", #[])]
-									]
-								)]
-							]
-						)]
-					]
-				)],
-				[class_(
-					"B", null, #[
-						[operation(PACKAGE, false, NON_EXTERNAL, "void", "bar", #[], #[])]
-					]
-				)],
-				[association(
-					false, "AB", #[
-						[associationEnd(PACKAGE, false, null, false, "A", "a")],
-						[associationEnd(PACKAGE, false, null, false, "B", "b")]
-					]
-				)]
-			]
-		)
+		file("test.model",null, #[
+			[class_("A", null, #[
+				[operation(PACKAGE, false, NON_EXTERNAL, "void", "foo", #[], #[
+					[forEachLoop([parameter("B", "b")], [propertyAccess([this_], "b")], #[
+						[featureCall([variable("b")], "bar", #[])]
+					])]
+				])]
+			])],
+			[class_("B", null, #[
+				[operation(PACKAGE, false, NON_EXTERNAL, "void", "bar", #[], #[])]
+			])],
+			[association("AB", #[
+				[associationEnd(PACKAGE, false, null, false, "A", "a")],
+				[associationEnd(PACKAGE, false, null, false, "B", "b")]
+			])]
+		])
 	}
 
 	@Test
@@ -510,39 +520,32 @@ class XtxtUMLExpressionParserTest {
 			}
 		'''
 		.parse.
-		file(
-			"test.model",
-			null, #[
-				[class_(
-					"A", null, #[
-						[operation(
-							PACKAGE, false, NON_EXTERNAL, "void", "foo", #[], #[
-								[forLoop(
-									[variableDeclaration("int", null, "i", [number(0)])],
-									[binaryOperation(OPERATOR_LESS_THAN, [variable("i")], [number(10)])],
-									[postfixOperation(OPERATOR_PLUS_PLUS, [variable("i")])], #[
-										[featureCall(null, "foo", #[])]
-									]
-								)],
-								[forLoop(
-									[variableDeclaration("int", null, "i", [number(0)])], null, null, #[]
-								)],
-								[forLoop(
-									null, null, null, #[]
-								)],
-								[variableDeclaration("int", null, "i", null)],
-								[forLoop(
-									[assignment("i", [number(2)])],
-									null,
-									[postfixOperation(OPERATOR_PLUS_PLUS, [variable("i")])],
-									#[]
-								)]
-							]
-						)]
-					]
-				)]
-			]
-		)
+		file("test.model", null, #[
+			[class_("A", null, #[
+				[operation(PACKAGE, false, NON_EXTERNAL, "void", "foo", #[], #[
+					[forLoop(
+						[variableDeclaration("int", null, "i", [number(0)])],
+						[binaryOperation(OPERATOR_LESS_THAN, [variable("i")], [number(10)])],
+						[postfixOperation(OPERATOR_PLUS_PLUS, [variable("i")])], #[
+							[featureCall(null, "foo", #[])]
+						]
+					)],
+					[forLoop(
+						[variableDeclaration("int", null, "i", [number(0)])], null, null, #[]
+					)],
+					[forLoop(
+						null, null, null, #[]
+					)],
+					[variableDeclaration("int", null, "i", null)],
+					[forLoop(
+						[assignment("i", [number(2)])],
+						null,
+						[postfixOperation(OPERATOR_PLUS_PLUS, [variable("i")])],
+						#[]
+					)]
+				])]
+			])]
+		])
 	}
 
 }

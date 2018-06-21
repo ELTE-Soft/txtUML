@@ -35,13 +35,10 @@ class XtxtUMLStructureParserTest {
 			import static java.lang.Math.*;
 		'''
 		.parse.
-		file(
-			"test.model", #[
-				[importDeclaration(false, "java.lang.Integer", false)],
-				[importDeclaration(true, "java.lang.Math", true)]
-			],
-			#[]
-		)
+		file("test.model", #[
+			[importDeclaration(false, "java.lang.Integer", false)],
+			[importDeclaration(true, "java.lang.Math", true)]
+		], #[])
 	}
 
 	@Test
@@ -65,12 +62,9 @@ class XtxtUMLStructureParserTest {
 			execution TestExecution {}
 		'''
 		.parse.
-		file(
-			"test.model",
-			null, #[
-				[execution("TestExecution", #[])]
-			]
-		)
+		file("test.model", null, #[
+			[execution("TestExecution", #[])]
+		])
 	}
 
 	@Test
@@ -87,23 +81,16 @@ class XtxtUMLStructureParserTest {
 			}
 		'''
 		.parse.
-		file(
-			"test.model",
-			null, #[
-				[signal("EmptyTestSignal", null, #[])],
-				[signal(
-					"NotEmptyTestSignal", null, #[
-						[attribute(PUBLIC, "int", "testAttribute")]
-					]
-				)],
-				[signal("EmptySubTestSignal", "NotEmptyTestSignal", #[])],
-				[signal(
-					"NotEmptySubTestSignal", "EmptyTestSignal", #[
-						[attribute(PUBLIC, "int", "testAttribute")]
-					]
-				)]
-			]
-		)
+		file("test.model", null, #[
+			[signal("EmptyTestSignal", null, #[])],
+			[signal("NotEmptyTestSignal", null, #[
+				[attribute(PUBLIC, "int", "testAttribute")]
+			])],
+			[signal("EmptySubTestSignal", "NotEmptyTestSignal", #[])],
+			[signal("NotEmptySubTestSignal", "EmptyTestSignal", #[
+				[attribute(PUBLIC, "int", "testAttribute")]
+			])]
+		])
 	}
 
 	@Test
@@ -114,13 +101,10 @@ class XtxtUMLStructureParserTest {
 			class DerivedTestClass extends BaseTestClass {}
 		'''
 		.parse.
-		file(
-			"test.model",
-			null, #[
-				[class_("BaseTestClass", null, #[])],
-				[class_("DerivedTestClass", "BaseTestClass", #[])]
-			]
-		)
+		file("test.model", null, #[
+			[class_("BaseTestClass", null, #[])],
+			[class_("DerivedTestClass", "BaseTestClass", #[])]
+		])
 	}
 
 	@Test
@@ -149,44 +133,33 @@ class XtxtUMLStructureParserTest {
 			}
 		'''
 		.parse.
-		file(
-			"test.model",
-			null, #[
-				[class_(
-					"TestClass", null, #[
-						[attribute(PACKAGE, false, NON_EXTERNAL, "int", "a1", null)],
-						[attribute(PROTECTED, false, NON_EXTERNAL, "int", "a2", null)],
-						[attribute(PUBLIC, true, EXTERNAL, "int", "a3", [number(0)])],
-						[attribute(PRIVATE, false, EXTERNAL, "String", "a4", null)],
-						[operation(PUBLIC, false, NON_EXTERNAL, "void", "o1", #[], #[])],
-						[operation(
-							PRIVATE, false, NON_EXTERNAL, "int", "o2", #[], #[
-								[return_[number(0)]]
-							]
-						)],
-						[operation(
-							PACKAGE, false, NON_EXTERNAL, "TestClass", "o3", #[
-								[parameter("int", "p")]
-							], #[
-								[return_[null_]]
-							]
-						)],
-						[operation(PUBLIC, true, NON_EXTERNAL, "void", "o4", #[], #[])],
-						[operation(PUBLIC, false, EXTERNAL, "void", "o5", #[], #[])],
-						[operation(PUBLIC, false, EXTERNAL_BODY, "void", "o6", #[], #[])],
-						[operation(PUBLIC, true, EXTERNAL, "void", "o7", #[], #[])],
-						[constructor(
-							PUBLIC, NON_EXTERNAL, "TestClass", #[
-								[parameter("int", "p1")],
-								[parameter("TestClass", "p2")]
-							], #[]
-						)],
-						[constructor(PACKAGE, EXTERNAL, "TestClass", #[], #[])],
-						[constructor(PACKAGE, EXTERNAL_BODY, "TestClass", #[[parameter("int", "p")]], #[])]
-					]
-				)]
-			]
-		)
+		file("test.model", null, #[
+			[class_("TestClass", null, #[
+				[attribute(PACKAGE, false, NON_EXTERNAL, "int", "a1", null)],
+				[attribute(PROTECTED, false, NON_EXTERNAL, "int", "a2", null)],
+				[attribute(PUBLIC, true, EXTERNAL, "int", "a3", [number(0)])],
+				[attribute(PRIVATE, false, EXTERNAL, "String", "a4", null)],
+				[operation(PUBLIC, false, NON_EXTERNAL, "void", "o1", #[], #[])],
+				[operation(PRIVATE, false, NON_EXTERNAL, "int", "o2", #[], #[
+					[return_[number(0)]]
+				])],
+				[operation(PACKAGE, false, NON_EXTERNAL, "TestClass", "o3", #[
+					[parameter("int", "p")]
+				], #[
+					[return_[null_]]
+				])],
+				[operation(PUBLIC, true, NON_EXTERNAL, "void", "o4", #[], #[])],
+				[operation(PUBLIC, false, EXTERNAL, "void", "o5", #[], #[])],
+				[operation(PUBLIC, false, EXTERNAL_BODY, "void", "o6", #[], #[])],
+				[operation(PUBLIC, true, EXTERNAL, "void", "o7", #[], #[])],
+				[constructor(PUBLIC, NON_EXTERNAL, "TestClass", #[
+					[parameter("int", "p1")],
+					[parameter("TestClass", "p2")]
+				], #[])],
+				[constructor(PACKAGE, EXTERNAL, "TestClass", #[], #[])],
+				[constructor(PACKAGE, EXTERNAL_BODY, "TestClass", #[[parameter("int", "p")]], #[])]
+			])]
+		])
 	}
 
 	@Test
@@ -196,15 +169,9 @@ class XtxtUMLStructureParserTest {
 			enum TestEnum;
 		'''
 		.parse.
-		file(
-			"test.model",
-			null, #[
-				[enumeration(
-					"TestEnum", #[
-					]
-				)]
-			]
-		)
+		file("test.model", null, #[
+			[enumeration("TestEnum", #[])]
+		])
 	}
 
 	@Test
@@ -218,12 +185,10 @@ class XtxtUMLStructureParserTest {
 		'''
 		.parse.
 		file("test.model", null, #[
-			[enumeration(
-				"TestEnum", #[
-					[enumerationLiteral("A")],
-					[enumerationLiteral("B")]
-				]
-			)]
+			[enumeration("TestEnum", #[
+				[enumerationLiteral("A")],
+				[enumerationLiteral("B")]
+			])]
 		])
 	}
 
@@ -272,55 +237,40 @@ class XtxtUMLStructureParserTest {
 			}
 		'''
 		.parse.
-		file(
-			"test.model",
-			null, #[
-				[signal("Sig", null, #[])],
-				[class_(
-					"TestClass", null, #[
-						[port(false, "Port", #[])],
-						[state(INITIAL, "Init", #[])],
-						[state(CHOICE, "Choice", #[])],
-						[transition(
-							"T1", #[
-								[vertex(true, "Init")],
-								[vertex(false, "Choice")],
-								[effect(#[])]
-							]
-						)],
-						[transition(
-							"T2", #[
-								[vertex(true, "Choice")],
-								[vertex(false, "Composite")],
-								[guard(null)]
-							]
-						)],
-						[state(
-							COMPOSITE, "Composite", #[
-								[entryOrExit(true, #[])],
-								[entryOrExit(false, #[])],
-								[state(INITIAL, "CInit", #[])],
-								[state(PLAIN, "State", #[])],
-								[transition(
-									"T3", #[
-										[vertex(true, "CInit")],
-										[vertex(false, "State")]
-									]
-								)],
-								[transition(
-									"T4", #[
-										[vertex(true, "State")],
-										[vertex(false, "State")],
-										[trigger("Sig")],
-										[port("Port")]
-									]
-								)]
-							]
-						)]
-					]
-				)]
-			]
-		)
+		file("test.model", null, #[
+			[signal("Sig", null, #[])],
+			[class_("TestClass", null, #[
+				[port("Port", #[])],
+				[state(INITIAL, "Init", #[])],
+				[state(CHOICE, "Choice", #[])],
+				[transition("T1", #[
+					[from("Init")],
+					[to("Choice")],
+					[effect(#[])]
+				])],
+				[transition("T2", #[
+					[from("Choice")],
+					[to("Composite")],
+					[guard(null)]
+				])],
+				[state(COMPOSITE, "Composite", #[
+					[entry(#[])],
+					[exit(#[])],
+					[state(INITIAL, "CInit", #[])],
+					[state(PLAIN, "State", #[])],
+					[transition("T3", #[
+						[from("CInit")],
+						[to("State")]
+					])],
+					[transition("T4", #[
+						[from("State")],
+						[to("State")],
+						[trigger("Sig")],
+						[port("Port")]
+					])]
+				])]
+			])]
+		])
 	}
 
 	@Test
@@ -337,23 +287,16 @@ class XtxtUMLStructureParserTest {
 			}
 		'''
 		.parse.
-		file(
-			"test.model",
-			null, #[
-				[interface_("TestInterface", #[])],
-				[class_(
-					"TestClass", null, #[
-						[port(false, "EmptyPort", #[])],
-						[port(
-							true, "BehaviorPort", #[
-								[portMember(true, "TestInterface")],
-								[portMember(false, "TestInterface")]
-							]
-						)]
-					]
-				)]
-			]
-		)
+		file("test.model", null, #[
+			[interface_("TestInterface", #[])],
+			[class_("TestClass", null, #[
+				[port("EmptyPort", #[])],
+				[behaviorPort("BehaviorPort", #[
+					[required("TestInterface")],
+					[provided("TestInterface")]
+				])]
+			])]
+		])
 	}
 
 	@Test
@@ -371,24 +314,17 @@ class XtxtUMLStructureParserTest {
 			}
 		'''
 		.parse.
-		file(
-			"test.model",
-			null, #[
-				[class_("TestClass", null, #[])],
-				[association(
-					false, "TestAssociation1", #[
-						[associationEnd(PACKAGE, false, null, false, "TestClass", "plainEnd")],
-						[associationEnd(PACKAGE, true, [any], false, "TestClass", "hiddenEnd")]
-					]
-				)],
-				[association(
-					false, "TestAssociation2", #[
-						[associationEnd(PACKAGE, true, [interval(1, null)], false, "TestClass", "intervalEnd")],
-						[associationEnd(PACKAGE, false, [exact(5)], false, "TestClass", "exactEnd")]
-					]
-				)]
-			]
-		)
+		file("test.model", null, #[
+			[class_("TestClass", null, #[])],
+			[association("TestAssociation1", #[
+				[associationEnd(PACKAGE, false, null, false, "TestClass", "plainEnd")],
+				[associationEnd(PACKAGE, true, [any], false, "TestClass", "hiddenEnd")]
+			])],
+			[association("TestAssociation2", #[
+				[associationEnd(PACKAGE, true, [interval(1, null)], false, "TestClass", "intervalEnd")],
+				[associationEnd(PACKAGE, false, [exact(5)], false, "TestClass", "exactEnd")]
+			])]
+		])
 	}
 
 	@Test
@@ -402,18 +338,13 @@ class XtxtUMLStructureParserTest {
 			}
 		'''
 		.parse.
-		file(
-			"test.model",
-			null, #[
-				[class_("TestClass", null,  #[])],
-				[association(
-					true, "TestComposition", #[
-						[associationEnd(PACKAGE, true, null, true, "TestClass", "containerEnd")],
-						[associationEnd(PACKAGE, false, null, false, "TestClass", "otherEnd")]
-					]
-				)]
-			]
-		)
+		file("test.model", null, #[
+			[class_("TestClass", null,  #[])],
+			[composition("TestComposition", #[
+				[associationEnd(PACKAGE, true, null, true, "TestClass", "containerEnd")],
+				[associationEnd(PACKAGE, false, null, false, "TestClass", "otherEnd")]
+			])]
+		])
 	}
 
 	@Test
@@ -427,18 +358,13 @@ class XtxtUMLStructureParserTest {
 			}
 		'''
 		.parse.
-		file(
-			"test.model",
-			null, #[
-				[signal("TestSignal", null, #[])],
-				[interface_("EmptyTestInterface", #[])],
-				[interface_(
-					"NotEmptyTestInterface", #[
-						[reception("TestSignal")]
-					]
-				)]
-			]
-		)
+		file("test.model", null, #[
+			[signal("TestSignal", null, #[])],
+			[interface_("EmptyTestInterface", #[])],
+			[interface_("NotEmptyTestInterface", #[
+				[reception("TestSignal")]
+			])]
+		])
 	}
 
 	@Test
@@ -495,72 +421,47 @@ class XtxtUMLStructureParserTest {
 			}
 		'''
 		.parse.
-		file(
-			"test.model",
-			null, #[
-				[interface_("I1", #[])],
-				[interface_("I2", #[])],
-				[interface_("I3", #[])],
-				[class_(
-					"A", null, #[
-						[port(
-							false, "AP1", #[
-								[portMember(false, "I1")],
-								[portMember(true, "I2")]
-							]
-						)],
-						[port(
-							false, "AP2", #[
-								[portMember(false, "I3")]
-							]
-						)]
-					]
-				)],
-				[class_(
-					"B", null, #[
-						[port(
-							false, "BP", #[
-								[portMember(false, "I2")],
-								[portMember(true, "I1")]
-							]
-						)]
-					]
-				)],
-				[class_(
-					"C", null, #[
-						[port(
-							false, "CP", #[
-								[portMember(false, "I3")]
-							]
-						)]
-					]
-				)],
-				[association(
-					true, "CA", #[
-						[associationEnd(PACKAGE, false, null, true, "C", "c")],
-						[associationEnd(PACKAGE, false, null, false, "A", "a")]
-					]
-				)],
-				[association(
-					true, "CB", #[
-						[associationEnd(PACKAGE, false, null, true, "C", "c")],
-						[associationEnd(PACKAGE, false, null, false, "B", "b")]
-					]
-				)],
-				[connector(
-					false, "A_AB", #[
-						[connectorEnd("a", "AP1", "aap")],
-						[connectorEnd("b", "BP", "abp")]
-					]
-				)],
-				[connector(
-					true, "D_CA", #[
-						[connectorEnd("c", "CP", "dcp")],
-						[connectorEnd("a", "AP2", "dap")]
-					]
-				)]
-			]
-		)
+		file("test.model", null, #[
+			[interface_("I1", #[])],
+			[interface_("I2", #[])],
+			[interface_("I3", #[])],
+			[class_("A", null, #[
+				[port("AP1", #[
+					[provided("I1")],
+					[required("I2")]
+				])],
+				[port("AP2", #[
+					[provided("I3")]
+				])]
+			])],
+			[class_("B", null, #[
+				[port("BP", #[
+					[provided("I2")],
+					[required("I1")]
+				])]
+			])],
+			[class_("C", null, #[
+				[port("CP", #[
+					[provided("I3")]
+				])]
+			])],
+			[composition("CA", #[
+				[associationEnd(PACKAGE, false, null, true, "C", "c")],
+				[associationEnd(PACKAGE, false, null, false, "A", "a")]
+			])],
+			[composition("CB", #[
+				[associationEnd(PACKAGE, false, null, true, "C", "c")],
+				[associationEnd(PACKAGE, false, null, false, "B", "b")]
+			])],
+			[connector("A_AB", #[
+				[connectorEnd("a", "AP1", "aap")],
+				[connectorEnd("b", "BP", "abp")]
+			])],
+			[delegation("D_CA", #[
+				[connectorEnd("c", "CP", "dcp")],
+				[connectorEnd("a", "AP2", "dap")]
+			])]
+		])
 	}
 
 }
