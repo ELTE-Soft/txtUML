@@ -1,0 +1,14 @@
+package microwave.model;
+
+signal Interrupt;
+signal Reset;
+
+/**
+ * See and use either of its subclass:
+ * {@link SimpleClock} or {@link SmartClock}.
+ */
+class Clock {
+
+	protected Clock() {}
+
+}

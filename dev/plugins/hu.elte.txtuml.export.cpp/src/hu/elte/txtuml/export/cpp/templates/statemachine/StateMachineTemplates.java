@@ -12,6 +12,7 @@ import org.eclipse.uml2.uml.Transition;
 import com.google.common.collect.Multimap;
 
 import hu.elte.txtuml.export.cpp.CppExporterUtils;
+import hu.elte.txtuml.export.cpp.CppExporterUtils.TypeDescriptor;
 import hu.elte.txtuml.export.cpp.statemachine.TransitionConditions;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.EntryExitNames;
@@ -28,7 +29,7 @@ import hu.elte.txtuml.utils.Pair;
 
 public class StateMachineTemplates {
 
-	public static final String InitStateMachineProcedureName = GenerationNames.InitStateMachine;
+	public static final String InitStateMachineProcedureName = GenerationNames.InitializerFixFunctionNames.InitStateMachine;
 	public static final String StateMachineBaseHeader = GenerationNames.StatemachineBaseHeaderName + "."
 			+ FileNames.HeaderExtension;
 	public static final String InitTransitionTable = "initTransitionTable";
@@ -41,19 +42,19 @@ public class StateMachineTemplates {
 	}
 
 	public static String transitionActionDecl(String transitionActionName) {
-		List<String> params = new LinkedList<String>();
-		params.add(EventTemplates.EventPointerType);
+		List<TypeDescriptor> params = new LinkedList<>();
+		params.add(new TypeDescriptor(EventTemplates.EventPointerType));
 
 		return FunctionTemplates.functionDecl(transitionActionName, params);
 	}
 
 	public static String transitionActionDef(String className, String transitionFunctionName,
 			String transitionActionName, String body, boolean singalAcces) {
-		List<Pair<String, String>> params = new LinkedList<Pair<String, String>>();
+		List<Pair<TypeDescriptor, String>> params = new LinkedList<>();
 		if (singalAcces) {
-			params.add(new Pair<String, String>(EventTemplates.EventPointerType, EventTemplates.EventParamName));
+			params.add(new Pair<TypeDescriptor, String>(new TypeDescriptor(EventTemplates.EventPointerType), EventTemplates.EventParamName));
 		} else {
-			params.add(new Pair<String, String>(EventTemplates.EventPointerType, ""));
+			params.add(new Pair<TypeDescriptor, String>(new TypeDescriptor(EventTemplates.EventPointerType), ""));
 
 		}
 
@@ -104,7 +105,7 @@ public class StateMachineTemplates {
 		for (State item : states) {
 			statesDecl.append(GenerationNames.stateEnumName(item.getName()) + ",");
 		}
-		String cuttedStateList = CppExporterUtils.cutOffTheLastCharcter(statesDecl.toString());
+		String cuttedStateList = CppExporterUtils.cutOffTheLastCharacter(statesDecl.toString());
 		if(!cuttedStateList.isEmpty()) {
 			finalStateList = "{" + cuttedStateList + "}";
 		}
@@ -235,13 +236,13 @@ public class StateMachineTemplates {
 	}
 	public static String stateMachineInitializationDefinition(String className, Integer poolId, Optional<Map<String, String>> optionalSubMachines) {
 		if(!optionalSubMachines.isPresent()) {
-			return FunctionTemplates.functionDef(className, GenerationNames.InitStateMachine, stateMachineInitializationSharedBody(true, poolId));
+			return FunctionTemplates.functionDef(className, GenerationNames.InitializerFixFunctionNames.InitStateMachine, stateMachineInitializationSharedBody(true, poolId));
 		} else {
 			Map<String, String> subMachines = optionalSubMachines.get();
 			StringBuilder body = new StringBuilder("");
 			body.append(HierarchicalStateMachineNames.CurrentMachineName + " = " + PointerAndMemoryNames.NullPtr + ";\n");
 			body.append(hierarchicalStateMachineClassConstructorSharedBody(subMachines, true, poolId));
-			return FunctionTemplates.functionDef(className, GenerationNames.InitStateMachine, body.toString());
+			return FunctionTemplates.functionDef(className, GenerationNames.InitializerFixFunctionNames.InitStateMachine, body.toString());
 		}
 	}
 	

@@ -5,7 +5,7 @@ import com.google.common.collect.ImmutableList;
 import hu.elte.txtuml.api.model.GeneralCollection.NonUnique;
 import hu.elte.txtuml.api.model.GeneralCollection.Ordered;
 import hu.elte.txtuml.api.model.error.CollectionCopyError;
-import hu.elte.txtuml.api.model.utils.Collections;
+import hu.elte.txtuml.api.model.external.Collections;
 
 /**
  * A base class for ordered, non-unique JtxtUML API collections in the model.

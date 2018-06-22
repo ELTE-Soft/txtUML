@@ -2,8 +2,8 @@ package hu.elte.txtuml.api.stdlib.timers;
 
 import hu.elte.txtuml.api.model.Model;
 import hu.elte.txtuml.api.model.ModelClass;
-import hu.elte.txtuml.api.model.Runtime;
 import hu.elte.txtuml.api.model.Signal;
+import hu.elte.txtuml.api.model.^external.BaseModelScheduler;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -79,9 +79,8 @@ class Timer {
 	 *             if <code>millisecs</code> is <code>null</code>
 	 */
 	public external-body void reset(int millisecs) {
-		ScheduledFuture<Void> newFuture = schedule(millisecs);
 		cancel();
-		this.future = newFuture;
+		this.future = schedule(millisecs);
 	}
 
 	/**
@@ -106,13 +105,11 @@ class Timer {
 	 *         performed; <code>false</code> otherwise
 	 */
 	public external-body boolean cancel() {
-		boolean isDone = future.isDone();
-		future.cancel(false);
-		return isDone;
+		return !future.cancel(false);
 	}
 
 	private external ScheduledFuture<Void> schedule(int millisecs) {
-		return Runtime.currentRuntime().schedule(action, millisecs, TimeUnit.MILLISECONDS);
+		return BaseModelScheduler.current().schedule(action, millisecs, TimeUnit.MILLISECONDS);
 	}
 
 }

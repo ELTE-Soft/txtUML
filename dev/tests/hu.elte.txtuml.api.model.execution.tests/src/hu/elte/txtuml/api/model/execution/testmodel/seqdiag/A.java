@@ -5,7 +5,9 @@ import hu.elte.txtuml.api.model.From;
 import hu.elte.txtuml.api.model.ModelClass;
 import hu.elte.txtuml.api.model.To;
 import hu.elte.txtuml.api.model.Trigger;
+import hu.elte.txtuml.api.model.impl.SequenceDiagramRelated;
 
+@SequenceDiagramRelated
 public class A extends ModelClass {
 
 	public class Init extends Initial {

@@ -1,71 +1,55 @@
 package hu.elte.txtuml.export.cpp.structural;
 
-import java.io.FileNotFoundException;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Predicate;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.eclipse.uml2.uml.AttributeOwner;
 import org.eclipse.uml2.uml.Operation;
 import org.eclipse.uml2.uml.OperationOwner;
 import org.eclipse.uml2.uml.Parameter;
 import org.eclipse.uml2.uml.Property;
+import org.eclipse.uml2.uml.UMLPackage;
 import org.eclipse.uml2.uml.VisibilityKind;
 
 import hu.elte.txtuml.export.cpp.ActivityExportResult;
 import hu.elte.txtuml.export.cpp.CppExporterUtils;
+import hu.elte.txtuml.export.cpp.CppExporterUtils.TypeDescriptor;
+import hu.elte.txtuml.export.cpp.ICppCompilationUnit;
+import hu.elte.txtuml.export.cpp.IDependencyCollector;
 import hu.elte.txtuml.export.cpp.activity.ActivityExporter;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames;
+import hu.elte.txtuml.export.cpp.templates.GenerationTemplates.VariableType;
 import hu.elte.txtuml.export.cpp.templates.structual.FunctionTemplates;
-import hu.elte.txtuml.export.cpp.templates.structual.VariableTemplates;
+import hu.elte.txtuml.export.cpp.templates.structual.ObjectDeclDefTemplates;
 
-public abstract class StructuredElementExporter<StructuredElement extends OperationOwner & AttributeOwner> {
+public abstract class StructuredElementExporter<StructuredElement extends OperationOwner & AttributeOwner> implements ICppCompilationUnit, IDependencyCollector {
 
 	private static final String UKNOWN_TYPE = "!!UNKNOWNTYPE!!";
 
 	protected StructuredElement structuredElement;
 	protected String name;
+	private String dest;
 
 	protected ActivityExporter activityExporter;
 	protected DependencyExporter dependencyExporter;
-	private Predicate<Operation> pred;
 	private Boolean testing;
-
-	public void setName(String name) {
+	
+	public StructuredElementExporter(StructuredElement structuredElement, String name, String dest) {
+		this.structuredElement = structuredElement;
 		this.name = name;
+		this.dest = dest;
+		
 	}
 	
 	public void setTesting(Boolean testing) {
 		this.testing = testing;
 	}
 
-	abstract public void exportStructuredElement(StructuredElement structuredElement, String sourceDestination)
-			throws FileNotFoundException, UnsupportedEncodingException;
-
-	public void init() {
+	protected void init() {
 		dependencyExporter = new DependencyExporter();
-		activityExporter = new ActivityExporter();
-	}
-
-	public boolean hasProperOperation() {
-		return structuredElement.getOwnedOperations().stream().anyMatch(pred);
-	}
-
-	public boolean hasProperOperation(StructuredElement structuredElement) {
-		return structuredElement.getOwnedOperations().stream().anyMatch(pred);
-	}
-
-	protected StructuredElementExporter() {
-		pred = o -> true;
-	}
-
-	protected StructuredElementExporter(Predicate<Operation> pred) {
-		this.pred = pred;
-	}
-
-	protected void setStructuredElement(StructuredElement structuredElement) {
-		this.structuredElement = structuredElement;
+		activityExporter = new ActivityExporter(Optional.of(this), false);
 	}
 
 	protected String createPublicAttributes() {
@@ -96,10 +80,9 @@ public abstract class StructuredElementExporter<StructuredElement extends Operat
 		StringBuilder source = new StringBuilder("");
 		for (Operation operation : structuredElement.getOwnedOperations()) {
 			if (!CppExporterUtils.isConstructor(operation)) {
-				String returnType = getReturnType(operation.getReturnResult());
+				TypeDescriptor returnType = getReturnType(operation.getReturnResult());
 				if (!operation.isAbstract()) {
 					ActivityExportResult activityResult = activityExporter.createFunctionBody(CppExporterUtils.getOperationActivity(operation));				
-					dependencyExporter.addDependencies(activityExporter.getAdditionalClassDependencies());
 					source.append(FunctionTemplates.functionDef(name, returnType, operation.getName(),
 							CppExporterUtils.getOperationParams(operation), activityResult.getActivitySource()));
 					
@@ -116,20 +99,20 @@ public abstract class StructuredElementExporter<StructuredElement extends Operat
 		return source.toString();
 	}
 
-	protected String getReturnType(Parameter returnResult) {
-		String returnType = null;
+	protected TypeDescriptor getReturnType(Parameter returnResult) {
+		TypeDescriptor returnType = TypeDescriptor.NoReturn;
 		if (returnResult != null) {
-			returnType = returnResult.getType().getName();
+			returnType = new TypeDescriptor(returnResult.getType().getName(),returnResult.getLower(), returnResult.getUpper());
 		}
 		return returnType;
 	}
 
-	protected List<String> getOperationParamTypes(Operation operation) {
-		List<String> ret = new ArrayList<String>();
+	protected List<TypeDescriptor> getOperationParamTypes(Operation operation) {
+		List<TypeDescriptor> ret = new ArrayList<>();
 		for (Parameter param : operation.getOwnedParameters()) {
 			if (param != operation.getReturnResult()) {
 				if (param.getType() != null) {
-					ret.add(param.getType().getName());
+					ret.add(new TypeDescriptor(param.getType().getName(), param.getLower(), param.getUpper()));
 				}
 			}
 		}
@@ -137,7 +120,7 @@ public abstract class StructuredElementExporter<StructuredElement extends Operat
 	}
 
 	protected String operationDecl(Operation op) {
-		String returnType = getReturnType(op.getReturnResult());
+		TypeDescriptor returnType = getReturnType(op.getReturnResult());
 		if (op.isAbstract()) {
 			return FunctionTemplates.functionDecl(returnType, op.getName(), getOperationParamTypes(op),
 					GenerationNames.ModifierNames.AbstractModifier, false);
@@ -150,6 +133,9 @@ public abstract class StructuredElementExporter<StructuredElement extends Operat
 	private String createAttributes(VisibilityKind modifyer) {
 		StringBuilder source = new StringBuilder("");
 		for (Property attribute : structuredElement.getOwnedAttributes()) {
+			if(attribute.getType().eClass().equals(UMLPackage.Literals.INTERFACE)) {
+				continue;
+			}
 			if (attribute.getVisibility().equals(modifyer)) {
 				String type = UKNOWN_TYPE;
 				if (attribute.getType() != null) {
@@ -157,8 +143,8 @@ public abstract class StructuredElementExporter<StructuredElement extends Operat
 				}
 
 				if (isSimpleAttribute(attribute)) {
-
-					source.append(VariableTemplates.propertyDecl(type, attribute.getName(), attribute.getDefault()));
+					source.append(ObjectDeclDefTemplates.propertyDecl(type, attribute.getName(), attribute.getDefault(), 
+							VariableType.getUMLMultpliedElementType(attribute.getLower(), attribute.getUpper())));
 				} else {
 					dependencyExporter.addDependency(type);
 				}
@@ -170,15 +156,16 @@ public abstract class StructuredElementExporter<StructuredElement extends Operat
 	private String createOperationDeclarations(VisibilityKind modifier) {
 		StringBuilder source = new StringBuilder("");
 		for (Operation operation : structuredElement.getOwnedOperations()) {
-			if (operation.getVisibility().equals(modifier) && pred.test(operation)) {
-				String returnType = getReturnType(operation.getReturnResult());
+			if (operation.getVisibility().equals(modifier)) {
+				TypeDescriptor returnType = getReturnType(operation.getReturnResult());
 				if (!CppExporterUtils.isConstructor(operation)) {
 					source.append(operationDecl(operation));
 				}
 				if (returnType != null) {
-					dependencyExporter.addDependency(returnType);
+					dependencyExporter.addDependency(returnType.getTypeName());
 				}
-				dependencyExporter.addDependencies(getOperationParamTypes(operation));
+				dependencyExporter.addDependencies(getOperationParamTypes(operation)
+						.stream().map(t -> t.getTypeName()).collect(Collectors.toList()));
 			}
 		}
 
@@ -187,6 +174,34 @@ public abstract class StructuredElementExporter<StructuredElement extends Operat
 
 	private boolean isSimpleAttribute(Property property) {
 		return property.getAssociation() == null;
+	}
+	
+	
+	// Dependecy owner part
+	@Override
+	public void addDependency(String dependency) {
+		dependencyExporter.addDependency(dependency);
+	}
+	
+	@Override
+	public void addCppOnlyDependency(String dependency) {
+		dependencyExporter.addCppOnlyDependency(dependency);
+	}
+	
+	@Override
+	public void addHeaderOnlyIncludeDependency(String type) {
+		dependencyExporter.addHeaderOnlyIncludeDependency(type);
+		
+	}
+	
+	@Override
+	public String getUnitName() {
+		return name;
+	}
+	
+	@Override
+	public String getDestination() {
+		return dest;
 	}
 
 }

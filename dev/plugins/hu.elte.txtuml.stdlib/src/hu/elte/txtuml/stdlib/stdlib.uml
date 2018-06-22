@@ -666,4 +666,5 @@
       </ownedParameter>
     </ownedOperation>
   </packagedElement>
+  <packagedElement xmi:type="uml:Interface" xmi:id="_Gr2AoPR0Eee6MZEwLRZg9w" name="hu.elte.txtuml.api.model.Interface.Empty"/>
 </uml:Model>

@@ -3,6 +3,7 @@ package hu.elte.txtuml.export.cpp.wizardz;
 import java.io.File;
 import java.net.URLClassLoader;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -30,8 +31,8 @@ class TxtUMLToCppGovernor {
 	}
 
 	void uml2ToCpp(String txtUMLProject, String txtUMLModel, String deploymentDescription,
-			String deploymentDescriptionProjectName, boolean addRuntimeOption, boolean overWriteMainFileOption)
-			throws Exception {
+			String deploymentDescriptionProjectName, boolean addRuntimeOption, boolean overWriteMainFileOption,
+			List<String> buildEnvironments) throws Exception {
 
 		String projectFolder = ResourcesPlugin.getWorkspace().getRoot().getProject(txtUMLProject).getLocation().toFile()
 				.getAbsolutePath();
@@ -80,12 +81,13 @@ class TxtUMLToCppGovernor {
 			}
 		}
 
-
 		Uml2ToCppExporter cppExporter = new Uml2ToCppExporter(model.allOwnedElements(), exporter.getExportedConfiguration(),
 				addRuntimeOption, overWriteMainFileOption, testing);
+
 		try {
 			cppExporter.buildCppCode(
 					projectFolder + File.separator + GeneratedCPPFolderName + File.separator + txtUMLModel);
+
 		} catch (Exception e) {
 			if (!testing) {
 				Dialogs.errorMsgb("C++ export error!", e.getClass() + ":" + System.lineSeparator() + e.getMessage(), e);

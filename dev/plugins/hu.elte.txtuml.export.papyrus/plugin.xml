@@ -23,14 +23,14 @@
             name="PreferencePageCommand">
       </command>
       <command
-            defaultHandler="hu.elte.txtuml.export.papyrus.handlers.TxtUMLVisualizeHandler"
-            id="hu.elte.txtuml.export.papyrus.txtUMLVisualize"
-            name="txtUMLVisualize">
+            defaultHandler="hu.elte.txtuml.export.papyrus.handlers.PapyrusVisualizeHandler"
+            id="hu.elte.txtuml.export.papyrus.PapyrusVisualize"
+            name="PapyrusVisualize">
       </command>
 	  <command
-            defaultHandler="hu.elte.txtuml.export.papyrus.handlers.TxtUMLVisualizeSelectedDiagramsHandler"
-            id="hu.elte.txtuml.export.papyrus.txtUMLVisualizeSelectedDiagram"
-            name="txtUMLVisualizeSelectedDiagram">
+            defaultHandler="hu.elte.txtuml.export.papyrus.handlers.PapyrusVisualizeSelectedDiagramsHandler"
+            id="hu.elte.txtuml.export.papyrus.PapyrusVisualizeSelectedDiagram"
+            name="PapyrusVisualizeSelectedDiagram">
       </command>
    </extension>
    <extension point="org.eclipse.core.expressions.propertyTesters">
@@ -81,7 +81,7 @@
                id="hu.elte.txtuml.export.menu"
                label="txtUML">
             <command
-                  commandId="hu.elte.txtuml.export.papyrus.txtUMLVisualize"
+                  commandId="hu.elte.txtuml.export.papyrus.PapyrusVisualize"
                   icon="icons/txtUML_papyrus.png"
                   label="Generate Papyrus diagrams from txtUML"
                   style="push">
@@ -109,7 +109,7 @@
       <menuContribution 
           locationURI="popup:org.eclipse.ui.navigator.ProjectExplorer#PopupMenu?before=additions">
           <command
-              commandId="hu.elte.txtuml.export.papyrus.txtUMLVisualizeSelectedDiagram"
+              commandId="hu.elte.txtuml.export.papyrus.PapyrusVisualizeSelectedDiagram"
               icon="icons/txtUML_papyrus.png"
               label="Visualize as Papyrus diagram"
               style="push">
@@ -128,7 +128,7 @@
       <menuContribution 
           locationURI="popup:org.eclipse.jdt.ui.PackageExplorer?before=additions">
           <command
-              commandId="hu.elte.txtuml.export.papyrus.txtUMLVisualizeSelectedDiagram"
+              commandId="hu.elte.txtuml.export.papyrus.PapyrusVisualizeSelectedDiagram"
               icon="icons/txtUML_papyrus.png"
               label="Visualize as Papyrus diagram"
               style="push">
@@ -151,12 +151,6 @@
             id="hu.elte.txtuml.export.papyrus.preferences1"
             name="txtUML Diagram Generation">
       </page>
-   </extension>
-   <extension
-         point="org.eclipse.core.runtime.preferences">
-      <initializer
-            class="hu.elte.txtuml.export.papyrus.preferences.PreferencesInitializer">
-      </initializer>
    </extension>
    <extension point="org.eclipse.ui.startup">
       <startup class="hu.elte.txtuml.export.papyrus.handlers.Startup"/>

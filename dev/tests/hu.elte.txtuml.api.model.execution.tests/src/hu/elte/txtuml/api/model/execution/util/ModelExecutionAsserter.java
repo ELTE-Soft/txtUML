@@ -6,6 +6,7 @@ import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Consumer;
 
 import org.junit.Assert;
 
@@ -14,18 +15,27 @@ import hu.elte.txtuml.api.model.execution.ModelExecutor;
 import hu.elte.txtuml.api.model.execution.TraceListener;
 import hu.elte.txtuml.api.model.execution.WarningListener;
 
-public final class ModelExecutionAsserter {
+public class ModelExecutionAsserter {
+
+	private static final Consumer<ErrorListener> EMPTY_ERROR_CONSUMER = x -> {
+	};
+
+	private static final Consumer<ErrorListener> EMPTY_WARNING_CONSUMER = x -> {
+	};
 
 	private final List<ListenerInvocation> events = new ArrayList<>();
 	private final List<ListenerInvocation> errors = new ArrayList<>();
 	private final List<ListenerInvocation> warnings = new ArrayList<>();
 
-	public ModelExecutionAsserter(ModelExecutor executor) {
+	public void configureFor(ModelExecutor executor) {
+		events.clear();
+		errors.clear();
+		warnings.clear();
 		executor.addTraceListener(createListener(TraceListener.class, events));
 		executor.addErrorListener(createListener(ErrorListener.class, errors));
 		executor.addWarningListener(createListener(WarningListener.class, warnings));
 	}
-
+	
 	@SuppressWarnings("unchecked")
 	private static <L> L createListener(Class<L> listenerClass, List<ListenerInvocation> list) {
 		InvocationHandler handler = (proxy, method, params) -> {
@@ -35,49 +45,52 @@ public final class ModelExecutionAsserter {
 		return (L) Proxy.newProxyInstance(listenerClass.getClassLoader(), new Class[] { listenerClass }, handler);
 	}
 
-	public void assertEvents(ExpectedsGenerator<TraceListener> generator) {
+	public void assertEvents(Consumer<TraceListener> generator) {
 		privateAssert(TraceListener.class, generator, events);
 	}
 
-	public void assertErrors(ExpectedsGenerator<ErrorListener> generator) {
+	public void assertErrors(Consumer<ErrorListener> generator) {
 		privateAssert(ErrorListener.class, generator, errors);
 	}
 
-	public void assertWarnings(ExpectedsGenerator<WarningListener> generator) {
+	public void assertWarnings(Consumer<WarningListener> generator) {
 		privateAssert(WarningListener.class, generator, warnings);
 	}
 
-	private static <L> void privateAssert(Class<L> listenerClass, ExpectedsGenerator<L> generator,
+	public void assertNoErrors() {
+		privateAssert(ErrorListener.class, EMPTY_ERROR_CONSUMER, errors);
+	}
+
+	public void assertNoWarnings() {
+		privateAssert(ErrorListener.class, EMPTY_WARNING_CONSUMER, warnings);
+	}
+
+	private static <L> void privateAssert(Class<L> listenerClass, Consumer<L> generator,
 			List<ListenerInvocation> actuals) {
 		List<ListenerInvocation> expecteds = new ArrayList<>();
-		generator.generate(createListener(listenerClass, expecteds));
+		generator.accept(createListener(listenerClass, expecteds));
 
 		Assert.assertArrayEquals(expecteds.toArray(), actuals.toArray());
 	}
 
-	public boolean checkEvents(ExpectedsGenerator<TraceListener> generator) {
+	public boolean hasEvents(Consumer<TraceListener> generator) {
 		return privateCheck(TraceListener.class, generator, events);
 	}
 
-	public boolean checkErrors(ExpectedsGenerator<ErrorListener> generator) {
+	public boolean hasErrors(Consumer<ErrorListener> generator) {
 		return privateCheck(ErrorListener.class, generator, errors);
 	}
 
-	public boolean checkWarnings(ExpectedsGenerator<WarningListener> generator) {
+	public boolean hasWarnings(Consumer<WarningListener> generator) {
 		return privateCheck(WarningListener.class, generator, warnings);
 	}
 
-	private static <L> boolean privateCheck(Class<L> listenerClass, ExpectedsGenerator<L> generator,
+	private static <L> boolean privateCheck(Class<L> listenerClass, Consumer<L> generator,
 			List<ListenerInvocation> actuals) {
 		List<ListenerInvocation> expecteds = new ArrayList<>();
-		generator.generate(createListener(listenerClass, expecteds));
+		generator.accept(createListener(listenerClass, expecteds));
 
 		return Arrays.equals(expecteds.toArray(), actuals.toArray());
-	}
-
-	@FunctionalInterface
-	public interface ExpectedsGenerator<L> {
-		void generate(L listener);
 	}
 
 	private static class ListenerInvocation {

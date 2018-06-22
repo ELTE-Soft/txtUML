@@ -2,7 +2,8 @@ package train.x;
 
 import hu.elte.txtuml.api.model.API;
 import hu.elte.txtuml.api.model.Action;
-import hu.elte.txtuml.api.model.execution.ModelExecutor;
+import hu.elte.txtuml.api.model.execution.Execution;
+import hu.elte.txtuml.api.model.execution.LogLevel;
 import train.x.model.Backward;
 import train.x.model.Engine;
 import train.x.model.Forward;
@@ -13,18 +14,19 @@ import train.x.model.LE;
 import train.x.model.Lamp;
 import train.x.model.SwitchLight;
 
-public class Tester {
-	Tester() {
-		ModelExecutor executor = ModelExecutor.create().setTraceLogging(true).launch(this::createInstances);
-		test();
-		executor.shutdown();
+public class Tester implements Execution {
+
+	@Override
+	public void configure(Settings s) {
+		s.logLevel = LogLevel.TRACE;
 	}
 
 	Gearbox g;
 	Engine e;
 	Lamp l;
 
-	public void createInstances() {
+	@Override
+	public void initialization() {
 		g = Action.create(Gearbox.class);
 		e = Action.create(Engine.class);
 		l = Action.create(Lamp.class);
@@ -36,7 +38,8 @@ public class Tester {
 		Action.start(l);
 	}
 
-	public void test() {
+	@Override
+	public void during() {
 		try {
 			int time = 50;
 			for (int i = 0; i < 3; i++) {
@@ -62,6 +65,6 @@ public class Tester {
 	}
 
 	public static void main(String[] args) throws Exception {
-		new Tester();
+		new Tester().run();
 	}
 }

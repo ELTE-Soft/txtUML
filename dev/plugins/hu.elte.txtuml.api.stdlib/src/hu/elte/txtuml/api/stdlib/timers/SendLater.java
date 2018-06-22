@@ -2,7 +2,7 @@ package hu.elte.txtuml.api.stdlib.timers;
 
 import java.util.concurrent.Callable;
 
-import hu.elte.txtuml.api.model.Action;
+import hu.elte.txtuml.api.model.API;
 import hu.elte.txtuml.api.model.External;
 import hu.elte.txtuml.api.model.ModelClass;
 import hu.elte.txtuml.api.model.Signal;
@@ -19,8 +19,8 @@ public class SendLater implements Callable<Void> {
 	}
 
 	@Override
-	public Void call() throws Exception {
-		Action.send(signal, targetObject);
+	public Void call() {
+		API.send(signal, targetObject);
 		return null;
 	}
 

@@ -1,5 +1,8 @@
 package hu.elte.txtuml.export.cpp.templates.structual;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -10,22 +13,26 @@ import hu.elte.txtuml.export.cpp.templates.GenerationNames.EntryExitNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.FileNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.HierarchicalStateMachineNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.ModifierNames;
-import hu.elte.txtuml.export.cpp.templates.GenerationTemplates;
 import hu.elte.txtuml.export.cpp.templates.PrivateFunctionalTemplates;
 import hu.elte.txtuml.export.cpp.templates.RuntimeTemplates;
 import hu.elte.txtuml.export.cpp.templates.statemachine.StateMachineTemplates;
 import hu.elte.txtuml.export.cpp.templates.statemachine.SubStateMachineTemplates;
 
 public class HeaderTemplates {
-	
+
 	public static interface HeaderType {
 		String getSpecificBaseClass();
+
 		String getSpecificPrivatePart();
-		String getSpecificInclude();
+
+		List<String> getSpecificIncludes();
+
 		Boolean hasStateMachine();
+
 		Boolean hasHierarchicalStateMachine();
+
 		Boolean hasExecutionInterface();
-		
+
 	}
 
 	public static class RawClassHeaderType implements HeaderType {
@@ -41,9 +48,10 @@ public class HeaderTemplates {
 		}
 
 		@Override
-		public String getSpecificInclude() {
-			return "";
+		public List<String> getSpecificIncludes() {
+			return Collections.emptyList();
 		}
+
 
 		@Override
 		public Boolean hasExecutionInterface() {
@@ -59,7 +67,7 @@ public class HeaderTemplates {
 		public Boolean hasHierarchicalStateMachine() {
 			return false;
 		}
-		
+
 	}
 
 	public static class SimpleClassHeaderType implements HeaderType {
@@ -75,8 +83,8 @@ public class HeaderTemplates {
 		}
 
 		@Override
-		public String getSpecificInclude() {
-			return PrivateFunctionalTemplates.include(RuntimeTemplates.RTPath + ClassUtilsNames.NotStateMachineOwnerBaseName);
+		public List<String> getSpecificIncludes() {
+			return Arrays.asList(RuntimeTemplates.RTPath + ClassUtilsNames.NotStateMachineOwnerBaseName);
 		}
 
 		@Override
@@ -93,55 +101,61 @@ public class HeaderTemplates {
 		public Boolean hasHierarchicalStateMachine() {
 			return false;
 		}
-		
+
 	}
 
 	public static class StateMachineClassHeaderType implements HeaderType {
 		private Optional<List<String>> optionalSubMachines;
-		
+
 		public StateMachineClassHeaderType(Optional<List<String>> optionalSubMachines) {
 			this.optionalSubMachines = optionalSubMachines;
 		}
+
 		@Override
 		public String getSpecificPrivatePart() {
-			if(optionalSubMachines.isPresent()) {
+			if (optionalSubMachines.isPresent()) {
 				return SubStateMachineTemplates.subMachineFriendDecls(optionalSubMachines.get());
- 
+
 			}
 			return "";
 		}
+
 		@Override
 		public String getSpecificBaseClass() {
 			return ClassUtilsNames.StateMachineOwnerBaseName;
 		}
+
 		@Override
-		public String getSpecificInclude() {
-			StringBuilder includes = new StringBuilder("");
-			if(hasHierarchicalStateMachine()) {
-				includes.append(PrivateFunctionalTemplates.include(RuntimeTemplates.RTPath + ClassUtilsNames.SubStateMachineBase));
+		public List<String> getSpecificIncludes() {
+			List<String> includes = new ArrayList<>();
+			if (hasHierarchicalStateMachine()) {
+				includes.add(RuntimeTemplates.RTPath + ClassUtilsNames.SubStateMachineBase);
 			}
-			includes.append(PrivateFunctionalTemplates.include(RuntimeTemplates.RTPath + ClassUtilsNames.StateMachineOwnerBaseName));
-			
-			return includes.toString();
+			includes.add(RuntimeTemplates.RTPath + ClassUtilsNames.StateMachineOwnerBaseName);
+
+			return includes;
 		}
+
 		@Override
 		public Boolean hasExecutionInterface() {
 			return true;
 		}
+
 		@Override
 		public Boolean hasStateMachine() {
 			return true;
 		}
+
 		@Override
 		public Boolean hasHierarchicalStateMachine() {
 			return optionalSubMachines.isPresent();
 		}
 	}
-	
+
 	public static class SubMachineHeaderType implements HeaderType {
 		private String parentClassName;
 		private Boolean hierarchical;
-		
+
 		public SubMachineHeaderType(String parentClassName, Boolean hierarchical) {
 			this.parentClassName = parentClassName;
 			this.hierarchical = hierarchical;
@@ -149,8 +163,8 @@ public class HeaderTemplates {
 
 		@Override
 		public String getSpecificPrivatePart() {
-			return VariableTemplates.variableDecl(parentClassName,
-					HierarchicalStateMachineNames.ParentSmMemberName, null, false);
+			return VariableTemplates.variableDecl(parentClassName, HierarchicalStateMachineNames.ParentSmMemberName,
+					null, false);
 		}
 
 		@Override
@@ -159,8 +173,8 @@ public class HeaderTemplates {
 		}
 
 		@Override
-		public String getSpecificInclude() {
-			return PrivateFunctionalTemplates.include(RuntimeTemplates.RTPath + ClassUtilsNames.SubStateMachineBase);
+		public List<String> getSpecificIncludes() {
+			return Arrays.asList(RuntimeTemplates.RTPath + ClassUtilsNames.SubStateMachineBase);
 		}
 
 		@Override
@@ -178,18 +192,19 @@ public class HeaderTemplates {
 			return hierarchical;
 		}
 	}
-	
+
 	public static class HeaderInfo {
-		
+
 		public static class StateMachineInfo {
 			public StateMachineInfo(Boolean hierarchical) {
 				this.hierarchical = hierarchical;
 			}
 
+
 			Boolean isHierarhicalStateMachine() {
 				return hierarchical;
 			}
-			
+
 			private Boolean hierarchical;
 		}
 
@@ -205,10 +220,10 @@ public class HeaderTemplates {
 			return headerType.getSpecificBaseClass();
 		}
 
-		public String getRelatedBaseClassInclude() {
-			return headerType.getSpecificInclude();
+		public List<String> getRelatedBaseClassInclude() {
+			return headerType.getSpecificIncludes();
 		}
-		
+
 		public String getOwnerClassName() {
 			return ownerClassName;
 		}
@@ -220,32 +235,31 @@ public class HeaderTemplates {
 						+ FunctionTemplates.functionDecl(StateMachineTemplates.InitTransitionTable));
 				fixPublicParts.append(GenerationNames.ProcessEventDecl + GenerationNames.SetInitialStateDecl + "\n");
 				fixPublicParts.append(StateMachineTemplates.initializeFunctionDecl());
-				fixPublicParts.append(StateMachineTemplates.finalizeFunctionDecl()); 
-
+				fixPublicParts.append(StateMachineTemplates.finalizeFunctionDecl());
 
 			}
 			if (headerType.hasExecutionInterface()) {
 				fixPublicParts.append("//RuntimeFunctions\n" + RuntimeTemplates.processEventVirtualDecl()
 						+ RuntimeTemplates.processInitTransitionDecl() + "\n");
 			}
-			
+
 			return fixPublicParts.toString();
 		}
-		
+
 		public String getFixProtectedParts() {
 			StringBuilder fixProtectedParts = new StringBuilder("");
-			if(headerType.hasStateMachine()) {
+			if (headerType.hasStateMachine()) {
 				fixProtectedParts.append(PrivateFunctionalTemplates.typedefs(ownerClassName));
 				fixProtectedParts.append(PrivateFunctionalTemplates.transitionTableDecl(ownerClassName));
 			}
-			
+
 			return fixProtectedParts.toString();
 		}
 
 		public String getFixPrivateParts() {
 			StringBuilder fixPrivateParts = new StringBuilder("");
 			if(headerType.hasStateMachine()) {
-				fixPrivateParts.append("//Simple Machine Parts\n" + FunctionTemplates.functionDecl(GenerationNames.InitStateMachine) + "\n" + 
+				fixPrivateParts.append("//Simple Machine Parts\n" + FunctionTemplates.functionDecl(GenerationNames.InitializerFixFunctionNames.InitStateMachine) + "\n" + 
 						GenerationNames.SetStateDecl + EntryExitNames.EntryDecl + EntryExitNames.ExitDecl + 
 						"\n" + "int " + GenerationNames.CurrentStateName + ";\n");
 				
@@ -256,13 +270,15 @@ public class HeaderTemplates {
 							+ HierarchicalStateMachineNames.CompositeStateMap); 	
 				
 					
+
 				}
-				
+
 			}
 			fixPrivateParts.append(headerType.getSpecificPrivatePart());
 			return fixPrivateParts.toString();
 		}
 	}
+
 
 	public static String headerGuard(String source, String className) {
 		return "#ifndef __" + className.toUpperCase() + "_" + FileNames.HeaderExtension.toUpperCase() + "__\n"
@@ -271,15 +287,15 @@ public class HeaderTemplates {
 				+ "_";
 	}
 
-	public static String classHeader(String dependency, List<String> baseClassNames, List<String> pureInfBasaNames, String publicPart,
+	public static String classHeader(List<String> baseClassNames, List<String> pureInfBaseNames, String publicPart,
 			String protectedPart, String privatePart, HeaderInfo headerInfo) {
-		StringBuilder source = new StringBuilder(dependency + headerInfo.getRelatedBaseClassInclude());
-		StringBuilder classDecleration = new StringBuilder("");
-		classDecleration.append(GenerationNames.ClassType + " " + headerInfo.getOwnerClassName());
+
+		StringBuilder classDeclaration = new StringBuilder("");
+		classDeclaration.append(GenerationNames.TypeDeclarationKeywords.ClassType + " " + headerInfo.getOwnerClassName());
 
 		List<String> objectBase = new LinkedList<>();
-		if(pureInfBasaNames != null) {
-			objectBase.addAll(pureInfBasaNames);
+		if (pureInfBaseNames != null) {
+			objectBase.addAll(pureInfBaseNames);
 		}
 		if (baseClassNames != null && !baseClassNames.isEmpty()) {
 			objectBase.addAll(baseClassNames);
@@ -290,21 +306,16 @@ public class HeaderTemplates {
 			}
 		}
 
+		classDeclaration.append(PrivateFunctionalTemplates.baseClassList(objectBase));
 
+		classDeclaration.append("\n{\n");
 
-		classDecleration.append(PrivateFunctionalTemplates.baseClassList(objectBase));
+		classDeclaration.append("\npublic:\n" + headerInfo.getFixPublicParts() + publicPart);
+		classDeclaration.append("\nprotected:\n" + headerInfo.getFixProtectedParts() + protectedPart);
+		classDeclaration.append("\nprivate:\n" + headerInfo.getFixPrivateParts() + privatePart);
 
-		classDecleration.append("\n{\n");
-		
-		classDecleration.append("\npublic:\n" + headerInfo.getFixPublicParts() + publicPart);
-		classDecleration.append("\nprotected:\n" + headerInfo.getFixProtectedParts() + protectedPart);		
-		classDecleration.append("\nprivate:\n" + headerInfo.getFixPrivateParts() + privatePart);
-
-		classDecleration.append("\n};\n\n");
-		source.append(GenerationTemplates.putNamespace(classDecleration.toString(),
-				GenerationNames.Namespaces.ModelNamespace));
-		return source.toString();
+		classDeclaration.append("\n};\n\n");
+		return classDeclaration.toString();
 	}
-
 
 }

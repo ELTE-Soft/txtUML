@@ -1,14 +1,19 @@
 package hu.elte.txtuml.export.cpp.activity;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.uml2.uml.CallOperationAction;
+import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.InputPin;
+import org.eclipse.uml2.uml.NamedElement;
+import org.eclipse.uml2.uml.Operation;
 import org.eclipse.uml2.uml.OutputPin;
 import org.eclipse.uml2.uml.Parameter;
 import org.eclipse.uml2.uml.ParameterDirectionKind;
@@ -16,32 +21,32 @@ import org.eclipse.uml2.uml.TestIdentityAction;
 import org.eclipse.uml2.uml.UMLPackage;
 
 import hu.elte.txtuml.export.cpp.CppExporterUtils;
+import hu.elte.txtuml.export.cpp.IDependencyCollector;
+import hu.elte.txtuml.export.cpp.templates.GenerationNames.CollectionNames;
+import hu.elte.txtuml.export.cpp.templates.GenerationNames.FileNames;
+import hu.elte.txtuml.export.cpp.templates.GenerationNames.PointerAndMemoryNames;
+import hu.elte.txtuml.export.cpp.templates.GenerationTemplates;
 import hu.elte.txtuml.export.cpp.templates.activity.ActivityTemplates;
 import hu.elte.txtuml.export.cpp.templates.activity.OperatorTemplates;
-import hu.elte.txtuml.export.cpp.templates.structual.VariableTemplates;
+import hu.elte.txtuml.export.cpp.templates.structual.ObjectDeclDefTemplates;
 
 class CallOperationExporter {
-
-	private boolean containsTimerOperator;
 
 	private OutVariableExporter tempVariableExporter;
 	private Map<CallOperationAction, OutputPin> returnOutputsToCallActions;
 	private ActivityNodeResolver activityExportResolver;
 	private Set<String> declaredTempVariables;
+	private Optional<IDependencyCollector> exportUser;
 
 	public CallOperationExporter(OutVariableExporter tempVariableExporter,
-			Map<CallOperationAction, OutputPin> returnOutputsToCallActions,
-			ActivityNodeResolver activityExportResolver) {
-		containsTimerOperator = false;
+			Map<CallOperationAction, OutputPin> returnOutputsToCallActions, ActivityNodeResolver activityExportResolver,
+			Optional<IDependencyCollector> exportUser) {
 		declaredTempVariables = new HashSet<String>();
 
 		this.tempVariableExporter = tempVariableExporter;
 		this.returnOutputsToCallActions = returnOutputsToCallActions;
 		this.activityExportResolver = activityExportResolver;
-	}
-
-	public boolean isInvokedTimerOperation() {
-		return containsTimerOperator;
+		this.exportUser = exportUser;
 	}
 
 	public String createTestIdentityActionCode(TestIdentityAction node) {
@@ -93,8 +98,13 @@ class CallOperationExporter {
 			addOutParametrsToList(parameterVariables, outParamaterPins);
 
 			val = ActivityTemplates.stdLibCall(node.getOperation().getName(), parameterVariables);
+
 			if (OperatorTemplates.isTimerStart(node.getOperation().getName())) {
-				containsTimerOperator = true;
+				if (exportUser.isPresent()) {
+					exportUser.get().addCppOnlyDependency(FileNames.TimerInterfaceHeader);
+					exportUser.get().addCppOnlyDependency(FileNames.TimerHeader);
+				}
+
 			}
 
 			if (node.getOperation().getType() != null) {
@@ -109,9 +119,26 @@ class CallOperationExporter {
 
 		} else {
 
+			Operation op = node.getOperation();
+
+			Element opOwner = op.getOwner();
+			if (opOwner instanceof NamedElement) {
+				NamedElement namedOwner = (NamedElement) opOwner;
+				if (exportUser.isPresent()) {
+					exportUser.get().addCppOnlyDependency(namedOwner.getName());
+				}
+			}
+
 			val = ActivityTemplates.operationCall(activityExportResolver.getTargetFromInputPin(node.getTarget(), false),
 					ActivityTemplates.accesOperatoForType(activityExportResolver.getTypeFromInputPin(node.getTarget())),
-					node.getOperation().getName(), getParametersNames(node.getArguments()));
+					op.getName(), getParametersNames(node.getArguments()));
+			
+			
+			if(op.getUpper() == 1 && returnPin != null) {
+				val = ActivityTemplates.operationCall(val, PointerAndMemoryNames.SimpleAccess, 
+						CollectionNames.SelectAnyFunctionName, Collections.emptyList());
+			}
+
 
 		}
 
@@ -143,8 +170,8 @@ class CallOperationExporter {
 	private String declareAllOutTempParameters(EList<OutputPin> outParamaterPins) {
 		StringBuilder declerations = new StringBuilder("");
 		for (OutputPin outPin : outParamaterPins) {
-			declerations.append(VariableTemplates.variableDecl(outPin.getType().getName(),
-					tempVariableExporter.getRealVariableName(outPin), false));
+			declerations.append(ObjectDeclDefTemplates.variableDecl(outPin.getType().getName(),
+					tempVariableExporter.getRealVariableName(outPin), GenerationTemplates.VariableType.RawPointerType));
 		}
 
 		return declerations.toString();
@@ -173,7 +200,7 @@ class CallOperationExporter {
 			return ActivityTemplates.simpleSetValue(var, value);
 		} else {
 			declaredTempVariables.add(var);
-			return ActivityTemplates.addVariableTemplate(type, var, value);
+			return ActivityTemplates.addVariableTemplate(type, var, value, GenerationTemplates.VariableType.EType);
 
 		}
 	}

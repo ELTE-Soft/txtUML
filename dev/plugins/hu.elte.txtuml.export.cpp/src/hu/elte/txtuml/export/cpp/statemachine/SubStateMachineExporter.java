@@ -10,7 +10,9 @@ import java.util.Optional;
 
 import org.eclipse.uml2.uml.Region;
 
-import hu.elte.txtuml.export.cpp.CppExporterUtils;
+import hu.elte.txtuml.export.cpp.CppExporterUtils.TypeDescriptor;
+import hu.elte.txtuml.export.cpp.ICppCompilationUnit;
+import hu.elte.txtuml.export.cpp.IDependencyCollector;
 import hu.elte.txtuml.export.cpp.structural.DependencyExporter;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationTemplates;
@@ -22,94 +24,22 @@ import hu.elte.txtuml.export.cpp.templates.structual.HeaderTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.HeaderTemplates.HeaderInfo;
 import hu.elte.txtuml.utils.Pair;
 
-public class SubStateMachineExporter extends StateMachineExporterBase {
+public class SubStateMachineExporter extends StateMachineExporterBase implements ICppCompilationUnit, IDependencyCollector {
 
-	private Map<String, Pair<String, Region>> submachineMap;// <stateName,<machinename,behavior>>
-
-	public SubStateMachineExporter() {
-		super();
-	}
-
-	public void setRegion(Region region) {
+	private String subStateMachineName;
+	private DependencyExporter dependencyExporter;
+	private String subMachineCodeDest;
+	
+	public SubStateMachineExporter(String subStateMachineName, Region region, ICppCompilationUnit owner, String subMachineCodeDest) {
+		super(region,owner);
+		this.subStateMachineName = subStateMachineName;
 		this.stateMachineRegion = region;
-		createStateList();
-	}
-
-	public void createSubSmSource(String destination) throws FileNotFoundException, UnsupportedEncodingException {
-		super.createMachine();
-		String source = "";
-		submachineMap = getSubMachines();
-		createSubMachineSources(destination);
+		this.subMachineCodeDest = subMachineCodeDest;
 		
-		source = createSubSmClassHeaderSource();
-		CppExporterUtils.writeOutSource(destination, GenerationTemplates.headerName(ownerClassName),
-				HeaderTemplates.headerGuard(source, ownerClassName));
-
-		source = GenerationTemplates.putNamespace(createSubSmClassCppSource(), GenerationNames.Namespaces.ModelNamespace);
-		StringBuilder dependencyIncludes = new StringBuilder(PrivateFunctionalTemplates.include(ownerClassName)
-				+ PrivateFunctionalTemplates.include(EventTemplates.EventHeaderName) + 
-				PrivateFunctionalTemplates.include(GenerationNames.FileNames.ActionPath) + 
-				GenerationTemplates.debugOnlyCodeBlock(GenerationTemplates.StandardIOinclude));
+		dependencyExporter = new DependencyExporter();
 		
-		DependencyExporter dependecyExporter = new DependencyExporter();
-		dependecyExporter.addDependencies(getOwnSubmachineNames());
-		dependencyIncludes.append(dependecyExporter.createDependencyCppIncludeCode(ownerClassName));
-		
-		CppExporterUtils.writeOutSource(destination, GenerationTemplates.sourceName(ownerClassName),
-				CppExporterUtils.format(dependencyIncludes + "\n" + source));
-	}
+		init(this);
 
-	private String createSubSmClassHeaderSource() {
-		String source = "";
-		StringBuilder dependency = new StringBuilder(PrivateFunctionalTemplates.include(parentClassName));
-		dependency.append(PrivateFunctionalTemplates.include(GenerationNames.FileNames.StringUtilsPath));
-		dependency.append(PrivateFunctionalTemplates.include(GenerationNames.FileNames.CollectionUtilsPath));
-		
-		StringBuilder publicParts = new StringBuilder("");	
-		StringBuilder protectedParts = new StringBuilder("");
-		StringBuilder privateParts = new StringBuilder("");
-
-		publicParts.append(ConstructorTemplates.constructorDecl(ownerClassName, Arrays.asList(parentClassName)));					
-		publicParts.append(StateMachineTemplates.stateEnum(stateList, getInitialState(stateMachineRegion)));
-			
-		privateParts.append(entryExitFunctionExporter.createEntryFunctionsDecl());
-		privateParts.append(entryExitFunctionExporter.createExitFunctionsDecl());
-		privateParts.append(GenerationTemplates
-					.formatSubSmFunctions(guardExporter.declareGuardFunctions(stateMachineRegion)));
-		privateParts.append(transitionExporter.createTransitionFunctionDecl());
-			
-		source = HeaderTemplates
-					.classHeader(dependency.toString(), null, null,
-							publicParts.toString(), protectedParts.toString(), privateParts.toString(), 
-							new HeaderInfo(ownerClassName, 
-									new HeaderTemplates.SubMachineHeaderType(parentClassName, !submachineMap.isEmpty())));
-				
-			
-		return source;
-	}
-
-	private String createSubSmClassCppSource() {
-		StringBuilder source = new StringBuilder("");
-		source.append(createTransitionTableInitRelatedCodes());
-		source.append(ConstructorTemplates.subStateMachineClassConstructor(ownerClassName, parentClassName, stateMachineMap, 
-								 submachineMap.isEmpty() ? Optional.empty() : Optional.of(getEventSubMachineNameMap())));
-		source.append(StateMachineTemplates.stateMachineFixFunctionDefitions(ownerClassName, getInitialState(stateMachineRegion), true, submachineMap.isEmpty()));
-
-		
-		StringBuilder subSmSpec = new StringBuilder(entryExitFunctionExporter.createEntryFunctionsDef());
-		subSmSpec.append(entryExitFunctionExporter.createExitFunctionsDef());
-		subSmSpec.append(guardExporter.defnieGuardFunctions(ownerClassName));
-		subSmSpec.append(transitionExporter.createTransitionFunctionsDef());
-		subSmSpec.append(StateMachineTemplates.entry(ownerClassName,
-				createStateActionMap(entryExitFunctionExporter.getEntryMap())) + "\n");
-		subSmSpec.append(
-				StateMachineTemplates.exit(ownerClassName, createStateActionMap(entryExitFunctionExporter.getExitMap()))
-						+ "\n");
-		subSmSpec.append(StateMachineTemplates.finalizeFunctionDef(ownerClassName));
-		subSmSpec.append(StateMachineTemplates.initializeFunctionDef(ownerClassName, getInitialTransition(stateMachineRegion)));
-		source.append(GenerationTemplates.formatSubSmFunctions(subSmSpec.toString()));
-
-		return source.toString();
 	}
 	
 	private List<String> getOwnSubmachineNames() {
@@ -119,5 +49,131 @@ public class SubStateMachineExporter extends StateMachineExporterBase {
 		}
 		return ownSubMachines;
 	}
+
+	@Override
+	public String getUnitName() {
+		return subStateMachineName;
+	}
+
+	@Override
+	public void addDependency(String type) {
+		dependencyExporter.addDependency(type);
+		
+	}
+	
+	@Override
+	public void addCppOnlyDependency(String type) {
+		dependencyExporter.addCppOnlyDependency(type);
+		
+	}
+	
+	@Override
+	public void addHeaderOnlyIncludeDependency(String type) {
+		dependencyExporter.addHeaderOnlyIncludeDependency(type);		
+	}
+
+
+	@Override
+	protected ICppCompilationUnit getActualCompilationUnit() {
+		return this;
+	}
+
+	@Override
+	public String getUnitNamespace() {
+		 return GenerationNames.Namespaces.ModelNamespace;
+	}
+	
+	@Override
+	public void createAdditionalSources() throws FileNotFoundException, UnsupportedEncodingException {
+		createSubMachineSources(getDestination());
+	}
+
+	@Override
+	public String createUnitCppCode() {
+		StringBuilder source = new StringBuilder("");
+		source.append(createTransitionTableInitRelatedCodes());
+		source.append(ConstructorTemplates.subStateMachineClassConstructor(getUnitName(), ownerClassUnit.getUnitName(), stateMachineMap, 
+								 submachineMap.isEmpty() ? Optional.empty() : Optional.of(getStateToSubMachineNameMap())));
+		source.append(StateMachineTemplates.stateMachineFixFunctionDefitions(getUnitName(), getInitialState(), true, submachineMap.isEmpty()));
+
+		
+		StringBuilder subSmSpec = new StringBuilder(entryExitFunctionExporter.createEntryFunctionsDef());
+		subSmSpec.append(entryExitFunctionExporter.createExitFunctionsDef());
+		subSmSpec.append(guardExporter.defnieGuardFunctions(getUnitName()));
+		subSmSpec.append(transitionExporter.createTransitionFunctionsDef());
+		subSmSpec.append(StateMachineTemplates.entry(getUnitName(),
+				createStateActionMap(entryExitFunctionExporter.getEntryMap())) + "\n");
+		subSmSpec.append(
+				StateMachineTemplates.exit(getUnitName(), createStateActionMap(entryExitFunctionExporter.getExitMap()))
+						+ "\n");
+		subSmSpec.append(StateMachineTemplates.finalizeFunctionDef(getUnitName()));
+		subSmSpec.append(StateMachineTemplates.initializeFunctionDef(getUnitName(), getInitialTransition()));
+		source.append(GenerationTemplates.formatSubSmFunctions(subSmSpec.toString()));
+
+		return source.toString();
+	}
+
+	@Override
+	public String createUnitHeaderCode() {
+		String source = "";
+		
+		StringBuilder publicParts = new StringBuilder("");	
+		StringBuilder protectedParts = new StringBuilder("");
+		StringBuilder privateParts = new StringBuilder("");
+		publicParts.append(ConstructorTemplates.constructorDecl(getUnitName(), Arrays.asList
+				(new TypeDescriptor(ownerClassUnit.getUnitName()))));					
+		publicParts.append(StateMachineTemplates.stateEnum(stateList, getInitialState()));
+			
+		privateParts.append(entryExitFunctionExporter.createEntryFunctionsDecl());
+		privateParts.append(entryExitFunctionExporter.createExitFunctionsDecl());
+		privateParts.append(GenerationTemplates
+					.formatSubSmFunctions(guardExporter.declareGuardFunctions(stateMachineRegion)));
+		privateParts.append(transitionExporter.createTransitionFunctionDecl());
+			
+		source = HeaderTemplates
+					.classHeader(null, null,
+							publicParts.toString(), protectedParts.toString(), privateParts.toString(), 
+							new HeaderInfo(getUnitName(), 
+									new HeaderTemplates.SubMachineHeaderType(ownerClassUnit.getUnitName(), !submachineMap.isEmpty())));
+				
+			
+		return source;
+	}
+
+	@Override
+	public String getUnitDependencies(UnitType type) {
+		
+		StringBuilder dependencyIncludes = new StringBuilder("");
+		dependencyExporter.addDependencies(getOwnSubmachineNames());
+		
+		if(type == UnitType.Header) {
+			dependencyIncludes.append(PrivateFunctionalTemplates.include(ownerClassUnit.getUnitName()));
+			dependencyIncludes.append(PrivateFunctionalTemplates.include(EventTemplates.EventHeaderName));
+
+			dependencyIncludes.append(dependencyExporter.createDependencyHeaderIncludeCode(GenerationNames.Namespaces.ModelNamespace));
+
+
+		} else {
+			dependencyIncludes.append(dependencyExporter.createDependencyCppIncludeCode(getUnitName()));
+			dependencyIncludes.append(PrivateFunctionalTemplates.include(GenerationNames.FileNames.ActionPath));
+			dependencyIncludes.append(GenerationTemplates.debugOnlyCodeBlock(GenerationTemplates.StandardIOinclude));
+			dependencyIncludes.append(PrivateFunctionalTemplates.include(GenerationNames.FileNames.StringUtilsPath));
+			dependencyIncludes.append(PrivateFunctionalTemplates.include(GenerationNames.FileNames.CollectionUtilsPath));
+		}
+				
+		
+		return dependencyIncludes.toString();
+	}
+
+	@Override
+	public String getDestination() {
+		return subMachineCodeDest;
+	}
+
+
+
+
+
+
 
 }

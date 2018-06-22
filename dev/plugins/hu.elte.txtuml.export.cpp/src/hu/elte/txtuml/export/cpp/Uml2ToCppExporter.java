@@ -15,7 +15,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Platform;
@@ -23,31 +22,30 @@ import org.eclipse.uml2.uml.Association;
 import org.eclipse.uml2.uml.Class;
 import org.eclipse.uml2.uml.DataType;
 import org.eclipse.uml2.uml.Element;
-import org.eclipse.uml2.uml.Parameter;
-import org.eclipse.uml2.uml.Property;
-import org.eclipse.uml2.uml.Signal;
+import org.eclipse.uml2.uml.Interface;
 import org.eclipse.uml2.uml.UMLPackage;
 import org.osgi.framework.Bundle;
-import hu.elte.txtuml.export.cpp.thread.ThreadPoolConfiguration;
+
 import hu.elte.txtuml.api.deployment.RuntimeType;
+import hu.elte.txtuml.export.cpp.structural.AssociationEndDescriptorsExproter;
+import hu.elte.txtuml.export.cpp.structural.AssociationInstancesExporter;
 import hu.elte.txtuml.export.cpp.structural.ClassExporter;
 import hu.elte.txtuml.export.cpp.structural.DataTypeExporter;
 import hu.elte.txtuml.export.cpp.structural.DependencyExporter;
-import hu.elte.txtuml.export.cpp.structural.OnlyAbstractOperationExporter;
+import hu.elte.txtuml.export.cpp.structural.EventStructuresExporter;
+import hu.elte.txtuml.export.cpp.structural.InterfaceExporter;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.FileNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.ModifierNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationTemplates;
 import hu.elte.txtuml.export.cpp.templates.Options;
-import hu.elte.txtuml.export.cpp.templates.PrivateFunctionalTemplates;
 import hu.elte.txtuml.export.cpp.templates.RuntimeTemplates;
 import hu.elte.txtuml.export.cpp.templates.activity.ActivityTemplates;
-import hu.elte.txtuml.export.cpp.templates.statemachine.EventTemplates;
 import hu.elte.txtuml.export.cpp.templates.statemachine.StateMachineTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.FunctionTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.HeaderTemplates;
-import hu.elte.txtuml.export.cpp.templates.structual.LinkTemplates;
 import hu.elte.txtuml.export.cpp.thread.ThreadHandlingManager;
+import hu.elte.txtuml.export.cpp.thread.ThreadPoolConfiguration;
 import hu.elte.txtuml.utils.Pair;
 
 public class Uml2ToCppExporter {
@@ -56,49 +54,41 @@ public class Uml2ToCppExporter {
 
 	private static final String RUNTIME_DIR_PREFIX = RuntimeTemplates.RTPath;
 	private static final String RUNTIME_LIB_NAME = "libsmrt";
-	private static final String DEFAULT_ASSOCIATIONS_NAME = "associations";
 	private static final String PROJECT_NAME = "hu.elte.txtuml.export.cpp";
 	private static final String CPP_FILES_FOLDER_NAME = "cpp-runtime";
-	private static final String ENUM_EXTENSION = "_EE";
 
 	// default sources
 	private static final String DEFAULT_TARGET_EXECUTABLE = "main";
-	private static final String DEFAULT_DEPLOYMENT_NAME = "deployment";
-	private static final String DEFAULT_INIT_MACHINE_NAME = StateMachineTemplates.TransitionTableInitialSourceName;
-	private static final String DEFAULT_ENVIRONMENT_INITIALIZER = "Env";
+	private static final String DEPLOYMENT_NAME = "deployment";
+	private static final String INIT_MACHINE_NAME = StateMachineTemplates.TransitionTableInitialSourceName;
+	private static final String ENVIRONMENT_INITIALIZER = "Env";
 
-	private ClassExporter classExporter;
-	private DataTypeExporter dataTypeExporter;
-	private OnlyAbstractOperationExporter abstractOperationExporter;
+
 	private final Options options;
 
 	private ThreadHandlingManager threadManager;
 
 	private List<Class> classes;
 	private Set<String> stateMachineOwners;
-	private List<DataType> dataTypes;
 	private List<String> classNames;
 	private List<Element> modelRoot;
+	private boolean testing;
 
 
 	public Uml2ToCppExporter(List<Element> modelRoot, Pair<RuntimeType, Map<String, ThreadPoolConfiguration>> config,
-			boolean addRuntimeOption, boolean overWriteMainFileOption, Boolean testing) {
+			boolean addRuntimeOption, boolean overWriteMainFileOption, boolean testing) {
 
 		this.modelRoot = modelRoot;
-		classExporter = new ClassExporter();
-		classExporter.setTesting(testing);
-		dataTypeExporter = new DataTypeExporter();
-		abstractOperationExporter = new OnlyAbstractOperationExporter();
+
+		this.testing = testing;
 		threadManager = new ThreadHandlingManager(config);
 
-		classes = new ArrayList<Class>();
-		dataTypes = new ArrayList<DataType>();
 		classNames = new LinkedList<String>();
 		stateMachineOwners = new HashSet<String>();
 		options = new Options(addRuntimeOption, overWriteMainFileOption);
 
-		CppExporterUtils.getTypedElements(dataTypes, UMLPackage.Literals.DATA_TYPE, modelRoot);
-		classes = CppExporterUtils.getAllModelCLass(modelRoot);
+
+		classes = CppExporterUtils.getAllModelClass(modelRoot);
 
 	}
 
@@ -109,24 +99,21 @@ public class Uml2ToCppExporter {
 		copyPreWrittenCppFiles(outputDirectory);
 		createEventSource(outputDirectory);
 		createClassSources(outputDirectory);
-		createAbstractClassSources(outputDirectory);
 		createTransitionTableInitialSource(outputDirectory);
 		createDataTypes(outputDirectory);
 		createAssociationsSources(outputDirectory);
+		createInterfaces(outputDirectory);
 		createCMakeFile(outputDirectory);
 	}
 
 	private void createClassSources(String outputDirectory) throws IOException {
 		for (Class cls : classes) {
-
-			if (abstractOperationExporter.hasProperOperation(cls)) {
-				classExporter.setAbstractInterface(GenerationTemplates.generatedAbstractClassName(cls.getName()));
-			} else {
-				classExporter.removeAbstractInterface();
-			}
-			classExporter.setName(cls.getName());
+			
+			ClassExporter classExporter = new ClassExporter(cls, cls.getName(), outputDirectory);
+			classExporter.setTesting(testing);		
 			classExporter.setPoolId(threadManager.getConfiguratedPoolId(cls.getName()));
-			classExporter.exportStructuredElement(cls, outputDirectory);
+
+			classExporter.createUnitSource();
 			if (CppExporterUtils.isStateMachineOwner(cls)) {
 				classNames.addAll(classExporter.getSubmachines());
 			}
@@ -140,16 +127,6 @@ public class Uml2ToCppExporter {
 			}
 
 		}
-	}
-
-	private void createAbstractClassSources(String outputDirectory) throws IOException {
-		List<Class> abstractClasses = classes.stream().filter(c -> abstractOperationExporter.hasProperOperation(c))
-				.collect(Collectors.toList());
-		for (Class cls : abstractClasses) {
-			abstractOperationExporter.setName(GenerationTemplates.generatedAbstractClassName(cls.getName()));
-			abstractOperationExporter.exportStructuredElement(cls, outputDirectory);
-		}
-
 	}
 
 	private void createTransitionTableInitialSource(String outputDirectory) throws IOException {
@@ -185,10 +162,14 @@ public class Uml2ToCppExporter {
 	}
 
 	private void createDataTypes(String outputDirectory) throws IOException {
+		
+		List<DataType> dataTypes = new ArrayList<>();
+		CppExporterUtils.getTypedElements(dataTypes, UMLPackage.Literals.DATA_TYPE, modelRoot);
+
 		for (DataType dataType : dataTypes) {
-			dataTypeExporter.setName(dataType.getName());
-			dataTypeExporter.init();
-			dataTypeExporter.exportStructuredElement(dataType, outputDirectory);
+			DataTypeExporter dataTypeExporter = new DataTypeExporter(dataType, dataType.getName(), outputDirectory);
+			dataTypeExporter.createUnitSource();
+			
 		}
 
 	}
@@ -202,15 +183,15 @@ public class Uml2ToCppExporter {
 		}
 
 		Files.copy(
-				Paths.get(cppFilesLocation + DEFAULT_ENVIRONMENT_INITIALIZER + "."
+				Paths.get(cppFilesLocation + ENVIRONMENT_INITIALIZER + "."
 						+ GenerationNames.FileNames.HeaderExtension),
-				Paths.get(destination + File.separator + DEFAULT_ENVIRONMENT_INITIALIZER + "."
+				Paths.get(destination + File.separator + ENVIRONMENT_INITIALIZER + "."
 						+ GenerationNames.FileNames.HeaderExtension),
 				StandardCopyOption.REPLACE_EXISTING);
 		Files.copy(
-				Paths.get(cppFilesLocation + DEFAULT_ENVIRONMENT_INITIALIZER + "."
+				Paths.get(cppFilesLocation + ENVIRONMENT_INITIALIZER + "."
 						+ GenerationNames.FileNames.SourceExtension),
-				Paths.get(destination + File.separator + DEFAULT_ENVIRONMENT_INITIALIZER + "."
+				Paths.get(destination + File.separator + ENVIRONMENT_INITIALIZER + "."
 						+ GenerationNames.FileNames.SourceExtension),
 				StandardCopyOption.REPLACE_EXISTING);
 
@@ -268,7 +249,6 @@ public class Uml2ToCppExporter {
 		librarySourceClasses.add("StateMachineOwner");
 		librarySourceClasses.add("NotStateMachineOwner");
 		librarySourceClasses.add("threadpool");
-		librarySourceClasses.add("threadpoolmanager");
 		librarySourceClasses.add("threadcontainer");
 		librarySourceClasses.add("timer");
 		librarySourceClasses.add("itimer");
@@ -276,106 +256,49 @@ public class Uml2ToCppExporter {
 		cmake.addStaticLibraryTarget(RUNTIME_LIB_NAME, librarySourceClasses, RUNTIME_DIR_PREFIX);
 		List<String> sourceNames = new ArrayList<String>();
 		sourceNames.add(DEFAULT_TARGET_EXECUTABLE);
-		sourceNames.add(DEFAULT_DEPLOYMENT_NAME);
-		sourceNames.add(DEFAULT_ASSOCIATIONS_NAME);
-		sourceNames.add(DEFAULT_INIT_MACHINE_NAME);
-		sourceNames.add(DEFAULT_ENVIRONMENT_INITIALIZER);
+		sourceNames.add(DEPLOYMENT_NAME);
+		sourceNames.add(INIT_MACHINE_NAME);
+		sourceNames.add(ENVIRONMENT_INITIALIZER);
+		sourceNames.add(GenerationNames.AssociationNames.AssociationInstancesUnitName);
 		sourceNames.addAll(classNames);
 		cmake.addExecutableTarget(DEFAULT_TARGET_EXECUTABLE, sourceNames, "");
 		cmake.writeOutCMakeLists();
 	}
 
 	private void createEventSource(String outputDirectory) throws FileNotFoundException, UnsupportedEncodingException {
-		List<Signal> signalList = new ArrayList<Signal>();
-		CppExporterUtils.getTypedElements(signalList, UMLPackage.Literals.SIGNAL, modelRoot);
-		StringBuilder forwardDecl = new StringBuilder("");
-		StringBuilder events = new StringBuilder("");
-		StringBuilder source = new StringBuilder("");
-		List<Pair<String, String>> allParam = new LinkedList<Pair<String, String>>();
-		for (Signal signal : signalList) {
-			List<Pair<String, String>> currentParams = getSignalParams(signal);
-			String ctrBody = CppExporterUtils.signalCtrBody(signal, modelRoot);
-			allParam.addAll(currentParams);
-			source.append(
-					EventTemplates.eventClass(signal.getName(), currentParams, ctrBody, signal.getOwnedAttributes()));
-			events.append(signal.getName() + ENUM_EXTENSION + ",");
-		}
-
-		DependencyExporter dependencyEporter = new DependencyExporter();
-		for (Pair<String, String> param : allParam) {
-			dependencyEporter.addDependency(param.getSecond());
-		}
-		forwardDecl.append(dependencyEporter.createDependencyHeaderIncludeCode());
-		forwardDecl.append(RuntimeTemplates.eventHeaderInclude());
-		forwardDecl.append("enum Events {" + CppExporterUtils.cutOffTheLastCharcter(events.toString()) + "};\n");
-		forwardDecl.append(source);
-		CppExporterUtils.writeOutSource(outputDirectory, (EventTemplates.EventHeader),
-				CppExporterUtils.format(
-						EventTemplates.eventHeaderGuard(RuntimeTemplates.eventHeaderInclude() + GenerationTemplates
-								.putNamespace(forwardDecl.toString(), GenerationNames.Namespaces.ModelNamespace))));
+		
+		EventStructuresExporter eventSourceExporter = new EventStructuresExporter(CppExporterUtils.getSignalsWithConstructors(modelRoot), outputDirectory);
+		eventSourceExporter.createUnitSource();
 
 	}
 
 	private void createAssociationsSources(String outputDirectory)
 			throws FileNotFoundException, UnsupportedEncodingException {
 
-		Set<String> associatedClasses = new HashSet<String>();
-		StringBuilder includes = new StringBuilder(
-				PrivateFunctionalTemplates.include(LinkTemplates.AssociationsStructuresHreaderName));
-		StringBuilder preDeclerations = new StringBuilder("");
-		StringBuilder structures = new StringBuilder("");
-		StringBuilder functions = new StringBuilder("");
 
 		List<Association> associationList = new ArrayList<Association>();
 		CppExporterUtils.getTypedElements(associationList, UMLPackage.Literals.ASSOCIATION, modelRoot);
-		for (Association assoc : associationList) {
-			Property e1End = assoc.getMemberEnds().get(0);
-			Property e2End = assoc.getMemberEnds().get(1);
-			String e1 = e1End.getType().getName();
-			String e1Name = e1End.getName();
-			String e2 = e2End.getType().getName();
-			String e2Name = e2End.getName();
-			associatedClasses.add(e1);
-			associatedClasses.add(e2);
-			structures.append(LinkTemplates.createAssociationStructure(assoc.getName(), e1, e2, e1Name, e2Name));
-
-			functions.append(LinkTemplates.linkTemplateSpecializationDef(e1, e2, assoc.getName(), e2Name,
-					e2End.isNavigable(), LinkTemplates.LinkFunctionType.Link));
-			functions.append(LinkTemplates.linkTemplateSpecializationDef(e2, e1, assoc.getName(), e1Name,
-					e1End.isNavigable(), LinkTemplates.LinkFunctionType.Link));
-
-			functions.append(LinkTemplates.linkTemplateSpecializationDef(e2, e1, assoc.getName(), e1Name,
-					e1End.isNavigable(), LinkTemplates.LinkFunctionType.Unlink));
-			functions.append(LinkTemplates.linkTemplateSpecializationDef(e1, e2, assoc.getName(), e2Name,
-					e2End.isNavigable(), LinkTemplates.LinkFunctionType.Unlink));
-
-		}
-
-		for (String className : associatedClasses) {
-			includes.append(PrivateFunctionalTemplates.include(className));
-			preDeclerations.append(GenerationTemplates.forwardDeclaration(className));
-		}
-		String headerSource = HeaderTemplates.headerGuard(
-				PrivateFunctionalTemplates.include(RuntimeTemplates.RTPath + LinkTemplates.AssocationHeader)
-						+ GenerationTemplates.putNamespace(preDeclerations.toString() + structures.toString(),
-								GenerationNames.Namespaces.ModelNamespace),
-				LinkTemplates.AssociationsStructuresHreaderName);
-
-		CppExporterUtils.writeOutSource(outputDirectory, (LinkTemplates.AssociationStructuresHeader),
-				CppExporterUtils.format(headerSource));
-
-		String cppSource = includes.toString()
-				+ GenerationTemplates.putNamespace(functions.toString(), GenerationNames.Namespaces.ModelNamespace);
-		CppExporterUtils.writeOutSource(outputDirectory, (LinkTemplates.AssociationStructuresSource),
-				CppExporterUtils.format(cppSource));
+		AssociationInstancesExporter associationInstances = new AssociationInstancesExporter(associationList,outputDirectory);
+		associationInstances.createUnitSource();
+		
+		AssociationEndDescriptorsExproter associationDescriptorsExporter = new AssociationEndDescriptorsExproter(associationList, outputDirectory);
+		associationDescriptorsExporter.createUnitSource();
 
 	}
 
-	private List<Pair<String, String>> getSignalParams(Signal signal) {
-		List<Pair<String, String>> ret = new ArrayList<Pair<String, String>>();
-		for (Parameter param : CppExporterUtils.getSignalConstructorParameters(signal, modelRoot)) {
-			ret.add(new Pair<String, String>(param.getType().getName(), param.getName()));
+	private void createInterfaces(String outputDirectory) throws FileNotFoundException, UnsupportedEncodingException {
+		List<Interface> interfaces = new ArrayList<Interface>();
+
+		CppExporterUtils.getTypedElements(interfaces, UMLPackage.Literals.INTERFACE, modelRoot);
+
+		for (Interface inf : interfaces) {
+			if (!inf.getOwnedReceptions().isEmpty()) {
+				InterfaceExporter interfaceExporter = new InterfaceExporter(inf,inf.getName(), outputDirectory);
+				interfaceExporter.createUnitSource();
+			}
+
 		}
-		return ret;
 	}
+
+
 }

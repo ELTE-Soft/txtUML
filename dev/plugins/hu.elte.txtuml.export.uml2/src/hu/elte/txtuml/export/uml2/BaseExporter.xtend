@@ -48,6 +48,11 @@ import org.eclipse.uml2.uml.SignalEvent
 import hu.elte.txtuml.utils.jdt.ElementTypeTeller
 import hu.elte.txtuml.export.uml2.structural.OutPortExporter
 import hu.elte.txtuml.export.uml2.structural.InPortExporter
+import org.eclipse.uml2.uml.Reception
+import hu.elte.txtuml.export.uml2.structural.ReceptionExporter
+import hu.elte.txtuml.export.uml2.structural.ConnectorTypeEndExporter
+import hu.elte.txtuml.export.uml2.structural.ConnectorTypeExporter
+import java.util.List
 
 /**
  * Base class for exporters, methods to export different kinds of elements using specific exporters.
@@ -70,7 +75,7 @@ abstract class BaseExporter<S, A, R extends Element> {
 
 	abstract def Element getImportedElement(String name)
 
-	def exportPackage(IPackageFragment pf, Consumer<Package> store) {
+	def exportPackage(List<IPackageFragment> pf, Consumer<Package> store) {
 		cache.export(new PackageExporter(this), pf, pf, store)
 	}
 
@@ -123,6 +128,14 @@ abstract class BaseExporter<S, A, R extends Element> {
 	def exportConnectorEnd(TypeDeclaration td, Consumer<ConnectorEnd> store) {
 		cache.export(new ConnectorEndExporter(this), td, td.resolveBinding, store)
 	}
+	
+	def exportConnectorType(TypeDeclaration td, Consumer<Association> store) {
+		cache.export(new ConnectorTypeExporter(this), td, td.resolveBinding, store)	
+	}
+	
+	def exportConnectorTypeEnd(TypeDeclaration td, Consumer<Property> store) {
+		cache.export(new ConnectorTypeEndExporter(this), td, td.resolveBinding, store)
+	}
 
 	def exportField(IVariableBinding td, Consumer<Property> store) {
 		cache.export(new FieldExporter(this), td, td, store)
@@ -130,6 +143,10 @@ abstract class BaseExporter<S, A, R extends Element> {
 
 	def exportOperation(MethodDeclaration md, Consumer<Operation> store) {
 		cache.export(new OperationExporter(this), md, md.resolveBinding, store)
+	}
+	
+	def exportReception(MethodDeclaration md, Consumer<Reception> store) {
+		cache.export(new ReceptionExporter(this), md, md.resolveBinding, store)
 	}
 
 	def exportDefaultConstructor(IMethodBinding bnd, Consumer<Operation> store) {

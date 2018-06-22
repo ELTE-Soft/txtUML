@@ -5,15 +5,76 @@ import java.util.List;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.FileNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.HierarchicalStateMachineNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.PointerAndMemoryNames;
-import hu.elte.txtuml.export.cpp.templates.GenerationNames.TimerNames;
+import hu.elte.txtuml.export.cpp.templates.GenerationNames.TypeDeclarationKeywords;
 
 public class GenerationTemplates {
 
 	public static final String StandardIOinclude = GenerationNames.StandardIOInclude;
 	public static final String DeploymentHeader = GenerationNames.DeploymentHeaderName;
-	public static final String TimerInterfaceHeader = TimerNames.TimerInterFaceName.toLowerCase();
-	public static final String TimerHeader = TimerNames.TimerClassName.toLowerCase();
+	
+	
+	public enum ClassDeclerationType {
+		Class(GenerationNames.TypeDeclarationKeywords.ClassType),
+		AssocDescriptor(GenerationNames.TypeDeclarationKeywords.AssociationEndDescriptor);
+		
+		private String typeString;
+		
+		ClassDeclerationType(String typeString) {
+			this.typeString = typeString;
+		}
+		
+		String getTypeDeclerationString() {
+			return typeString;
+		}
+		
+		
+	}
+	
+	public enum VariableType {				
+		RawPointerType,
+		StackStored,
+		EventPtr,
+		SharedPtr,
+		OriginalType,
+		UMLVariableType,
+		EType;
+		
+		VariableType() {
+			lowMul = 1;
+			upMul = 1;
+		}
+		
+		
+		
+		public int getLowMul() {
+			return lowMul;
+		}
 
+		public int getUpMul() {
+			return upMul;
+		}
+
+
+		public void setLowMul(int lowMul) {
+			this.lowMul = lowMul;
+		}
+
+		public void setUpMul(int upMul) {
+			this.upMul = upMul;
+		}
+
+		int lowMul;
+		int upMul;
+		
+		public static VariableType getUMLMultpliedElementType(int low, int up) {
+			VariableType type = UMLVariableType;
+			type.setLowMul(low);
+			type.setUpMul(up);
+			return type;
+		}
+	}
+	
+	
 	public static String headerName(String className) {
 		return className + "." + FileNames.HeaderExtension;
 	}
@@ -23,8 +84,9 @@ public class GenerationTemplates {
 	}
 
 	public static String dataType(String datatTypeName, String attributes) {
-		return GenerationNames.DataType + " " + datatTypeName + "\n" + "{\n" + attributes + "}";
+		return TypeDeclarationKeywords.DataType + " " + datatTypeName + "\n" + "{\n" + attributes + "}";
 	}
+	
 
 	public static String generatedAbstractClassName(String className) {
 		return "Abstract" + className;
@@ -39,11 +101,11 @@ public class GenerationTemplates {
 		return GenerationNames.formatIncomingParamName(paramName);
 	}
 
-	public static String forwardDeclaration(String className) {
+	public static String forwardDeclaration(String className, ClassDeclerationType type) {
+		
+		return type.getTypeDeclerationString() + " " + PrivateFunctionalTemplates.mapUMLTypeToCppClass(className) + ";\n";
 
-		return GenerationNames.ClassType + " " + PrivateFunctionalTemplates.mapUMLClassToCppClass(className) + ";\n";
 	}
-
 	public static String putNamespace(String source, String namespace) {
 		return "namespace " + namespace + "\n{\n" + source + "\n}\n";
 	}
@@ -51,6 +113,7 @@ public class GenerationTemplates {
 	public static String formatSubSmFunctions(String source) {
 		return source.replaceAll(PointerAndMemoryNames.Self, HierarchicalStateMachineNames.ParentSmMemberName);
 	}
+
 
 	public static String createObject(String typeName, String objName, boolean sharedObject) {
 		return createObject(typeName, objName, null, null, sharedObject);

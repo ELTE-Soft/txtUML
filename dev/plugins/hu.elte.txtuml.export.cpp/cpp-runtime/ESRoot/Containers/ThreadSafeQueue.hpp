@@ -35,12 +35,12 @@ public:
 	void dequeue(ValueType& ret)
 	{
 	  std::unique_lock<std::mutex> mlock(_mutex);
-	  while (_queue.empty() && !_stop)
+	  if (_queue.empty() && !_stop)
 	  {
-	    _cond->wait(mlock);
+		  _cond->wait(mlock, [this] {return !_queue.empty() || _stop || this->exitFromWaitingCondition(); });
 	  }
 
-	  if (!_stop)
+	  if (!_queue.empty() && !_stop)
 	  {
 			ret = _queue.front();
 			_queue.pop();
@@ -83,13 +83,16 @@ public:
 
 	ThreadSafeQueue(const ThreadSafeQueue&) = delete;            // disable copying
 	ThreadSafeQueue& operator=(const ThreadSafeQueue&) = delete; // disable assignment
-
+protected:
+	virtual bool exitFromWaitingCondition() { return false; }
 private:
 	QueueType _queue;
 
 	std::mutex _mutex;
 	std::shared_ptr<std::condition_variable> _cond;
 	std::atomic_bool _stop;
+
+
 };
 
 

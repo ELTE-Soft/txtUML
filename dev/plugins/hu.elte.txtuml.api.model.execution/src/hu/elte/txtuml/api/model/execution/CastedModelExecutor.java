@@ -29,10 +29,14 @@ import hu.elte.txtuml.api.model.Model;
 public interface CastedModelExecutor<S extends CastedModelExecutor<S>> extends ModelExecutor {
 
 	@Override
-	S start() throws LockedModelExecutorException;
+	default S start() throws LockedModelExecutorException {
+		return startNoWait().awaitInitialization();
+	}
 
 	@Override
-	S start(Runnable initialization) throws LockedModelExecutorException;
+	default S start(Runnable initialization) throws LockedModelExecutorException {
+		return setInitialization(initialization).start();
+	}
 
 	@Override
 	S setInitialization(Runnable initialization) throws LockedModelExecutorException;
@@ -56,16 +60,25 @@ public interface CastedModelExecutor<S extends CastedModelExecutor<S>> extends M
 	S removeTerminationBlocker(Object blocker);
 
 	@Override
-	S awaitInitialization();
+	default S awaitInitialization() {
+		while (true) {
+			try {
+				return awaitInitializationNoCatch();
+			} catch (InterruptedException e) {
+			}
+		}
+	}
 
 	@Override
 	S awaitInitializationNoCatch() throws InterruptedException;
-	
-	@Override
-	S launch() throws LockedModelExecutorException;
 
 	@Override
-	S launch(Runnable initialization) throws LockedModelExecutorException;
+	S startNoWait() throws LockedModelExecutorException;
+
+	@Override
+	default S startNoWait(Runnable initialization) throws LockedModelExecutorException {
+		return setInitialization(initialization).startNoWait();
+	}
 
 	@Override
 	S addTraceListener(TraceListener listener) throws LockedModelExecutorException;
@@ -86,13 +99,13 @@ public interface CastedModelExecutor<S extends CastedModelExecutor<S>> extends M
 	S removeWarningListener(WarningListener listener) throws LockedModelExecutorException;
 
 	@Override
-	S setDynamicChecks(boolean newValue) throws LockedModelExecutorException;
+	S setLogLevel(LogLevel logLevel) throws LockedModelExecutorException;
+
+	@Override
+	S setCheckLevel(CheckLevel checkLevel) throws LockedModelExecutorException;
 
 	@Override
 	S setExecutionTimeMultiplier(double newMultiplier) throws LockedModelExecutorException;
-
-	@Override
-	S setTraceLogging(boolean newValue) throws LockedModelExecutorException;
 
 	/**
 	 * @return this
