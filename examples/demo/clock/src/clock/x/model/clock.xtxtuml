@@ -26,7 +26,7 @@ class Clock {
 		link this, pendulum via PendulumInClock;
 		link this, secondHand via SecondHand;
 		link this, minuteHand via MinuteHand;
-		link this, hourHand via hourHand;
+		link this, hourHand via HourHand;
 		link this, display via DisplayInClock;
 
 		connect pendulum->(Pendulum.OutTickPort), secondHand->(Hand.InTickPort) via Seconds;

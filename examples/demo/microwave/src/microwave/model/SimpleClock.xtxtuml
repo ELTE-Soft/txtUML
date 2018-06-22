@@ -21,13 +21,13 @@ class SimpleClock extends Clock {
 
 	state Running {
 		entry {
-			Timer timer = Timer.start(new Stop(), this, 10000);
-			link(TimerOfClock.timer, timer, TimerOfClock.clock, this);
+			Timer timer = Timer.^start(new Stop(), this, 10000);
+			link timer, this via TimerOfClock;
 		}
 		exit {
 			Timer timer = this->(TimerOfClock.timer).one();
 			timer.cancel();
-			unlink(TimerOfClock.timer, timer, TimerOfClock.clock, this);
+			unlink timer, this via TimerOfClock;
 		}
 	}
 

@@ -39,7 +39,7 @@ class Timer {
 	 *         happens
 	 */
 	public static external-body Timer ^start(Signal sig, ModelClass targetObj, int millisecs) {
-		return new Timer(sig, targetObj, millisecs);
+		return create Timer(sig, targetObj, millisecs);
 	}
 
 	/**

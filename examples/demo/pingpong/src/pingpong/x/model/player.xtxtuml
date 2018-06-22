@@ -26,10 +26,11 @@ class Player {
 		this.name = name;
 
 		Racket racket = create Racket();
-		link Player.this as PlayerOwnsRacket.player, racket as PlayerOwnsRacket.racket via PlayerOwnsRacket;
+		link this, racket via PlayerOwnsRacket;
 		connect this->(Player.BallAtPlayerPort),
-				racket->(Racket.BallAtRacketPort) via PlayerUsesRacket;
-		connect this->(Player.ShoutPort), racket->(Racket.HitOrMissPort) via  PlayerHitsOrMisses;
+			racket->(Racket.BallAtRacketPort) via PlayerUsesRacket;
+		connect this->(Player.ShoutPort),
+			racket->(Racket.HitOrMissPort) via PlayerHitsOrMisses;
 
 		start racket;
 	}

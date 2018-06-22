@@ -81,7 +81,7 @@ class Tower {
 					Plane nextPlane = thePlane->(TheNextWaitingTakingOffPlane.toPlane).one();
 					if(nextPlane != null) {
 						unlink thePlane, nextPlane as TheNextWaitingTakingOffPlane.toPlane via TheNextWaitingTakingOffPlane;
-						link  nextPlane, this via TheFirstWaitingTakingOffPlane; 
+						link nextPlane, this via TheFirstWaitingTakingOffPlane;
 					}
 					
 					firstPlane = nextPlane;
@@ -112,7 +112,7 @@ class Tower {
 					// Unlink
 					
 					
-					unlink thePLane, this via TheFirstWaitingLandingPlane;
+					unlink thePlane, this via TheFirstWaitingLandingPlane;
 					
 					Plane nextPlane = thePlane->(TheNextWaitingLandingPlane.toPlane).one();
 					if(nextPlane != null) {
@@ -155,7 +155,7 @@ class Tower {
 				}
 				
 				Plane lastPlane = actPlane;
-				link lastPlane, thePLane as TheNextWaitingLandingPlane.toPlane via TheNextWaitingLandingPlane;
+				link lastPlane, thePlane as TheNextWaitingLandingPlane.toPlane via TheNextWaitingLandingPlane;
 			}
 			
 		}
@@ -180,7 +180,7 @@ class Tower {
 			
 			if(firstPlane == null) {
 				// There isn't any waiting landing planes
-				link thePLane, this via TheFirstWaitingTakingOffPlane;
+				link thePlane, this via TheFirstWaitingTakingOffPlane;
 			} else {
 				// There are any waiting landing planes
 				
@@ -194,7 +194,7 @@ class Tower {
 				}
 				
 				Plane lastPlane = actPlane;
-				link lastPLane, thePlane as TheNextWaitingTakingOffPlane.toPlane via TheNextWaitingTakingOffPlane;
+				link lastPlane, thePlane as TheNextWaitingTakingOffPlane.toPlane via TheNextWaitingTakingOffPlane;
 			}
 				
 		}
@@ -286,8 +286,8 @@ class Tower {
 					unlink actualPlane, this via TheFirstWaitingLandingPlane;
 				} else {
 					unlink actualPlane, this via TheFirstWaitingLandingPlane;
-					unlink thePLane, nextPLane as TheNextWaitingLandingPlane.toPlane via TheNextWaitingLandingPlane;
-					link nextPLane, this via TheFirstWaitingLandingPlane;
+					unlink thePlane, nextPlane as TheNextWaitingLandingPlane.toPlane via TheNextWaitingLandingPlane;
+					link nextPlane, this via TheFirstWaitingLandingPlane;
 				}
 			} else {
 				if(nextPlane == null) {

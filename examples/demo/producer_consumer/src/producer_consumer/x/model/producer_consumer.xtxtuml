@@ -151,7 +151,7 @@ class Storage {
 		guard(Storage.this->(InStore.item).size() > 0);
 		effect {
 			Consumer consumer = Storage.this->(Request.consumer).one();
-			unlink Storage.this, consumer via Request;
+			unlink this, consumer via Request;
 			Item item = Storage.this->(InStore.item).one();
 			unlink Storage.this, item via InStore;
 			consumer.consume(item);

@@ -33,13 +33,13 @@ class SmartClock extends Clock {
 
 	state Running {
 		entry {
-			Timer timer = Timer.start(new Tick(), this, 1000);
-			link(TimerOfClock.timer, timer, TimerOfClock.clock, this);
+			Timer timer = Timer.^start(new Tick(), this, 1000);
+			link timer, this via TimerOfClock;
 		}
 		exit {
 			Timer timer = this->(TimerOfClock.timer).one();
 			timer.cancel();
-			unlink(TimerOfClock.timer, timer, TimerOfClock.clock, this);
+			unlink timer, this via TimerOfClock;
 		}
 	}
 
