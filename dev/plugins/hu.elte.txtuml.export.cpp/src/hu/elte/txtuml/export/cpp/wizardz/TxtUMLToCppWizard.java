@@ -24,6 +24,7 @@ import hu.elte.txtuml.export.fmu.EnvironmentExporter;
 import hu.elte.txtuml.export.fmu.FMUConfig;
 import hu.elte.txtuml.export.fmu.FMUExportGovernor;
 import hu.elte.txtuml.export.fmu.FMUResourceHandler;
+import hu.elte.txtuml.export.fmu.FMUStandardCreator;
 import hu.elte.txtuml.export.fmu.ModelDescriptionExporter;
 import hu.elte.txtuml.utils.Pair;
 import hu.elte.txtuml.utils.eclipse.Dialogs;
@@ -105,6 +106,9 @@ public class TxtUMLToCppWizard extends Wizard {
 				environmentExporter.exportHeader(genPath, fmuConfig);
 				debuggerExporter.export(genPath, fmuConfig);
 				resourceHandler.copyResources(genPath);
+				
+				FMUStandardCreator fmuCreator = new FMUStandardCreator();
+				fmuCreator.buildFMUProject(genPath.toString());
 			}
 			
 			String projectFolder = ResourcesPlugin.getWorkspace().getRoot().getProject(txtUMLProject).getLocation()

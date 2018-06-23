@@ -31,7 +31,7 @@ public class BuildSupport implements IRunnableWithProgress {
 			for (String environment : environments) {
 				monitor.worked(1);
 				
-				if(!build(directory, environment).equals(0)){
+				if(!createBuildEnvironment(directory, environment).equals(0)){
 					unavailableEnvironments.add(environment);
 				}
 			}
@@ -41,7 +41,7 @@ public class BuildSupport implements IRunnableWithProgress {
 			monitor.done();
 		}
 	}
-	
+		
 	public void handleErrors() throws Exception {
 		if(buildIOFail != null) {
 			throw buildIOFail;
@@ -56,11 +56,21 @@ public class BuildSupport implements IRunnableWithProgress {
 		}
 	}
 
-	private static Integer build(String directory, String environment) throws IOException, InterruptedException {
-		String buildDir = directory + File.separator + "build_" + environment;
+	public static Integer createBuildEnvironment(String directory, String environment) throws IOException, InterruptedException {
+		String buildDir = createBuildEnvioronmentDir(directory, environment);
 		File buildDirFile = new File(buildDir);
 		buildDirFile.mkdir();
 		return CppExporterUtils.executeCommand(buildDir,
-				Arrays.asList("cmake", "-G", environment, "-DCMAKE_BUILD_TYPE=" + "Debug", ".."), null, "buildLog.txt");
+				Arrays.asList("cmake", "-G", environment, "-DCMAKE_BUILD_TYPE=" + "Debug", ".."), null, "createEnvLog.txt");
+	}
+	
+	public static Integer buildWithEnvironment(String directory, String environment, List<String> buildCommand) throws IOException, InterruptedException {
+		String buildDir = createBuildEnvioronmentDir(directory, environment);
+		return CppExporterUtils.executeCommand(buildDir, buildCommand, null, "buildLog.txt");
+
+	}
+	
+	private static String createBuildEnvioronmentDir(String directory, String environment) {
+		return directory + File.separator + "build_" + environment;
 	}
 }
