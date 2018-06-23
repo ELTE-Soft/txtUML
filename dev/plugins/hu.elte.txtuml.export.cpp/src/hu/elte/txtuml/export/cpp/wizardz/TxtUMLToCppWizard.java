@@ -108,7 +108,8 @@ public class TxtUMLToCppWizard extends Wizard {
 				resourceHandler.copyResources(genPath);
 				
 				FMUStandardCreator fmuCreator = new FMUStandardCreator();
-				fmuCreator.buildFMUProject(genPath.toString());
+				fmuCreator.createFMU("fmulib", genPath, Paths.get(proj.getLocation().toOSString(), Uml2ToCppExporter.GENERATED_CPP_FOLDER_NAME, "modelDescription.xml"));
+				
 			}
 			
 			String projectFolder = ResourcesPlugin.getWorkspace().getRoot().getProject(txtUMLProject).getLocation()

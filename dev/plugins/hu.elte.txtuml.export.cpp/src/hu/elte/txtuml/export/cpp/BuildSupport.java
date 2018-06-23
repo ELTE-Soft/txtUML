@@ -66,11 +66,13 @@ public class BuildSupport implements IRunnableWithProgress {
 	
 	public static Integer buildWithEnvironment(String directory, String environment, List<String> buildCommand) throws IOException, InterruptedException {
 		String buildDir = createBuildEnvioronmentDir(directory, environment);
-		return CppExporterUtils.executeCommand(buildDir, buildCommand, null, "buildLog.txt");
+		Integer ret = CppExporterUtils.executeCommand(buildDir, buildCommand, null, "buildLog.txt");
+		
+		return ret;
 
 	}
 	
-	private static String createBuildEnvioronmentDir(String directory, String environment) {
+	public static String createBuildEnvioronmentDir(String directory, String environment) {
 		return directory + File.separator + "build_" + environment;
 	}
 }
