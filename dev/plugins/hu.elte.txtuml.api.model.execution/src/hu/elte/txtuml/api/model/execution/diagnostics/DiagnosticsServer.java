@@ -22,7 +22,6 @@ import hu.elte.txtuml.api.model.execution.diagnostics.protocol.GlobalSettings;
  *
  */
 
-@SuppressWarnings("restriction")
 public class DiagnosticsServer implements HttpHandler{
 	
 	private HttpServer server;
