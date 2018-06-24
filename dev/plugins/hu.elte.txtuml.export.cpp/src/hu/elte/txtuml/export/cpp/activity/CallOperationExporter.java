@@ -1,6 +1,7 @@
 package hu.elte.txtuml.export.cpp.activity;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -21,7 +22,10 @@ import org.eclipse.uml2.uml.UMLPackage;
 
 import hu.elte.txtuml.export.cpp.CppExporterUtils;
 import hu.elte.txtuml.export.cpp.IDependencyCollector;
+import hu.elte.txtuml.export.cpp.templates.GenerationNames.CollectionNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.FileNames;
+import hu.elte.txtuml.export.cpp.templates.GenerationNames.PointerAndMemoryNames;
+import hu.elte.txtuml.export.cpp.templates.GenerationTemplates;
 import hu.elte.txtuml.export.cpp.templates.activity.ActivityTemplates;
 import hu.elte.txtuml.export.cpp.templates.activity.OperatorTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.ObjectDeclDefTemplates;
@@ -128,6 +132,13 @@ class CallOperationExporter {
 			val = ActivityTemplates.operationCall(activityExportResolver.getTargetFromInputPin(node.getTarget(), false),
 					ActivityTemplates.accesOperatoForType(activityExportResolver.getTypeFromInputPin(node.getTarget())),
 					op.getName(), getParametersNames(node.getArguments()));
+			
+			
+			if(op.getUpper() == 1 && returnPin != null) {
+				val = ActivityTemplates.operationCall(val, PointerAndMemoryNames.SimpleAccess, 
+						CollectionNames.SelectAnyFunctionName, Collections.emptyList());
+			}
+
 
 		}
 
@@ -160,7 +171,7 @@ class CallOperationExporter {
 		StringBuilder declerations = new StringBuilder("");
 		for (OutputPin outPin : outParamaterPins) {
 			declerations.append(ObjectDeclDefTemplates.variableDecl(outPin.getType().getName(),
-					tempVariableExporter.getRealVariableName(outPin), ObjectDeclDefTemplates.VariableType.Default));
+					tempVariableExporter.getRealVariableName(outPin), GenerationTemplates.VariableType.RawPointerType));
 		}
 
 		return declerations.toString();
@@ -189,7 +200,7 @@ class CallOperationExporter {
 			return ActivityTemplates.simpleSetValue(var, value);
 		} else {
 			declaredTempVariables.add(var);
-			return ActivityTemplates.addVariableTemplate(type, var, value);
+			return ActivityTemplates.addVariableTemplate(type, var, value, GenerationTemplates.VariableType.EType);
 
 		}
 	}

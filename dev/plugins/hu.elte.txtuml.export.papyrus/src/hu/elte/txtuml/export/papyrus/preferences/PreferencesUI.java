@@ -10,6 +10,7 @@ import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 
 import hu.elte.txtuml.export.papyrus.graphics.IconsUtil;
+import hu.elte.txtuml.utils.eclipse.preferences.PreferencesManager;
 
 /**
  * Creates the controls for the preferences

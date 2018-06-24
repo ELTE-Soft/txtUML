@@ -1,11 +1,13 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: txtUML Utils for Eclipse Plugins
-Bundle-SymbolicName: hu.elte.txtuml.utils.eclipse
+Bundle-SymbolicName: hu.elte.txtuml.utils.eclipse;singleton:=true
 Bundle-Version: 0.6.0.qualifier
 Bundle-Vendor: ELTE
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Export-Package: hu.elte.txtuml.utils.eclipse,
+ hu.elte.txtuml.utils.eclipse.preferences,
+ hu.elte.txtuml.utils.eclipse.wizards,
  hu.elte.txtuml.utils.jdt
 Require-Bundle: hu.elte.txtuml.api.model,
  org.eclipse.jdt.core,
@@ -15,5 +17,8 @@ Require-Bundle: hu.elte.txtuml.api.model,
  org.eclipse.jface,
  org.eclipse.ui.ide,
  org.eclipse.jdt.launching,
- org.eclipse.jdt.ui
+ org.eclipse.jdt.ui,
+ org.eclipse.ui.workbench
 Import-Package: org.eclipse.ui.preferences
+Bundle-ActivationPolicy: lazy
+Bundle-Activator: hu.elte.txtuml.utils.eclipse.Activator

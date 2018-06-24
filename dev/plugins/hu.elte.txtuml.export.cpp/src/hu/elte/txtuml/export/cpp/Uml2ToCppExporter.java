@@ -23,30 +23,29 @@ import org.eclipse.uml2.uml.Class;
 import org.eclipse.uml2.uml.DataType;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.Interface;
-import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.UMLPackage;
 import org.osgi.framework.Bundle;
-import hu.elte.txtuml.export.cpp.thread.ThreadPoolConfiguration;
+
 import hu.elte.txtuml.api.deployment.RuntimeType;
+import hu.elte.txtuml.export.cpp.structural.AssociationEndDescriptorsExproter;
+import hu.elte.txtuml.export.cpp.structural.AssociationInstancesExporter;
 import hu.elte.txtuml.export.cpp.structural.ClassExporter;
 import hu.elte.txtuml.export.cpp.structural.DataTypeExporter;
 import hu.elte.txtuml.export.cpp.structural.DependencyExporter;
 import hu.elte.txtuml.export.cpp.structural.EventStructuresExporter;
+import hu.elte.txtuml.export.cpp.structural.InterfaceExporter;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.FileNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.ModifierNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationTemplates;
 import hu.elte.txtuml.export.cpp.templates.Options;
-import hu.elte.txtuml.export.cpp.templates.PrivateFunctionalTemplates;
 import hu.elte.txtuml.export.cpp.templates.RuntimeTemplates;
 import hu.elte.txtuml.export.cpp.templates.activity.ActivityTemplates;
 import hu.elte.txtuml.export.cpp.templates.statemachine.StateMachineTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.FunctionTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.HeaderTemplates;
-import hu.elte.txtuml.export.cpp.templates.structual.LinkTemplates;
 import hu.elte.txtuml.export.cpp.thread.ThreadHandlingManager;
-import hu.elte.txtuml.export.cpp.structural.InterfaceExporter;
-
+import hu.elte.txtuml.export.cpp.thread.ThreadPoolConfiguration;
 import hu.elte.txtuml.utils.Pair;
 
 public class Uml2ToCppExporter {
@@ -55,7 +54,6 @@ public class Uml2ToCppExporter {
 
 	private static final String RUNTIME_DIR_PREFIX = RuntimeTemplates.RTPath;
 	private static final String RUNTIME_LIB_NAME = "libsmrt";
-	private static final String DEFAULT_ASSOCIATIONS_NAME = "associations";
 	private static final String PROJECT_NAME = "hu.elte.txtuml.export.cpp";
 	private static final String CPP_FILES_FOLDER_NAME = "cpp-runtime";
 
@@ -251,7 +249,6 @@ public class Uml2ToCppExporter {
 		librarySourceClasses.add("StateMachineOwner");
 		librarySourceClasses.add("NotStateMachineOwner");
 		librarySourceClasses.add("threadpool");
-		librarySourceClasses.add("threadpoolmanager");
 		librarySourceClasses.add("threadcontainer");
 		librarySourceClasses.add("timer");
 		librarySourceClasses.add("itimer");
@@ -260,9 +257,9 @@ public class Uml2ToCppExporter {
 		List<String> sourceNames = new ArrayList<String>();
 		sourceNames.add(DEFAULT_TARGET_EXECUTABLE);
 		sourceNames.add(DEPLOYMENT_NAME);
-		sourceNames.add(DEFAULT_ASSOCIATIONS_NAME);
 		sourceNames.add(INIT_MACHINE_NAME);
 		sourceNames.add(ENVIRONMENT_INITIALIZER);
+		sourceNames.add(GenerationNames.AssociationNames.AssociationInstancesUnitName);
 		sourceNames.addAll(classNames);
 		cmake.addExecutableTarget(DEFAULT_TARGET_EXECUTABLE, sourceNames, "");
 		cmake.writeOutCMakeLists();
@@ -277,116 +274,15 @@ public class Uml2ToCppExporter {
 
 	private void createAssociationsSources(String outputDirectory)
 			throws FileNotFoundException, UnsupportedEncodingException {
-		
-		class TypeDecriptor {
 
-			public TypeDecriptor(String name, Boolean isInterface) {
-				this.name = name;
-				this.isInterface = isInterface;
-			}
-			public String getName() {
-				return name;
-			}
-			public Boolean getIsInterface() {
-				return isInterface;
-			}
-			private String name;
-			private Boolean isInterface;
-			
-			@Override
-			public int hashCode() {
-				final int prime = 31;
-				int result = 1;
-				result = prime * result + ((isInterface == null) ? 0 : isInterface.hashCode());
-				result = prime * result + ((name == null) ? 0 : name.hashCode());
-				return result;
-			}
-			@Override
-			public boolean equals(Object obj) {
-				if (this == obj)
-					return true;
-				if (obj == null)
-					return false;
-				if (getClass() != obj.getClass())
-					return false;
-				TypeDecriptor other = (TypeDecriptor) obj;
-				if (isInterface == null) {
-					if (other.isInterface != null)
-						return false;
-				} else if (!isInterface.equals(other.isInterface))
-					return false;
-				if (name == null) {
-					if (other.name != null)
-						return false;
-				} else if (!name.equals(other.name))
-					return false;
-				return true;
-			}
-			
-			
-		}
-		
-		Set<TypeDecriptor> associatedClasses = new HashSet<TypeDecriptor>();
-		StringBuilder includes = new StringBuilder(
-				PrivateFunctionalTemplates.include(LinkTemplates.AssociationsStructuresHreaderName));
-		StringBuilder preDeclerations = new StringBuilder("");
-		StringBuilder structures = new StringBuilder("");
-		StringBuilder functions = new StringBuilder("");
 
 		List<Association> associationList = new ArrayList<Association>();
 		CppExporterUtils.getTypedElements(associationList, UMLPackage.Literals.ASSOCIATION, modelRoot);
-		for (Association assoc : associationList) {
-			Property e1End = assoc.getMemberEnds().get(0);
-			Property e2End = assoc.getMemberEnds().get(1);
-			String e1 = e1End.getType().getName();
-			String e1Name = e1End.getName();
-			String e2 = e2End.getType().getName();
-			String e2Name = e2End.getName();
-			associatedClasses.add(new TypeDecriptor(e1, e1End.getType().eClass().equals(UMLPackage.Literals.INTERFACE)));
-			associatedClasses.add(new TypeDecriptor(e2, e2End.getType().eClass().equals(UMLPackage.Literals.INTERFACE)));
-			structures.append(LinkTemplates.createAssociationStructure(assoc.getName(), e1, e2, e1Name, e2Name));
-			
-			// TODO temporally solution, this functions will be elinamented
-			if(!e1End.getType().eClass().equals(UMLPackage.Literals.INTERFACE) && !e2End.getType().eClass().equals(UMLPackage.Literals.INTERFACE)) {
-				functions.append(LinkTemplates.linkTemplateSpecializationDef(e1, e2, assoc.getName(), e2Name,
-						e2End.isNavigable(), LinkTemplates.LinkFunctionType.Link));
-				functions.append(LinkTemplates.linkTemplateSpecializationDef(e2, e1, assoc.getName(), e1Name,
-						e1End.isNavigable(), LinkTemplates.LinkFunctionType.Link));
-
-				functions.append(LinkTemplates.linkTemplateSpecializationDef(e2, e1, assoc.getName(), e1Name,
-						e1End.isNavigable(), LinkTemplates.LinkFunctionType.Unlink));
-				functions.append(LinkTemplates.linkTemplateSpecializationDef(e1, e2, assoc.getName(), e2Name,
-						e2End.isNavigable(), LinkTemplates.LinkFunctionType.Unlink));
-			}
-
-
-		}
-		StringBuilder headerIncludes = new StringBuilder("");
-		headerIncludes.append(PrivateFunctionalTemplates.include(RuntimeTemplates.RTPath + LinkTemplates.AssocationHeader));
-		for (TypeDecriptor classDescriptor : associatedClasses) {
-			includes.append(PrivateFunctionalTemplates.include(classDescriptor.getName()));
-			if(!classDescriptor.getIsInterface()) {
-				preDeclerations.append(GenerationTemplates.forwardDeclaration(classDescriptor.getName()));
-
-			} else {
-				headerIncludes.append(PrivateFunctionalTemplates.include(classDescriptor.getName()));
-			}
-		}
-		String headerSource = HeaderTemplates.headerGuard(
-				headerIncludes.toString() 
-				+ GenerationTemplates.putNamespace(preDeclerations.toString() 
-				+ structures.toString(),
-				GenerationNames.Namespaces.ModelNamespace),
-				LinkTemplates.AssociationsStructuresHreaderName);
-
-		CppExporterUtils.writeOutSource(outputDirectory, (LinkTemplates.AssociationStructuresHeader),
-				CppExporterUtils.format(headerSource));
-
-		String cppSource = includes.toString()
-				+ GenerationTemplates.putNamespace(functions.toString(), GenerationNames.Namespaces.ModelNamespace);
+		AssociationInstancesExporter associationInstances = new AssociationInstancesExporter(associationList,outputDirectory);
+		associationInstances.createUnitSource();
 		
-		CppExporterUtils.writeOutSource(outputDirectory, (LinkTemplates.AssociationStructuresSource),
-				CppExporterUtils.format(cppSource));
+		AssociationEndDescriptorsExproter associationDescriptorsExporter = new AssociationEndDescriptorsExproter(associationList, outputDirectory);
+		associationDescriptorsExporter.createUnitSource();
 
 	}
 

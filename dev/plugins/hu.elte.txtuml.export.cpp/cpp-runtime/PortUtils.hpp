@@ -1,3 +1,7 @@
+/** @file PortUtils.hpp
+Contains the port related types and connection functions.
+*/
+
 #include "ievent.hpp"
 #include "ESRoot/Types.hpp"
 #include "InterfaceUtils.hpp"
@@ -112,23 +116,58 @@ private:
 	ES::PortRef<ProvidedInf, RequiredInf> port;
 };
 
-// TODO Handle create link actions uniformly
-template<typename LeftEnd, typename RightEnd>
-void assemblyConnect(
-ES::IPortRef<typename LeftEnd::EdgeType, typename RightEnd::EdgeType> p1, 
-ES::IPortRef <typename RightEnd::EdgeType, typename LeftEnd::EdgeType> p2)
+
+/*enum class ConnectorKind {
+	Delegation,
+	Assemembly
+};
+
+template<class AssoctaionType, ConnectorKind k>
+class Connector {
+
+};
+
+template<class AssoctaionType>
+class Connector<AssoctaionType, ConnectorKind::Delegation> {
+public:
+	template<class ProvidedInf, class RequiredInf>
+	void connect (ES::PortRef<ProvidedInf,RequiredInf> parent, typename AssoctaionType::SecondClassRoleType* childEnd,
+				 ES::IPortRef<ProvidedInf, RequiredInf> childPort) {
+		childPort->setDelgationConnectedPort (parentPort);
+		parentPort->setInnerConnection (childPort);
+	}
+
+};
+
+template<class AssoctaionType>
+class Connector<AssoctaionType, ConnectorKind::Assemembly> {
+public:
+
+	template<class ProvidedInf, class RequiredInf>
+	void connect (typename AssoctaionType::FirstClassRoleType* p1End, ES::IPortRef<ProvidedInf, RequiredInf> p1,
+				  ES::IPortRef<RequiredInf, ProvidedInf> p2, typename AssoctaionType::SecondClassRoleType* p2End) {
+		p1->setAssemblyConnectedPort (p2);
+		p2->setAssemblyConnectedPort (p1);
+	}
+
+};*/
+
+template<typename R1, typename R2, typename R1PortType, typename R2PortType>
+void assemblyConnect(R1* /*r1*/, R1PortType p1,
+					 R2* /*r2*/, R2PortType p2)
 {
 	p1->setAssemblyConnectedPort(p2);
 	p2->setAssemblyConnectedPort(p1);
+	//(static_cast<Connector<typename r1::AssocType, ConnectorKind::Assembly>*>(r->connector))->connect<Prov,Req>(r1, p1, r2, p2);
 }
 
-template<typename ChildEnd, typename ParentRequired>
-void delegateConnect(
-ES::IPortRef<typename ChildEnd::EdgeType, ParentRequired> childPort,
-ES::PortRef <typename ChildEnd::EdgeType, ParentRequired> parentPort)
+template<typename CE, typename ParentType, typename ChildType>
+void delegateConnect(ParentType parentPort,
+CE* /*childEnd*/, ChildType childPort)
 {
         childPort->setDelegationConnectedPort(parentPort);
 	parentPort->setInnerConnection(childPort);
+	//(static_cast<Connector<childEnd::AssocType,ConnectorKind::Delegation>*>(r->connector))->connect<Prov,Req>(parentPort, childEnd, childPort);
 }
 
 

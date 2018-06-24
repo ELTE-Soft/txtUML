@@ -4,7 +4,7 @@ import com.google.common.collect.ImmutableList;
 
 import hu.elte.txtuml.api.model.Model;
 import hu.elte.txtuml.api.model.execution.impl.seqdiag.DefaultSeqDiagExecutor;
-import hu.elte.txtuml.api.model.execution.seqdiag.error.MessageError;
+import hu.elte.txtuml.api.model.execution.seqdiag.error.SequenceDiagramProblem;
 import hu.elte.txtuml.api.model.impl.SequenceDiagramRelated;
 import hu.elte.txtuml.api.model.seqdiag.SequenceDiagram;
 
@@ -51,7 +51,7 @@ public interface SequenceDiagramExecutor extends CastedModelExecutor<SequenceDia
 
 	SequenceDiagramExecutor setDiagram(SequenceDiagram diagram) throws LockedSeqDiagExecutorException;
 
-	ImmutableList<MessageError> getErrors();
+	ImmutableList<SequenceDiagramProblem> getErrors();
 
 	/**
 	 * Not supported; use the {@link #setDiagram} method instead.

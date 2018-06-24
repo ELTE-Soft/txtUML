@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Sequence diagram tests
+Bundle-SymbolicName: hu.elte.txtuml.seqdiag.tests
+Bundle-Version: 0.6.0.qualifier
+Fragment-Host: hu.elte.txtuml.seqdiag
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Require-Bundle: org.junit
+Bundle-Vendor: ELTE

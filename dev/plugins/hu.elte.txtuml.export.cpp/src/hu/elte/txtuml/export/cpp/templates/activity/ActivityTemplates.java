@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Optional;
 
 import hu.elte.txtuml.export.cpp.templates.GenerationNames;
+import hu.elte.txtuml.export.cpp.templates.GenerationTemplates;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.ActionNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.CollectionNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.PointerAndMemoryNames;
@@ -20,7 +21,7 @@ import hu.elte.txtuml.utils.Pair;
 public class ActivityTemplates {
 	public static final String AddSimpleTypeOp = "+=";
 	public static final String ReplaceSimpleTypeOp = "=";
-	public static final String AddCompositTypeOp = ".push_back";
+	public static final String AddCompositTypeOp = ".add";
 	public static final String ReplaceCompositTypeOp = ReplaceSimpleTypeOp;
 	public static final String AccessOperatorForSets = PointerAndMemoryNames.SimpleAccess;
 	public static final String SignalSmartPointerType = PointerAndMemoryNames.EventPtr;
@@ -51,17 +52,28 @@ public class ActivityTemplates {
 	}
 
 	public static String linkObjects(String firstObjectName, String secondObjectName, String associationName,
-			String endPoint1, String endPoint2, LinkFunctionType linkType) {
+			Optional<String> endPoint1, String endPoint2, LinkFunctionType linkType) {
 		
-		String secondTemplateArgument = "typename " + associationName + "::" + endPoint2;
+		/*String secondTemplateArgument = "typename " + associationName + "::" + endPoint2;
 
 		if(linkType == LinkFunctionType.DelegeateConnect) {
 			secondTemplateArgument = endPoint2;
-		}
+		}*/
+		ArrayList<String> parameters = new ArrayList<>();
+		parameters.add(firstObjectName);
+		parameters.add(roleReadFromAssoc(associationName, endPoint2));
+		parameters.add(secondObjectName);
 		
-		return  LinkTemplates.getLinkFunctionName(linkType) + "<"
-				+ "typename " + associationName + "::" + endPoint1 + "," + secondTemplateArgument
-				+ ">" + "(" + firstObjectName + "," + secondObjectName + ");\n";
+		if(endPoint1.isPresent()) {
+			parameters.ensureCapacity(4);
+			parameters.add(0, roleReadFromAssoc(associationName, endPoint1.get()));
+		}
+		return blockStatement(operationCall(LinkTemplates.getLinkFunctionName(linkType),parameters));
+
+	}
+	
+	private static String roleReadFromAssoc(String associationName, String role) {
+		return associationName + "." + role;
 	}
 
 	public static String signalSend(String target, String signalName) {
@@ -170,7 +182,7 @@ public class ActivityTemplates {
 
 	public static String foreachCycle(String conatinedType, String paramName, String collection, String body,
 			String inits) {
-		return inits + "for (" + PrivateFunctionalTemplates.cppType(conatinedType) + " " + paramName + " :" + collection
+		return inits + "for (" + PrivateFunctionalTemplates.cppType(conatinedType, GenerationTemplates.VariableType.RawPointerType) + " " + paramName + " :" + collection
 				+ ")\n{\n" + body + "\n}\n";
 	}
 
@@ -218,17 +230,14 @@ public class ActivityTemplates {
 
 	}
 
-	public static String selectAllTemplate(String target, String otherEnd, String associationName) {
-		return target + PointerAndMemoryNames.PointerAccess
-				+ LinkTemplates.formatAssociationRoleName(otherEnd, associationName)
-				+ PointerAndMemoryNames.SimpleAccess + CollectionNames.SelectAllFunctionName + "()";
+	public static String readLinkTemplate(String target, String otherEnd, String associationName) {
+		return operationCallOnPointerVariable(target, 
+				GenerationNames.AssociationNames.NavigationFunctionName, 
+				Arrays.asList(roleReadFromAssoc(associationName, otherEnd))) /*+ PointerAndMemoryNames.SimpleAccess + CollectionNames.SelectAllFunctionName + "()"; */;
+
+				
 	}
-
-	public static String collectionTemplate(String collectedType) {
-		return CollectionNames.Collection + "<" + PrivateFunctionalTemplates.cppType(collectedType) + ">";
-
-	}
-
+	
 	public static String getRealSignal(String signalType, String signalVariableName) {
 		StringBuilder source = new StringBuilder("");
 		source.append(EventTemplates.eventPtr(signalType) + " ");
@@ -240,8 +249,8 @@ public class ActivityTemplates {
 		return source.toString();
 	}
 
-	public static String returnTemplates(String variable) {
-		return "return " + variable + ";\n";
+	public static String returnTemplates(String variable, boolean singleReturn) {
+		return "return " + variable + (singleReturn ? "." + GenerationNames.CollectionNames.SelectAnyFunctionName + "()"  : "") +  ";\n"; 
 	}
 
 	public static String getOperationFromType(boolean isMultivalued, boolean isReplace) {
@@ -265,13 +274,8 @@ public class ActivityTemplates {
 		return PointerAndMemoryNames.PointerAccess;
 	}
 
-	public static String addVariableTemplate(String type, String left, String right) {
-		return PrivateFunctionalTemplates.cppType(type) + " " + left + " = " + right + ";\n";
-	}
-
-	public static String defineAndAddToCollection(String collectedType, String collectionName, String valueName) {
-		return collectionTemplate(collectedType) + " " + collectionName + " " + ReplaceSimpleTypeOp + " " + valueName
-				+ ";\n";
+	public static String addVariableTemplate(String type, String left, String right, GenerationTemplates.VariableType varType) {
+		return PrivateFunctionalTemplates.cppType(type, varType) + " " + left + " = " + right + ";\n";
 	}
 
 	public static String generatedTempVariable(int count) {
@@ -288,7 +292,7 @@ public class ActivityTemplates {
 	}
 
 	public static String declareRegex(String variableName) {
-		return "[ a-zA-z0-9<>:*]*" + variableName + "[ ]*;\n";
+		return "[ a-zA-z0-9<>:*-,]*" + variableName + "[ ]*;\n";
 	}
 
 	public static String formatUserVar(String varName, int userVarCounter) {

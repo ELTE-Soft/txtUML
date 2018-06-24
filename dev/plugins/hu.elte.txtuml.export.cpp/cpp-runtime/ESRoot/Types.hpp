@@ -24,7 +24,7 @@ class SpecialEventChecker;
 
 namespace Execution 
 {
-template<typename RuntimeType>
+template<typename RuntimeType, int NC>
 class IRuntime;
 }
 
@@ -81,12 +81,12 @@ namespace ES
     template<typename ProvidedInf, typename RequiredInf>
     using PortRef = ES::SharedPtr<Model::Port<ProvidedInf,RequiredInf>>;
 
-	template<typename RuntimeType>
-	using RuntimePtr = SharedPtr<Execution::IRuntime<RuntimeType>>;
+	template<typename RuntimeType, int NC>
+	using RuntimePtr = SharedPtr<Execution::IRuntime<RuntimeType,NC>>;
 
 	//ThreadSafeQueue types
 	using MessageQueueType = ThreadSafeQueue<SpecialPriorityQueue<EventRef, Model::SpecialEventChecker<Model::EventBase>>>;
-	using PoolQueueType = ThreadSafeQueue<Queue<StateMachineRef>>;
+	//using PoolQueueType = ThreadSafeQueue<Queue<StateMachineRef>>;
 
 	using TimerPtr = SharedPtr<Timer>;
 

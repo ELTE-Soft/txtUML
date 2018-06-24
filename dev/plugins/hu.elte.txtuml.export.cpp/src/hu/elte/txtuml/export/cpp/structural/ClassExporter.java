@@ -20,13 +20,11 @@ import hu.elte.txtuml.export.cpp.statemachine.StateMachineExporter;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationTemplates;
 import hu.elte.txtuml.export.cpp.templates.PrivateFunctionalTemplates;
-import hu.elte.txtuml.export.cpp.templates.RuntimeTemplates;
 import hu.elte.txtuml.export.cpp.templates.statemachine.EventTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.ConstructorTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.FunctionTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.HeaderTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.HeaderTemplates.HeaderInfo;
-import hu.elte.txtuml.export.cpp.templates.structual.LinkTemplates;
 import hu.elte.txtuml.utils.Pair;
 
 public class ClassExporter extends StructuredElementExporter<Class> {
@@ -35,7 +33,6 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 
 	private List<String> baseClasses;
 	private List<String> interfacesToImplement;
-	private AssociationExporter associationExporter;
 	private ConstructorExporter constructorExporter;
 
 	private StateMachineExporter stateMachineExporter;
@@ -49,7 +46,6 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 		baseClasses = new LinkedList<String>();
 		interfacesToImplement = new LinkedList<String>();
 		constructorExporter = new ConstructorExporter(structuredElement.getOwnedOperations(), super.activityExporter);
-		associationExporter = new AssociationExporter(structuredElement.getOwnedAttributes());
 		additionalSourcesNames = new ArrayList<String>();
 
 		portExporter = new PortExporter(structuredElement.getOwnedPorts(), structuredElement.getName(), this);
@@ -134,10 +130,7 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 		publicParts.append(constructorExporter.exportConstructorDeclarations(name));
 		publicParts.append(ConstructorTemplates.destructorDecl(name));
 
-		publicParts.append("\n" + associationExporter.createAssociationMemberDeclarationsCode());
 
-		publicParts.append(LinkTemplates.templateLinkFunctionGeneralDef(LinkTemplates.LinkFunctionType.Link));
-		publicParts.append(LinkTemplates.templateLinkFunctionGeneralDef(LinkTemplates.LinkFunctionType.Unlink));
 
 		publicParts.append(portExporter.createPortRelatedCodes());
 
@@ -162,15 +155,13 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 			dependencyExporter.addHeaderOnlyIncludeDependencies(simpleClassHeaderInfo.getRelatedBaseClassInclude());
 		}
 		
-		String externalDeclerations = associationExporter.createLinkFunctionDeclarations(name); 
 
-		return source + externalDeclerations;
+		return source;
 	}
 
 	@Override
 	public String getUnitDependencies(UnitType type) {
 		StringBuilder source = new StringBuilder("");
-		dependencyExporter.addDependencies(associationExporter.getAssociatedPropertyTypes());
 		dependencyExporter.addHeaderOnlyIncludeDependencies(baseClasses);
 		dependencyExporter.addHeaderOnlyIncludeDependencies(interfacesToImplement);
 
@@ -189,10 +180,7 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 				source.append(GenerationTemplates.debugOnlyCodeBlock(GenerationTemplates.StandardIOinclude));
 			}
 			source.append(PrivateFunctionalTemplates.include(EventTemplates.EventHeaderName));
-			if (associationExporter.ownAssociation()) {
-				source.append(PrivateFunctionalTemplates.include(LinkTemplates.AssociationsStructuresHreaderName));
 
-			}
 			// TODO analyze what dependency is necessary..
 			source.append(PrivateFunctionalTemplates.include(GenerationNames.FileNames.ActionPath));
 			source.append(PrivateFunctionalTemplates.include(GenerationNames.FileNames.StringUtilsPath));
@@ -201,12 +189,10 @@ public class ClassExporter extends StructuredElementExporter<Class> {
 		} else if (type == UnitType.Header) {
 			dependencyExporter.addHeaderOnlyIncludeDependency(GenerationNames.FileNames.TypesFilePath);
 			dependencyExporter.addHeaderOnlyIncludeDependency(GenerationNames.FileNames.PortUtilsPath);
+			dependencyExporter.addHeaderOnlyIncludeDependency(GenerationNames.FileNames.ElementsFilePath);
 
-			if (associationExporter.ownAssociation()) {
-				dependencyExporter
-						.addHeaderOnlyIncludeDependency(RuntimeTemplates.RTPath + LinkTemplates.AssocationHeader);
-				dependencyExporter.addHeaderOnlyIncludeDependency(LinkTemplates.AssociationsStructuresHreaderName);
-			}
+
+
 			source.append(
 					dependencyExporter.createDependencyHeaderIncludeCode(GenerationNames.Namespaces.ModelNamespace));
 

@@ -72,6 +72,9 @@ public abstract class AbstractModelClassRuntime extends AbstractSignalTargetRunt
 		return status;
 	}
 
+	/**
+	 * May only be accessed from the owner thread.
+	 */
 	public VertexWrapper getCurrentVertexWrapper() {
 		return currentVertex;
 	}
