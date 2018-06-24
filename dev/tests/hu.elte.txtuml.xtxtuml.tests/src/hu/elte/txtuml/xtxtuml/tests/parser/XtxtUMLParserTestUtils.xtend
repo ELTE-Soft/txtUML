@@ -427,9 +427,9 @@ class XtxtUMLParserTestUtils {
 		assertEquals(type, bind.type);
 
 		leftParticipantCheck.apply(bind.leftParticipant);
-		assertEquals(leftEndName, bind.leftEnd.name);
+		assertEquals(leftEndName, bind.leftEnd?.name);
 		rightParticipantCheck.apply(bind.rightParticipant);
-		assertEquals(rightEndName, bind.rightEnd.name);
+		assertEquals(rightEndName, bind.rightEnd?.name);
 
 		assertEquals(connectiveName, bind.connective.connectiveName);
 	}

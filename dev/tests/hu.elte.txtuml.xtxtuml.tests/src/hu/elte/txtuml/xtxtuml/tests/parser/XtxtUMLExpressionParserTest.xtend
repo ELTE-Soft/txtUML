@@ -10,6 +10,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 import static hu.elte.txtuml.xtxtuml.tests.parser.XtxtUMLParserTestUtils.*
+import static hu.elte.txtuml.xtxtuml.xtxtUML.TUBindType.*
 import static hu.elte.txtuml.xtxtuml.xtxtUML.TUExternality.*
 import static hu.elte.txtuml.xtxtuml.xtxtUML.TUStateType.*
 import static hu.elte.txtuml.xtxtuml.xtxtUML.TUVisibility.*
@@ -134,7 +135,18 @@ class XtxtUMLExpressionParserTest {
 			}
 		'''
 		.parse.
-		file(null, null, null)
+		file("test.model", null, #[
+			[class_("A", null, #[
+				[operation(PACKAGE, false, NON_EXTERNAL, "void", "foo", #[], #[
+					[variableDeclaration(
+						"A", null, "a",
+						[new_("A", null, #[], null)]
+					)],
+					[start[variable("a")]],
+					[start[new_("A", null, #[], null)]]
+				])]
+			])]
+		])
 	}
 
 	@Test
@@ -255,9 +267,19 @@ class XtxtUMLExpressionParserTest {
 			class B {
 				port P {}
 			}
+			class C;
+			
 			association AB {
 				A a;
 				B b;
+			}
+			composition CA {
+			    container C c;
+			    A a;
+			}
+			composition CB {
+			    container C c;
+			    B b;
 			}
 			connector CAB {
 				CA.a->A.P e;
@@ -265,7 +287,97 @@ class XtxtUMLExpressionParserTest {
 			}
 		'''
 		.parse.
-		file(null, null, null)
+		file("test.model", null, #[
+				[class_("A", null, #[
+					[operation(PACKAGE, false, NON_EXTERNAL, "void", "f", #[], #[
+						[variableDeclaration(
+							"B", null, "b",
+							[new_("B", null, #[], null)]
+						)],
+						[bind(LINK,
+							[this_], null,
+							[variable("b")], null,
+							"AB"
+						)],
+						[bind(LINK,
+							[this_], "a",
+							[variable("b")], null,
+							"AB"
+						)],
+						[bind(LINK, 
+							[this_], null,
+							[variable("b")], "b",
+							"AB"
+						)],
+						[bind(LINK, 
+							[this_], "a",
+							[variable("b")], "b",
+							"AB"
+						)],						
+						[bind(UNLINK,
+							[this_], null,
+							[variable("b")], null,
+							"AB"
+						)],
+						[bind(UNLINK,
+							[this_], "a",
+							[variable("b")], null,
+							"AB"
+						)],
+						[bind(UNLINK,
+							[this_], null,
+							[variable("b")], "b",
+							"AB"
+						)],
+						[bind(UNLINK,
+							[this_], "a",
+							[variable("b")], "b",
+							"AB"
+						)],						
+						[bind(CONNECT,
+							[propertyAccess([this_], "P")], null,
+							[propertyAccess([variable("b")], "P")], null,
+							"CAB"
+						)],
+						[bind(CONNECT, 
+							[propertyAccess([this_], "P")], "e",
+							[propertyAccess([variable("b")], "P")], null,
+							"CAB"
+						)],
+						[bind(CONNECT, 
+							[propertyAccess([this_], "P")], null,
+							[propertyAccess([variable("b")], "P")], "f",
+							 "CAB"
+						)],
+						[bind(CONNECT, 
+							[propertyAccess([this_], "P")], "e",
+							[propertyAccess([variable("b")], "P")], "f",
+							"CAB"
+						)]
+					])],
+					[port("P", #[])]
+				])],
+				[class_("B", null, #[
+					[port("P", #[])]
+				])],
+				[class_("C", null, #[])],
+				[association("AB", #[
+					[associationEnd(PACKAGE, false, null, false, "A", "a")],
+					[associationEnd(PACKAGE, false, null, false, "B", "b")]
+				])],
+				[composition("CA", #[
+					[associationEnd(PACKAGE, false, null, true, "C", "c")],
+					[associationEnd(PACKAGE, false, null, false, "A", "a")]
+				])],
+				[composition("CB", #[
+					[associationEnd(PACKAGE, false, null, true, "C", "c")],
+					[associationEnd(PACKAGE, false, null, false, "B", "b")]
+				])],
+				[connector("CAB", #[
+					[connectorEnd("a", "P", "e")],
+					[connectorEnd("b", "P", "f")]
+				])]
+		])
 	}
 
 	@Test
