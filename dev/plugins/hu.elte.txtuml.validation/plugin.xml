@@ -13,10 +13,27 @@
                markerType="hu.elte.txtuml.validation.jtxtumlmodelmarker">
          </managedMarker>
       </compilationParticipant>
+      <compilationParticipant
+            class="hu.elte.txtuml.validation.sequencediagram.SequenceDiagramCompilationParticipant"
+            createsProblems="true"
+            id="hu.elte.txtuml.validation.sequenceDiagramCompilationParticipant"
+            modifiesEnvironment="false">
+         <managedMarker
+               markerType="hu.elte.txtuml.validation.sequencediagrammarker">
+         </managedMarker>
+      </compilationParticipant>
    </extension>
    <extension
          id="jtxtumlmodelmarker"
          name="JtxtUML Model Problem"
+         point="org.eclipse.core.resources.markers">
+	  <persistent value="true"/>
+      <super type="org.eclipse.core.resources.problemmarker"/> 
+      <super type="org.eclipse.core.resources.textmarker"/> 
+   </extension>
+   <extension
+         id="sequencediagrammarker"
+         name="Sequence Diagram Problem"
          point="org.eclipse.core.resources.markers">
 	  <persistent value="true"/>
       <super type="org.eclipse.core.resources.problemmarker"/> 

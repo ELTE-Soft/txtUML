@@ -233,7 +233,7 @@ public class VisualizeTxtUMLPage extends WizardPage {
 
 	private void createPage(Composite parent, IProgressMonitor monitor) {
 		if (monitor != null)
-			monitor.beginTask("Creating dialog", 100);
+			monitor.beginTask("Discovering diagram descriptions...", 100);
 
 		sc = new ScrolledComposite(parent, SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER);
 		container = new Composite(sc, SWT.NONE);

@@ -71,7 +71,7 @@ public class CompileTests {
 			new Config("machine", "machine1.j.model", "machine1.j.cpp.Machine1Configuration", DemoExpectedLines.MACHINE.getLines(), true, "main.cpp"),
 			new Config("monitoring", "monitoring.x.model", "monitoring.x.cpp.XMonitoringConfiguration", DemoExpectedLines.MONITORING.getLines(), false, "mainTest.cpp"),
 			new Config("producer_consumer", "producer_consumer.j.model",
-					"producer_consumer.j.cpp.ProducerConsumerConfiguration", DemoExpectedLines.PRODUCER_CONSUMER.getLines(), false, "main.cpp"),
+					"producer_consumer.j.cpp.ProducerConsumerFixConfiguration", DemoExpectedLines.PRODUCER_CONSUMER.getLines(), false, "main.cpp"),
 			new Config("train", "train.j.model", "train.j.cpp.TrainConfiguration", DemoExpectedLines.TRAIN.getLines(), false, "mainTest.cpp"),
 			new Config("pingpong", "pingpong.j.model", "pingpong.j.cpp.PingPongConfiguration", DemoExpectedLines.PINGPONG.getLines(), true, "main.cpp")};
 	
@@ -80,7 +80,6 @@ public class CompileTests {
 	private static final String BUILD_DIR_PREFIX = "build_";
 
 	private static final String RELATIVE_PATH_TO_STDLIB = "../../../dev/plugins/hu.elte.txtuml.api.stdlib";
-	private static final String OPERATING_SYSTEM = System.getProperty("os.name");
 	private static final String MAIN_OUTPUT_FILE = "mainOutput.txt";
 
 	private static String testWorkspace = "target/work/data/";
@@ -119,7 +118,7 @@ public class CompileTests {
 		try {
 			gccRet = CppExporterUtils.executeCommand(testWorkspace, Arrays.asList("gcc", "--version"), null, null);
 			gccxxRet = CppExporterUtils.executeCommand(testWorkspace, Arrays.asList("g++", "--version"), null, null);
-			if(!isWindowsOS()){
+			if(!CppExporterUtils.isWindowsOS()){
 				clangRet = CppExporterUtils.executeCommand(testWorkspace, Arrays.asList("clang", "--version"), null, null);
 				clangxxRet = CppExporterUtils.executeCommand(testWorkspace, Arrays.asList("clang++", "--version"), null, null);
 			}
@@ -142,9 +141,7 @@ public class CompileTests {
 		
 	}
 	
-	private static Boolean isWindowsOS(){
-		return OPERATING_SYSTEM.toUpperCase().startsWith("WIN");
-	}
+
 
 	@BeforeClass
 	public static void importStdLibIntoWorkspace() {
@@ -258,7 +255,7 @@ public class CompileTests {
 			env.put("CXX", "g++");
 			compileEnvironments.add(env);
 		}
-		if (compilerClangPresent && !isWindowsOS()) {
+		if (compilerClangPresent && !CppExporterUtils.isWindowsOS()) {
 			Map<String, String> env = new TreeMap<String, String>();
 			env.put("CC", "clang");
 			env.put("CXX", "clang++");
@@ -301,9 +298,9 @@ public class CompileTests {
 			int ninjaRetCode = CppExporterUtils.executeCommand(buildDir, Arrays.asList("ninja", "-v"), compileEnv, null);
 			assertThat(ninjaRetCode, is(0));
 			
-			String bash = isWindowsOS() ? "cmd.exe" : "/bin/bash";
-			String mainBinary = isWindowsOS() ? "main.exe" : "./main";
-			String c = isWindowsOS() ? "/c" : "-c";
+			String bash = CppExporterUtils.isWindowsOS() ? "cmd.exe" : "/bin/bash";
+			String mainBinary = CppExporterUtils.isWindowsOS() ? "main.exe" : "./main";
+			String c = CppExporterUtils.isWindowsOS() ? "/c" : "-c";
 			
 			int mainRetCode = CppExporterUtils.executeCommand(buildDir, Arrays.asList(bash, c, mainBinary), compileEnv, MAIN_OUTPUT_FILE);
 			assertThat(mainRetCode, is(0));

@@ -42,7 +42,7 @@ class PrefixOperatorExporter extends OperatorExporter<PrefixExpression> {
 			}
 			case Operator.INCREMENT,
 			case Operator.DECREMENT: {
-				assignToExpression(source.operand) [ act |
+				assignToExpression(source.operand, true) [ act |
 					val callOp = factory.createCallOperationAction
 					callOp.operation = operator
 					val lhs = act.get

@@ -10,6 +10,7 @@ import java.util.Optional;
 
 import org.eclipse.uml2.uml.Region;
 
+import hu.elte.txtuml.export.cpp.CppExporterUtils.TypeDescriptor;
 import hu.elte.txtuml.export.cpp.ICppCompilationUnit;
 import hu.elte.txtuml.export.cpp.IDependencyCollector;
 import hu.elte.txtuml.export.cpp.structural.DependencyExporter;
@@ -119,8 +120,8 @@ public class SubStateMachineExporter extends StateMachineExporterBase implements
 		StringBuilder publicParts = new StringBuilder("");	
 		StringBuilder protectedParts = new StringBuilder("");
 		StringBuilder privateParts = new StringBuilder("");
-
-		publicParts.append(ConstructorTemplates.constructorDecl(getUnitName(), Arrays.asList(ownerClassUnit.getUnitName())));					
+		publicParts.append(ConstructorTemplates.constructorDecl(getUnitName(), Arrays.asList
+				(new TypeDescriptor(ownerClassUnit.getUnitName()))));					
 		publicParts.append(StateMachineTemplates.stateEnum(stateList, getInitialState()));
 			
 		privateParts.append(entryExitFunctionExporter.createEntryFunctionsDecl());

@@ -30,7 +30,7 @@ class OperationExporter extends Exporter<MethodDeclaration, IMethodBinding, Oper
 		result.visibility = getVisibility(decl.getModifiers)
 		if (binding.returnType.qualifiedName != void.canonicalName) {
 			val retParam = factory.createParameter
-			retParam.type = fetchType(binding.returnType)
+			fillElementTypeAndBounds(binding.returnType, retParam)
 			retParam.direction = ParameterDirectionKind.RETURN_LITERAL
 			retParam.name = 'return'
 			result.ownedParameters += retParam

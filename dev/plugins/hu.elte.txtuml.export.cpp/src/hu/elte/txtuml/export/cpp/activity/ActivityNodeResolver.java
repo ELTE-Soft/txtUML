@@ -1,5 +1,6 @@
 package hu.elte.txtuml.export.cpp.activity;
 
+import java.util.Collections;
 import java.util.Map;
 
 import org.eclipse.emf.ecore.EClass;
@@ -27,7 +28,10 @@ import org.eclipse.uml2.uml.ValueSpecification;
 import org.eclipse.uml2.uml.ValueSpecificationAction;
 
 import hu.elte.txtuml.export.cpp.CppExporterUtils;
+import hu.elte.txtuml.export.cpp.templates.GenerationNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationTemplates;
+import hu.elte.txtuml.export.cpp.templates.GenerationNames.CollectionNames;
+import hu.elte.txtuml.export.cpp.templates.GenerationNames.PointerAndMemoryNames;
 import hu.elte.txtuml.export.cpp.templates.activity.ActivityTemplates;
 import hu.elte.txtuml.utils.Logger;
 
@@ -47,7 +51,7 @@ class ActivityNodeResolver {
 		this.userVariableExporter = userVariableExporter;
 	}
 	
-	public String getTargetFromActivityNode(ActivityNode node) {
+	public String getTargetFromActivityNode(ActivityNode node, boolean conditionalExpression) {
 		if(node == null) {
 			Logger.sys.error("This should not happen..");
 		}
@@ -55,7 +59,7 @@ class ActivityNodeResolver {
 		String source = "UNHANDLED_ACTIVITYNODE";
 		if (node.eClass().equals(UMLPackage.Literals.FORK_NODE) || node.eClass().equals(UMLPackage.Literals.JOIN_NODE)
 				|| node.eClass().equals(UMLPackage.Literals.DECISION_NODE)) {
-			source = getTargetFromActivityNode(node.getIncomings().get(0).getSource());
+			source = getTargetFromActivityNode(node.getIncomings().get(0).getSource(), conditionalExpression);
 		} else if (node.eClass().equals(UMLPackage.Literals.ADD_STRUCTURAL_FEATURE_VALUE_ACTION)) {
 			source = getTargetFromInputPin(((AddStructuralFeatureValueAction) node).getObject());
 		} else if (node.eClass().equals(UMLPackage.Literals.READ_STRUCTURAL_FEATURE_ACTION)) {
@@ -76,13 +80,13 @@ class ActivityNodeResolver {
 			source = ActivityTemplates.SelfLiteral;
 
 		} else if (node.eClass().equals(UMLPackage.Literals.READ_LINK_ACTION)) {
-			source = getTargetFromActivityNode(((ReadLinkAction) node).getResult());
+			source = getTargetFromActivityNode(((ReadLinkAction) node).getResult(), conditionalExpression);
 
 		} else if (node.eClass().equals(UMLPackage.Literals.OUTPUT_PIN)) {
 			OutputPin outPin = (OutputPin) node;
 			source = tempVariableExporter.isOutExported(outPin) ? 
 					tempVariableExporter.getRealVariableName(outPin):
-					 getTargetFromActivityNode((ActivityNode) node.getOwner());
+					 getTargetFromActivityNode((ActivityNode) node.getOwner(), conditionalExpression);
 
 		} else if (node.eClass().equals(UMLPackage.Literals.VALUE_SPECIFICATION_ACTION)) {
 			source = getValueFromValueSpecification(((ValueSpecificationAction) node).getValue());
@@ -90,11 +94,15 @@ class ActivityNodeResolver {
 
 			ReadVariableAction rA = (ReadVariableAction) node;
 			userVariableExporter.modifyVariableInfo(rA.getVariable());
-			source = userVariableExporter.getRealVariableName(rA.getVariable());
+			source = userVariableExporter.getRealVariableReference(rA.getVariable());
+			if(rA.getVariable().getUpper() == 1 && conditionalExpression) {
+				source = ActivityTemplates.operationCall(source, PointerAndMemoryNames.SimpleAccess, 
+							CollectionNames.SelectAnyFunctionName, Collections.emptyList());
+			}
 		} else if (node.eClass().equals(UMLPackage.Literals.SEQUENCE_NODE)) {
 			SequenceNode seqNode = (SequenceNode) node;
 			int lastIndex = seqNode.getNodes().size() - 1;
-			source = getTargetFromActivityNode(seqNode.getNodes().get(lastIndex));
+			source = getTargetFromActivityNode(seqNode.getNodes().get(lastIndex), conditionalExpression);
 
 		} else if (node.eClass().equals(UMLPackage.Literals.CALL_OPERATION_ACTION)) {
 			CallOperationAction callAction = (CallOperationAction) node;
@@ -132,7 +140,7 @@ class ActivityNodeResolver {
 		if (node.eClass().equals(UMLPackage.Literals.INPUT_PIN)) {
 
 			if (node.getIncomings().size() > 0) {
-				source = getTargetFromActivityNode(node.getIncomings().get(0).getSource());
+				source = getTargetFromActivityNode(node.getIncomings().get(0).getSource(), false);
 			}
 
 		} else if (node.eClass().equals(UMLPackage.Literals.VALUE_PIN)) {
@@ -141,7 +149,7 @@ class ActivityNodeResolver {
 			if (valueSpec != null) {
 				source = getValueFromValueSpecification(valueSpec);
 			} else if (node.getIncomings().size() > 0) {
-				source = getTargetFromActivityNode(node.getIncomings().get(0).getSource());
+				source = getTargetFromActivityNode(node.getIncomings().get(0).getSource(), false);
 			}
 
 		}
@@ -201,7 +209,7 @@ class ActivityNodeResolver {
 			source = ((Boolean) ((LiteralBoolean) valueSpec).isValue()).toString();
 		} else if (valueSpec.eClass().equals(UMLPackage.Literals.LITERAL_STRING)) {
 			source =  ((LiteralString) valueSpec).getValue();			
-			source = "\"" + CppExporterUtils.escapeQuates(source) + "\"";
+			source = GenerationNames.BasicTypeNames.StringTypeName + "(" + "\"" + CppExporterUtils.escapeQuates(source) + "\"" + ")";
 		
 		} else if(valueSpec.eClass().equals(UMLPackage.Literals.LITERAL_NULL)) {
 			source = ActivityTemplates.NullPtrLiteral;
