@@ -211,7 +211,7 @@ body {
 	transition: all 0.2s ease-in-out;
 	-webkit-box-shadow: 0;
 			box-shadow: 0;
-	height: 8em;
+	height: 10.5em;
 	display:-webkit-box;
 	display:-ms-flexbox;
 	display:flex;
@@ -228,7 +228,7 @@ body {
 	left:2em;
 	top:0;
 	padding: 0.5em;
-	width: 8em;
+	width: 10.5em;
 	-webkit-transform:rotate(90deg);
 		-ms-transform:rotate(90deg);
 			transform:rotate(90deg);
@@ -243,7 +243,24 @@ body {
 	transition: all 0.2s ease-in-out;
 }
 
-#debug-label{
+#debug-port-input{
+	width: 100%
+}
+
+#debug-port-error{
+	font-weight: bolder;
+	color: #e84343;
+	margin: 0;
+	overflow: hidden;
+	height: 0em;
+	-webkit-transition: all 0.2s ease-in-out;
+	-o-transition: all 0.2s ease-in-out;
+	transition: all 0.2s ease-in-out;
+}
+
+.debug-label{
+	margin: 0.5em 0 0.5em 0;
+	display: block;
 	text-align: center;
 	font-size: 80%;
 }

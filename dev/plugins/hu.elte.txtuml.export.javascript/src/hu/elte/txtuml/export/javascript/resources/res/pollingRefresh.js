@@ -1,8 +1,7 @@
 //include after animation.js
 var isPolling = false;
 var alertDisplayed = false;
-
-const ALERT_STRING = "Could not connect to server. Please make sure an execution is in progress.";
+var port = "";
 
 /**
  * Queries the server for diagnostics information.
@@ -11,18 +10,20 @@ const ALERT_STRING = "Could not connect to server. Please make sure an execution
  */
 function refreshElements(){
 	$.ajax({
-		url: 'http://localhost:' + DIAGNOSTICS_PORT + '/' + DIAGNOSTICS_PATH,
+		url: 'http://localhost:' + port + '/' + DIAGNOSTICS_PATH,
 	    type: 'GET',
 	    dataType: 'json'
 	}).complete(function(response){
         if(response.status == 200 && isPolling){
             setActiveElements((JSON.parse(response.responseText)).map( e => e.element));
+            hideError();
         }
         else{
             setActiveElements([]);
-            if(!alertDisplayed && isPolling){
-            	alert(ALERT_STRING);
-            	alertDisplayed = true;
+            if(isPolling){
+            	showError();
+            }else{
+            	hideError();
             }
         }
 	});
@@ -45,7 +46,35 @@ $("#toggle-debug-checkbox").on("change", function(){
 	else{
 		//off
 		isPolling = false;
-		alertDisplayed = false;
+		hideError();
 		clearCurrentActiveElements();
 	}
+});
+
+var errorLabelElement = $('#debug-port-error');
+var debugContainer = $('#debug-toggle-container');
+
+function showError(){
+	errorLabelElement.innerHeight('8em');
+	debugContainer.innerHeight('18em');
+}
+
+function hideError(){
+	errorLabelElement.height('0');
+	debugContainer.innerHeight('10.5em');
+}
+
+var typingTimer;
+var DONE_TYPING_TIMEOUT_IN_MILISECONDS = 500;
+
+function doneTyping(){
+	port = $('#debug-port-input').val();
+}
+
+//add event listeners to the debug input
+$('#debug-port-input').on('keyup change input',function(){
+    clearTimeout(typingTimer);
+    if ($('#debug-port-input').val()) {
+        typingTimer = setTimeout(doneTyping, DONE_TYPING_TIMEOUT_IN_MILISECONDS);
+    }
 });

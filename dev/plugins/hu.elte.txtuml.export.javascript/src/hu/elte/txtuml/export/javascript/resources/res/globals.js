@@ -3,6 +3,5 @@ var panEnabled = true;
 
 //TODO: generate from eclipse preferences
 //diagnostics constants
-const DIAGNOSTICS_PORT = 52525;
 const DIAGNOSTICS_PATH = "activeElements";
 const REFRESH_INTERVAL_IN_MILISECONDS = 300;
