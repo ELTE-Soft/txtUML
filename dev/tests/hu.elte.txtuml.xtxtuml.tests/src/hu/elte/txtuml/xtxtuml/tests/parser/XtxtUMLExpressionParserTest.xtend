@@ -119,7 +119,17 @@ class XtxtUMLExpressionParserTest {
 			}
 		'''
 		.parse.
-		file(null, null, null)
+		file("test.model", null, #[
+			[class_("A", null, #[
+				[operation(PACKAGE, false, NON_EXTERNAL, "void", "foo", #[], #[
+					[variableDeclaration("String", null, "m", [string("message")])],
+					[log([variable("m")])],
+					[log([string("message")])],
+					[logError([variable("m")])],
+					[logError([string("message")])]
+				])]
+			])]
+		])
 	}
 
 	@Test
@@ -236,7 +246,33 @@ class XtxtUMLExpressionParserTest {
 			}
 		'''
 		.parse.
-		file(null, null, null)
+		file("test.model", null, #[
+			[class_("A", null, #[
+				[constructor(PACKAGE, NON_EXTERNAL, "A", #[], #[])],
+				[constructor(PACKAGE, NON_EXTERNAL, "A", #[
+					[parameter("int", "i")]
+				], #[])],
+				[operation(PACKAGE, false, NON_EXTERNAL, "void", "f", #[], #[
+					[new_("A",null, #[], null)],
+					[new_("A", null, #[[number(0)]], null)],
+					[create_("A", null, #[], null)],
+					[create_("A", null, #[[number(0)]], null)],
+					[new_("A", null, #[], "a")],
+					[new_("A", null, #[[number(0)]], "a")],
+					[create_("A", null, #[], "a")],
+					[create_("A", null, #[[number(0)]], "a")],
+					[variableDeclaration("A", null,	"a", null)],
+					[assignment("a", [new_("A", null, #[], null)])],
+					[assignment("a", [new_("A", null, #[[number(0)]], null)])],
+					[assignment("a", [create_("A", null, #[], null)])],
+					[assignment("a", [create_("A", null, #[[number(0)]], null)])],
+					[assignment("a", [new_("A", null, #[], "a")])],
+					[assignment("a", [new_("A", null, #[[number(0)]], "a")])],
+					[assignment("a", [create_("A", null, #[], "a")])],
+					[assignment("a", [create_("A", null, #[[number(0)]], "a")])]
+				])]
+			])]
+		])
 	}
 
 	@Test
