@@ -517,11 +517,11 @@ body {
 
 @keyframes blinking-body {
 	from {
-		fill: #20ac59;
+		stroke: #20ac59;
 	}
   
 	to {
-		fill: transparent;
+		stroke: transparent;
 	}
 }
 
@@ -536,7 +536,7 @@ body {
 	}
 }
 
-#paper g[active] path,
+/*#paper g[active] path,*/
 #paper g[active] rect,
 #paper g[active] circle,
 #paper g[active] ellipse,
@@ -545,9 +545,10 @@ body {
 #paper g[active] polygon,
 #paper g[active] mesh{
 	animation: blinking-body 0.5s ease-in-out infinite alternate;
+	fill: #20ac59;
 }
 
 #paper g[active] text{
 	animation: blinking-text 0.5s ease-in-out infinite alternate;
-	font-weight: bold;
+	font-weight: bolder;
 }
