@@ -1,7 +1,17 @@
 //include after animation.js
+
+var errorLabelElement = $('#debug-port-error');
+var debugContainer = $('#debug-toggle-container');
+
+//try to load from sessionStorage
 var isPolling = false;
-var alertDisplayed = false;
-var port = "";
+if(sessionStorage['isPolling'] == "true" ) {
+	isPolling = true;
+	$('#toggle-debug-checkbox').attr("checked",false);
+	pollingRefresh();
+}
+var port = sessionStorage['diagnosticsPort'];
+$('#debug-port-input').val(port);
 
 /**
  * Queries the server for diagnostics information.
@@ -23,9 +33,10 @@ function refreshElements(){
             if(isPolling){
             	showError();
             }else{
-            	hideError();
+                hideError();
             }
         }
+        firstLoad = false;
 	});
 }
 
@@ -41,27 +52,26 @@ $("#toggle-debug-checkbox").on("change", function(){
 	if(!this.checked){
 		//on
 		isPolling = true;
+		sessionStorage['isPolling'] = true;
 		pollingRefresh();
 	}
 	else{
 		//off
-		isPolling = false;
-		hideError();
+		isPolling = null;
+		sessionStorage['isPolling'] = false;
+		//hideError();
 		clearCurrentActiveElements();
 	}
 });
 
-var errorLabelElement = $('#debug-port-error');
-var debugContainer = $('#debug-toggle-container');
-
 function showError(){
 	errorLabelElement.innerHeight('8em');
-	debugContainer.innerHeight('18em');
+	//debugContainer.innerHeight('18em');
 }
 
 function hideError(){
 	errorLabelElement.height('0');
-	debugContainer.innerHeight('10.5em');
+	//debugContainer.innerHeight('10.5em');
 }
 
 var typingTimer;
@@ -69,6 +79,7 @@ var DONE_TYPING_TIMEOUT_IN_MILISECONDS = 500;
 
 function doneTyping(){
 	port = $('#debug-port-input').val();
+	sessionStorage['diagnosticsPort'] = port;
 }
 
 //add event listeners to the debug input

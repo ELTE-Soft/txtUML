@@ -211,7 +211,7 @@ body {
 	transition: all 0.2s ease-in-out;
 	-webkit-box-shadow: 0;
 			box-shadow: 0;
-	height: 10.5em;
+	/*height: 10.5em;*/
 	display:-webkit-box;
 	display:-ms-flexbox;
 	display:flex;
@@ -250,8 +250,8 @@ body {
 #debug-port-error{
 	font-weight: bolder;
 	color: #e84343;
-	margin: 0;
 	overflow: hidden;
+	margin: 0;
 	height: 0em;
 	-webkit-transition: all 0.2s ease-in-out;
 	-o-transition: all 0.2s ease-in-out;
