@@ -15,7 +15,7 @@ function refreshElements(){
 	    dataType: 'json'
 	}).complete(function(response){
         if(response.status == 200 && isPolling){
-            setActiveElements((JSON.parse(response.responseText)).map( e => e.element));
+            setActiveElements((JSON.parse(response.responseText)).map(e => _visualizer.getShapeIdByElementName(e.element)));
             hideError();
         }
         else{
@@ -78,3 +78,4 @@ $('#debug-port-input').on('keyup change input',function(){
         typingTimer = setTimeout(doneTyping, DONE_TYPING_TIMEOUT_IN_MILISECONDS);
     }
 });
+

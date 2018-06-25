@@ -4,8 +4,19 @@ visualizer.linkholders.Link = function (link) {
 	if (this.constructor === visualizer.linkholders.Link) {
 		throw new Error("Can't instantiate abstract class!");
 	}
+	this._name = link.id;
 	this._link = null;
 }
+
+// returns the fully qualified name of the enclosed link element
+visualizer.linkholders.Link.prototype.getElementName = function () {
+	return this._name;
+};
+
+// returns the id of the enclosed link shape
+visualizer.linkholders.Link.prototype.getShapeId = function () {
+	return this._link.id;
+};
 
 //returns the JointJS model
 visualizer.linkholders.Link.prototype.getLink = function () {

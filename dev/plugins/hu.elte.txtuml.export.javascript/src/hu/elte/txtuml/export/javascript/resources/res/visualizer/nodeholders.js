@@ -5,17 +5,22 @@ visualizer.nodeholders.Node = function (node) {
 	if (this.constructor === visualizer.nodeholders.Node) {
 		throw new Error("Can't instantiate abstract class!");
 	}
-	this._id = node.id;
+	this._name = node.id;
 	this._size = {
 		'width': node.width,
 		'height': node.height
 	};
 }
 
-// returns the node layout descriptor ID
-visualizer.nodeholders.Node.prototype.getID = function () {
-	return this._id;
+// returns the fully qualified name of the enclosed node element
+visualizer.nodeholders.Node.prototype.getElementName = function () {
+	return this._name;
 }
+
+// returns the id of the enclosed node shape
+visualizer.nodeholders.Node.prototype.getShapeId = function () {
+	return this._node.id;
+};
 
 // returns the JointJS model
 visualizer.nodeholders.Node.prototype.getNode = function () {

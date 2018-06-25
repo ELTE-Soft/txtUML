@@ -1,11 +1,11 @@
 //this script starts the visualization
+_visualizer = null;
 
 try {
 	var selector = new visualizer.Selector(input); // create selector
 	selector.putLinks($('#selector')); // place links to other diagrams
 	document.title = input.modelName; // sets the title of the page
 	var diagram = selector.getSelectedDiagram(); //get selected diagram
-	_visualizer = null;
 
 	//create suitable diagram visualizer
 	switch (diagram.type) {
