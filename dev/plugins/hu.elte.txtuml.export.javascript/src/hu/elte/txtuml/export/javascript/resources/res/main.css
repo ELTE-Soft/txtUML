@@ -512,31 +512,17 @@ body {
 		top:0;
 	}
 }*/
-
-/* JointJS animation*/
-
-@keyframes blinking-body {
-	from {
-		stroke: #20ac59;
-	}
-  
-	to {
-		stroke: transparent;
-	}
+#paper g rect,
+#paper g circle,
+#paper g ellipse,
+#paper g line,
+#paper g polyline,
+#paper g polygon,
+#paper g mesh
+#paper g text{
+	transition: fill 0.1s ease-in-out;
 }
 
-@keyframes blinking-text {
-	from {
-		fill: black;
-		text-shadow: 0 0 5px white;
-	}
-  
-	to {
-		fill: rgb(0, 0, 0);
-	}
-}
-
-/*#paper g[active] path,*/
 #paper g[active] rect,
 #paper g[active] circle,
 #paper g[active] ellipse,
@@ -544,11 +530,9 @@ body {
 #paper g[active] polyline,
 #paper g[active] polygon,
 #paper g[active] mesh{
-	animation: blinking-body 0.5s ease-in-out infinite alternate;
 	fill: #20ac59;
 }
 
 #paper g[active] text{
-	animation: blinking-text 0.5s ease-in-out infinite alternate;
 	font-weight: bolder;
 }
