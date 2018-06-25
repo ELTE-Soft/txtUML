@@ -28,7 +28,8 @@ import hu.elte.txtuml.utils.NotifierOfTermination;
  * sends information to the DiagnosticsPlugin about events happening. Blocks
  * execution until animation is in progress (will be optional later).
  * 
- * Also stores the current active states in a {@link DiagnosticsRegistry} and serves them over HTTP with a {@link DiagnosticsServer}.
+ * Also stores the current active states and serves them over HTTP with a
+ * {@link DiagnosticsServer}.
  */
 public class DiagnosticsService extends NotifierOfTermination implements TraceListener {
 
@@ -36,62 +37,79 @@ public class DiagnosticsService extends NotifierOfTermination implements TraceLi
 
 	private final int serviceInstanceID;
 
-	private final int diagnosticsPort;
+	private final int diagnosticsSocketPort;
 	private volatile int faultTolerance = 17;
-	
-	private DiagnosticsRegistry registry;
-	private DiagnosticsServer server;
+
+	private DiagnosticsServer server = new DiagnosticsServer();
 
 	/**
 	 * Initiates singleton by signaling the presence of a new DiagnosticsService
 	 * towards the DiagnosticsPlugin. It also does configuration if needed.
 	 */
 	public DiagnosticsService() {
-		this.registry = new DiagnosticsRegistry();
-		this.server = new DiagnosticsServer(this.registry);
-		try {
-			this.server.start();
-		} catch (IOException e) {
-			Logger.sys.error("Error in DiagnosticsServer: ", e);
-		}
-		
 		int rnd;
 		do {
 			rnd = new Random().nextInt();
 		} while (rnd == 0);
 		serviceInstanceID = rnd;
 
-		String portStr = System.getProperty(GlobalSettings.TXTUML_DIAGNOSTICS_PORT_KEY, NO_PORT_SET);
-		int port = -1;
-		if (portStr.equals(NO_PORT_SET)) {
-			diagnosticsPort = -1;
-			notifyAllOfTermination();
-			return;
-		}
+		int socketPort, httpPort;
 		try {
-			port = Integer.decode(portStr).intValue();
-		} catch (Exception ex) {
-		}
-		if (port <= 0 || port > 65535) {
-			Logger.sys.info("INFO: No " + GlobalSettings.TXTUML_DIAGNOSTICS_PORT_KEY
-					+ " property is set correctly on this VM, no txtUML diagnostics will be available for service instance 0x"
+			socketPort = getPort(GlobalSettings.TXTUML_DIAGNOSTICS_SOCKET_PORT_KEY);
+			httpPort = getPort(GlobalSettings.TXTUML_DIAGNOSTICS_HTTP_PORT_KEY);
+		} catch (IOException e) {
+			Logger.sys.error("Properties " + GlobalSettings.TXTUML_DIAGNOSTICS_SOCKET_PORT_KEY + " and "
+					+ GlobalSettings.TXTUML_DIAGNOSTICS_HTTP_PORT_KEY
+					+ " are not correctly set on this VM, no txtUML diagnostics will be available for service instance 0x"
 					+ Integer.toHexString(serviceInstanceID));
-			diagnosticsPort = -1;
+
+			diagnosticsSocketPort = -1;
 			notifyAllOfTermination();
 			return;
 		}
-		diagnosticsPort = port;
 
+		try {
+			server.start(httpPort);
+		} catch (IOException e) {
+			Logger.sys.error("Couldn't start HTTP server on port " + httpPort + " in service instance 0x"
+					+ Integer.toHexString(serviceInstanceID), e);
+
+			diagnosticsSocketPort = -1;
+			notifyAllOfTermination();
+			return;
+		}
+
+		diagnosticsSocketPort = socketPort;
 		addTerminationListener(() -> sendMessage(new Message(MessageType.CHECKOUT, serviceInstanceID)));
 
-		Logger.sys.info("txtUML Diagnostics connection is set on " + diagnosticsPort + " for service instance 0x"
-				+ Integer.toHexString(serviceInstanceID));
+		Logger.sys.info("txtUML diagnostics connection is set on socket port " + diagnosticsSocketPort
+				+ " and HTTP port " + httpPort + " for service instance 0x" + Integer.toHexString(serviceInstanceID));
 		sendMessage(new Message(MessageType.CHECKIN, serviceInstanceID));
 	}
 
+	private int getPort(String property) throws IOException {
+		String portStr = System.getProperty(property, NO_PORT_SET);
+		if (portStr.equals(NO_PORT_SET)) {
+			throw new IOException();
+		}
+
+		int port;
+		try {
+			port = Integer.decode(portStr).intValue();
+		} catch (Exception ex) {
+			throw new IOException();
+		}
+
+		if (port <= 0 || port > 65535) {
+			throw new IOException();
+		}
+
+		return port;
+	}
+
 	public void shutdown() {
+		server.stop();
 		notifyAllOfTermination();
-		this.registry.clear();
 	}
 
 	@Override
@@ -108,15 +126,15 @@ public class DiagnosticsService extends NotifierOfTermination implements TraceLi
 
 	@Override
 	public void enteringVertex(ModelClass object, Vertex vertex) {
-		this.registry.addEntry(object, vertex);
+		server.enteringVertex(object, vertex);
 		sendNewModelEvent(MessageType.ENTERING_VERTEX, object.getClass().getCanonicalName(), getIdentifierOf(object),
 				vertex.getClass().getCanonicalName());
-		
+
 	}
 
 	@Override
 	public void leavingVertex(ModelClass object, Vertex vertex) {
-		this.registry.removeEntry(object, vertex);
+		server.leavingVertex(object, vertex);
 		sendNewModelEvent(MessageType.LEAVING_VERTEX, object.getClass().getCanonicalName(), getIdentifierOf(object),
 				vertex.getClass().getCanonicalName());
 	}
@@ -132,7 +150,7 @@ public class DiagnosticsService extends NotifierOfTermination implements TraceLi
 			return;
 		}
 
-		try (Socket socket = new Socket(InetAddress.getLoopbackAddress(), diagnosticsPort);
+		try (Socket socket = new Socket(InetAddress.getLoopbackAddress(), diagnosticsSocketPort);
 				ObjectOutputStream outStream = new ObjectOutputStream(socket.getOutputStream());) {
 			assert socket.isBound() && socket.isConnected();
 			outStream.writeObject(message);

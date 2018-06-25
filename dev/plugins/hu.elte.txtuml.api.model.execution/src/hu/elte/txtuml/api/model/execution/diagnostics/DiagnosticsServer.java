@@ -3,63 +3,79 @@ package hu.elte.txtuml.api.model.execution.diagnostics;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
+import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.stream.Collectors;
 
+import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
-import com.sun.net.httpserver.Headers;
 
+import hu.elte.txtuml.api.model.ModelClass;
+import hu.elte.txtuml.api.model.StateMachine.Vertex;
 import hu.elte.txtuml.api.model.execution.diagnostics.protocol.GlobalSettings;
+import hu.elte.txtuml.api.model.external.ModelClasses;
 
 /**
- * Serves diagnostics data over HTTP during execution from the {@link DiagnosticsRegistry} passed to the constructor.
- * The resource path and port are defined in {@link GlobalSettings}.
- * 
- * The set port currently introduces a limitation: if there is already an execution in progress, or the port is
- * otherwise occupied, the server will not be set up.
- * 
- * @author szokolai-mate
- *
+ * Serves diagnostics data over HTTP.
  */
+public class DiagnosticsServer {
 
-public class DiagnosticsServer implements HttpHandler{
-	
 	private HttpServer server;
-	private DiagnosticsRegistry registry;
+	private ConcurrentMap<ModelClass, Vertex> registry = new ConcurrentHashMap<>();
 
-	public DiagnosticsServer(DiagnosticsRegistry registry) {
-		this.registry = registry;
+	public void start(Integer port) throws IOException {
+		server = HttpServer.create(new InetSocketAddress(port), 0);
+		server.createContext("/" + GlobalSettings.TXTUML_DIAGNOSTICS_HTTP_PATH, new DiagnosticsHandler());
+		server.setExecutor(null); // creates a default executor
+		server.start();
 	}
-	
-	public void start() throws IOException{
-		this.server = HttpServer.create(new InetSocketAddress(GlobalSettings.TXTUML_DIAGNOSTICS_HTTP_PORT), 0);
-        server.createContext("/"+GlobalSettings.TXTUML_DIAGNOSTICS_HTTP_PATH, this);
-        server.setExecutor(null); // creates a default executor
-        server.start();
+
+	public void stop() {
+		if (server != null) server.stop(0);
+		registry.clear();
 	}
-	
-	@Override
-    public void handle(HttpExchange t) throws IOException {
-		//Set required headers
-		Headers headers = t.getResponseHeaders();
-		headers.add("Content-type", "application/json");
-		headers.add("Access-Control-Allow-Origin", "*");
-		
-		//Build the payload
-        String response = "[";
-        Boolean first = true;
-        for( DiagnosticsRegistryEntry e : this.registry.getRegistry()){
-        	if(!first) response+=",";
-        	first = false;
-        	response += e.toJSON();
-        }
-        response+= "]";
-        
-        //Write response
-        t.sendResponseHeaders(200, response.length());
-        OutputStream os = t.getResponseBody();
-        os.write(response.getBytes());
-        os.close();
-    }
+
+	public void enteringVertex(ModelClass object, Vertex vertex) {
+		registry.put(object, vertex);
+	}
+
+	public void leavingVertex(ModelClass object, Vertex vertex) {
+		registry.remove(object, vertex);
+	}
+
+	private class DiagnosticsHandler implements HttpHandler {
+
+		@Override
+		public void handle(HttpExchange exchange) throws IOException {
+			// Set required headers
+			Headers headers = exchange.getResponseHeaders();
+			headers.add("Content-type", "application/json");
+			headers.add("Access-Control-Allow-Origin", "*");
+
+			// Build the payload
+			String response = registry.entrySet().stream()
+					.map(DiagnosticsServer::registryEntryToJson)
+					.collect(Collectors.joining(",", "[", "]"));
+
+			// Write response
+			exchange.sendResponseHeaders(200, response.length());
+			OutputStream os = exchange.getResponseBody();
+			os.write(response.getBytes());
+			os.close();
+		}
+
+	}
+
+	private static String registryEntryToJson(Entry<ModelClass, Vertex> objectToVertex) {
+		ModelClass object = objectToVertex.getKey();
+		Vertex vertex = objectToVertex.getValue();
+
+		return "{\"class\":\"" + object.getClass().getCanonicalName() + "\","
+				+ "\"id\":\"" + ModelClasses.getIdentifierOf(object) + "\","
+				+ "\"element\":\"" + vertex.getClass().getCanonicalName() + "\"}";
+	}
 
 }
