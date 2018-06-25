@@ -14,7 +14,6 @@ import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 
 import hu.elte.txtuml.api.model.ModelClass;
-import hu.elte.txtuml.api.model.StateMachine.Vertex;
 import hu.elte.txtuml.api.model.execution.diagnostics.protocol.GlobalSettings;
 import hu.elte.txtuml.api.model.external.ModelClasses;
 
@@ -24,7 +23,7 @@ import hu.elte.txtuml.api.model.external.ModelClasses;
 public class DiagnosticsServer {
 
 	private HttpServer server;
-	private ConcurrentMap<ModelClass, Vertex> registry = new ConcurrentHashMap<>();
+	private ConcurrentMap<ModelClass, String> registry = new ConcurrentHashMap<>();
 
 	public void start(Integer port) throws IOException {
 		server = HttpServer.create(new InetSocketAddress(port), 0);
@@ -38,12 +37,8 @@ public class DiagnosticsServer {
 		registry.clear();
 	}
 
-	public void enteringVertex(ModelClass object, Vertex vertex) {
-		registry.put(object, vertex);
-	}
-
-	public void leavingVertex(ModelClass object, Vertex vertex) {
-		registry.remove(object, vertex);
+	public void register(ModelClass object, String currentLocation) {
+		registry.put(object, currentLocation);
 	}
 
 	private class DiagnosticsHandler implements HttpHandler {
@@ -69,13 +64,13 @@ public class DiagnosticsServer {
 
 	}
 
-	private static String registryEntryToJson(Entry<ModelClass, Vertex> objectToVertex) {
-		ModelClass object = objectToVertex.getKey();
-		Vertex vertex = objectToVertex.getValue();
+	private static String registryEntryToJson(Entry<ModelClass, String> objectToLocation) {
+		ModelClass object = objectToLocation.getKey();
+		String location = objectToLocation.getValue();
 
 		return "{\"class\":\"" + object.getClass().getCanonicalName() + "\","
 				+ "\"id\":\"" + ModelClasses.getIdentifierOf(object) + "\","
-				+ "\"element\":\"" + vertex.getClass().getCanonicalName() + "\"}";
+				+ "\"element\":\"" + location + "\"}";
 	}
 
 }

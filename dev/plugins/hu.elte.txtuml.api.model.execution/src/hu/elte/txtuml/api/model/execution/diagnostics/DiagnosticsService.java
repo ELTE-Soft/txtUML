@@ -120,23 +120,27 @@ public class DiagnosticsService extends NotifierOfTermination implements TraceLi
 
 	@Override
 	public void usingTransition(ModelClass object, Transition transition) {
+		String transitionName = transition.getClass().getCanonicalName();
+		server.register(object, transitionName);
 		sendNewModelEvent(MessageType.USING_TRANSITION, object.getClass().getCanonicalName(), getIdentifierOf(object),
-				transition.getClass().getCanonicalName());
+				transitionName);
 	}
 
 	@Override
 	public void enteringVertex(ModelClass object, Vertex vertex) {
-		server.enteringVertex(object, vertex);
+		String vertexName = vertex.getClass().getCanonicalName();
+		server.register(object, vertexName);
 		sendNewModelEvent(MessageType.ENTERING_VERTEX, object.getClass().getCanonicalName(), getIdentifierOf(object),
-				vertex.getClass().getCanonicalName());
+				vertexName);
 
 	}
 
 	@Override
 	public void leavingVertex(ModelClass object, Vertex vertex) {
-		server.leavingVertex(object, vertex);
+		String vertexName = vertex.getClass().getCanonicalName();
+		server.register(object, vertexName);
 		sendNewModelEvent(MessageType.LEAVING_VERTEX, object.getClass().getCanonicalName(), getIdentifierOf(object),
-				vertex.getClass().getCanonicalName());
+				vertexName);
 	}
 
 	private void sendNewModelEvent(MessageType type, String modelClassName, String modelClassInstanceID,
