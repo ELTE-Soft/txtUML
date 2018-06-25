@@ -4,14 +4,15 @@ var errorLabelElement = $('#debug-port-error');
 var debugContainer = $('#debug-toggle-container');
 
 //try to load from sessionStorage
+var port = sessionStorage['diagnosticsPort'];
+$('#debug-port-input').val(port);
+
 var isPolling = false;
 if(sessionStorage['isPolling'] == "true" ) {
 	isPolling = true;
 	$('#toggle-debug-checkbox').attr("checked",false);
 	pollingRefresh();
 }
-var port = sessionStorage['diagnosticsPort'];
-$('#debug-port-input').val(port);
 
 /**
  * Queries the server for diagnostics information.
