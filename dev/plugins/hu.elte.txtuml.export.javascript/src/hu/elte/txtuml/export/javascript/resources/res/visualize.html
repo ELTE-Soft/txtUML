@@ -24,7 +24,6 @@
 	<script src="visualizer/nodeholders.js"></script>
 	<script src="visualizer/linkholders.js"></script>
 	<script src="visualizer/visualizers.js"></script>
-	<script src="visualizer/grid.js"></script>
 </head>
 <body>
 	<input type="checkbox" class="toggle-checkbox" id="toggle-diagram-selector-checkbox" checked>
@@ -60,35 +59,35 @@
 
 		<!-- resize selector label -->
 		<script>
-		$("#diagram-selector-label").width($("#diagram-selector").innerWidth());
+			$("#diagram-selector-label").width($("#diagram-selector").innerWidth());
 		</script>
 		
 		<!-- add debug information toggle -->
 		<input type="checkbox" class="toggle-checkbox" id="toggle-debug-container-checkbox" checked>
 		<div id="debug-toggle-container">
-		<div style="display: flex; flex-direction: column">
-		<div style="flex: 0 0">
-		<label class="debug-label" for="toggle-debug">Poll server for diagnostics information</label>
-		<input type="checkbox" class="toggle-checkbox" id="toggle-debug-checkbox" checked>
-		<label for="toggle-debug-checkbox" class="button switch" id="toggle-debug">
-			<div class="switch-left switch-content" id="toggle-debug-on">On</div>
-			<div class="switch-right switch-content" id="toggle-debug-off">Off</div>
-			<div class="switch-border"></div>
-		</label>
-		</div>
-		<div style="flex: 0 0">
-		<label class="debug-label" for="debugPort">Diagnostics port</label>
-		<input type="number" name="debugPort" id="debug-port-input">
-		</div>
-		</div>
-		<label id="debug-port-error" class="debug-label">Could not connect to server. Please make sure an execution is in progress in txtUML configuration and that the port is correct.</label>
+			<div style="display: flex; flex-direction: column">
+				<div style="flex: 0 0">
+					<label class="debug-label" for="toggle-debug">Poll server for diagnostics information</label>
+					<input type="checkbox" class="toggle-checkbox" id="toggle-debug-checkbox" checked>
+					<label for="toggle-debug-checkbox" class="button switch" id="toggle-debug">
+						<div class="switch-left switch-content" id="toggle-debug-on">On</div>
+						<div class="switch-right switch-content" id="toggle-debug-off">Off</div>
+						<div class="switch-border"></div>
+					</label>
+				</div>
+				<div style="flex: 0 0">
+					<label class="debug-label" for="debugPort">Diagnostics port</label>
+					<input type="number" name="debugPort" id="debug-port-input">
+				</div>
+			</div>
+			<label id="debug-port-error" class="debug-label">Could not connect to server. Please make sure an execution is
+				in progress through a txtUML configuration and that the specified port is correct.</label>
 		</div>
 		<label id="debug-toggle-label" for="toggle-debug-container-checkbox" class="button control label">Diagnostics</label>
+
 		<!-- debug functionality -->
 		<script src="pollingRefresh.js"></script>
-		
-		
-		
+
 		<!-- add pan and zoom -->
 		<input type="checkbox" class="toggle-checkbox" id="toggle-control-checkbox" checked>
 		<div id="pan-and-zoom-control-container">
@@ -96,7 +95,7 @@
 				<div class="button control" id="zoom-in">+</div>
 				<div class="button control" id="zoom-out">-</div>
 			</div>
-			<div class="button control" id="reset-view">reset view</div>
+			<div class="button control" id="reset-view">Reset view</div>
 			<input type="checkbox" class="toggle-checkbox" id="toggle-pan-checkbox" checked>
 			<label for="toggle-pan-checkbox" class="button switch" id="toggle-pan">
 				<div class="switch-left switch-content">Edit</div>
@@ -110,10 +109,10 @@
 		<label id="pan-and-zoom-toggle-label" for="toggle-control-checkbox" class="button control label">Toggle controls</label>
 		<!-- resize control label -->
 		<script>
-		$("#pan-and-zoom-toggle-label").width($("#pan-and-zoom-control-container").innerHeight());
-		</script>	
+			$("#pan-and-zoom-toggle-label").width($("#pan-and-zoom-control-container").innerHeight());
+		</script>
 		<script src="panAndZoom.js"></script>
-	</div>	
+	</div>
 
 	<div class="footer">
 		The source and licensing details of the 3rd party libraries used by this page can be found at their respective websites:

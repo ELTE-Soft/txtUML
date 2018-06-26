@@ -8,9 +8,9 @@ var port = sessionStorage['diagnosticsPort'];
 $('#debug-port-input').val(port);
 
 var isPolling = false;
-if(sessionStorage['isPolling'] == "true" ) {
+if(sessionStorage['isPolling'] == "true") {
 	isPolling = true;
-	$('#toggle-debug-checkbox').attr("checked",false);
+	$('#toggle-debug-checkbox').attr("checked", false);
 	pollingRefresh();
 }
 
@@ -22,30 +22,30 @@ if(sessionStorage['isPolling'] == "true" ) {
 function refreshElements(){
 	$.ajax({
 		url: 'http://localhost:' + port + '/' + DIAGNOSTICS_PATH,
-	    type: 'GET',
-	    dataType: 'json'
+		type: 'GET',
+		dataType: 'json'
 	}).complete(function(response){
-        if(response.status == 200 && isPolling){
-            setActiveElements((JSON.parse(response.responseText)).map(e => _visualizer.getShapeIdByElementName(e.element)));
-            hideError();
-        }
-        else{
-            setActiveElements([]);
-            if(isPolling){
-            	showError();
-            }else{
-                hideError();
-            }
-        }
-        firstLoad = false;
+		if(response.status == 200 && isPolling){
+			setActiveElements((JSON.parse(response.responseText))
+				.map(entry => _visualizer.getShapeIdByElementName(entry.location)));
+			hideError();
+		}
+		else{
+			clearCurrentActiveElements();
+			if(isPolling){
+				showError();
+			}else{
+				hideError();
+			}
+		}
 	});
 }
 
 function pollingRefresh(){
-    refreshElements();
-    if(isPolling){
-    	setTimeout(pollingRefresh, REFRESH_INTERVAL_IN_MILISECONDS);
-    }
+	refreshElements();
+	if(isPolling){
+		setTimeout(pollingRefresh, REFRESH_INTERVAL_IN_MILLISECONDS);
+	}
 }
 
 //add event listener to the checkbox
@@ -58,25 +58,23 @@ $("#toggle-debug-checkbox").on("change", function(){
 	}
 	else{
 		//off
-		isPolling = null;
+		isPolling = false;
 		sessionStorage['isPolling'] = false;
-		//hideError();
+		hideError();
 		clearCurrentActiveElements();
 	}
 });
 
 function showError(){
-	errorLabelElement.innerHeight('8em');
-	//debugContainer.innerHeight('18em');
+	errorLabelElement.slideDown();
 }
 
 function hideError(){
-	errorLabelElement.height('0');
-	//debugContainer.innerHeight('10.5em');
+	errorLabelElement.slideUp();
 }
 
 var typingTimer;
-var DONE_TYPING_TIMEOUT_IN_MILISECONDS = 500;
+var DONE_TYPING_TIMEOUT_IN_MILLISECONDS = 500;
 
 function doneTyping(){
 	port = $('#debug-port-input').val();
@@ -84,10 +82,9 @@ function doneTyping(){
 }
 
 //add event listeners to the debug input
-$('#debug-port-input').on('keyup change input',function(){
-    clearTimeout(typingTimer);
-    if ($('#debug-port-input').val()) {
-        typingTimer = setTimeout(doneTyping, DONE_TYPING_TIMEOUT_IN_MILISECONDS);
-    }
+$('#debug-port-input').on('keyup change input', function(){
+	clearTimeout(typingTimer);
+	if($('#debug-port-input').val()){
+		typingTimer = setTimeout(doneTyping, DONE_TYPING_TIMEOUT_IN_MILLISECONDS);
+	}
 });
-

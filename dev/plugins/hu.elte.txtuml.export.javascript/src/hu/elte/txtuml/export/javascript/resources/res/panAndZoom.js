@@ -1,13 +1,13 @@
 var svgZoom = svgPanZoom('#paper > svg', {
-	  center: true,
-	  zoomEnabled: true,
-	  panEnabled: true,
-	  controlIconsEnabled: false,
-	  dblClickZoomEnabled: false,
-	  fit: false,
-	  minZoom: 0.1,
-	  maxZoom:3,
-	  zoomScaleSensitivity: 0.5
+		center: true,
+		zoomEnabled: true,
+		panEnabled: true,
+		controlIconsEnabled: false,
+		dblClickZoomEnabled: false,
+		fit: false,
+		minZoom: 0.1,
+		maxZoom:3,
+		zoomScaleSensitivity: 0.5
 	});
 
 function fitMaxHeightToParent(element){

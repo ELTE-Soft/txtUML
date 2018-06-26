@@ -211,7 +211,6 @@ body {
 	transition: all 0.2s ease-in-out;
 	-webkit-box-shadow: 0;
 			box-shadow: 0;
-	/*height: 10.5em;*/
 	display:-webkit-box;
 	display:-ms-flexbox;
 	display:flex;
@@ -228,7 +227,7 @@ body {
 	left:2em;
 	top:0;
 	padding: 0.5em;
-	width: 10.5em;
+	width: 11.4em;
 	-webkit-transform:rotate(90deg);
 		-ms-transform:rotate(90deg);
 			transform:rotate(90deg);
@@ -244,25 +243,27 @@ body {
 }
 
 #debug-port-input{
-	width: 100%
+	width: 100%;
+	height: 2em;
 }
 
 #debug-port-error{
+	display: none;
 	font-weight: bolder;
 	color: #e84343;
 	overflow: hidden;
-	margin: 0;
-	height: 0em;
+	margin: 0.15em 0 0 0;
 	-webkit-transition: all 0.2s ease-in-out;
 	-o-transition: all 0.2s ease-in-out;
 	transition: all 0.2s ease-in-out;
 }
 
 .debug-label{
-	margin: 0.5em 0 0.5em 0;
+	margin: 0 0 0.4em 0;
 	display: block;
 	text-align: center;
 	font-size: 80%;
+	line-height: 1.5;
 }
 
 #toggle-control-checkbox:checked + #pan-and-zoom-control-container{
@@ -275,11 +276,16 @@ body {
 	left: 12em;
 }
 
+#toggle-debug{
+	margin-bottom: 0.85em;
+}
+
 #toggle-debug-container-checkbox:checked + #debug-toggle-container{
 	left: 0;
 	-webkit-box-shadow: 2px 2px 5px black;
 			box-shadow: 2px 2px 5px black;
 }
+
 #toggle-debug-container-checkbox:checked ~ #debug-toggle-label{
 	left: 12em;
 }
@@ -468,50 +474,6 @@ body {
 	border: 2px inset;
 }
 
-/*@media screen and (orientation: portrait) {
-	#pan-and-zoom-control-container{
-		position: absolute;
-		left:0;
-		top: -100%;
-		display:-webkit-box;
-		display:-ms-flexbox;
-		display:flex;
-		-webkit-box-orient:vertical;
-		-webkit-box-direction:normal;
-			-ms-flex-direction:column;
-				flex-direction:column;
-		-ms-flex-pack:distribute;
-			justify-content:space-around;
-		font-weight: 800;
-		padding: 0.5em;
-		width: 10em;
-		-webkit-transition: all 0.2s ease-in-out;
-		-o-transition: all 0.2s ease-in-out;
-		transition: all 0.2s ease-in-out;
-		-webkit-box-shadow: 0;
-				box-shadow: 0;
-	}
-
-	#pan-and-zoom-toggle-label{
-		top:0;
-		left:0;
-		width:10em !important;
-		-webkit-transform: rotate(0deg) !important;
-			-ms-transform: rotate(0deg) !important;
-				transform: rotate(0deg) !important;
-	}
-
-	.toggle-checkbox:checked + #pan-and-zoom-control-container{
-		top:2em;
-		-webkit-box-shadow: 2px 2px 5px black;
-				box-shadow: 2px 2px 5px black;
-	}
-
-	.toggle-checkbox:checked ~ #pan-and-zoom-toggle-label{
-		left: 0;
-		top:0;
-	}
-}*/
 #paper g rect,
 #paper g circle,
 #paper g ellipse,

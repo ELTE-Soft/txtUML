@@ -59,7 +59,6 @@ visualizer.visualizers.Visualizer.prototype.visualize = function (holder) {
 				//panEnabled is global
 				return !panEnabled;
 			}
-
 		});
 
 	// do previsualization tasks

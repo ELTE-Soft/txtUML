@@ -15,5 +15,5 @@ public class GlobalSettings {
 	 * Parameters for service over HTTP
 	 * NOT KEYS, only predefined parameters.
 	 */
-	public static final String TXTUML_DIAGNOSTICS_HTTP_PATH = "activeElements";
+	public static final String TXTUML_DIAGNOSTICS_HTTP_PATH = "registry";
 }

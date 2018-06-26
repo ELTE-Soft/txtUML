@@ -59,7 +59,6 @@ visualizer.nodeholders.ClassNode = function (node) {
 		'position': node.position,
 		'size': this._size
 	}
-	console.log(classData);
 
 	switch (node.type) {
 	case 'class':
@@ -122,8 +121,8 @@ visualizer.nodeholders.StateNode = function (node) {
 		'position': node.position,
 		'size': this._size
 	}
-	this._node = new visualizer.shapes.State(nodeData);
 
+	this._node = new visualizer.shapes.State(nodeData);
 }
 
 // prototype chaining

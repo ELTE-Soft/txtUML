@@ -70,7 +70,7 @@ public class DiagnosticsServer {
 
 		return "{\"class\":\"" + object.getClass().getCanonicalName() + "\","
 				+ "\"id\":\"" + ModelClasses.getIdentifierOf(object) + "\","
-				+ "\"element\":\"" + location + "\"}";
+				+ "\"location\":\"" + location + "\"}";
 	}
 
 }
