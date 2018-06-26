@@ -11,4 +11,16 @@
 	</parent>
 	<artifactId>hu.elte.txtuml.api.model.execution</artifactId>
 	<packaging>eclipse-plugin</packaging>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.eclipse.tycho</groupId>
+				<artifactId>tycho-compiler-plugin</artifactId>
+				<version>${tycho.version}</version>
+				<configuration>
+					<compilerArgument>-warn:+discouraged,forbidden</compilerArgument>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
 </project>

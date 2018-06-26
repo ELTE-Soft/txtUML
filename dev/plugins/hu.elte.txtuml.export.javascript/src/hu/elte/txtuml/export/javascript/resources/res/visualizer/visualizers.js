@@ -12,8 +12,19 @@ visualizer.visualizers.Visualizer = function (diagram, padding) {
 
 	// generate holders from input
 	this._populateNodesAndLinks();
-
 }
+
+visualizer.visualizers.Visualizer.prototype.getShapeIdByElementName = function (name) {
+	var nameMatches = function (holder) { return holder.getElementName() == name };
+	var matchingHolder = _.find(this._nodes, nameMatches) || _.find(this._links, nameMatches);
+
+	if (matchingHolder) {
+		return matchingHolder.getShapeId();
+	} else {
+		return undefined;
+	}
+}
+
 // returns ther LinkView to use during visualization
 visualizer.visualizers.Visualizer.prototype._getLinkView = function () {
 	return joint.dia.LinkView;
@@ -48,7 +59,6 @@ visualizer.visualizers.Visualizer.prototype.visualize = function (holder) {
 				//panEnabled is global
 				return !panEnabled;
 			}
-
 		});
 
 	// do previsualization tasks
