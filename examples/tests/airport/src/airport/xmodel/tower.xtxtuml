@@ -123,7 +123,7 @@ class Tower {
 			}
 
 			// And repeat it
-			Timer.^start(new SignalTowerWorks(), this, 50); // It send a signal in every 30 sec
+			Timer.schedule(new SignalTowerWorks(), this, 50); // It send a signal in every 30 sec
 		}
 	}
 	

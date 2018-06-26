@@ -95,7 +95,7 @@ public class GenerationNames {
 	public static class TimerNames {
 
 		public static final String TimerInterFaceName = "ITimer";
-		public static final String StartTimerFunctionName = "start";
+		public static final String TimerScheduleFunctionName = "schedule";
 		public static final String TimerClassName = "Timer";
 		public static final String TimerPtrName = Namespaces.RootNamespace + "::" + "TimerPtr";
 

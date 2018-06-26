@@ -21,7 +21,7 @@ class SimpleClock extends Clock {
 
 	state Running {
 		entry {
-			Timer timer = Timer.^start(new Stop(), this, 10000);
+			Timer timer = Timer.schedule(new Stop(), this, 10000);
 			link timer, this via TimerOfClock;
 		}
 		exit {

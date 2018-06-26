@@ -42,7 +42,7 @@ public class Tester implements Execution {
 		// association end is non-navigable in that model.
 		Action.send(new DoYourWork(), oneOfTheUsers);
 
-		Timer.start(new DoYourWork(), oneOfTheUsers, 5000);
+		Timer.schedule(new DoYourWork(), oneOfTheUsers, 5000);
 	}
 
 	public static void main(String[] args) {
