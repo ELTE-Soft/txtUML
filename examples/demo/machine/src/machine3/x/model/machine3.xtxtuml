@@ -17,33 +17,33 @@ class Machine {
 
 	state Off {
 		entry {
-			log("\tMachine enters state: 'off'");
+			log "\tMachine enters state: 'off'";
 		}
 
 		exit {
-			log("\tMachine exits state: 'off'");
+			log "\tMachine exits state: 'off'";
 		}
 	}
 
 	composite On {
 		entry {
-			log("\tMachine enters state: 'on'");
+			log "\tMachine enters state: 'on'";
 		}
 
 		exit {
-			log("\tMachine exits state: 'on'");
+			log "\tMachine exits state: 'on'";
 		}
 
 		initial Init;
 
 		state Active {
 			entry {
-				log("\tMachine enters state: 'active'");
-				log("\tMachine: tasks to do: " + tasksToDo);
+				log "\tMachine enters state: 'active'";
+				log "\tMachine: tasks to do: " + tasksToDo;
 			}
 
 			exit {
-				log("\tMachine exits state: 'active'");
+				log "\tMachine exits state: 'active'";
 			}
 		}
 		
@@ -60,7 +60,7 @@ class Machine {
 			effect {
 				DoTasks doTasks = trigger;
 				tasksToDo -= doTasks.count;
-				log("\tMachine: becoming active...");
+				log "\tMachine: becoming active...";
 			}
 			
 			guard(tasksToDo > 0);
@@ -72,7 +72,7 @@ class Machine {
 		from Init;
 		to Off;
 		effect {
-			log("\tMachine: initializing...");
+			log "\tMachine: initializing...";
 		}
 	}
 
@@ -82,7 +82,7 @@ class Machine {
 		trigger ButtonPress;
 
 		effect {
-			log("\tMachine: switching on...");
+			log "\tMachine: switching on...";
 		}
 	}
 
@@ -92,7 +92,7 @@ class Machine {
 		trigger ButtonPress;
 		
 		effect {
-			log("\tMachine: switching off...");
+			log "\tMachine: switching off...";
 		}
 
 		guard(tasksToDo <= 0);
@@ -117,7 +117,7 @@ class User {
 		from Init;
 		to NotWorking;
 		effect {
-			log("\t" + name.toString() + ": initializing...");				
+			log "\t" + name.toString() + ": initializing...";
 		}
 	}
 
@@ -133,7 +133,7 @@ class User {
 		guard (workToDo == 0);
 
 		effect {
-			log("\t" + name.toString() + ": I have no work to do!");
+			log "\t" + name.toString() + ": I have no work to do!";
 		}
 	}
 
@@ -143,63 +143,63 @@ class User {
 		guard(workToDo != 0);
 
 		effect {
-			log("\t" + name.toString() + ": I am doing my work now...");
+			log "\t" + name.toString() + ": I am doing my work now...";
 			doWork();
 		}
 	}
 
 	User findOtherUser(Machine m) {
 
-		log("\t" + name.toString() + ": analyzing machine...");
+		log "\t" + name.toString() + ": analyzing machine...";
 
 		Any<User> usersOfM = m->(Usage.userOfMachine);
 
-		log("\t\tI found its users!");
-		log("");
+		log "\t\tI found its users!";
+		log "";
 		
 		for(User user : usersOfM) {
 			user.sayHello();
 		}
-		log("");
+		log "";
 
 	 	if (usersOfM.contains(this)) {
- 			log("\t\tI am a user of this machine.");
+ 			log "\t\tI am a user of this machine.";
 	 	}
 
 	 	GeneralCollection<User> otherUsers = usersOfM.remove(this);
 	 	
 	 	if (otherUsers.size() == 1) {
-	 		log("\t\tThere is exactly one other person who is user of this machine.");
+	 		log "\t\tThere is exactly one other person who is user of this machine.";
 	 	}
 	 	
 	  	return otherUsers.one();
 	}
 	
 	void sayHello() {
-		log("\t\tHello, I am " + name.toString() + ".");
+		log "\t\tHello, I am " + name.toString() + ".";
 	}
 	
 	void newWork() {
 		workToDo++;
-		log("\t" + name.toString() + ": I got some new work to do.");
+		log "\t" + name.toString() + ": I got some new work to do.";
 	}
 	
 	void workDone() {
 		workToDo--;
-		log("\t" + name.toString() + ": I am done with some of my work.");
+		log "\t" + name.toString() + ": I am done with some of my work.";
 	}
 	
 	void doWork() {
-		log("\t" + name.toString() + ": starting to work...");
+		log "\t" + name.toString() + ": starting to work...";
 
 		Machine myMachine = User.this->(Usage.usedMachine).one();
 		
 		User otherUser = findOtherUser(myMachine);
 
-		log("\t" + name.toString() + ": giving some of my work to other user...");
+		log "\t" + name.toString() + ": giving some of my work to other user...";
 		
 	 	for (int i = 0; i < 3; i++) {
-	 		log("\t" + name.toString() + ": giving work to other user (" + i +")");
+	 		log "\t" + name.toString() + ": giving work to other user (" + i +")";
 	 		otherUser.newWork();
 	 		this.workDone();
 	 	}
@@ -207,14 +207,14 @@ class User {
 		send new ButtonPress() to myMachine;
 		// Switching the machine on.
 		
-		log("\t" + name.toString() + ": finishing my work...");
+		log "\t" + name.toString() + ": finishing my work...";
 		
 		send new DoTasks(workToDo) to myMachine;
 
-		Timer.start(new ButtonPress(), myMachine, 2000);
+		Timer.schedule(new ButtonPress(), myMachine, 2000);
 		// Switching off the machine with some delay.
 		
-		log("\t" + name.toString() + ": work finished...");
+		log "\t" + name.toString() + ": work finished...";
 	}
 }
 

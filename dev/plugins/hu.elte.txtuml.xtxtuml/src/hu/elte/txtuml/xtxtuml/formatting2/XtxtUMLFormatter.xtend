@@ -4,18 +4,21 @@ import hu.elte.txtuml.xtxtuml.xtxtUML.TUAssociation
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAssociationEnd
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAttribute
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAttributeOrOperationDeclarationPrefix
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUBindExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUClass
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUClassPropertyAccessExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUComposition
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUConnector
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUConnectorEnd
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUConstructor
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUCreateObjectExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUDeleteObjectExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUEntryOrExitActivity
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUEnumeration
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUExecution
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUFile
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUInterface
+import hu.elte.txtuml.xtxtuml.xtxtUML.TULogExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUModelDeclaration
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUModifiers
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUMultiplicity
@@ -26,6 +29,7 @@ import hu.elte.txtuml.xtxtuml.xtxtUML.TUReception
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUSendSignalExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUSignal
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUSignalAttribute
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUStartObjectExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUState
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUTransition
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUTransitionEffect
@@ -120,7 +124,7 @@ class XtxtUMLFormatter extends XbaseFormatter {
 
 	def dispatch void format(TUConnectorEnd it, extension IFormattableDocument document) {
 		regionFor.keyword('->').surround[noSpace];
-		regionFor.feature(TU_CONNECTOR_END__NAME).prepend[oneSpace].append[noSpace];
+		regionFor.feature(TU_CONNECTIVE_END__NAME).prepend[oneSpace].append[noSpace];
 	}
 
 	def dispatch void format(TUSignalAttribute it, extension IFormattableDocument document) {
@@ -221,7 +225,7 @@ class XtxtUMLFormatter extends XbaseFormatter {
 		multiplicity.append[oneSpace];
 
 		regionFor.keyword('container').append[oneSpace];
-		regionFor.feature(TU_CLASS_PROPERTY__NAME).prepend[oneSpace].append[noSpace];
+		regionFor.feature(TU_CONNECTIVE_END__NAME).prepend[oneSpace].append[noSpace];
 
 		format(multiplicity, document);
 	}
@@ -238,9 +242,34 @@ class XtxtUMLFormatter extends XbaseFormatter {
 		format(target, document);
 	}
 
+	def dispatch void format(TUStartObjectExpression it, extension IFormattableDocument document) {
+		object.prepend[oneSpace];
+		format(object, document);
+	}
+
 	def dispatch void format(TUDeleteObjectExpression it, extension IFormattableDocument document) {
 		object.prepend[oneSpace];
 		format(object, document);
+	}
+
+	def dispatch void format(TULogExpression it, extension IFormattableDocument document) {
+		message.prepend[oneSpace];
+		format(message, document);
+	}
+
+	def dispatch void format(TUBindExpression it, extension IFormattableDocument document) {
+		regionFor.feature(TU_BIND_EXPRESSION__TYPE).append[oneSpace];
+		regionFor.keyword(',').prepend[noSpace].append[oneSpace];
+		regionFor.keyword('via').surround[oneSpace];
+		regionFor.keywords('as').forEach[surround[oneSpace]];
+
+		format(leftParticipant, document);
+		format(rightParticipant, document);
+	}
+
+	def dispatch void format(TUCreateObjectExpression it, extension IFormattableDocument document) {
+		regionFor.keyword('as').surround[oneSpace];
+		super._format(it, document);
 	}
 
 	override dispatch void format(XBlockExpression it, extension IFormattableDocument document) {

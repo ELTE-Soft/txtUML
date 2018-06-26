@@ -4,6 +4,7 @@ import com.google.inject.Inject
 import hu.elte.txtuml.xtxtuml.XtxtUMLInjectorProvider
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUClass
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUClassPropertyAccessExpression
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUCreateObjectExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUFile
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUOperation
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUSignalAccessExpression
@@ -31,9 +32,31 @@ class XtxtUMLTypeComputerTests {
 			package test.model;
 			class A {
 				void foo() {
+					start this;
+					log "message";
+					link this as AA.e, this via AA;
+					unlink this as AA.e, this via AA;
+					connect this->(PA) as CA3.e, this->(PA) via CA3;
 					send new S() to this;
 					delete this;
 				}
+				port PA {}
+			}
+			association AA {
+				A e;
+				A f;
+			}
+			composition CA1 {
+				container C c;
+				A a;
+			}
+			composition CA2 {
+				container C c;
+				A a;
+			}
+			connector CA3 {
+				CA1.a->A.PA e;
+				CA2.a->A.pA f;
 			}
 			signal S;
 		'''.parse;
@@ -43,8 +66,9 @@ class XtxtUMLTypeComputerTests {
 		val block = op.body as XBlockExpression;
 
 		assertEquals("void", block.resolvedTypeId);
-		assertEquals("void", block.expressions.head.resolvedTypeId);
-		assertEquals("void", block.expressions.get(1).resolvedTypeId);
+		block.expressions.forEach [
+			assertEquals("void", resolvedTypeId);
+		]
 	}
 
 	@Test
@@ -77,6 +101,38 @@ class XtxtUMLTypeComputerTests {
 
 		val portAccess = block.expressions.get(2) as TUClassPropertyAccessExpression;
 		assertEquals("test.model.A$P", portAccess.resolvedTypeId);
+	}
+
+	@Test
+	def computeCreateObjectExpressionTypes() {
+		val file = '''
+			package test.model;
+				class A {
+					void f() {
+						new A();
+						new B();
+						create A();
+						create B();
+						new A() as "a";
+						new B() as "b";
+						create A() as "a";
+						create B() as "b";
+					}
+				}
+				class B extends A;
+		'''.parse;
+
+		val class = file.elements.head as TUClass;
+		val op = class.members.head as TUOperation;
+		val block = op.body as XBlockExpression;
+
+		(0..3).forEach[
+			val createA = block.expressions.get(it * 2) as TUCreateObjectExpression;
+			assertEquals("test.model.A", createA.resolvedTypeId);
+
+			val createB = block.expressions.get(it * 2 + 1) as TUCreateObjectExpression;
+			assertEquals("test.model.B", createB.resolvedTypeId);
+		]
 	}
 
 	@Test

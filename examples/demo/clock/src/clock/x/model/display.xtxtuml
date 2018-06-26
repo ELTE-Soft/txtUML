@@ -28,7 +28,7 @@ class Display {
 	}
 
 	private void refresh() {
-		log("" + hour + ":" + minute + ":" + second);
+		log "" + hour + ":" + minute + ":" + second;
 	}
 
 	initial Init;

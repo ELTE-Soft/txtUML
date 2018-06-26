@@ -59,7 +59,7 @@ public class Keyboard extends ModelClass {
 				Timer timer = assoc(KeyboardUsesTimer.timer.class).one();
 				Action.unlink(KeyboardUsesTimer.timer.class, timer, KeyboardUsesTimer.keyboard.class, Keyboard.this);				
 			}
-			Timer timer = Timer.start(new KeyboardTimerExpired(), Keyboard.this, 50);
+			Timer timer = Timer.schedule(new KeyboardTimerExpired(), Keyboard.this, 50);
 			Action.link(KeyboardUsesTimer.timer.class, timer, KeyboardUsesTimer.keyboard.class, Keyboard.this);
 		}
 	}

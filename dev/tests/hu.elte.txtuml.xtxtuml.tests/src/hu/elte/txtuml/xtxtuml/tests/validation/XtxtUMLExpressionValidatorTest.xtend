@@ -417,8 +417,117 @@ class XtxtUMLExpressionValidatorTest {
 			}
 		''';
 
-		rawFile.parse.assertError(TU_CLASS_PROPERTY_ACCESS_EXPRESSION, MISSING_CLASS_PROPERTY, rawFile.indexOf("->"),
-			2);
+		rawFile.parse.assertError(TU_CLASS_PROPERTY_ACCESS_EXPRESSION, MISSING_CLASS_PROPERTY, rawFile.indexOf("->"), 2);
+	}
+
+	@Test
+	def checkBindExpressionPartIsNotMissing() {
+		val valid = '''
+			class A {
+				port P {}
+				void f() {
+					B b = new B();
+
+					link this, b via AB;
+					link this as AB.a, b via AB;
+					link this, b as AB.b via AB;
+					link this as AB.a, b as AB.b via AB;
+
+					unlink this, b via AB;
+					unlink this as AB.a, b via AB;
+					unlink this, b as AB.b via AB;
+					unlink this as AB.a, b as AB.b via AB;
+
+					connect this->(A.P), b->(B.P) via CAB;
+					connect this->(A.P) as CAB.ap, b->(B.P) via CAB;
+					connect this->(A.P), b->(B.P) as CAB.bp via CAB;
+					connect this->(A.P) as CAB.ap, b->(B.P) as CAB.bp via CAB;
+				}
+			}
+			class B {
+				port P {}
+			}
+			class C;
+			association AB {
+				A a;
+				B b;
+			}
+			composition CA {
+				container C c;
+				A a;
+			}
+			composition CB {
+				container C c;
+				B b;
+			}
+			connector CAB {
+				CA.a->A.P ap;
+				CB.b->B.P bp;
+			}
+		'''.parse;
+
+		valid.assertNoError(MISSING_CONNECTIVE_IN_BIND_EXPRESSION);
+		valid.assertNoError(MISSING_END_IN_BIND_EXPRESSION);
+
+		val missingPartsRaw = '''
+			class A {
+				port P {}
+				void f() {
+					B b = new B();
+
+					link this, b via;
+					link this as, b via AB;
+					link this, b as via AB;
+					link this as, b as via;
+
+					unlink this, b via;
+					unlink this as, b via AB;
+					unlink this, b as via AB;
+					unlink this as, b as via;
+
+					connect this->(A.P), b->(B.P) via;
+					connect this->(A.P) as, b->(B.P) via CAB;
+					connect this->(A.P), b->(B.P) as via CAB;
+					connect this->(A.P) as, b->(B.P) as via;
+				}
+			}
+			class B {
+				port P {}
+			}
+			class C;
+			association AB {
+				A a;
+				B b;
+			}
+			composition CA {
+				container C c;
+				A a;
+			}
+			composition CB {
+				container C c;
+				B b;
+			}
+			connector CAB {
+				CA.a->A.P ap;
+				CB.b->B.P bp;
+			}
+		''';
+
+		val missingPartsParsed = missingPartsRaw.parse;
+		#[0, 1, 2].forEach[
+			missingPartsParsed.assertError(TU_BIND_EXPRESSION, MISSING_CONNECTIVE_IN_BIND_EXPRESSION,
+				missingPartsRaw.indexOfNth("via", it * 4), 3);
+			missingPartsParsed.assertError(TU_BIND_EXPRESSION, MISSING_END_IN_BIND_EXPRESSION,
+				missingPartsRaw.indexOfNth("as", it * 4 + 1), 2);
+			missingPartsParsed.assertError(TU_BIND_EXPRESSION, MISSING_END_IN_BIND_EXPRESSION,
+				missingPartsRaw.indexOfNth("as", it * 4 + 2), 2);
+			missingPartsParsed.assertError(TU_BIND_EXPRESSION, MISSING_END_IN_BIND_EXPRESSION,
+				missingPartsRaw.indexOfNth("as", it * 4 + 3), 2);
+			missingPartsParsed.assertError(TU_BIND_EXPRESSION, MISSING_END_IN_BIND_EXPRESSION,
+				missingPartsRaw.indexOfNth("as", it * 4 + 4), 2);
+			missingPartsParsed.assertError(TU_BIND_EXPRESSION, MISSING_CONNECTIVE_IN_BIND_EXPRESSION,
+				missingPartsRaw.indexOfNth("via", it * 4 + 3), 3);
+		]
 	}
 
 	@Test

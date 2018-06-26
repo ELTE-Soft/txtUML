@@ -16,7 +16,7 @@ class ITimer
 {
 public:
 	/*!
-	* Starts a new delayed send operation. Sends asynchronously a signal to the
+	* Schedules a new delayed send operation. Sends asynchronously a signal to the
 	* target model object after a specified timeout.
 	*
 	* @param sm
@@ -28,7 +28,7 @@ public:
 	* @return a timer instance to manage this delayed send operation before it
 	*         happens
 	*/
-	static ES::TimerPtr start(ES::StateMachineRef sm, ES::EventRef event, int millisecs);
+	static ES::TimerPtr schedule(ES::StateMachineRef sm, ES::EventRef event, int millisecs);
 
 };
 

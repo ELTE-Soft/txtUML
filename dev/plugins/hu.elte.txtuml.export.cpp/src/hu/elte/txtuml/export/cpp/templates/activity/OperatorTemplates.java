@@ -33,7 +33,7 @@ public class OperatorTemplates {
 	public static final String Round = "round";
 	public static final String Sinus = "sin";
 	public static final String Cosinus = "cos";
-	public static final String TimerStart = TimerNames.StartTimerFunctionName;
+	public static final String TimerSchedule = TimerNames.TimerScheduleFunctionName;
 
 	public static final String NotBinaryOperator = "not_binary_operator";
 
@@ -105,8 +105,8 @@ public class OperatorTemplates {
 			return GenerationNames.Namespaces.CollectionUtilsNamespace + "::" + "select"; 
 		case "log":
 			return ActionNames.Log;
-		case "start":
-			return TimerNames.TimerInterFaceName + "::" + TimerStart;
+		case "schedule":
+			return TimerNames.TimerInterFaceName + "::" + TimerSchedule;
 		case "inc":
 			return Increment;
 		case "dec":
@@ -121,8 +121,8 @@ public class OperatorTemplates {
 		}
 	}
 
-	public static boolean isTimerStart(String function) {
-		return function == TimerStart;
+	public static boolean isTimerSchedule(String function) {
+		return function == TimerSchedule;
 	}
 
 }

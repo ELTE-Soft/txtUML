@@ -1,14 +1,14 @@
 package machine1.x.model;
 
-import java.time.format.DateTimeFormatter;
+import com.google.common.collect.Lists;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 // classes
 
 class Machine {
-	private external List<String> switchOnLog = new ArrayList<String>();
+	private external List<String> switchOnLog = Lists.newArrayList();
 	private external DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
 
 	private external-body void logSwitchOn() {
@@ -26,22 +26,22 @@ class Machine {
 
 	state Off {
 		entry {
-			log("\tMachine enters state: 'off'");
+			log "\tMachine enters state: 'off'";
 		}
 
 		exit {
-			log("\tMachine exits state: 'off'");
+			log "\tMachine exits state: 'off'";
 		}
 	}
 
 	state On {
 		entry {
-			log("\tMachine enters state: 'on'");
+			log "\tMachine enters state: 'on'";
 			logSwitchOn();
 		}
 
 		exit {
-			log("\tMachine exits state: 'on'");
+			log "\tMachine exits state: 'on'";
 		}
 	}
 
@@ -49,7 +49,7 @@ class Machine {
 		from Init;
 		to Off;
 		effect {
-			log("\tMachine: initializing...");
+			log "\tMachine: initializing...";
 		}
 	}
 
@@ -58,7 +58,7 @@ class Machine {
 		to On;
 		trigger ButtonPress;
 		effect {
-			log("\tMachine: switching on...");
+			log "\tMachine: switching on...";
 		}
 	}
 
@@ -67,7 +67,7 @@ class Machine {
 		to Off;
 		trigger ButtonPress;
 		effect {
-			log("\tMachine: switching off...");
+			log "\tMachine: switching off...";
 		}
 	}
 }
@@ -80,7 +80,7 @@ class User {
 		from Init;
 		to Ready;
 		effect {
-			log("\tUser: initializing...");
+			log "\tUser: initializing...";
 		}
 	}
 
@@ -89,18 +89,18 @@ class User {
 		to Ready;
 		trigger DoYourWork;
 		effect {
-			log("\tUser: working...");
+			log "\tUser: working...";
 			doWork();
 		}
 	}
 
 	void doWork() {
-		log("\tUser: starting to work...");
+		log "\tUser: starting to work...";
 		Machine myMachine = this->(Usage.usedMachine).one();
 		send new ButtonPress() to myMachine;
 		send new ButtonPress() to myMachine;
 		send new ButtonPress() to myMachine;
-		log("\tUser: work finished...");
+		log "\tUser: work finished...";
 	}
 }
 

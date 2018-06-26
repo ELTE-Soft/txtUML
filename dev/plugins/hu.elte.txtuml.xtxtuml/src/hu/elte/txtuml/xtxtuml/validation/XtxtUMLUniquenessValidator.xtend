@@ -262,7 +262,7 @@ class XtxtUMLUniquenessValidator extends XtxtUMLNameValidator {
 				"Port " + port.name + " in class " + containingClass.name +
 					" must have a unique name among states, transitions and ports of the enclosing element" +
 					optionalCaseInsensitivityWarning(port.name, duplicate.nameOfClassLikeMember), port,
-				TU_CLASS_PROPERTY__NAME, NOT_UNIQUE_NAME);
+				TU_CONNECTIVE_END__NAME, NOT_UNIQUE_NAME);
 		}
 	}
 
@@ -288,7 +288,7 @@ class XtxtUMLUniquenessValidator extends XtxtUMLNameValidator {
 		if (duplicateName != null) {
 			error("Association end " + associationEnd.name + " in association " + association.name +
 				" must have a unique name" + optionalCaseInsensitivityWarning(associationEnd.name, duplicateName),
-				associationEnd, TU_CLASS_PROPERTY__NAME, NOT_UNIQUE_NAME);
+				associationEnd, TU_CONNECTIVE_END__NAME, NOT_UNIQUE_NAME);
 		}
 	}
 
@@ -302,7 +302,7 @@ class XtxtUMLUniquenessValidator extends XtxtUMLNameValidator {
 		if (duplicateName != null) {
 			error("Connector end " + connectorEnd.name + " in connector " + connector.name +
 				" must have a unique name" + optionalCaseInsensitivityWarning(connectorEnd.name, duplicateName),
-				connectorEnd, TU_CONNECTOR_END__NAME, NOT_UNIQUE_NAME);
+				connectorEnd, TU_CONNECTIVE_END__NAME, NOT_UNIQUE_NAME);
 		}
 	}
 
