@@ -201,7 +201,7 @@ class XtxtUMLExpressionValidator extends XtxtUMLTypeValidator {
 		}
 
 		#[bindExpr.leftAs -> bindExpr.leftEnd -> TU_BIND_EXPRESSION__LEFT_AS,
-				bindExpr.rightAs -> bindExpr.rightEnd -> TU_BIND_EXPRESSION__RIGHT_AS]
+			bindExpr.rightAs -> bindExpr.rightEnd -> TU_BIND_EXPRESSION__RIGHT_AS]
 		.forEach[ asToEndToFeature |
 			val currentAs = asToEndToFeature.key.key;
 			val currentEnd = asToEndToFeature.key.value;

@@ -37,16 +37,8 @@ class XtxtUMLConnectiveHelper {
 		false
 	}
 
-	def dispatch isDelegationConnector(TUAssociation it) {
-		false
-	}
-
 	def dispatch isDelegationConnector(TUConnector it) {
 		delegation
-	}
-
-	def connectiveEndName(TUConnectiveEnd it) {
-		fullyQualifiedName.lastSegment
 	}
 
 	def dispatch endEntity(TUConnectiveEnd it) {

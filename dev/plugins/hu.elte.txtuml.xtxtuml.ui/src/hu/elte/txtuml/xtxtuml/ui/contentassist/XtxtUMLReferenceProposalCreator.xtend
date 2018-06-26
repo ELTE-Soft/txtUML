@@ -163,7 +163,7 @@ class XtxtUMLReferenceProposalCreator extends XbaseReferenceProposalCreator {
 
 				return scope.allElements.filter [ descr |
 					providedSignals?.findFirst[fullyQualifiedName == descr.qualifiedName] != null
-				// `findFirst` is used instead of `exists` to eliminate the warning about null-safe'd primitives
+					// `findFirst` is used instead of `exists` to eliminate the warning about null-safe'd primitives
 				]
 			}
 		}

@@ -216,7 +216,7 @@ class XtxtUMLTypeValidator extends XtxtUMLUniquenessValidator {
 			val currentFeature = endToFeature.value;
 
 			if (currentEnd != null && !connective.connectiveEnds.exists[fullyQualifiedName == currentEnd.fullyQualifiedName]) {
-				error("End " + currentEnd.connectiveEndName + " does not belong to connective " + connective.connectiveName,
+				error("End " + currentEnd.name + " does not belong to connective " + connective.connectiveName,
 					it, currentFeature, END_MISMATCH_IN_BIND_EXPRESSION);
 
 				result = false;
@@ -225,7 +225,7 @@ class XtxtUMLTypeValidator extends XtxtUMLUniquenessValidator {
 
 		if (leftEnd != null && rightEnd != null && leftEnd.fullyQualifiedName == rightEnd.fullyQualifiedName) {
 			#[leftEnd -> TU_BIND_EXPRESSION__LEFT_END, rightEnd -> TU_BIND_EXPRESSION__RIGHT_END].forEach[ endToFeature |
-				error("Duplicate connective end " + endToFeature.key.connectiveEndName, it, endToFeature.value,
+				error("Duplicate connective end " + endToFeature.key.name, it, endToFeature.value,
 					DUPLICATE_END_IN_BIND_EXPRESSION);
 			];
 
