@@ -9,12 +9,12 @@ import hu.elte.txtuml.examples.validation.sequencediagram.testmodel.AToB;
 import hu.elte.txtuml.examples.validation.sequencediagram.testmodel.B;
 import hu.elte.txtuml.examples.validation.sequencediagram.testmodel.TestSig;
 
-public class MissingSend extends SequenceDiagram {
+public class ValidDiagramWithMethodInvocations extends SequenceDiagram {
 
 	@Position(10)
 	private A lifeline1;
 
-	private B lifeline2;
+	public B lifeline2;
 
 	@Override
 	public void initialize() {
@@ -25,13 +25,11 @@ public class MissingSend extends SequenceDiagram {
 
 	@Override
 	public void run() {
-		Sequence.fromActor(new TestSig(), lifeline1);
-		if (true) {
-			if (true) {
-			} else {
-				Sequence.send(lifeline1, new TestSig(), lifeline2);
-			}
-		}
+		someMethod();
+	}
+
+	private void someMethod() {
+		Sequence.fromActor(new TestSig(), lifeline2);
 	}
 
 }
