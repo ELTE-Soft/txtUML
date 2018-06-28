@@ -139,7 +139,7 @@ public class JavaScriptVisualizeWizard extends TxtUMLVisualizeWizard {
 							}
 						}
 
-						monitor.subTask("Exporting diagrams for JointJS visualization...");
+						monitor.subTask("Exporting diagrams for JavaScript visualization...");
 						try {
 							Exporter ex = new Exporter(layoutDescriptor, txtUMLModelName);
 							ex.export();
