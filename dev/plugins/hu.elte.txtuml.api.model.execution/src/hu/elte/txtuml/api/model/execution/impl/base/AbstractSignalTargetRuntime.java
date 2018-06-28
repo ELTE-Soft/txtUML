@@ -24,7 +24,7 @@ public abstract class AbstractSignalTargetRuntime<W> extends WrapperImpl<W> impl
 	 * The runtime instance that owns this object.
 	 * <p>
 	 * This implementation is only a shorthand for {@link #getThread()}.
-	 * {@link ModelExecutorThread#getRuntime() getRuntime()}.
+	 * {@link AbstractExecutorThread#getModelRuntime() getModelRuntime()}.
 	 */
 	@Override
 	public AbstractModelRuntime<?, ?> getModelRuntime() {

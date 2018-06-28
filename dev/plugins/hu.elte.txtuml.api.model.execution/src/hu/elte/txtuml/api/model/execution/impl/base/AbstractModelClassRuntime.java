@@ -139,7 +139,7 @@ public abstract class AbstractModelClassRuntime extends AbstractSignalTargetRunt
 	 * <p>
 	 * Is <b>not</b> thread-safe. Should only be called from the owner thread.
 	 * 
-	 * @param signal
+	 * @param signalWrapper
 	 *            the signal to be processed
 	 * @throws NullPointerException
 	 *             if {@code signal} is {@code null}

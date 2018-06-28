@@ -12,7 +12,7 @@ import java.util.concurrent.TimeUnit;
  * An external class which enhances the txtUML models with the ability of using
  * timed events.
  * <p>
- * By calling the {@link #schedule(ModelClass, Signal, int)} method, a new delayed
+ * By calling the {@link #schedule(Signal, ModelClass, int)} method, a new delayed
  * send operation can be started, which means that a signal will be
  * asynchronously sent to the a target model object after a specified timeout.
  * <p>
