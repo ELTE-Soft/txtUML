@@ -10,7 +10,7 @@
 	<parent>
 		<groupId>hu.elte.txtuml</groupId>
 		<artifactId>hu.elte.txtuml.parent</artifactId>
-		<version>0.6.0-SNAPSHOT</version>
+		<version>0.7.0-SNAPSHOT</version>
 		<relativePath>../../releng/hu.elte.txtuml.parent/pom.xml</relativePath>
 	</parent>
 	
