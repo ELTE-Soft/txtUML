@@ -33,7 +33,7 @@ import hu.elte.txtuml.utils.NotifierOfTermination;
  */
 public class DiagnosticsService extends NotifierOfTermination implements TraceListener {
 
-	private static final String NO_PORT_SET = "No port set";
+	private static final int NO_PORT_SET = -1;
 
 	private final int serviceInstanceID;
 
@@ -57,13 +57,24 @@ public class DiagnosticsService extends NotifierOfTermination implements TraceLi
 		try {
 			socketPort = getPort(GlobalSettings.TXTUML_DIAGNOSTICS_SOCKET_PORT_KEY);
 			httpPort = getPort(GlobalSettings.TXTUML_DIAGNOSTICS_HTTP_PORT_KEY);
+			if (socketPort != NO_PORT_SET && httpPort == NO_PORT_SET
+					|| socketPort == NO_PORT_SET && httpPort != NO_PORT_SET) {
+				throw new IOException();
+				// not nice but reduces code duplication
+			}
 		} catch (IOException e) {
 			Logger.sys.error("Properties " + GlobalSettings.TXTUML_DIAGNOSTICS_SOCKET_PORT_KEY + " and "
 					+ GlobalSettings.TXTUML_DIAGNOSTICS_HTTP_PORT_KEY
 					+ " are not correctly set on this VM, no txtUML diagnostics will be available for service instance 0x"
 					+ Integer.toHexString(serviceInstanceID));
 
-			diagnosticsSocketPort = -1;
+			diagnosticsSocketPort = NO_PORT_SET;
+			notifyAllOfTermination();
+			return;
+		}
+
+		if (socketPort == NO_PORT_SET && httpPort == NO_PORT_SET) {
+			diagnosticsSocketPort = NO_PORT_SET;
 			notifyAllOfTermination();
 			return;
 		}
@@ -74,7 +85,7 @@ public class DiagnosticsService extends NotifierOfTermination implements TraceLi
 			Logger.sys.error("Couldn't start HTTP server on port " + httpPort + " in service instance 0x"
 					+ Integer.toHexString(serviceInstanceID), e);
 
-			diagnosticsSocketPort = -1;
+			diagnosticsSocketPort = NO_PORT_SET;
 			notifyAllOfTermination();
 			return;
 		}
@@ -88,9 +99,9 @@ public class DiagnosticsService extends NotifierOfTermination implements TraceLi
 	}
 
 	private int getPort(String property) throws IOException {
-		String portStr = System.getProperty(property, NO_PORT_SET);
-		if (portStr.equals(NO_PORT_SET)) {
-			throw new IOException();
+		String portStr = System.getProperty(property);
+		if (portStr == null) {
+			return NO_PORT_SET;
 		}
 
 		int port;
