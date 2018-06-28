@@ -6,17 +6,17 @@
       <command
             defaultHandler="hu.elte.txtuml.seqdiag.handlers.RunSelectedSequenceDiagramHandler"
             id="hu.elte.txtuml.seqdiag.runSelectedSequenceDiagramCommand"
-            name="runSelectedSequenceDiagramCommand">
+            name="Run sequence diagram">
       </command>
       <command
             defaultHandler="hu.elte.txtuml.seqdiag.handlers.PlantUMLVisualizeHandler"
             id="hu.elte.txtuml.seqdiag.plantUMLVisualize"
-            name="plantUMLVisualize">
+            name="Generate sequence diagrams from txtUML">
       </command>
       <command
             defaultHandler="hu.elte.txtuml.seqdiag.handlers.PlantUMLVisualizeSelectedDiagramsHandler"
             id="hu.elte.txtuml.seqdiag.plantUMLVisualizeSelectedDiagram"
-            name="plantUMLVisualizeSelectedDiagram">
+            name="Visualize sequence diagram...">
       </command>
    </extension>
    <extension
