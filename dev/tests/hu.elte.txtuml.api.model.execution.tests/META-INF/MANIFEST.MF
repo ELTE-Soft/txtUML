@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: txtUML API for Model Execution Tests
 Bundle-SymbolicName: hu.elte.txtuml.api.model.execution.tests
 Bundle-Vendor: ELTE
-Bundle-Version: 0.6.0.qualifier
+Bundle-Version: 0.7.0.qualifier
 Fragment-Host: hu.elte.txtuml.api.model.execution
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Require-Bundle: org.junit

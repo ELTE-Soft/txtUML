@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: txtUML Layout Visualizer Tests
 Bundle-SymbolicName: hu.elte.txtuml.layout.visualizer.tests
-Bundle-Version: 0.6.0.qualifier
+Bundle-Version: 0.7.0.qualifier
 Fragment-Host: hu.elte.txtuml.layout.visualizer
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Require-Bundle: org.junit

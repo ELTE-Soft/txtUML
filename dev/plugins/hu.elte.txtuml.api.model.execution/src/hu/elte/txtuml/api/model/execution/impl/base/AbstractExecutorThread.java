@@ -30,7 +30,8 @@ import hu.elte.txtuml.utils.Logger;
  * mailbox is empty.</li>
  * </ul>
  * </li>
- * <li>The {@link AbstractModelExecutor#unregisterThread(ModelExecutorThread)}
+ * <li>The
+ * {@link AbstractModelExecutor#unregisterThread(AbstractModelExecutor.OwnedThread)}
  * method returns true.</li>
  * </ol>
  * Otherwise, the loop tries to continue working, even if it has been
@@ -105,8 +106,8 @@ public abstract class AbstractExecutorThread extends AbstractModelExecutor.Owned
 
 	/**
 	 * Runs the main loop of this thread until {@link #shouldContinue()} returns
-	 * false. Called from {@link run()} after running the initialization of this
-	 * thread and before unregistering it.
+	 * false. Called from {@link #doRun()} after running the initialization of
+	 * this thread and before unregistering it.
 	 * <p>
 	 * As this method is <i>not</i> thread-safe, it may only be called from this
 	 * thread.

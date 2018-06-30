@@ -14,12 +14,12 @@ public class StateMethodNotCorrect extends ModelClass {
 	public class St extends State {
 		public void entry() {
 		}
-		
+
 		public void exit(int x, int y) {
 		}
-		
+
 		public void foo(int x) {
-			
+
 		}
 	}
 

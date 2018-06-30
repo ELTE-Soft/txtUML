@@ -140,7 +140,7 @@ public interface Execution extends Runnable {
 	 * This method:
 	 * <ol>
 	 * <li>Calls the {@link #before} method.</li>
-	 * <li>Calls the {@link #settings} method to configure the model
+	 * <li>Calls the {@link #configure} method to configure the model
 	 * execution.</li>
 	 * <li>Starts the model execution with the {@link #initialization} method as
 	 * its initialization on a different thread, and awaits the initialization

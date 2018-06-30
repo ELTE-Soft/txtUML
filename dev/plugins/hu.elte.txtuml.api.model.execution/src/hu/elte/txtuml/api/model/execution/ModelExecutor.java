@@ -426,7 +426,7 @@ public interface ModelExecutor extends BaseModelExecutor, Runnable {
 
 	/**
 	 * A shorthand operation for {@link #getSettings()}&#x2e;
-	 * {@link ExecutionSettings#logLevel logLevel}.
+	 * {@link Execution.Settings#logLevel logLevel}.
 	 * 
 	 * @return the current log level
 	 */
@@ -436,7 +436,7 @@ public interface ModelExecutor extends BaseModelExecutor, Runnable {
 
 	/**
 	 * A shorthand operation for {@link #getSettings()}&#x2e;
-	 * {@link ExecutionSettings#checkLevel checkLevel}.
+	 * {@link Execution.Settings#checkLevel checkLevel}.
 	 * 
 	 * @return the current check level
 	 */

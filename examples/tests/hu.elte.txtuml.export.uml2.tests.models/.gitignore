@@ -1,2 +1,2 @@
-!src-gen
-*.java._trace
+!src-gen/
+*._trace

@@ -114,7 +114,7 @@ public interface BaseModelExecutor {
 	 * Thread-safe.
 	 * <p>
 	 * Note that although this method and the {@link #getFeature} method are
-	 * both thread-safe, a code that calls {@link &getFeature} and then
+	 * both thread-safe, a code that calls {@link #getFeature} and then
 	 * {@link #setFeature} (in order to initialize the feature if the
 	 * {@link #getFeature} returned {@code null}) is <i><b>not</b></i>
 	 * thread-safe. Use {@link #getOrCreateFeature} in such cases.
@@ -136,7 +136,7 @@ public interface BaseModelExecutor {
 	 * @param key
 	 *            the key associated with the required feature in this model
 	 *            executor
-	 * @returns the stored feature or {@code null}
+	 * @return the stored feature or {@code null}
 	 * 
 	 * @see #setFeature
 	 */
@@ -155,7 +155,7 @@ public interface BaseModelExecutor {
 	 * @param creator
 	 *            a function that receives the key as a parameter and must
 	 *            return the new value (not {@code null})
-	 * @returns the stored feature or the newly created one
+	 * @return the stored feature or the newly created one
 	 * 
 	 * @see #setFeature
 	 */

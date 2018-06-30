@@ -10,7 +10,7 @@ import hu.elte.txtuml.api.model.error.CollectionCopyError;
 import hu.elte.txtuml.api.model.external.Collections;
 
 /**
- * A base class for unordered, non-unique JtxtUML API scollections in the model.
+ * A base class for unordered, non-unique JtxtUML API collections in the model.
  * Should not be used in the model (only its subtypes) as this type does not
  * specify the multiplicity of the actual collection instance.
  * 

@@ -1,6 +1,5 @@
 package hu.elte.txtuml.export.uml2.tests.models.foreach_control;
 
-import hu.elte.txtuml.api.model.Collection;
 import hu.elte.txtuml.api.model.GeneralCollection;
 import hu.elte.txtuml.api.model.ModelClass;
 

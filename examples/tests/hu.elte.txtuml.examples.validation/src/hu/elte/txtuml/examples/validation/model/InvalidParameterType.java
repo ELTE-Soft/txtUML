@@ -1,4 +1,5 @@
 package hu.elte.txtuml.examples.validation.model;
+
 import hu.elte.txtuml.api.model.ModelClass;
 import hu.elte.txtuml.examples.validation.model.helpers.A;
 import hu.elte.txtuml.examples.validation.model.helpers.ExternalClass;
@@ -19,11 +20,11 @@ public class InvalidParameterType extends ModelClass {
 	public A k() {
 		return null;
 	}
-	
+
 	public ExternalClass m() {
 		return null;
 	}
-	
+
 	public MyDataType n() {
 		return null;
 	}

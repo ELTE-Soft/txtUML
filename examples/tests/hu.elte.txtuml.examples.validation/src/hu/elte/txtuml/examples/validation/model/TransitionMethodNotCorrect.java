@@ -17,14 +17,14 @@ public class TransitionMethodNotCorrect extends ModelClass {
 	public class Tr extends Transition {
 		public void effect() {
 		}
-		
+
 		public boolean guard() {
 			return true;
 		}
-		
+
 		public void foo() {
 		}
-		
+
 		public boolean guard(Object x) {
 			return false;
 		}

@@ -20,17 +20,17 @@
       <command
             defaultHandler="hu.elte.txtuml.export.papyrus.handlers.PreferencesPageHandler"
             id="hu.elte.txtuml.export.papyrus.PreferencePageCommand"
-            name="PreferencePageCommand">
+            name="Set txtUML diagram generation preferences">
       </command>
       <command
             defaultHandler="hu.elte.txtuml.export.papyrus.handlers.PapyrusVisualizeHandler"
             id="hu.elte.txtuml.export.papyrus.PapyrusVisualize"
-            name="PapyrusVisualize">
+            name="Generate Papyrus diagrams from txtUML">
       </command>
 	  <command
             defaultHandler="hu.elte.txtuml.export.papyrus.handlers.PapyrusVisualizeSelectedDiagramsHandler"
             id="hu.elte.txtuml.export.papyrus.PapyrusVisualizeSelectedDiagram"
-            name="PapyrusVisualizeSelectedDiagram">
+            name="Visualize as Papyrus diagram...">
       </command>
    </extension>
    <extension point="org.eclipse.core.expressions.propertyTesters">
@@ -94,13 +94,9 @@
                   style="push">
             </command>
 -->
-            <separator
-                  name="separator"
-                  visible="true">
-            </separator>
             <command
                   commandId="hu.elte.txtuml.export.papyrus.PreferencePageCommand"
-                  label="Preferences"
+                  label="Diagram generation preferences"
                   style="push">
             </command>
          </menu>
@@ -111,7 +107,7 @@
           <command
               commandId="hu.elte.txtuml.export.papyrus.PapyrusVisualizeSelectedDiagram"
               icon="icons/txtUML_papyrus.png"
-              label="Visualize as Papyrus diagram"
+              label="Visualize as Papyrus diagram..."
               style="push">
               <visibleWhen>
                   <with variable="activeMenuSelection">
@@ -130,7 +126,7 @@
           <command
               commandId="hu.elte.txtuml.export.papyrus.PapyrusVisualizeSelectedDiagram"
               icon="icons/txtUML_papyrus.png"
-              label="Visualize as Papyrus diagram"
+              label="Visualize as Papyrus diagram..."
               style="push">
               <visibleWhen>
                   <with variable="activeMenuSelection">

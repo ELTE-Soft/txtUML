@@ -20,5 +20,5 @@ class OtherClass extends ModelClass {
 	@To(TransitionOutsideOfClass.St.class)
 	public class Tr extends Transition {
 	}
-	
+
 }

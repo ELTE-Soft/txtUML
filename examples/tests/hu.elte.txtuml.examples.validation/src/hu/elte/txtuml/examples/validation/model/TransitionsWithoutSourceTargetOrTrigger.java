@@ -19,7 +19,7 @@ public class TransitionsWithoutSourceTargetOrTrigger extends ModelClass {
 	@Trigger(Sig.class)
 	public class Tr extends Transition {
 	}
-	
+
 	public class St2 extends State {
 	}
 
@@ -27,13 +27,13 @@ public class TransitionsWithoutSourceTargetOrTrigger extends ModelClass {
 	@To(St2.class)
 	public class Tr2 extends Transition {
 	}
-	
+
 	@From(Init.class)
 	public class Tr3 extends Transition {
 	}
-	
+
 	@To(Init.class)
 	public class Tr4 extends Transition {
 	}
-	
+
 }

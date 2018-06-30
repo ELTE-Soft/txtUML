@@ -6,7 +6,7 @@ public class AssociationWrongInnerClass extends Association {
 
 	class X {
 	}
-	
+
 	class Y {
 	}
 
