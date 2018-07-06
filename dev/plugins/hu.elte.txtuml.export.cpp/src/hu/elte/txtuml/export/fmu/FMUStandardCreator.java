@@ -14,8 +14,6 @@ import java.util.Optional;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-import org.eclipse.core.runtime.FileLocator;
-
 import hu.elte.txtuml.export.cpp.BuildSupport;
 
 public class FMUStandardCreator {
@@ -30,57 +28,68 @@ public class FMUStandardCreator {
 		return Optional.of(BuildSupport.createBuildEnvioronmentDir(path, FMU_BUILD_ENV));
 	}
 
-	public void createFMU(String fmuName, Path genPath, Path xmlPath) throws IOException, InterruptedException {
+	public void createFMU(String fmuName, Path genPath, Path xmlPath) throws Exception {
 		Optional<String> optionalBuildDirectory = buildFMUProject(genPath.toFile().getPath());
 		if (optionalBuildDirectory.isPresent()) {
 			String buildDirectory = optionalBuildDirectory.get();
 			String libName = System.mapLibraryName(FMU_LIBRARY_NAME);
 			File fmuDir = new File(buildDirectory + File.separator + fmuName + ".zip");
-			//fmuDir.mkdir();
+
+			File binaries = new File(buildDirectory + File.separator + "binaries");
+			binaries.mkdir();
+
+			File win32 = new File(binaries.getAbsolutePath() + File.separator + "win32");
+			win32.mkdir();
+
+			Files.copy(Paths.get(buildDirectory, libName), Paths.get(win32.getAbsolutePath(), libName),
+					StandardCopyOption.REPLACE_EXISTING);
+
 			
-			
-			zip(fmuDir, Arrays.asList(Paths.get(buildDirectory, libName).toFile()));
-			/*
-			Files.copy(xmlPath, Paths.get(fmuDir.getPath(), "modelDescription.xml"),
-					StandardCopyOption.REPLACE_EXISTING);*/
+			zipFolder(Arrays.asList(binaries.getAbsolutePath(), xmlPath.toAbsolutePath().toFile().getAbsolutePath()) , 
+					fmuDir.getAbsolutePath());
 
 		}
 	}
 
-	private static void zip(File zip, List<File> files) throws IOException {
-		ZipOutputStream zos = null;
-		try {
-			for (File file : files) {
+	static public void zipFolder(List<String> srcFolders, String destZipFile) throws Exception {
+		ZipOutputStream zip = null;
+		FileOutputStream fileWriter = null;
 
-				String name = file.getName();
-				zos = new ZipOutputStream(new FileOutputStream(zip));
+		fileWriter = new FileOutputStream(destZipFile);
+		zip = new ZipOutputStream(fileWriter);
+		for(String srcFolder : srcFolders) {
+			addFileToZip("", srcFolder, zip);
+		}		
+		zip.flush();
+		zip.close();
+	}
 
-				ZipEntry entry = new ZipEntry(name);
-				zos.putNextEntry(entry);
+	static private void addFileToZip(String path, String srcFile, ZipOutputStream zip) throws Exception {
 
-				FileInputStream fis = null;
-				try {
-					fis = new FileInputStream(file);
-					byte[] byteBuffer = new byte[1024];
-					int bytesRead = -1;
-					while ((bytesRead = fis.read(byteBuffer)) != -1) {
-						zos.write(byteBuffer, 0, bytesRead);
-					}
-					zos.flush();
-				} finally {
-					try {
-						fis.close();
-					} catch (Exception e) {
-					}
-				}
-				zos.closeEntry();
-
-				zos.flush();
+		File folder = new File(srcFile);
+		if (folder.isDirectory()) {
+			addFolderToZip(path, srcFile, zip);
+		} else {
+			byte[] buf = new byte[1024];
+			int len;
+			FileInputStream in = new FileInputStream(srcFile);
+			zip.putNextEntry(new ZipEntry(path.equals("") ? folder.getName() : path + File.separator + folder.getName()));
+			while ((len = in.read(buf)) > 0) {
+				zip.write(buf, 0, len);
 			}
-		} finally {
-			try {
-				zos.close();
-			} catch (Exception e) {
+			
+			//in.close();
+		}
+	}
+
+	static private void addFolderToZip(String path, String srcFolder, ZipOutputStream zip) throws Exception {
+		File folder = new File(srcFolder);
+
+		for (String fileName : folder.list()) {
+			if (path.equals("")) {
+				addFileToZip(folder.getName(), srcFolder + "/" + fileName, zip);
+			} else {
+				addFileToZip(path + "/" + folder.getName(), srcFolder + "/" + fileName, zip);
 			}
 		}
 	}
