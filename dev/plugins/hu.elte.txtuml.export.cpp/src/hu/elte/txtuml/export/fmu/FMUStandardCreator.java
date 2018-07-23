@@ -15,11 +15,33 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import hu.elte.txtuml.export.cpp.BuildSupport;
+import hu.elte.txtuml.export.cpp.CppExporterUtils;
 
 public class FMUStandardCreator {
 
 	private static final String FMU_BUILD_ENV = "Ninja";
 	private static final String FMU_LIBRARY_NAME = "liblibmodelfmu";
+	
+	
+	static class FMUStandardFolders {
+		public static final String FMU_BINARIES_ROOT_FOLDER = "binaries";
+		
+		public static String getSpecificBinariesFolder() {
+			String arc = System.getProperty("os.arch");
+			switch(arc) {
+			case "amd64":
+				arc = "64"; 
+				break;
+			case "x86":
+				arc = "32";
+				break;
+			default:
+				arc = "32";
+				break;			
+			}
+			return (CppExporterUtils.isWindowsOS() ? "win" : "linux") + arc;
+		}
+	}
 
 	private Optional<String> buildFMUProject(String path) throws IOException, InterruptedException {
 		BuildSupport.createBuildEnvironment(path, FMU_BUILD_ENV);
@@ -35,13 +57,13 @@ public class FMUStandardCreator {
 			String libName = System.mapLibraryName(FMU_LIBRARY_NAME);
 			File fmuDir = new File(buildDirectory + File.separator + fmuName + ".zip");
 
-			File binaries = new File(buildDirectory + File.separator + "binaries");
+			File binaries = new File(buildDirectory + File.separator + FMUStandardFolders.FMU_BINARIES_ROOT_FOLDER);
 			binaries.mkdir();
 
-			File win32 = new File(binaries.getAbsolutePath() + File.separator + "win32");
-			win32.mkdir();
+			File subBinaryFolder = new File(binaries.getAbsolutePath() + File.separator + FMUStandardFolders.getSpecificBinariesFolder());
+			subBinaryFolder.mkdir();
 
-			Files.copy(Paths.get(buildDirectory, libName), Paths.get(win32.getAbsolutePath(), libName),
+			Files.copy(Paths.get(buildDirectory, libName), Paths.get(subBinaryFolder.getAbsolutePath(), libName),
 					StandardCopyOption.REPLACE_EXISTING);
 
 			
