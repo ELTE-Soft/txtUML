@@ -205,6 +205,22 @@ T inline operator-(const Model::MultipliedElement<T, 1, 1>& e1, const T& e2) { r
 template<typename T>
 T inline operator-(const T& e1, const Model::MultipliedElement<T, 1, 1>& e2) { return e1 - e2.one(); }
 
+template<typename T>
+inline T operator*(const Model::MultipliedElement<T, 1, 1>& e1, const Model::MultipliedElement<T, 1, 1>& e2) { return e1.one () * e2.one (); }
+template<typename T>
+T inline operator*(const Model::MultipliedElement<T, 1, 1>& e1, const T& e2) { return e1.one () * e2; }
+template<typename T>
+T inline operator*(const T& e1, const Model::MultipliedElement<T, 1, 1>& e2) { return e1 * e2.one (); }
+
+template<typename T>
+inline T operator/(const Model::MultipliedElement<T, 1, 1>& e1, const Model::MultipliedElement<T, 1, 1>& e2) { return e1.one () / e2.one (); }
+template<typename T>
+T inline operator/(const Model::MultipliedElement<T, 1, 1>& e1, const T& e2) { return e1.one () / e2; }
+template<typename T>
+T inline operator/(const T& e1, const Model::MultipliedElement<T, 1, 1>& e2) { return e1 / e2.one (); }
+
+template<typename T>
+inline T operator-(const Model::MultipliedElement<T, 1, 1>& e) { return -(e.one ()); }
 
 template<typename T>
 inline T operator&&(const Model::MultipliedElement<T, 1, 1>& e1, const Model::MultipliedElement<T, 1, 1>& e2) { return e1.one() && e2.one(); }
