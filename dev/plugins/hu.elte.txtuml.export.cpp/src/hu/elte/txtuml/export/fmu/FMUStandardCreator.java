@@ -23,8 +23,9 @@ public class FMUStandardCreator {
 	private static final String FMU_LIBRARY_NAME = "liblibmodelfmu";
 	
 	
-	static class FMUStandardFolders {
+	static class FMUStandardNames {
 		public static final String FMU_BINARIES_ROOT_FOLDER = "binaries";
+		public static final String FMU_EXTENSION = "fmu";
 		
 		public static String getSpecificBinariesFolder() {
 			String arc = System.getProperty("os.arch");
@@ -50,20 +51,21 @@ public class FMUStandardCreator {
 		return Optional.of(BuildSupport.createBuildEnvioronmentDir(path, FMU_BUILD_ENV));
 	}
 
-	public void createFMU(String fmuName, Path genPath, Path xmlPath) throws Exception {
+	public void createFMU(FMUConfig fmuConfig, Path genPath, Path xmlPath) throws Exception {
 		Optional<String> optionalBuildDirectory = buildFMUProject(genPath.toFile().getPath());
 		if (optionalBuildDirectory.isPresent()) {
 			String buildDirectory = optionalBuildDirectory.get();
-			String libName = System.mapLibraryName(FMU_LIBRARY_NAME);
-			File fmuDir = new File(buildDirectory + File.separator + fmuName + ".zip");
+			String generatedLibName = System.mapLibraryName(FMU_LIBRARY_NAME);
+			String fmuLibName = System.mapLibraryName(fmuConfig.umlClassName);
+			File fmuDir = new File(buildDirectory + File.separator + fmuConfig.umlClassName + "." + FMUStandardNames.FMU_EXTENSION);
 
-			File binaries = new File(buildDirectory + File.separator + FMUStandardFolders.FMU_BINARIES_ROOT_FOLDER);
+			File binaries = new File(buildDirectory + File.separator + FMUStandardNames.FMU_BINARIES_ROOT_FOLDER);
 			binaries.mkdir();
 
-			File subBinaryFolder = new File(binaries.getAbsolutePath() + File.separator + FMUStandardFolders.getSpecificBinariesFolder());
+			File subBinaryFolder = new File(binaries.getAbsolutePath() + File.separator + FMUStandardNames.getSpecificBinariesFolder());
 			subBinaryFolder.mkdir();
 
-			Files.copy(Paths.get(buildDirectory, libName), Paths.get(subBinaryFolder.getAbsolutePath(), libName),
+			Files.copy(Paths.get(buildDirectory, generatedLibName), Paths.get(subBinaryFolder.getAbsolutePath(), fmuLibName),
 					StandardCopyOption.REPLACE_EXISTING);
 
 			
