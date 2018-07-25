@@ -54,7 +54,6 @@ public class TxtUMLToCppPage extends WizardPage {
 	private Button fmuDescriptionBrowser;
 
 	private Button addRuntime;
-	private Button overWriteMainFle;
 
 	private static String DESCRIPTION_NAME = "";
 
@@ -166,13 +165,17 @@ public class TxtUMLToCppPage extends WizardPage {
 		GridData gd = new GridData(GridData.FILL_HORIZONTAL);
 		threadManagerDescriptionText.setLayoutData(gd);
 
+		Label emptyRowLabel = new Label(composite, SWT.NONE);
+		emptyRowLabel.setText("");
+
+		GridData emptryRowGridData = new GridData();
+		emptryRowGridData.horizontalAlignment = GridData.FILL;
+		emptryRowGridData.horizontalSpan = 3;
+		emptyRowLabel.setLayoutData(emptryRowGridData);
+
 		addRuntime = new Button(composite, SWT.CHECK);
 		addRuntime.setSelection(true);
 		addRuntime.setText("Copy runtime next to generated files");
-
-		overWriteMainFle = new Button(composite, SWT.CHECK);
-		overWriteMainFle.setSelection(false);
-		overWriteMainFle.setText("Overwrite main file if it exists");
 
 		setControl(composite);
 		setPageComplete(!threadManagerDescriptionText.getText().trim().equals(""));
@@ -192,7 +195,8 @@ public class TxtUMLToCppPage extends WizardPage {
 	}
 
 	public boolean getOverWriteMainFileSelection() {
-		return overWriteMainFle.getSelection();
+		// TODO restructure C++ wizard
+		return false;
 	}
 
 	public boolean generateFMU() {

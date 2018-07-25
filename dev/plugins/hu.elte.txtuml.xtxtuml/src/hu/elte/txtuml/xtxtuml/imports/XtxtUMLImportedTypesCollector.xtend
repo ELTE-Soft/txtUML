@@ -2,6 +2,7 @@ package hu.elte.txtuml.xtxtuml.imports;
 
 import com.google.inject.Inject
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAssociationEnd
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUBindExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUClass
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUClassPropertyAccessExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUConnectorEnd
@@ -61,6 +62,15 @@ class XtxtUMLImportedTypesCollector extends ImportedTypesCollector {
 				TUClassPropertyAccessExpression:
 					references.add(adjustedNestedClassReference(next.right?.getPrimaryJvmElement as JvmType,
 						next.getFullTextRegion(XtxtUMLPackage::eINSTANCE.TUClassPropertyAccessExpression_Right, 0)))
+				TUBindExpression: {
+					references.add(next.connective?.getPrimaryJvmElement as JvmType ->
+						next.getFullTextRegion(XtxtUMLPackage::eINSTANCE.TUBindExpression_Connective, 0))
+					#[next.leftEnd -> XtxtUMLPackage::eINSTANCE.TUBindExpression_LeftEnd,
+							next.rightEnd -> XtxtUMLPackage::eINSTANCE.TUBindExpression_RightEnd].forEach[ endToFeature |
+						references.add(adjustedNestedClassReference(endToFeature.key?.getPrimaryJvmElement as JvmType,
+							next.getFullTextRegion(endToFeature.value, 0)))
+					]
+				}
 				TUReception:
 					references.add(next.signal?.getPrimaryJvmElement as JvmType ->
 						next.getFullTextRegion(XtxtUMLPackage::eINSTANCE.TUReception_Signal, 0))

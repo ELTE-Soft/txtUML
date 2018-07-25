@@ -6,7 +6,14 @@ package hu.elte.txtuml.api.model.execution.diagnostics.protocol;
  */
 public class GlobalSettings {
 	/**
-	 * Sets the VM property key which determines the DiagnosticsPlugin port
+	 * Sets the VM property key which determines the DiagnosticsPlugin ports
 	 */
-	public static final String TXTUML_DIAGNOSTICS_PORT_KEY = "txtUMLDiagnosticsPort";
+	public static final String TXTUML_DIAGNOSTICS_SOCKET_PORT_KEY = "txtUMLDiagnosticsSocketPort";
+	public static final String TXTUML_DIAGNOSTICS_HTTP_PORT_KEY = "txtUMLDiagnosticsHttpPort";
+	
+	/**
+	 * Parameters for service over HTTP
+	 * NOT KEYS, only predefined parameters.
+	 */
+	public static final String TXTUML_DIAGNOSTICS_HTTP_PATH = "registry";
 }

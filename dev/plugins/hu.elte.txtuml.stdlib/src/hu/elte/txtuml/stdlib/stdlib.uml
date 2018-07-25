@@ -420,7 +420,7 @@
     </ownedOperation>
   </packagedElement>
   <packagedElement xmi:type="uml:Class" xmi:id="__n84QCiUEeapMvtX7A4jBw" name="Timer">
-    <ownedOperation xmi:id="_BjLO0CiVEeapMvtX7A4jBw" name="start" isStatic="true">
+    <ownedOperation xmi:id="_BjLO0CiVEeapMvtX7A4jBw" name="schedule" isStatic="true">
       <ownedParameter xmi:id="_H_9FACiVEeapMvtX7A4jBw" name="recipient"/>
       <ownedParameter xmi:id="_LOvVMCiVEeapMvtX7A4jBw" name="signal"/>
       <ownedParameter xmi:id="_NCX2ACiVEeapMvtX7A4jBw" name="delay">

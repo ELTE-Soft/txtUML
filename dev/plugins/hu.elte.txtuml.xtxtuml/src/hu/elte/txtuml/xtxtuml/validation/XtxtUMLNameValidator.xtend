@@ -78,17 +78,17 @@ class XtxtUMLNameValidator extends AbstractXtxtUMLValidator {
 
 	@Check
 	def checkPortNameIsNotReserved(TUPort port) {
-		checkReservedError(port, port.name, TU_CLASS_PROPERTY__NAME, "port");
+		checkReservedError(port, port.name, TU_CONNECTIVE_END__NAME, "port");
 	}
 
 	@Check
 	def checkAssociationEndNameIsNotReserved(TUAssociationEnd associationEnd) {
-		checkReservedError(associationEnd, associationEnd.name, TU_CLASS_PROPERTY__NAME, "association end");
+		checkReservedError(associationEnd, associationEnd.name, TU_CONNECTIVE_END__NAME, "association end");
 	}
 
 	@Check
 	def checkConnectorEndNameIsNotReserved(TUConnectorEnd connectorEnd) {
-		checkReservedError(connectorEnd, connectorEnd.name, TU_CONNECTOR_END__NAME, "connector end");
+		checkReservedError(connectorEnd, connectorEnd.name, TU_CONNECTIVE_END__NAME, "connector end");
 	}
 
 	@Check

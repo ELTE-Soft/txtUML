@@ -236,6 +236,40 @@ TUDeleteObjectExpression returns xbase::XExpression :
 	'delete' object=XExpression
 ;
 
+TUStartObjectExpression returns xbase::XExpression :
+	{TUStartObjectExpression}
+	'start' object=XExpression
+;
+
+TULogExpression returns xbase::XExpression:
+	{TULogExpression}
+	('log' | error?='log-error') message=XExpression
+;
+
+TUBindExpression returns xbase::XExpression :
+	{TUBindExpression}
+	type=TUBindType leftParticipant=XMemberFeatureCall (leftAs='as' leftEnd=[TUConnectiveEnd|QualifiedName]?)? ','
+		rightParticipant=XMemberFeatureCall (rightAs='as' rightEnd=[TUConnectiveEnd|QualifiedName]?)?
+		via='via' connective=[TUConnective|QualifiedName]?
+			// features 'leftAs', 'rightAs' and 'via' are for error markers
+;
+
+enum TUBindType :
+	LINK = 'link' | UNLINK = 'unlink' | CONNECT = 'connect'
+;
+
+TUConnectiveEnd :
+	// it is inevitable to include 'TUPort' here
+	// otherwise 'TUAssociationEnd' would derive both from 'TUClassProperty' and 'TUConnectiveEnd'
+	// which would result in a duplicate 'name' feature in it, rendering the grammar incorrect
+	// by not flattening 'TUClassProperty', at least the implementation of '->' could remain intact
+	TUClassProperty | TUConnectorEnd
+;
+
+TUConnective :
+	TUAssociation | TUConnector
+;
+
 TUSignalAccessExpression returns xbase::XExpression :
 	{TUSignalAccessExpression}
 	trigger='trigger'
@@ -257,7 +291,10 @@ TUStatementSemicolonNeeded returns xbase::XExpression
 	| XDoWhileExpression
 	| XExpression
 	| TUSendSignalExpression
+	| TUStartObjectExpression
+	| TULogExpression
 	| TUDeleteObjectExpression
+	| TUBindExpression
 ;
 
 // Overridden Xbase rules
@@ -326,12 +363,11 @@ XPrimaryExpression returns xbase::XExpression
  *     <li>no XClosure after the parameter list</li>
  * </ul>
  */
-XConstructorCall returns xbase::XExpression :
-	{xbase::XConstructorCall}
-	'new' constructor=[types::JvmConstructor|QualifiedName] (
-		=>'<' typeArguments+=JvmSimpleTypeReference '>'
-	)?
-	=>explicitConstructorCall?='(' (arguments+=XExpression (',' arguments+=XExpression)*)? ')'
+XConstructorCall returns xbase::XConstructorCall :
+	{TUCreateObjectExpression}
+	(new?='new' | 'create') constructor=[types::JvmConstructor|QualifiedName]
+		=>explicitConstructorCall?='(' (arguments+=XExpression (',' arguments+=XExpression)*)? ')'
+	('as' objectName=STRING)?
 ;
 
 /*

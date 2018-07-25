@@ -26,7 +26,7 @@ public class Pendulum extends ModelClass {
 	@From(Init.class) @To(Working.class)
 	class Initialize extends Transition {
 		public void effect() {
-			Timer timer = Timer.start(new Tick(), Pendulum.this, unit);
+			Timer timer = Timer.schedule(new Tick(), Pendulum.this, unit);
 			Action.link(TimerOfPendulum.timer.class, timer, TimerOfPendulum.pendulum.class, Pendulum.this);
 		}
 	}

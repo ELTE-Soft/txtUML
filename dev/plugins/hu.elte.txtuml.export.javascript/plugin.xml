@@ -8,12 +8,12 @@
       <command
             defaultHandler="hu.elte.txtuml.export.javascript.handlers.JavaScriptVisualizeHandler"
             id="hu.elte.txtuml.export.javascript.JavaScriptVisualize"
-            name="JavaScriptVisualize">
+            name="Generate JavaScript diagrams from txtUML">
       </command>
   	  <command
             defaultHandler="hu.elte.txtuml.export.javascript.handlers.JavaScriptVisualizeSelectedDiagramsHandler"
             id="hu.elte.txtuml.export.javascript.JavaScriptVisualizeSelectedDiagram"
-            name="JavaScriptVisualizeSelectedDiagram">
+            name="Visualize as JavaScript diagram...">
       </command>
    </extension>
    <extension
@@ -27,7 +27,7 @@
             <command
                   commandId="hu.elte.txtuml.export.javascript.JavaScriptVisualize"
                   icon="icons/jsdiagram.png"
-                  label="Generate JointJS diagrams from txtUML"
+                  label="Generate JavaScript diagrams from txtUML"
                   style="push">
             </command>
          </menu>
@@ -38,7 +38,7 @@
 	     <command
             commandId="hu.elte.txtuml.export.javascript.JavaScriptVisualizeSelectedDiagram"
             icon="icons/jsdiagram.png"
-            label="Visualize as JointJS diagram"
+            label="Visualize as JavaScript diagram..."
             style="push">
 	         <visibleWhen>
 	             <with variable="activeMenuSelection">
@@ -56,7 +56,7 @@
       <command
             commandId="hu.elte.txtuml.export.javascript.JavaScriptVisualizeSelectedDiagram"
             icon="icons/jsdiagram.png"
-            label="Visualize as JointJS diagram"
+            label="Visualize as JavaScript diagram..."
             style="push">
          <visibleWhen>
             <with

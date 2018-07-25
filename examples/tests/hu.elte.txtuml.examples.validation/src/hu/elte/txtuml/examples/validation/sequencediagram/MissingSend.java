@@ -1,7 +1,6 @@
 package hu.elte.txtuml.examples.validation.sequencediagram;
 
 import hu.elte.txtuml.api.model.Action;
-import hu.elte.txtuml.api.model.ModelClass;
 import hu.elte.txtuml.api.model.seqdiag.Position;
 import hu.elte.txtuml.api.model.seqdiag.Sequence;
 import hu.elte.txtuml.api.model.seqdiag.SequenceDiagram;

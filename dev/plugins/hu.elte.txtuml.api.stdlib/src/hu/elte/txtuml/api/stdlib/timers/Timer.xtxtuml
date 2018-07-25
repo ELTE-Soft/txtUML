@@ -12,7 +12,7 @@ import java.util.concurrent.TimeUnit;
  * An external class which enhances the txtUML models with the ability of using
  * timed events.
  * <p>
- * By calling the {@link #start(ModelClass, Signal, int)} method, a new delayed
+ * By calling the {@link #schedule(Signal, ModelClass, int)} method, a new delayed
  * send operation can be started, which means that a signal will be
  * asynchronously sent to the a target model object after a specified timeout.
  * <p>
@@ -26,7 +26,7 @@ class Timer {
 	private external ScheduledFuture<Void> future;
 
 	/**
-	 * Starts a new delayed send operation. Sends asynchronously a signal to the
+	 * Schedules a new delayed send operation. Sends asynchronously a signal to the
 	 * target model object after a specified timeout.
 	 * 
 	 * @param targetObj
@@ -38,8 +38,8 @@ class Timer {
 	 * @return a handle object to manage this delayed send operation before it
 	 *         happens
 	 */
-	public static external-body Timer start(Signal sig, ModelClass targetObj, int millisecs) {
-		return create(Timer, sig, targetObj, millisecs);
+	public static external-body Timer schedule(Signal sig, ModelClass targetObj, int millisecs) {
+		return create Timer(sig, targetObj, millisecs);
 	}
 
 	/**

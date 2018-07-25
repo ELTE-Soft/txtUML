@@ -31,8 +31,8 @@ class WorldObject {
 
 	external WorldObject(World world, WorldObjectHelper helper) {
 		this.helper = helper;
-		link(WorldOwnsObject.world, world, WorldOwnsObject.objects, this);
-		start(this);
+		link world, this via WorldOwnsObject;
+		start this;
 	}
 
 	// STATE MACHINE

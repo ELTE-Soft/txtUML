@@ -2,8 +2,8 @@ package hu.elte.txtuml.examples.performance_test.xmodel;
 
 class Test {				
 	public void test() {
-		A a = create(A, 10000);
-		start(a);
+		A a = create A(10000);
+		start a;
 	}
 }
 
@@ -22,7 +22,7 @@ class A {
 		entry {
 			if (remainingCycles-- <= 0) {
 				for (B b : A.this->(AB.b)) {
-					unlink(AB.a, A.this, AB.b, b);
+					unlink this, b via AB;
 				}
 				delete A.this;
 			}
@@ -35,8 +35,8 @@ class A {
 	private void createChild() {
 		// B b = new B();
 		B b = new B();
-		link(AB.a, this, AB.b, b);
-		start(b);
+		link this, b via AB;
+		start b;
 	}
 	
 	void childTerminated() {
@@ -174,7 +174,7 @@ class B {
 			if (B.this->(AB.a).isEmpty()) {
 			} else {
 				A a = B.this->(AB.a).one();
-				unlink(AB.a, a, AB.b, B.this);
+				unlink a, this via AB;
 				a.childTerminated();
 			}
 			delete B.this;

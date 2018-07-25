@@ -68,7 +68,7 @@ class Tower {
 					
 					
 					
-					log("The tower give the taking off permission for the plane (" + thePlane.getId() + ") ");
+					log "The tower give the taking off permission for the plane (" + thePlane.getId() + ") ";
 							
 					
 					send new SignalGiveTakingOffPermission() to thePlane;	
@@ -76,12 +76,12 @@ class Tower {
 					// Unlink
 					
 					
-					unlink(TheFirstWaitingTakingOffPlane.thePlane, thePlane, TheFirstWaitingTakingOffPlane.theTower, this);
+					unlink thePlane, this via TheFirstWaitingLandingPlane;
 					
 					Plane nextPlane = thePlane->(TheNextWaitingTakingOffPlane.toPlane).one();
 					if(nextPlane != null) {
-						unlink(TheNextWaitingTakingOffPlane.fromPlane, thePlane, TheNextWaitingTakingOffPlane.toPlane, nextPlane);
-						link(TheFirstWaitingTakingOffPlane.thePlane, nextPlane, TheFirstWaitingTakingOffPlane.theTower, this);
+						unlink thePlane, nextPlane as TheNextWaitingTakingOffPlane.toPlane via TheNextWaitingTakingOffPlane;
+						link nextPlane, this via TheFirstWaitingTakingOffPlane;
 					}
 					
 					firstPlane = nextPlane;
@@ -102,7 +102,7 @@ class Tower {
 					
 					
 					
-					log("The tower give the landing permission for the plane (" + thePlane.getId() + ") ");
+					log "The tower give the landing permission for the plane (" + thePlane.getId() + ") ";
 							
 					Runway theRunWay = searchFirstFreeRunway();
 					send new SignalSetNewPlane(thePlane.getId()) to theRunWay;
@@ -112,18 +112,18 @@ class Tower {
 					// Unlink
 					
 					
-					unlink(TheFirstWaitingLandingPlane.thePlane, thePlane, TheFirstWaitingLandingPlane.theTower, this);
+					unlink thePlane, this via TheFirstWaitingLandingPlane;
 					
 					Plane nextPlane = thePlane->(TheNextWaitingLandingPlane.toPlane).one();
 					if(nextPlane != null) {
-						unlink(TheNextWaitingLandingPlane.fromPlane, thePlane, TheNextWaitingLandingPlane.toPlane, nextPlane);
-						link(TheFirstWaitingLandingPlane.thePlane, nextPlane, TheFirstWaitingLandingPlane.theTower, this);
+						unlink thePlane, nextPlane as TheNextWaitingLandingPlane.toPlane via TheNextWaitingLandingPlane;
+						link nextPlane, this via TheFirstWaitingLandingPlane;
 					}
 				}
 			}
 
 			// And repeat it
-			Timer.start(new SignalTowerWorks(), this, 50); // It send a signal in every 30 sec
+			Timer.schedule(new SignalTowerWorks(), this, 50); // It send a signal in every 30 sec
 		}
 	}
 	
@@ -141,7 +141,7 @@ class Tower {
 			
 			if(firstPlane == null) {
 				// There isn't any waiting landing planes
-				link(TheFirstWaitingLandingPlane.thePlane, thePlane, TheFirstWaitingLandingPlane.theTower, this);
+				link thePlane, this via TheFirstWaitingLandingPlane;
 			} else {
 				// There are any waiting landing planes
 				
@@ -155,7 +155,7 @@ class Tower {
 				}
 				
 				Plane lastPlane = actPlane;
-				link(TheNextWaitingLandingPlane.fromPlane, lastPlane, TheNextWaitingLandingPlane.toPlane, thePlane);
+				link lastPlane, thePlane as TheNextWaitingLandingPlane.toPlane via TheNextWaitingLandingPlane;
 			}
 			
 		}
@@ -180,7 +180,7 @@ class Tower {
 			
 			if(firstPlane == null) {
 				// There isn't any waiting landing planes
-				link(TheFirstWaitingTakingOffPlane.thePlane, thePlane, TheFirstWaitingTakingOffPlane.theTower, this);
+				link thePlane, this via TheFirstWaitingTakingOffPlane;
 			} else {
 				// There are any waiting landing planes
 				
@@ -194,7 +194,7 @@ class Tower {
 				}
 				
 				Plane lastPlane = actPlane;
-				link(TheNextWaitingTakingOffPlane.fromPlane, lastPlane, TheNextWaitingTakingOffPlane.toPlane, thePlane);
+				link lastPlane, thePlane as TheNextWaitingTakingOffPlane.toPlane via TheNextWaitingTakingOffPlane;
 			}
 				
 		}
@@ -206,7 +206,7 @@ class Tower {
 		to Working;
 		trigger SignalToTowerPlaneIsUnderLanding;
 		effect {
-			log("The plane (" + trigger.id + ") is under landing");
+			log "The plane (" + trigger.id + ") is under landing";
 		}
 	}
 	
@@ -216,7 +216,7 @@ class Tower {
 		to Working;
 		trigger SignalToTowerPlaneIsUnderTakingOff;
 		effect {
-			log("The plane (" + trigger.id + ") is under taking off");
+			log "The plane (" + trigger.id + ") is under taking off";
 		}
 	}
 	
@@ -226,7 +226,7 @@ class Tower {
 		to Working;
 		trigger SignalToTowerPlaneAlreadyTakenOff;
 		effect {
-			log("The plane (" + trigger.id + ") has already taken off");
+			log "The plane (" + trigger.id + ") has already taken off";
 			Runway runWay = searchTheRunway(trigger.id);
 			send new SignalSetFreeTheRunway() to runWay;
 		}
@@ -238,7 +238,7 @@ class Tower {
 		to Working;
 		trigger SignalToTowerPlaneAlreadyLanded;
 		effect {
-			log("The plane (" + trigger.id + ") has already landed");
+			log "The plane (" + trigger.id + ") has already landed";
 		}
 	}
 	
@@ -248,7 +248,7 @@ class Tower {
 		to Working;
 		trigger SignalToTowerAnnulingTheLanding_AL;
 		effect {
-			log("The plane (" + trigger.id + ")'s landing request would be deleted!");
+			log "The plane (" + trigger.id + ")'s landing request would be deleted!";
 			
 			Runway runWay = searchTheRunway(trigger.id);
 			
@@ -261,7 +261,7 @@ class Tower {
 		to Working;
 		trigger SignalToTowerAnnulingTheLanding_WL;
 		effect {
-			log("The plane (" + trigger.id + ")'s landing request would be deleted!");
+			log "The plane (" + trigger.id + ")'s landing request would be deleted!";
 			
 			Plane thePlane = findThePlane(trigger.id);
 			
@@ -283,20 +283,20 @@ class Tower {
 			if(actualPlane == firstPlane) {
 				// First plane
 				if(nextPlane == null) {
-					unlink(TheFirstWaitingLandingPlane.thePlane, actualPlane, TheFirstWaitingLandingPlane.theTower, this);
+					unlink actualPlane, this via TheFirstWaitingLandingPlane;
 				} else {
-					unlink(TheFirstWaitingLandingPlane.thePlane, actualPlane, TheFirstWaitingLandingPlane.theTower, this);
-					unlink(TheNextWaitingLandingPlane.fromPlane, thePlane, TheNextWaitingLandingPlane.toPlane, nextPlane);
-					link(TheFirstWaitingLandingPlane.thePlane, nextPlane, TheFirstWaitingLandingPlane.theTower, this);
+					unlink actualPlane, this via TheFirstWaitingLandingPlane;
+					unlink thePlane, nextPlane as TheNextWaitingLandingPlane.toPlane via TheNextWaitingLandingPlane;
+					link nextPlane, this via TheFirstWaitingLandingPlane;
 				}
 			} else {
 				if(nextPlane == null) {
 					// Last plane
-					unlink(TheNextWaitingLandingPlane.fromPlane, previousPlane, TheNextWaitingLandingPlane.toPlane, actualPlane);
+					unlink previousPlane, actualPlane as TheNextWaitingLandingPlane.toPlane via TheNextWaitingLandingPlane;
 				} else {
 					// Not first and not last
-					unlink(TheNextWaitingLandingPlane.fromPlane, previousPlane, TheNextWaitingLandingPlane.toPlane, actualPlane);
-					link(TheNextWaitingLandingPlane.fromPlane, previousPlane, TheNextWaitingLandingPlane.toPlane, nextPlane);
+					unlink previousPlane, actualPlane as TheNextWaitingLandingPlane.toPlane via TheNextWaitingLandingPlane;
+					link previousPlane, nextPlane as TheNextWaitingLandingPlane.toPlane via TheNextWaitingLandingPlane;
 				}
 			}
 	
@@ -309,7 +309,7 @@ class Tower {
 		to Working;
 		trigger SignalToTowerAnnulingTheTakingOff_WL;
 		effect {
-			log("The plane (" + trigger.id + ")'s taking off request would be deleted!");
+			log "The plane (" + trigger.id + ")'s taking off request would be deleted!";
 			
 			
 			Plane thePlane = findThePlane(trigger.id);
@@ -332,20 +332,20 @@ class Tower {
 			if(actualPlane == firstPlane) {
 				// First plane
 				if(nextPlane == null) {
-					unlink(TheFirstWaitingTakingOffPlane.thePlane, actualPlane, TheFirstWaitingTakingOffPlane.theTower, this);
+					unlink actualPlane, this via TheFirstWaitingTakingOffPlane;
 				} else {
-					unlink(TheFirstWaitingTakingOffPlane.thePlane, actualPlane, TheFirstWaitingTakingOffPlane.theTower, this);
-					unlink(TheNextWaitingTakingOffPlane.fromPlane, thePlane, TheNextWaitingTakingOffPlane.toPlane, nextPlane);
-					link(TheFirstWaitingTakingOffPlane.thePlane, nextPlane, TheFirstWaitingTakingOffPlane.theTower, this);
+					unlink actualPlane, this via TheFirstWaitingTakingOffPlane;
+					unlink thePlane, nextPlane as TheNextWaitingTakingOffPlane.toPlane via TheNextWaitingTakingOffPlane;
+					link nextPlane, this via TheFirstWaitingTakingOffPlane;
 				}
 			} else {
 				if(nextPlane == null) {
 					// Last plane
-					unlink(TheNextWaitingTakingOffPlane.fromPlane, previousPlane, TheNextWaitingTakingOffPlane.toPlane, actualPlane);
+					unlink previousPlane, actualPlane as TheNextWaitingTakingOffPlane.toPlane via TheNextWaitingTakingOffPlane;
 				} else {
 					// Not first and not last
-					unlink(TheNextWaitingTakingOffPlane.fromPlane, previousPlane, TheNextWaitingTakingOffPlane.toPlane, actualPlane);
-					link(TheNextWaitingTakingOffPlane.fromPlane, previousPlane, TheNextWaitingTakingOffPlane.toPlane, nextPlane);
+					unlink previousPlane, actualPlane as TheNextWaitingTakingOffPlane.toPlane via TheNextWaitingTakingOffPlane;
+					link previousPlane, nextPlane as TheNextWaitingTakingOffPlane.toPlane via TheNextWaitingTakingOffPlane;
 				}
 			}
 		}
@@ -356,7 +356,7 @@ class Tower {
 		to Working;
 		trigger SignalToTowerAnnulingTheTakingOff_AL;
 		effect {
-			log("The plane (" + trigger.id + ")'s taking off request would be deleted!");
+			log "The plane (" + trigger.id + ")'s taking off request would be deleted!";
 			
 			// There isn't any task to do, because the plane isn't be in the list
 		}

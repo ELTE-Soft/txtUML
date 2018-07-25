@@ -10,7 +10,6 @@
 #include "Engine.hpp"
 #include "Lamp.hpp"
 
-
 int main()
 {
 	Env::initEnvironment();

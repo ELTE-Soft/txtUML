@@ -26,9 +26,9 @@ import hu.elte.txtuml.api.model.seqdiag.SequenceDiagram;
  * single parameter is a sequence diagram subclass instance.</li>
  * <li>Run the executor using the {@link #start()} or {@link #run()} methods.
  * Calling {@link #run()} translates to calling {@linkplain #start()},
- * {@linkplain #shutdown()} and {@linkplain #awaitShutdown()} in this order. The
- * {@link #start} method is for simply starting the executor and not waiting for
- * it to finish running.</li>
+ * {@linkplain #shutdown()} and {@linkplain #awaitTermination()} in this order.
+ * The {@link #start} method is for simply starting the executor and not waiting
+ * for it to finish running.</li>
  * </ol>
  * The executor uses multiple threads inside itself, some for sequence diagram
  * execution and one for the model execution. However, it is ensured that at any

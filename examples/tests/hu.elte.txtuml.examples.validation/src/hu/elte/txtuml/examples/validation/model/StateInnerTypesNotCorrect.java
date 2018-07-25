@@ -9,10 +9,10 @@ public class StateInnerTypesNotCorrect extends ModelClass {
 	public class Init extends Initial {
 		class InnerInit extends Initial {
 		}
-		
+
 		class InnerSt extends State {
 		}
-		
+
 		@From(InnerInit.class)
 		@To(InnerSt.class)
 		public class InnerTr extends Transition {
@@ -21,20 +21,20 @@ public class StateInnerTypesNotCorrect extends ModelClass {
 
 	public class St extends CompositeState {
 		class A {
-			
+
 		}
-		
+
 		class InnerInit extends Initial {
 		}
-		
+
 		class InnerSt extends State {
 		}
-		
+
 		@From(InnerInit.class)
 		@To(InnerSt.class)
 		public class InnerTr extends Transition {
 		}
-		
+
 	}
 
 	@From(Init.class)

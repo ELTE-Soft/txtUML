@@ -75,7 +75,7 @@ public class PlantUmlGenerator {
 		ByteArrayInputStream stream = new ByteArrayInputStream(compiledOutput.getBytes());
 
 		try {
-			targetFile.create(stream, false, null);
+			targetFile.create(stream, true, null);
 		} catch (Exception e) {
 			throw new ExportRuntimeException(
 					"Couldn't create target file: " + targetFile.getName() + "\n Reason: " + e.getMessage());

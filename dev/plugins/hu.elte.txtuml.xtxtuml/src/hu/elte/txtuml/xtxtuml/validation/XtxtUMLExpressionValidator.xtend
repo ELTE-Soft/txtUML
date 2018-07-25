@@ -7,15 +7,18 @@ import hu.elte.txtuml.xtxtuml.common.XtxtUMLUtils
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAssociation
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAssociationEnd
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAttribute
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUBindExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUClass
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUClassPropertyAccessExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUDeleteObjectExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUEntryOrExitActivity
+import hu.elte.txtuml.xtxtuml.xtxtUML.TULogExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUOperation
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUPort
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUSendSignalExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUSignal
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUSignalAccessExpression
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUStartObjectExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUState
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUStateType
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUTransition
@@ -191,6 +194,25 @@ class XtxtUMLExpressionValidator extends XtxtUMLTypeValidator {
 		}
 	}
 
+	@Check
+	def checkBindExpressionPartIsNotMissing(TUBindExpression bindExpr) {
+		if (bindExpr.via != null && bindExpr.connective == null) {
+			error("Missing connective", bindExpr, TU_BIND_EXPRESSION__VIA, MISSING_CONNECTIVE_IN_BIND_EXPRESSION);
+		}
+
+		#[bindExpr.leftAs -> bindExpr.leftEnd -> TU_BIND_EXPRESSION__LEFT_AS,
+			bindExpr.rightAs -> bindExpr.rightEnd -> TU_BIND_EXPRESSION__RIGHT_AS]
+		.forEach[ asToEndToFeature |
+			val currentAs = asToEndToFeature.key.key;
+			val currentEnd = asToEndToFeature.key.value;
+			val currentFeature = asToEndToFeature.value;
+
+			if (currentAs != null && currentEnd == null) {
+				error("Missing connective end", bindExpr, currentFeature, MISSING_END_IN_BIND_EXPRESSION);
+			}
+		]
+	}
+
 	/*
 	 * TODO modify ExtensionScopeHelper
 	 */
@@ -261,8 +283,11 @@ class XtxtUMLExpressionValidator extends XtxtUMLTypeValidator {
 		val container = expr.eContainer;
 		return switch (container) {
 			TUAttribute,
+			TUStartObjectExpression,
 			TUDeleteObjectExpression,
+			TULogExpression,
 			TUSendSignalExpression,
+			TUBindExpression,
 			TUTransitionGuard: true
 			XBlockExpression: false
 			default: super.isValueExpectedRecursive(expr)

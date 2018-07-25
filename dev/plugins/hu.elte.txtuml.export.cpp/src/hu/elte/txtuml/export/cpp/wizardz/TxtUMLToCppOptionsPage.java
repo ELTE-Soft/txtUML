@@ -64,7 +64,7 @@ public class TxtUMLToCppOptionsPage extends WizardPage {
         gridLayout.numColumns = 3;
         
         Label mainCppLabel = new Label(composite, SWT.NONE);
-        mainCppLabel.setText("Select main file for override: ");
+        mainCppLabel.setText("New main file: ");
         
         mainCppText = new Text(composite, SWT.BORDER | SWT.SINGLE);
         mainCppText.setText("");
@@ -81,7 +81,6 @@ public class TxtUMLToCppOptionsPage extends WizardPage {
 			public void widgetSelected(SelectionEvent e) {
 				FileDialog fd = new FileDialog(parent.getShell(), SWT.OPEN);
 		        fd.setText("Open");
-		        fd.setFilterPath("C:/");
 		        fd.setFilterExtensions(new String[] { "*.cpp"});
 		        String selected = fd.open();
 	        	mainCppText.setText(selected);
@@ -106,7 +105,7 @@ public class TxtUMLToCppOptionsPage extends WizardPage {
         emptyRowLabel.setLayoutData(emptryRowGridData);
         
         Label buildEnvironmentLabel = new Label(composite, SWT.NONE);
-        buildEnvironmentLabel.setText("Select build environments: ");
+        buildEnvironmentLabel.setText("Build environments: ");
         
         buildEnvironmentText = new Text(composite, SWT.BORDER | SWT.SINGLE);
         buildEnvironmentText.setText("");

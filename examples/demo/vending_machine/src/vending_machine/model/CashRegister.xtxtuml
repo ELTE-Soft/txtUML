@@ -31,7 +31,7 @@ class CashRegister {
 			insertedCash -= trigger.paidAmount;
 			updateMessage("Returning: " + insertedCash);
 			insertedCash = 0;
-			Timer.start(new Done(), this, delay);
+			Timer.schedule(new Done(), this, delay);
 		}
 	}
 

@@ -99,7 +99,7 @@ class CallOperationExporter {
 
 			val = ActivityTemplates.stdLibCall(node.getOperation().getName(), parameterVariables);
 
-			if (OperatorTemplates.isTimerStart(node.getOperation().getName())) {
+			if (OperatorTemplates.isTimerSchedule(node.getOperation().getName())) {
 				if (exportUser.isPresent()) {
 					exportUser.get().addCppOnlyDependency(FileNames.TimerInterfaceHeader);
 					exportUser.get().addCppOnlyDependency(FileNames.TimerHeader);

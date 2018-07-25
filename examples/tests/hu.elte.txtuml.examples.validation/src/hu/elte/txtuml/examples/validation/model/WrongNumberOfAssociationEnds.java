@@ -19,10 +19,10 @@ class AssociationWithThreeEnds extends Association {
 
 	public class a extends End<Any<A>> {
 	}
-	
+
 	public class b extends End<Any<A>> {
 	}
-	
+
 	public class c extends End<Any<A>> {
 	}
 

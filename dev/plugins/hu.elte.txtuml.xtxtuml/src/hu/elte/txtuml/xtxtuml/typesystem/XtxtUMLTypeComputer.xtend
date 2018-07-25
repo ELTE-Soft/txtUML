@@ -5,13 +5,16 @@ import hu.elte.txtuml.api.model.AssociationEnd
 import hu.elte.txtuml.api.model.ModelClass.Port
 import hu.elte.txtuml.api.model.Signal
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAssociationEnd
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUBindExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUClass
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUClassPropertyAccessExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUDeleteObjectExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUEntryOrExitActivity
+import hu.elte.txtuml.xtxtuml.xtxtUML.TULogExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUPort
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUSendSignalExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUSignalAccessExpression
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUStartObjectExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUState
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUStateType
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUTransition
@@ -206,9 +209,19 @@ class XtxtUMLTypeComputer extends XbaseWithAnnotationsTypeComputer {
 		}
 	}
 
+	def dispatch computeTypes(TUStartObjectExpression startExpr, ITypeComputationState state) {
+		state.acceptActualType(state.getPrimitiveVoid);
+		state.withoutRootExpectation.computeTypes(startExpr.object);
+	}
+
 	def dispatch computeTypes(TUDeleteObjectExpression deleteExpr, ITypeComputationState state) {
 		state.acceptActualType(state.getPrimitiveVoid);
 		state.withoutRootExpectation.computeTypes(deleteExpr.object);
+	}
+
+	def dispatch computeTypes(TULogExpression logExpr, ITypeComputationState state) {
+		state.acceptActualType(state.getPrimitiveVoid);
+		state.withoutRootExpectation.computeTypes(logExpr.message);
 	}
 
 	def dispatch computeTypes(TUSendSignalExpression sendExpr, ITypeComputationState state) {
@@ -217,6 +230,14 @@ class XtxtUMLTypeComputer extends XbaseWithAnnotationsTypeComputer {
 
 		childState.computeTypes(sendExpr.signal);
 		childState.computeTypes(sendExpr.target);
+	}
+	
+	def dispatch computeTypes(TUBindExpression bindExpr, ITypeComputationState state) {
+		state.acceptActualType(state.getPrimitiveVoid);
+		val childState = state.withoutRootExpectation;
+
+		childState.computeTypes(bindExpr.leftParticipant);
+		childState.computeTypes(bindExpr.rightParticipant);
 	}
 
 	/**

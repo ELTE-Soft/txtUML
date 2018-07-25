@@ -21,10 +21,10 @@ class PlaneFactory {
 			Plane plane = new Plane(trigger.planeId, trigger.xCoord, trigger.yCoord, trigger.angle);
 			Plane lastPlane = this->(LastPlaneCreated.plane).one();
 			if (lastPlane != null) {
-				unlink(LastPlaneCreated.factory, this, LastPlaneCreated.plane, lastPlane);
+				unlink this, lastPlane via LastPlaneCreated;
 			}
-			link(LastPlaneCreated.factory, this, LastPlaneCreated.plane, plane);
-			start(plane);
+			link this, plane via LastPlaneCreated;
+			start plane;
 		}
 	}
 	

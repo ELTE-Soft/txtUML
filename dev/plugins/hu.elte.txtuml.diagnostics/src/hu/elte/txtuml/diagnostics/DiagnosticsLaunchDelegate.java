@@ -16,60 +16,78 @@ import hu.elte.txtuml.diagnostics.session.DiagnosticsPlugin;
 import hu.elte.txtuml.diagnostics.session.IDisposable;
 import hu.elte.txtuml.diagnostics.session.RuntimeSessionTracker;
 import hu.elte.txtuml.utils.Logger;
+import hu.elte.txtuml.utils.Pair;
 
 /**
- * Launches txtUML apps with all debugging aids.
- * Makes sure client service knows about the plugin diagnostics port.
- * It should cease to exist after the process was launched.
+ * Launches txtUML apps with all debugging aids. Makes sure client service knows
+ * about the plugin diagnostics port. It should cease to exist after the process
+ * was launched.
  */
 public class DiagnosticsLaunchDelegate extends JavaLaunchDelegate {
-	
-	private static final String TXTUML_DIAGNOSTICS_PORT_TOKEN = "-D" + GlobalSettings.TXTUML_DIAGNOSTICS_PORT_KEY + "=";
 
 	@Override
-	public void launch(ILaunchConfiguration configuration, String mode, ILaunch launch, IProgressMonitor monitor) throws CoreException {
-		int diagnosticsPort = 0;
+	public void launch(ILaunchConfiguration configuration, String mode, ILaunch launch, IProgressMonitor monitor)
+			throws CoreException {
+		ILaunchConfiguration modifiedConfiguration = getAndSetPort(configuration,
+				GlobalSettings.TXTUML_DIAGNOSTICS_HTTP_PORT_KEY).getSecond();
+		Pair<Integer, ILaunchConfiguration> socketPortToModifiedConfiguration = getAndSetPort(modifiedConfiguration,
+				GlobalSettings.TXTUML_DIAGNOSTICS_SOCKET_PORT_KEY);
+
+		int socketPort = socketPortToModifiedConfiguration.getFirst();
+		modifiedConfiguration = socketPortToModifiedConfiguration.getSecond();
+
+		IDisposable diagnosticsPlugin;
 		try {
-			String vmargs = configuration.getAttribute(IJavaLaunchConfigurationConstants.ATTR_VM_ARGUMENTS, "");
-			int portIdx = vmargs.lastIndexOf(TXTUML_DIAGNOSTICS_PORT_TOKEN);
+			diagnosticsPlugin = new DiagnosticsPlugin(socketPort,
+					modifiedConfiguration.getAttribute(IJavaLaunchConfigurationConstants.ATTR_PROJECT_NAME, ""),
+					modifiedConfiguration.getAttribute(IJavaLaunchConfigurationConstants.ATTR_WORKING_DIRECTORY, "."));
+		} catch (IOException ex) {
+			throw new RuntimeException("Launching txtUML DiagnosticsPlugin failed miserably");
+		}
+
+		new RuntimeSessionTracker(launch, diagnosticsPlugin);
+		super.launch(modifiedConfiguration, mode, launch, monitor);
+	}
+
+	private Pair<Integer, ILaunchConfiguration> getAndSetPort(ILaunchConfiguration configuration, String portKey)
+			throws CoreException {
+		int port = 0;
+		String portToken = "-D" + portKey + "=";
+		ILaunchConfiguration resultConfiguration = configuration;
+
+		try {
+			String vmargs = resultConfiguration.getAttribute(IJavaLaunchConfigurationConstants.ATTR_VM_ARGUMENTS, "");
+			int portIdx = vmargs.lastIndexOf(portToken);
 			if (portIdx != -1) {
-				portIdx += TXTUML_DIAGNOSTICS_PORT_TOKEN.length();
+				portIdx += portToken.length();
 				int endIdx = vmargs.indexOf(" ", portIdx);
 				if (endIdx == -1) {
 					endIdx = vmargs.length();
 				}
 				String strPort = vmargs.substring(portIdx, endIdx);
-				diagnosticsPort = Integer.decode(strPort).intValue();
+				port = Integer.decode(strPort).intValue();
 			}
 		} catch (CoreException ex) {
-			Logger.sys.error("Failed to acquire VM arguments for " + GlobalSettings.TXTUML_DIAGNOSTICS_PORT_KEY);
+			Logger.sys.error("Failed to acquire VM arguments for " + portKey);
 		} catch (NumberFormatException ex) {
-			Logger.sys.error("VM argument problem, use " + TXTUML_DIAGNOSTICS_PORT_TOKEN + "<portNumber> as VM argument");
+			Logger.sys.error("VM argument problem, use " + portToken + "<portNumber> as VM argument");
 		}
-		
-		if (diagnosticsPort == 0) {
-			diagnosticsPort = SocketUtil.findFreePort();
+
+		if (port == 0) {
+			port = SocketUtil.findFreePort();
 			try {
-				ILaunchConfigurationWorkingCopy workingCopy = configuration.getWorkingCopy();
+				ILaunchConfigurationWorkingCopy workingCopy = resultConfiguration.getWorkingCopy();
 				workingCopy.setAttribute(IJavaLaunchConfigurationConstants.ATTR_VM_ARGUMENTS,
-						configuration.getAttribute(IJavaLaunchConfigurationConstants.ATTR_VM_ARGUMENTS, "")
-						+ " " + TXTUML_DIAGNOSTICS_PORT_TOKEN + diagnosticsPort);
-				configuration = workingCopy;
+						resultConfiguration.getAttribute(IJavaLaunchConfigurationConstants.ATTR_VM_ARGUMENTS, "") + " "
+								+ portToken + port);
+				resultConfiguration = workingCopy;
 			} catch (CoreException | IllegalArgumentException | SecurityException ex) {
 				Logger.sys.error("Cannot set VM arguments: " + ex);
 				throw ex;
 			}
 		}
-		
-		IDisposable diagnosticsPlugin;
-		try {
-			diagnosticsPlugin = new DiagnosticsPlugin(diagnosticsPort,
-					configuration.getAttribute(IJavaLaunchConfigurationConstants.ATTR_PROJECT_NAME, ""),
-					configuration.getAttribute(IJavaLaunchConfigurationConstants.ATTR_WORKING_DIRECTORY, "."));
-		} catch (IOException ex) {
-			throw new RuntimeException("Launching txtUML DiagnosticsPlugin failed miserably");
-		}
-		new RuntimeSessionTracker(launch, diagnosticsPlugin);
-		super.launch(configuration, mode, launch, monitor);
+
+		return new Pair<>(port, resultConfiguration);
 	}
+
 }
