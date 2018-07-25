@@ -148,14 +148,6 @@ private:
 }
 
 template<typename T>
-bool inline operator<(const Model::MultipliedElement<T,1,1>& e1, const Model::MultipliedElement<T, 1, 1>& e2) {return e1.one() < e2.one();}
-template<typename T>
-bool inline operator<(const Model::MultipliedElement<T, 1, 1>& e1, const T& e2) {return e1.one() < e2;}
-template<typename T>
-bool inline operator<(const T& e1, const Model::MultipliedElement<T, 1, 1>& e2) {return e1 < e2.one(); }
-
-
-template<typename T>
 inline bool operator==(const Model::MultipliedElement<T, 1, 1>& e1, const Model::MultipliedElement<T, 1, 1>& e2) { return e1.one() == e2.one(); }
 template<typename T>
 bool inline operator==(const Model::MultipliedElement<T, 1, 1>& e1, const T& e2) { return e1.one() == e2; }
@@ -169,55 +161,63 @@ bool inline operator!=(const Model::MultipliedElement<T, 1, 1>& e1, const T& e2)
 template<typename T>
 bool inline operator!=(const T& e1, const Model::MultipliedElement<T, 1, 1>& e2) { return e1 != e2.one(); }
 
-template<typename T>
-inline bool operator<=(const Model::MultipliedElement<T, 1, 1>& e1, const Model::MultipliedElement<T, 1, 1>& e2) { return  e1.one() <= e2.one(); }
-template<typename T>
-bool inline operator<=(const Model::MultipliedElement<T, 1, 1>& e1, const T& e2) { return e1.one() <= e2; }
-template<typename T>
-bool inline operator<=(const T& e1, const Model::MultipliedElement<T, 1, 1>& e2) { return e1 <= e2.one(); }
+template<typename T, typename U>
+bool inline operator<(const Model::MultipliedElement<T, 1, 1>& e1, const Model::MultipliedElement<U, 1, 1>& e2) { return e1.one () < e2.one (); }
+template<typename T, typename U>
+bool inline operator<(const Model::MultipliedElement<T, 1, 1>& e1, const U& e2) { return e1.one () < e2; }
+template<typename T, typename U>
+bool inline operator<(const T& e1, const Model::MultipliedElement<U, 1, 1>& e2) { return e1 < e2.one (); }
 
-template<typename T>
-inline bool operator>=(const Model::MultipliedElement<T, 1, 1>& e1, const Model::MultipliedElement<T, 1, 1>& e2) { return e1.one() >= e2.one(); }
-template<typename T>
-bool inline operator>=(const Model::MultipliedElement<T, 1, 1>& e1, const T& e2) { return e1.one() >= e2; }
-template<typename T>
-bool inline operator>=(const T& e1, const Model::MultipliedElement<T, 1, 1>& e2) { return e1 >= e2.one(); }
+template<typename T, typename U>
+inline bool operator<=(const Model::MultipliedElement<T, 1, 1>& e1, const Model::MultipliedElement<U, 1, 1>& e2) { return  e1.one() <= e2.one(); }
+template<typename T, typename U>
+bool inline operator<=(const Model::MultipliedElement<T, 1, 1>& e1, const U& e2) { return e1.one() <= e2; }
+template<typename T, typename U>
+bool inline operator<=(const T& e1, const Model::MultipliedElement<U, 1, 1>& e2) { return e1 <= e2.one(); }
 
-template<typename T>
-inline bool operator>(const Model::MultipliedElement<T, 1, 1>& e1, const Model::MultipliedElement<T, 1, 1>& e2) { return e1.one() > e2.one(); }
-template<typename T>
-bool inline operator>(const Model::MultipliedElement<T, 1, 1>& e1, const T& e2) { return e1.one() > e2; }
-template<typename T>
-bool inline operator>(const T& e1, const Model::MultipliedElement<T, 1, 1>& e2) { return e1 > e2.one(); }
+template<typename T, typename U>
+inline bool operator>=(const Model::MultipliedElement<T, 1, 1>& e1, const Model::MultipliedElement<U, 1, 1>& e2) { return e1.one() >= e2.one(); }
+template<typename T, typename U>
+bool inline operator>=(const Model::MultipliedElement<T, 1, 1>& e1, const U& e2) { return e1.one() >= e2; }
+template<typename T, typename U>
+bool inline operator>=(const T& e1, const Model::MultipliedElement<U, 1, 1>& e2) { return e1 >= e2.one(); }
+
+template<typename T, typename U>
+inline bool operator>(const Model::MultipliedElement<T, 1, 1>& e1, const Model::MultipliedElement<U, 1, 1>& e2) { return e1.one() > e2.one(); }
+template<typename T, typename U>
+bool inline operator>(const Model::MultipliedElement<T, 1, 1>& e1, const U& e2) { return e1.one() > e2; }
+template<typename T, typename U>
+bool inline operator>(const T& e1, const Model::MultipliedElement<U, 1, 1>& e2) { return e1 > e2.one(); }
 
 
-template<typename T>
-inline T operator+(const Model::MultipliedElement<T, 1, 1>& e1, const Model::MultipliedElement<T, 1, 1>& e2) { return e1.one() + e2.one(); }
-template<typename T>
-T inline operator+(const Model::MultipliedElement<T, 1, 1>& e1, const T& e2) { return e1.one() + e2; }
-template<typename T>
-T inline operator+(const T& e1, const Model::MultipliedElement<T, 1, 1>& e2) { return e1 + e2.one(); }
+template<typename T, typename U>
+inline typename std::common_type<T, U>::type operator+(const Model::MultipliedElement<T, 1, 1>& e1, const Model::MultipliedElement<U, 1, 1>& e2) { return e1.one() + e2.one(); }
+template<typename T, typename U>
+typename std::common_type<T, U>::type inline operator+(const Model::MultipliedElement<T, 1, 1>& e1, const U& e2) { return e1.one() + e2; }
+template<typename T, typename U>
+typename std::common_type<T, U>::type inline operator+(const T& e1, const Model::MultipliedElement<U, 1, 1>& e2) { return e1 + e2.one(); }
 
-template<typename T>
-inline T operator-(const Model::MultipliedElement<T, 1, 1>& e1, const Model::MultipliedElement<T, 1, 1>& e2) {return e1.one() - e2.one();}
-template<typename T>
-T inline operator-(const Model::MultipliedElement<T, 1, 1>& e1, const T& e2) { return e1.one() - e2; }
-template<typename T>
-T inline operator-(const T& e1, const Model::MultipliedElement<T, 1, 1>& e2) { return e1 - e2.one(); }
+template<typename T, typename U>
+inline typename std::common_type<T, U>::type operator-(const Model::MultipliedElement<T, 1, 1>& e1, const Model::MultipliedElement<U, 1, 1>& e2) {return e1.one() - e2.one();}
+template<typename T, typename U>
+typename std::common_type<T, U>::type inline operator-(const Model::MultipliedElement<T, 1, 1>& e1, const U& e2) { return e1.one() - e2; }
+template<typename T, typename U>
+typename std::common_type<T, U>::type inline operator-(const T& e1, const Model::MultipliedElement<U, 1, 1>& e2) { return e1 - e2.one(); }
 
-template<typename T>
-inline T operator*(const Model::MultipliedElement<T, 1, 1>& e1, const Model::MultipliedElement<T, 1, 1>& e2) { return e1.one () * e2.one (); }
-template<typename T>
-T inline operator*(const Model::MultipliedElement<T, 1, 1>& e1, const T& e2) { return e1.one () * e2; }
-template<typename T>
-T inline operator*(const T& e1, const Model::MultipliedElement<T, 1, 1>& e2) { return e1 * e2.one (); }
 
-template<typename T>
-inline T operator/(const Model::MultipliedElement<T, 1, 1>& e1, const Model::MultipliedElement<T, 1, 1>& e2) { return e1.one () / e2.one (); }
-template<typename T>
-T inline operator/(const Model::MultipliedElement<T, 1, 1>& e1, const T& e2) { return e1.one () / e2; }
-template<typename T>
-T inline operator/(const T& e1, const Model::MultipliedElement<T, 1, 1>& e2) { return e1 / e2.one (); }
+template<typename T, typename U>
+typename std::common_type<T, U>::type inline operator*(const Model::MultipliedElement<T, 1, 1>& e1, const Model::MultipliedElement<U, 1, 1>& e2) { return e1.one () * e2.one (); }
+template<typename T, typename U>
+typename std::common_type<T, U>::type inline operator*(const Model::MultipliedElement<T, 1, 1>& e1, const U& e2) { return e1.one () * e2; }
+template<typename T, typename U>
+typename std::common_type<T, U>::type inline operator*(const T& e1, const Model::MultipliedElement<U, 1, 1>& e2) { return e1 * e2.one (); }
+
+template<typename T, typename U>
+inline typename std::common_type<T, U>::type operator/(const Model::MultipliedElement<T, 1, 1>& e1, const Model::MultipliedElement<U, 1, 1>& e2) { return e1.one () / e2.one (); }
+template<typename T, typename U>
+typename std::common_type<T, U>::type inline operator/(const Model::MultipliedElement<T, 1, 1>& e1, const U& e2) { return e1.one () / e2; }
+template<typename T, typename U>
+typename std::common_type<T, U>::type inline operator/(const T& e1, const Model::MultipliedElement<U, 1, 1>& e2) { return e1 / e2.one (); }
 
 template<typename T>
 inline T operator-(const Model::MultipliedElement<T, 1, 1>& e) { return -(e.one ()); }
