@@ -20,7 +20,7 @@ import hu.elte.txtuml.export.cpp.CppExporterUtils;
 public class FMUStandardCreator {
 
 	private static final String FMU_BUILD_ENV = "Ninja";
-	private static final String FMU_LIBRARY_NAME = "liblibmodelfmu";
+	private static final String FMU_LIBRARY_NAME = "modelfmu";
 	
 	
 	static class FMUStandardNames {
@@ -43,6 +43,15 @@ public class FMUStandardCreator {
 			return (CppExporterUtils.isWindowsOS() ? "win" : "linux") + arc;
 		}
 	}
+	
+	static private String mapToGeneratedLibraryName(String libraryName) {
+		String paltfromDependedLibraryName = System.mapLibraryName(FMU_LIBRARY_NAME);
+		if(CppExporterUtils.isWindowsOS()) {
+			return "lib" + paltfromDependedLibraryName;
+		}
+		
+		return paltfromDependedLibraryName;
+	}
 
 	private Optional<String> buildFMUProject(String path) throws IOException, InterruptedException {
 		BuildSupport.createBuildEnvironment(path, FMU_BUILD_ENV);
@@ -55,7 +64,7 @@ public class FMUStandardCreator {
 		Optional<String> optionalBuildDirectory = buildFMUProject(genPath.toFile().getPath());
 		if (optionalBuildDirectory.isPresent()) {
 			String buildDirectory = optionalBuildDirectory.get();
-			String generatedLibName = System.mapLibraryName(FMU_LIBRARY_NAME);
+			String generatedLibName = mapToGeneratedLibraryName(FMU_LIBRARY_NAME);
 			String fmuLibName = System.mapLibraryName(fmuConfig.umlClassName);
 			File fmuDir = new File(buildDirectory + File.separator + fmuConfig.umlClassName + "." + FMUStandardNames.FMU_EXTENSION);
 
@@ -87,6 +96,7 @@ public class FMUStandardCreator {
 		zip.flush();
 		zip.close();
 	}
+	
 
 	static private void addFileToZip(String path, String srcFile, ZipOutputStream zip) throws Exception {
 
