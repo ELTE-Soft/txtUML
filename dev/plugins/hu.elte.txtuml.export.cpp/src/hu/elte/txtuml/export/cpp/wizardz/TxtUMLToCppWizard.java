@@ -19,12 +19,12 @@ import hu.elte.txtuml.export.cpp.BuildSupport;
 import hu.elte.txtuml.export.cpp.CppExporterUtils;
 import hu.elte.txtuml.export.cpp.EnvironmentNotFoundException;
 import hu.elte.txtuml.export.cpp.Uml2ToCppExporter;
+import hu.elte.txtuml.export.fmu.CreateFMUParamaters;
 import hu.elte.txtuml.export.fmu.DebuggerExporter;
 import hu.elte.txtuml.export.fmu.EnvironmentExporter;
 import hu.elte.txtuml.export.fmu.FMUConfig;
 import hu.elte.txtuml.export.fmu.FMUExportGovernor;
 import hu.elte.txtuml.export.fmu.FMUResourceHandler;
-import hu.elte.txtuml.export.fmu.FMUStandardCreator;
 import hu.elte.txtuml.export.fmu.ModelDescriptionExporter;
 import hu.elte.txtuml.utils.Pair;
 import hu.elte.txtuml.utils.eclipse.Dialogs;
@@ -92,6 +92,7 @@ public class TxtUMLToCppWizard extends Wizard {
 			governor.uml2ToCpp(txtUMLProject, txtUMLModel, threadManagementDescription.getFullyQualifiedName(),
 					descriptionProjectName, addRuntimeOption, overWriteMainFileOption, buildEnvironments);
 			
+			CreateFMUParamaters fmuParameters = new CreateFMUParamaters();
 			if (generateFMU) {
 				FMUExportGovernor fmuGovernor = new FMUExportGovernor();
 				FMUConfig fmuConfig = fmuGovernor.extractFMUConfig(txtUMLProject, fmuDescription);
@@ -107,8 +108,11 @@ public class TxtUMLToCppWizard extends Wizard {
 				debuggerExporter.export(genPath, fmuConfig);
 				resourceHandler.copyResources(genPath);
 				
-				FMUStandardCreator fmuCreator = new FMUStandardCreator();
-				fmuCreator.createFMU(fmuConfig, genPath, Paths.get(proj.getLocation().toOSString(), Uml2ToCppExporter.GENERATED_CPP_FOLDER_NAME, "modelDescription.xml"));
+
+				fmuParameters.needFMU = generateFMU;
+				fmuParameters.fmuConfig = fmuConfig;
+				fmuParameters.genPath = genPath;
+				fmuParameters.xmlPath =  Paths.get(proj.getLocation().toOSString(), Uml2ToCppExporter.GENERATED_CPP_FOLDER_NAME, "modelDescription.xml");
 				
 			}
 			
@@ -127,13 +131,11 @@ public class TxtUMLToCppWizard extends Wizard {
 					throw new FileNotFoundException(mainForOverride + " file not found!");
 				}
 			}
-			
-			if (buildEnvironments != null && buildEnvironments.size() > 0) {
-				BuildSupport buildSupport = new BuildSupport(outputDirectory, buildEnvironments);
-				getContainer().run(true, true, buildSupport);
-				buildSupport.handleErrors();
 		
-			}
+			BuildSupport buildSupport = new BuildSupport(outputDirectory, buildEnvironments, fmuParameters);
+			getContainer().run(true, true, buildSupport);
+			buildSupport.handleErrors();
+		
 			//TODO hotfix only, desktop not working on linux currently
 			if(CppExporterUtils.isWindowsOS() && Desktop.isDesktopSupported()) { 
 				Desktop.getDesktop().open(new File(outputDirectory));
