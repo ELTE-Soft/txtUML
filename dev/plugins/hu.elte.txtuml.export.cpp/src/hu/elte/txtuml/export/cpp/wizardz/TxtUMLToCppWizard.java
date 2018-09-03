@@ -17,7 +17,7 @@ import org.eclipse.jface.wizard.Wizard;
 
 import hu.elte.txtuml.export.cpp.BuildSupport;
 import hu.elte.txtuml.export.cpp.CppExporterUtils;
-import hu.elte.txtuml.export.cpp.EnvironmentNotFoundException;
+import hu.elte.txtuml.export.cpp.NotExecutableCommandException;
 import hu.elte.txtuml.export.cpp.Uml2ToCppExporter;
 import hu.elte.txtuml.export.fmu.CreateFMUParamaters;
 import hu.elte.txtuml.export.fmu.DebuggerExporter;
@@ -143,8 +143,8 @@ public class TxtUMLToCppWizard extends Wizard {
 		} catch(FileNotFoundException e) {
 			Dialogs.errorMsgb("C++ file copying error", "Unable to copy selected file", e);		
 			return false;
-		} catch (EnvironmentNotFoundException e) {		
-			Dialogs.errorMsgb("C++ build environment generation error", "Not supported build environments selected", e);		
+		} catch (NotExecutableCommandException e) {		
+			Dialogs.errorMsgb("C++ environments generation error", "Try to use not supported commands", e);		
 			return false;
 		} catch (Exception e) {
 			Dialogs.errorMsgb("C++ code generation error", e.getMessage(), e);

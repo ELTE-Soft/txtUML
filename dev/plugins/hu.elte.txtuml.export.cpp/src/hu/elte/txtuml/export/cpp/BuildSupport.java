@@ -23,6 +23,7 @@ public class BuildSupport implements IRunnableWithProgress {
 	
 	private IOException buildIOFail;
 	private Exception 	fmuCreateFail;
+	private boolean 	cmakeFail;
 
 	public BuildSupport(String directory, List<String> environments, CreateFMUParamaters fmuParameters) {
 		this.directory = directory;
@@ -34,8 +35,20 @@ public class BuildSupport implements IRunnableWithProgress {
 	@Override
 	public void run(final IProgressMonitor monitor) throws InterruptedException {
 		if(environments != null && !environments.isEmpty()) {
+			try {
+				int cmakeRet = -1;
+				cmakeFail = false;
+				cmakeRet = CppExporterUtils.executeCommand(directory, Arrays.asList("cmake", "--version"), null, null);
+				if(cmakeRet != 0) {
+					cmakeFail = true;
+					return;
+				}
+			} catch (IOException e) {
+				buildIOFail = e;
+			}
+			
+			
 			monitor.beginTask("Building environments ...", environments.size());
-
 			try {
 				for (String environment : environments) {
 					monitor.worked(1);
@@ -79,6 +92,9 @@ public class BuildSupport implements IRunnableWithProgress {
 	}
 		
 	public void handleErrors() throws Exception {
+		if(cmakeFail) {
+			throw new NotExecutableCommandException("Cmake is not supported");
+		}
 		if(buildIOFail != null) {
 			throw buildIOFail;
 		}
@@ -91,7 +107,7 @@ public class BuildSupport implements IRunnableWithProgress {
 			  for(String environment : unavailableEnvironments){
 				  sBuilder.append(environment + "\n");
 			  }
-			throw new EnvironmentNotFoundException(sBuilder.toString());
+			throw new NotExecutableCommandException(sBuilder.toString());
 		}
 	}
 
