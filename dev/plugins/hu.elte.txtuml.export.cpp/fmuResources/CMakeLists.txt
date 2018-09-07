@@ -6,7 +6,7 @@ add_library(modelfmu SHARED fmu/FMUEnvironment.cpp ${LIB_CONTENT_libsmrt} ${EXEC
 # set up the debug executable
 # add_executable(fmudebug ${EXEC_CONTENT_main} fmu/fmudebug.cpp)
 add_executable(fmudebug ${LIB_CONTENT_libsmrt} ${EXEC_CONTENT_main} fmu/FMUEnvironment.cpp fmu/fmudebug.cpp) # walkaround, the linked library doesn't seem to work
-# target_link_libraries(fmudebug libmodelfmu)
+target_link_libraries(fmudebug modelfmu)
 
 if(MSVC)
   set_target_properties(fmudebug PROPERTIES LINK_FLAGS_RELEASE "/LTCG")

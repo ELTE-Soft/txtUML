@@ -97,7 +97,7 @@ public class FMUStandardCreator {
 				zip.write(buf, 0, len);
 			}
 			
-			//in.close();
+			in.close();
 		}
 	}
 

@@ -51,11 +51,11 @@ public class BuildSupport implements IRunnableWithProgress {
 			monitor.beginTask("Building environments ...", environments.size());
 			try {
 				for (String environment : environments) {
-					monitor.worked(1);
-					
+				
 					if(!createBuildEnvironment(directory, environment, Optional.empty()).equals(0)){
 						unavailableEnvironments.add(environment);
 					}
+					monitor.worked(1);
 				}
 			} catch (IOException e) {
 				buildIOFail = e;
@@ -65,8 +65,9 @@ public class BuildSupport implements IRunnableWithProgress {
 		}
 		
 		if(fmuParameters.needFMU) {			
-			monitor.beginTask("Create FMU", 2);
+			monitor.beginTask("Create FMU", 3);
 			
+			monitor.subTask("Create environment by " + FMUStandardCreator.FMU_BUILD_ENV);
 			String sourceDirectoryPath = fmuParameters.genPath.toFile().getPath();
 			String fmuBuildDirectoryPath = createBuildEnvioronmentDir(sourceDirectoryPath,"fmu");
 			
@@ -74,12 +75,15 @@ public class BuildSupport implements IRunnableWithProgress {
 				if(!createBuildEnvironment(sourceDirectoryPath, FMUStandardCreator.FMU_BUILD_ENV, Optional.of(fmuBuildDirectoryPath)).equals(0)) {
 					unavailableEnvironments.add(FMUStandardCreator.FMU_BUILD_ENV);
 				}
+				monitor.worked(1);	
+				
+				monitor.subTask("Bulding model by " + FMUStandardCreator.FMU_BUILD_ENV);
 				buildWithEnvironment(fmuBuildDirectoryPath, Arrays.asList("ninja", "-v"));
 				monitor.worked(1);		
-
-				FMUStandardCreator fmuStandardCreator = new FMUStandardCreator();		
-				fmuStandardCreator.createFMU(fmuParameters.fmuConfig, fmuBuildDirectoryPath, fmuParameters.xmlPath);
 				
+				monitor.subTask("Create standard FMU structure");
+				FMUStandardCreator fmuStandardCreator = new FMUStandardCreator();		
+				fmuStandardCreator.createFMU(fmuParameters.fmuConfig, fmuBuildDirectoryPath, fmuParameters.xmlPath);				
 				monitor.worked(1);	
 				
 			} catch (Exception e) {

@@ -6,7 +6,7 @@ import hu.elte.txtuml.api.deployment.Runtime;
 import hu.elte.txtuml.api.deployment.RuntimeType;
 import hu.eltesoft.moonlander.model.MoonLander;
 
-@Group(contains = { MoonLander.class })
 @Runtime(RuntimeType.SINGLE)
+@Group(contains = { MoonLander.class })
 public class MoonLanderConfiguration extends Configuration {
 }
