@@ -19,6 +19,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Platform;
 import org.osgi.framework.Bundle;
 
+import hu.elte.txtuml.export.cpp.CppExporterUtils;
 import hu.elte.txtuml.export.cpp.Uml2ToCppExporter;
 
 public class ModelDescriptionExporter {
@@ -41,8 +42,7 @@ public class ModelDescriptionExporter {
 			} else if (matcher.group().equals("$modelName")) {
 				matcher.appendReplacement(sb, fmuConfig.umlClassName);
 			} else if (matcher.group().equals("$modelId")) {
-				String[] nameParts = fmuConfig.umlClassName.split("\\.");
-				matcher.appendReplacement(sb, nameParts[nameParts.length - 1]);
+				matcher.appendReplacement(sb, CppExporterUtils.qualifiedNameToSimpleName(fmuConfig.umlClassName));
 			} else if (matcher.group().equals("$variables")) {
 				matcher.appendReplacement(sb, generateVariables(fmuConfig.inputVariables, fmuConfig.outputVariables,
 						fmuConfig.initialValues));

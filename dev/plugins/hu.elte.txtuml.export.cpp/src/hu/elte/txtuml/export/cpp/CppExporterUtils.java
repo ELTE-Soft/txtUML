@@ -409,5 +409,10 @@ public class CppExporterUtils {
 	public static boolean isWindowsOS() {
 		return OPERATING_SYSTEM.toUpperCase().startsWith("WIN");
 	}
+	
+	public static String qualifiedNameToSimpleName(String qualifiedName) {
+		String[] nameParts = qualifiedName.split("\\.");
+		return nameParts[nameParts.length - 1];
+	}
 
 }

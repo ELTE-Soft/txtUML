@@ -23,20 +23,9 @@ public class FMUStandardCreator {
 		public static final String FMU_BINARIES_ROOT_FOLDER = "binaries";
 		public static final String FMU_EXTENSION = "fmu";
 		
-		public static String getSpecificBinariesFolder() {
-			String arc = System.getProperty("os.arch");
-			switch(arc) {
-			case "amd64":
-				arc = "64"; 
-				break;
-			case "x86":
-				arc = "32";
-				break;
-			default:
-				arc = "32";
-				break;			
-			}
-			return (CppExporterUtils.isWindowsOS() ? "win" : "linux") + arc;
+		public static List<String> getArcBinaryFolders() {
+			String op = (CppExporterUtils.isWindowsOS() ? "win" : "linux");
+			return  Arrays.asList(op + "32", op + "64");
 		}
 	}
 	
@@ -52,24 +41,26 @@ public class FMUStandardCreator {
 
 	public void createFMU(FMUConfig fmuConfig, String fmuBuildDirectoryPath, Path xmlPath) throws Exception {
 		String generatedLibName = mapToGeneratedLibraryName(FMU_LIBRARY_NAME);
-		String fmuLibName = System.mapLibraryName(fmuConfig.umlClassName);
+		String fmuLibName = System.mapLibraryName(CppExporterUtils.qualifiedNameToSimpleName(fmuConfig.umlClassName));
+		
 		File fmuDir = new File(fmuBuildDirectoryPath + File.separator + fmuConfig.umlClassName + "." + FMUStandardNames.FMU_EXTENSION);
-
+		
 		File binaries = new File(fmuBuildDirectoryPath + File.separator + FMUStandardNames.FMU_BINARIES_ROOT_FOLDER);
 		binaries.mkdir();
-
-		File subBinaryFolder = new File(binaries.getAbsolutePath() + File.separator + FMUStandardNames.getSpecificBinariesFolder());
-		subBinaryFolder.mkdir();
-
-		Files.copy(Paths.get(fmuBuildDirectoryPath, generatedLibName), Paths.get(subBinaryFolder.getAbsolutePath(), fmuLibName),
-				StandardCopyOption.REPLACE_EXISTING);
-
 		
-		zipFolder(Arrays.asList(binaries.getAbsolutePath(), xmlPath.toAbsolutePath().toFile().getAbsolutePath()) , fmuDir.getAbsolutePath());
+		for(String arcFolders : FMUStandardNames.getArcBinaryFolders ()) {
+			File subBinaryFolder = new File(binaries.getAbsolutePath() + File.separator + arcFolders);
+			subBinaryFolder.mkdir();
+			Files.copy(Paths.get(fmuBuildDirectoryPath, generatedLibName), Paths.get(subBinaryFolder.getAbsolutePath(), fmuLibName),
+					StandardCopyOption.REPLACE_EXISTING);
+		}
+		
+		zipFolder(Arrays.asList(binaries.getAbsolutePath(), xmlPath.toAbsolutePath().toFile().getAbsolutePath()) , 
+				fmuDir.getAbsolutePath());
 
 	}
 
-	static public void zipFolder(List<String> srcFolders, String destZipFile) throws Exception  {
+	public void zipFolder(List<String> srcFolders, String destZipFile) throws Exception  {
 		ZipOutputStream zip = null;
 		FileOutputStream fileWriter = null;
 
@@ -83,7 +74,7 @@ public class FMUStandardCreator {
 	}
 	
 
-	static private void addFileToZip(String path, String srcFile, ZipOutputStream zip) throws Exception {
+	private void addFileToZip(String path, String srcFile, ZipOutputStream zip) throws Exception {
 
 		File folder = new File(srcFile);
 		if (folder.isDirectory()) {
@@ -101,7 +92,7 @@ public class FMUStandardCreator {
 		}
 	}
 
-	static private void addFolderToZip(String path, String srcFolder, ZipOutputStream zip) throws Exception {
+	private void addFolderToZip(String path, String srcFolder, ZipOutputStream zip) throws Exception {
 		File folder = new File(srcFolder);
 
 		for (String fileName : folder.list()) {
