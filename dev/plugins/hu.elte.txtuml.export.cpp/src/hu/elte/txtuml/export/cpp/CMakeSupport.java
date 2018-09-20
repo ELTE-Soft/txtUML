@@ -168,6 +168,9 @@ class CMakeSupport {
 		if (RELEASE_ONLY_COMPILE_OPTIONS.length() > 0) {
 			addCompileOption(fileContent, RELEASE_ONLY_COMPILE_OPTIONS, false, false, true);
 		}
+		addCompileOption(fileContent,"-pthread", false, false, false);
+		fileContent.append("SET(CMAKE_CXX_FLAGS \"${CMAKE_CXX_FLAGS} -pthread\")\n");
+
 
 		fileContent.append("endif()\n");
 

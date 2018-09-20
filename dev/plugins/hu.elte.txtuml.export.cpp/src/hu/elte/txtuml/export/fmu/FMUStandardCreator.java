@@ -26,10 +26,19 @@ public class FMUStandardCreator {
 		}
 	}
 	
-	static private String mapToGeneratedLibraryName(String libraryName) {
+	private String mapToGeneratedLibraryName(String libraryName) {
 		String paltfromDependedLibraryName = System.mapLibraryName(FMU_LIBRARY_NAME);
 		if(CppExporterUtils.isWindowsOS()) {
 			return "lib" + paltfromDependedLibraryName;
+		}
+		
+		return paltfromDependedLibraryName;
+	}
+	
+	private String mapToSimpleLibraryName(String libraryName) {
+		String paltfromDependedLibraryName = System.mapLibraryName(libraryName);
+		if(!CppExporterUtils.isWindowsOS()) {
+			return paltfromDependedLibraryName.replaceAll("lib", "");
 		}
 		
 		return paltfromDependedLibraryName;
@@ -38,7 +47,7 @@ public class FMUStandardCreator {
 
 	public void createFMU(FMUConfig fmuConfig, String fmuBuildDirectoryPath, Path xmlPath) throws Exception {
 		String generatedLibName = mapToGeneratedLibraryName(FMU_LIBRARY_NAME);
-		String fmuLibName = System.mapLibraryName(CppExporterUtils.qualifiedNameToSimpleName(fmuConfig.umlClassName));
+		String fmuLibName = mapToSimpleLibraryName(CppExporterUtils.qualifiedNameToSimpleName(fmuConfig.umlClassName));
 		
 		File fmuDir = new File(fmuBuildDirectoryPath + File.separator + fmuConfig.umlClassName + "." + FMUStandardNames.FMU_EXTENSION);
 		
