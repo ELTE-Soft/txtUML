@@ -39,7 +39,7 @@ public:
 					*static_cast<$controlevent_EC*>(event.get())));
       // set the environment variables by name-id pairs
       $setoutputvariables
-      callbacks->stepFinished(NULL, fmi2OK);
+      //callbacks->stepFinished(NULL, fmi2OK); TODO why invalid?
       return true;
     }
     return false;
