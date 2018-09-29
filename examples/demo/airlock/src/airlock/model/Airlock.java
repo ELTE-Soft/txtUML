@@ -1,5 +1,6 @@
 package airlock.model;
 
+import hu.elte.txtuml.api.deployment.fmi.FMUEnvironment;
 import hu.elte.txtuml.api.model.Action;
 import hu.elte.txtuml.api.model.From;
 import hu.elte.txtuml.api.model.ModelClass;
@@ -7,6 +8,10 @@ import hu.elte.txtuml.api.model.To;
 import hu.elte.txtuml.api.model.Trigger;
 
 public class Airlock extends ModelClass{
+	
+	public Airlock(FMUEnvironment env) {
+		Action.link(AirlockEnv.env.class, env, AirlockEnv.airlock.class, this);
+	}
 	
 	private double pressure = 100;
 	
@@ -86,7 +91,7 @@ public class Airlock extends ModelClass{
 	
 	public class OuterDoorOpen extends State{
 		public void entry(){
-			////Action.log("Opening Outer door ...");
+			Action.log("Opening Outer door ...");
 			/*try {
 				Thread.sleep(500);
 			} catch (InterruptedException e) {
@@ -103,5 +108,16 @@ public class Airlock extends ModelClass{
 			}*/
 			////Action.log(" closed!\n");
 		}	
+	}
+
+	@From(InnerDoorOpen.class)
+	@To(InnerDoorOpen.class)
+	@Trigger(InputSignal.class)
+	public class InnerDoorOpenOutput extends Transition{
+		@Override
+		public void effect() {
+			FMUEnvironment env = assoc(AirlockEnv.env.class).one();
+			Action.send(new OutputSignal(pressure), env);
+		}
 	}
 }
