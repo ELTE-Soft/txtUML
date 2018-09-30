@@ -68,7 +68,7 @@ public class ModelDescriptionExporter {
 
 	}
 
-	private int variableIndex = 1;
+	private int variableIndex = 0;
 
 	private String generateVariable(VariableDefinition variableDefinition, Map<String, Object> initVal,
 			boolean output) {
