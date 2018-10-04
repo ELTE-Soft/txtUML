@@ -31,7 +31,6 @@ import org.eclipse.jface.viewers.DelegatingStyledCellLabelProvider;
 import org.eclipse.jface.viewers.IBaseLabelProvider;
 import org.eclipse.jface.viewers.StyledString;
 
-import hu.elte.txtuml.api.deployment.Group;
 import hu.elte.txtuml.api.model.Model;
 import hu.elte.txtuml.utils.Pair;
 import hu.elte.txtuml.utils.jdt.ModelUtils;
@@ -199,7 +198,7 @@ public class WizardUtils {
 					Arrays.asList(annotatedType.getJavaProject().getRequiredProjectNames()));
 			referencedProjects.add(annotatedType.getJavaProject().getElementName());
 			for (IAnnotation annot : annotatedType.getAnnotations()) {
-				if (annot.getElementName().equals(Group.class.getSimpleName())) {
+				if (!annot.getElementName().equals(hu.elte.txtuml.api.deployment.Runtime.class.getSimpleName())) {
 					List<Object> annotValues = Stream.of(annot.getMemberValuePairs())
 							.filter(mvp -> mvp.getValueKind() == IMemberValuePair.K_CLASS)
 							.flatMap(mvp -> Stream.of(mvp.getValue())).collect(Collectors.toList());

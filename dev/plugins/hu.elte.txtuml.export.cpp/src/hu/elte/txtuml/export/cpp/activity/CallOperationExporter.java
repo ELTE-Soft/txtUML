@@ -88,7 +88,7 @@ class CallOperationExporter {
 
 		if (isStdLibOperation(node)) {
 
-			EList<OutputPin> outParamaterPins = node.getResults();
+			List<OutputPin> outParamaterPins = new ArrayList<>(node.getResults());
 			outParamaterPins.remove(returnPin);
 			source.append(declareAllOutTempParameters(outParamaterPins));
 			List<String> parameterVariables = new ArrayList<String>(getParametersNames(node.getArguments()));
@@ -157,13 +157,13 @@ class CallOperationExporter {
 				getParametersNames(arguments));
 	}
 
-	private void addOutParametrsToList(List<String> parameterVariables, EList<OutputPin> outParamaterPins) {
+	private void addOutParametrsToList(List<String> parameterVariables, List<OutputPin> outParamaterPins) {
 		for (OutputPin outPin : outParamaterPins) {
 			parameterVariables.add(tempVariableExporter.getRealVariableName(outPin));
 		}
 	}
 
-	private String declareAllOutTempParameters(EList<OutputPin> outParamaterPins) {
+	private String declareAllOutTempParameters(List<OutputPin> outParamaterPins) {
 		StringBuilder declerations = new StringBuilder("");
 		for (OutputPin outPin : outParamaterPins) {
 			declerations.append(ObjectDeclDefTemplates.variableDecl(outPin.getType().getName(),
