@@ -81,14 +81,18 @@ class ActivityNodeResolver {
 		this.userVariableExporter = userVariableExporter;
 	}
 	
-	public ActivityResolveResult getTargetFromActivityNode(ActivityNode node, boolean conditionalExpression) {
+	
+	public ActivityResolveResult getTargetFromActivityNode(ActivityNode node) {
+		return getTargetFromActivityNode(node, false, false);
+	}
+	public ActivityResolveResult getTargetFromActivityNode(ActivityNode node, boolean conditionalExpression, boolean forceUpdate) {
 		if(node == null) {
 			Logger.sys.error("This should not happen..");
 		}
 
 		if (node.eClass().equals(UMLPackage.Literals.FORK_NODE) || node.eClass().equals(UMLPackage.Literals.JOIN_NODE)
 				|| node.eClass().equals(UMLPackage.Literals.DECISION_NODE)) {
-			return ActivityResolveResult.createCopiedResult(getTargetFromActivityNode(node.getIncomings().get(0).getSource(), conditionalExpression));
+			return ActivityResolveResult.createCopiedResult(getTargetFromActivityNode(node.getIncomings().get(0).getSource(), conditionalExpression, forceUpdate));
 		} else if (node.eClass().equals(UMLPackage.Literals.ADD_STRUCTURAL_FEATURE_VALUE_ACTION)) {
 			return ActivityResolveResult.createCopiedResult( getTargetFromInputPin(((AddStructuralFeatureValueAction) node).getObject()));
 		} else if (node.eClass().equals(UMLPackage.Literals.READ_STRUCTURAL_FEATURE_ACTION)) {
@@ -109,16 +113,16 @@ class ActivityNodeResolver {
 			return ActivityResolveResult.createSimpleResult(ActivityTemplates.SelfLiteral);
 
 		} else if (node.eClass().equals(UMLPackage.Literals.READ_LINK_ACTION)) {
-			return ActivityResolveResult.createCopiedResult(getTargetFromActivityNode(((ReadLinkAction) node).getResult(), conditionalExpression));
+			return ActivityResolveResult.createCopiedResult(getTargetFromActivityNode(((ReadLinkAction) node).getResult(), conditionalExpression, forceUpdate));
 
 		} else if (node.eClass().equals(UMLPackage.Literals.OUTPUT_PIN)) {
 			OutputPin outPin = (OutputPin) node;
-			/*if(node.getOwner().eClass().equals(UMLPackage.Literals.CALL_OPERATION_ACTION)) {
-				return ActivityResolveResult.createCopiedResult( getTargetFromActivityNode((ActivityNode) node.getOwner(), conditionalExpression));
-			}*/
+			if(node.getOwner().eClass().equals(UMLPackage.Literals.CALL_OPERATION_ACTION)) {
+				return ActivityResolveResult.createCopiedResult( getTargetFromActivityNode((ActivityNode) node.getOwner(), conditionalExpression, forceUpdate));
+			}
 			ActivityResolveResult res = tempVariableExporter.isOutExported(outPin) ? 
 					 ActivityResolveResult.createSimpleResult(tempVariableExporter.getRealVariableName(outPin)) : 
-					 ActivityResolveResult.createCopiedResult( getTargetFromActivityNode((ActivityNode) node.getOwner(), conditionalExpression));
+					 ActivityResolveResult.createCopiedResult( getTargetFromActivityNode((ActivityNode) node.getOwner(), conditionalExpression, forceUpdate));
 					 
 			return res;
 
@@ -138,14 +142,14 @@ class ActivityNodeResolver {
 		} else if (node.eClass().equals(UMLPackage.Literals.SEQUENCE_NODE)) {
 			SequenceNode seqNode = (SequenceNode) node;
 			int lastIndex = seqNode.getNodes().size() - 1;
-			return getTargetFromActivityNode(seqNode.getNodes().get(lastIndex), conditionalExpression);
+			return getTargetFromActivityNode(seqNode.getNodes().get(lastIndex), conditionalExpression, forceUpdate);
 
 		} else if (node.eClass().equals(UMLPackage.Literals.CALL_OPERATION_ACTION)) {
 			CallOperationAction callAction = (CallOperationAction) node;
 			String declares = "";
-			//if(!returnOutputsToCallActions.containsKey(callAction)) {
-				declares = activityExporter.createActivityNodeCode(callAction);
-			//}
+			if(!returnOutputsToCallActions.containsKey(callAction) || forceUpdate) {
+				declares = activityExporter.createActivityNodeCode(callAction, forceUpdate);
+			}
 			return  ActivityResolveResult.createComplexResult(tempVariableExporter.getRealVariableName(returnOutputsToCallActions.get(callAction)), declares);
 		} else {
 			Logger.sys.error("Unhandled activity node: " + node.getName());		
@@ -173,15 +177,16 @@ class ActivityNodeResolver {
 	}
 	
 	public ActivityResolveResult getTargetFromInputPin(InputPin node) {
-		return getTargetFromInputPin(node, true);
+		return getTargetFromInputPin(node, true, false);
 	}
 	
-	public ActivityResolveResult getTargetFromInputPin(InputPin node, Boolean recursive) {
+	
+	public ActivityResolveResult getTargetFromInputPin(InputPin node, Boolean recursive, boolean forceUpdate) {
 		ActivityResolveResult source = ActivityResolveResult.createSimpleResult("UNHANDLED");
 		if (node.eClass().equals(UMLPackage.Literals.INPUT_PIN)) {
 
 			if (node.getIncomings().size() > 0) {				 
-				source = getTargetFromActivityNode(node.getIncomings().get(0).getSource(), false);
+				source = getTargetFromActivityNode(node.getIncomings().get(0).getSource(), false, forceUpdate);
 			}
 
 		} else if (node.eClass().equals(UMLPackage.Literals.VALUE_PIN)) {
@@ -190,7 +195,7 @@ class ActivityNodeResolver {
 			if (valueSpec != null) {
 				source = ActivityResolveResult.createSimpleResult(getValueFromValueSpecification(valueSpec));
 			} else if (node.getIncomings().size() > 0) {
-				source = getTargetFromActivityNode(node.getIncomings().get(0).getSource(), false);
+				source = getTargetFromActivityNode(node.getIncomings().get(0).getSource(), false, forceUpdate);
 			}
 
 		}

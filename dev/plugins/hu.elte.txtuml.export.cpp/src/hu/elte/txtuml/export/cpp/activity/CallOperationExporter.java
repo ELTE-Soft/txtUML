@@ -61,7 +61,7 @@ class CallOperationExporter {
 				tempVariableExporter.getRealVariableName(node.getResult()), val);
 	}
 
-	public String createCallOperationActionCode(CallOperationAction node) {
+	public String createCallOperationActionCode(CallOperationAction node, boolean forceUpdate) {
 		StringBuilder source = new StringBuilder("");
 		tempVariableExporter.exportAllOutputPinsToMap(node.getOutputs());
 		OutputPin returnPin = searchReturnPin(node.getResults(), node.getOperation().outputParameters());
@@ -89,7 +89,7 @@ class CallOperationExporter {
 		if (node.getOperation().getType() != null)
 			returnTypeName = node.getOperation().getType().getName();
 
-		List<ActivityResolveResult> parameterVariables = new ArrayList<>(getParametersNames(node.getArguments()));
+		List<ActivityResolveResult> parameterVariables = new ArrayList<>(getParametersNames(node.getArguments(), forceUpdate));
 		List<String> parameterReferences = parameterVariables.stream()
 				.map(r -> r.getReferenceResultCode()).collect(Collectors.toList());
 		if (isStdLibOperation(node)) {
@@ -124,7 +124,7 @@ class CallOperationExporter {
 					exportUser.get().addCppOnlyDependency(namedOwner.getName());
 				}
 			}
-			ActivityResolveResult refResult = activityExportResolver.getTargetFromInputPin(node.getTarget(), false);
+			ActivityResolveResult refResult = activityExportResolver.getTargetFromInputPin(node.getTarget(), false, false);
 			source.append(refResult.getDeclaredVarCodes());
 			val = ActivityTemplates.operationCall(
 					refResult.getReferenceResultCode(),
@@ -152,8 +152,8 @@ class CallOperationExporter {
 
 	private String createConstructorCallAction(InputPin target, EList<InputPin> arguments) {
 
-		ActivityResolveResult refResult = activityExportResolver.getTargetFromInputPin(target, false);
-		List<ActivityResolveResult> parameterVariables = new ArrayList<>(getParametersNames(arguments));
+		ActivityResolveResult refResult = activityExportResolver.getTargetFromInputPin(target, false, false);
+		List<ActivityResolveResult> parameterVariables = new ArrayList<>(getParametersNames(arguments, false));
 		List<String> parameterReferences = parameterVariables.stream()
 				.map(r -> r.getReferenceResultCode()).collect(Collectors.toList());
 		
@@ -189,10 +189,10 @@ class CallOperationExporter {
 		return null;
 	}
 
-	private List<ActivityResolveResult> getParametersNames(List<InputPin> arguments_) {
+	private List<ActivityResolveResult> getParametersNames(List<InputPin> arguments_, boolean forceUpdate) {
 		List<ActivityResolveResult> params = new ArrayList<>();
 		for (InputPin param : arguments_) {
-			params.add(activityExportResolver.getTargetFromInputPin(param));
+			params.add(activityExportResolver.getTargetFromInputPin(param, true, forceUpdate));
 		}
 		return params;
 	}

@@ -58,7 +58,7 @@ class StructuredControlNodeExporter {
 			}
 			
 			ActivityResolveResult res = activityExportResolver
-					.getTargetFromActivityNode(node.getInputElements().get(0).getIncomings().get(0).getSource(), false);
+					.getTargetFromActivityNode(node.getInputElements().get(0).getIncomings().get(0).getSource(), false, false);
 			body += res.getDeclaredVarCodes();
 			String collection = res.getReferenceResultCode();
 			source = ActivityTemplates.foreachCycle(iterativeVar.getType().getName(), iterativeVar.getName(),
@@ -90,9 +90,9 @@ class StructuredControlNodeExporter {
 
 		StringBuilder recalulcateCondition = new StringBuilder("");
 		for (ExecutableNode condNode : loopNode.getTests()) {
-			recalulcateCondition.append(activityExporter.createActivityNodeCode(condNode));
+			recalulcateCondition.append(activityExporter.createActivityNodeCode(condNode, true));
 		}
-		ActivityResolveResult res = activityExportResolver.getTargetFromActivityNode(loopNode.getDecider(), true);
+		ActivityResolveResult res = activityExportResolver.getTargetFromActivityNode(loopNode.getDecider(), true, false);
 		source.append(res.getDeclaredVarCodes());
 		source.append(
 				ActivityTemplates.whileCycle(res.getReferenceResultCode(),
@@ -110,7 +110,7 @@ class StructuredControlNodeExporter {
 			for (ExecutableNode test : clause.getTests()) {
 				tests.append(activityExporter.createActivityNodeCode(test));
 			}
-			ActivityResolveResult res = activityExportResolver.getTargetFromActivityNode(clause.getDecider(), true);
+			ActivityResolveResult res = activityExportResolver.getTargetFromActivityNode(clause.getDecider(), true, false);
 			source.append(res.getDeclaredVarCodes());
 			String cond = res.getReferenceResultCode();
 			StringBuilder body = new StringBuilder("");
