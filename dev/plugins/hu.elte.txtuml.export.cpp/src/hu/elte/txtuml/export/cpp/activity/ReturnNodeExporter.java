@@ -45,7 +45,7 @@ public class ReturnNodeExporter {
 
 	public String createReturnParamaterCode() {
 		if (containsReturnNode) {
-			return ActivityTemplates.returnTemplates(activityExportResolver.getTargetFromActivityNode(returnNode, false), singleReturn);
+			return ActivityTemplates.returnTemplates(activityExportResolver.getTargetFromActivityNode(returnNode, false).getReferenceResultCode(), singleReturn);
 		} else {
 			return "";
 		}

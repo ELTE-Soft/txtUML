@@ -37,85 +37,126 @@ import hu.elte.txtuml.utils.Logger;
 
 
 class ActivityNodeResolver {
-	
+	private ActivityExporter activityExporter;
 	private Map<CreateObjectAction, String> objectMap;
 	private Map<CallOperationAction, OutputPin> returnOutputsToCallActions;	
 	private OutVariableExporter tempVariableExporter;
 	private UserVariableExporter userVariableExporter;
 	
-	public ActivityNodeResolver(Map<CreateObjectAction, String> objectMap,Map<CallOperationAction, OutputPin> returnOutputsToCallActions,
+	static class ActivityResolveResult {
+		
+		
+		static ActivityResolveResult createCopiedResult(ActivityResolveResult result) {
+			return new ActivityResolveResult(result.getReferenceResultCode(), result.getDeclaredVarCodes());
+		}
+		static ActivityResolveResult createSimpleResult (String reference) {
+			return new ActivityResolveResult(reference, "");
+		}
+		
+		static ActivityResolveResult createComplexResult(String reference, String extras) {
+			return new ActivityResolveResult (reference, extras);
+		}
+		
+		private ActivityResolveResult (String referenceResultCode, String declaredVarsCode) {
+			this.referenceResultCode = referenceResultCode;
+			this.declaredVarsCode = declaredVarsCode;
+		}
+		
+		public String getReferenceResultCode() {
+			return referenceResultCode;
+		}
+		public String getDeclaredVarCodes() {
+			return declaredVarsCode;
+		}
+		private String referenceResultCode = "";
+		private String declaredVarsCode = "";
+	}
+	
+	public ActivityNodeResolver(ActivityExporter activityExporter, Map<CreateObjectAction, String> objectMap,Map<CallOperationAction, OutputPin> returnOutputsToCallActions,
 			OutVariableExporter tempVariableExporter, UserVariableExporter userVariableExporter) {
+		this.activityExporter =  activityExporter;
 	    this.objectMap = objectMap;
 		this.returnOutputsToCallActions = returnOutputsToCallActions;
 		this.tempVariableExporter = tempVariableExporter;
 		this.userVariableExporter = userVariableExporter;
 	}
 	
-	public String getTargetFromActivityNode(ActivityNode node, boolean conditionalExpression) {
+	public ActivityResolveResult getTargetFromActivityNode(ActivityNode node, boolean conditionalExpression) {
 		if(node == null) {
 			Logger.sys.error("This should not happen..");
 		}
 
-		String source = "UNHANDLED_ACTIVITYNODE";
 		if (node.eClass().equals(UMLPackage.Literals.FORK_NODE) || node.eClass().equals(UMLPackage.Literals.JOIN_NODE)
 				|| node.eClass().equals(UMLPackage.Literals.DECISION_NODE)) {
-			source = getTargetFromActivityNode(node.getIncomings().get(0).getSource(), conditionalExpression);
+			return ActivityResolveResult.createCopiedResult(getTargetFromActivityNode(node.getIncomings().get(0).getSource(), conditionalExpression));
 		} else if (node.eClass().equals(UMLPackage.Literals.ADD_STRUCTURAL_FEATURE_VALUE_ACTION)) {
-			source = getTargetFromInputPin(((AddStructuralFeatureValueAction) node).getObject());
+			return ActivityResolveResult.createCopiedResult( getTargetFromInputPin(((AddStructuralFeatureValueAction) node).getObject()));
 		} else if (node.eClass().equals(UMLPackage.Literals.READ_STRUCTURAL_FEATURE_ACTION)) {
-			source = getTargetFromRSFA((ReadStructuralFeatureAction) node);
+			return ActivityResolveResult.createSimpleResult(getTargetFromRSFA((ReadStructuralFeatureAction) node));
 		} else if (node.eClass().equals(UMLPackage.Literals.ACTIVITY_PARAMETER_NODE)) {
 			EClass ec = node.getActivity().getOwner().eClass();
 			String paramName = ((ActivityParameterNode) node).getParameter().getName();
 			if (ec.equals(UMLPackage.Literals.TRANSITION)) {
-				source = ActivityTemplates.transitionActionParameter(paramName);
+				return ActivityResolveResult.createSimpleResult(ActivityTemplates.transitionActionParameter(paramName));
 			} else // the parameter is a function parameter
 			{
-				source = GenerationTemplates.paramName(paramName);
+				return ActivityResolveResult.createSimpleResult(GenerationTemplates.paramName(paramName));
 			}
 
 		} else if (node.eClass().equals(UMLPackage.Literals.CREATE_OBJECT_ACTION)) {
-			source = objectMap.get(node);
+			return ActivityResolveResult.createSimpleResult(objectMap.get(node));
 		} else if (node.eClass().equals(UMLPackage.Literals.READ_SELF_ACTION)) {
-			source = ActivityTemplates.SelfLiteral;
+			return ActivityResolveResult.createSimpleResult(ActivityTemplates.SelfLiteral);
 
 		} else if (node.eClass().equals(UMLPackage.Literals.READ_LINK_ACTION)) {
-			source = getTargetFromActivityNode(((ReadLinkAction) node).getResult(), conditionalExpression);
+			return ActivityResolveResult.createCopiedResult(getTargetFromActivityNode(((ReadLinkAction) node).getResult(), conditionalExpression));
 
 		} else if (node.eClass().equals(UMLPackage.Literals.OUTPUT_PIN)) {
 			OutputPin outPin = (OutputPin) node;
-			source = tempVariableExporter.isOutExported(outPin) ? 
-					tempVariableExporter.getRealVariableName(outPin):
-					 getTargetFromActivityNode((ActivityNode) node.getOwner(), conditionalExpression);
+			/*if(node.getOwner().eClass().equals(UMLPackage.Literals.CALL_OPERATION_ACTION)) {
+				return ActivityResolveResult.createCopiedResult( getTargetFromActivityNode((ActivityNode) node.getOwner(), conditionalExpression));
+			}*/
+			ActivityResolveResult res = tempVariableExporter.isOutExported(outPin) ? 
+					 ActivityResolveResult.createSimpleResult(tempVariableExporter.getRealVariableName(outPin)) : 
+					 ActivityResolveResult.createCopiedResult( getTargetFromActivityNode((ActivityNode) node.getOwner(), conditionalExpression));
+					 
+			return res;
 
 		} else if (node.eClass().equals(UMLPackage.Literals.VALUE_SPECIFICATION_ACTION)) {
-			source = getValueFromValueSpecification(((ValueSpecificationAction) node).getValue());
+			return ActivityResolveResult.createSimpleResult(getValueFromValueSpecification(((ValueSpecificationAction) node).getValue()));
 		} else if (node.eClass().equals(UMLPackage.Literals.READ_VARIABLE_ACTION)) {
 
 			ReadVariableAction rA = (ReadVariableAction) node;
 			userVariableExporter.modifyVariableInfo(rA.getVariable());
-			source = userVariableExporter.getRealVariableReference(rA.getVariable());
+			ActivityResolveResult source =ActivityResolveResult.createSimpleResult(userVariableExporter.getRealVariableReference(rA.getVariable()));
 			if(rA.getVariable().getUpper() == 1 && conditionalExpression) {
-				source = ActivityTemplates.operationCall(source, PointerAndMemoryNames.SimpleAccess, 
-							CollectionNames.SelectAnyFunctionName, Collections.emptyList());
+				source = ActivityResolveResult.createSimpleResult(ActivityTemplates.operationCall(source.getReferenceResultCode(), PointerAndMemoryNames.SimpleAccess, 
+							CollectionNames.SelectAnyFunctionName, Collections.emptyList()));
 			}
+			
+			return source;
 		} else if (node.eClass().equals(UMLPackage.Literals.SEQUENCE_NODE)) {
 			SequenceNode seqNode = (SequenceNode) node;
 			int lastIndex = seqNode.getNodes().size() - 1;
-			source = getTargetFromActivityNode(seqNode.getNodes().get(lastIndex), conditionalExpression);
+			return getTargetFromActivityNode(seqNode.getNodes().get(lastIndex), conditionalExpression);
 
 		} else if (node.eClass().equals(UMLPackage.Literals.CALL_OPERATION_ACTION)) {
 			CallOperationAction callAction = (CallOperationAction) node;
-			source = tempVariableExporter.getRealVariableName(returnOutputsToCallActions.get(callAction));
+			String declares = "";
+			//if(!returnOutputsToCallActions.containsKey(callAction)) {
+				declares = activityExporter.createActivityNodeCode(callAction);
+			//}
+			return  ActivityResolveResult.createComplexResult(tempVariableExporter.getRealVariableName(returnOutputsToCallActions.get(callAction)), declares);
 		} else {
-			Logger.sys.error("Unhandled activity node: " + node.getName());
+			Logger.sys.error("Unhandled activity node: " + node.getName());		
+			return ActivityResolveResult.createSimpleResult("UNHANDLED_REFERENCE");
 		}
-		return source;
+		
 	}
 	
 	public String getTargetFromASFVA(AddStructuralFeatureValueAction node) {
 		String source = node.getStructuralFeature().getName();
-		String object = getTargetFromInputPin(node.getObject());
+		String object = getTargetFromInputPin(node.getObject()).getReferenceResultCode();
 		if (!object.isEmpty()) {
 			source = object + ActivityTemplates.accesOperatoForType(getTypeFromInputPin(node.getObject())) + source;
 		}
@@ -124,22 +165,22 @@ class ActivityNodeResolver {
 	
 	private String getTargetFromRSFA(ReadStructuralFeatureAction node) {
 		String source = node.getStructuralFeature().getName();
-		String object = getTargetFromInputPin(node.getObject());
+		String object = getTargetFromInputPin(node.getObject()).getReferenceResultCode();
 		if (!object.isEmpty()) {
 			source = object + ActivityTemplates.accesOperatoForType(getTypeFromInputPin(node.getObject())) + source;
 		}
 		return source;
 	}
 	
-	public String getTargetFromInputPin(InputPin node) {
+	public ActivityResolveResult getTargetFromInputPin(InputPin node) {
 		return getTargetFromInputPin(node, true);
 	}
 	
-	public String getTargetFromInputPin(InputPin node, Boolean recursive) {
-		String source = "UNKNOWN_TYPE_FROM_VALUEPIN";
+	public ActivityResolveResult getTargetFromInputPin(InputPin node, Boolean recursive) {
+		ActivityResolveResult source = ActivityResolveResult.createSimpleResult("UNHANDLED");
 		if (node.eClass().equals(UMLPackage.Literals.INPUT_PIN)) {
 
-			if (node.getIncomings().size() > 0) {
+			if (node.getIncomings().size() > 0) {				 
 				source = getTargetFromActivityNode(node.getIncomings().get(0).getSource(), false);
 			}
 
@@ -147,7 +188,7 @@ class ActivityNodeResolver {
 
 			ValueSpecification valueSpec = ((ValuePin) node).getValue();
 			if (valueSpec != null) {
-				source = getValueFromValueSpecification(valueSpec);
+				source = ActivityResolveResult.createSimpleResult(getValueFromValueSpecification(valueSpec));
 			} else if (node.getIncomings().size() > 0) {
 				source = getTargetFromActivityNode(node.getIncomings().get(0).getSource(), false);
 			}

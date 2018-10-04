@@ -41,7 +41,7 @@ class LinkActionExporter {
 		tempVariableExporter.exportOutputPinToMap(readLinkNode.getResult());
 
 		String target = readLinkNode.getInputValues().size() > 0
-				? activityExportResolver.getTargetFromInputPin(readLinkNode.getInputValues().get(0))
+				? activityExportResolver.getTargetFromInputPin(readLinkNode.getInputValues().get(0)).getReferenceResultCode()
 				: ActivityTemplates.SelfLiteral;
 		
 		String readLink = ActivityTemplates
@@ -60,8 +60,8 @@ class LinkActionExporter {
 		String secondLinkEndName = secondLinkEnd.getEnd().getName();
 		
 		
-		String firstEndObject = activityExportResolver.getTargetFromInputPin(firstLinkEnd.getValue());
-		String secondEndObject = activityExportResolver.getTargetFromInputPin(secondLinkEnd.getValue());
+		String firstEndObject = activityExportResolver.getTargetFromInputPin(firstLinkEnd.getValue()).getReferenceResultCode();
+		String secondEndObject = activityExportResolver.getTargetFromInputPin(secondLinkEnd.getValue()).getReferenceResultCode();
 		
 		
 		
@@ -137,8 +137,8 @@ class LinkActionExporter {
 		LinkEndData firstLinkEnd = node.getEndData().get(0);
 		LinkEndData secondLinkEnd = node.getEndData().get(1);
 
-		String firstEndObject = activityExportResolver.getTargetFromInputPin(firstLinkEnd.getValue());
-		String secondEndObject = activityExportResolver.getTargetFromInputPin(secondLinkEnd.getValue());
+		String firstEndObject = activityExportResolver.getTargetFromInputPin(firstLinkEnd.getValue()).getReferenceResultCode();
+		String secondEndObject = activityExportResolver.getTargetFromInputPin(secondLinkEnd.getValue()).getReferenceResultCode();
 
 		return ActivityTemplates.linkObjects(firstEndObject, secondEndObject,
 				firstLinkEnd.getEnd().getAssociation().getName(), Optional.of(firstLinkEnd.getEnd().getName()),

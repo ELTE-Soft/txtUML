@@ -51,21 +51,21 @@ class ObjectActionExporter {
 	}
 
 	public String createDestroyObjectActionCode(DestroyObjectAction node) {
-		return ActivityTemplates.deleteObject(activityExportResolver.getTargetFromInputPin(node.getTarget()));
+		return ActivityTemplates.deleteObject(activityExportResolver.getTargetFromInputPin(node.getTarget()).getReferenceResultCode());
 	}
 
 	public String createStartObjectActionCode(StartClassifierBehaviorAction node) {
-		return ActivityTemplates.startObject(activityExportResolver.getTargetFromInputPin(node.getObject()));
+		return ActivityTemplates.startObject(activityExportResolver.getTargetFromInputPin(node.getObject()).getReferenceResultCode());
 	}
 
 	public String createStartObjectActionCode(StartObjectBehaviorAction node) {
-		return ActivityTemplates.startObject(activityExportResolver.getTargetFromInputPin(node.getObject()));
+		return ActivityTemplates.startObject(activityExportResolver.getTargetFromInputPin(node.getObject()).getReferenceResultCode());
 	}
 
 	public String createSendSignalActionCode(SendObjectAction sendObjectAction) {
 
-		String target = activityExportResolver.getTargetFromInputPin(sendObjectAction.getTarget());
-		String singal = activityExportResolver.getTargetFromInputPin(sendObjectAction.getRequest());
+		String target = activityExportResolver.getTargetFromInputPin(sendObjectAction.getTarget()).getReferenceResultCode();
+		String singal = activityExportResolver.getTargetFromInputPin(sendObjectAction.getRequest()).getReferenceResultCode();
 
 		return ActivityTemplates.signalSend(target, singal);
 
