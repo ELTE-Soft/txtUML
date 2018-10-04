@@ -19,6 +19,7 @@ public class Demo implements Execution {
 	@Override
 	public void configure(Settings s) {
 		s.logLevel = LogLevel.TRACE;
+		s.timeMultiplier = 1000;
 	}
 
 	Gearbox g;
