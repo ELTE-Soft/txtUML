@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -222,15 +223,21 @@ public class CppExporterUtils {
 
 		return formattedSource;
 	}
-
+	
+	
 	public static String escapeQuates(String source) {
 		StringBuilder resultSource = new StringBuilder("");
-
+		
 		for (char ch : source.toCharArray()) {
 			if (ch == '"') {
-				resultSource.append("\\");
+				resultSource.append("\\\"");
 			}
-			resultSource.append(ch);
+			else if(ch == '\n') {
+				resultSource.append("\\n");
+			} else {
+				resultSource.append(ch);
+			}
+		
 		}
 
 		return resultSource.toString();

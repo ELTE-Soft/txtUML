@@ -33,6 +33,7 @@ import org.eclipse.uml2.uml.UMLPackage;
 import hu.elte.txtuml.export.cpp.ActivityExportResult;
 import hu.elte.txtuml.export.cpp.CppExporterUtils;
 import hu.elte.txtuml.export.cpp.IDependencyCollector;
+import hu.elte.txtuml.export.cpp.activity.ActivityNodeResolver.ActivityResolveResult;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames;
 import hu.elte.txtuml.export.cpp.templates.activity.ActivityTemplates;
 
@@ -72,6 +73,10 @@ public class ActivityExporter {
 	}
 	
 	String createActivityNodeCode(ActivityNode node) {
+		return createActivityNodeCode(node, false);
+	}
+	
+	String createActivityNodeCode(ActivityNode node, boolean forceUpdate) {
 
 		StringBuilder source = new StringBuilder("");
 
@@ -102,14 +107,16 @@ public class ActivityExporter {
 			if (callAction.getOperation().getName().equals(ActivityTemplates.GetSignalFunctionName)) {
 				activityExportResult.setSignalReferenceContainment();
 			}
-			source.append(callOperationExporter.createCallOperationActionCode(callAction));
+			source.append(callOperationExporter.createCallOperationActionCode(callAction, forceUpdate));
 
 		} else if (node.eClass().equals(UMLPackage.Literals.ADD_VARIABLE_VALUE_ACTION)) {
 			AddVariableValueAction avva = (AddVariableValueAction) node;
 			
+			ActivityResolveResult res = activityExportResolver.getTargetFromInputPin(avva.getValue(), true, forceUpdate);
+			source.append(res.getDeclaredVarCodes());
 			source.append(ActivityTemplates.generalSetValue(
 					userVariableExporter.getRealVariableReference(avva.getVariable()),
-					activityExportResolver.getTargetFromInputPin(avva.getValue()),
+					res.getReferenceResultCode(),
 					ActivityTemplates.getOperationFromType(avva.getVariable().isMultivalued(), avva.isReplaceAll())));
 
 		} else if (node.eClass().equals(UMLPackage.Literals.LOOP_NODE)) {
@@ -160,7 +167,7 @@ public class ActivityExporter {
 		userVariableExporter = new UserVariableExporter();
 		returnOutputsToCallActions = new HashMap<CallOperationAction, OutputPin>();
 		objectMap = new HashMap<CreateObjectAction, String>();
-		activityExportResolver = new ActivityNodeResolver(objectMap, returnOutputsToCallActions, tempVariableExporter,
+		activityExportResolver = new ActivityNodeResolver(this, objectMap, returnOutputsToCallActions, tempVariableExporter,
 				userVariableExporter);
 		returnNodeExporter = new ReturnNodeExporter(activityExportResolver, isSingleReturn);
 		callOperationExporter = new CallOperationExporter(tempVariableExporter, returnOutputsToCallActions,
@@ -236,7 +243,7 @@ public class ActivityExporter {
 	private String createAddStructuralFeatureActionCode(AddStructuralFeatureValueAction asfva) {
 		String source = "";
 		String target = activityExportResolver.getTargetFromASFVA(asfva);
-		String value = activityExportResolver.getTargetFromInputPin(asfva.getValue(), false);
+		String value = activityExportResolver.getTargetFromInputPin(asfva.getValue(), false, false).getReferenceResultCode();
 
 			source = ActivityTemplates.generalSetValue(target,value, ActivityTemplates
 							.getOperationFromType(asfva.getStructuralFeature().isMultivalued(), asfva.isReplaceAll()));

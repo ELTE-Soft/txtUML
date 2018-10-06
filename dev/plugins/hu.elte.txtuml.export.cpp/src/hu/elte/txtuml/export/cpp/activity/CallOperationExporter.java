@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.uml2.uml.CallOperationAction;
@@ -21,6 +22,7 @@ import org.eclipse.uml2.uml.UMLPackage;
 
 import hu.elte.txtuml.export.cpp.CppExporterUtils;
 import hu.elte.txtuml.export.cpp.IDependencyCollector;
+import hu.elte.txtuml.export.cpp.activity.ActivityNodeResolver.ActivityResolveResult;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.FileNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationTemplates;
 import hu.elte.txtuml.export.cpp.templates.activity.ActivityTemplates;
@@ -51,14 +53,15 @@ class CallOperationExporter {
 		InputPin secondArgument = node.getInputs().get(1);
 		tempVariableExporter.exportOutputPinToMap(node.getResult());
 
-		String val = ActivityTemplates.isEqualTesting(activityExportResolver.getTargetFromInputPin(firstArgument),
-				activityExportResolver.getTargetFromInputPin(secondArgument));
+		String val = ActivityTemplates.isEqualTesting(
+				activityExportResolver.getTargetFromInputPin(firstArgument).getReferenceResultCode(),
+				activityExportResolver.getTargetFromInputPin(secondArgument).getReferenceResultCode());
 
 		return addValueToTemporalVariable(node.getResult().getType().getName(),
 				tempVariableExporter.getRealVariableName(node.getResult()), val);
 	}
 
-	public String createCallOperationActionCode(CallOperationAction node) {
+	public String createCallOperationActionCode(CallOperationAction node, boolean forceUpdate) {
 		StringBuilder source = new StringBuilder("");
 		tempVariableExporter.exportAllOutputPinsToMap(node.getOutputs());
 		OutputPin returnPin = searchReturnPin(node.getResults(), node.getOperation().outputParameters());
@@ -86,15 +89,12 @@ class CallOperationExporter {
 		if (node.getOperation().getType() != null)
 			returnTypeName = node.getOperation().getType().getName();
 
+		List<ActivityResolveResult> parameterVariables = new ArrayList<>(getParametersNames(node.getArguments(), forceUpdate));
+		List<String> parameterReferences = parameterVariables.stream()
+				.map(r -> r.getReferenceResultCode()).collect(Collectors.toList());
 		if (isStdLibOperation(node)) {
-
-			List<OutputPin> outParamaterPins = new ArrayList<>(node.getResults());
-			outParamaterPins.remove(returnPin);
-			source.append(declareAllOutTempParameters(outParamaterPins));
-			List<String> parameterVariables = new ArrayList<String>(getParametersNames(node.getArguments()));
-			addOutParametrsToList(parameterVariables, outParamaterPins);
-
-			val = ActivityTemplates.stdLibCall(node.getOperation().getName(), parameterVariables);
+			source.append(parameterVariables.stream().map(d1 -> d1.getDeclaredVarCodes()).reduce((d1, d2) -> d1 + d2).get());
+			val = ActivityTemplates.stdLibCall(node.getOperation().getName(), parameterReferences);
 
 			if (OperatorTemplates.isTimerSchedule(node.getOperation().getName())) {
 				if (exportUser.isPresent()) {
@@ -103,7 +103,6 @@ class CallOperationExporter {
 				}
 
 			}
-
 			if (node.getOperation().getType() != null) {
 				if (node.getOutgoings().size() > 0) {
 					returnTypeName = ((InputPin) node.getOutgoings().get(0).getTarget()).getType().getName();
@@ -125,10 +124,12 @@ class CallOperationExporter {
 					exportUser.get().addCppOnlyDependency(namedOwner.getName());
 				}
 			}
-
-			val = ActivityTemplates.operationCall(activityExportResolver.getTargetFromInputPin(node.getTarget(), false),
+			ActivityResolveResult refResult = activityExportResolver.getTargetFromInputPin(node.getTarget(), false, false);
+			source.append(refResult.getDeclaredVarCodes());
+			val = ActivityTemplates.operationCall(
+					refResult.getReferenceResultCode(),
 					ActivityTemplates.accesOperatoForType(activityExportResolver.getTypeFromInputPin(node.getTarget())),
-					op.getName(), getParametersNames(node.getArguments()));
+					op.getName(), parameterReferences);
 			
 			
 			if(op.getUpper() == 1 && returnPin != null) {
@@ -151,19 +152,24 @@ class CallOperationExporter {
 
 	private String createConstructorCallAction(InputPin target, EList<InputPin> arguments) {
 
-		return ActivityTemplates.constructorCall(activityExportResolver.getTargetFromInputPin(target, false),
+		ActivityResolveResult refResult = activityExportResolver.getTargetFromInputPin(target, false, false);
+		List<ActivityResolveResult> parameterVariables = new ArrayList<>(getParametersNames(arguments, false));
+		List<String> parameterReferences = parameterVariables.stream()
+				.map(r -> r.getReferenceResultCode()).collect(Collectors.toList());
+		
+		return refResult.getDeclaredVarCodes() +  ActivityTemplates.constructorCall(refResult.getReferenceResultCode(),
 				target.getType().getName(), target.getType().eClass().equals(UMLPackage.Literals.SIGNAL)
 						? ActivityTemplates.CreateObjectType.Signal : ActivityTemplates.CreateObjectType.Class,
-				getParametersNames(arguments));
+								parameterReferences);
 	}
 
-	private void addOutParametrsToList(List<String> parameterVariables, List<OutputPin> outParamaterPins) {
+	/*private void addOutParametrsToList(List<ActivityResolveResult> parameterVariables, List<OutputPin> outParamaterPins) {
 		for (OutputPin outPin : outParamaterPins) {
 			parameterVariables.add(tempVariableExporter.getRealVariableName(outPin));
 		}
-	}
+	}*/
 
-	private String declareAllOutTempParameters(List<OutputPin> outParamaterPins) {
+	/*private String declareAllOutTempParameters(List<OutputPin> outParamaterPins) {
 		StringBuilder declerations = new StringBuilder("");
 		for (OutputPin outPin : outParamaterPins) {
 			declerations.append(ObjectDeclDefTemplates.variableDecl(outPin.getType().getName(),
@@ -171,7 +177,7 @@ class CallOperationExporter {
 		}
 
 		return declerations.toString();
-	}
+	}*/
 
 	private OutputPin searchReturnPin(EList<OutputPin> results, EList<Parameter> outputParameters) {
 		for (int i = 0; i < Math.min(results.size(), outputParameters.size()); i++) {
@@ -183,10 +189,10 @@ class CallOperationExporter {
 		return null;
 	}
 
-	private List<String> getParametersNames(List<InputPin> arguments_) {
-		List<String> params = new ArrayList<String>();
+	private List<ActivityResolveResult> getParametersNames(List<InputPin> arguments_, boolean forceUpdate) {
+		List<ActivityResolveResult> params = new ArrayList<>();
 		for (InputPin param : arguments_) {
-			params.add(activityExportResolver.getTargetFromInputPin(param));
+			params.add(activityExportResolver.getTargetFromInputPin(param, true, forceUpdate));
 		}
 		return params;
 	}

@@ -12,6 +12,7 @@ import org.eclipse.uml2.uml.SequenceNode;
 import org.eclipse.uml2.uml.UMLPackage;
 import org.eclipse.uml2.uml.Variable;
 
+import hu.elte.txtuml.export.cpp.activity.ActivityNodeResolver.ActivityResolveResult;
 import hu.elte.txtuml.export.cpp.templates.GenerationTemplates;
 import hu.elte.txtuml.export.cpp.templates.GenerationTemplates.VariableType;
 import hu.elte.txtuml.export.cpp.templates.activity.ActivityTemplates;
@@ -55,9 +56,11 @@ class StructuredControlNodeExporter {
 			for (int i = 0; i < nodes.size() - 1; i++) {
 				inits.append(activityExporter.createActivityNodeCode(nodes.get(i)));
 			}
-
-			String collection = activityExportResolver
-					.getTargetFromActivityNode(node.getInputElements().get(0).getIncomings().get(0).getSource(), false);
+			
+			ActivityResolveResult res = activityExportResolver
+					.getTargetFromActivityNode(node.getInputElements().get(0).getIncomings().get(0).getSource(), false, false);
+			body += res.getDeclaredVarCodes();
+			String collection = res.getReferenceResultCode();
 			source = ActivityTemplates.foreachCycle(iterativeVar.getType().getName(), iterativeVar.getName(),
 					collection, body.toString(), inits.toString());
 		}
@@ -87,11 +90,12 @@ class StructuredControlNodeExporter {
 
 		StringBuilder recalulcateCondition = new StringBuilder("");
 		for (ExecutableNode condNode : loopNode.getTests()) {
-			recalulcateCondition.append(activityExporter.createActivityNodeCode(condNode));
+			recalulcateCondition.append(activityExporter.createActivityNodeCode(condNode, true));
 		}
-
+		ActivityResolveResult res = activityExportResolver.getTargetFromActivityNode(loopNode.getDecider(), true, false);
+		source.append(res.getDeclaredVarCodes());
 		source.append(
-				ActivityTemplates.whileCycle(activityExportResolver.getTargetFromActivityNode(loopNode.getDecider(), true),
+				ActivityTemplates.whileCycle(res.getReferenceResultCode(),
 						body.toString() + "\n" + recalulcateCondition.toString()));
 
 		return source.toString();
@@ -106,8 +110,9 @@ class StructuredControlNodeExporter {
 			for (ExecutableNode test : clause.getTests()) {
 				tests.append(activityExporter.createActivityNodeCode(test));
 			}
-
-			String cond = activityExportResolver.getTargetFromActivityNode(clause.getDecider(), true);
+			ActivityResolveResult res = activityExportResolver.getTargetFromActivityNode(clause.getDecider(), true, false);
+			source.append(res.getDeclaredVarCodes());
+			String cond = res.getReferenceResultCode();
 			StringBuilder body = new StringBuilder("");
 			for (ExecutableNode node : clause.getBodies()) {
 				body.append(activityExporter.createActivityNodeCode(node));
