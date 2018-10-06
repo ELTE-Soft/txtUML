@@ -1,5 +1,3 @@
-import java.util.Scanner;
-
 import airlock.model.Airlock;
 import airlock.model.CycleSignal;
 import hu.elte.txtuml.api.deployment.fmi.FMUEnvironment;
@@ -21,11 +19,13 @@ public class Demo implements Execution{
 	
 	@Override
 	public void during() {
-		try(Scanner scanner = new Scanner(System.in)){
-		while(true){
-			scanner.nextLine();
-			API.send(new CycleSignal(), airlock);
-		}
+		try{
+			while(true){
+				Thread.sleep(1000);
+				API.send(new CycleSignal(), airlock);
+			}
+		}catch(InterruptedException e){
+			e.printStackTrace();
 		}
 	}
 
