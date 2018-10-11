@@ -2,6 +2,8 @@ package hu.elte.txtuml.validation.common;
 
 import org.eclipse.jdt.core.compiler.CategorizedProblem;
 import org.eclipse.jdt.core.dom.ASTNode;
+import org.eclipse.jdt.core.dom.SimpleType;
+import org.eclipse.jdt.core.dom.TypeDeclaration;
 
 /**
  * Base class for all txtUML validation problems.
@@ -19,7 +21,14 @@ public abstract class AbstractValidationProblem extends CategorizedProblem imple
 	public AbstractValidationProblem(SourceInfo sourceInfo, ASTNode node) {
 		this.sourceInfo = sourceInfo;
 		this.sourceStart = node.getStartPosition();
-		this.sourceEnd = node.getStartPosition() + node.getLength() - 1;
+		if(ASTNode.nodeClassForType(node.getNodeType()) == TypeDeclaration.class){
+			//identifier
+			this.sourceEnd = node.getStartPosition() + node.getLength() - 1;
+		}else if(ASTNode.nodeClassForType(node.getNodeType()) ==  SimpleType.class){
+			this.sourceEnd = node.getStartPosition() + node.getLength();
+		}else{
+			this.sourceEnd = node.getStartPosition() + node.getLength() - 1;
+		}
 		this.lineNumber = sourceInfo.getSourceLineNumber(getSourceEnd());
 	}
 
