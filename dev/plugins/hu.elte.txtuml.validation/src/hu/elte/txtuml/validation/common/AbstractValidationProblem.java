@@ -22,13 +22,14 @@ public abstract class AbstractValidationProblem extends CategorizedProblem imple
 	public AbstractValidationProblem(SourceInfo sourceInfo, ASTNode node) {
 		this.sourceInfo = sourceInfo;
 		this.sourceStart = node.getStartPosition();
-		if(ASTNode.nodeClassForType(node.getNodeType()) == TypeDeclaration.class){
-			SimpleName name = ((TypeDeclaration)node).getName();
+		Class<?> c = ASTNode.nodeClassForType(node.getNodeType());
+		if (c == TypeDeclaration.class) {
+			SimpleName name = ((TypeDeclaration) node).getName();
 			this.sourceStart = name.getStartPosition();
 			this.sourceEnd = name.getStartPosition() + name.getLength();
-		}else if(ASTNode.nodeClassForType(node.getNodeType()) ==  SimpleType.class){
+		} else if (c == SimpleType.class) {
 			this.sourceEnd = node.getStartPosition() + node.getLength();
-		}else{
+		} else {
 			this.sourceEnd = node.getStartPosition() + node.getLength() - 1;
 		}
 		this.lineNumber = sourceInfo.getSourceLineNumber(getSourceEnd());
