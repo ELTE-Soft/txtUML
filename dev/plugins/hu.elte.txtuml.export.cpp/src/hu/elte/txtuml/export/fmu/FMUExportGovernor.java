@@ -71,7 +71,7 @@ public class FMUExportGovernor {
 						config.outputVariables = loadClassMembers(javaProject, config.outputSignalConfig.get());
 					} else if (INITIAL_ANNOT_NAMES.contains(bind.getQualifiedName())) {
 						config.initialValues.put(getAnnotValueAsString(annotMod, "variableName"),
-								getAnnotValueAsString(annotMod, "value"));
+								convertBooleanStringToIntString(getAnnotValueAsString(annotMod, "value")));
 					}
 				}
 			}
@@ -110,6 +110,16 @@ public class FMUExportGovernor {
 			 ret.add(new VariableDefinition(field.getElementName(), VariableType.fromJavaType(field.getTypeSignature())));
 		}
 		return ret;
+	}
+	
+	private String convertBooleanStringToIntString(String valueString) {
+		if(valueString.equals("true")) { 
+			return "1";
+		} else if(valueString.equals("false")) {
+			return "0";
+		}
+		
+		return valueString;
 	}
 	
 }

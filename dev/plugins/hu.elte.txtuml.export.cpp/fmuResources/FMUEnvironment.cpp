@@ -102,6 +102,11 @@ fmi2Component fmi2Instantiate( fmi2String /*instanceName*/,
   Env::initEnvironment();
   fmu->fmu_env->callbacks = functions;
   fmu->uml_rt->setupObject(fmu->fmu_env);
+  
+  fmi2ValueReference vars[] = { 0 };
+  $declarebuffers
+  $initinputvariables
+  
   fmu->fmu_env->start();
   fmu->fmu_class = new $fmuclass(fmu->fmu_env);
   fmu->uml_rt->setupObject(fmu->fmu_class);

@@ -8,6 +8,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -56,6 +57,13 @@ public class EnvironmentExporter {
 			} else if (matcher.group().equals("$variableoffsets")) {
 				String replacement = generateVariableOffsets(allVars);
 				matcher.appendReplacement(sb, replacement);
+			} else if (matcher.group().equals("$declarebuffers")) {
+				// to avoid 'unused' warnings
+				matcher.appendReplacement(sb, VariableDefinition.generateDeclareBuffers(fmuConfig.inputVariables)); 
+					
+			} else if(matcher.group().equals("$initinputvariables")) {
+				String replacement = initInputVariables(fmuConfig.inputVariables, fmuConfig.initialValues);
+				matcher.appendReplacement(sb, replacement);
 			}
 		}
 		matcher.appendTail(sb);
@@ -63,6 +71,7 @@ public class EnvironmentExporter {
 		Files.write(projectLoc.resolve("fmu/FMUEnvironment.cpp"), sb.toString().getBytes());
 	}
 	
+
 	public void exportHeader(Path projectLoc, FMUConfig fmuConfig) throws IOException, URISyntaxException {
 		Bundle bundle = Platform.getBundle(Uml2ToCppExporter.PROJECT_NAME);
 		URL fileURL = bundle.getEntry("fmuResources" + IPath.SEPARATOR + "FMUEnvironment.hpp");
@@ -155,6 +164,20 @@ public class EnvironmentExporter {
 		for (int i = 1; i < variables.size(); i++) {
 			sb.append(", ").append("offsetof(fmu_variables,").append(variables.get(i).name).append(")");
 		}
+		return sb.toString();
+	}
+	
+	private String initInputVariables(List<VariableDefinition> inputVariables, Map<String, Object> initialValues) {
+		StringBuilder sb = new StringBuilder();
+		for (VariableDefinition var : inputVariables) {
+			String typeName = var.type.getName();
+			String buffer = "temp" + typeName;
+
+			sb.append(buffer).append("[0] = ").append(initialValues.get(var.name)).append(";\n");
+			sb.append("fmi2Set").append(typeName).append("(fmu, vars, 1, ").append(buffer).append(");\n");
+			sb.append("++vars[0];\n");
+		}
+
 		return sb.toString();
 	}
 
