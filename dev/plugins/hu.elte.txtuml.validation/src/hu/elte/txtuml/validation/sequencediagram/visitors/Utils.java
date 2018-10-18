@@ -70,7 +70,7 @@ public class Utils {
 			isActionCall = false;
 		}
 		if (isActionCall) {
-			collector.report(SequenceErrors.INVALID_ACTION_CALL.create(collector.getSourceInfo(), elem));
+			collector.report(SequenceErrors.INVALID_ACTION_CALL.create(collector.getSourceInfo(), elem.getName()));
 		}
 	}
 

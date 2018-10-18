@@ -10,6 +10,7 @@ import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 
 import hu.elte.txtuml.validation.model.ModelErrors;
 import hu.elte.txtuml.validation.model.ModelValidationError;
+import hu.elte.txtuml.validation.sequencediagram.SequenceValidationError;
 
 /**
  * Base class for all txtUML validation problems.
@@ -26,8 +27,7 @@ public abstract class AbstractValidationProblem extends CategorizedProblem imple
 
 	public AbstractValidationProblem(SourceInfo sourceInfo, ASTNode node) {
 		this.sourceInfo = sourceInfo;
-		Class<?> c = ASTNode.nodeClassForType(node.getNodeType());
-		if (c == PrefixExpression.class) {
+		if (this instanceof SequenceValidationError) {
 			this.sourceStart = node.getStartPosition();
 			this.sourceEnd = node.getStartPosition() + node.getLength() - 1;
 		} else if (this instanceof ModelValidationError

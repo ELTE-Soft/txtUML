@@ -29,10 +29,10 @@ public class DataTypeVisitor extends VisitorBase {
 	@Override
 	public boolean visit(FieldDeclaration node) {
 		if (!ElementTypeTeller.isFinal(node)) {
-			collector.report(MUTABLE_DATA_TYPE_FIELD.create(collector.getSourceInfo(), node));
+			collector.report(MUTABLE_DATA_TYPE_FIELD.create(collector.getSourceInfo(), node.getType()));
 		}
 		if (!Utils.isAllowedAttributeType(node.getType().resolveBinding(), false)) {
-			collector.report(INVALID_DATA_TYPE_FIELD.create(collector.getSourceInfo(), node));
+			collector.report(INVALID_DATA_TYPE_FIELD.create(collector.getSourceInfo(), node.getType()));
 		}
 		return false;
 	}
