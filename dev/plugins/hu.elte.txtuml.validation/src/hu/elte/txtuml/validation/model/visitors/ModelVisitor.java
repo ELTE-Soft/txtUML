@@ -52,7 +52,7 @@ public class ModelVisitor extends VisitorBase {
 		} else if (ElementTypeTeller.isConnector(elem)) {
 			// TODO: check connectors
 		} else {
-			collector.report(INVALID_TYPE_IN_MODEL.create(collector.getSourceInfo(), elem));
+			collector.report(INVALID_TYPE_IN_MODEL.create(collector.getSourceInfo(), elem.getName()));
 		}
 		return false;
 	}
@@ -62,7 +62,7 @@ public class ModelVisitor extends VisitorBase {
 		if (ElementTypeTeller.isModelEnum(elem)) {
 			// TODO: check model enums
 		} else {
-			collector.report(INVALID_TYPE_IN_MODEL.create(collector.getSourceInfo(), elem));
+			collector.report(INVALID_TYPE_IN_MODEL.create(collector.getSourceInfo(), elem.getName()));
 		}
 		return false;
 	}

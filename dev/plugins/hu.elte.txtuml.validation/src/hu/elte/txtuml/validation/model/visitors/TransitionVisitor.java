@@ -40,16 +40,18 @@ public class TransitionVisitor extends VisitorBase {
 	@Override
 	public boolean visit(MethodDeclaration node) {
 		if (!ElementTypeTeller.isEffect(node) && !ElementTypeTeller.isGuard(node)) {
-			collector.report(UNKNOWN_TRANSITION_METHOD.create(collector.getSourceInfo(), node));
+			collector.report(UNKNOWN_TRANSITION_METHOD.create(collector.getSourceInfo(), node.getName()));
 			return false;
 		}
 		if (ElementTypeTeller.isEffect(node)) {
 			if (!Utils.isVoid(node.getReturnType2())) {
-				collector.report(TRANSITION_METHOD_NON_VOID_RETURN.create(collector.getSourceInfo(), node.getReturnType2()));
+				collector.report(
+						TRANSITION_METHOD_NON_VOID_RETURN.create(collector.getSourceInfo(), node.getReturnType2()));
 			}
 		} else {
 			if (!Utils.isBoolean(node.getReturnType2())) {
-				collector.report(TRANSITION_METHOD_NON_VOID_RETURN.create(collector.getSourceInfo(), node.getReturnType2()));
+				collector.report(
+						TRANSITION_METHOD_NON_VOID_RETURN.create(collector.getSourceInfo(), node.getReturnType2()));
 			}
 		}
 		if (!node.parameters().isEmpty()) {
@@ -113,8 +115,8 @@ public class TransitionVisitor extends VisitorBase {
 		}
 		if (value != null && (ElementTypeTeller.isInitialPseudoState(fromValue)
 				|| ElementTypeTeller.isChoicePseudoState(fromValue))) {
-			collector.report(
-					TRIGGER_ON_INITIAL_TRANSITION.create(collector.getSourceInfo(), signal != null ? signal : transition));
+			collector.report(TRIGGER_ON_INITIAL_TRANSITION.create(collector.getSourceInfo(),
+					signal != null ? signal : transition));
 		}
 	}
 

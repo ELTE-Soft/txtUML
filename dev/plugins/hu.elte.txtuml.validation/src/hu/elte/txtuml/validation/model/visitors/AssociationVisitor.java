@@ -41,7 +41,7 @@ public class AssociationVisitor extends VisitorBase {
 	@Override
 	public void check() {
 		if (!errorInside && members != 2) {
-			collector.report(WRONG_NUMBER_OF_ASSOCIATION_ENDS.create(collector.getSourceInfo(), root));
+			collector.report(WRONG_NUMBER_OF_ASSOCIATION_ENDS.create(collector.getSourceInfo(), root.getName()));
 		}
 	}
 

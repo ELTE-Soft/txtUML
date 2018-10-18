@@ -31,7 +31,7 @@ public class CompositionVisitor extends VisitorBase {
 
 	public void check() {
 		if (containerMembers != 1 || partMembers != 1) {
-			collector.report(WRONG_COMPOSITION_ENDS.create(collector.getSourceInfo(), root));
+			collector.report(WRONG_COMPOSITION_ENDS.create(collector.getSourceInfo(), root.getName()));
 		}
 	}
 
