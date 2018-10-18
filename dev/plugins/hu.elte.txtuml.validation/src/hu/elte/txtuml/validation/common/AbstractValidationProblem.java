@@ -31,8 +31,8 @@ public abstract class AbstractValidationProblem extends CategorizedProblem imple
 			this.sourceStart = node.getStartPosition();
 			this.sourceEnd = node.getStartPosition() + node.getLength() - 1;
 		} else if (this instanceof ModelValidationError
-				&& ((ModelValidationError) this).getType() == ModelErrors.STATE_METHOD_PARAMETERS
-				|| ((ModelValidationError) this).getType() == ModelErrors.TRANSITION_METHOD_PARAMETERS) {
+				&& (((ModelValidationError) this).getType() == ModelErrors.STATE_METHOD_PARAMETERS
+				|| ((ModelValidationError) this).getType() == ModelErrors.TRANSITION_METHOD_PARAMETERS)) {
 			List<SingleVariableDeclaration> paramlist = ((MethodDeclaration) node).parameters();
 			this.sourceStart = paramlist.get(0).getStartPosition();
 			this.sourceEnd = paramlist.get(paramlist.size() - 1).getStartPosition()

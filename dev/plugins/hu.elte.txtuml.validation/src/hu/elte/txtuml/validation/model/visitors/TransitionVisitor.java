@@ -98,10 +98,10 @@ public class TransitionVisitor extends VisitorBase {
 			}
 		}
 		if (fromValue == null) {
-			collector.report(MISSING_TRANSITION_SOURCE.create(collector.getSourceInfo(), transition));
+			collector.report(MISSING_TRANSITION_SOURCE.create(collector.getSourceInfo(), transition.getName()));
 		}
 		if (toValue == null) {
-			collector.report(MISSING_TRANSITION_TARGET.create(collector.getSourceInfo(), transition));
+			collector.report(MISSING_TRANSITION_TARGET.create(collector.getSourceInfo(), transition.getName()));
 		}
 		if (fromValue != null && toValue != null) {
 			checkTrigger(triggerAnnot, triggerValue, fromValue);
@@ -111,12 +111,12 @@ public class TransitionVisitor extends VisitorBase {
 	protected void checkTrigger(Annotation signal, ITypeBinding value, ITypeBinding fromValue) {
 		if (value == null && !ElementTypeTeller.isInitialPseudoState(fromValue)
 				&& !ElementTypeTeller.isChoicePseudoState(fromValue)) {
-			collector.report(MISSING_TRANSITION_TRIGGER.create(collector.getSourceInfo(), transition));
+			collector.report(MISSING_TRANSITION_TRIGGER.create(collector.getSourceInfo(), transition.getName()));
 		}
 		if (value != null && (ElementTypeTeller.isInitialPseudoState(fromValue)
 				|| ElementTypeTeller.isChoicePseudoState(fromValue))) {
 			collector.report(TRIGGER_ON_INITIAL_TRANSITION.create(collector.getSourceInfo(),
-					signal != null ? signal : transition));
+					signal != null ? signal.getTypeName() : transition.getName()));
 		}
 	}
 
