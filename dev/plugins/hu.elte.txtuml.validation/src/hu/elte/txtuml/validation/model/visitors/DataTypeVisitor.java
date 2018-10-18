@@ -40,7 +40,8 @@ public class DataTypeVisitor extends VisitorBase {
 	@Override
 	public boolean visit(MethodDeclaration node) {
 		if (!node.isConstructor()) {
-			if (node.getReturnType2() != null && !Utils.isAllowedParameterType(node.getReturnType2().resolveBinding(), true)) {
+			if (node.getReturnType2() != null
+					&& !Utils.isAllowedParameterType(node.getReturnType2().resolveBinding(), true)) {
 				collector.report(INVALID_PARAMETER_TYPE.create(collector.getSourceInfo(), node.getReturnType2()));
 			}
 		}

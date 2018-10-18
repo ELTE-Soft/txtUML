@@ -5,7 +5,6 @@ import java.util.List;
 import org.eclipse.jdt.core.compiler.CategorizedProblem;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
-import org.eclipse.jdt.core.dom.PrefixExpression;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 
 import hu.elte.txtuml.validation.model.ModelErrors;
@@ -32,7 +31,7 @@ public abstract class AbstractValidationProblem extends CategorizedProblem imple
 			this.sourceEnd = node.getStartPosition() + node.getLength() - 1;
 		} else if (this instanceof ModelValidationError
 				&& (((ModelValidationError) this).getType() == ModelErrors.STATE_METHOD_PARAMETERS
-				|| ((ModelValidationError) this).getType() == ModelErrors.TRANSITION_METHOD_PARAMETERS)) {
+						|| ((ModelValidationError) this).getType() == ModelErrors.TRANSITION_METHOD_PARAMETERS)) {
 			List<SingleVariableDeclaration> paramlist = ((MethodDeclaration) node).parameters();
 			this.sourceStart = paramlist.get(0).getStartPosition();
 			this.sourceEnd = paramlist.get(paramlist.size() - 1).getStartPosition()

@@ -64,7 +64,8 @@ public class ModelClassVisitor extends VisitorBase {
 		}
 
 		if (!elem.isConstructor()) {
-			if (elem.getReturnType2() != null && !Utils.isAllowedParameterType(elem.getReturnType2().resolveBinding(), true)) {
+			if (elem.getReturnType2() != null
+					&& !Utils.isAllowedParameterType(elem.getReturnType2().resolveBinding(), true)) {
 				collector.report(INVALID_PARAMETER_TYPE.create(collector.getSourceInfo(), elem.getReturnType2()));
 			}
 		}
