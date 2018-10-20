@@ -34,7 +34,7 @@ public class DebuggerExporter {
 		while (matcher.find()) {
 			if (matcher.group().equals("$declarebuffers")) {
 				// to avoid 'unused' warnings
-				matcher.appendReplacement(sb, generateDeclareBuffers(allVars));
+				matcher.appendReplacement(sb, VariableDefinition.generateDeclareBuffers(allVars));
 			} else if (matcher.group().equals("$setinputvariables")) {
 				matcher.appendReplacement(sb, generateSetInputVariables(fmuConfig.inputVariables));
 			} else if (matcher.group().equals("$getoutputvariables")) {
@@ -45,18 +45,6 @@ public class DebuggerExporter {
 		matcher.appendTail(sb);
 		Files.createDirectories(projectLoc.resolve("fmu"));
 		Files.write(projectLoc.resolve("fmu/fmudebug.cpp"), sb.toString().getBytes());
-	}
-
-	private String generateDeclareBuffers(List<VariableDefinition> allVars) {
-		StringBuilder sb = new StringBuilder();
-		for (VariableType varType : VariableType.values()) {
-			if (allVars.stream().anyMatch(var -> var.type == varType)) {
-				String typeName = varType.getName();
-				sb.append("fmi2").append(typeName).append(" temp").append(typeName).append("[1];\n");
-			}
-		}
-
-		return sb.toString();
 	}
 
 	private String generateSetInputVariables(List<VariableDefinition> inputVariables) {
