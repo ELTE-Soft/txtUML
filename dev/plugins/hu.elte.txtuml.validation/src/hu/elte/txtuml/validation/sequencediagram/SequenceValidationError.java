@@ -12,6 +12,8 @@ public abstract class SequenceValidationError extends AbstractValidationError {
 
 	public SequenceValidationError(SourceInfo sourceInfo, ASTNode node) {
 		super(sourceInfo, node);
+		this.sourceStart = node.getStartPosition();
+		this.sourceEnd = node.getStartPosition() + node.getLength() - 1;
 	}
 
 	@Override

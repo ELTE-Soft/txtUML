@@ -1,15 +1,7 @@
 package hu.elte.txtuml.validation.common;
 
-import java.util.List;
-
 import org.eclipse.jdt.core.compiler.CategorizedProblem;
 import org.eclipse.jdt.core.dom.ASTNode;
-import org.eclipse.jdt.core.dom.MethodDeclaration;
-import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
-
-import hu.elte.txtuml.validation.model.ModelErrors;
-import hu.elte.txtuml.validation.model.ModelValidationError;
-import hu.elte.txtuml.validation.sequencediagram.SequenceValidationError;
 
 /**
  * Base class for all txtUML validation problems.
@@ -20,26 +12,14 @@ import hu.elte.txtuml.validation.sequencediagram.SequenceValidationError;
 public abstract class AbstractValidationProblem extends CategorizedProblem implements IValidationProblem {
 
 	private final SourceInfo sourceInfo;
-	private int sourceStart;
-	private int sourceEnd;
+	protected int sourceStart;
+	protected int sourceEnd;
 	private int lineNumber;
 
 	public AbstractValidationProblem(SourceInfo sourceInfo, ASTNode node) {
 		this.sourceInfo = sourceInfo;
-		if (this instanceof SequenceValidationError) {
-			this.sourceStart = node.getStartPosition();
-			this.sourceEnd = node.getStartPosition() + node.getLength() - 1;
-		} else if (this instanceof ModelValidationError
-				&& (((ModelValidationError) this).getType() == ModelErrors.STATE_METHOD_PARAMETERS
-						|| ((ModelValidationError) this).getType() == ModelErrors.TRANSITION_METHOD_PARAMETERS)) {
-			List<SingleVariableDeclaration> paramlist = ((MethodDeclaration) node).parameters();
-			this.sourceStart = paramlist.get(0).getStartPosition();
-			this.sourceEnd = paramlist.get(paramlist.size() - 1).getStartPosition()
-					+ paramlist.get(paramlist.size() - 1).getLength();
-		} else {
-			this.sourceStart = node.getStartPosition();
-			this.sourceEnd = node.getStartPosition() + node.getLength();
-		}
+		this.sourceStart = node.getStartPosition();
+		this.sourceEnd = node.getStartPosition() + node.getLength();
 		this.lineNumber = sourceInfo.getSourceLineNumber(getSourceEnd());
 	}
 

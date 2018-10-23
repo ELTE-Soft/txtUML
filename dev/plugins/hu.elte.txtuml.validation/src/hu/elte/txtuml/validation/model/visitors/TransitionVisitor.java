@@ -40,7 +40,7 @@ public class TransitionVisitor extends VisitorBase {
 	@Override
 	public boolean visit(MethodDeclaration node) {
 		if (!ElementTypeTeller.isEffect(node) && !ElementTypeTeller.isGuard(node)) {
-			collector.report(UNKNOWN_TRANSITION_METHOD.create(collector.getSourceInfo(), node.getName()));
+			collector.report(UNKNOWN_TRANSITION_METHOD.create(collector.getSourceInfo(), node));
 			return false;
 		}
 		if (ElementTypeTeller.isEffect(node)) {

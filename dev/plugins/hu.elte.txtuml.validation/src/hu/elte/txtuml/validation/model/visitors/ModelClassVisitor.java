@@ -38,7 +38,7 @@ public class ModelClassVisitor extends VisitorBase {
 		} else if (ElementTypeTeller.isPort(elem)) {
 			// TODO: check port
 		} else {
-			collector.report(INVALID_MODEL_CLASS_ELEMENT.create(collector.getSourceInfo(), elem.getName()));
+			collector.report(INVALID_MODEL_CLASS_ELEMENT.create(collector.getSourceInfo(), elem));
 		}
 		return false;
 	}

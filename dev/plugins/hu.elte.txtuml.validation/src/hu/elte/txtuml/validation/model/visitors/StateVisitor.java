@@ -27,7 +27,7 @@ public class StateVisitor extends VisitorBase {
 	public boolean visit(MethodDeclaration node) {
 		if (!node.getName().toString().equals("entry") && !node.getName().toString().equals("exit")) { //$NON-NLS-1$ //$NON-NLS-2$
 
-			collector.report(UNKNOWN_STATE_METHOD.create(collector.getSourceInfo(), node.getName()));
+			collector.report(UNKNOWN_STATE_METHOD.create(collector.getSourceInfo(), node));
 			return false;
 		}
 		if (!node.parameters().isEmpty()) {

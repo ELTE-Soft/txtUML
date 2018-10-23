@@ -52,7 +52,7 @@ public class ModelVisitor extends VisitorBase {
 		} else if (ElementTypeTeller.isConnector(elem)) {
 			// TODO: check connectors
 		} else {
-			collector.report(INVALID_TYPE_IN_MODEL.create(collector.getSourceInfo(), elem.getName()));
+			collector.report(INVALID_TYPE_IN_MODEL.create(collector.getSourceInfo(), elem));
 		}
 		return false;
 	}

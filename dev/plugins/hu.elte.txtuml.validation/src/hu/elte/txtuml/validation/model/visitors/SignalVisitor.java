@@ -37,7 +37,7 @@ public class SignalVisitor extends VisitorBase {
 	@Override
 	public boolean visit(MethodDeclaration elem) {
 		if (!elem.isConstructor()) {
-			collector.report(INVALID_SIGNAL_CONTENT.create(collector.getSourceInfo(), elem.getName()));
+			collector.report(INVALID_SIGNAL_CONTENT.create(collector.getSourceInfo(), elem));
 		} else {
 			checkConstructor(elem);
 			Utils.checkModifiers(collector, elem);
