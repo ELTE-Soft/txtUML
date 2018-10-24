@@ -15,10 +15,9 @@ public abstract class ModelValidationError extends AbstractValidationError {
 
 	public ModelValidationError(SourceInfo sourceInfo, ASTNode node) {
 		super(sourceInfo, node);
-		Class<?> c = ASTNode.nodeClassForType(node.getNodeType());
-		if (c == MethodDeclaration.class || c == TypeDeclaration.class) {
+		if (node instanceof MethodDeclaration || node instanceof TypeDeclaration) {
 			SimpleName name;
-			if (c == MethodDeclaration.class) {
+			if (node instanceof MethodDeclaration) {
 				name = ((MethodDeclaration) node).getName();
 			} else {
 				name = ((TypeDeclaration) node).getName();
