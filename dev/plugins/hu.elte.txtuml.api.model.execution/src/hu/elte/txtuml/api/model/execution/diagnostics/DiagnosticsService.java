@@ -1,6 +1,7 @@
 package hu.elte.txtuml.api.model.execution.diagnostics;
 
 import static hu.elte.txtuml.api.model.external.ModelClasses.getIdentifierOf;
+import static hu.elte.txtuml.api.model.external.ModelClasses.getNameOf;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -40,6 +41,8 @@ public class DiagnosticsService extends NotifierOfTermination implements TraceLi
 	private final int diagnosticsSocketPort;
 	private volatile int faultTolerance = 17;
 
+	//private DiagnosticsServer server = new DiagnosticsServer();
+
 	/**
 	 * Initiates singleton by signaling the presence of a new DiagnosticsService
 	 * towards the DiagnosticsPlugin. It also does configuration if needed.
@@ -51,16 +54,16 @@ public class DiagnosticsService extends NotifierOfTermination implements TraceLi
 		} while (rnd == 0);
 		serviceInstanceID = rnd;
 
-		int socketPort, httpPort;
+		int socketPort; // httpPort;
 		try {
 			socketPort = getPort(GlobalSettings.TXTUML_DIAGNOSTICS_SOCKET_PORT_KEY);
-			if (socketPort != NO_PORT_SET) {
+			if (socketPort == NO_PORT_SET) {
 				throw new IOException();
 				// not nice but reduces code duplication
 			}
 		} catch (IOException e) {
 			Logger.sys.error("Properties " + GlobalSettings.TXTUML_DIAGNOSTICS_SOCKET_PORT_KEY
-					+ " is not correctly set on this VM, no txtUML diagnostics will be available for service instance 0x"
+					+ " are not correctly set on this VM, no txtUML diagnostics will be available for service instance 0x"
 					+ Integer.toHexString(serviceInstanceID));
 
 			diagnosticsSocketPort = NO_PORT_SET;
@@ -98,7 +101,7 @@ public class DiagnosticsService extends NotifierOfTermination implements TraceLi
 
 	@Override
 	public void processingSignal(ModelClass object, Signal signal, Optional<ModelClass> sender) {
-		sendNewModelEvent(MessageType.PROCESSING_SIGNAL, object.getClass().getCanonicalName(), getIdentifierOf(object),
+		sendNewModelEvent(MessageType.PROCESSING_SIGNAL, object.getClass().getCanonicalName(), getIdentifierOf(object), getNameOf(object),
 				signal.getClass().getCanonicalName());
 	}
 
@@ -106,14 +109,14 @@ public class DiagnosticsService extends NotifierOfTermination implements TraceLi
 	public void usingTransition(ModelClass object, Transition transition) {
 		String transitionName = transition.getClass().getCanonicalName();
 		sendNewModelEvent(MessageType.USING_TRANSITION, object.getClass().getCanonicalName(), getIdentifierOf(object),
-				transitionName);
+				getNameOf(object), transitionName);
 	}
 
 	@Override
 	public void enteringVertex(ModelClass object, Vertex vertex) {
 		String vertexName = vertex.getClass().getCanonicalName();
 		sendNewModelEvent(MessageType.ENTERING_VERTEX, object.getClass().getCanonicalName(), getIdentifierOf(object),
-				vertexName);
+				getNameOf(object), vertexName);
 
 	}
 
@@ -121,13 +124,13 @@ public class DiagnosticsService extends NotifierOfTermination implements TraceLi
 	public void leavingVertex(ModelClass object, Vertex vertex) {
 		String vertexName = vertex.getClass().getCanonicalName();
 		sendNewModelEvent(MessageType.LEAVING_VERTEX, object.getClass().getCanonicalName(), getIdentifierOf(object),
-				vertexName);
+				getNameOf(object), vertexName);
 	}
 
-	private void sendNewModelEvent(MessageType type, String modelClassName, String modelClassInstanceID,
+	private void sendNewModelEvent(MessageType type, String modelClassName, String modelClassInstanceID, String modelClassInstanceName,
 			String eventTargetClassName) {
 		sendMessage(
-				new ModelEvent(type, serviceInstanceID, modelClassName, modelClassInstanceID, eventTargetClassName));
+				new ModelEvent(type, serviceInstanceID, modelClassName, modelClassInstanceID, modelClassInstanceName, eventTargetClassName));
 	}
 
 	private void sendMessage(Message message) {
