@@ -13,6 +13,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import hu.elte.txtuml.api.model.execution.diagnostics.protocol.Message;
 import hu.elte.txtuml.api.model.execution.diagnostics.protocol.MessageType;
 import hu.elte.txtuml.api.model.execution.diagnostics.protocol.ModelEvent;
+import hu.elte.txtuml.diagnostics.animation.papyrus.AnimationConfig;
 import hu.elte.txtuml.diagnostics.animation.papyrus.Animator;
 import hu.elte.txtuml.utils.Logger;
 
@@ -109,6 +110,9 @@ public class DiagnosticsPlugin implements IDisposable, Runnable {
 						instanceRegister.processMessage(event);
 						if (event instanceof ModelEvent) {
 							animator.animateEvent((ModelEvent)event);
+							try {
+								Thread.sleep(DELAY.longValue());
+							} catch (InterruptedException ex) {}
 						}
 												
 						if (event.messageType.isAckNeeded()) {

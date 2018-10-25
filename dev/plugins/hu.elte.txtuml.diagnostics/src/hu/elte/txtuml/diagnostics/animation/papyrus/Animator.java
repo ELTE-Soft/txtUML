@@ -69,10 +69,6 @@ public class Animator {
 			addAnimationMarker(eobject);
 			classNameToAnimatedElement.put(event.modelClassName, eobject);
 		}
-
-		try {
-			Thread.sleep(AnimationConfig.ANIMATION_TIMER);
-		} catch (InterruptedException ex) {}
 	}
 		
 	private void removeMarkerFromClass(String modelClassName) {
