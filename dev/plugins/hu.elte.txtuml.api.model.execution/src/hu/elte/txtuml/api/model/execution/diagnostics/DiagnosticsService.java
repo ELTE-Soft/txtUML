@@ -41,8 +41,6 @@ public class DiagnosticsService extends NotifierOfTermination implements TraceLi
 	private final int diagnosticsSocketPort;
 	private volatile int faultTolerance = 17;
 
-	//private DiagnosticsServer server = new DiagnosticsServer();
-
 	/**
 	 * Initiates singleton by signaling the presence of a new DiagnosticsService
 	 * towards the DiagnosticsPlugin. It also does configuration if needed.
@@ -63,7 +61,7 @@ public class DiagnosticsService extends NotifierOfTermination implements TraceLi
 			}
 		} catch (IOException e) {
 			Logger.sys.error("Properties " + GlobalSettings.TXTUML_DIAGNOSTICS_SOCKET_PORT_KEY
-					+ " are not correctly set on this VM, no txtUML diagnostics will be available for service instance 0x"
+					+ " is not correctly set on this VM, no txtUML diagnostics will be available for service instance 0x"
 					+ Integer.toHexString(serviceInstanceID));
 
 			diagnosticsSocketPort = NO_PORT_SET;
