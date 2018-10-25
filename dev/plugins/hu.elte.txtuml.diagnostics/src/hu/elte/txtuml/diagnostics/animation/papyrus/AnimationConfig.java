@@ -1,4 +1,4 @@
-package hu.elte.txtuml.diagnostics.animation;
+package hu.elte.txtuml.diagnostics.animation.papyrus;
 
 /**
  * Configuration and IDs for animation related stuff

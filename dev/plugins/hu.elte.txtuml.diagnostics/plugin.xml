@@ -22,7 +22,7 @@
    <extension
          point="org.eclipse.papyrus.infra.gmfdiag.css.markertopseudoselectormappingprovider">
       <provider
-            class="hu.elte.txtuml.diagnostics.animation.AnimationMarkerToPseudoSelectorMappingProvider">
+            class="hu.elte.txtuml.diagnostics.animation.papyrus.AnimationMarkerToPseudoSelectorMappingProvider">
       </provider>
    </extension>
    <extension

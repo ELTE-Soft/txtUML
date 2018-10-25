@@ -1,4 +1,4 @@
-package hu.elte.txtuml.diagnostics.animation;
+package hu.elte.txtuml.diagnostics.animation.papyrus;
 
 import java.util.HashMap;
 import java.util.Map;
