@@ -10,10 +10,13 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.eclipse.emf.ecore.EObject;
+
+import hu.elte.txtuml.api.model.execution.diagnostics.protocol.GlobalSettings;
 import hu.elte.txtuml.api.model.execution.diagnostics.protocol.Message;
 import hu.elte.txtuml.api.model.execution.diagnostics.protocol.MessageType;
 import hu.elte.txtuml.api.model.execution.diagnostics.protocol.ModelEvent;
-import hu.elte.txtuml.diagnostics.animation.papyrus.AnimationConfig;
+import hu.elte.txtuml.diagnostics.animation.js.DiagnosticsServer;
 import hu.elte.txtuml.diagnostics.animation.papyrus.Animator;
 import hu.elte.txtuml.utils.Logger;
 
@@ -25,6 +28,9 @@ public class DiagnosticsPlugin implements IDisposable, Runnable {
 
 	private static final int SERVER_SOCKET_BACKLOG = 50;
 	private static final int FAULT_TOLERANCE = 99;
+	private static AtomicInteger DELAY = new AtomicInteger(5000);
+	
+	private static final int NO_PORT_SET = -1;
 	
 	private Thread thread;
 	private volatile boolean shutdownHasCome = false;
@@ -32,7 +38,9 @@ public class DiagnosticsPlugin implements IDisposable, Runnable {
 	private ModelMapper modelMapper;
 	private InstanceRegister instanceRegister;
 	private Animator animator;
-	private static AtomicInteger DELAY = new AtomicInteger(5000);
+	private DiagnosticsServer server;
+	private int httpPort;
+
 	
 	public DiagnosticsPlugin(int diagnosticsPort, String projectName, String workingDirectory) throws IOException {
 		try {
@@ -44,9 +52,50 @@ public class DiagnosticsPlugin implements IDisposable, Runnable {
 		modelMapper = new ModelMapper(projectName);
 		instanceRegister = new InstanceRegister();
 		animator = new Animator(instanceRegister, modelMapper);
+		server = new DiagnosticsServer();
+
+		try {
+			httpPort = getPort(GlobalSettings.TXTUML_DIAGNOSTICS_HTTP_PORT_KEY);
+			if (httpPort == NO_PORT_SET) {
+				throw new IOException();
+			}
+		} catch (IOException e) {
+			Logger.sys.error("Properties " + GlobalSettings.TXTUML_DIAGNOSTICS_HTTP_PORT_KEY
+					+ " are not correctly set on this VM, no txtUML diagnostics will be available");
+			return;
+		}
+		
+		try {
+			server.start(httpPort);
+		} catch (IOException e) {
+			Logger.sys.error("Couldn't start HTTP server on port " + httpPort + " in service instance 0x", e);
+			return;
+		}
+		Logger.sys.info("txtUML diagnostics connection is set on HTTP port " + httpPort );
+		
 		thread = new Thread(this, "txtUMLDiagnosticsPlugin");
 		thread.start();
 		//Logger.logInfo("txtUML DiagnosticsPlugin started"));
+	}
+	
+	private int getPort(String property) throws IOException {
+		String portStr = System.getProperty(property);
+		if (portStr == null) {
+			return NO_PORT_SET;
+		}
+
+		int port;
+		try {
+			port = Integer.decode(portStr).intValue();
+		} catch (Exception ex) {
+			throw new IOException();
+		}
+
+		if (port <= 0 || port > 65535) {
+			throw new IOException();
+		}
+
+		return port;
 	}
 	
 	@Override
@@ -72,6 +121,8 @@ public class DiagnosticsPlugin implements IDisposable, Runnable {
 		instanceRegister = null;
 		modelMapper.dispose();
 		modelMapper = null;
+		
+		server.stop();
 	}
 
 	@Override
@@ -110,6 +161,7 @@ public class DiagnosticsPlugin implements IDisposable, Runnable {
 						instanceRegister.processMessage(event);
 						if (event instanceof ModelEvent) {
 							animator.animateEvent((ModelEvent)event);
+							server.animateEvent((ModelEvent)event);
 							try {
 								Thread.sleep(DELAY.longValue());
 							} catch (InterruptedException ex) {}
