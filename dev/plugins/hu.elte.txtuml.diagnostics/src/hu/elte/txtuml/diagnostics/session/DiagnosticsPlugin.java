@@ -8,6 +8,7 @@ import java.io.StringWriter;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import hu.elte.txtuml.api.model.execution.diagnostics.protocol.Message;
 import hu.elte.txtuml.api.model.execution.diagnostics.protocol.MessageType;
@@ -30,6 +31,7 @@ public class DiagnosticsPlugin implements IDisposable, Runnable {
 	private ModelMapper modelMapper;
 	private InstanceRegister instanceRegister;
 	private Animator animator;
+	private static AtomicInteger DELAY = new AtomicInteger(5000);
 	
 	public DiagnosticsPlugin(int diagnosticsPort, String projectName, String workingDirectory) throws IOException {
 		try {
