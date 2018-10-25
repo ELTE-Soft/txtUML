@@ -40,8 +40,6 @@ public class DiagnosticsService extends NotifierOfTermination implements TraceLi
 	private final int diagnosticsSocketPort;
 	private volatile int faultTolerance = 17;
 
-	private DiagnosticsServer server = new DiagnosticsServer();
-
 	/**
 	 * Initiates singleton by signaling the presence of a new DiagnosticsService
 	 * towards the DiagnosticsPlugin. It also does configuration if needed.
@@ -56,34 +54,14 @@ public class DiagnosticsService extends NotifierOfTermination implements TraceLi
 		int socketPort, httpPort;
 		try {
 			socketPort = getPort(GlobalSettings.TXTUML_DIAGNOSTICS_SOCKET_PORT_KEY);
-			httpPort = getPort(GlobalSettings.TXTUML_DIAGNOSTICS_HTTP_PORT_KEY);
-			if (socketPort != NO_PORT_SET && httpPort == NO_PORT_SET
-					|| socketPort == NO_PORT_SET && httpPort != NO_PORT_SET) {
+			if (socketPort != NO_PORT_SET) {
 				throw new IOException();
 				// not nice but reduces code duplication
 			}
 		} catch (IOException e) {
-			Logger.sys.error("Properties " + GlobalSettings.TXTUML_DIAGNOSTICS_SOCKET_PORT_KEY + " and "
-					+ GlobalSettings.TXTUML_DIAGNOSTICS_HTTP_PORT_KEY
-					+ " are not correctly set on this VM, no txtUML diagnostics will be available for service instance 0x"
+			Logger.sys.error("Properties " + GlobalSettings.TXTUML_DIAGNOSTICS_SOCKET_PORT_KEY
+					+ " is not correctly set on this VM, no txtUML diagnostics will be available for service instance 0x"
 					+ Integer.toHexString(serviceInstanceID));
-
-			diagnosticsSocketPort = NO_PORT_SET;
-			notifyAllOfTermination();
-			return;
-		}
-
-		if (socketPort == NO_PORT_SET && httpPort == NO_PORT_SET) {
-			diagnosticsSocketPort = NO_PORT_SET;
-			notifyAllOfTermination();
-			return;
-		}
-
-		try {
-			server.start(httpPort);
-		} catch (IOException e) {
-			Logger.sys.error("Couldn't start HTTP server on port " + httpPort + " in service instance 0x"
-					+ Integer.toHexString(serviceInstanceID), e);
 
 			diagnosticsSocketPort = NO_PORT_SET;
 			notifyAllOfTermination();
@@ -94,7 +72,7 @@ public class DiagnosticsService extends NotifierOfTermination implements TraceLi
 		addTerminationListener(() -> sendMessage(new Message(MessageType.CHECKOUT, serviceInstanceID)));
 
 		Logger.sys.info("txtUML diagnostics connection is set on socket port " + diagnosticsSocketPort
-				+ " and HTTP port " + httpPort + " for service instance 0x" + Integer.toHexString(serviceInstanceID));
+				+ " for service instance 0x" + Integer.toHexString(serviceInstanceID));
 		sendMessage(new Message(MessageType.CHECKIN, serviceInstanceID));
 	}
 
@@ -118,11 +96,6 @@ public class DiagnosticsService extends NotifierOfTermination implements TraceLi
 		return port;
 	}
 
-	public void shutdown() {
-		server.stop();
-		notifyAllOfTermination();
-	}
-
 	@Override
 	public void processingSignal(ModelClass object, Signal signal, Optional<ModelClass> sender) {
 		sendNewModelEvent(MessageType.PROCESSING_SIGNAL, object.getClass().getCanonicalName(), getIdentifierOf(object),
@@ -132,7 +105,6 @@ public class DiagnosticsService extends NotifierOfTermination implements TraceLi
 	@Override
 	public void usingTransition(ModelClass object, Transition transition) {
 		String transitionName = transition.getClass().getCanonicalName();
-		server.register(object, transitionName);
 		sendNewModelEvent(MessageType.USING_TRANSITION, object.getClass().getCanonicalName(), getIdentifierOf(object),
 				transitionName);
 	}
@@ -140,7 +112,6 @@ public class DiagnosticsService extends NotifierOfTermination implements TraceLi
 	@Override
 	public void enteringVertex(ModelClass object, Vertex vertex) {
 		String vertexName = vertex.getClass().getCanonicalName();
-		server.register(object, vertexName);
 		sendNewModelEvent(MessageType.ENTERING_VERTEX, object.getClass().getCanonicalName(), getIdentifierOf(object),
 				vertexName);
 
@@ -149,7 +120,6 @@ public class DiagnosticsService extends NotifierOfTermination implements TraceLi
 	@Override
 	public void leavingVertex(ModelClass object, Vertex vertex) {
 		String vertexName = vertex.getClass().getCanonicalName();
-		server.register(object, vertexName);
 		sendNewModelEvent(MessageType.LEAVING_VERTEX, object.getClass().getCanonicalName(), getIdentifierOf(object),
 				vertexName);
 	}
