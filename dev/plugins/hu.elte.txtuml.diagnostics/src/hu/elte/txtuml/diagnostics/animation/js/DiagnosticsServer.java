@@ -1,4 +1,4 @@
-package hu.elte.txtuml.api.model.execution.diagnostics;
+package hu.elte.txtuml.diagnostics.animation.js;
 
 import java.io.IOException;
 import java.io.OutputStream;
