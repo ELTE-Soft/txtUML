@@ -54,7 +54,7 @@ public class DiagnosticsService extends NotifierOfTermination implements TraceLi
 		} while (rnd == 0);
 		serviceInstanceID = rnd;
 
-		int socketPort; // httpPort;
+		int socketPort;
 		try {
 			socketPort = getPort(GlobalSettings.TXTUML_DIAGNOSTICS_SOCKET_PORT_KEY);
 			if (socketPort == NO_PORT_SET) {
@@ -97,6 +97,11 @@ public class DiagnosticsService extends NotifierOfTermination implements TraceLi
 		}
 
 		return port;
+	}
+	
+
+	public void shutdown() {
+		notifyAllOfTermination();
 	}
 
 	@Override

@@ -13,9 +13,9 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 
-import hu.elte.txtuml.api.model.ModelClass;
 import hu.elte.txtuml.api.model.execution.diagnostics.protocol.GlobalSettings;
-import hu.elte.txtuml.api.model.external.ModelClasses;
+import hu.elte.txtuml.api.model.execution.diagnostics.protocol.MessageType;
+import hu.elte.txtuml.api.model.execution.diagnostics.protocol.ModelEvent;
 
 /**
  * Serves diagnostics data over HTTP.
@@ -23,7 +23,7 @@ import hu.elte.txtuml.api.model.external.ModelClasses;
 public class DiagnosticsServer {
 
 	private HttpServer server;
-	private ConcurrentMap<ModelClass, String> registry = new ConcurrentHashMap<>();
+	private ConcurrentMap<RegistryEntry, String> registry = new ConcurrentHashMap<>();
 
 	public void start(Integer port) throws IOException {
 		server = HttpServer.create(new InetSocketAddress(port), 0);
@@ -37,8 +37,9 @@ public class DiagnosticsServer {
 		registry.clear();
 	}
 
-	public void register(ModelClass object, String currentLocation) {
-		registry.put(object, currentLocation);
+	public void register(ModelEvent event) {
+		RegistryEntry registryEntry = new RegistryEntry(event.modelClassName, event.modelClassInstanceID, event.modelClassInstanceName);
+		registry.put(registryEntry, event.eventTargetClassName);
 	}
 
 	private class DiagnosticsHandler implements HttpHandler {
@@ -64,13 +65,22 @@ public class DiagnosticsServer {
 
 	}
 
-	private static String registryEntryToJson(Entry<ModelClass, String> objectToLocation) {
-		ModelClass object = objectToLocation.getKey();
+	private static String registryEntryToJson(Entry<RegistryEntry, String> objectToLocation) {
+		RegistryEntry object = objectToLocation.getKey();
 		String location = objectToLocation.getValue();
 
-		return "{\"class\":\"" + object.getClass().getCanonicalName() + "\","
-				+ "\"id\":\"" + ModelClasses.getIdentifierOf(object) + "\","
+		return "{\"class\":\"" + object.getModelClassName() + "\","
+				+ "\"id\":\"" + object.getModelClassInstanceID() + "\","
+				+ "\"name\":\"" + object.getModelClassInstanceName() + "\","  
 				+ "\"location\":\"" + location + "\"}";
+	}
+	
+	public void animateEvent(ModelEvent event) {
+		if (event.messageType == MessageType.PROCESSING_SIGNAL) {
+			return;
+		}
+		
+		this.register(event);
 	}
 
 }
