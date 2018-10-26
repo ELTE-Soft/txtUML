@@ -10,9 +10,6 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.eclipse.emf.ecore.EObject;
-
-import hu.elte.txtuml.api.model.execution.diagnostics.protocol.GlobalSettings;
 import hu.elte.txtuml.api.model.execution.diagnostics.protocol.Message;
 import hu.elte.txtuml.api.model.execution.diagnostics.protocol.MessageType;
 import hu.elte.txtuml.api.model.execution.diagnostics.protocol.ModelEvent;
@@ -30,8 +27,6 @@ public class DiagnosticsPlugin implements IDisposable, Runnable {
 	private static final int FAULT_TOLERANCE = 99;
 	private static AtomicInteger DELAY = new AtomicInteger(5000);
 	
-	private static final int NO_PORT_SET = -1;
-	
 	private Thread thread;
 	private volatile boolean shutdownHasCome = false;
 	private ServerSocket serverSocket;
@@ -39,8 +34,6 @@ public class DiagnosticsPlugin implements IDisposable, Runnable {
 	private InstanceRegister instanceRegister;
 	private Animator animator;
 	private DiagnosticsServer server;
-	private int httpPort;
-
 	
 	public DiagnosticsPlugin(int diagnosticsPort, int httpPort, String projectName, String workingDirectory) throws IOException {
 		try {
@@ -92,6 +85,7 @@ public class DiagnosticsPlugin implements IDisposable, Runnable {
 		modelMapper = null;
 		
 		server.stop();
+		server = null;
 	}
 
 	@Override
