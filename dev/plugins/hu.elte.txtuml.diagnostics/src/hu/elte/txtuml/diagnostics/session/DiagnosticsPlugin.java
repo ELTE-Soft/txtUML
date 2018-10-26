@@ -42,7 +42,7 @@ public class DiagnosticsPlugin implements IDisposable, Runnable {
 	private int httpPort;
 
 	
-	public DiagnosticsPlugin(int diagnosticsPort, String projectName, String workingDirectory) throws IOException {
+	public DiagnosticsPlugin(int diagnosticsPort, int httpPort, String projectName, String workingDirectory) throws IOException {
 		try {
 			serverSocket = new ServerSocket(diagnosticsPort, SERVER_SOCKET_BACKLOG, InetAddress.getLoopbackAddress());
 		} catch (IOException | IllegalArgumentException | SecurityException ex) {
@@ -53,17 +53,6 @@ public class DiagnosticsPlugin implements IDisposable, Runnable {
 		instanceRegister = new InstanceRegister();
 		animator = new Animator(instanceRegister, modelMapper);
 		server = new DiagnosticsServer();
-
-		try {
-			httpPort = getPort(GlobalSettings.TXTUML_DIAGNOSTICS_HTTP_PORT_KEY);
-			if (httpPort == NO_PORT_SET) {
-				throw new IOException();
-			}
-		} catch (IOException e) {
-			Logger.sys.error("Properties " + GlobalSettings.TXTUML_DIAGNOSTICS_HTTP_PORT_KEY
-					+ " are not correctly set on this VM, no txtUML diagnostics will be available");
-			return;
-		}
 		
 		try {
 			server.start(httpPort);
@@ -76,26 +65,6 @@ public class DiagnosticsPlugin implements IDisposable, Runnable {
 		thread = new Thread(this, "txtUMLDiagnosticsPlugin");
 		thread.start();
 		//Logger.logInfo("txtUML DiagnosticsPlugin started"));
-	}
-	
-	private int getPort(String property) throws IOException {
-		String portStr = System.getProperty(property);
-		if (portStr == null) {
-			return NO_PORT_SET;
-		}
-
-		int port;
-		try {
-			port = Integer.decode(portStr).intValue();
-		} catch (Exception ex) {
-			throw new IOException();
-		}
-
-		if (port <= 0 || port > 65535) {
-			throw new IOException();
-		}
-
-		return port;
 	}
 	
 	@Override
