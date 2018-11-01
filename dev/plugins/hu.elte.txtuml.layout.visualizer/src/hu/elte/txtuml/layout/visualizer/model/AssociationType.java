@@ -1,5 +1,8 @@
 package hu.elte.txtuml.layout.visualizer.model;
 
+/**
+ * Enumeration for the types of an Association.
+ */
 public enum AssociationType
 {
 	/**

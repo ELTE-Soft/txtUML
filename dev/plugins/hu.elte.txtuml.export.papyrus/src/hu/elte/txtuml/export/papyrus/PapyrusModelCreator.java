@@ -16,7 +16,6 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.impl.BasicEObjectImpl;
 import org.eclipse.emf.transaction.RecordingCommand;
 import org.eclipse.papyrus.infra.core.resource.ModelSet;
-import org.eclipse.papyrus.infra.core.sashwindows.di.service.IPageManager;
 import org.eclipse.papyrus.infra.core.services.ExtensionServicesRegistry;
 import org.eclipse.papyrus.infra.core.services.ServiceException;
 import org.eclipse.papyrus.infra.core.services.ServicesRegistry;
@@ -24,6 +23,7 @@ import org.eclipse.papyrus.uml.diagram.wizards.command.NewPapyrusModelCommand;
 import org.eclipse.uml2.uml.Model;
 import org.eclipse.uml2.uml.Profile;
 
+import hu.elte.txtuml.export.diagrams.common.layout.LayoutUtils;
 import hu.elte.txtuml.export.uml2.TxtUMLToUML2;
 
 /**
@@ -140,6 +140,10 @@ public class PapyrusModelCreator {
 		return TxtUMLToUML2.loadExportedModel(umlFilePath);
 	}
 	
+	public ServicesRegistry getServiceRegistry(){
+		return this.registry;
+	}
+	
 	private void copyFile(String sourcepath, IFile newFile){
 		try{
 			File oldFile = new File(java.net.URI.create(sourcepath));
@@ -186,18 +190,14 @@ public class PapyrusModelCreator {
 	 * @param registry - The ServiceRegistry to be Initialized 
 	 */
 	private void initRegistry(ServicesRegistry registry){
-		try {
-			registry.startRegistry();
-		} catch (ServiceException ex) {
-			// Ignore this exception: some services may not have been loaded,
-			// which is probably normal at this point
-		}
-		
-		try{
-			registry.getService(IPageManager.class);
-		}catch (ServiceException e){
-			throw new RuntimeException(e);
-		}
+		LayoutUtils.getDisplay().syncExec(() -> {
+			try {
+				registry.startRegistry();
+			} catch (ServiceException ex) {
+				// Ignore this exception: some services may not have been loaded,
+				// which is probably normal at this point
+			}
+		});
 	}
 
 	/**

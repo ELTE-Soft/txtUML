@@ -16,7 +16,6 @@ Require-Bundle: org.eclipse.ui,
  hu.elte.txtuml.export.uml2,
  hu.elte.txtuml.utils,
  hu.elte.txtuml.utils.eclipse,
- hu.elte.txtuml.export.papyrus,
  hu.elte.txtuml.api.model.execution
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy

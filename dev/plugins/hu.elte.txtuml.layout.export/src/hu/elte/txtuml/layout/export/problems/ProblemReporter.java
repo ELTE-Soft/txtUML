@@ -27,40 +27,46 @@ public class ProblemReporter {
 	}
 
 	public void noLayoutClass() {
-		report.error("The diagram class has no inner class which is a subclass of Diagram.Layout.");
+		report.error("The diagram class should have an inner class which is a subclass of Diagram.Layout.");
 	}
 
 	public void lineStatementExportationFailed(String name, Class<?>[] nodes) {
-		statementExportationFailed(Utils.lineStatementAsString(name, nodes));
+		statementExportationFailed(Utils.lineStatementAsString(name, nodes), 
+				"node");
 	}
 
 	public void diamondStatementExportationFailed(Class<?> top, Class<?> right,
 			Class<?> bottom, Class<?> left) {
 		statementExportationFailed(Utils.diamondStatementAsString(top, right,
-				bottom, left));
+				bottom, left), "node");
 	}
 
 	public void adjacencyStatementExportationFailed(StatementType type,
 			Class<?> val, Class<?> from) {
 		statementExportationFailed(Utils.adjacencyStatementAsString(type, val,
-				from));
+				from), "node");
 	}
 
 	public void cardinalStatementExportationFailed(StatementType type,
 			Class<?>[] val, Class<?>[] from, LinkEnd end) {
 		statementExportationFailed(Utils.cardinalStatementAsString(type, val,
-				from, end));
+				from, end), "(node, node), (link, node)");
 	}
 
 	public void mostStatementExportationFailed(
 			Class<? extends Annotation> type, Class<?>[] val) {
-		statementExportationFailed(Utils.mostStatementAsString(type, val));
+		statementExportationFailed(Utils.mostStatementAsString(type, val), "node");
 	}
 
 	public void multipleMostStatement(Class<? extends Annotation> type,
 			Class<?>[] val) {
 		report.error("Statement " + Utils.mostStatementAsString(type, val)
-				+ " is illegal. Only one *most statement is allowed per type.");
+				+ " is illegal. Only one *most statement is allowed per hierarchy layer.");
+	}
+	
+	public void multipleSpacingStatement(Double val) {
+		report.error("Statement " + Utils.spacingStatementAsString(val)
+			+ " is illegal. Only one spacing statement is allowed per hierarchy layer.");
 	}
 
 	public void invalidGroup(Class<?> groupClass, Class<?> elementClass) {
@@ -71,10 +77,8 @@ public class ProblemReporter {
 
 	public void invalidAnonymousGroup(Class<?>[] elementClasses,
 			Class<?> elementClass) {
-		report.error("Exportation of anonymous group {"
-				+ Utils.classArrayAsString(elementClasses)
-				+ "} failed, as at least one of its elements ("
-				+ Utils.classAsString(elementClass) + ") is invalid.");
+		report.error("The element (" + Utils.classAsString(elementClass) + ")"
+				+ " is invalid. Only state and groups are allowed in a State Machine.");
 	}
 
 	public void selfContainment(Class<?> groupClass) {
@@ -160,8 +164,9 @@ public class ProblemReporter {
 				+ ". Acceptable model elements here: " + valid + ".");
 	}
 
-	private void statementExportationFailed(String statement) {
-		report.error("Exportation of statement " + statement + " failed.");
+	private void statementExportationFailed(String statement, String valid) {
+		report.error("Exportation of statement " + statement + "some of its elements are invalid. Only Class are allowed in a Class Diagram or States and Groups in a State Machine." +
+				" Acceptable model elements here: " + valid + ".");
 	}
 
 	private void emptyStatement(String statement) {

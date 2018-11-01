@@ -25,7 +25,7 @@ public class ModelMapper {
 	private static final String MAPPING_FILE_EXTENSION_TOKEN = "." + MAPPING_FILE_EXTENSION;
 	private static final String MAPPING_DIRECTORY_PATH =
 			PreferencesManager.getString(PreferencesManager.TXTUML_VISUALIZE_DESTINATION_FOLDER);
-
+	
 	private NavigableMap<String, ModelMapProvider> mappingFileNameToMapProvider = new TreeMap<String, ModelMapProvider>();
 
 	ModelMapper(String projectName) {

@@ -216,7 +216,12 @@ public class WizardUtils {
 
 					for (Object v : annotations) {
 						String[][] resolvedTypes = resolveType(annotatedType, (String) v);
-						List<String[]> resolvedTypeList = new ArrayList<>(Arrays.asList(resolvedTypes));
+						
+						if(resolvedTypes == null){
+							throw new NoSuchElementException();
+						}
+						
+						List<String[]> resolvedTypeList = Arrays.asList(resolvedTypes);
 						for (String[] type : resolvedTypeList) {
 							Optional<Pair<String, String>> model = ModelUtils.getModelOf(type[0], referencedProjects);
 							if (model.isPresent()) {

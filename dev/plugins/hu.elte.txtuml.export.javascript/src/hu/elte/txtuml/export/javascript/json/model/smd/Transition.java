@@ -6,9 +6,9 @@ import java.util.stream.Collectors;
 import org.eclipse.persistence.oxm.annotations.XmlAccessMethods;
 import org.eclipse.uml2.uml.Trigger;
 
+import hu.elte.txtuml.export.diagrams.common.Point;
 import hu.elte.txtuml.export.javascript.json.MarshalablePoint;
 import hu.elte.txtuml.layout.visualizer.model.LineAssociation;
-import hu.elte.txtuml.utils.diagrams.Point;
 
 /**
  * 

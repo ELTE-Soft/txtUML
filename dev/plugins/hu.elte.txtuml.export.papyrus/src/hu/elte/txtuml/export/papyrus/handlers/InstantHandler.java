@@ -18,7 +18,6 @@ import org.eclipse.ui.handlers.HandlerUtil;
 import org.eclipse.ui.progress.IProgressService;
 
 import hu.elte.txtuml.export.papyrus.PapyrusVisualizer;
-import hu.elte.txtuml.export.papyrus.papyrusmodelmanagers.DefaultPapyrusModelManager;
 import hu.elte.txtuml.utils.eclipse.Dialogs;
 
 /**
@@ -42,7 +41,6 @@ public class InstantHandler extends AbstractHandler {
 		IProgressService progressService = PlatformUI.getWorkbench().getProgressService();
 		
 		PapyrusVisualizer pv = new PapyrusVisualizer(project.getName(), getFileNameWithOutExtension(file), file.getRawLocationURI().toString());
-		pv.registerPayprusModelManager(DefaultPapyrusModelManager.class);
 		try {
 			progressService.runInUI(
 					progressService,

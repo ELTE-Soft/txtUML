@@ -124,20 +124,122 @@ public class ElementExporterImpl implements ElementExporter {
 		return sourceProjectName;
 	}
 	
+	private Set<LineAssociation> convertedLinks;
+	
 	@Override
 	public Set<RectangleObject> getNodesAsObjects() {
-		// for efficiency purposes, phantoms are handled in NodeMap's convert()
-		// method
-		return nodes.convert();
+		//Convert default Nodes (model elements) and container phantoms (box).
+		Set<RectangleObject> result = nodes.convert(getDiagramTypeBasedOnElements());
+		//Convert phantoms (virtual phantom) that are not explicitly declared 
+		//but is a side effect of another statement.
+		result.addAll(phantoms.convert());
+		
+		convertLinks();
+		
+		result = mergeLinksIntoObjects(result);
+		
+		return result;
 	}
 
+	private void convertLinks()
+	{
+		convertedLinks = links.convert();
+
+		generalizations.forEach(gen -> convertedLinks.add(gen.convert()));
+	}
+	
+	private Set<RectangleObject> mergeLinksIntoObjects(Set<RectangleObject> baseObjects)
+	{
+		Set<LineAssociation> toDelete = new HashSet<LineAssociation>();
+		
+		for(LineAssociation link : convertedLinks)
+		{
+			if(mergeLinkIntoObjects(link, baseObjects))
+				toDelete.add(link);
+		}
+		
+		toDelete.forEach(ll -> convertedLinks.remove(ll));
+		
+		return baseObjects;
+	}
+	
+	private boolean mergeLinkIntoObjects(LineAssociation link, Set<RectangleObject> siblings)
+	{
+		for(RectangleObject node : siblings)
+		{
+			if(node.hasInner())
+			{
+				if(isLinkBetweenChildren(link, node))
+				{
+					// Full
+					node.getInner().Assocs.add(link);
+					return true;
+				}
+				else if(isLinkOneEndInChildren(link, node))
+				{
+					// Partial
+					//node.getInner().Assocs.add(link);
+					return false;
+				}
+				else if(mergeLinkIntoObjects(link, node.getInner().Objects))
+				{
+					return true;
+				}
+			}
+		}
+		
+		return false;
+	}
+	
+	private boolean isLinkBetweenChildren(LineAssociation link, 
+			RectangleObject parent)
+	{
+		return isLinkBetweenChildren(link, parent, true);
+	}
+	
+	private boolean isLinkOneEndInChildren(LineAssociation link, 
+			RectangleObject parent)
+	{
+		return isLinkBetweenChildren(link, parent, false);
+	}
+	
+	private boolean isLinkBetweenChildren(LineAssociation link, 
+			RectangleObject parent, boolean and)
+	{
+		if(!parent.hasInner())
+			return false;
+		
+		boolean startFound = false;
+		boolean endFound = false;
+		
+		for(RectangleObject child : parent.getInner().Objects)
+		{
+			if(startFound && endFound)
+				break;
+			
+			if(link.getFrom().equals(child.getName()))
+			{
+				startFound = true;
+			}
+			
+			if(link.getTo().equals(child.getName()))
+			{
+				endFound = true;
+			}
+		}
+		
+		if(and)
+			return startFound && endFound;
+		else
+			return startFound || endFound;
+	}
+	
 	@Override
 	public Set<LineAssociation> getLinksAsLines() {
-		Set<LineAssociation> res = links.convert();
-
-		generalizations.forEach(gen -> res.add(gen.convert()));
-
-		return res;
+		if(convertedLinks == null)
+			convertLinks();
+		
+		return convertedLinks;
 	}
 
 	@Override
@@ -389,6 +491,34 @@ public class ElementExporterImpl implements ElementExporter {
 
 		throw new ElementExportationException();
 	}
+	
+	@Override
+	public void startOfParent(Class<?> parent)
+	{
+		nodes.startOfParent(parent);
+	}
+	
+	@Override
+	public void setParent(Class<?> child, Class<?> parent)
+	{
+		nodes.setParent(child, parent);
+	}
+	
+	@Override
+	public Class<?> getCurrentParent() {
+		return nodes.getCurrentParent();
+	}
+	
+	@Override
+	public Class<?> getParent(Class<?> child) {
+		return nodes.getParent(child);
+	}
+	
+	@Override
+	public void endOfParent()
+	{
+		nodes.endOfParent();
+	}
 
 	@Override
 	public NodeGroupInfo exportAnonymousNodeGroup(Class<?>[] abstractNodes)
@@ -585,6 +715,13 @@ public class ElementExporterImpl implements ElementExporter {
 		generalizations.add(info);
 	}
 
+	@Override
+	public void exportDefaultParentage()
+	{
+		if(sourceExporter != null)
+			sourceExporter.exportDefaultParentage(containingModel, this);
+	}
+	
 	@Override
 	public void exportImpliedLinks() {
 		if (sourceExporter != null) {

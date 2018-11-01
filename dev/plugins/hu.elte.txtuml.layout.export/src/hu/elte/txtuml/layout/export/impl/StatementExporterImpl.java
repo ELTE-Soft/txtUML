@@ -3,6 +3,7 @@ package hu.elte.txtuml.layout.export.impl;
 import java.lang.annotation.Annotation;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import hu.elte.txtuml.api.layout.Above;
 import hu.elte.txtuml.api.layout.Below;
@@ -10,6 +11,7 @@ import hu.elte.txtuml.api.layout.BottomMost;
 import hu.elte.txtuml.api.layout.Column;
 import hu.elte.txtuml.api.layout.Diamond;
 import hu.elte.txtuml.api.layout.East;
+import hu.elte.txtuml.api.layout.Inside;
 import hu.elte.txtuml.api.layout.Left;
 import hu.elte.txtuml.api.layout.LeftMost;
 import hu.elte.txtuml.api.layout.LinkEnd;
@@ -47,7 +49,9 @@ import hu.elte.txtuml.layout.export.interfaces.StatementExporter;
 import hu.elte.txtuml.layout.export.interfaces.StatementList;
 import hu.elte.txtuml.layout.export.problems.ElementExportationException;
 import hu.elte.txtuml.layout.export.problems.ProblemReporter;
+import hu.elte.txtuml.layout.export.problems.Utils;
 import hu.elte.txtuml.layout.visualizer.statements.StatementType;
+import hu.elte.txtuml.utils.Pair;
 
 /**
  * Default implementation for {@link StatementExporter}.
@@ -57,14 +61,13 @@ public class StatementExporterImpl implements StatementExporter {
 	private final StatementList statements;
 	private final ElementExporter elementExporter;
 	private final ProblemReporter problemReporter;
-	private final Map<Class<? extends Annotation>, NodeGroupInfo> mostMap;
+	private final Map<Pair<Class<?>, Class<? extends Annotation>>, NodeGroupInfo> mostMap;
 
-	public StatementExporterImpl(ElementExporter elementExporter,
-			ProblemReporter problemReporter) {
+	public StatementExporterImpl(ElementExporter elementExporter, ProblemReporter problemReporter) {
 		this.statements = StatementList.create();
 		this.elementExporter = elementExporter;
 		this.problemReporter = problemReporter;
-		this.mostMap = new HashMap<Class<? extends Annotation>, NodeGroupInfo>();
+		this.mostMap = new HashMap<Pair<Class<?>, Class<? extends Annotation>>, NodeGroupInfo>();
 	}
 
 	@Override
@@ -123,26 +126,22 @@ public class StatementExporterImpl implements StatementExporter {
 
 	@Override
 	public void exportNorth(North annot) {
-		exportCardinalStatement(StatementType.north, annot.val(), annot.from(),
-				annot.end());
+		exportCardinalStatement(StatementType.north, annot.val(), annot.from(), annot.end());
 	}
 
 	@Override
 	public void exportSouth(South annot) {
-		exportCardinalStatement(StatementType.south, annot.val(), annot.from(),
-				annot.end());
+		exportCardinalStatement(StatementType.south, annot.val(), annot.from(), annot.end());
 	}
 
 	@Override
 	public void exportEast(East annot) {
-		exportCardinalStatement(StatementType.east, annot.val(), annot.from(),
-				annot.end());
+		exportCardinalStatement(StatementType.east, annot.val(), annot.from(), annot.end());
 	}
 
 	@Override
 	public void exportWest(West annot) {
-		exportCardinalStatement(StatementType.west, annot.val(), annot.from(),
-				annot.end());
+		exportCardinalStatement(StatementType.west, annot.val(), annot.from(), annot.end());
 	}
 
 	@Override
@@ -168,8 +167,7 @@ public class StatementExporterImpl implements StatementExporter {
 	@Override
 	public void exportPriority(Priority annot) {
 		if (annot.val().length == 0) {
-			problemReporter.priorityStatementWithEmptyArguments(annot.val(),
-					annot.prior());
+			problemReporter.priorityStatementWithEmptyArguments(annot.val(), annot.prior());
 			return;
 		}
 
@@ -178,19 +176,15 @@ public class StatementExporterImpl implements StatementExporter {
 				ElementInfo info = elementExporter.exportElement(link);
 
 				if (info instanceof LinkInfo) {
-					statements.addNew(StatementType.priority, info.toString(),
-							Integer.toString(annot.prior()));
+					statements.addNew(StatementType.priority, info.toString(), Integer.toString(annot.prior()));
 				} else if (info instanceof LinkGroupInfo) {
-					for (LinkInfo innerLink : ((LinkGroupInfo) info)
-							.getAllLinks().values()) {
-						statements.addNew(StatementType.priority,
-								innerLink.toString(),
+					for (LinkInfo innerLink : ((LinkGroupInfo) info).getAllLinks().values()) {
+						statements.addNew(StatementType.priority, innerLink.toString(),
 								Integer.toString(annot.prior()));
 					}
 				}
 			} catch (ElementExportationException e) {
-				problemReporter.priorityStatementWithInvalidElement(link,
-						annot.val(), annot.prior());
+				problemReporter.priorityStatementWithInvalidElement(link, annot.val(), annot.prior());
 			}
 		}
 	}
@@ -206,10 +200,25 @@ public class StatementExporterImpl implements StatementExporter {
 			try {
 				elementExporter.exportConcreteElement(element);
 			} catch (ElementExportationException e) {
-				problemReporter.showStatementWithInvalidElement(element,
-						annot.value());
+				problemReporter.showStatementWithInvalidElement(element, annot.value());
 			}
 		}
+	}
+
+	@Override
+	public Class<?> exportInside(Inside annot) {
+		if (annot.value() == null) {
+			problemReporter.sugarStatementWithEmptyArguments("show");
+			return null;
+		}
+
+		try {
+			return elementExporter.exportConcreteElement(annot.value()).getElementClass();
+		} catch (ElementExportationException e) {
+			problemReporter.showStatementWithInvalidElement(annot.value(), new Class<?>[] { annot.value() });
+		}
+
+		return null;
 	}
 
 	@Override
@@ -232,23 +241,27 @@ public class StatementExporterImpl implements StatementExporter {
 
 			NodeInfo phantom = elementExporter.createPhantom();
 
-			statements.addNew(StatementType.above, top.toString(),
-					phantom.toString());
-			statements.addNew(StatementType.right, right.toString(),
-					phantom.toString());
-			statements.addNew(StatementType.below, bottom.toString(),
-					phantom.toString());
-			statements.addNew(StatementType.left, left.toString(),
-					phantom.toString());
+			statements.addNew(StatementType.above, top.toString(), phantom.toString());
+			statements.addNew(StatementType.right, right.toString(), phantom.toString());
+			statements.addNew(StatementType.below, bottom.toString(), phantom.toString());
+			statements.addNew(StatementType.left, left.toString(), phantom.toString());
 		} catch (ElementExportationException e) {
-			problemReporter.diamondStatementExportationFailed(annot.top(),
-					annot.right(), annot.bottom(), annot.left());
+			problemReporter.diamondStatementExportationFailed(annot.top(), annot.right(), annot.bottom(), annot.left());
 		}
 	}
-	
+
 	@Override
-	public void exportCorridorRatio(hu.elte.txtuml.api.layout.Spacing annot) {
-		statements.addNew(StatementType.corridorsize, Double.toString(annot.value()));
+	public void exportSpacing(hu.elte.txtuml.api.layout.Spacing annot) {
+		String currentParent = (elementExporter.getCurrentParent() == null) ? ""
+				: Utils.classAsString(elementExporter.getCurrentParent());
+		
+		if (!statements.stream().anyMatch(st -> st.getType().equals(StatementType.corridorsize) &&
+				st.getParameter(1).equals(currentParent))) {
+			statements.addNew(StatementType.corridorsize, 
+					Double.toString(annot.value()), currentParent);
+		} else {
+			problemReporter.multipleSpacingStatement(annot.value());
+		}
 	}
 
 	// public statement container exporters
@@ -346,24 +359,16 @@ public class StatementExporterImpl implements StatementExporter {
 
 	@Override
 	public void resolveMosts() {
-		NodeGroupInfo topMostInfo = mostMap.get(TopMost.class);
-		if (topMostInfo != null) {
-			exportMostStatement(StatementType.north, topMostInfo);
-		}
-
-		NodeGroupInfo bottomMostInfo = mostMap.get(BottomMost.class);
-		if (bottomMostInfo != null) {
-			exportMostStatement(StatementType.south, bottomMostInfo);
-		}
-
-		NodeGroupInfo rightMostInfo = mostMap.get(RightMost.class);
-		if (rightMostInfo != null) {
-			exportMostStatement(StatementType.east, rightMostInfo);
-		}
-
-		NodeGroupInfo leftMostInfo = mostMap.get(LeftMost.class);
-		if (leftMostInfo != null) {
-			exportMostStatement(StatementType.west, leftMostInfo);
+		for (Entry<Pair<Class<?>, Class<? extends Annotation>>, NodeGroupInfo> entry : mostMap.entrySet()) {
+			if (entry.getKey().getSecond().equals(TopMost.class)) {
+				exportMostStatement(StatementType.north, entry.getValue());
+			} else if (entry.getKey().getSecond().equals(BottomMost.class)) {
+				exportMostStatement(StatementType.south, entry.getValue());
+			} else if (entry.getKey().getSecond().equals(RightMost.class)) {
+				exportMostStatement(StatementType.east, entry.getValue());
+			} else if (entry.getKey().getSecond().equals(LeftMost.class)) {
+				exportMostStatement(StatementType.west, entry.getValue());
+			}
 		}
 	}
 
@@ -378,41 +383,33 @@ public class StatementExporterImpl implements StatementExporter {
 
 	private void exportLineStatement(StatementType type, Class<?>[] nodes) {
 		if (nodes.length == 0) {
-			problemReporter
-					.sugarStatementWithEmptyArguments(type == StatementType.above ? "column"
-							: "row");
+			problemReporter.sugarStatementWithEmptyArguments(type == StatementType.above ? "column" : "row");
 			return;
 		}
 
 		try {
-			NodeGroupInfo info = elementExporter
-					.exportAnonymousNodeGroup(nodes);
+			NodeGroupInfo info = elementExporter.exportAnonymousNodeGroup(nodes);
 			exportAlignmentWithGivenStatement(info, type);
 		} catch (ElementExportationException e) {
-			problemReporter.lineStatementExportationFailed(
-					type == StatementType.above ? "column" : "row", nodes);
+			problemReporter.lineStatementExportationFailed(type == StatementType.above ? "column" : "row", nodes);
 
 		}
 	}
 
-	private void exportAdjacencyStatement(StatementType type, Class<?> val,
-			Class<?> from) {
+	private void exportAdjacencyStatement(StatementType type, Class<?> val, Class<?> from) {
 		try {
 			NodeInfo valInfo = elementExporter.exportNode(val);
 			NodeInfo fromInfo = elementExporter.exportNode(from);
 			statements.addNew(type, valInfo.toString(), fromInfo.toString());
 		} catch (ElementExportationException e) {
-			problemReporter
-					.adjacencyStatementExportationFailed(type, val, from);
+			problemReporter.adjacencyStatementExportationFailed(type, val, from);
 		}
 
 	}
 
-	private void exportCardinalStatement(StatementType type, Class<?>[] val,
-			Class<?>[] from, LinkEnd end) {// XXX
+	private void exportCardinalStatement(StatementType type, Class<?>[] val, Class<?>[] from, LinkEnd end) {// XXX
 		if (val.length == 0 || from.length == 0) {
-			problemReporter.cardinalStatementWithEmptyArguments(type, val,
-					from, end);
+			problemReporter.cardinalStatementWithEmptyArguments(type, val, from, end);
 			return;
 		}
 
@@ -421,8 +418,7 @@ public class StatementExporterImpl implements StatementExporter {
 			try {
 				LinkInfo valInfo = elementExporter.exportLink(val[0]);
 				NodeInfo fromInfo = elementExporter.exportNode(from[0]);
-				newStatementWithLinkEndCheck(type, valInfo.toString(),
-						fromInfo.toString(), end);
+				newStatementWithLinkEndCheck(type, valInfo.toString(), fromInfo.toString(), end);
 				return;
 			} catch (ElementExportationException e) {
 				// Check other options.
@@ -434,68 +430,54 @@ public class StatementExporterImpl implements StatementExporter {
 				ElementInfo valInfo = elementExporter.exportElement(valClass);
 
 				for (Class<?> fromClass : from) {
-					ElementInfo fromInfo = elementExporter
-							.exportElement(fromClass);
+					ElementInfo fromInfo = elementExporter.exportElement(fromClass);
 					exportCardinalStatement(type, valInfo, fromInfo);
 				}
 			}
 		} catch (ElementExportationException e) {
-			problemReporter.cardinalStatementExportationFailed(type, val, from,
-					end);
+			problemReporter.cardinalStatementExportationFailed(type, val, from, end);
 		}
 	}
 
-	private void exportCardinalStatement(StatementType type,
-			ElementInfo valInfo, ElementInfo fromInfo)
+	private void exportCardinalStatement(StatementType type, ElementInfo valInfo, ElementInfo fromInfo)
 			throws ElementExportationException {
 
 		// type(node, node) || type(link, node)
 		// not sure if the latter is necessary
-		if (valInfo instanceof ConcreteElementInfo
-				&& fromInfo instanceof NodeInfo) {
+		if (valInfo instanceof ConcreteElementInfo && fromInfo instanceof NodeInfo) {
 			statements.addNew(type, valInfo.toString(), fromInfo.toString());
 			return;
 		}
 
 		// type(linkGroup, node)
 		if (valInfo instanceof LinkGroupInfo && fromInfo instanceof NodeInfo) {
-			for (LinkInfo innerValLinkInfo : ((LinkGroupInfo) valInfo)
-					.getAllLinks().values()) {
-				statements.addNew(type, innerValLinkInfo.toString(),
-						fromInfo.toString());
+			for (LinkInfo innerValLinkInfo : ((LinkGroupInfo) valInfo).getAllLinks().values()) {
+				statements.addNew(type, innerValLinkInfo.toString(), fromInfo.toString());
 			}
 			return;
 		}
 
 		// type(node, nodegroup)
 		if (valInfo instanceof NodeInfo && fromInfo instanceof NodeGroupInfo) {
-			for (NodeInfo innerFromNodeInfo : ((NodeGroupInfo) fromInfo)
-					.getAllNodes().values()) {
-				statements.addNew(type, valInfo.toString(),
-						innerFromNodeInfo.toString());
+			for (NodeInfo innerFromNodeInfo : ((NodeGroupInfo) fromInfo).getAllNodes().values()) {
+				statements.addNew(type, valInfo.toString(), innerFromNodeInfo.toString());
 			}
 			return;
 		}
 
 		// type(nodegroup, node)
 		if (valInfo instanceof NodeGroupInfo && fromInfo instanceof NodeInfo) {
-			for (NodeInfo innerValNodeInfo : ((NodeGroupInfo) valInfo)
-					.getAllNodes().values()) {
-				statements.addNew(type, innerValNodeInfo.toString(),
-						fromInfo.toString());
+			for (NodeInfo innerValNodeInfo : ((NodeGroupInfo) valInfo).getAllNodes().values()) {
+				statements.addNew(type, innerValNodeInfo.toString(), fromInfo.toString());
 			}
 			return;
 		}
 
 		// type(nodegroup, nodegroup)
-		if (valInfo instanceof NodeGroupInfo
-				&& fromInfo instanceof NodeGroupInfo) {
-			for (NodeInfo innerValNodeInfo : ((NodeGroupInfo) valInfo)
-					.getAllNodes().values()) {
-				for (NodeInfo innerFromNodeInfo : ((NodeGroupInfo) fromInfo)
-						.getAllNodes().values()) {
-					statements.addNew(type, innerValNodeInfo.toString(),
-							innerFromNodeInfo.toString());
+		if (valInfo instanceof NodeGroupInfo && fromInfo instanceof NodeGroupInfo) {
+			for (NodeInfo innerValNodeInfo : ((NodeGroupInfo) valInfo).getAllNodes().values()) {
+				for (NodeInfo innerFromNodeInfo : ((NodeGroupInfo) fromInfo).getAllNodes().values()) {
+					statements.addNew(type, innerValNodeInfo.toString(), innerFromNodeInfo.toString());
 				}
 			}
 			return;
@@ -504,8 +486,7 @@ public class StatementExporterImpl implements StatementExporter {
 		throw new ElementExportationException();
 	}
 
-	private void newStatementWithLinkEndCheck(StatementType type,
-			String param1, String param2, LinkEnd end) {
+	private void newStatementWithLinkEndCheck(StatementType type, String param1, String param2, LinkEnd end) {
 		if (end == LinkEnd.Default) {
 			statements.addNew(type, param1, param2);
 		} else {
@@ -513,8 +494,9 @@ public class StatementExporterImpl implements StatementExporter {
 		}
 	}
 
-	private void processMostStatement(Class<? extends Annotation> type,
-			Class<?>[] val) {
+	private void processMostStatement(Class<? extends Annotation> type, Class<?>[] val) {
+
+		Pair<Class<?>, Class<? extends Annotation>> key = Pair.of(elementExporter.getCurrentParent(), type);
 		if (mostMap.containsKey(type)) {
 			problemReporter.multipleMostStatement(type, val);
 			return;
@@ -527,7 +509,7 @@ public class StatementExporterImpl implements StatementExporter {
 
 		try {
 			NodeGroupInfo info = elementExporter.exportAnonymousNodeGroup(val);
-			mostMap.put(type, info);
+			mostMap.put(key, info);
 		} catch (ElementExportationException e) {
 			problemReporter.mostStatementExportationFailed(type, val);
 		}
@@ -540,20 +522,28 @@ public class StatementExporterImpl implements StatementExporter {
 		for (Class<?> nodeClass : allNodes.keySet()) {
 			if (!mostedNodes.containsKey(nodeClass)) {
 				for (NodeInfo valNodeInfo : mostedNodes.values()) {
-					statements.addNew(type, valNodeInfo.toString(), allNodes
-							.get(nodeClass).toString());
+					// Both node's parent is null
+					// OR
+					// nodeClass's parent is NOT null 
+					//   AND 
+					//   both node's parent is the same
+					if ((elementExporter.getParent(nodeClass) == 
+							elementExporter.getParent(valNodeInfo.getElementClass())) 
+							|| (elementExporter.getParent(nodeClass) != null &&
+									elementExporter.getParent(nodeClass)
+									.equals(elementExporter.getParent(valNodeInfo.getElementClass())))) {
+						statements.addNew(type, valNodeInfo.toString(), allNodes.get(nodeClass).toString());
+					}
 				}
 			}
 		}
 	}
 
-	private void exportAlignmentWithGivenStatement(NodeGroupInfo info,
-			StatementType type) {
+	private void exportAlignmentWithGivenStatement(NodeGroupInfo info, StatementType type) {
 		NodeInfo prevNode = null;
 		for (NodeInfo currNode : info.getAllNodes().values()) {
 			if (prevNode != null) {
-				statements.addNew(type, prevNode.toString(),
-						currNode.toString());
+				statements.addNew(type, prevNode.toString(), currNode.toString());
 			}
 
 			prevNode = currNode;

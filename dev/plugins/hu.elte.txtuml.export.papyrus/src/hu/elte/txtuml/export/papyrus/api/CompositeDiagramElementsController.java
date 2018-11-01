@@ -7,6 +7,7 @@ import org.eclipse.uml2.uml.Property;
 
 import hu.elte.txtuml.export.papyrus.utils.ElementsManagerUtils;
 
+@Deprecated
 public class CompositeDiagramElementsController {
 	/**
 	 * @param diagramEditPart

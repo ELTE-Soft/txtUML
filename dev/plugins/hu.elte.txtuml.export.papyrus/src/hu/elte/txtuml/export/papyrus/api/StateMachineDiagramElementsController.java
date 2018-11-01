@@ -17,6 +17,7 @@ import org.eclipse.uml2.uml.Transition;
 
 import hu.elte.txtuml.export.papyrus.utils.ElementsManagerUtils;
 
+@Deprecated
 public class StateMachineDiagramElementsController {
 	
 	//**ELEMENT**//

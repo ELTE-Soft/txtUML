@@ -3,6 +3,8 @@ package hu.elte.txtuml.layout.visualizer.model;
 import java.util.HashSet;
 import java.util.Set;
 
+import hu.elte.txtuml.layout.visualizer.exceptions.ConversionException;
+
 /**
  * The class representing an abstract Integer Point.
  */
@@ -388,18 +390,7 @@ public class Point
 	 */
 	public boolean isInTheDirection(Point p, Direction dir)
 	{
-		Point dv = Point.Substract(p, this);
-		
-		if (dv.getX() > 0 && dir.equals(Direction.east))
-			return true;
-		if (dv.getX() < 0 && dir.equals(Direction.west))
-			return true;
-		if (dv.getY() > 0 && dir.equals(Direction.north))
-			return true;
-		if (dv.getY() < 0 && dir.equals(Direction.south))
-			return true;
-		
-		return false;
+		return isInTheDirection(p, dir, false);
 	}
 	
 	/**
@@ -439,6 +430,30 @@ public class Point
 	public Double length()
 	{
 		return Math.sqrt(Math.pow(_x, 2) + Math.pow(_y, 2));
+	}
+	
+	/**
+	 * Converts a Point(Vector) to a Direction.
+	 * 
+	 * @param p
+	 *            Point to convert.
+	 * @return The converted Direction.
+	 * @throws ConversionException
+	 *             Throws if no such Direction exists.
+	 */
+	public Direction asDirection() throws ConversionException
+	{
+		if (_x == 0 && _y > 0)
+			return Direction.north;
+		if (_x == 0 && _y < 0)
+			return Direction.south;
+		if (_x > 0 && _y == 0)
+			return Direction.east;
+		if (_x < 0 && _y == 0)
+			return Direction.west;
+		
+		throw new ConversionException("Cannot convert Point " + this.toString()
+				+ " to any Direction!");
 	}
 	
 	@Override

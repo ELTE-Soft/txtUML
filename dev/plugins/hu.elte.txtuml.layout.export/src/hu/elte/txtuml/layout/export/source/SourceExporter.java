@@ -52,5 +52,7 @@ public interface SourceExporter {
 	 * are shown on the diagram).
 	 */
 	void exportImpliedLinks(ModelId modelId, ElementExporter elementExporter);
+	
+	void exportDefaultParentage(ModelId modelId, ElementExporter elementExporter);
 
 }

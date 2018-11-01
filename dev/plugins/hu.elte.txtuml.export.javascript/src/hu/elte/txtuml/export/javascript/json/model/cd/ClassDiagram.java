@@ -11,20 +11,21 @@ import org.eclipse.persistence.oxm.annotations.XmlAccessMethods;
 import org.eclipse.uml2.uml.Association;
 import org.eclipse.uml2.uml.Classifier;
 
+import hu.elte.txtuml.export.diagrams.common.Point;
+import hu.elte.txtuml.export.diagrams.common.Rectangle;
+import hu.elte.txtuml.export.diagrams.common.arrange.ArrangeException;
+import hu.elte.txtuml.export.diagrams.common.arrange.LayoutTransformer;
+import hu.elte.txtuml.export.diagrams.common.arrange.LayoutVisualizerManager;
 import hu.elte.txtuml.export.javascript.scalers.ClassScaler;
 import hu.elte.txtuml.export.javascript.scalers.NodeScaler;
 import hu.elte.txtuml.export.javascript.utils.LinkUtils;
 import hu.elte.txtuml.export.javascript.utils.NodeUtils;
-import hu.elte.txtuml.export.papyrus.elementsarrangers.ArrangeException;
-import hu.elte.txtuml.export.papyrus.elementsarrangers.txtumllayout.LayoutVisualizerManager;
 import hu.elte.txtuml.export.uml2.mapping.ModelMapProvider;
 import hu.elte.txtuml.layout.export.DiagramExportationReport;
 import hu.elte.txtuml.layout.visualizer.model.AssociationType;
+import hu.elte.txtuml.layout.visualizer.model.DiagramType;
 import hu.elte.txtuml.layout.visualizer.model.LineAssociation;
 import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
-import hu.elte.txtuml.utils.diagrams.LayoutTransformer;
-import hu.elte.txtuml.utils.diagrams.Point;
-import hu.elte.txtuml.utils.diagrams.Rectangle;
 
 /**
  * 
@@ -71,8 +72,8 @@ public class ClassDiagram {
 	 * @throws UnexpectedException
 	 *             Exception is thrown if a diagram contains unexpected parts
 	 */
-	public ClassDiagram(String diagramName, DiagramExportationReport der, ModelMapProvider map)
-			throws UnexpectedEndException, ArrangeException {
+	public ClassDiagram(String diagramName, DiagramExportationReport der, ModelMapProvider map,
+			ClassDiagramPixelDimensionProvider provider) throws UnexpectedEndException, ArrangeException {
 		name = diagramName;
 		classes = new ArrayList<ClassNode>();
 		attributeLinks = new ArrayList<ClassAttributeLink>();
@@ -92,14 +93,14 @@ public class ClassDiagram {
 
 			classes.add(cn);
 		}
+
 		// arranging the diagram
-		LayoutVisualizerManager lvm = new LayoutVisualizerManager(nodes, links, der.getStatements());
+		LayoutVisualizerManager lvm = new LayoutVisualizerManager(nodes, links, der.getStatements(), DiagramType.Class,
+				provider);
 		lvm.arrange();
 
 		// scaling and transforming nodes and links
-		LayoutTransformer lt = new LayoutTransformer(lvm.getPixelGridRatioHorizontal(),
-				lvm.getPixelGridRatioVertical());
-
+		LayoutTransformer lt = new LayoutTransformer();
 		Map<String, Rectangle> ltrmap = NodeUtils.getRectMapfromROCollection(lvm.getObjects());
 		Map<String, List<Point>> ltpmap = LinkUtils.getPointMapfromLACollection(lvm.getAssociations());
 

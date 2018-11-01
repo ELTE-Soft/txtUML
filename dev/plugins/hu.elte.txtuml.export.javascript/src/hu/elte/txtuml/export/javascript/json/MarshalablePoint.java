@@ -2,7 +2,7 @@ package hu.elte.txtuml.export.javascript.json;
 
 import javax.xml.bind.annotation.XmlAttribute;
 
-import hu.elte.txtuml.utils.diagrams.Point;
+import hu.elte.txtuml.export.diagrams.common.Point;
 
 /**
  * 

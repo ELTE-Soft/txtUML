@@ -75,13 +75,15 @@ public interface StatementExporter {
 
 	void exportShow(Show annot);
 	
+	Class<?> exportInside(hu.elte.txtuml.api.layout.Inside annot);
+	
 	void exportColumn(Column annot);
 	
 	void exportRow(Row annot);
 	
 	void exportDiamond(Diamond annot);
 	
-	void exportCorridorRatio(Spacing annot);
+	void exportSpacing(Spacing annot);
 	
 	// statement container exporters
 	

@@ -5,11 +5,12 @@ Bundle-SymbolicName: hu.elte.txtuml.export.papyrus;singleton:=true
 Bundle-Version: 0.7.0.qualifier
 Bundle-Vendor: ELTE
 Require-Bundle: 
+ hu.elte.txtuml.utils,
+ hu.elte.txtuml.export.diagrams.common,
  hu.elte.txtuml.layout.visualizer,
  hu.elte.txtuml.layout.export,
  hu.elte.txtuml.api.model,
  hu.elte.txtuml.api.layout,
- hu.elte.txtuml.utils,
  hu.elte.txtuml.export.uml2,
  org.eclipse.gmf.tooling.runtime,
  org.eclipse.debug.ui,
@@ -34,20 +35,12 @@ Require-Bundle:
  org.eclipse.emf.ecore,
  org.eclipse.jdt.ui,
  com.google.guava,
- hu.elte.txtuml.utils.eclipse,
- org.eclipse.core.expressions
+ org.eclipse.core.jobs,
+ org.eclipse.core.expressions,
+ hu.elte.txtuml.utils.eclipse;bundle-version="0.7.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Export-Package: hu.elte.txtuml.export.papyrus,
- hu.elte.txtuml.export.papyrus.elementsarrangers,
- hu.elte.txtuml.export.papyrus.elementsarrangers.gmflayout,
- hu.elte.txtuml.export.papyrus.elementsarrangers.txtumllayout,
- hu.elte.txtuml.export.papyrus.elementsmanagers,
- hu.elte.txtuml.export.papyrus.graphics,
- hu.elte.txtuml.export.papyrus.handlers,
- hu.elte.txtuml.export.papyrus.layout.txtuml,
- hu.elte.txtuml.export.papyrus.papyrusmodelmanagers,
- hu.elte.txtuml.export.papyrus.preferences,
+ hu.elte.txtuml.export.papyrus.arrange,
  hu.elte.txtuml.export.papyrus.wizardz
-Import-Package: hu.elte.txtuml.utils.diagrams,
- hu.elte.txtuml.utils.eclipse
+Import-Package: hu.elte.txtuml.utils.eclipse

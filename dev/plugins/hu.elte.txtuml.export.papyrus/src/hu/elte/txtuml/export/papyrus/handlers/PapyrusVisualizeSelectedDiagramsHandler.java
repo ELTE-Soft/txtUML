@@ -18,7 +18,7 @@ import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.ui.handlers.HandlerUtil;
 
 import hu.elte.txtuml.export.papyrus.wizardz.PapyrusVisualizeWizard;
-import hu.elte.txtuml.utils.eclipse.wizards.VisualizeTxtUMLPage;
+import hu.elte.txtuml.export.diagrams.common.wizards.VisualizeTxtUMLPage;
 
 public class PapyrusVisualizeSelectedDiagramsHandler extends AbstractHandler {
 

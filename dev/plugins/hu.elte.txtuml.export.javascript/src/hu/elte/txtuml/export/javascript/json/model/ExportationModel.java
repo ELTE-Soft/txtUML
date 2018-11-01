@@ -6,11 +6,15 @@ import java.util.List;
 
 import org.eclipse.persistence.oxm.annotations.XmlAccessMethods;
 
+import hu.elte.txtuml.export.diagrams.common.arrange.ArrangeException;
+import hu.elte.txtuml.export.diagrams.common.layout.IDiagramElementsMapper;
+import hu.elte.txtuml.export.diagrams.common.layout.TxtUMLElementsMapper;
 import hu.elte.txtuml.export.javascript.UnexpectedDiagramTypeException;
 import hu.elte.txtuml.export.javascript.json.model.cd.ClassDiagram;
+import hu.elte.txtuml.export.javascript.json.model.cd.ClassDiagramPixelDimensionProvider;
 import hu.elte.txtuml.export.javascript.json.model.cd.UnexpectedEndException;
 import hu.elte.txtuml.export.javascript.json.model.smd.SMDiagram;
-import hu.elte.txtuml.export.papyrus.elementsarrangers.ArrangeException;
+import hu.elte.txtuml.export.javascript.json.model.smd.StateMachineDiagramPixelDimensionProvider;
 import hu.elte.txtuml.export.uml2.mapping.ModelMapProvider;
 import hu.elte.txtuml.layout.export.DiagramExportationReport;
 
@@ -62,15 +66,18 @@ public class ExportationModel {
 	 * @throws UnexpectedException
 	 *             Exception is thrown if a diagram contains unexpected parts
 	 */
-	public void createDiagram(String diagramName, DiagramExportationReport der, ModelMapProvider map)
+	public void createDiagram(String diagramName, DiagramExportationReport der, ModelMapProvider map,
+			TxtUMLElementsMapper elementsMapper)
 			throws UnexpectedEndException, ArrangeException, UnexpectedDiagramTypeException, UnexpectedException {
-
+		IDiagramElementsMapper mapper = elementsMapper.getMapperForReport(der);
 		switch (der.getType()) {
 		case Class:
-			classDiagrams.add(new ClassDiagram(diagramName, der, map));
+			ClassDiagramPixelDimensionProvider clazzPxProvider = new ClassDiagramPixelDimensionProvider(mapper);
+			classDiagrams.add(new ClassDiagram(diagramName, der, map, clazzPxProvider));
 			break;
 		case StateMachine:
-			stateMachines.add(new SMDiagram(diagramName, der, map));
+			StateMachineDiagramPixelDimensionProvider stmPxProvider = new StateMachineDiagramPixelDimensionProvider();
+			stateMachines.add(new SMDiagram(diagramName, der, map, stmPxProvider));
 			break;
 		default:
 			throw new UnexpectedDiagramTypeException(diagramName, der.getType().name());
@@ -90,7 +97,7 @@ public class ExportationModel {
 	public List<SMDiagram> getStateMachines() {
 		return stateMachines;
 	}
-	
+
 	/**
 	 * @return the model name
 	 */
@@ -99,7 +106,8 @@ public class ExportationModel {
 	}
 
 	/**
-	 * @param modelName - the name of the model
+	 * @param modelName
+	 *            - the name of the model
 	 */
 	public void setModelName(String modelName) {
 		this.modelName = modelName;

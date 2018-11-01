@@ -27,6 +27,7 @@
 		<module>../../plugins/hu.elte.txtuml.api.model.execution</module>
 		<module>../../plugins/hu.elte.txtuml.diagnostics</module>
 		<module>../../plugins/hu.elte.txtuml.export.cpp</module>
+		<module>../../plugins/hu.elte.txtuml.export.diagrams.common</module>
 		<module>../../plugins/hu.elte.txtuml.export.javascript</module>
 		<module>../../plugins/hu.elte.txtuml.export.papyrus</module>
 		<module>../../plugins/hu.elte.txtuml.export.uml2</module>
@@ -45,6 +46,7 @@
 		<module>../../tests/hu.elte.txtuml.api.model.execution.tests</module>
 		<module>../../tests/hu.elte.txtuml.diagnostics.tests</module>
 		<module>../../tests/hu.elte.txtuml.export.cpp.tests</module>
+		<module>../../tests/hu.elte.txtuml.export.diagrams.common.tests</module>
 		<module>../../tests/hu.elte.txtuml.export.javascript.tests</module>
 		<module>../../tests/hu.elte.txtuml.export.papyrus.tests</module>
 		<module>../../tests/hu.elte.txtuml.export.uml2.tests</module>

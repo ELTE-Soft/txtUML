@@ -14,7 +14,15 @@ public enum DiagramType
 	 */
 	State,
 	/**
+	 * Composite Diagram
+	 */
+	Composite,
+	/**
 	 * Activity Diagram
 	 */
-	Activity
+	Activity,
+	/**
+	 * Unknown Diagram
+	 */
+	unknown
 }

@@ -61,6 +61,13 @@ public class ClassDiagramExporter extends AbstractSourceExporter {
 	}
 
 	@Override
+	public void exportDefaultParentage(ModelId modelId, 
+			ElementExporter elementExporter)
+	{
+		// Done.
+	}
+	
+	@Override
 	public void exportImpliedLinks(ModelId modelId, ElementExporter elementExporter) {
 
 		if (modelId instanceof ModelIdImpl) {

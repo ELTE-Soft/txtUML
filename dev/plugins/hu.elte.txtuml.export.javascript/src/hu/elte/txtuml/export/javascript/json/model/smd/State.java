@@ -2,8 +2,8 @@ package hu.elte.txtuml.export.javascript.json.model.smd;
 
 import org.eclipse.persistence.oxm.annotations.XmlAccessMethods;
 
+import hu.elte.txtuml.export.diagrams.common.Rectangle;
 import hu.elte.txtuml.export.javascript.json.MarshalablePoint;
-import hu.elte.txtuml.utils.diagrams.Rectangle;
 
 /**
  * 

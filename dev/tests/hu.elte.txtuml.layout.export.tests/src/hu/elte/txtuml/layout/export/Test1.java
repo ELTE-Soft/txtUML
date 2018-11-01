@@ -73,10 +73,10 @@ class Diagram1 extends ClassDiagram {
 	class MyClass {
 	}
 
-	class F extends Phantom {
+	class F extends Box {
 	}
 
-	class G extends Phantom {
+	class G extends Box {
 	}
 
 	@Deprecated

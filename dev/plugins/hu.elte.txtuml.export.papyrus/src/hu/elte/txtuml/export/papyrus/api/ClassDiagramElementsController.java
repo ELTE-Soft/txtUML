@@ -19,6 +19,7 @@ import org.eclipse.uml2.uml.Reception;
 
 import hu.elte.txtuml.export.papyrus.utils.ElementsManagerUtils;
 
+@Deprecated
 public class ClassDiagramElementsController {
 
 	/**

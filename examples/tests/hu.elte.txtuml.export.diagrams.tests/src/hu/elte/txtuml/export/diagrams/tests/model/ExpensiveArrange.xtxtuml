@@ -1,0 +1,264 @@
+package hu.elte.txtuml.export.diagrams.tests.model;
+
+class ExpensiveArrange {
+
+	initial Init;
+	state S1;
+	state S2;
+	state S3;
+	composite S4 {
+		initial InitS4;
+		state S41;
+		state S42;
+		state S43;
+		composite S44 {
+			initial InitS44;
+			state S441;
+			state S442;
+			state S443;
+			state S444;
+			
+			transition initS44ToS441 {
+				from InitS44;
+				to S441;
+			}
+			transition S441toS442 {
+				from S441;
+				to S442;
+				trigger Signal1;
+			}
+			transition S442toS443 {
+				from S442;
+				to S443;
+				trigger Signal2;
+			}
+			transition S443toS444 {
+				from S443;
+				to S444;
+				trigger Signal3;
+			}
+			transition S444toS442 {
+				from S444;
+				to S442;
+				trigger Signal4;
+			}
+		}
+		state S45;
+		
+		transition initS4ToS41 {
+			from InitS4;
+			to S41;
+		}
+		transition S41toS42 {
+			from S41;
+			to S42;
+			trigger Signal1;
+		}
+		transition S41toS43 {
+			from S41;
+			to S43;
+			trigger Signal6;
+		}
+		transition S42toS43 {
+			from S42;
+			to S43;
+			trigger Signal2;
+		}
+		transition S42toS41 {
+			from S42;
+			to S41;
+			trigger Signal3;
+		}
+		transition S43toS44 {
+			from S43;
+			to S44;
+			trigger Signal6;
+		}
+		transition S43toS41 {
+			from S43;
+			to S41;
+			trigger Signal1;
+		}
+		transition S44toS45 {
+			from S44;
+			to S45;
+			trigger Signal1;
+		}
+		transition S45toS43 {
+			from S45;
+			to S43;
+			trigger Signal2;
+		}
+		transition S45toS42 {
+			from S45;
+			to S42;
+			trigger Signal3;
+		}
+		transition S45toS44 {
+			from S45;
+			to S44;
+			trigger Signal4;
+		}
+	}
+	state S5;
+	composite S6 {
+		initial InitS6;
+		state S61;
+		state S62;
+		state S63;
+		state S64;
+		state S65;
+		composite S66 {
+			initial InitS66;
+			state S661;
+			state S662;
+			transition initS66ToS661 {
+				from InitS66;
+				to S661;
+			}
+			transition S661toS662 {
+				from S661;
+				to S662;
+				trigger Signal1;
+			}
+		}
+		transition initS6ToS61 {
+			from InitS6;
+			to S61;
+		}
+		transition S61toS62 {
+			from S61;
+			to S62;
+			trigger Signal1;
+		}
+		transition S62toS65 {
+			from S62;
+			to S65;
+			trigger Signal1;
+		}
+		transition S62toS63 {
+			from S62;
+			to S63;
+			trigger Signal2;
+		}
+		transition S63toS65 {
+			from S63;
+			to S65;
+			trigger Signal1;
+		}
+		transition S62toS64 {
+			from S62;
+			to S64;
+			trigger Signal2;
+		}
+		transition S62toS66 {
+			from S62;
+			to S66;
+			trigger Signal3;
+		}
+	}
+	state S7;
+
+	transition initToS1 {
+		from Init;
+		to S1;
+	}
+
+	transition S1ToS2 {
+		from S1;
+		to S2;
+		trigger Signal1;
+	}
+
+	transition S2ToS3 {
+		from S2;
+		to S3;
+		trigger Signal2;
+	}
+
+	transition S3ToS4 {
+		from S3;
+		to S4;
+		trigger Signal1;
+	}
+
+	transition S3ToS5 {
+		from S3;
+		to S5;
+		trigger Signal4;
+	}
+
+	transition S3ToS6 {
+		from S3;
+		to S6;
+		trigger Signal5;
+	}
+
+	transition S4ToS6 {
+		from S4;
+		to S6;
+		trigger Signal1;
+	}
+
+	transition S4ToS1 {
+		from S4;
+		to S1;
+		trigger Signal2;
+	}
+
+	transition S4ToS7 {
+		from S4;
+		to S7;
+		trigger Signal6;
+	}
+
+	transition S5ToS6 {
+		from S5;
+		to S6;
+		trigger Signal1;
+	}
+
+	transition S5ToS2 {
+		from S5;
+		to S2;
+		trigger Signal2;
+	}
+
+	transition S5ToS3 {
+		from S5;
+		to S3;
+		trigger Signal3;
+	}
+
+	transition S6ToS5 {
+		from S6;
+		to S5;
+		trigger Signal3;
+	}
+
+	transition S6ToS1 {
+		from S6;
+		to S1;
+		trigger Signal2;
+	}
+
+	transition S7ToS1 {
+		from S7;
+		to S1;
+		trigger Signal3;
+	}
+
+	transition S7ToS2 {
+		from S7;
+		to S2;
+		trigger Signal1;
+	}
+
+	transition S7ToS4 {
+		from S7;
+		to S4;
+		trigger Signal6;
+	}
+
+}
+

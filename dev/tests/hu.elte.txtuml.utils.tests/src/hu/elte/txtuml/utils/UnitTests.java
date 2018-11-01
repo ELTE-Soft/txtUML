@@ -4,10 +4,8 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
-import hu.elte.txtuml.utils.diagrams.LayoutTransformerTest;
-
 @RunWith(Suite.class)
-@SuiteClasses({ InstanceCreatorTests.class, LayoutTransformerTest.class })
+@SuiteClasses({ InstanceCreatorTests.class })
 public class UnitTests {
 
 }

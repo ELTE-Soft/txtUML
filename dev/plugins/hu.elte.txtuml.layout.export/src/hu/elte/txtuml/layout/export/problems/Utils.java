@@ -55,6 +55,10 @@ public class Utils {
         return type.getSimpleName().toLowerCase() + "({" + classArrayAsString(val) + "})";
     }
     
+    public static String spacingStatementAsString(Double val) {
+        return "spacing(" + val.toString() + ")";
+    }
+    
     public static String priorityStatementAsString(Class<?>[] val, int prior) {
         return "priority(val = {" + classArrayAsString(val) + "}, prior = " + Integer.toString(prior) + ")";
     }

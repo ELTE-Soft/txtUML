@@ -12,6 +12,7 @@ import org.eclipse.core.runtime.Plugin;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.PlatformUI;
 
 public class Dialogs {
@@ -49,7 +50,11 @@ public class Dialogs {
 	    MultiStatus ms = new MultiStatus(plugin.getBundle().getSymbolicName(), IStatus.ERROR,
 	            childStatuses.toArray(new Status[] {}), // convert to array of statuses
 	            e.getLocalizedMessage(), e);
-	    ErrorDialog.openError(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), title, body, ms);
+	    final String dialogTitle = title;
+	    final String dialogBody = body;
+	    Display.getDefault().syncExec(() -> {
+	    	ErrorDialog.openError(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), dialogTitle, dialogBody, ms);
+	    });
 	}
 	
 	

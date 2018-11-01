@@ -14,7 +14,9 @@ public class StatementListImpl extends ArrayList<Statement> implements Statement
 
 	@Override
 	public void addNew(StatementType type, String... params) {
-		add(new Statement(type, params));
+		Statement toAdd = new Statement(type, params);
+		if(!contains(toAdd))
+			add(toAdd);
 	}
 
 }

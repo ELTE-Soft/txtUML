@@ -5,9 +5,9 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import org.eclipse.persistence.oxm.annotations.XmlAccessMethods;
 import org.eclipse.uml2.uml.PseudostateKind;
 
+import hu.elte.txtuml.export.diagrams.common.Rectangle;
 import hu.elte.txtuml.export.javascript.json.EnumAdapter;
 import hu.elte.txtuml.export.javascript.json.MarshalablePoint;
-import hu.elte.txtuml.utils.diagrams.Rectangle;
 
 /**
  * 

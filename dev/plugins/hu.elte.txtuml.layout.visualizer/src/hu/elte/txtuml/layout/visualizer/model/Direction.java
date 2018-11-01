@@ -1,6 +1,7 @@
 package hu.elte.txtuml.layout.visualizer.model;
 
 import hu.elte.txtuml.layout.visualizer.exceptions.ConversionException;
+import hu.elte.txtuml.layout.visualizer.statements.StatementType;
 
 /**
  * Enumeration for Directions.
@@ -74,4 +75,31 @@ public enum Direction
 				+ " to Direction!");
 	}
 	
+	/**
+	 * Method to convert {@link Direction} to {@link StatementType}.
+	 * 
+	 * @param dir
+	 *            Dire.ction to convert
+	 * @return The converted StatementType
+	 * @throws ConversionException
+	 *             Throws if the given Direction is cannot be converted to any
+	 *             StatementType.
+	 */
+	public StatementType asStatementType() throws ConversionException
+	{
+		switch (this)
+		{
+			case north:
+				return StatementType.north;
+			case south:
+				return StatementType.south;
+			case east:
+				return StatementType.east;
+			case west:
+				return StatementType.west;
+			default:
+				throw new ConversionException("Cannot convert direction " + this.toString()
+						+ " to StatementType!");
+		}
+	}
 }

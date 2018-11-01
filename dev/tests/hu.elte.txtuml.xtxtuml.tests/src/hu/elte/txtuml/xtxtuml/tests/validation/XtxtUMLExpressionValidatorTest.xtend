@@ -21,7 +21,7 @@ class XtxtUMLExpressionValidatorTest {
 	@Inject extension ParseHelper<TUFile>;
 	@Inject extension ValidationTestHelper;
 	@Inject extension XtxtUMLValidationTestUtils;
-
+	
 	@Test
 	def checkMandatoryIntentionalReturn() {
 		'''

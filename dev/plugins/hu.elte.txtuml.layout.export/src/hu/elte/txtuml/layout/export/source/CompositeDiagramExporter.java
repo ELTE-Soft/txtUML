@@ -41,4 +41,10 @@ public class CompositeDiagramExporter  extends AbstractSourceExporter {
 		
 	}
 
+	@Override
+	public void exportDefaultParentage(ModelId modelId, ElementExporter elementExporter) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

@@ -14,6 +14,7 @@ import hu.elte.txtuml.api.layout.StateMachineDiagram;
 import hu.elte.txtuml.api.layout.Diagram.Layout;
 import hu.elte.txtuml.api.layout.Diamond;
 import hu.elte.txtuml.api.layout.East;
+import hu.elte.txtuml.api.layout.Inside;
 import hu.elte.txtuml.api.layout.Left;
 import hu.elte.txtuml.api.layout.LeftMost;
 import hu.elte.txtuml.api.layout.North;
@@ -86,28 +87,44 @@ public class DiagramExporterImpl implements DiagramExporter {
 			report.setModelName(elementExporter.getModelName());
 			report.setType(elementExporter.getDiagramTypeBasedOnElements());
 			report.setStatements(statementExporter.getStatements());
+			
 			report.setNodes(elementExporter.getNodesAsObjects());
 			report.setLinks(elementExporter.getLinksAsLines());
 		}
 
 		return report;
 	}
-
-	@SuppressWarnings("unchecked")
-	// All casts are checked with reflection.
+	
 	private void exportDiagram() {
-
-		if(isClassDiagram(diagClass)) {
-			//report.setReferencedElementName(diagClass.getPackage().getName() + ".model");
+		exportDiagramBody(diagClass);
+		elementExporter.exportDefaultParentage();
+		// exportation finalizers
+		statementExporter.resolveMosts();
+		statementExporter.exportPhantoms();
+		elementExporter.exportImpliedLinks();
+		
+		if(isClassDiagram(diagClass))
+		{
+			report.setReferencedElementName(elementExporter.getModelName());
 		} 
 		else if(isStateMachineDiagram(diagClass) || isCompositeDiagram(diagClass)) {
 			Class<?> cls = (Class<?>)((ParameterizedType)diagClass.getGenericSuperclass()).getActualTypeArguments()[0];
 			report.setReferencedElementName(cls.getCanonicalName());
 		}
 		else {
-			report.error("No proper Diagram class found (ClassDiagram or StateMachineDiagram<T>)");
+			report.error("No proper Diagram class found (ClassDiagram, StateMachineDiagram<T> or CompositeStructureDiagram)");
 		}
-		
+	}
+	
+	private void exportDiagramBody(Class<?> diagClass)
+	{
+		exportDiagramBody(diagClass, null);
+	}
+	
+	@SuppressWarnings("unchecked")
+	// All casts are checked with reflection.
+	private void exportDiagramBody(Class<?> diagClass, Class<?> phantomParent)
+	{
 		Class<? extends Diagram.Layout> layoutClass = null;
 
 		for (Class<?> innerClass : diagClass.getDeclaredClasses()) {
@@ -125,6 +142,15 @@ public class DiagramExporterImpl implements DiagramExporter {
 
 				} else if (ElementExporter.isPhantom(innerClass)) {
 					elementExporter.exportPhantom(innerClass);
+					elementExporter.startOfParent(innerClass);
+					exportDiagramBody(innerClass, innerClass);
+					elementExporter.endOfParent();
+					
+				} else if(ElementExporter.isBoxContainer(innerClass)){
+					Class<?> boxClass = statementExporter.exportInside(innerClass.getAnnotation(Inside.class));
+					elementExporter.startOfParent(boxClass);
+					exportDiagramBody(innerClass);
+					elementExporter.endOfParent();
 
 				} else if (isLayout(innerClass)) {
 					if (layoutClass != null) {
@@ -150,7 +176,7 @@ public class DiagramExporterImpl implements DiagramExporter {
 			exportLayout(layoutClass);
 		}
 	}
-
+	
 	private boolean isClassDiagram(Class<? extends Diagram> cls)
 	{
 		return ClassDiagram.class.isAssignableFrom(cls);
@@ -223,7 +249,8 @@ public class DiagramExporterImpl implements DiagramExporter {
 				statementExporter.exportDiamond((Diamond) annot);
 
 			} else if (isOfType(Spacing.class, annot)) {
-				statementExporter.exportCorridorRatio((Spacing) annot);
+				statementExporter.exportSpacing((Spacing) annot);
+				
 			} else if (isOfType(AboveContainer.class, annot)) {
 				statementExporter.exportAboveContainer((AboveContainer) annot);
 
@@ -272,11 +299,6 @@ public class DiagramExporterImpl implements DiagramExporter {
 			}
 
 		}
-
-		// exportation finalizers
-		statementExporter.resolveMosts();
-		statementExporter.exportPhantoms();
-		elementExporter.exportImpliedLinks();
 	}
 
 	private static boolean isOfType(

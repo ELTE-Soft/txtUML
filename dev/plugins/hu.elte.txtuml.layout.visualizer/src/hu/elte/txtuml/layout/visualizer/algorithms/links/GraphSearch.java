@@ -6,18 +6,19 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Set;
+import java.util.function.Function;
 
-import hu.elte.txtuml.layout.visualizer.algorithms.links.graphsearchhelpers.Boundary;
-import hu.elte.txtuml.layout.visualizer.algorithms.links.graphsearchhelpers.Color;
-import hu.elte.txtuml.layout.visualizer.algorithms.links.graphsearchhelpers.Cost;
-import hu.elte.txtuml.layout.visualizer.algorithms.links.graphsearchhelpers.Graph;
-import hu.elte.txtuml.layout.visualizer.algorithms.links.graphsearchhelpers.Link;
-import hu.elte.txtuml.layout.visualizer.algorithms.links.graphsearchhelpers.Node;
-import hu.elte.txtuml.layout.visualizer.algorithms.links.graphsearchhelpers.Parent;
+import hu.elte.txtuml.layout.visualizer.algorithms.links.graphsearchutils.Color;
+import hu.elte.txtuml.layout.visualizer.algorithms.links.graphsearchutils.Cost;
+import hu.elte.txtuml.layout.visualizer.algorithms.links.graphsearchutils.Graph;
+import hu.elte.txtuml.layout.visualizer.algorithms.links.graphsearchutils.Link;
+import hu.elte.txtuml.layout.visualizer.algorithms.links.graphsearchutils.Node;
+import hu.elte.txtuml.layout.visualizer.algorithms.links.graphsearchutils.Parent;
 import hu.elte.txtuml.layout.visualizer.exceptions.CannotFindAssociationRouteException;
 import hu.elte.txtuml.layout.visualizer.exceptions.CannotStartAssociationRouteException;
 import hu.elte.txtuml.layout.visualizer.exceptions.ConversionException;
 import hu.elte.txtuml.layout.visualizer.exceptions.InternalException;
+import hu.elte.txtuml.layout.visualizer.model.Boundary;
 import hu.elte.txtuml.layout.visualizer.model.Direction;
 import hu.elte.txtuml.layout.visualizer.model.Point;
 import hu.elte.txtuml.utils.Pair;
@@ -29,9 +30,10 @@ class GraphSearch {
 
 	// Constants
 
-	private final Double WEIGHT_LENGTH = 1.0; // 2.9
+	private Double WEIGHT_LENGTH = 1.0; // 2.9
+	private Double WEIGHT_REFLEXIVE_LENGTH = 1.0;
 	private final Double WEIGHT_TURNS = 3.2; // 2.7
-	private final Double WEIGHT_CROSSING = 2.0; // 2.0
+	private final Double WEIGHT_CROSSING = 10.0; // 2.0
 
 	// end Constants
 
@@ -49,6 +51,10 @@ class GraphSearch {
 	private Parent<Node> PI;
 
 	private HashMap<Node, Double> _heuristic;
+	
+	private Function<Node, Double> heuristicFunction;
+	
+	private int maxDistanceBetweenPossibleEndpoints;
 
 	// end Variables
 
@@ -81,6 +87,40 @@ class GraphSearch {
 	public GraphSearch(Set<Pair<Node, Double>> ss, Set<Pair<Node, Double>> es, Map<Point, Color> cols, Boundary bounds)
 			throws CannotFindAssociationRouteException, CannotStartAssociationRouteException, ConversionException,
 			InternalException {
+		this(ss, es, cols, bounds, false, null, null);
+	}
+	
+	/**
+	 * Creates a graph to find a route in it from start to end. If the link is not recursive, the route length is
+	 * minimal, otherwise the difference between the route length and the maximum distance between two endpoints is minimal. Route cornering is minimal.
+	 * 
+	 * @param ss
+	 *            Set of start Nodes.
+	 * @param es
+	 *            Set of end Nodes to reach.
+	 * @param cols
+	 *            Nodes we have to skip (already occupied).
+	 * @param bounds
+	 *            Bounds of the maximum width of the graph to search in.
+	 * @param isReflexive
+	 * 			  Indicates whether the link represented by this route is reflexive.
+	 * @throws CannotFindAssociationRouteException
+	 *             Throws if there is no route from start->end.
+	 * @throws CannotStartAssociationRouteException
+	 *             Throws if the algorithm cannot even start the route from
+	 *             start.
+	 * @throws ConversionException
+	 *             Throws if the algorithm cannot convert a {@link Point} to a
+	 *             {@link Direction} or vice versa.
+	 * @throws InternalException
+	 *             Throws if the algorithm encounters something which it should
+	 *             not have.
+	 */
+	public GraphSearch(Set<Pair<Node, Double>> ss, Set<Pair<Node, Double>> es, Map<Point, Color> cols, Boundary bounds, boolean isReflexive, Set<Point> startBoxPerimeterPoints, Set<Point> endBoxPerimeterPoints)
+			throws CannotFindAssociationRouteException, CannotStartAssociationRouteException, ConversionException,
+			InternalException {
+		
+
 		// Initialize
 		G = new Graph<Node>(); // Graph
 		AvailableNodes = new PriorityQueue<Node>((x, y) -> nodeComparator(x, y)); // 'Open'
@@ -89,7 +129,8 @@ class GraphSearch {
 		PI = new Parent<Node>(); // Parent relation
 		_end = new Node(new Point(), new Point());
 		_endSet = new HashSet<Node>();
-		_colors = cols;
+		_colors = new HashMap<>(cols);
+
 		_boundary = bounds;
 		_extends = 0;
 		_heuristic = new HashMap<Node, Double>();
@@ -99,14 +140,20 @@ class GraphSearch {
 			_endSet.add(pair.getFirst());
 			g.set(pair.getFirst(), pair.getSecond());
 		}
-
+		
+		if(isReflexive){
+			initializeReflexiveHeuristic();
+		}else{
+			initializeNonReflexiveHeuristic();
+		}
+		//HashMap<, > pointsMissingFromSide
 		// Extend StartSet
 		for (Pair<Node, Double> pair : ss) {
 			PI.set(pair.getFirst(), null);
 			g.set(pair.getFirst(), 2 * WEIGHT_LENGTH + pair.getSecond());
 			AvailableNodes.add(pair.getFirst());
 		}
-
+		
 		if (!search()) {
 			throw new CannotFindAssociationRouteException("No Route from START to END!");
 		}
@@ -115,6 +162,52 @@ class GraphSearch {
 	// end Ctors
 
 	// Methods
+	
+	private void initializeReflexiveHeuristic(){
+		maxDistanceBetweenPossibleEndpoints = _endSet.stream().map(p1 -> {
+			return _endSet.stream().map(p2 -> {
+				return Math.max(Math.abs(p1.getTo().getX() - p2.getTo().getX()), Math.abs(p1.getTo().getY() - p2.getTo().getY()));
+			}).max((d1, d2) -> Integer.compare(d1, d2)).get();
+		}).max((d1, d2) -> Integer.compare(d1, d2)).get();
+		
+		heuristicFunction = new Function<Node, Double>(){
+
+			@Override
+			public Double apply(Node p) {
+				if (_heuristic.containsKey(p))
+					return _heuristic.get(p);
+
+				Double remainingTurns = manhattanLeastTurns(p);
+				Double reflexiveLength = reflexiveLinkMinLength(p);
+				Double result = (WEIGHT_TURNS * remainingTurns + WEIGHT_REFLEXIVE_LENGTH * reflexiveLength);
+
+				_heuristic.put(p, result);
+
+				return result;
+			}
+			
+		};
+	}
+	
+	private void initializeNonReflexiveHeuristic(){
+		heuristicFunction = new Function<Node, Double>(){
+
+			@Override
+			public Double apply(Node p) {
+				if (_heuristic.containsKey(p))
+					return _heuristic.get(p);
+
+				Pair<Double, Node> distance = manhattanDistance(p);
+				Double remainingTurns = manhattanLeastTurns(p);
+				Double result = (WEIGHT_TURNS * remainingTurns + WEIGHT_LENGTH * distance.getFirst());
+
+				_heuristic.put(p, result);
+
+				return result;
+			}
+			
+		};
+	}
 
 	private boolean search() {
 		while (true) {
@@ -172,7 +265,7 @@ class GraphSearch {
 	// Evaluation function
 	private Double f(Node p) {
 		Double cost = g.get(p);
-		Double heuristic = h(p);
+		Double heuristic = heuristicFunction.apply(p);
 
 		return cost + heuristic;
 	}
@@ -183,8 +276,9 @@ class GraphSearch {
 
 		Pair<Double, Node> distance = manhattanDistance(p);
 		Double remainingTurns = manhattanLeastTurns(p);
+		Double reflexiveLength = 0.0;//reflexiveLinkMinLength(p);
 		// manhattanLeastTurnsCheckingOccupied(p, distance.getSecond());
-		Double result = (WEIGHT_TURNS * remainingTurns + WEIGHT_LENGTH * distance.getFirst());
+		Double result = (WEIGHT_TURNS * remainingTurns + WEIGHT_LENGTH * distance.getFirst() + WEIGHT_REFLEXIVE_LENGTH * reflexiveLength);
 
 		_heuristic.put(p, result);
 
@@ -192,7 +286,24 @@ class GraphSearch {
 	}
 
 	// Metrics
-
+	
+	private Double reflexiveLinkMinLength(Node a){		
+		return Math.abs(maxDistanceBetweenPossibleEndpoints - linkLengthUpTo(a));
+	}
+	
+	private Double linkLengthUpTo(Node a){
+		if(a == null)
+			return 0.0;
+		
+		double length = Math.pow(a.getFrom().getX() - a.getTo().getX(), 2.0) + Math.pow(a.getFrom().getY() - a.getTo().getY(), 2.0);
+		a = PI.get(a);
+		while(a != null){
+			length += Math.pow(a.getFrom().getX() - a.getTo().getX(), 2.0) + Math.pow(a.getFrom().getY() - a.getTo().getY(), 2.0);
+			a = PI.get(a);
+		}
+		return length;
+	}
+	
 	private Pair<Double, Node> manhattanDistance(Node a) {
 		Pair<Integer, Node> result = _endSet.stream().map(p -> {
 			Integer dx = Math.abs(a.getTo().getX() - p.getTo().getX());
@@ -287,28 +398,27 @@ class GraphSearch {
 			return result;
 
 		// Add possible neighbors
-		if (!_colors.containsKey(parent.getTo())) {
-			Direction sub = Point.directionOf(parent.getTo(), parent.getFrom());
+		if (!_colors.containsKey(parent.getTo())) {// The point at the parent's end is not occupied
+			Direction sub = Point.directionOf(parent.getTo(), parent.getFrom());// Direction of parent
 
-			// ~0.5ms
 			for (Direction dir : Direction.values()) {
 				Double w = 0.0;
 
 				if (dir.equals(sub))
-					w = WEIGHT_LENGTH;
+					w = WEIGHT_LENGTH;// This direction is the same as the parent's direction (if this is the path's next step then we are going straight ahead without turning, so the cost of going this way doesn't include the cost of a turn)
 				else if (dir.equals(Direction.opposite(sub)))
-					continue;
+					continue;// We dont want to go backward
 				else
-					w = WEIGHT_LENGTH + WEIGHT_TURNS;
+					w = WEIGHT_LENGTH + WEIGHT_TURNS;// This means that the direction represented by 'dir' is a turn, so the cost of going this way includes the cost of a turn
 
 				Point p = Point.Add(parent.getTo(), dir);
 				result.add(new Pair<Node, Double>(new Node(parent.getTo(), p), w));
 			}
-		} else if (_colors.get(parent.getTo()).equals(Color.Yellow)) {
+		} else if (_colors.get(parent.getTo()).equals(Color.Yellow)) {// The point at the parent's end is occupied
 			Direction sub = Point.directionOf(parent.getTo(), parent.getFrom());
 			// straight, crossing
 			result.add(new Pair<Node, Double>(new Node(parent.getTo(), Point.Add(parent.getTo(), sub)),
-					WEIGHT_LENGTH + WEIGHT_CROSSING));
+					WEIGHT_LENGTH + WEIGHT_CROSSING));// The point at the parent's end is occupied so we just go ahead. Why?
 		}
 
 		return result;

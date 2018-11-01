@@ -19,7 +19,9 @@ public interface NodeInfo extends ConcreteElementInfo {
 	 */
 	RectangleObject convert();
 
+	boolean isBoxContainer();
 	boolean isPhantom();
+	boolean isVirtualPhantom();
 	
 	SpecialBox getSpecialProperty();
 

@@ -10,6 +10,7 @@ import org.eclipse.uml2.uml.Element;
 
 import hu.elte.txtuml.export.papyrus.utils.ElementsManagerUtils;
 
+@Deprecated
 public class ActivityDiagramElementsController {
 	
 	/**

@@ -1,0 +1,25 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Diagrams Common
+Bundle-SymbolicName: hu.elte.txtuml.export.diagrams.common
+Bundle-Version: 0.6.0.qualifier
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Export-Package: hu.elte.txtuml.export.diagrams.common,
+ hu.elte.txtuml.export.diagrams.common.arrange,
+ hu.elte.txtuml.export.diagrams.common.layout,
+ hu.elte.txtuml.export.diagrams.common.preferences,
+ hu.elte.txtuml.export.diagrams.common.wizards
+Bundle-Vendor: ELTE
+Require-Bundle: org.eclipse.core.runtime,
+ org.eclipse.uml2.uml,
+ org.eclipse.jface,
+ org.eclipse.jdt.core,
+ org.eclipse.core.resources,
+ org.eclipse.ui.ide,
+ hu.elte.txtuml.utils,
+ hu.elte.txtuml.layout.visualizer,
+ hu.elte.txtuml.layout.export,
+ hu.elte.txtuml.api.layout,
+ hu.elte.txtuml.export.uml2,
+ hu.elte.txtuml.utils.eclipse,
+ org.eclipse.ui.workbench
