@@ -25,7 +25,7 @@ import hu.elte.txtuml.export.diagrams.common.Constants;
 import hu.elte.txtuml.export.diagrams.common.TxtUMLExporter;
 import hu.elte.txtuml.export.diagrams.common.arrange.TxtUMLLayoutDescriptor;
 import hu.elte.txtuml.export.diagrams.common.layout.LayoutUtils;
-import hu.elte.txtuml.export.diagrams.common.preferences.PreferencesManager;
+import hu.elte.txtuml.utils.eclipse.preferences.PreferencesManager;
 import hu.elte.txtuml.layout.export.DiagramExportationReport;
 import hu.elte.txtuml.utils.Logger;
 import hu.elte.txtuml.utils.Pair;
