@@ -7,6 +7,10 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
 
+/*TODO: NOTE: we could move the package export.papyrus.preferences to export.diagrams.common.preferences,
+ * 				if we change these icons for non-papyrus ones
+ */
+
 /**
  * A collection of papyrus icons
  */
