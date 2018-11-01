@@ -64,7 +64,6 @@ public class PlantUMLVisualizeWizard extends TxtUMLVisualizeWizard {
 				return false;
 
 			try {
-				checkNoLayoutDescriptionsSelected();
 
 				IProgressService progressService = PlatformUI.getWorkbench().getProgressService();
 				PlantUmlExporter exp = new PlantUmlExporter(txtUMLProjectName, generatedFolderName, diagrams);

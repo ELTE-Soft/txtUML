@@ -10,23 +10,24 @@ import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.emf.common.CommonPlugin;
 import org.eclipse.emf.common.util.URI;
 
+import hu.elte.txtuml.api.layout.ClassDiagram;
+import hu.elte.txtuml.api.layout.CompositeDiagram;
+import hu.elte.txtuml.api.layout.StateMachineDiagram;
 import hu.elte.txtuml.export.diagrams.common.arrange.TxtUMLLayoutDescriptor;
-//TODO: include preferences manager, probably in AbstractVisualizeWizard
-//import hu.elte.txtuml.utils.eclipse.preferences.PreferencesManager;
-import hu.elte.txtuml.export.diagrams.common.wizards.AbstractVisualizeWizard;
+import hu.elte.txtuml.export.diagrams.common.wizards.UML2VisualizeWizard;
+import hu.elte.txtuml.export.diagrams.common.wizards.VisualizeTxtUMLPage;
 import hu.elte.txtuml.export.papyrus.PapyrusVisualizer;
 
 /**
  * Wizard for visualization of txtUML models
  */
-public class PapyrusVisualizeWizard extends AbstractVisualizeWizard {
+public class PapyrusVisualizeWizard extends UML2VisualizeWizard {
 
 	@Override
 	protected void visualize(TxtUMLLayoutDescriptor layoutDescriptor, String genFolder, IProgressMonitor monitor)
 			throws Exception {
 		PapyrusVisualizer pv = createVisualizer(layoutDescriptor, genFolder);
 		pv.run(SubMonitor.convert(monitor, 85));
-
 	}
 
 	/**
@@ -46,5 +47,16 @@ public class PapyrusVisualizeWizard extends AbstractVisualizeWizard {
 		PapyrusVisualizer pv = new PapyrusVisualizer(projectName, outputFolder + File.separator + modelName,
 				UmlFile.getRawLocationURI().toString(), descriptor);
 		return pv;
+	}
+	
+	@Override
+	public void addPages() {
+		selectTxtUmlPage = new VisualizeTxtUMLPage(false, true, StateMachineDiagram.class, ClassDiagram.class, CompositeDiagram.class);
+		addPage(selectTxtUmlPage);
+	}
+	
+	@Override
+	public String getWindowTitle() {
+		return "Visualize Papyrus diagrams from txtUML models";
 	}
 }

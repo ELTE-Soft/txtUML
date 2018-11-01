@@ -44,22 +44,59 @@ public abstract class TxtUMLVisualizeWizard extends Wizard {
 	 */
 	@Override
 	public boolean performFinish() {
+		/*Check if any diagrams were selected*/
+		if (!this.checkNoLayoutDescriptionsSelected()) {
+			return false;
+		}
+		
 		List<IType> txtUMLLayout = selectTxtUmlPage.getTxtUmlLayouts();
+		Map<Pair<String, String>, List<IType>> layoutConfigs = null;
+		/*Check for invalid layouts*/
+		try {
+			layoutConfigs = checkLayouts(txtUMLLayout);
+		} catch (IllegalArgumentException ex) {
+			Dialogs.MessageBox("Invalid layouts", ex.getMessage());
+			return false;
+		} catch (JavaModelException e) {
+			Logger.user.error(e.getMessage());
+			return false;
+		}
+		
+		setTxtUMLLayoutPreferences(layoutConfigs);
+
+		/*TODO: continue wizard refactoring with exportDiagrams, jobs, workers, better monitoring and parallelization*/
+		return exportDiagrams(layoutConfigs, txtUMLLayout);
+	}
+
+	/**
+	 * Abstract method for diagram export.
+	 */
+	protected abstract boolean exportDiagrams(Map<Pair<String, String>, List<IType>> layoutConfigs,
+			List<IType> txtUMLLayout);
+
+	private boolean checkNoLayoutDescriptionsSelected(){
+		if (selectTxtUmlPage.getTxtUmlLayouts().isEmpty()) {
+			boolean answer = Dialogs.WarningConfirm("No Layout descriptions",
+					"No diagrams will be generated using the current setup,"
+							+ " because no diagram descriptions are added." + System.lineSeparator()
+							+ "In order to have diagrams visualized, select a description from the wizard."
+							+ System.lineSeparator() + System.lineSeparator()
+							+ "Do you want to continue without diagram descriptions?");
+			return answer;
+		}
+		return true;
+	}
+	
+	private Map<Pair<String, String>, List<IType>> checkLayouts(List<IType> txtUMLLayout) throws JavaModelException {
 		Map<Pair<String, String>, List<IType>> layoutConfigs = new HashMap<>();
 		List<String> invalidLayouts = new ArrayList<>();
 		for (IType layout : txtUMLLayout) {
 			Optional<Pair<String, String>> maybeModel = Optional.empty();
-			try {
-				maybeModel = Stream.of(layout.getTypes())
-						.map(innerClass -> WizardUtils.getModelByAnnotations(innerClass)).filter(Optional::isPresent)
-						.map(Optional::get).findFirst();
-				if (!maybeModel.isPresent())
-					maybeModel = WizardUtils.getModelByFields(layout);
-			} catch (JavaModelException e) {
-				Logger.sys.error(e.getMessage());
-				return false;
-			}
-
+			maybeModel = Stream.of(layout.getTypes()).map(innerClass -> WizardUtils.getModelByAnnotations(innerClass))
+					.filter(Optional::isPresent).map(Optional::get).findFirst();
+			if (!maybeModel.isPresent())
+				maybeModel = WizardUtils.getModelByFields(layout);
+			
 			if (maybeModel.isPresent()) {
 				Pair<String, String> model = maybeModel.get();
 				if (!layoutConfigs.containsKey(model)) {
@@ -73,38 +110,20 @@ public abstract class TxtUMLVisualizeWizard extends Wizard {
 		}
 
 		if (!invalidLayouts.isEmpty()) {
-			Dialogs.MessageBox("Invalid layouts", "The following diagram descriptions have no txtUML model attached"
+			throw new IllegalArgumentException("The following diagram descriptions have no txtUML model attached"
 					+ ", hence no diagram is generated for them:" + System.lineSeparator() + invalidLayouts.stream()
 							.map(s -> " - ".concat(s)).collect(Collectors.joining(System.lineSeparator())));
 		}
-
+		return layoutConfigs;
+	}
+	
+	private void setTxtUMLLayoutPreferences(Map<Pair<String, String>, List<IType>> layoutConfigs){
 		PreferencesManager.setValue(PreferencesManager.TXTUML_VISUALIZE_TXTUML_LAYOUT, layoutConfigs.values().stream()
 				.flatMap(c -> c.stream()).map(layout -> layout.getFullyQualifiedName()).collect(Collectors.toList()));
 
 		PreferencesManager.setValue(PreferencesManager.TXTUML_VISUALIZE_TXTUML_LAYOUT_PROJECTS,
 				layoutConfigs.values().stream().flatMap(c -> c.stream())
 						.map(layout -> layout.getJavaProject().getElementName()).collect(Collectors.toList()));
-
-		return exportDiagrams(layoutConfigs, txtUMLLayout);
-	}
-
-	/**
-	 * Abstract method for diagram export.
-	 */
-	protected abstract boolean exportDiagrams(Map<Pair<String, String>, List<IType>> layoutConfigs,
-			List<IType> txtUMLLayout);
-
-	protected void checkNoLayoutDescriptionsSelected() throws InterruptedException {
-		if (selectTxtUmlPage.getTxtUmlLayouts().isEmpty()) {
-			boolean answer = Dialogs.WarningConfirm("No Layout descriptions",
-					"No diagrams will be generated using the current setup,"
-							+ " because no diagram descriptions are added." + System.lineSeparator()
-							+ "In order to have diagrams visualized, select a description from the wizard."
-							+ System.lineSeparator() + System.lineSeparator()
-							+ "Do you want to continue without diagram descriptions?");
-			if (!answer)
-				throw new InterruptedException();
-		}
 	}
 
 }

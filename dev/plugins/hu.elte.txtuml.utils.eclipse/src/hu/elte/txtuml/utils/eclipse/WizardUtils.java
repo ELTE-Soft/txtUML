@@ -242,6 +242,7 @@ public class WizardUtils {
 	 *         otherwise the name of the model package and its java project
 	 *         respectively, which contains the types of the given diagramType
 	 */
+	//TODO: throws "String index out of range: -1"
 	public static Optional<Pair<String, String>> getModelByFields(IType diagramType) {
 		try {
 			List<String> referencedProjects = new ArrayList<>(

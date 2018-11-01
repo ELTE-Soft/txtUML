@@ -27,6 +27,7 @@ import hu.elte.txtuml.export.uml2.ExportMode;
 import hu.elte.txtuml.export.uml2.TxtUMLToUML2;
 import hu.elte.txtuml.layout.export.DiagramExportationReport;
 import hu.elte.txtuml.utils.eclipse.NotFoundException;
+import hu.elte.txtuml.utils.eclipse.preferences.PreferencesManager;
 
 /**
  * This class helps preparing the {@link PapyrusVisualizer} from a txtUML model
@@ -100,9 +101,10 @@ public class TxtUMLExporter {
 	 * @throws IOException
 	 */
 	public void exportModel() throws JavaModelException, NotFoundException, IOException {
+		final String generatedFolderName = PreferencesManager.getString(PreferencesManager.TXTUML_VISUALIZE_DESTINATION_FOLDER);
 		TxtUMLToUML2.exportModel(projectName, txtUMLModelName,
-				projectName + File.separator + Constants.DIAGRAM_GENERATION_FOLDER, ExportMode.ErrorHandlingNoActions,
-				Constants.DIAGRAM_GENERATION_FOLDER);
+				projectName + File.separator + generatedFolderName, ExportMode.ErrorHandlingNoActions,
+				generatedFolderName);
 	}
 
 	/**
