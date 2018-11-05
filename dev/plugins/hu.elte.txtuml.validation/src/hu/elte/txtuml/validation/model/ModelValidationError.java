@@ -1,9 +1,9 @@
 package hu.elte.txtuml.validation.model;
 
 import org.eclipse.jdt.core.dom.ASTNode;
+import org.eclipse.jdt.core.dom.AbstractTypeDeclaration;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.SimpleName;
-import org.eclipse.jdt.core.dom.TypeDeclaration;
 
 import hu.elte.txtuml.validation.common.AbstractValidationError;
 import hu.elte.txtuml.validation.common.SourceInfo;
@@ -15,12 +15,12 @@ public abstract class ModelValidationError extends AbstractValidationError {
 
 	public ModelValidationError(SourceInfo sourceInfo, ASTNode node) {
 		super(sourceInfo, node);
-		if (node instanceof MethodDeclaration || node instanceof TypeDeclaration) {
+		if (node instanceof MethodDeclaration || node instanceof AbstractTypeDeclaration) {
 			SimpleName name;
 			if (node instanceof MethodDeclaration) {
 				name = ((MethodDeclaration) node).getName();
 			} else {
-				name = ((TypeDeclaration) node).getName();
+				name = ((AbstractTypeDeclaration) node).getName();
 			}
 			this.sourceStart = name.getStartPosition();
 			this.sourceEnd = name.getStartPosition() + name.getLength();
