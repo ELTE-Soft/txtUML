@@ -8,7 +8,7 @@ import hu.elte.txtuml.api.model.impl.SequenceDiagramRelated;
 import hu.elte.txtuml.api.model.seqdiag.Sequence;
 
 @SequenceDiagramRelated
-public class SequencePar extends SequenceBase {
+public class SequenceParErr extends SequenceBase {
 
 	@Override
 	public void run() {
@@ -18,18 +18,20 @@ public class SequencePar extends SequenceBase {
 
 		}, () -> {
 			Sequence.send(c, new TestSig(), b);
+			Sequence.send(c, new TestSig(), b);
 		}, () -> {
 			Sequence.send(b, new TestSig(), c);
 			Sequence.assertState(b, B.StateB.class);
 			Sequence.assertState(c, C.StateB.class);
 			Sequence.send(b, new TestSig(), a);
+			Sequence.send(c, new TestSig(), b);
 			Sequence.assertState(a, A.StateA.class);
 			Sequence.assertState(b, B.StateA.class);
 		}, () -> {
 			Sequence.fromActor(new TestSig(), a);
 			Sequence.assertState(a, A.StateB.class);
 		});
-
+		Sequence.send(c, new TestSig(), b);
 	}
 
 }
