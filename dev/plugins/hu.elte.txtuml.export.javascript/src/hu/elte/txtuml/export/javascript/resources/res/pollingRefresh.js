@@ -2,6 +2,7 @@
 
 var errorLabelElement = $('#debug-port-error');
 var debugContainer = $('#debug-toggle-container');
+var stateMachineSpeed = $('#animation-speed-input').val();
 
 //try to load from sessionStorage
 var port = sessionStorage['diagnosticsPort'];
@@ -87,4 +88,22 @@ $('#debug-port-input').on('keyup change input', function(){
 	if($('#debug-port-input').val()){
 		typingTimer = setTimeout(doneTyping, DONE_TYPING_TIMEOUT_IN_MILLISECONDS);
 	}
+});
+
+//send animation delay to the server
+function sendSMTime(){
+	$.ajax({
+		url: 'http://localhost:' + port + '/' + "delay",
+		type: 'POST',
+		data: {"delayTime":stateMachineSpeed},
+	    success: function(){
+	        alert(stateMachineSpeed);
+	    }
+	});
+}
+
+//add event listeners to the state machine's speed range
+$('#animation-speed-input').on('click', function(){
+	stateMachineSpeed = $('#animation-speed-input').val();
+	sendSMTime();
 });
