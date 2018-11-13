@@ -27,7 +27,6 @@ import hu.elte.txtuml.export.cpp.templates.GenerationNames.FileNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationTemplates;
 import hu.elte.txtuml.export.cpp.templates.activity.ActivityTemplates;
 import hu.elte.txtuml.export.cpp.templates.activity.OperatorTemplates;
-import hu.elte.txtuml.export.cpp.templates.structual.ObjectDeclDefTemplates;
 
 class CallOperationExporter {
 
@@ -162,22 +161,6 @@ class CallOperationExporter {
 						? ActivityTemplates.CreateObjectType.Signal : ActivityTemplates.CreateObjectType.Class,
 								parameterReferences);
 	}
-
-	/*private void addOutParametrsToList(List<ActivityResolveResult> parameterVariables, List<OutputPin> outParamaterPins) {
-		for (OutputPin outPin : outParamaterPins) {
-			parameterVariables.add(tempVariableExporter.getRealVariableName(outPin));
-		}
-	}*/
-
-	/*private String declareAllOutTempParameters(List<OutputPin> outParamaterPins) {
-		StringBuilder declerations = new StringBuilder("");
-		for (OutputPin outPin : outParamaterPins) {
-			declerations.append(ObjectDeclDefTemplates.variableDecl(outPin.getType().getName(),
-					tempVariableExporter.getRealVariableName(outPin), GenerationTemplates.VariableType.RawPointerType));
-		}
-
-		return declerations.toString();
-	}*/
 
 	private OutputPin searchReturnPin(EList<OutputPin> results, EList<Parameter> outputParameters) {
 		for (int i = 0; i < Math.min(results.size(), outputParameters.size()); i++) {
