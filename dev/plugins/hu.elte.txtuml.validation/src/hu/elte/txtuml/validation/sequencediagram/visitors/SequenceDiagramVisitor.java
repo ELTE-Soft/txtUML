@@ -1,8 +1,12 @@
 package hu.elte.txtuml.validation.sequencediagram.visitors;
 
+import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTVisitor;
+import org.eclipse.jdt.core.dom.Block;
 import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.Expression;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
+import org.eclipse.jdt.core.dom.LambdaExpression;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.MethodInvocation;
 
@@ -38,8 +42,23 @@ public class SequenceDiagramVisitor extends ASTVisitor {
 
 	@Override
 	public boolean visit(MethodInvocation elem) {
+		if (elem.resolveMethodBinding().getName().equals("par")) {
+			Utils.checkEmptyPar(collector, elem);
+			return true;
+		}
+		ASTNode grandParent = elem.getParent().getParent();
+		if (grandParent instanceof MethodInvocation
+				&& ((MethodInvocation) grandParent).resolveMethodBinding().getName().equals("par")) {
+			Utils.checkSendInLambda(collector, elem, this);
+		}
 		Utils.checkInvalidActionCall(elem, collector);
 		return false;
+	}
+
+	@Override
+	public boolean visit(Block node) {
+		Utils.checkSendExists(collector, node, this);
+		return true;
 	}
 
 }
