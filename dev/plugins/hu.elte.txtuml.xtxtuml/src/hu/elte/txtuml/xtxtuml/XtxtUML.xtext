@@ -33,8 +33,9 @@ TUModelElement
 ;
 
 TUExecution :
-	'execution' name=ValidID
-		body=XBlockExpression ';'?
+	'execution' name=ValidID ('{'
+		elements+=TUExecutionElement* 
+	'}' ';'? | ';')?
 ;
 
 TUSignal :
@@ -86,6 +87,37 @@ TUConnectorEnd :
 ;
 
 // Inner element level
+
+// Execution related
+
+TUExecutionElement 
+	: TUConfiguration 
+	| TUBefore 
+	| TUInitialization 
+	| TUDuring 
+	| TUAfter
+	| TUAttributeOrOperationDeclarationPrefix
+;
+
+TUConfiguration :
+	configure='configure' body=XBlockExpression ';'?
+;
+
+TUBefore :
+	before='before' body=XBlockExpression ';'?
+;
+
+TUInitialization :
+	initialization='initialization' body=XBlockExpression ';'?
+;
+
+TUDuring:
+	during='during' body=XBlockExpression ';'?
+;
+
+TUAfter:
+	after='after' body=XBlockExpression ';'?
+;
 
 // Signal- and Class-related
 

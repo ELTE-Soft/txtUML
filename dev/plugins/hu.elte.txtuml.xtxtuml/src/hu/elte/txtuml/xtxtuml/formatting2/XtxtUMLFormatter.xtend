@@ -83,7 +83,7 @@ class XtxtUMLFormatter extends XbaseFormatter {
 		regionFor.feature(TU_MODEL_ELEMENT__NAME).surround[oneSpace];
 		regionFor.keyword(';').prepend[noSpace];
 
-		format(body, document);
+		//format(body, document);
 	}
 
 	def dispatch void format(TUSignal it, extension IFormattableDocument document) {

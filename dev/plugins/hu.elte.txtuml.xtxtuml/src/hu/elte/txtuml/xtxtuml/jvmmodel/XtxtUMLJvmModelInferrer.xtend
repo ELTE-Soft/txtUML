@@ -99,7 +99,7 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 				varArgs = true
 
 				static = true
-				body = exec.body
+				//body = exec.body
 			]
 		]
 	}
