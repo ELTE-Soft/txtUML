@@ -91,23 +91,23 @@ TUConnectorEnd :
 // Execution related
 
 TUExecutionElement 
-	: TUConfiguration
-	| ({TUBefore} 'before' 
-	| {TUInitialization} 'initialization'
-	| {TUDuring} 'during' 
-	| {TUAfter} 'after') body=XBlockExpression ';'?
-	| TUAttributeOrOperationDeclarationPrefixForExecution (
-		{TUAttributeForExecution.prefix=current} name=ValidID ('=' initExpression=XExpression)? ';' |
-		{TUOperationForExecution.prefix=current} name=ValidID '(' (parameters+=FullJvmFormalParameter (',' parameters+=FullJvmFormalParameter)*)? ')'
+	: TUExecutionConfiguration
+	| ({TUExecutionBefore} 'before' 
+	| {TUExecutionInitialization} 'initialization'
+	| {TUExecutionDuring} 'during' 
+	| {TUExecutionAfter} 'after') body=XBlockExpression ';'?
+	| TUExecutionAttributeOrOperationDeclarationPrefix (
+		{TUExecutionAttribute.prefix=current} name=ValidID ('=' initExpression=XExpression)? ';' |
+		{TUExecutionOperation.prefix=current} name=ValidID '(' (parameters+=FullJvmFormalParameter (',' parameters+=FullJvmFormalParameter)*)? ')'
 			body=XBlockExpression ';'?
 	  )
 ;
 
-TUAttributeOrOperationDeclarationPrefixForExecution :
+TUExecutionAttributeOrOperationDeclarationPrefix :
 	modifiers=TUModifiers type=JvmTypeReference
 ;
 
-TUConfiguration :
+TUExecutionConfiguration :
 	'configure' body=XBlockExpression ';'?
 ;
 
