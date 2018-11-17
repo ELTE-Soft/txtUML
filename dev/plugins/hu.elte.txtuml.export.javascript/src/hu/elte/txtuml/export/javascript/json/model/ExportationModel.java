@@ -9,8 +9,6 @@ import org.eclipse.persistence.oxm.annotations.XmlAccessMethods;
 import hu.elte.txtuml.export.diagrams.common.arrange.ArrangeException;
 import hu.elte.txtuml.export.diagrams.common.layout.IDiagramElementsMapper;
 import hu.elte.txtuml.export.diagrams.common.layout.TxtUMLElementsMapper;
-import hu.elte.txtuml.export.diagrams.common.statemachine.StateMachineDiagramElementsProvider;
-import hu.elte.txtuml.export.diagrams.common.statemachine.impl.StateMachineDiagramElementsProviderImpl;
 import hu.elte.txtuml.export.javascript.UnexpectedDiagramTypeException;
 import hu.elte.txtuml.export.javascript.json.model.cd.ClassDiagram;
 import hu.elte.txtuml.export.javascript.json.model.cd.ClassDiagramPixelDimensionProvider;
@@ -79,8 +77,7 @@ public class ExportationModel {
 			break;
 		case StateMachine:
 			StateMachineDiagramPixelDimensionProvider stmPxProvider = new StateMachineDiagramPixelDimensionProvider();
-			StateMachineDiagramElementsProvider provider = new StateMachineDiagramElementsProviderImpl(der, mapper);
-			stateMachines.add(new SMDiagram(diagramName, der, map, stmPxProvider, provider));
+			stateMachines.add(new SMDiagram(diagramName, der, map, stmPxProvider));
 			break;
 		default:
 			throw new UnexpectedDiagramTypeException(diagramName, der.getType().name());

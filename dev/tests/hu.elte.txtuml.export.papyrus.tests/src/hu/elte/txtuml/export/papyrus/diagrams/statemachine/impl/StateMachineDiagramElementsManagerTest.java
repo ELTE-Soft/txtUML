@@ -26,8 +26,8 @@ import org.eclipse.uml2.uml.UMLPackage;
 import org.junit.Before;
 import org.junit.Test;
 
-import hu.elte.txtuml.export.diagrams.common.statemachine.StateMachineDiagramElementsProvider;
 import hu.elte.txtuml.export.papyrus.arrange.IDiagramElementsArranger;
+import hu.elte.txtuml.export.papyrus.diagrams.statemachine.StateMachineDiagramElementsProvider;
 import hu.elte.txtuml.export.papyrus.diagrams.statemachine.StateMachineDiagramNotationManager;
 
 public class StateMachineDiagramElementsManagerTest {

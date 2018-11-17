@@ -7,8 +7,6 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Export-Package: hu.elte.txtuml.export.diagrams.common,
  hu.elte.txtuml.export.diagrams.common.arrange,
  hu.elte.txtuml.export.diagrams.common.layout,
- hu.elte.txtuml.export.diagrams.common.statemachine,
- hu.elte.txtuml.export.diagrams.common.statemachine.impl,
  hu.elte.txtuml.export.diagrams.common.wizards
 Bundle-Vendor: ELTE
 Require-Bundle: org.eclipse.core.runtime,

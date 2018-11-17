@@ -21,7 +21,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import hu.elte.txtuml.export.diagrams.common.layout.IDiagramElementsMapper;
-import hu.elte.txtuml.export.diagrams.common.statemachine.impl.StateMachineDiagramElementsProviderImpl;
 import hu.elte.txtuml.layout.export.DiagramExportationReport;
 
 public class StateMachineDiagramElementsProviderImplTest {

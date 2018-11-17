@@ -10,9 +10,9 @@ import org.eclipse.uml2.uml.Region;
 import org.eclipse.uml2.uml.StateMachine;
 import org.eclipse.uml2.uml.Vertex;
 
-import hu.elte.txtuml.export.diagrams.common.statemachine.StateMachineDiagramElementsProvider;
 import hu.elte.txtuml.export.papyrus.arrange.IDiagramElementsArranger;
 import hu.elte.txtuml.export.papyrus.diagrams.AbstractDiagramElementsManager;
+import hu.elte.txtuml.export.papyrus.diagrams.statemachine.StateMachineDiagramElementsProvider;
 import hu.elte.txtuml.export.papyrus.diagrams.statemachine.StateMachineDiagramNotationManager;
 
 /**

@@ -1,4 +1,4 @@
-package hu.elte.txtuml.export.diagrams.common.statemachine.impl;
+package hu.elte.txtuml.export.papyrus.diagrams.statemachine.impl;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -15,7 +15,7 @@ import org.eclipse.uml2.uml.StateMachine;
 import org.eclipse.uml2.uml.Transition;
 
 import hu.elte.txtuml.export.diagrams.common.layout.IDiagramElementsMapper;
-import hu.elte.txtuml.export.diagrams.common.statemachine.StateMachineDiagramElementsProvider;
+import hu.elte.txtuml.export.papyrus.diagrams.statemachine.StateMachineDiagramElementsProvider;
 import hu.elte.txtuml.layout.export.DiagramExportationReport;
 
 public class StateMachineDiagramElementsProviderImpl implements StateMachineDiagramElementsProvider {
