@@ -2,6 +2,7 @@ package hu.elte.txtuml.export.javascript.json.model.smd;
 
 import java.rmi.UnexpectedException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -16,6 +17,7 @@ import hu.elte.txtuml.export.diagrams.common.Rectangle;
 import hu.elte.txtuml.export.diagrams.common.arrange.ArrangeException;
 import hu.elte.txtuml.export.diagrams.common.arrange.LayoutTransformer;
 import hu.elte.txtuml.export.diagrams.common.arrange.LayoutVisualizerManager;
+import hu.elte.txtuml.export.diagrams.common.statemachine.StateMachineDiagramElementsProvider;
 import hu.elte.txtuml.export.javascript.scalers.NodeScaler;
 import hu.elte.txtuml.export.javascript.scalers.PseudoStateScaler;
 import hu.elte.txtuml.export.javascript.scalers.StateScaler;
@@ -26,6 +28,7 @@ import hu.elte.txtuml.layout.export.DiagramExportationReport;
 import hu.elte.txtuml.layout.visualizer.model.DiagramType;
 import hu.elte.txtuml.layout.visualizer.model.LineAssociation;
 import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
+import hu.elte.txtuml.utils.Pair;
 
 /**
  * 
@@ -45,6 +48,12 @@ public class SMDiagram {
 	private List<Transition> transitions;
 	@XmlAccessMethods(getMethodName = "getSpacing")
 	private double spacing;
+	
+	private StateMachineDiagramElementsProvider provider;
+	private StateMachineDiagramPixelDimensionProvider dimensionProvider;
+	private ModelMapProvider map;
+	private DiagramExportationReport der;
+	private ArrayList<Pair<Set<RectangleObject>, Set<Transition>>> regions;
 
 	/**
 	 * No-arg constructor required for serialization
@@ -71,48 +80,90 @@ public class SMDiagram {
 	 *             Exception is thrown if a diagram contains unexpected parts
 	 */
 	public SMDiagram(String diagramName, DiagramExportationReport der, ModelMapProvider map,
-			StateMachineDiagramPixelDimensionProvider provider) throws UnexpectedException, ArrangeException {
-		name = diagramName;
-		machineName = null;
-		states = new ArrayList<State>();
-		pseudoStates = new ArrayList<PseudoState>();
-		transitions = new ArrayList<Transition>();
+			StateMachineDiagramPixelDimensionProvider dimensionProvider, StateMachineDiagramElementsProvider provider) throws UnexpectedException, ArrangeException {
+		this.provider = provider;
+		this.map = map;
+		this.der = der;
+		this.dimensionProvider = dimensionProvider;
+		
+			name = diagramName;
+			machineName = null;
+			states = new ArrayList<State>();
+			pseudoStates = new ArrayList<PseudoState>();
+			transitions = new ArrayList<Transition>();
 
-		Set<RectangleObject> nodes = der.getNodes();
-		Set<LineAssociation> links = der.getLinks();
-
-		// creating and sorting states into states and pseudoStates
-		NodeScaler scaler = null;
-		for (RectangleObject node : nodes) {
-
-			EObject estate = map.getByName(node.getName());
-			// getting the name of the containing region
-			if (machineName == null) {
-				machineName = ((Region) ((Element) estate).getOwner()).getName();
+			for(Region r : this.provider.getMainRegions()){
+				machineName = r.getName();
+				processRegion(r,0);
 			}
+		/*TMP: old workings*/
+		/*TODO: explore links like states*/
 
-			if (estate instanceof org.eclipse.uml2.uml.State) {
-				org.eclipse.uml2.uml.State state = (org.eclipse.uml2.uml.State) estate;
-				State s = new State(state, node.getName());
-				scaler = new StateScaler(s);
-				states.add(s);
-
-			} else if (estate instanceof org.eclipse.uml2.uml.Pseudostate) {
-				org.eclipse.uml2.uml.Pseudostate state = (org.eclipse.uml2.uml.Pseudostate) estate;
-				PseudoState ps = new PseudoState(state, node.getName());
-				scaler = new PseudoStateScaler(ps);
-				pseudoStates.add(ps);
-			} else {
-				throw new UnexpectedException("Unexpected statemachine element type: " + estate.getClass().toString());
-			}
-			// setting the estimated size to the RectangleObject
-			node.setPixelWidth(scaler.getWidth());
-			node.setPixelHeight(scaler.getHeight());
-
+		
+	}
+	
+	private void processRegion(Region rec, Integer level){
+		List<State> states = new ArrayList<>();
+		List<PseudoState> pseudoStates = new ArrayList<>();
+		List<Transition> transitions = new ArrayList<>();
+		
+		Set<RectangleObject> nodes = new HashSet<>();
+		/*RectangleObject mainNode = new RectangleObject(rec.getName());
+		try {
+			processNodeInto(mainNode, states, pseudoStates, transitions);
+		} catch (UnexpectedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-		// arranging
-		LayoutVisualizerManager lvm = new LayoutVisualizerManager(nodes, links, der.getStatements(), DiagramType.State,
-				provider);
+		nodes.add(mainNode);*/
+		/*TODO: links*/
+		Set<LineAssociation> links = der.getLinks();
+		/* TMP: old working restored*/
+		/*for(org.eclipse.uml2.uml.State s : this.provider.getStatesForRegion(rec)){
+			//System.out.println(level + s.getName() + " child of " + s.getOwner());
+			if(!s.isSimple()){
+				for(Region r : this.provider.getRegionsOfState(s)){
+					System.out.println("Sub-region: " + s.getName());
+					processRegion(r, level+1);
+				}
+			}else{
+				RectangleObject node = new RectangleObject(s.getName());
+				try {
+					processNodeInto(s, node, states, pseudoStates, transitions);
+				} catch (UnexpectedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				nodes.add(node);
+			}
+		}*/
+		nodes = der.getNodes();
+		for(RectangleObject r : nodes){
+			try {
+				processNodeInto(r, states, pseudoStates, transitions);
+			} catch (UnexpectedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+		//arrange
+		try {
+			arrangeRegion(nodes, links, states, pseudoStates, transitions);
+		} catch (ArrangeException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		//TMP - must place result in member
+		this.states = states;
+		this.pseudoStates = pseudoStates;
+		this.transitions = transitions;
+	}
+	
+	private void arrangeRegion(Set<RectangleObject> nodes, Set<LineAssociation> links, List<State> states, List<PseudoState> pseudoStates, List<Transition> transitions) throws ArrangeException{
+		LayoutVisualizerManager lvm = new LayoutVisualizerManager(nodes, links, this.der.getStatements(), DiagramType.State,
+				this.dimensionProvider);
 		lvm.arrange();
 		LayoutTransformer lt = new LayoutTransformer();
 
@@ -121,7 +172,7 @@ public class SMDiagram {
 		Map<String, List<Point>> ltpmap = LinkUtils.getPointMapfromLACollection(lvm.getAssociations());
 
 		lt.doTranformations(ltrmap, ltpmap);
-
+		
 		// setting correct dimensions
 		for (State s : states) {
 			s.setLayout(ltrmap.get(s.getId()));
@@ -132,6 +183,7 @@ public class SMDiagram {
 		}
 
 		// creating transitions
+		/*TODO*/
 		for (LineAssociation link : der.getLinks()) {
 			org.eclipse.uml2.uml.Transition t = (org.eclipse.uml2.uml.Transition) map.getByName(link.getId());
 			Transition tr = new Transition(link, t);
@@ -139,6 +191,39 @@ public class SMDiagram {
 			tr.setRoute(ltpmap.get(tr.getId()));
 		}
 	}
+	
+	/*TODO: recursive processing*/
+	
+	private void processNodeInto(RectangleObject node, List<State> states, List<PseudoState> pseudoStates, List<Transition> transitions) throws UnexpectedException{
+		NodeScaler scaler = null;
+		System.out.println("Processing node: " + node.getName());
+		/*TMP NOTE: map is fine for all, only it uses full class name*/
+		EObject estate = this.map.getByName(node.getName());
+		/*TODO: replace this by provider*/
+		// getting the name of the containing region
+		/*if (machineName == null) {
+			machineName = ((Region) ((Element) estate).getOwner()).getName();
+		}*/
+
+		if (estate instanceof org.eclipse.uml2.uml.State) {
+			org.eclipse.uml2.uml.State state = (org.eclipse.uml2.uml.State) estate;
+			State s = new State(state, node.getName());
+			scaler = new StateScaler(s);
+			states.add(s);
+
+		} else if (estate instanceof org.eclipse.uml2.uml.Pseudostate) {
+			org.eclipse.uml2.uml.Pseudostate state = (org.eclipse.uml2.uml.Pseudostate) estate;
+			PseudoState ps = new PseudoState(state, node.getName());
+			scaler = new PseudoStateScaler(ps);
+			pseudoStates.add(ps);
+		} else {
+			throw new UnexpectedException("Unexpected statemachine element type: " + estate.getClass().toString());
+		}
+		// setting the estimated size to the RectangleObject
+		node.setPixelWidth(scaler.getWidth());
+		node.setPixelHeight(scaler.getHeight());
+	}
+	
 
 	/**
 	 * 

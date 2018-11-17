@@ -1,4 +1,4 @@
-package hu.elte.txtuml.export.papyrus.diagrams.statemachine;
+package hu.elte.txtuml.export.diagrams.common.statemachine;
 
 import java.util.Collection;
 
