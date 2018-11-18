@@ -102,7 +102,6 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 			for(element : exec.elements){
 				if (!(element instanceof TUExecutionAttributeOrOperationDeclarationPrefix)) {
 					members += element.toJvmMember
-					System.out.println(element.toString());
 				}
 			}
 			members += exec.toMethod("main", Void.TYPE.typeRef) [
