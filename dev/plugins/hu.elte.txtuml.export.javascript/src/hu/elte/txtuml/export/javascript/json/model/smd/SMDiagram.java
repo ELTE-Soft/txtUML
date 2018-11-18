@@ -2,6 +2,7 @@ package hu.elte.txtuml.export.javascript.json.model.smd;
 
 import java.rmi.UnexpectedException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -26,6 +27,7 @@ import hu.elte.txtuml.layout.export.DiagramExportationReport;
 import hu.elte.txtuml.layout.visualizer.model.DiagramType;
 import hu.elte.txtuml.layout.visualizer.model.LineAssociation;
 import hu.elte.txtuml.layout.visualizer.model.RectangleObject;
+import hu.elte.txtuml.utils.Pair;
 
 /**
  * 
@@ -45,6 +47,10 @@ public class SMDiagram {
 	private List<Transition> transitions;
 	@XmlAccessMethods(getMethodName = "getSpacing")
 	private double spacing;
+	
+	private ModelMapProvider map;
+	private DiagramExportationReport der;
+	private StateMachineDiagramPixelDimensionProvider provider;
 
 	/**
 	 * No-arg constructor required for serialization
@@ -72,6 +78,9 @@ public class SMDiagram {
 	 */
 	public SMDiagram(String diagramName, DiagramExportationReport der, ModelMapProvider map,
 			StateMachineDiagramPixelDimensionProvider provider) throws UnexpectedException, ArrangeException {
+		this.map = map;
+		this.der = der;
+		this.provider = provider;
 		name = diagramName;
 		machineName = null;
 		states = new ArrayList<State>();
@@ -80,35 +89,18 @@ public class SMDiagram {
 
 		Set<RectangleObject> nodes = der.getNodes();
 		Set<LineAssociation> links = der.getLinks();
-
-		// creating and sorting states into states and pseudoStates
-		NodeScaler scaler = null;
+		
+		processDiagram(nodes, links);
+	}
+	
+	private void processDiagram(Set<RectangleObject> nodes, Set<LineAssociation> links) throws ArrangeException, UnexpectedException{
+		// Discovering hierarchy, parent regions of links and creating and sorting states into states and pseudoStates
+		Set<Pair<LineAssociation, RectangleObject>> innerLinks = new HashSet<>();
+		for(LineAssociation l : der.getLinks()){
+			innerLinks.add(new Pair<>(new LineAssociation(l), null));
+		}
 		for (RectangleObject node : nodes) {
-
-			EObject estate = map.getByName(node.getName());
-			// getting the name of the containing region
-			if (machineName == null) {
-				machineName = ((Region) ((Element) estate).getOwner()).getName();
-			}
-
-			if (estate instanceof org.eclipse.uml2.uml.State) {
-				org.eclipse.uml2.uml.State state = (org.eclipse.uml2.uml.State) estate;
-				State s = new State(state, node.getName());
-				scaler = new StateScaler(s);
-				states.add(s);
-
-			} else if (estate instanceof org.eclipse.uml2.uml.Pseudostate) {
-				org.eclipse.uml2.uml.Pseudostate state = (org.eclipse.uml2.uml.Pseudostate) estate;
-				PseudoState ps = new PseudoState(state, node.getName());
-				scaler = new PseudoStateScaler(ps);
-				pseudoStates.add(ps);
-			} else {
-				throw new UnexpectedException("Unexpected statemachine element type: " + estate.getClass().toString());
-			}
-			// setting the estimated size to the RectangleObject
-			node.setPixelWidth(scaler.getWidth());
-			node.setPixelHeight(scaler.getHeight());
-
+			processNode(node, innerLinks);
 		}
 		// arranging
 		LayoutVisualizerManager lvm = new LayoutVisualizerManager(nodes, links, der.getStatements(), DiagramType.State,
@@ -117,26 +109,77 @@ public class SMDiagram {
 		LayoutTransformer lt = new LayoutTransformer();
 
 		// scaling and transforming
-		Map<String, Rectangle> ltrmap = NodeUtils.getRectMapfromROCollection(lvm.getObjects());
-		Map<String, List<Point>> ltpmap = LinkUtils.getPointMapfromLACollection(lvm.getAssociations());
+		Map<String, Rectangle> ltrmap = NodeUtils.getFlattenedAndOffsetRectMapfromROCollection(lvm.getObjects());
+		Map<String, List<Point>> ltpmap = LinkUtils.getPointMapfromLACollection(lvm.getAllAssociations());
 
 		lt.doTranformations(ltrmap, ltpmap);
 
 		// setting correct dimensions
 		for (State s : states) {
-			s.setLayout(ltrmap.get(s.getId()));
+			Rectangle pos = ltrmap.get(s.getId());
+			s.setLayout(pos);
 		}
 
 		for (PseudoState ps : pseudoStates) {
-			ps.setLayout(ltrmap.get(ps.getId()));
+			Rectangle pos = ltrmap.get(ps.getId());
+			ps.setLayout(pos);
 		}
 
 		// creating transitions
-		for (LineAssociation link : der.getLinks()) {
+		for (Pair<LineAssociation, RectangleObject> pair : innerLinks) {
+			LineAssociation link = pair.getFirst();
+			Point offset = new Point(0,0);
+			//getting the offset of the parent region
+			if(pair.getSecond() != null){
+				offset = ltrmap.get(pair.getSecond().getName()).getTopLeft();
+				offset.setY(offset.y() + NodeUtils.HEIGHT_PADDING);
+			}
 			org.eclipse.uml2.uml.Transition t = (org.eclipse.uml2.uml.Transition) map.getByName(link.getId());
 			Transition tr = new Transition(link, t);
 			transitions.add(tr);
-			tr.setRoute(ltpmap.get(tr.getId()));
+			ArrayList<Point> route = new ArrayList<>(ltpmap.get(tr.getId()));
+			for(Point p : route){
+				p.setX(p.x() + offset.x());
+				p.setY(p.y() + offset.y());
+			}
+			tr.setRoute(route);
+		}
+	}
+	
+	private void processNode(RectangleObject node, Set<Pair<LineAssociation, RectangleObject>> links) throws UnexpectedException{
+		NodeScaler scaler = null;
+		EObject estate = map.getByName(node.getName());
+		// getting the name of the containing region
+		if (machineName == null) {
+			machineName = ((Region) ((Element) estate).getOwner()).getName();
+		}
+
+		if (estate instanceof org.eclipse.uml2.uml.State) {
+			org.eclipse.uml2.uml.State state = (org.eclipse.uml2.uml.State) estate;
+			State s = new State(state, node.getName());
+			scaler = new StateScaler(s);
+			states.add(s);
+
+		} else if (estate instanceof org.eclipse.uml2.uml.Pseudostate) {
+			org.eclipse.uml2.uml.Pseudostate state = (org.eclipse.uml2.uml.Pseudostate) estate;
+			PseudoState ps = new PseudoState(state, node.getName());
+			scaler = new PseudoStateScaler(ps);
+			pseudoStates.add(ps);
+		} else {
+			throw new UnexpectedException("Unexpected statemachine element type: " + estate.getClass().toString());
+		}
+		// setting the estimated size to the RectangleObject
+		node.setPixelWidth(scaler.getWidth());
+		node.setPixelHeight(scaler.getHeight());
+		
+		//exploring the hierarchy recursively
+		if(node.hasInner()){
+			for(RectangleObject r : node.getInner().Objects){
+				processNode(r, links);
+			}
+			for(LineAssociation l : node.getInner().Assocs){
+				links.add(new Pair<>(l, node));
+			}
 		}
 	}
 

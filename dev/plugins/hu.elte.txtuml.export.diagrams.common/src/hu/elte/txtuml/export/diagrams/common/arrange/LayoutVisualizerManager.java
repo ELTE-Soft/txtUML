@@ -2,6 +2,7 @@ package hu.elte.txtuml.export.diagrams.common.arrange;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
@@ -179,6 +180,28 @@ public class LayoutVisualizerManager {
 	 */
 	public Set<LineAssociation> getAssociations() {
 		return diagram.Assocs;
+	}
+	
+	/**
+	 * @return - The txtUML Links
+	 */
+	public Set<LineAssociation> getAllAssociations() {
+		Set<LineAssociation> res = new HashSet<>(diagram.Assocs);
+		for(RectangleObject r : diagram.Objects){
+			recursiveFillSetWithAssociations(r, res);
+		}
+		return res;
+	}
+	
+	private void recursiveFillSetWithAssociations(RectangleObject node, Set<LineAssociation> container){
+		if(node.hasInner()){
+			for(LineAssociation l : node.getInner().Assocs){
+				container.add(l);
+			}
+			for(RectangleObject innerNode : node.getInner().Objects){
+				recursiveFillSetWithAssociations(innerNode, container);
+			}
+		}
 	}
 
 	/**
