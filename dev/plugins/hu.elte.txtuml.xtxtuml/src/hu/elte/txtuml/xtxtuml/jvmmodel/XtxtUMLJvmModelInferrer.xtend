@@ -4,6 +4,8 @@ import com.google.inject.Inject
 import hu.elte.txtuml.api.model.Association
 import hu.elte.txtuml.api.model.BehaviorPort
 import hu.elte.txtuml.api.model.Composition
+import hu.elte.txtuml.api.model.Composition.ContainerEnd
+import hu.elte.txtuml.api.model.Composition.HiddenContainerEnd
 import hu.elte.txtuml.api.model.Connector
 import hu.elte.txtuml.api.model.ConnectorBase.One
 import hu.elte.txtuml.api.model.Delegation
@@ -18,6 +20,7 @@ import hu.elte.txtuml.api.model.Signal
 import hu.elte.txtuml.api.model.StateMachine
 import hu.elte.txtuml.api.model.To
 import hu.elte.txtuml.api.model.Trigger
+import hu.elte.txtuml.api.model.execution.Execution
 import hu.elte.txtuml.xtxtuml.common.XtxtUMLUtils
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAssociation
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAssociationEnd
@@ -32,6 +35,10 @@ import hu.elte.txtuml.xtxtuml.xtxtUML.TUEntryOrExitActivity
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUEnumeration
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUEnumerationLiteral
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUExecution
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUExecutionAttribute
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUExecutionAttributeOrOperationDeclarationPrefix
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUExecutionConfiguration
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUExecutionOperation
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUInterface
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUModelDeclaration
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUOperation
@@ -40,6 +47,7 @@ import hu.elte.txtuml.xtxtuml.xtxtUML.TUPortMember
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUReception
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUSignal
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUSignalAttribute
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUSimpleExecutionElement
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUState
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUTransition
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUTransitionEffect
@@ -61,8 +69,6 @@ import org.eclipse.xtext.naming.IQualifiedNameProvider
 import org.eclipse.xtext.xbase.jvmmodel.AbstractModelInferrer
 import org.eclipse.xtext.xbase.jvmmodel.IJvmDeclaredTypeAcceptor
 import org.eclipse.xtext.xbase.jvmmodel.IJvmModelAssociations
-import hu.elte.txtuml.api.model.Composition.HiddenContainerEnd
-import hu.elte.txtuml.api.model.Composition.ContainerEnd
 
 /**
  * Infers a JVM model equivalent from an XtxtUML resource. If not stated otherwise,
@@ -92,15 +98,82 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 		acceptor.accept(exec.toClass(exec.fullyQualifiedName)) [
 			documentation = exec.documentation
 			visibility = JvmVisibility.PUBLIC
-
+			superTypes += Execution.typeRef
+			for(element : exec.elements){
+				if (!(element instanceof TUExecutionAttributeOrOperationDeclarationPrefix)) {
+					members += element.toJvmMember
+					System.out.println(element.toString());
+				}
+			}
 			members += exec.toMethod("main", Void.TYPE.typeRef) [
 				documentation = exec.documentation
 				parameters += exec.toParameter("args", String.typeRef.addArrayTypeDimension)
 				varArgs = true
 
-				static = true
-				//body = exec.body
+				static = true 
+				//TODO: body =
 			]
+		]
+	}
+	
+	def dispatch private toJvmMember(TUExecutionConfiguration op){
+		op.toMethod("configure", Void.TYPE.typeRef) [
+			documentation = op.documentation
+			//TODO: parameter: Settings s    parameters += 
+			visibility = JvmVisibility.PUBLIC
+			annotations += annotationRef(Override)
+			body = op.body
+		]
+	}
+	
+	def dispatch private toJvmMember(TUSimpleExecutionElement op){
+		op.toMethod(op.name, Void.TYPE.typeRef) [
+			documentation = op.documentation
+			visibility = JvmVisibility.PUBLIC
+			annotations += annotationRef(Override)
+			body = op.body
+		]
+	}
+	
+	def dispatch private toJvmMember(TUExecutionAttribute attr) {
+		attr.toField(attr.name, attr.prefix.type) [
+			documentation = attr.documentation
+
+			val modifiers = attr.prefix.modifiers
+			static = modifiers.static
+			visibility = modifiers.visibility.toJvmVisibility
+
+			switch (modifiers.externality) {
+				case EXTERNAL: annotations += External.annotationRef
+				default: {
+				}
+			}
+
+			initializer = attr.initExpression
+		]
+	}
+	
+	def dispatch private toJvmMember(TUExecutionOperation op) {
+		op.toMethod(op.name, op.prefix.type) [
+			documentation = op.documentation
+			val modifiers = op.prefix.modifiers
+			static = modifiers.static
+			visibility = modifiers.visibility.toJvmVisibility
+
+			switch (modifiers.externality) {
+				case EXTERNAL: annotations += External.annotationRef
+				case EXTERNAL_BODY: annotations += ExternalBody.annotationRef
+				default: {
+				}
+			}
+
+			for (JvmFormalParameter param : op.parameters) {
+				parameters += param.toParameter(param.name, param.parameterType) => [
+					documentation = param.documentation
+				]
+			}
+
+			body = op.body
 		]
 	}
 
@@ -162,7 +235,7 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 				]
 
 				superAttributes.forEach(addAsParam)
-				signal.attributes.forEach(addAsParam) 
+				signal.attributes.forEach(addAsParam)
 
 				val lastSuperAttribute = if (superAttributes.empty) {
 						null
@@ -322,6 +395,7 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 		]
 	}
 
+
 	def dispatch private toJvmMember(TUConstructor ctor) {
 		ctor.toConstructor [
 			documentation = ctor.documentation
@@ -330,7 +404,8 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 			switch (modifiers.externality) {
 				case EXTERNAL: annotations += External.annotationRef
 				case EXTERNAL_BODY: annotations += ExternalBody.annotationRef
-				default: {}
+				default: {
+				}
 			}
 
 			for (param : ctor.parameters) {
@@ -346,14 +421,15 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 	def dispatch private toJvmMember(TUAttribute attr) {
 		attr.toField(attr.name, attr.prefix.type) [
 			documentation = attr.documentation
-			
+
 			val modifiers = attr.prefix.modifiers
 			static = modifiers.static
 			visibility = modifiers.visibility.toJvmVisibility
 
 			switch (modifiers.externality) {
 				case EXTERNAL: annotations += External.annotationRef
-				default: {}
+				default: {
+				}
 			}
 
 			initializer = attr.initExpression
@@ -383,7 +459,8 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 			switch (modifiers.externality) {
 				case EXTERNAL: annotations += External.annotationRef
 				case EXTERNAL_BODY: annotations += ExternalBody.annotationRef
-				default: {}
+				default: {
+				}
 			}
 
 			for (JvmFormalParameter param : op.parameters) {
@@ -523,7 +600,7 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 			else if (!multiplicity.upperSet) { // <lower> (exact)
 				if (multiplicity.lower == 1)
 					"One"
-				// TODO support custom multiplicities
+			// TODO support custom multiplicities
 			} else { // <lower> .. <upper>
 				if (multiplicity.lower == 0 && multiplicity.upper == 1)
 					"ZeroToOne"
@@ -533,7 +610,7 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 					"Any"
 				else if (multiplicity.lower == 1 && multiplicity.upperInf)
 					"OneToAny"
-				// TODO support custom multiplicities
+			// TODO support custom multiplicities
 			}
 
 		val endClassImpl = "hu.elte.txtuml.api.model.Association$" + optionalHidden + "End"

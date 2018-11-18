@@ -92,15 +92,19 @@ TUConnectorEnd :
 
 TUExecutionElement 
 	: TUExecutionConfiguration
-	| ({TUExecutionBefore} 'before' 
-	| {TUExecutionInitialization} 'initialization'
-	| {TUExecutionDuring} 'during' 
-	| {TUExecutionAfter} 'after') body=XBlockExpression ';'?
+	| TUSimpleExecutionElement
 	| TUExecutionAttributeOrOperationDeclarationPrefix (
 		{TUExecutionAttribute.prefix=current} name=ValidID ('=' initExpression=XExpression)? ';' |
 		{TUExecutionOperation.prefix=current} name=ValidID '(' (parameters+=FullJvmFormalParameter (',' parameters+=FullJvmFormalParameter)*)? ')'
 			body=XBlockExpression ';'?
 	  )
+;
+
+TUSimpleExecutionElement :
+	({TUExecutionBefore} name='before' 
+	| {TUExecutionInitialization} name='initialization'
+	| {TUExecutionDuring} name='during' 
+	| {TUExecutionAfter} name='after') body=XBlockExpression ';'?
 ;
 
 TUExecutionAttributeOrOperationDeclarationPrefix :
