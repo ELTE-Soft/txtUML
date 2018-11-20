@@ -35,10 +35,6 @@ import hu.elte.txtuml.xtxtuml.xtxtUML.TUEntryOrExitActivity
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUEnumeration
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUEnumerationLiteral
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUExecution
-import hu.elte.txtuml.xtxtuml.xtxtUML.TUExecutionAttribute
-import hu.elte.txtuml.xtxtuml.xtxtUML.TUExecutionAttributeOrOperationDeclarationPrefix
-import hu.elte.txtuml.xtxtuml.xtxtUML.TUExecutionConfiguration
-import hu.elte.txtuml.xtxtuml.xtxtUML.TUExecutionOperation
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUInterface
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUModelDeclaration
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUOperation
@@ -47,7 +43,6 @@ import hu.elte.txtuml.xtxtuml.xtxtUML.TUPortMember
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUReception
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUSignal
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUSignalAttribute
-import hu.elte.txtuml.xtxtuml.xtxtUML.TUSimpleExecutionElement
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUState
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUTransition
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUTransitionEffect
@@ -69,6 +64,7 @@ import org.eclipse.xtext.naming.IQualifiedNameProvider
 import org.eclipse.xtext.xbase.jvmmodel.AbstractModelInferrer
 import org.eclipse.xtext.xbase.jvmmodel.IJvmDeclaredTypeAcceptor
 import org.eclipse.xtext.xbase.jvmmodel.IJvmModelAssociations
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUExecutionElement
 
 /**
  * Infers a JVM model equivalent from an XtxtUML resource. If not stated otherwise,
@@ -99,80 +95,27 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 			documentation = exec.documentation
 			visibility = JvmVisibility.PUBLIC
 			superTypes += Execution.typeRef
-			for(element : exec.elements){
-				if (!(element instanceof TUExecutionAttributeOrOperationDeclarationPrefix)) {
-					members += element.toJvmMember
-				}
+			for (element : exec.elements) {
+				members += element.toJvmMember
 			}
 			members += exec.toMethod("main", Void.TYPE.typeRef) [
 				documentation = exec.documentation
 				parameters += exec.toParameter("args", String.typeRef.addArrayTypeDimension)
 				varArgs = true
 
-				static = true 
-				//TODO: body =
+				static = true
+			// TODO: body =
 			]
 		]
 	}
-	
-	def dispatch private toJvmMember(TUExecutionConfiguration op){
-		op.toMethod("configure", Void.TYPE.typeRef) [
-			documentation = op.documentation
-			//TODO: parameter: Settings s    parameters += 
+
+	def dispatch private toJvmMember(TUExecutionElement element) {
+
+		return element.toMethod(element.type.toString, Void.TYPE.typeRef) [
+			documentation = element.documentation
 			visibility = JvmVisibility.PUBLIC
 			annotations += annotationRef(Override)
-			body = op.body
-		]
-	}
-	
-	def dispatch private toJvmMember(TUSimpleExecutionElement op){
-		op.toMethod(op.name, Void.TYPE.typeRef) [
-			documentation = op.documentation
-			visibility = JvmVisibility.PUBLIC
-			annotations += annotationRef(Override)
-			body = op.body
-		]
-	}
-	
-	def dispatch private toJvmMember(TUExecutionAttribute attr) {
-		attr.toField(attr.name, attr.prefix.type) [
-			documentation = attr.documentation
-
-			val modifiers = attr.prefix.modifiers
-			static = modifiers.static
-			visibility = modifiers.visibility.toJvmVisibility
-
-			switch (modifiers.externality) {
-				case EXTERNAL: annotations += External.annotationRef
-				default: {
-				}
-			}
-
-			initializer = attr.initExpression
-		]
-	}
-	
-	def dispatch private toJvmMember(TUExecutionOperation op) {
-		op.toMethod(op.name, op.prefix.type) [
-			documentation = op.documentation
-			val modifiers = op.prefix.modifiers
-			static = modifiers.static
-			visibility = modifiers.visibility.toJvmVisibility
-
-			switch (modifiers.externality) {
-				case EXTERNAL: annotations += External.annotationRef
-				case EXTERNAL_BODY: annotations += ExternalBody.annotationRef
-				default: {
-				}
-			}
-
-			for (JvmFormalParameter param : op.parameters) {
-				parameters += param.toParameter(param.name, param.parameterType) => [
-					documentation = param.documentation
-				]
-			}
-
-			body = op.body
+			body = element.body
 		]
 	}
 
@@ -394,15 +337,16 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 		]
 	}
 
-
 	def dispatch private toJvmMember(TUConstructor ctor) {
 		ctor.toConstructor [
 			documentation = ctor.documentation
 			val modifiers = ctor.modifiers
 			visibility = modifiers.visibility.toJvmVisibility
 			switch (modifiers.externality) {
-				case EXTERNAL: annotations += External.annotationRef
-				case EXTERNAL_BODY: annotations += ExternalBody.annotationRef
+				case EXTERNAL:
+					annotations += External.annotationRef
+				case EXTERNAL_BODY:
+					annotations += ExternalBody.annotationRef
 				default: {
 				}
 			}
@@ -426,7 +370,8 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 			visibility = modifiers.visibility.toJvmVisibility
 
 			switch (modifiers.externality) {
-				case EXTERNAL: annotations += External.annotationRef
+				case EXTERNAL:
+					annotations += External.annotationRef
 				default: {
 				}
 			}
@@ -456,8 +401,10 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 			visibility = modifiers.visibility.toJvmVisibility
 
 			switch (modifiers.externality) {
-				case EXTERNAL: annotations += External.annotationRef
-				case EXTERNAL_BODY: annotations += ExternalBody.annotationRef
+				case EXTERNAL:
+					annotations += External.annotationRef
+				case EXTERNAL_BODY:
+					annotations += ExternalBody.annotationRef
 				default: {
 				}
 			}

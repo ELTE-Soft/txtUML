@@ -90,29 +90,13 @@ TUConnectorEnd :
 
 // Execution related
 
-TUExecutionElement 
-	: TUExecutionConfiguration
-	| TUSimpleExecutionElement
-	| TUExecutionAttributeOrOperationDeclarationPrefix (
-		{TUExecutionAttribute.prefix=current} name=ValidID ('=' initExpression=XExpression)? ';' |
-		{TUExecutionOperation.prefix=current} name=ValidID '(' (parameters+=FullJvmFormalParameter (',' parameters+=FullJvmFormalParameter)*)? ')'
-			body=XBlockExpression ';'?
-	  )
+TUExecutionElement :
+	type=TUExecutionElementType body=XBlockExpression ';'?
 ;
 
-TUSimpleExecutionElement :
-	({TUExecutionBefore} name='before' 
-	| {TUExecutionInitialization} name='initialization'
-	| {TUExecutionDuring} name='during' 
-	| {TUExecutionAfter} name='after') body=XBlockExpression ';'?
-;
-
-TUExecutionAttributeOrOperationDeclarationPrefix :
-	modifiers=TUModifiers type=JvmTypeReference
-;
-
-TUExecutionConfiguration :
-	'configure' body=XBlockExpression ';'?
+enum TUExecutionElementType 
+	: CONFIGURE = 'configure' | INITIALIZATION = 'initialization' | BEFORE = 'before'
+	| DURING = 'during' | AFTER = 'after'
 ;
 
 // Signal- and Class-related
