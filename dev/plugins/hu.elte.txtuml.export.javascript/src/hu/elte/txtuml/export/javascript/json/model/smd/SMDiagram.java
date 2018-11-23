@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.persistence.oxm.annotations.XmlAccessMethods;
 import org.eclipse.uml2.uml.Element;
@@ -77,7 +79,7 @@ public class SMDiagram {
 	 *             Exception is thrown if a diagram contains unexpected parts
 	 */
 	public SMDiagram(String diagramName, DiagramExportationReport der, ModelMapProvider map,
-			StateMachineDiagramPixelDimensionProvider provider) throws UnexpectedException, ArrangeException {
+			StateMachineDiagramPixelDimensionProvider provider, IProgressMonitor monitor) throws UnexpectedException, ArrangeException {
 		this.map = map;
 		this.der = der;
 		this.provider = provider;
@@ -90,24 +92,34 @@ public class SMDiagram {
 		Set<RectangleObject> nodes = der.getNodes();
 		Set<LineAssociation> links = der.getLinks();
 		
-		processDiagram(nodes, links);
+		if(monitor.isCanceled()) return;
+		processDiagram(nodes, links, monitor);
 	}
 	
-	private void processDiagram(Set<RectangleObject> nodes, Set<LineAssociation> links) throws ArrangeException, UnexpectedException{
+	private void processDiagram(Set<RectangleObject> nodes, Set<LineAssociation> links, IProgressMonitor monitor) throws ArrangeException, UnexpectedException{
+		SubMonitor subMonitor = SubMonitor.convert(monitor, 100);
+		subMonitor.subTask("Exploring diagram...");
 		// Discovering hierarchy, parent regions of links and creating and sorting states into states and pseudoStates
 		Set<Pair<LineAssociation, RectangleObject>> innerLinks = new HashSet<>();
 		for(LineAssociation l : der.getLinks()){
+			if(subMonitor.isCanceled()) return;
 			innerLinks.add(new Pair<>(new LineAssociation(l), null));
 		}
 		for (RectangleObject node : nodes) {
+			if(subMonitor.isCanceled()) return;
 			processNode(node, innerLinks);
 		}
+		subMonitor.worked(10);
+		if(subMonitor.isCanceled()) return;
 		// arranging
 		LayoutVisualizerManager lvm = new LayoutVisualizerManager(nodes, links, der.getStatements(), DiagramType.State,
 				provider);
+		lvm.addProgressMonitor(subMonitor.newChild(80));
 		lvm.arrange();
 		LayoutTransformer lt = new LayoutTransformer();
 
+		subMonitor.subTask("Applying transformations...");
+		if(subMonitor.isCanceled()) return;
 		// scaling and transforming
 		Map<String, Rectangle> ltrmap = NodeUtils.getFlattenedAndOffsetRectMapfromROCollection(lvm.getObjects());
 		Map<String, List<Point>> ltpmap = LinkUtils.getPointMapfromLACollection(lvm.getAllAssociations());
@@ -124,9 +136,12 @@ public class SMDiagram {
 			Rectangle pos = ltrmap.get(ps.getId());
 			ps.setLayout(pos);
 		}
+		subMonitor.worked(5);
 
+		subMonitor.subTask("Creating transitions...");
 		// creating transitions
 		for (Pair<LineAssociation, RectangleObject> pair : innerLinks) {
+			if(subMonitor.isCanceled()) return;
 			LineAssociation link = pair.getFirst();
 			Point offset = new Point(0,0);
 			//getting the offset of the parent region
@@ -144,6 +159,7 @@ public class SMDiagram {
 			}
 			tr.setRoute(route);
 		}
+		subMonitor.done();
 	}
 	
 	private void processNode(RectangleObject node, Set<Pair<LineAssociation, RectangleObject>> links) throws UnexpectedException{

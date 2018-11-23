@@ -6,7 +6,6 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.emf.common.CommonPlugin;
 import org.eclipse.emf.common.util.URI;
 
@@ -27,7 +26,7 @@ public class PapyrusVisualizeWizard extends UML2VisualizeWizard {
 	protected void visualize(TxtUMLLayoutDescriptor layoutDescriptor, String genFolder, IProgressMonitor monitor)
 			throws Exception {
 		PapyrusVisualizer pv = createVisualizer(layoutDescriptor, genFolder);
-		pv.run(SubMonitor.convert(monitor, 85));
+		pv.run(monitor);
 	}
 
 	/**

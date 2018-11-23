@@ -19,7 +19,7 @@ public class JavaScriptVisualizeWizard extends UML2VisualizeWizard {
 	protected void visualize(TxtUMLLayoutDescriptor layoutDescriptor, String genFolder, IProgressMonitor monitor)
 			throws Exception {
 		Exporter ex = new Exporter(layoutDescriptor, layoutDescriptor.modelName);
-		ex.export();
+		ex.export(monitor);
 	}
 
 	@Override

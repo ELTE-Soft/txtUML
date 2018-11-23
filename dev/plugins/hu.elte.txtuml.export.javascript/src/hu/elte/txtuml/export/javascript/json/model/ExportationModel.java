@@ -4,6 +4,7 @@ import java.rmi.UnexpectedException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.persistence.oxm.annotations.XmlAccessMethods;
 
 import hu.elte.txtuml.export.diagrams.common.arrange.ArrangeException;
@@ -67,17 +68,17 @@ public class ExportationModel {
 	 *             Exception is thrown if a diagram contains unexpected parts
 	 */
 	public void createDiagram(String diagramName, DiagramExportationReport der, ModelMapProvider map,
-			TxtUMLElementsMapper elementsMapper)
+			TxtUMLElementsMapper elementsMapper, IProgressMonitor monitor)
 			throws UnexpectedEndException, ArrangeException, UnexpectedDiagramTypeException, UnexpectedException {
 		IDiagramElementsMapper mapper = elementsMapper.getMapperForReport(der);
 		switch (der.getType()) {
 		case Class:
 			ClassDiagramPixelDimensionProvider clazzPxProvider = new ClassDiagramPixelDimensionProvider(mapper);
-			classDiagrams.add(new ClassDiagram(diagramName, der, map, clazzPxProvider));
+			classDiagrams.add(new ClassDiagram(diagramName, der, map, clazzPxProvider, monitor));
 			break;
 		case StateMachine:
 			StateMachineDiagramPixelDimensionProvider stmPxProvider = new StateMachineDiagramPixelDimensionProvider();
-			stateMachines.add(new SMDiagram(diagramName, der, map, stmPxProvider));
+			stateMachines.add(new SMDiagram(diagramName, der, map, stmPxProvider, monitor));
 			break;
 		default:
 			throw new UnexpectedDiagramTypeException(diagramName, der.getType().name());

@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jdt.core.IType;
 
@@ -68,7 +69,7 @@ public abstract class UML2VisualizeWizard extends TxtUMLVisualizeWizard {
 						if (monitor.isCanceled())
 							return Status.CANCEL_STATUS;
 
-						visualization(generatedFolderName, monitor, layoutDescriptor);
+						visualization(generatedFolderName, SubMonitor.convert(monitor, 85), layoutDescriptor);
 
 						if (monitor.isCanceled())
 							return Status.CANCEL_STATUS;

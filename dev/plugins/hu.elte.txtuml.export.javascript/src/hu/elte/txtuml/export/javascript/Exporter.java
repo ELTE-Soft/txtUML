@@ -12,6 +12,8 @@ import java.util.List;
 import javax.xml.bind.JAXBException;
 
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
@@ -125,12 +127,23 @@ public class Exporter {
 	 * @throws PartInitException
 	 * @throws UnexpectedEndException
 	 */
-	public void export() throws ModelMapException, ArrangeException, UnexpectedDiagramTypeException, IOException,
+	public void export(IProgressMonitor monitor) throws ModelMapException, ArrangeException, UnexpectedDiagramTypeException, IOException,
 			JAXBException, PartInitException, UnexpectedEndException {
-		createModel();
+		SubMonitor submonitor = SubMonitor.convert(monitor, 100);
+		submonitor.subTask("Creating JointJS model...");
+		
+		if(submonitor.isCanceled()) return;
+		createModel(submonitor.newChild(95));
+		if(submonitor.isCanceled()) return;
 		prepare();
+		submonitor.setTaskName("Writing diagrams to file...");
+		if(submonitor.isCanceled()) return;
 		insertInput();
+		submonitor.worked(4);
+		submonitor.setTaskName("Opening diagrams in default browser...");
+		if(submonitor.isCanceled()) return;
 		display();
+		submonitor.done();
 	}
 
 	/**
@@ -141,10 +154,18 @@ public class Exporter {
 	 * @throws UnknownDiagramTypeException
 	 * @throws UnexpectedEndException
 	 */
-	private void createModel() throws ModelMapException, ArrangeException, UnexpectedDiagramTypeException,
+	private void createModel(IProgressMonitor monitor) throws ModelMapException, ArrangeException, UnexpectedDiagramTypeException,
 			UnexpectedEndException, UnexpectedException {
-
+		SubMonitor subMonitor = SubMonitor.convert(monitor, 100);
+		Integer diagramCount = layout.getReports().size();
+		Integer currentDiagram = 1;
+		
 		for (Pair<String, DiagramExportationReport> report : layout.getReportsWithDiagramNames()) {
+			if(monitor.isCanceled()) return;
+			SubMonitor innerMonitor = SubMonitor.convert(subMonitor.newChild(100/diagramCount), 100);
+			subMonitor.setTaskName("Generating diagram " + currentDiagram + "/" + diagramCount + ": " + report.getFirst());
+			currentDiagram++;
+			
 			String name = report.getFirst();
 			DiagramExportationReport der = report.getSecond();
 
@@ -153,9 +174,11 @@ public class Exporter {
 			ModelMapProvider map = new ModelMapProvider(URI.createFileURI(genFolder), der.getModelName());
 			List<ModelMapProvider> providers = Arrays.asList(map);
 			TxtUMLElementsMapper elementsMapper = new TxtUMLElementsMapper(providers, layout);
+			
+			innerMonitor.worked(5);
 
-			model.createDiagram(name, report.getSecond(), map, elementsMapper);
-
+			if(monitor.isCanceled()) return;
+			model.createDiagram(name, report.getSecond(), map, elementsMapper, innerMonitor.newChild(95));
 		}
 
 	}
