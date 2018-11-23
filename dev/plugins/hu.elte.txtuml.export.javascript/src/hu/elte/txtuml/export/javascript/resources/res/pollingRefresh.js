@@ -93,12 +93,25 @@ $('#debug-port-input').on('keyup change input', function(){
 //send animation delay to the server
 function sendSMTime(){
 	$.ajax({
-		url: 'http://localhost:' + port + '/' + "delay",
+		url: 'http://localhost:' + port + '/delay',
 		type: 'POST',
-		data: {"delayTime":stateMachineSpeed},
-	    success: function(){
-	        alert(stateMachineSpeed);
-	    }
+		dataType: 'json',
+		data: {delayTime:stateMachineSpeed},
+	    success: function(response) {
+        	if(response.status == 200 && isPolling){
+				setActiveElements((JSON.parse(response.responseText))
+					.map(entry => _visualizer.getShapeIdByElementName(entry.location)));
+				hideError();
+			}
+			else{
+				clearCurrentActiveElements();
+				if(isPolling){
+					showError();
+				}else{
+					hideError();
+				}
+			}
+    	}
 	});
 }
 

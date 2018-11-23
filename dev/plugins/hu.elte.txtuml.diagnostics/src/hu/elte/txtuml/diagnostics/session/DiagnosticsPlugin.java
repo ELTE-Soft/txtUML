@@ -45,7 +45,7 @@ public class DiagnosticsPlugin implements IDisposable, Runnable {
 		modelMapper = new ModelMapper(projectName);
 		instanceRegister = new InstanceRegister();
 		animator = new Animator(instanceRegister, modelMapper);
-		server = new DiagnosticsServer();
+		server = new DiagnosticsServer(this);
 		
 		try {
 			server.start(httpPort);
@@ -58,6 +58,14 @@ public class DiagnosticsPlugin implements IDisposable, Runnable {
 		thread = new Thread(this, "txtUMLDiagnosticsPlugin");
 		thread.start();
 		//Logger.logInfo("txtUML DiagnosticsPlugin started"));
+	}
+	
+	public void setDelay(int speed){
+		DELAY = new AtomicInteger(speed);
+	}
+	
+	public int getDelay(){
+		return DELAY.intValue();
 	}
 	
 	@Override

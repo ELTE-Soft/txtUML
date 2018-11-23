@@ -1,6 +1,7 @@
 package hu.elte.txtuml.diagnostics.animation.js;
 
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.util.Map.Entry;
@@ -16,6 +17,7 @@ import com.sun.net.httpserver.HttpServer;
 import hu.elte.txtuml.api.model.execution.diagnostics.protocol.GlobalSettings;
 import hu.elte.txtuml.api.model.execution.diagnostics.protocol.MessageType;
 import hu.elte.txtuml.api.model.execution.diagnostics.protocol.ModelEvent;
+import hu.elte.txtuml.diagnostics.session.DiagnosticsPlugin;
 
 /**
  * Serves diagnostics data over HTTP.
@@ -23,11 +25,17 @@ import hu.elte.txtuml.api.model.execution.diagnostics.protocol.ModelEvent;
 public class DiagnosticsServer {
 
 	private HttpServer server;
-	private ConcurrentMap<RegistryEntry, String> registry = new ConcurrentHashMap<>();
+	private ConcurrentMap<String, RegistryEntry> registry = new ConcurrentHashMap<>();
+	private DiagnosticsPlugin diagnosticsPlugin;
+	
+	public DiagnosticsServer(DiagnosticsPlugin diagnosticsPlugin){
+		this.diagnosticsPlugin = diagnosticsPlugin;
+	}
 
 	public void start(Integer port) throws IOException {
 		server = HttpServer.create(new InetSocketAddress(port), 0);
 		server.createContext("/" + GlobalSettings.TXTUML_DIAGNOSTICS_HTTP_PATH, new DiagnosticsHandler());
+		server.createContext("/delay", new DelayHandler());
 		server.setExecutor(null); // creates a default executor
 		server.start();
 	}
@@ -38,8 +46,9 @@ public class DiagnosticsServer {
 	}
 
 	public void register(ModelEvent event) {
-		RegistryEntry registryEntry = new RegistryEntry(event.modelClassName, event.modelClassInstanceID, event.modelClassInstanceName);
-		registry.put(registryEntry, event.eventTargetClassName);
+		RegistryEntry registryEntry = new RegistryEntry(event.modelClassName,
+				event.modelClassInstanceName, event.eventTargetClassName);
+		registry.put(event.modelClassInstanceID, registryEntry);
 	}
 
 	private class DiagnosticsHandler implements HttpHandler {
@@ -64,23 +73,56 @@ public class DiagnosticsServer {
 		}
 
 	}
-
-	private static String registryEntryToJson(Entry<RegistryEntry, String> objectToLocation) {
-		RegistryEntry object = objectToLocation.getKey();
-		String location = objectToLocation.getValue();
-
-		return "{\"class\":\"" + object.getModelClassName() + "\","
-				+ "\"id\":\"" + object.getModelClassInstanceID() + "\","
-				+ "\"name\":\"" + object.getModelClassInstanceName() + "\","  
-				+ "\"location\":\"" + location + "\"}";
-	}
 	
+	private class DelayHandler implements HttpHandler {
+
+		@Override
+		public void handle(HttpExchange exchange) throws IOException {
+			
+			StringBuilder body = new StringBuilder();
+		    try (InputStreamReader reader = new InputStreamReader(exchange.getRequestBody())) {
+		        char[] buffer = new char[256];
+		        int read;
+		        while ((read = reader.read(buffer)) != -1) {
+		            body.append(buffer, 0, read);
+		        }
+		    }
+            
+		    System.out.println(body.toString());
+		    String[] delayArray = body.toString().split("=");
+		    
+	        int delay = Integer.parseInt(delayArray[1]);
+			setAnimationDelay(delay);
+			
+			// Write response
+			exchange.sendResponseHeaders(200, 0);
+			OutputStream os = exchange.getResponseBody();
+			os.close();
+		}
+
+	}
+
+	private static String registryEntryToJson(Entry<String, RegistryEntry> instanceIdToEntry) {
+		String instanceId = instanceIdToEntry.getKey();
+		RegistryEntry entry = instanceIdToEntry.getValue();
+
+		return "{\"class\":\"" + entry.getModelClassName() + "\","
+				+ "\"id\":\"" + instanceId + "\","
+				+ "\"name\":\"" + entry.getModelClassInstanceName() + "\","  
+				+ "\"location\":\"" + entry.getLocationName() + "\"}";
+	}
+
 	public void animateEvent(ModelEvent event) {
 		if (event.messageType == MessageType.PROCESSING_SIGNAL) {
 			return;
 		}
 		
 		this.register(event);
+	}
+	
+	private void setAnimationDelay(int delay){
+		int delayInSec = delay*1000;
+		diagnosticsPlugin.setDelay(delayInSec);
 	}
 
 }

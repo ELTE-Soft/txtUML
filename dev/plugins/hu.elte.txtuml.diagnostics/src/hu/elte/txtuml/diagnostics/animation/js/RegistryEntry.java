@@ -2,25 +2,24 @@ package hu.elte.txtuml.diagnostics.animation.js;
 
 public class RegistryEntry {
 	private String modelClassName;
-	private String modelClassInstanceID;
 	private String modelClassInstanceName;
-		
-	RegistryEntry(String modelClassName, String modelClassInstanceID, String modelClassInstanceName){
+	private String locationName;
+
+	RegistryEntry(String modelClassName, String modelClassInstanceName, String locationName){
 		this.modelClassName = modelClassName;
-		this.modelClassInstanceID = modelClassInstanceID;
 		this.modelClassInstanceName = modelClassInstanceName;
+		this.locationName = locationName;
 	}
 
 	public String getModelClassName(){
-		return this.modelClassName;
+		return modelClassName;
 	}
-	
-	public String getModelClassInstanceID(){
-		return this.modelClassInstanceID;
-	}
-	
+
 	public String getModelClassInstanceName(){
-		return this.modelClassInstanceName;
+		return modelClassInstanceName;
 	}
-	
+
+	public String getLocationName() {
+		return locationName;
+	}
 }
