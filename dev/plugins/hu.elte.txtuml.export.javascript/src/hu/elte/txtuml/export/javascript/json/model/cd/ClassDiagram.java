@@ -88,6 +88,8 @@ public class ClassDiagram {
 		// creating ClassNodes
 		for (RectangleObject node : nodes) {
 			if(subMonitor.isCanceled()) return;
+			if(node.isPhantom() || node.isVirtualPhantom()) continue;
+			
 			Classifier clazz = (Classifier) map.getByName(node.getName());
 			ClassNode cn = new ClassNode(clazz, node.getName());
 

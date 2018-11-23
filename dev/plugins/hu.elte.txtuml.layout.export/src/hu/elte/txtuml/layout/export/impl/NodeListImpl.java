@@ -15,8 +15,9 @@ public class NodeListImpl extends ArrayList<NodeInfo> implements NodeList {
     public Set<RectangleObject> convert() {
         Set<RectangleObject> set = new HashSet<>();
         this.forEach(node -> {
-        	if(node.isVirtualPhantom())
+        	if(node.isVirtualPhantom() || node.isPhantom()){
         		set.add(node.convert());
+        	}
         });
 
         return set;

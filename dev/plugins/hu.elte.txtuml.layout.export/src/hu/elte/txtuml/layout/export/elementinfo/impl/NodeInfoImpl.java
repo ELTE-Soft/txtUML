@@ -18,7 +18,10 @@ public class NodeInfoImpl extends ElementInfoImpl implements NodeInfo {
 
 	@Override
 	public RectangleObject convert() {
-		return new RectangleObject(toString(), getSpecialProperty());	
+		RectangleObject res = new RectangleObject(toString(), getSpecialProperty());
+		res.setPhantom(isPhantom());
+		res.setVirtualPhantom(isVirtualPhantom());
+		return res;	
 	}
 
 	@Override

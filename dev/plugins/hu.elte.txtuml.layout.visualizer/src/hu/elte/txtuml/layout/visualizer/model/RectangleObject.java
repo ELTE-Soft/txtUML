@@ -20,6 +20,7 @@ public class RectangleObject {
 	private Integer _pixelHeight;
 
 	private Boolean _phantom;
+	private Boolean _virtualPhantom;
 	private SpecialBox _special;
 	private Integer _linkNumber;
 
@@ -317,6 +318,15 @@ public class RectangleObject {
 	public Boolean isPhantom() {
 		return _phantom;
 	}
+	
+	/**
+	 * Returns whether this box is a virtual phantom box or not.
+	 * 
+	 * @return whether this box is a virtual phantom box or not.
+	 */
+	public Boolean isVirtualPhantom() {
+		return _virtualPhantom;
+	}
 
 	/**
 	 * Sets the box to phantom or not.
@@ -326,6 +336,16 @@ public class RectangleObject {
 	 */
 	public void setPhantom(Boolean value) {
 		_phantom = value;
+	}
+	
+	/**
+	 * Sets the box to virtual phantom or not.
+	 * 
+	 * @param value
+	 *            whether this box should be a virtual phantom or not.
+	 */
+	public void setVirtualPhantom(Boolean value) {
+		_virtualPhantom = value;
 	}
 
 	/**
@@ -395,6 +415,7 @@ public class RectangleObject {
 		_pixelWidth = -1;
 		_pixelHeight = -1;
 		_phantom = false;
+		_virtualPhantom = false;
 		_special = SpecialBox.None;
 		_linkNumber = 0;
 		_inner = null;
@@ -440,6 +461,7 @@ public class RectangleObject {
 		_pixelWidth = new Integer(other._pixelWidth);
 		_pixelHeight = new Integer(other._pixelHeight);
 		_phantom = new Boolean(other._phantom);
+		_virtualPhantom = new Boolean(other._virtualPhantom);
 		_special = other._special;
 		_linkNumber = new Integer(other._linkNumber);
 		_inner = Diagram.clone(other._inner);
@@ -501,6 +523,7 @@ public class RectangleObject {
 		result = prime * result + _name.hashCode();
 		result = prime * result + _position.hashCode();
 		result = prime * result + _phantom.hashCode();
+		result = prime * result + _virtualPhantom.hashCode();
 		result = prime * result + _special.hashCode();
 		return result;
 	}

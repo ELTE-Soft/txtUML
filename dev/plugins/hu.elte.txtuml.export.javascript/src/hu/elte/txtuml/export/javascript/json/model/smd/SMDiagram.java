@@ -163,6 +163,7 @@ public class SMDiagram {
 	}
 	
 	private void processNode(RectangleObject node, Set<Pair<LineAssociation, RectangleObject>> links) throws UnexpectedException{
+		if(node.isPhantom()) return;
 		NodeScaler scaler = null;
 		EObject estate = map.getByName(node.getName());
 		// getting the name of the containing region
