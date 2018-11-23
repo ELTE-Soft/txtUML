@@ -25,7 +25,7 @@ public class DiagnosticsPlugin implements IDisposable, Runnable {
 
 	private static final int SERVER_SOCKET_BACKLOG = 50;
 	private static final int FAULT_TOLERANCE = 99;
-	private static AtomicInteger DELAY = new AtomicInteger(5000);
+	private static AtomicInteger DELAY = new AtomicInteger(1000);
 	
 	private Thread thread;
 	private volatile boolean shutdownHasCome = false;
