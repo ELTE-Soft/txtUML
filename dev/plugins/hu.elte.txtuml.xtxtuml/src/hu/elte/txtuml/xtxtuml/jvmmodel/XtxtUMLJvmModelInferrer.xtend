@@ -65,6 +65,8 @@ import org.eclipse.xtext.xbase.jvmmodel.AbstractModelInferrer
 import org.eclipse.xtext.xbase.jvmmodel.IJvmDeclaredTypeAcceptor
 import org.eclipse.xtext.xbase.jvmmodel.IJvmModelAssociations
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUExecutionElement
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUExecutionElementType
+import hu.elte.txtuml.api.model.execution.Execution.Settings
 
 /**
  * Infers a JVM model equivalent from an XtxtUML resource. If not stated otherwise,
@@ -104,13 +106,21 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 				varArgs = true
 
 				static = true
-			// TODO: body =
+				body ='''new «exec.name»().run();'''
 			]
 		]
 	}
 
 	def dispatch private toJvmMember(TUExecutionElement element) {
-
+		if (element.type == TUExecutionElementType.CONFIGURE) {
+			return element.toMethod(element.type.toString, Void.TYPE.typeRef) [
+				documentation = element.documentation
+				parameters += element.toParameter("s", Settings.typeRef)
+				visibility = JvmVisibility.PUBLIC
+				annotations += annotationRef(Override)
+				body = element.body
+			]
+		}
 		return element.toMethod(element.type.toString, Void.TYPE.typeRef) [
 			documentation = element.documentation
 			visibility = JvmVisibility.PUBLIC
