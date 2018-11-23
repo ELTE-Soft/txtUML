@@ -10,7 +10,9 @@ import pingpong.x.model.Racket;
 
 public class XPingPongClassDiagram extends ClassDiagram {
 
-	public class Space extends Phantom{}
+	public class Space extends Box{
+		class SpaceLayout extends Layout{};
+	}
 	
 	@Above(val = Game.class, from = Space.class)
 	@Row({Player.class, Space.class, Racket.class})

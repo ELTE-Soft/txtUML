@@ -7,7 +7,8 @@ import train.j.model.Gearbox;
 import train.j.model.Lamp;
 
 public class TrainClassDiagram extends ClassDiagram {
-	class TopPhantom extends Phantom {
+	class TopPhantom extends Box {
+		class TopPhantomLayout extends Layout{};
 	}
 
 	@Diamond(bottom = Lamp.class, left = Engine.class, right = Gearbox.class, top = TopPhantom.class)
