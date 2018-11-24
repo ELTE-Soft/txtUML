@@ -15,7 +15,6 @@ import org.eclipse.jdt.core.IType;
 
 import hu.elte.txtuml.export.diagrams.common.TxtUMLExporter;
 import hu.elte.txtuml.export.diagrams.common.arrange.TxtUMLLayoutDescriptor;
-import hu.elte.txtuml.export.diagrams.common.layout.LayoutUtils;
 import hu.elte.txtuml.layout.export.DiagramExportationReport;
 import hu.elte.txtuml.utils.Pair;
 import hu.elte.txtuml.utils.eclipse.Dialogs;
@@ -111,7 +110,12 @@ public abstract class UML2VisualizeWizard extends TxtUMLVisualizeWizard {
 	 */
 	private void exportModel(TxtUMLExporter exporter, IProgressMonitor monitor) {
 		monitor.subTask("Exporting txtUML Model to UML2 model...");
-		LayoutUtils.getDisplay().syncExec(() -> {
+		/* Removed the syncExec as it somehow caused inconsistencies when visualizing multiple models,
+		 * namely that the .uml file was missing.
+		 * Only commented out, because I do not fully understand how this bug was caused or why this fixed it.
+		 * Consider this as a hot-fix.
+		 */
+		//LayoutUtils.getDisplay().syncExec(() -> {
 			try {
 				exporter.exportModel();
 			} catch (Exception e) {
@@ -119,7 +123,7 @@ public abstract class UML2VisualizeWizard extends TxtUMLVisualizeWizard {
 				monitor.done();
 				throw new RuntimeException();
 			}
-		});
+		//});
 		monitor.worked(10);
 	}
 
