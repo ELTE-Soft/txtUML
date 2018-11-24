@@ -78,7 +78,7 @@ public class DiagnosticsServer {
 
 		@Override
 		public void handle(HttpExchange exchange) throws IOException {
-			
+			//Get request data
 			StringBuilder body = new StringBuilder();
 		    try (InputStreamReader reader = new InputStreamReader(exchange.getRequestBody())) {
 		        char[] buffer = new char[256];
@@ -87,11 +87,10 @@ public class DiagnosticsServer {
 		            body.append(buffer, 0, read);
 		        }
 		    }
-            
-		    System.out.println(body.toString());
-		    String[] delayArray = body.toString().split("=");
 		    
-	        int delay = Integer.parseInt(delayArray[1]);
+            //Get and set animation delay
+		    String[] delayArray = body.toString().split("=");
+		    int delay = Integer.parseInt(delayArray[1]);
 			setAnimationDelay(delay);
 			
 			// Write response
@@ -121,8 +120,8 @@ public class DiagnosticsServer {
 	}
 	
 	private void setAnimationDelay(int delay){
-		int delayInSec = delay*1000;
-		diagnosticsPlugin.setDelay(delayInSec);
+		int delayInMillisec = delay*1000;
+		diagnosticsPlugin.setDelay(delayInMillisec);
 	}
 
 }
