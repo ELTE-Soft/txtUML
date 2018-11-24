@@ -67,6 +67,9 @@ import org.eclipse.xtext.xbase.jvmmodel.IJvmModelAssociations
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUExecutionElement
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUExecutionElementType
 import hu.elte.txtuml.api.model.execution.Execution.Settings
+import hu.elte.txtuml.api.model.execution.CheckLevel
+import hu.elte.txtuml.api.model.execution.LogLevel
+import org.eclipse.xtext.nodemodel.util.NodeModelUtils
 
 /**
  * Infers a JVM model equivalent from an XtxtUML resource. If not stated otherwise,
@@ -97,6 +100,9 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 			documentation = exec.documentation
 			visibility = JvmVisibility.PUBLIC
 			superTypes += Execution.typeRef
+			members += exec.toField("checklevel",CheckLevel.typeRef)
+			members += exec.toField("loglevel",LogLevel.typeRef)
+			members += exec.toField("timemultiplier",double.typeRef)
 			for (element : exec.elements) {
 				members += element.toJvmMember
 			}
@@ -118,7 +124,19 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 				parameters += element.toParameter("s", Settings.typeRef)
 				visibility = JvmVisibility.PUBLIC
 				annotations += annotationRef(Override)
-				body = element.body
+				body = //TODO: concat with element.body
+				//«NodeModelUtils.getTokenText(NodeModelUtils.findActualNodeFor(element.body.get))»
+				'''
+				«FOR e : element.body.jvmElements»
+					«e»
+				«ENDFOR»
+				if(loglevel != null)
+					s.logLevel = loglevel;
+				if(checklevel != null)
+					s.checkLevel = checklevel;
+				if(timemultiplier != 0.0)
+					s.timeMultiplier = timemultiplier;
+				'''
 			]
 		}
 		return element.toMethod(element.type.toString, Void.TYPE.typeRef) [
