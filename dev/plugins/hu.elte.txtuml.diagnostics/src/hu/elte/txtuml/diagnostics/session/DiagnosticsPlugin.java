@@ -53,7 +53,6 @@ public class DiagnosticsPlugin implements IDisposable, Runnable {
 			Logger.sys.error("Couldn't start HTTP server on port " + httpPort + " in service instance 0x", e);
 			return;
 		}
-		Logger.sys.info("txtUML diagnostics connection is set on HTTP port " + httpPort );
 		
 		thread = new Thread(this, "txtUMLDiagnosticsPlugin");
 		thread.start();
