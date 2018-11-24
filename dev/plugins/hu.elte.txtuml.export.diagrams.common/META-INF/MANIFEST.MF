@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Diagrams Common
 Bundle-SymbolicName: hu.elte.txtuml.export.diagrams.common
-Bundle-Version: 0.6.0.qualifier
+Bundle-Version: 0.7.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Export-Package: hu.elte.txtuml.export.diagrams.common,
  hu.elte.txtuml.export.diagrams.common.arrange,
