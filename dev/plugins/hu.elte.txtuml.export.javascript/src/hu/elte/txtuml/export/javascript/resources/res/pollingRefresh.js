@@ -116,7 +116,7 @@ function sendSMTime(){
 }
 
 //add event listeners to the state machine's speed range
-$('#animation-speed-input').on('click', function(){
+$('#animation-speed-input').on('change', function(){
 	stateMachineSpeed = $('#animation-speed-input').val();
 	sendSMTime();
 });
