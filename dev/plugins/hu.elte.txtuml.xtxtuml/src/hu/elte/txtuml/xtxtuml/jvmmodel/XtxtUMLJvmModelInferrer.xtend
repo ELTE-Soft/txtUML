@@ -70,6 +70,7 @@ import hu.elte.txtuml.api.model.execution.Execution.Settings
 import hu.elte.txtuml.api.model.execution.CheckLevel
 import hu.elte.txtuml.api.model.execution.LogLevel
 import org.eclipse.xtext.nodemodel.util.NodeModelUtils
+import org.eclipse.xtext.xbase.XBlockExpression
 
 /**
  * Infers a JVM model equivalent from an XtxtUML resource. If not stated otherwise,
@@ -127,8 +128,8 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 				body = //TODO: concat with element.body
 				//«NodeModelUtils.getTokenText(NodeModelUtils.findActualNodeFor(element.body.get))»
 				'''
-				«FOR e : element.body.jvmElements»
-					«e»
+				«FOR e : (element.body as XBlockExpression).expressions»
+					«NodeModelUtils.getTokenText(NodeModelUtils.findActualNodeFor(e))»
 				«ENDFOR»
 				if(loglevel != null)
 					s.logLevel = loglevel;
