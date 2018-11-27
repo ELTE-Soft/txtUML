@@ -66,7 +66,7 @@ public class FragmentsTests {
 		
 		executor = SequenceDiagramExecutor.create();
 		
-		executor.setDiagram(diagErr).run();;
+		executor.setDiagram(diagErr).run();
 		
 		Assert.assertEquals(3, executor.getErrors().size());
 	}
