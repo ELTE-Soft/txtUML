@@ -35,7 +35,7 @@ public class DiagnosticsServer {
 	public void start(Integer port) throws IOException {
 		server = HttpServer.create(new InetSocketAddress(port), 0);
 		server.createContext("/" + GlobalSettings.TXTUML_DIAGNOSTICS_HTTP_PATH, new DiagnosticsHandler());
-		server.createContext("/delay", new DelayHandler());
+		server.createContext("/" + GlobalSettings.TXTUML_DIAGNOSTICS_DELAY_PATH, new DelayHandler());
 		server.setExecutor(null); // creates a default executor
 		server.start();
 	}

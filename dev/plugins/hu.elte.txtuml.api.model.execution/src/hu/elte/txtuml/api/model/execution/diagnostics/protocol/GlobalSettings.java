@@ -16,4 +16,5 @@ public class GlobalSettings {
 	 * NOT KEYS, only predefined parameters.
 	 */
 	public static final String TXTUML_DIAGNOSTICS_HTTP_PATH = "registry";
+	public static final String TXTUML_DIAGNOSTICS_DELAY_PATH = "delay";
 }
