@@ -25,7 +25,7 @@ public class DiagnosticsPlugin implements IDisposable, Runnable {
 
 	private static final int SERVER_SOCKET_BACKLOG = 50;
 	private static final int FAULT_TOLERANCE = 99;
-	private static AtomicInteger DELAY = new AtomicInteger(1000);
+	private static AtomicInteger delay = new AtomicInteger(1000);
 	
 	private Thread thread;
 	private volatile boolean shutdownHasCome = false;
@@ -60,11 +60,11 @@ public class DiagnosticsPlugin implements IDisposable, Runnable {
 	}
 	
 	public void setDelay(int speed){
-		DELAY = new AtomicInteger(speed);
+		this.delay = new AtomicInteger(speed);
 	}
 	
 	public int getDelay(){
-		return DELAY.intValue();
+		return this.delay.intValue();
 	}
 	
 	@Override
@@ -133,7 +133,7 @@ public class DiagnosticsPlugin implements IDisposable, Runnable {
 							animator.animateEvent((ModelEvent)event);
 							server.animateEvent((ModelEvent)event);
 							try {
-								Thread.sleep(DELAY.longValue());
+								Thread.sleep(this.delay.longValue());
 							} catch (InterruptedException ex) {}
 						}
 												
