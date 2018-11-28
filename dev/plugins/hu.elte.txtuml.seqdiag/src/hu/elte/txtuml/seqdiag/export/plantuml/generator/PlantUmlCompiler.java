@@ -4,13 +4,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Stack;
+import java.util.stream.Collectors;
 
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTVisitor;
+import org.eclipse.jdt.core.dom.Expression;
+import org.eclipse.jdt.core.dom.FieldAccess;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
+import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 
+import hu.elte.txtuml.api.model.ModelClass;
 import hu.elte.txtuml.seqdiag.export.plantuml.exporters.ExporterBase;
+import hu.elte.txtuml.utils.Logger;
 
 /**
  * <b>Main PlantUML compiler class.</b>
@@ -216,6 +222,53 @@ public class PlantUmlCompiler extends ASTVisitor {
 	 */
 	public String getSeqDiagramName() {
 		return seqDiagramName;
+	}
+	/*
+	 * public void setNewLifeline(String newArgumentName) {
+	 * orderedLifelines.stream().filter(elem -> elem.getName() == "??")
+	 * .forEach(elem -> "??").setNewLifeline(newArgumentName); }
+	 */
+
+	public void setNewLifeline(List<Expression> arguments, List<SingleVariableDeclaration> parameters) {
+
+		List<Integer> idxs = new ArrayList<>();
+		for (int i = 0; i < arguments.size(); ++i) {
+			if (arguments.get(i) instanceof FieldAccess) {
+				idxs.add(i);
+			}
+		}		
+		
+		List<String> oldNames = idxs.stream().map(i -> arguments.get(i)).map(elem -> ((FieldAccess) elem))
+				.map(elem -> elem.getName().toString()).collect(Collectors.toList());
+
+		List<String> newNames = idxs.stream().map(i -> parameters.get(i)).map(elem -> ((SingleVariableDeclaration) elem))
+				.map(elem -> elem.getName().toString()).collect(Collectors.toList());
+			
+		ChangeNames(oldNames, newNames);
+		
+		Logger.sys.error("log.");
+	}
+	
+	private void ChangeNames(List<String> oldNames, List<String> newNames) {
+		for (int i = 0; i < oldNames.size(); ++i) {
+			String oldName = oldNames.get(i);
+			List<Integer> lifelineIndexes = new ArrayList<>();
+			
+			for(int j = 0; j < orderedLifelines.size(); ++j) {
+				Lifeline lifeLine = orderedLifelines.get(j);
+				if(lifeLine.getName().equals(oldName)) {
+					lifelineIndexes.add(j);
+					lifeLine.setName(newNames.get(i));
+				}
+			}
+			
+			//ctor of ASD
+		}
+	}
+
+	public void changeBackLifelines() {
+		// TODO Auto-generated method stub
+		//ASD.changeBackLifelineNames
 	}
 
 }
