@@ -20,7 +20,10 @@ import hu.elte.txtuml.api.model.Signal
 import hu.elte.txtuml.api.model.StateMachine
 import hu.elte.txtuml.api.model.To
 import hu.elte.txtuml.api.model.Trigger
+import hu.elte.txtuml.api.model.execution.CheckLevel
 import hu.elte.txtuml.api.model.execution.Execution
+import hu.elte.txtuml.api.model.execution.Execution.Settings
+import hu.elte.txtuml.api.model.execution.LogLevel
 import hu.elte.txtuml.xtxtuml.common.XtxtUMLUtils
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAssociation
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAssociationEnd
@@ -35,6 +38,8 @@ import hu.elte.txtuml.xtxtuml.xtxtUML.TUEntryOrExitActivity
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUEnumeration
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUEnumerationLiteral
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUExecution
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUExecutionElement
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUExecutionElementType
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUInterface
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUModelDeclaration
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUOperation
@@ -61,16 +66,12 @@ import org.eclipse.xtext.common.types.JvmMember
 import org.eclipse.xtext.common.types.JvmVisibility
 import org.eclipse.xtext.common.types.TypesFactory
 import org.eclipse.xtext.naming.IQualifiedNameProvider
+import org.eclipse.xtext.nodemodel.util.NodeModelUtils
+import org.eclipse.xtext.xbase.XAssignment
+import org.eclipse.xtext.xbase.XBlockExpression
 import org.eclipse.xtext.xbase.jvmmodel.AbstractModelInferrer
 import org.eclipse.xtext.xbase.jvmmodel.IJvmDeclaredTypeAcceptor
 import org.eclipse.xtext.xbase.jvmmodel.IJvmModelAssociations
-import hu.elte.txtuml.xtxtuml.xtxtUML.TUExecutionElement
-import hu.elte.txtuml.xtxtuml.xtxtUML.TUExecutionElementType
-import hu.elte.txtuml.api.model.execution.Execution.Settings
-import hu.elte.txtuml.api.model.execution.CheckLevel
-import hu.elte.txtuml.api.model.execution.LogLevel
-import org.eclipse.xtext.nodemodel.util.NodeModelUtils
-import org.eclipse.xtext.xbase.XBlockExpression
 
 /**
  * Infers a JVM model equivalent from an XtxtUML resource. If not stated otherwise,
@@ -101,11 +102,13 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 			documentation = exec.documentation
 			visibility = JvmVisibility.PUBLIC
 			superTypes += Execution.typeRef
-			members += exec.toField("checklevel",CheckLevel.typeRef)
-			members += exec.toField("loglevel",LogLevel.typeRef)
-			members += exec.toField("timemultiplier",double.typeRef)
+			members += exec.toField("checklevel", CheckLevel.typeRef)
+			members += exec.toField("loglevel", LogLevel.typeRef)
+			members += exec.toField("timemultiplier", double.typeRef)
 			for (element : exec.elements) {
-				members += element.toJvmMember
+				for (e : element.executionelementToJvmMember) {
+					members += e
+				}
 			}
 			members += exec.toMethod("main", Void.TYPE.typeRef) [
 				documentation = exec.documentation
@@ -113,39 +116,53 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 				varArgs = true
 
 				static = true
-				body ='''new «exec.name»().run();'''
+				body = '''new «exec.name»().run();'''
 			]
 		]
 	}
 
-	def dispatch private toJvmMember(TUExecutionElement element) {
+	def private executionelementToJvmMember(TUExecutionElement element) {
 		if (element.type == TUExecutionElementType.CONFIGURE) {
-			return element.toMethod(element.type.toString, Void.TYPE.typeRef) [
-				documentation = element.documentation
-				parameters += element.toParameter("s", Settings.typeRef)
-				visibility = JvmVisibility.PUBLIC
-				annotations += annotationRef(Override)
-				body = //TODO: concat with element.body
-				//«NodeModelUtils.getTokenText(NodeModelUtils.findActualNodeFor(element.body.get))»
-				'''
-				«FOR e : (element.body as XBlockExpression).expressions»
-					«NodeModelUtils.getTokenText(NodeModelUtils.findActualNodeFor(e))»
-				«ENDFOR»
-				if(loglevel != null)
-					s.logLevel = loglevel;
-				if(checklevel != null)
-					s.checkLevel = checklevel;
-				if(timemultiplier != 0.0)
-					s.timeMultiplier = timemultiplier;
-				'''
+			val c = (element.body as XBlockExpression).expressions.filter [
+				(it instanceof XAssignment) && (it as XAssignment).concreteSyntaxFeatureName == "name"
+			]
+			return #[
+				element.toMethod(element.type.toString, Void.TYPE.typeRef) [
+					documentation = element.documentation
+					parameters += element.toParameter("s", Settings.typeRef)
+					visibility = JvmVisibility.PUBLIC
+					annotations += annotationRef(Override)
+					body = '''
+						«FOR e : (element.body as XBlockExpression).expressions»
+							«IF e instanceof XAssignment && (e as XAssignment).concreteSyntaxFeatureName != "name" »
+								«NodeModelUtils.getTokenText(NodeModelUtils.findActualNodeFor(e))»;
+							«ENDIF»
+						«ENDFOR»
+						if(loglevel != null)
+							s.logLevel = loglevel;
+						if(checklevel != null)
+							s.checkLevel = checklevel;
+						if(timemultiplier != 0.0)
+							s.timeMultiplier = timemultiplier;
+					'''
+				],
+				element.toMethod("name", String.typeRef) [
+					visibility = JvmVisibility.PUBLIC
+					annotations += annotationRef(Override)
+					body = '''
+						«FOR e : c»
+							return «NodeModelUtils.getTokenText(NodeModelUtils.findActualNodeFor((e as XAssignment).actualArguments.head))»;
+						«ENDFOR»
+					'''
+				]
 			]
 		}
-		return element.toMethod(element.type.toString, Void.TYPE.typeRef) [
+		return #[element.toMethod(element.type.toString, Void.TYPE.typeRef) [
 			documentation = element.documentation
 			visibility = JvmVisibility.PUBLIC
 			annotations += annotationRef(Override)
 			body = element.body
-		]
+		]]
 	}
 
 	def dispatch void infer(TUAssociation assoc, IJvmDeclaredTypeAcceptor acceptor, boolean isPreIndexingPhase) {
