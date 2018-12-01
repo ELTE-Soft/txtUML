@@ -26,6 +26,32 @@ import hu.elte.txtuml.utils.Logger;
  * Furthermore handles lifeline positions, activation and deactivation. <br>
  * For more information about the compilation, see {@link ExporterBase}.
  */
+private class LifelineNamingManager {
+	public final List<String> oldNames;
+	public final List<String> newNames;
+	public final List<Integer> indexes;
+	
+	LifelineNamingManager(List<String> oldnames, List<String> newnames, List<Integer> indxes) {
+		this.oldNames = oldnames;
+		this.newNames = newnames;
+		this.indexes = indxes;
+	}
+	
+	public void ChangeOldNamesToNewNames(List<Lifeline> orderedLifelines) {
+		int nameCounters = 0;
+		for(int lifeLineIndex : indexes) {
+			orderedLifelines.get(lifeLineIndex).setName(newNames.get(nameCounters++));
+		}
+	}
+
+	public void ChangeNewNamesBackToOriginalNames(List<Lifeline> orderedLifelines) {
+		int nameCounters = 0;
+		for(int lifeLineIndex : indexes) {
+			orderedLifelines.get(lifeLineIndex).setName(oldNames.get(nameCounters++));
+		}
+	}
+}
+
 public class PlantUmlCompiler extends ASTVisitor {
 
 	/**
@@ -39,6 +65,7 @@ public class PlantUmlCompiler extends ASTVisitor {
 	private String currentClassFullyQualifiedName;
 	private List<Lifeline> orderedLifelines;
 	private final String seqDiagramName;
+	private LifelineNamingManager lifelineNamingManager;
 
 	private StringBuilder compiledOutput;
 
@@ -49,6 +76,7 @@ public class PlantUmlCompiler extends ASTVisitor {
 		this.seqDiagramName = seqDiagramName;
 
 		compiledOutput = new StringBuilder();
+		this.lifelineNamingManager = null;
 	}
 
 	/**
@@ -229,7 +257,7 @@ public class PlantUmlCompiler extends ASTVisitor {
 	 * .forEach(elem -> "??").setNewLifeline(newArgumentName); }
 	 */
 
-	public void setNewLifeline(List<Expression> arguments, List<SingleVariableDeclaration> parameters) {
+	public void setNewLifelineNames(List<Expression> arguments, List<SingleVariableDeclaration> parameters) {
 
 		List<Integer> idxs = new ArrayList<>();
 		for (int i = 0; i < arguments.size(); ++i) {
@@ -262,13 +290,12 @@ public class PlantUmlCompiler extends ASTVisitor {
 				}
 			}
 			
-			//ctor of ASD
+			this.lifelineNamingManager = new LifelineNamingManager(oldNames, newNames, lifelineIndexes);
 		}
 	}
 
-	public void changeBackLifelines() {
-		// TODO Auto-generated method stub
-		//ASD.changeBackLifelineNames
+	public void changeBackLifelineNamesToOriginal() {
+		lifelineNamingManager.ChangeNewNamesBackToOriginalNames(orderedLifelines);
 	}
 
 }

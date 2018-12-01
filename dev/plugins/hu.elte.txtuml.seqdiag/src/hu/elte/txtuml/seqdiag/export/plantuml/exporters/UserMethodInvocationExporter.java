@@ -47,11 +47,11 @@ public class UserMethodInvocationExporter extends MethodInvocationExporter {
 		 * curElement.resolveMethodBinding().getParameterTypes()[0].;
 		 */
 		
-		compiler.setNewLifeline(curElement.arguments(), decl.parameters());
+		compiler.setNewLifelineNames(curElement.arguments(), decl.parameters());
 		
 		decl.getBody().accept(compiler);
 
-		compiler.changeBackLifelines();
+		compiler.changeBackLifelineNamesToOriginal();
 		
 		return true;
 	}

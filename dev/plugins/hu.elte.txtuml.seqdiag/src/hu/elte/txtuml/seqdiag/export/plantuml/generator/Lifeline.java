@@ -9,25 +9,15 @@ import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
  * Represents a sequence diagram lifeline.
  */
 
-class ASD {
-	public final List<String> oldNames;
-	public final List<String> newNames;
-	public final List<Integer> indexes;
-	
-	/*ctor*/
-}
-
 class Lifeline {
 
 	private LifelineDeclaration declaration;
 	private String name;
 	private boolean isActive;
-	private ASD asd;
 
 	Lifeline(final LifelineDeclaration declaration) {
 		this.declaration = declaration;
 		this.name = ((VariableDeclarationFragment) declaration.getLifelineDecl().fragments().get(0)).toString();
-		this.asd = null;
 	}
 
 	public void activate(boolean isActive) {
