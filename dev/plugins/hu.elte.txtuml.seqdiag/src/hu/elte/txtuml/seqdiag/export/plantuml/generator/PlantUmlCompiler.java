@@ -26,7 +26,7 @@ import hu.elte.txtuml.utils.Logger;
  * Furthermore handles lifeline positions, activation and deactivation. <br>
  * For more information about the compilation, see {@link ExporterBase}.
  */
-private class LifelineNamingManager {
+class LifelineNamingManager {
 	public final List<String> oldNames;
 	public final List<String> newNames;
 	public final List<Integer> indexes;
@@ -251,11 +251,6 @@ public class PlantUmlCompiler extends ASTVisitor {
 	public String getSeqDiagramName() {
 		return seqDiagramName;
 	}
-	/*
-	 * public void setNewLifeline(String newArgumentName) {
-	 * orderedLifelines.stream().filter(elem -> elem.getName() == "??")
-	 * .forEach(elem -> "??").setNewLifeline(newArgumentName); }
-	 */
 
 	public void setNewLifelineNames(List<Expression> arguments, List<SingleVariableDeclaration> parameters) {
 
@@ -271,30 +266,40 @@ public class PlantUmlCompiler extends ASTVisitor {
 
 		List<String> newNames = idxs.stream().map(i -> parameters.get(i)).map(elem -> ((SingleVariableDeclaration) elem))
 				.map(elem -> elem.getName().toString()).collect(Collectors.toList());
-			
-		ChangeNames(oldNames, newNames);
 		
-		Logger.sys.error("log.");
+		Logger.sys.error("asd");
+		
+		ChangeNames(oldNames, newNames);
 	}
 	
 	private void ChangeNames(List<String> oldNames, List<String> newNames) {
 		for (int i = 0; i < oldNames.size(); ++i) {
 			String oldName = oldNames.get(i);
 			List<Integer> lifelineIndexes = new ArrayList<>();
-			
+
 			for(int j = 0; j < orderedLifelines.size(); ++j) {
 				Lifeline lifeLine = orderedLifelines.get(j);
+				
+				Logger.sys.error("oldname: " + lifeLine.getName());
+				
 				if(lifeLine.getName().equals(oldName)) {
 					lifelineIndexes.add(j);
 					lifeLine.setName(newNames.get(i));
+					
+					Logger.sys.error("newname: " + lifeLine.getName());
 				}
 			}
 			
 			this.lifelineNamingManager = new LifelineNamingManager(oldNames, newNames, lifelineIndexes);
+			//lifelineNamingManager.ChangeOldNamesToNewNames(orderedLifelines); + delete line284: lifeLine.setName(newNames.get(i));
 		}
 	}
 
 	public void changeBackLifelineNamesToOriginal() {
+		if(lifelineNamingManager == null) {
+			return;
+		}
+		
 		lifelineNamingManager.ChangeNewNamesBackToOriginalNames(orderedLifelines);
 	}
 
