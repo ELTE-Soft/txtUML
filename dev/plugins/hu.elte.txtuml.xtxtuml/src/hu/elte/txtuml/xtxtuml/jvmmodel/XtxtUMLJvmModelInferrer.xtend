@@ -102,9 +102,9 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 			documentation = exec.documentation
 			visibility = JvmVisibility.PUBLIC
 			superTypes += Execution.typeRef
-			members += exec.toField("checklevel", CheckLevel.typeRef)
-			members += exec.toField("loglevel", LogLevel.typeRef)
-			members += exec.toField("timemultiplier", double.typeRef)
+			members += exec.toField("checkLevel", CheckLevel.typeRef)
+			members += exec.toField("logLevel", LogLevel.typeRef)
+			members += exec.toField("timeMultiplier", double.typeRef)
 			for (element : exec.elements) {
 				for (e : element.executionelementToJvmMember) {
 					members += e
@@ -126,7 +126,7 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 			val c = (element.body as XBlockExpression).expressions.filter [
 				(it instanceof XAssignment) && (it as XAssignment).concreteSyntaxFeatureName == "name"
 			]
-			return #[
+			var elementList = newLinkedList(
 				element.toMethod(element.type.toString, Void.TYPE.typeRef) [
 					documentation = element.documentation
 					parameters += element.toParameter("s", Settings.typeRef)
@@ -138,14 +138,17 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 								«NodeModelUtils.getTokenText(NodeModelUtils.findActualNodeFor(e))»;
 							«ENDIF»
 						«ENDFOR»
-						if(loglevel != null)
-							s.logLevel = loglevel;
-						if(checklevel != null)
-							s.checkLevel = checklevel;
-						if(timemultiplier != 0.0)
-							s.timeMultiplier = timemultiplier;
+						if (logLevel != null)
+						  s.logLevel = logLevel;
+						if (checkLevel != null)
+						  s.checkLevel = checkLevel;
+						if (timeMultiplier != 0.0)
+						  s.timeMultiplier = timeMultiplier;
 					'''
-				],
+				]
+			)
+			if (!c.empty) {
+				elementList.add(
 				element.toMethod("name", String.typeRef) [
 					visibility = JvmVisibility.PUBLIC
 					annotations += annotationRef(Override)
@@ -154,8 +157,9 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 							return «NodeModelUtils.getTokenText(NodeModelUtils.findActualNodeFor((e as XAssignment).actualArguments.head))»;
 						«ENDFOR»
 					'''
-				]
-			]
+				])
+			}
+			return elementList
 		}
 		return #[element.toMethod(element.type.toString, Void.TYPE.typeRef) [
 			documentation = element.documentation

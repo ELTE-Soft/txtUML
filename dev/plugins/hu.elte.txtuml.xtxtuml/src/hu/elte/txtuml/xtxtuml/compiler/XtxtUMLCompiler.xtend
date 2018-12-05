@@ -68,11 +68,8 @@ class XtxtUMLCompiler extends XbaseCompiler {
 
 	def dispatch toJavaStatement(TUStartObjectExpression startExpr, ITreeAppendable it) {
 		newLine;
-		if (isInExecution(startExpr)) {
-			append(API);
-		} else {
-			append(Action);
-		}
+		isInExecution(startExpr,it)
+
 		append(".start(");
 		startExpr.object.internalToJavaExpression(it);
 		append(");");
@@ -80,11 +77,8 @@ class XtxtUMLCompiler extends XbaseCompiler {
 
 	def dispatch toJavaStatement(TUDeleteObjectExpression deleteExpr, ITreeAppendable it) {
 		newLine;
-		if (isInExecution(deleteExpr)) {
-			append(API);
-		} else {
-			append(Action);
-		}
+		isInExecution(deleteExpr,it)
+
 		append(".delete(");
 		deleteExpr.object.internalToJavaExpression(it);
 		append(");");
@@ -92,11 +86,8 @@ class XtxtUMLCompiler extends XbaseCompiler {
 
 	def dispatch toJavaStatement(TULogExpression logExpr, ITreeAppendable it) {
 		newLine;
-		if (isInExecution(logExpr)) {
-			append(API);
-		} else {
-			append(Action);
-		}
+		isInExecution(logExpr,it)
+
 		append('''.log«IF logExpr.error»Error«ENDIF»(''');
 		logExpr.message.internalToJavaExpression(it);
 		append(");");
@@ -104,11 +95,8 @@ class XtxtUMLCompiler extends XbaseCompiler {
 
 	def dispatch toJavaStatement(TUBindExpression bindExpr, ITreeAppendable it) {
 		newLine;
-		if (isInExecution(bindExpr)) {
-			append(API);
-		} else {
-			append(Action);
-		}
+		isInExecution(bindExpr,it)
+
 		append('''.«bindExpr.type.toString»(''');
 
 		val compileSide = [ TUConnectiveEnd end, XExpression participant |
@@ -139,11 +127,8 @@ class XtxtUMLCompiler extends XbaseCompiler {
 
 	def dispatch toJavaStatement(TUSendSignalExpression sendExpr, ITreeAppendable it) {
 		newLine;
-		if (isInExecution(sendExpr)) {
-			append(API);
-		} else {
-			append(Action);
-		}
+		isInExecution(sendExpr,it)
+		
 		append(".send(");
 
 		sendExpr.signal.internalToJavaExpression(it);
@@ -194,11 +179,7 @@ class XtxtUMLCompiler extends XbaseCompiler {
 			return;
 		}
 
-		if (isInExecution(createExpr)) {
-			append(API);
-		} else {
-			append(Action);
-		}
+		isInExecution(createExpr,it)
 		append('''.create«IF nameSpecified»WithName«ENDIF»(''');
 		appendConstructedTypeName(createExpr, it);
 		append(".class");
@@ -214,15 +195,17 @@ class XtxtUMLCompiler extends XbaseCompiler {
 		append(")");
 	}
 
-	def isInExecution(EObject obj) {
+	def isInExecution(EObject obj, ITreeAppendable it) {
 		var container = obj.eContainer;
-		while (container != null && !(container instanceof TUExecutionElement)) {
-			container = container.eContainer;
+		for(;container != null && !(container instanceof TUExecutionElement); container = container.eContainer){
+			
 		}
-		if (container instanceof TUExecutionElement) {
-			return (container as TUExecutionElement).type != TUExecutionElementType.INITIALIZATION;
+		if (container instanceof TUExecutionElement && 
+			(container as TUExecutionElement).type != TUExecutionElementType.INITIALIZATION
+		) {
+			append(API);
 		} else {
-			return false;
+			append(Action);
 		}
 	}
 
