@@ -72,6 +72,8 @@ import org.eclipse.xtext.xbase.XBlockExpression
 import org.eclipse.xtext.xbase.jvmmodel.AbstractModelInferrer
 import org.eclipse.xtext.xbase.jvmmodel.IJvmDeclaredTypeAcceptor
 import org.eclipse.xtext.xbase.jvmmodel.IJvmModelAssociations
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUExecutionMethod
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUExecutionAttribute
 
 /**
  * Infers a JVM model equivalent from an XtxtUML resource. If not stated otherwise,
@@ -122,18 +124,28 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 	}
 
 	def private executionelementToJvmMember(TUExecutionElement element) {
-		if (element.type == TUExecutionElementType.CONFIGURE) {
-			val c = (element.body as XBlockExpression).expressions.filter [
+		if(element instanceof TUExecutionMethod){
+			return element.executionMethodToJvmMember
+		}else{
+			return #[
+				element.toField((element as TUExecutionAttribute).name,(element as TUExecutionAttribute).type)
+			]
+		}
+	}
+	
+	def private executionMethodToJvmMember(TUExecutionMethod method){
+		if (method.type == TUExecutionElementType.CONFIGURE) {
+			val c = (method.body as XBlockExpression).expressions.filter [
 				(it instanceof XAssignment) && (it as XAssignment).concreteSyntaxFeatureName == "name"
 			]
 			var elementList = newLinkedList(
-				element.toMethod(element.type.toString, Void.TYPE.typeRef) [
-					documentation = element.documentation
-					parameters += element.toParameter("s", Settings.typeRef)
+				method.toMethod(method.type.toString, Void.TYPE.typeRef) [
+					documentation = method.documentation
+					parameters += method.toParameter("s", Settings.typeRef)
 					visibility = JvmVisibility.PUBLIC
 					annotations += annotationRef(Override)
 					body = '''
-						«FOR e : (element.body as XBlockExpression).expressions»
+						«FOR e : (method.body as XBlockExpression).expressions»
 							«IF e instanceof XAssignment && (e as XAssignment).concreteSyntaxFeatureName != "name" »
 								«NodeModelUtils.getTokenText(NodeModelUtils.findActualNodeFor(e))»;
 							«ENDIF»
@@ -149,7 +161,7 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 			)
 			if (!c.empty) {
 				elementList.add(
-				element.toMethod("name", String.typeRef) [
+				method.toMethod("name", String.typeRef) [
 					visibility = JvmVisibility.PUBLIC
 					annotations += annotationRef(Override)
 					body = '''
@@ -161,11 +173,11 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 			}
 			return elementList
 		}
-		return #[element.toMethod(element.type.toString, Void.TYPE.typeRef) [
-			documentation = element.documentation
+		return #[method.toMethod(method.type.toString, Void.TYPE.typeRef) [
+			documentation = method.documentation
 			visibility = JvmVisibility.PUBLIC
 			annotations += annotationRef(Override)
-			body = element.body
+			body = method.body
 		]]
 	}
 

@@ -91,6 +91,14 @@ TUConnectorEnd :
 // Execution related
 
 TUExecutionElement :
+	TUExecutionMethod | TUExecutionAttribute
+;
+
+TUExecutionAttribute :
+	type=JvmTypeReference name=ValidID ('=' initExpression=XExpression)? ';'?
+;
+
+TUExecutionMethod :
 	type=TUExecutionElementType body=XBlockExpression ';'?
 ;
 

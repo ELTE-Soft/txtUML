@@ -25,6 +25,7 @@ import org.eclipse.xtext.xbase.XExpression
 import org.eclipse.xtext.xbase.compiler.XbaseCompiler
 import org.eclipse.xtext.xbase.compiler.output.ITreeAppendable
 import org.eclipse.xtext.xbase.jvmmodel.IJvmModelAssociations
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUExecutionMethod
 
 class XtxtUMLCompiler extends XbaseCompiler {
 
@@ -200,8 +201,8 @@ class XtxtUMLCompiler extends XbaseCompiler {
 		for(;container != null && !(container instanceof TUExecutionElement); container = container.eContainer){
 			
 		}
-		if (container instanceof TUExecutionElement && 
-			(container as TUExecutionElement).type != TUExecutionElementType.INITIALIZATION
+		if (container instanceof TUExecutionMethod && 
+			(container as TUExecutionMethod).type != TUExecutionElementType.INITIALIZATION
 		) {
 			append(API);
 		} else {
