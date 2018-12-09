@@ -1,5 +1,8 @@
 package hu.elte.txtuml.seqdiag.export.plantuml.exporters;
 
+import java.util.Collection;
+import java.util.Map.Entry;
+
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.Expression;
 import org.eclipse.jdt.core.dom.MethodInvocation;
@@ -36,10 +39,10 @@ public class SequenceExporter extends MethodInvocationExporter {
 
 		// Sequence.send call
 		Expression sender = (Expression) curElement.arguments().get(0);
-		String senderName = sender.toString();
+		String senderName = searchForRealLifelineName(sender);
 
 		Expression target = (Expression) curElement.arguments().get(2);
-		String targetName = target.toString();
+		String targetName = searchForRealLifelineName(target);
 
 		Expression signal = (Expression) curElement.arguments().get(1);
 		String signalExpr = signal.resolveTypeBinding().getQualifiedName();
@@ -52,4 +55,22 @@ public class SequenceExporter extends MethodInvocationExporter {
 	public void afterNext(MethodInvocation curElement) {
 	}
 
+	private String searchForRealLifelineName(Expression lifeLineExpression) {
+		String currentLifeLineName = lifeLineExpression.toString();
+		if(this.lifelineNames.containsKey(currentLifeLineName)) {
+			// it has aliases but we got the original lileLine name, just use it
+			return currentLifeLineName;
+		}
+		
+		// we may got an alias for the original lileLine name, so we need to search for the original name and use that instead		
+		// TODO reverse search, not too effective + it return the first original name it has found (problematic if it had more)
+		for(Entry<String, Collection<String>> aliases : lifelineNames.entrySet()) {
+			if(aliases.getValue().contains(currentLifeLineName)) {
+				return aliases.getKey();
+			}
+		}
+		
+		// just return the given name, since it has no aliases, it must be an original name
+		return currentLifeLineName;
+	}
 }

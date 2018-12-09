@@ -1,7 +1,10 @@
 package hu.elte.txtuml.seqdiag.export.plantuml.generator;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Stack;
 import java.util.stream.Collectors;
@@ -11,6 +14,7 @@ import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.Expression;
 import org.eclipse.jdt.core.dom.FieldAccess;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
+import org.eclipse.jdt.core.dom.Name;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 
@@ -26,31 +30,6 @@ import hu.elte.txtuml.utils.Logger;
  * Furthermore handles lifeline positions, activation and deactivation. <br>
  * For more information about the compilation, see {@link ExporterBase}.
  */
-class LifelineNamingManager {
-	public final List<String> oldNames;
-	public final List<String> newNames;
-	public final List<Integer> indexes;
-	
-	LifelineNamingManager(List<String> oldnames, List<String> newnames, List<Integer> indxes) {
-		this.oldNames = oldnames;
-		this.newNames = newnames;
-		this.indexes = indxes;
-	}
-	
-	public void ChangeOldNamesToNewNames(List<Lifeline> orderedLifelines) {
-		int nameCounters = 0;
-		for(int lifeLineIndex : indexes) {
-			orderedLifelines.get(lifeLineIndex).setName(newNames.get(nameCounters++));
-		}
-	}
-
-	public void ChangeNewNamesBackToOriginalNames(List<Lifeline> orderedLifelines) {
-		int nameCounters = 0;
-		for(int lifeLineIndex : indexes) {
-			orderedLifelines.get(lifeLineIndex).setName(oldNames.get(nameCounters++));
-		}
-	}
-}
 
 public class PlantUmlCompiler extends ASTVisitor {
 
@@ -65,7 +44,6 @@ public class PlantUmlCompiler extends ASTVisitor {
 	private String currentClassFullyQualifiedName;
 	private List<Lifeline> orderedLifelines;
 	private final String seqDiagramName;
-	private LifelineNamingManager lifelineNamingManager;
 
 	private StringBuilder compiledOutput;
 
@@ -76,7 +54,6 @@ public class PlantUmlCompiler extends ASTVisitor {
 		this.seqDiagramName = seqDiagramName;
 
 		compiledOutput = new StringBuilder();
-		this.lifelineNamingManager = null;
 	}
 
 	/**
@@ -252,55 +229,39 @@ public class PlantUmlCompiler extends ASTVisitor {
 		return seqDiagramName;
 	}
 
-	public void setNewLifelineNames(List<Expression> arguments, List<SingleVariableDeclaration> parameters) {
+	/**
+	 * This method updates the lifeline names and it's registered list of aliases upon a method call in the sequence diagram
+	 * @param arguments - the original objectiveNames
+	 * @param parameters - the possible new parameterNames
+	 * @param lifelineNames - the lifeLineNames map with the original names and the 'alias' nameList
+	 */
+	public void updateLifeLineNames(List<Expression> arguments, List<SingleVariableDeclaration> parameters,
+			Map<String, Collection<String>> lifelineNames) {
 
 		List<Integer> idxs = new ArrayList<>();
 		for (int i = 0; i < arguments.size(); ++i) {
-			if (arguments.get(i) instanceof FieldAccess) {
+			if (arguments.get(i) instanceof Name) {
 				idxs.add(i);
 			}
-		}		
+		}
 		
-		List<String> oldNames = idxs.stream().map(i -> arguments.get(i)).map(elem -> ((FieldAccess) elem))
-				.map(elem -> elem.getName().toString()).collect(Collectors.toList());
+		List<String> oldNames = idxs.stream().map(i -> arguments.get(i)).map(elem -> ((Name) elem))
+				.map(elem -> elem.toString()).collect(Collectors.toList());
 
 		List<String> newNames = idxs.stream().map(i -> parameters.get(i)).map(elem -> ((SingleVariableDeclaration) elem))
 				.map(elem -> elem.getName().toString()).collect(Collectors.toList());
 		
-		Logger.sys.error("asd");
-		
-		ChangeNames(oldNames, newNames);
-	}
-	
-	private void ChangeNames(List<String> oldNames, List<String> newNames) {
-		for (int i = 0; i < oldNames.size(); ++i) {
+		for (int i = 0; i < oldNames.size(); ++i) {	
 			String oldName = oldNames.get(i);
-			List<Integer> lifelineIndexes = new ArrayList<>();
-
-			for(int j = 0; j < orderedLifelines.size(); ++j) {
-				Lifeline lifeLine = orderedLifelines.get(j);
-				
-				Logger.sys.error("oldname: " + lifeLine.getName());
-				
-				if(lifeLine.getName().equals(oldName)) {
-					lifelineIndexes.add(j);
-					lifeLine.setName(newNames.get(i));
-					
-					Logger.sys.error("newname: " + lifeLine.getName());
-				}
+			Collection<String> nameList = lifelineNames.get(oldName);
+			
+			// we encountered this LifeLine the first time
+			if(nameList == null) {
+				lifelineNames.put(oldName, new ArrayList<String>());
 			}
 			
-			this.lifelineNamingManager = new LifelineNamingManager(oldNames, newNames, lifelineIndexes);
-			//lifelineNamingManager.ChangeOldNamesToNewNames(orderedLifelines); + delete line284: lifeLine.setName(newNames.get(i));
+			// simply add the alias to the list
+			lifelineNames.get(oldName).add(newNames.get(i));
 		}
 	}
-
-	public void changeBackLifelineNamesToOriginal() {
-		if(lifelineNamingManager == null) {
-			return;
-		}
-		
-		lifelineNamingManager.ChangeNewNamesBackToOriginalNames(orderedLifelines);
-	}
-
 }

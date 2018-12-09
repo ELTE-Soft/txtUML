@@ -14,10 +14,12 @@ class Lifeline {
 	private LifelineDeclaration declaration;
 	private String name;
 	private boolean isActive;
+	//private List<String> Names;
 
 	Lifeline(final LifelineDeclaration declaration) {
 		this.declaration = declaration;
 		this.name = ((VariableDeclarationFragment) declaration.getLifelineDecl().fragments().get(0)).toString();
+		//this.previousNames = null;
 	}
 
 	public void activate(boolean isActive) {
@@ -44,9 +46,19 @@ class Lifeline {
 		declaration.setPriority(-1);
 	}
 
-	public void setName(String newName) {
+	public void SetName(String newName) {
 		if(newName != null) {
+			//this.Names.add(name);
 			this.name = newName;
 		}
 	}
+	/*
+	public void ChangeBackName(){
+		if(this.Names.empty()){
+			return;
+		}
+		
+		this.name = Names.pop();
+	}*/
+	
 }
