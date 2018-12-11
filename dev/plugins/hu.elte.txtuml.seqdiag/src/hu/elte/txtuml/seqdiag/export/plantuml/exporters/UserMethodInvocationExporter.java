@@ -1,6 +1,5 @@
 package hu.elte.txtuml.seqdiag.export.plantuml.exporters;
 
-
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.dom.AST;
@@ -47,7 +46,7 @@ public class UserMethodInvocationExporter extends MethodInvocationExporter {
 		 * curElement.resolveMethodBinding().getParameterTypes()[0].;
 		 */
 		
-		compiler.updateLifeLineNames(curElement.arguments(), decl.parameters(), this.lifelineNames);
+		compiler.updateLifeLineNames(curElement.arguments(), decl.parameters());
 		
 		decl.getBody().accept(compiler);
 		

@@ -2,6 +2,7 @@ package hu.elte.txtuml.seqdiag.export.plantuml.generator;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -47,12 +48,15 @@ public class PlantUmlCompiler extends ASTVisitor {
 
 	private StringBuilder compiledOutput;
 
+	public static Map<String, Collection<String>> lifelineNames;
+	
 	public PlantUmlCompiler(final List<Lifeline> orderedLifelines, String seqDiagramName) {
 		errors = new ArrayList<ASTNode>();
 		exporterQueue = new Stack<ExporterBase<? extends ASTNode>>();
 		this.orderedLifelines = orderedLifelines;
 		this.seqDiagramName = seqDiagramName;
-
+		PlantUmlCompiler.lifelineNames = new HashMap<String, Collection<String>>();
+		
 		compiledOutput = new StringBuilder();
 	}
 
@@ -235,8 +239,7 @@ public class PlantUmlCompiler extends ASTVisitor {
 	 * @param parameters - the possible new parameterNames
 	 * @param lifelineNames - the lifeLineNames map with the original names and the 'alias' nameList
 	 */
-	public void updateLifeLineNames(List<Expression> arguments, List<SingleVariableDeclaration> parameters,
-			Map<String, Collection<String>> lifelineNames) {
+	public void updateLifeLineNames(List<Expression> arguments, List<SingleVariableDeclaration> parameters) {
 
 		List<Integer> idxs = new ArrayList<>();
 		for (int i = 0; i < arguments.size(); ++i) {

@@ -22,11 +22,9 @@ import hu.elte.txtuml.seqdiag.export.plantuml.generator.PlantUmlCompiler;
 public abstract class ExporterBase<T extends ASTNode> {
 
 	protected PlantUmlCompiler compiler;
-	protected Map<String, Collection<String>> lifelineNames;
 	
 	public ExporterBase(final PlantUmlCompiler compiler) {
 		this.compiler = compiler;
-		this.lifelineNames = new HashMap<String, Collection<String>>();
 	}
 
 	/**

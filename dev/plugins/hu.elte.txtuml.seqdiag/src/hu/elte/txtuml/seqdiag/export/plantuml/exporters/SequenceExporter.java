@@ -57,14 +57,14 @@ public class SequenceExporter extends MethodInvocationExporter {
 
 	private String searchForRealLifelineName(Expression lifeLineExpression) {
 		String currentLifeLineName = lifeLineExpression.toString();
-		if(this.lifelineNames.containsKey(currentLifeLineName)) {
+		if(PlantUmlCompiler.lifelineNames.containsKey(currentLifeLineName)) {
 			// it has aliases but we got the original lileLine name, just use it
 			return currentLifeLineName;
 		}
 		
 		// we may got an alias for the original lileLine name, so we need to search for the original name and use that instead		
 		// TODO reverse search, not too effective + it return the first original name it has found (problematic if it had more)
-		for(Entry<String, Collection<String>> aliases : lifelineNames.entrySet()) {
+		for(Entry<String, Collection<String>> aliases : PlantUmlCompiler.lifelineNames.entrySet()) {
 			if(aliases.getValue().contains(currentLifeLineName)) {
 				return aliases.getKey();
 			}
