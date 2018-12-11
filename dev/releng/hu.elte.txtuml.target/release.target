@@ -28,7 +28,8 @@
 		</location>
 		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
 			<unit id="net.sourceforge.plantuml.feature.feature.group" version="1.1.19"/>
-			<repository location="http://files.idi.ntnu.no/publish/plantuml/repository/"/>
+			<repository location="http://mextest.inf.elte.hu/updates/mirrors/plantuml"/>
+			<!-- hotfix, switch back to the official update site on the next release -->
 		</location>
 	</locations>
 	<targetJRE path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
