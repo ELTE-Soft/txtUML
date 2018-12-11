@@ -2,7 +2,7 @@
 
 var errorLabelElement = $('#debug-port-error');
 var debugContainer = $('#debug-toggle-container');
-var stateMachineSpeed = $('#animation-speed-input').val();
+var stateMachineDelay = $('#animation-speed-input').val();
 
 //try to load from sessionStorage
 var port = sessionStorage['diagnosticsPort'];
@@ -115,8 +115,8 @@ function sendSMTime(){
 	});
 }
 
-//add event listeners to the state machine's speed range
-$('#animation-speed-input').on('change', function(){
-	stateMachineSpeed = $('#animation-speed-input').val();
+//add event listeners to the state machine's delay range
+$('#animation-delay-input').on('change', function(){
+	stateMachineDelay = $('#animation-delay-input').val();
 	sendSMTime();
 });
