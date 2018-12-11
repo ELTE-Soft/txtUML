@@ -2,7 +2,7 @@
 
 var errorLabelElement = $('#debug-port-error');
 var debugContainer = $('#debug-toggle-container');
-var stateMachineDelay = $('#animation-speed-input').val();
+var stateMachineDelay = $('#animation-delay-input').val();
 
 //try to load from sessionStorage
 var port = sessionStorage['diagnosticsPort'];
@@ -96,7 +96,7 @@ function sendSMTime(){
 		url: 'http://localhost:' + port + '/delay',
 		type: 'POST',
 		dataType: 'json',
-		data: {delayTime:stateMachineSpeed},
+		data: {delayTime:stateMachineDelay},
 	    success: function(response) {
         	if(response.status == 200 && isPolling){
 				setActiveElements((JSON.parse(response.responseText))
