@@ -29,12 +29,16 @@ public abstract class MethodInvocationExporter extends ExporterBase<MethodInvoca
 	 */
 	@SuppressWarnings("unchecked")
 	public static <T extends ASTNode> ExporterBase<T> createExporter(T curElement, PlantUmlCompiler compiler) {
-		MethodInvocationExporter exp = new SequenceExporter(compiler);
-		if (exp.validElement(curElement)) {
-			return (ExporterBase<T>) exp;
-		} else {
-			return (ExporterBase<T>) new ParFragmentExporter(compiler);
-		}
+        if (curElement.getNodeType() != ASTNode.METHOD_INVOCATION) {
+            return null;
+        }
+
+        if (ExporterUtils.isCommunication(curElement)) {
+            return (ExporterBase<T>) new SequenceExporter(compiler);
+        } else if (ExporterUtils.isParFragment(curElement)) {
+            return (ExporterBase<T>) new ParFragmentExporter(compiler);
+        }
+        return (ExporterBase<T>) new UserMethodInvocationExporter(compiler);
 	}
 
 }

@@ -1,13 +1,20 @@
 package hu.elte.txtuml.seqdiag.export.plantuml.generator;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Stack;
+import java.util.stream.Collectors;
 
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTVisitor;
+import org.eclipse.jdt.core.dom.Expression;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
+import org.eclipse.jdt.core.dom.Name;
+import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 
 import hu.elte.txtuml.seqdiag.export.plantuml.exporters.ExporterBase;
@@ -35,13 +42,16 @@ public class PlantUmlCompiler extends ASTVisitor {
 	private final String seqDiagramName;
 
 	private StringBuilder compiledOutput;
+    public static Map<String, Collection<String>> lifelineNames;
+	
 
 	public PlantUmlCompiler(final List<Lifeline> orderedLifelines, String seqDiagramName) {
 		errors = new ArrayList<ASTNode>();
 		exporterQueue = new Stack<ExporterBase<? extends ASTNode>>();
 		this.orderedLifelines = orderedLifelines;
 		this.seqDiagramName = seqDiagramName;
-
+        PlantUmlCompiler.lifelineNames = new HashMap<String, Collection<String>>();
+        
 		compiledOutput = new StringBuilder();
 	}
 
@@ -218,4 +228,37 @@ public class PlantUmlCompiler extends ASTVisitor {
 		return seqDiagramName;
 	}
 
+    /**
+     * This method updates the lifeline names and it's registered list of aliases upon a method call in the sequence diagram
+     * @param arguments - the original objectiveNames
+     * @param parameters - the possible new parameterNames
+     */
+    public void updateLifeLineNames(List<Expression> arguments, List<SingleVariableDeclaration> parameters) {
+
+        List<Integer> idxs = new ArrayList<>();
+        for (int i = 0; i < arguments.size(); ++i) {
+            if (arguments.get(i) instanceof Name) {
+                idxs.add(i);
+            }
+        }        
+        
+        List<String> oldNames = idxs.stream().map(i -> arguments.get(i)).map(elem -> ((Name) elem))
+                .map(elem -> elem.toString()).collect(Collectors.toList());
+
+        List<String> newNames = idxs.stream().map(i -> parameters.get(i)).map(elem -> ((SingleVariableDeclaration) elem))
+                .map(elem -> elem.getName().toString()).collect(Collectors.toList());
+        
+        for (int i = 0; i < oldNames.size(); ++i) {
+            String oldName = oldNames.get(i);
+            
+            Collection<String> nameList = lifelineNames.get(oldName);
+            // we encountered this LifeLine the first time
+            if(nameList == null) {
+                lifelineNames.put(oldName, new ArrayList<String>());
+            }
+            
+            // simply add the alias to the list
+            lifelineNames.get(oldName).add(newNames.get(i));
+        }
+    }
 }
