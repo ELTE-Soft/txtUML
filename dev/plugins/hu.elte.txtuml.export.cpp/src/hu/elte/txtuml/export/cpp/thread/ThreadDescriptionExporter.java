@@ -113,9 +113,9 @@ public class ThreadDescriptionExporter {
 
 	private void exportGroup(Group group) {
 
-		checkConfigurationOptions(group.gradient(), group.constant(), group.max());
+		checkConfigurationOptions(group);
 
-		ThreadPoolConfiguration config = createNewPoolConfiguration(group.gradient(), group.constant(), group.max());
+		ThreadPoolConfiguration config = createNewPoolConfiguration(group.rate());
 
 		checkEmptyGroup(group.contains());
 
@@ -130,8 +130,8 @@ public class ThreadDescriptionExporter {
 		}
 	}
 
-	private ThreadPoolConfiguration createNewPoolConfiguration(double gradient, int constant, int max) {
-		ThreadPoolConfiguration config = new ThreadPoolConfiguration(numberOfConfigurations, gradient, constant, max);
+	private ThreadPoolConfiguration createNewPoolConfiguration(double rate) {
+		ThreadPoolConfiguration config = new ThreadPoolConfiguration(numberOfConfigurations, rate);
 		numberOfConfigurations++;
 
 		return config;
@@ -144,7 +144,7 @@ public class ThreadDescriptionExporter {
 			nonExportedClasses.addAll(allModelClassName);
 			nonExportedClasses.removeAll(exportedClasses);
 
-			ThreadPoolConfiguration config = createNewPoolConfiguration(0, 1, 1);
+			ThreadPoolConfiguration config = createNewPoolConfiguration(1);
 			for (String uncategorizedClassName : nonExportedClasses) {
 				configMap.put(uncategorizedClassName, config);
 			}
@@ -159,22 +159,10 @@ public class ThreadDescriptionExporter {
 
 	}
 
-	private void checkConfigurationOptions(double gradient, int constant, int max) {
-		if (gradient < 0 || gradient > 1) {
-			warningList.add("The gradient of linear function should be between 0 and 1: " + "conversion to 0.");
+	private void checkConfigurationOptions(Group group) {
+		if (group.rate() < 0 || group.rate() > 1) {
+			warningList.add("The rate should be between 0 and 1: " + "conversion to 1.");
 		}
 
-		if (constant < 1) {
-			warningList.add("The constant of linear function should be higher than 0: " + "conversion to 1.");
-		}
-
-		if (max < 1) {
-			warningList.add("The maximum number of threads should be higher than 0: " + "conversion to 1.");
-		}
-
-		if (max < constant) {
-			warningList.add(
-					"The maximum number of threads should more or equal to constant: " + "conversion to the value of constant.");
-		}
 	}
 }

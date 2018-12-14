@@ -23,7 +23,6 @@ import hu.elte.txtuml.export.cpp.templates.activity.ActivityTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.FunctionTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.HeaderTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.ObjectDeclDefTemplates;
-import hu.elte.txtuml.export.cpp.thread.ThreadPoolConfiguration.LinearFunction;
 import hu.elte.txtuml.utils.Pair;
 
 public class ThreadHandlingManager {
@@ -36,7 +35,6 @@ public class ThreadHandlingManager {
 	private static final String ConfigurationObjectVariableName = "conf";
 	private static final String ConfigurationFile = "deployment";
 	private static final String ThreadPoolClassName = GenerationNames.Namespaces.ExecutionNamesapce + "::" + "StateMachineThreadPool";
-	private static final String FunctionName = GenerationNames.Namespaces.ExecutionNamesapce + "::" + "LinearFunction";
 	private static final String NamespaceName = "deployment";
 	private static final String ConfiguratedThreadedRuntimeName = GenerationNames.Namespaces.ExecutionNamesapce + "::" + "ConfiguredThreadedRT";
 	private static final String SingleRuntimeName = GenerationNames.Namespaces.ExecutionNamesapce + "::" + "SingleThreadRT";
@@ -112,18 +110,12 @@ public class ThreadHandlingManager {
 
 	private String createConfiguration() {
 		StringBuilder source = new StringBuilder("");
-		List<String> parameters = new ArrayList<String>();
-		parameters.add(new Integer(pools.size()).toString());
 		source.append(getThreadConfArray() + " " +  ConfigurationObjectVariableName + ";\n");
-
 		for (ThreadPoolConfiguration pool : pools) {
-			parameters.clear();
-			parameters.add(allocatePoolObject(pool));
-			parameters.add(allocateFunctionObject(pool.getFunction()));
-			parameters.add(new Integer(pool.getMaxThread()).toString());
 
 			source.append(insertToConfiguration(pool.getId(),
-					ObjectDeclDefTemplates.allocateObject(ConfigurationStructName, Optional.of(parameters), true)));
+					ObjectDeclDefTemplates.allocateObject(ConfigurationStructName, Optional.of(Arrays.asList(allocatePoolObject(pool), 
+							new Double(pool.getRate()).toString())), true)));
 		}
 
 		return source.toString();
@@ -134,14 +126,6 @@ public class ThreadHandlingManager {
 
 		return ActivityTemplates.blockStatement(
 				ConfigurationObjectVariableName + "[" + id +  "] = " + configuration);
-	}
-
-	private String allocateFunctionObject(LinearFunction function) {
-		List<String> params = new ArrayList<String>();
-		params.add(new Integer(function.getConstant()).toString());
-		params.add(new Double(function.getGradient()).toString());
-
-		return ObjectDeclDefTemplates.allocateObject(FunctionName, Optional.of(params), true);
 	}
 
 	private String allocatePoolObject(ThreadPoolConfiguration pool) {

@@ -9,8 +9,8 @@ import producer_consumer.x.model.Producer;
 import producer_consumer.x.model.Storage;
 
 @Group(contains = { Consumer.class })
-@Group(contains = { Producer.class }, max = 10, gradient = 0.5)
-@Group(contains = { Storage.class }, constant = 2, max = 2)
+@Group(contains = { Producer.class }, rate = 0.5)
+@Group(contains = { Storage.class }, rate = 0.2)
 @Runtime(RuntimeType.THREADED)
 public class XProducerConsumerConfiguration extends Configuration {
 
