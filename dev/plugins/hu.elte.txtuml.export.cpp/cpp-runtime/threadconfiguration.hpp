@@ -6,45 +6,43 @@
 
 #include "threadpool.hpp"
 #include "math.h"
+
 namespace Execution
 {
-
-/*! Represents a linear function. */
-class LinearFunction
-{
-public:
-	LinearFunction(unsigned constant, double gradient) :
-		_constant(constant),
-		_gradient(gradient) {}
-
-	unsigned operator()(unsigned n)
-	{
-		return (unsigned)round(_gradient * n) + _constant;
-	}
-private:
-	unsigned _constant;
-	double _gradient;
-};
-
 
 /*! Configuration parameters datastore. */
 class Configuration
 {
 public:
 
-	Configuration(ES::SharedPtr<StateMachineThreadPool> threadPool, ES::SharedPtr<LinearFunction> function, unsigned max) :
-		_threadPool(threadPool), _function(function), _max(max) {}
+	Configuration(ThreadPoolPtr threadPool, double rate) :
+		_threadPool(threadPool), _rate(rate) {}
 	virtual ~Configuration() {}
 
-	ES::SharedPtr<StateMachineThreadPool> getThreadPool() const { return _threadPool; }
-	ES::SharedPtr<LinearFunction> getFunction() const { return _function; }
-	unsigned getMax() { return _max; }
+	ThreadPoolPtr getThreadPool() const { return _threadPool; }
+	double getRate() const { return _rate; }
 
 private:
 
-	ES::SharedPtr<StateMachineThreadPool> _threadPool;
-	ES::SharedPtr<LinearFunction> _function;
+	ThreadPoolPtr _threadPool;
+	double _rate;
 	unsigned _max;
+};
+
+class ThreadPoolConfigurationStore {
+public:
+	ThreadPoolConfigurationStore() {}
+	ThreadPoolConfigurationStore(unsigned nOfAllThread_, std::vector<Configuration> configurations_) :
+		nOfAllThreads(nOfAllThread_),
+		configurations(configurations_) {}
+
+	const std::vector<Configuration>& getConfigurations() const { return configurations; };
+	unsigned getNOfThreads() const { return nOfAllThreads; }
+
+private:
+	unsigned nOfAllThreads;
+	std::vector<Configuration> configurations;
+
 };
 
 }

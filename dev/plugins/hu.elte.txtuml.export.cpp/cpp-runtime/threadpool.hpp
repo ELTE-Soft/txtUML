@@ -9,7 +9,6 @@
 #include <stdexcept>
 #include <atomic>
 
-#include "threadcontainer.hpp"
 #include "StateMachineOwner.hpp"
 #include "ESRoot/AtomicCounter.hpp"
 
@@ -43,17 +42,16 @@ public:
 	void enqueueObject(ES::StateMachineRef);
 	void stopPool();
 	void stopUponCompletion();
-	void startPool(unsigned);
-	void modifyThreads(unsigned);
+	void startPool(unsigned nOfThreads);
 
 	void setWorkersCounter(ES::SharedPtr<ES::AtomicCounter> counter) { nOfWorkerThreads = counter; }
 	void setMessageCounter(ES::SharedPtr<ES::AtomicCounter> counter) { nOfAllMessages = counter;   }
-
 	void setStopReqest(std::condition_variable* stop_req) { stop_request_cond = stop_req; }
+
 	~StateMachineThreadPool();
 private:
 
-	ThreadContainer workers;
+	std::vector<std::thread> workers;
 	SharedConditionVar _sharedConditionVar;
 
 	// the task queue
@@ -68,7 +66,6 @@ private:
 
 	// synchronization
 	std::atomic_bool _stop;	
-	std::mutex modifie_mutex;
 	std::mutex stop_request_mu;
 };
 

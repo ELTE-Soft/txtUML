@@ -22,10 +22,9 @@ void StateMachineThreadPool::startPool(unsigned n)
 {
 	_stateMachines.startQueue();
 	_stop = false;
-	modifyThreads(n);
 	for (unsigned i = 0; i < n; ++i)
 	{
-		workers.addThread(new std::thread(&StateMachineThreadPool::task, this));
+		workers.push_back(std::thread(&StateMachineThreadPool::task, this));
 	}
 
 }
@@ -45,32 +44,14 @@ void StateMachineThreadPool::stopUponCompletion()
 
 void StateMachineThreadPool::task()
 {
-	while (!this->_stop && !workers.isReadyToStop(std::this_thread::get_id()))
+	while (!this->_stop)
 	{
-		if (modifie_mutex.try_lock())
-		{
-			if (workers.isTooManyWorkers())
-			{
-				workers.gettingThreadsReadyToStop(_sharedConditionVar);
-			}
-			while (workers.isTooFewWorkers())
-			{
-				workers.addThread(new std::thread(&StateMachineThreadPool::task, this));
-			}
-			modifie_mutex.unlock();
-		}
 
 		ES::StateMachineRef sm = nullptr;
 		while (sm == nullptr && !this->_stop)
 		{
 
-			if (workers.isReadyToStop(std::this_thread::get_id()))
-			{
-				return;
-			}
-
 			_stateMachines.dequeue(sm);
-
 		}
 
 
@@ -105,14 +86,6 @@ void StateMachineThreadPool::task()
 
 }
 
-void StateMachineThreadPool::modifyThreads(unsigned n)
-{
-	if (!_stop)
-	{
-		workers.setExpectedThreads((int)n);
-	}
-}
-
 
 void StateMachineThreadPool::incrementWorkers()
 {
@@ -133,7 +106,10 @@ void StateMachineThreadPool::enqueueObject(ES::StateMachineRef sm)
 StateMachineThreadPool::~StateMachineThreadPool()
 {
 	stopPool();
-	workers.removeAll(); // wait to all threads
+	for (std::thread& worker : workers) {
+		worker.join();
+	}
+	workers.clear();
 }
 
 PoolQueueType::PoolQueueType(StateMachineThreadPool * ownerPool_) : 
@@ -146,7 +122,7 @@ PoolQueueType::PoolQueueType(StateMachineThreadPool * ownerPool_) :
 
 bool PoolQueueType::exitFromWaitingCondition()
 {
-	return ownerPool->workers.isReadyToStop(std::this_thread::get_id());
+	return true; //TODO porpuse?
 }
 
 }
