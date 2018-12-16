@@ -123,10 +123,6 @@ public class GenerationNames {
 		public static final String InitFunctionName = "init";
 	}
 
-	public static class Containers {
-		public static final String FixContainer = Namespaces.StandardNamesapce + "::" + "array";
-	}
-
 	public static class StateMachineMethodNames {
 
 		public static final String InitFunctionName = "init";

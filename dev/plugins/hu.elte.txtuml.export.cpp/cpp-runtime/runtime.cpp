@@ -41,8 +41,6 @@ void SingleThreadRT::setConfiguration(const ThreadPoolConfigurationStore& /*thre
 
 void SingleThreadRT::stopUponCompletion() {}
 
-void SingleThreadRT::removeObject(ES::StateMachineRef) {}
-
 // ConfiguredThreadedRT
 
 ConfiguredThreadedRT::ConfiguredThreadedRT() :
@@ -53,27 +51,22 @@ ConfiguredThreadedRT::~ConfiguredThreadedRT() {}
 
 void ConfiguredThreadedRT::start()
 {
-	for (unsigned i = 0; i < threadPools.getConfigurations().size(); i++)
+	for (unsigned i = 0; i < threadConfig.getConfigurations().size(); i++)
 	{
-		Configuration config = threadPools.getConfigurations()[i];
+		Configuration config = threadConfig.getConfigurations()[i];
 		ES::SharedPtr<StateMachineThreadPool> pool = config.getThreadPool();
 		pool->setWorkersCounter(worker);
 		pool->setMessageCounter(messages);
 		pool->setStopReqest(&stop_request_cond);
-		pool->startPool(unsigned((double)threadPools.getNOfThreads() / config.getRate()));
+		pool->startPool(unsigned ((double)threadConfig.getNOfThreads() / config.getRate()));
 	}
-}
-
-void ConfiguredThreadedRT::removeObject(ES::StateMachineRef sm)
-{
-
 }
 
 void ConfiguredThreadedRT::stopUponCompletion()
 {
-	for (unsigned i = 0; i < threadPools.getConfigurations().size(); i++)
+	for (unsigned i = 0; i < threadConfig.getConfigurations().size(); i++)
 	{
-		Configuration config = threadPools.getConfigurations()[i];
+		Configuration config = threadConfig.getConfigurations()[i];
 		ThreadPoolPtr pool = config.getThreadPool();
 		pool->stopUponCompletion();
 
@@ -89,7 +82,7 @@ void ConfiguredThreadedRT::setupObjectSpecificRuntime(ES::StateMachineRef sm)
 
 void ConfiguredThreadedRT::setConfiguration(const ThreadPoolConfigurationStore& conf)
 {
-	threadPools = conf;
+	threadConfig = conf;
 }
 
 }

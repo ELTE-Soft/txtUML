@@ -19,6 +19,7 @@ import hu.elte.txtuml.export.cpp.templates.GenerationTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.FunctionTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.HeaderTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.HeaderTemplates.HeaderInfo;
+import hu.elte.txtuml.export.cpp.templates.structual.ObjectDeclDefTemplates.AllocateType;
 import hu.elte.txtuml.export.cpp.templates.structual.PortTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.ObjectDeclDefTemplates;
 import hu.elte.txtuml.utils.Pair;
@@ -105,7 +106,7 @@ public class PortExporter {
 		}
 		return ObjectDeclDefTemplates.setAllocatedObjectToObjectVariable(portTypeName, 
 				Optional.of(Arrays.asList(interfaces.getFirst(),interfaces.getSecond())), 
-				port.getName(), Optional.of(parameters), true);
+				port.getName(), Optional.of(parameters), AllocateType.SharedPtr);
 	}
 	private String createInterfacePortCode(Port port) {
 		assert(port != null && isInterfacePort(port));

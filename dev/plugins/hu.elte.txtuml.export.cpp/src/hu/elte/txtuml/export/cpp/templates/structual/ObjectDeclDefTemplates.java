@@ -12,6 +12,12 @@ import hu.elte.txtuml.export.cpp.templates.PrivateFunctionalTemplates;
 import hu.elte.txtuml.export.cpp.templates.activity.ActivityTemplates;
 
 public class ObjectDeclDefTemplates {
+	
+	public enum AllocateType {
+		RawPointer,
+		SharedPtr,
+		Temporary
+	}
 
 	public static String variableDecl(String typeName, String variableName, String defaultValue, Optional<List<String>> templateParameters, GenerationTemplates.VariableType varType, boolean isStatic) {
 		StringBuilder source = new StringBuilder("");
@@ -65,39 +71,47 @@ public class ObjectDeclDefTemplates {
 		String templateList = CppExporterUtils.createTemplateParametersCode(templateParams);
 		if(!sharedObject) {
 			return GenerationNames.sharedPtrType(typeName + templateList) + " " + 
-					setAllocatedObjectToObjectVariable(typeName,templateParams, objName, params, false);
+					setAllocatedObjectToObjectVariable(typeName,templateParams, objName, params, AllocateType.RawPointer);
 		} else {
 			return GenerationNames.sharedPtrType(typeName + templateList) + " " + 
-							setAllocatedObjectToObjectVariable(typeName,templateParams, objName, params, true);
+							setAllocatedObjectToObjectVariable(typeName,templateParams, objName, params, AllocateType.SharedPtr);
 		}
 	
 	
 	}
 	
 	public static String setAllocatedObjectToObjectVariable(String typeName, 
-			Optional<List<String>> templateParams, String objName, Optional<List<String>> params, Boolean sharedObject) {
-		return objName  + " = " + allocateObject(typeName, templateParams, params, sharedObject) + ";\n";
+			Optional<List<String>> templateParams, String objName, Optional<List<String>> params, AllocateType allocType) {
+		return objName  + " = " + allocateObject(typeName, templateParams, params, allocType) + ";\n";
 	}
 
-	public static String allocateObject(String typeName, Optional<List<String>> templateParams, Optional<List<String>> params, boolean sharedObject) {
+	public static String allocateObject(String typeName, Optional<List<String>> templateParams, 
+			Optional<List<String>> params, AllocateType allocType) {
 		String templateParameters = CppExporterUtils.createTemplateParametersCode(templateParams);
-		String allocatedObject = PointerAndMemoryNames.MemoryAllocator + " " + typeName + 
+		String allocatedObject =  typeName + 
 				templateParameters + 
-				CppExporterUtils.createParametersCode(params);
-		if(!sharedObject) {
+				CppExporterUtils.createParametersCode(params);	
+		switch(allocType) {
+		case Temporary:
 			return allocatedObject;
-		} else {
-			return GenerationNames.sharedPtrType(typeName + templateParameters) + "(" + allocatedObject + ")";
+		case RawPointer:
+			return PointerAndMemoryNames.MemoryAllocator + " " + allocatedObject;
+		case SharedPtr:
+			 return GenerationNames.sharedPtrType(typeName + templateParameters) + "(" + 
+			 	PointerAndMemoryNames.MemoryAllocator + " "  + allocatedObject + ")";
+		default:
+			return allocatedObject;
+		
 		}
-	
+
 	}
 
-	public static String allocateObject(String typeName, Optional<List<String>> params, boolean sharedObject) {
-		return allocateObject(typeName, Optional.empty(), params, sharedObject);
+	public static String allocateObject(String typeName, Optional<List<String>> params, AllocateType allocType) {
+		return allocateObject(typeName, Optional.empty(), params, allocType);
 	}
 
 	public static String allocateObject(String typeName) {
-		return allocateObject(typeName, Optional.empty(), Optional.empty(), false);
+		return allocateObject(typeName, Optional.empty(), Optional.empty(), AllocateType.RawPointer);
 	}
 
 	public static String staticPropertyDecl(String typeName, String variableName) {

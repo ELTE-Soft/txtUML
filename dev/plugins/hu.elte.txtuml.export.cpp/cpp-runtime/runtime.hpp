@@ -48,17 +48,6 @@ public:
 
 
 	/*!
-	Removes a state machine from the runtime instance when
-	the threaded runtime can record the number of object instances during the model execution.
-	Called by the state machine destructor.
-	*/
-	void removeObject(ES::StateMachineRef sm)
-	{
-		static_cast<RuntimeType*>(this)->removeObject(sm);
-	}
-
-
-	/*!
 	Sets the deployment configuration for the threaded runtime instance.
 	*/
 	void configure(const ThreadPoolConfigurationStore& conf)
@@ -112,7 +101,6 @@ public:
 	void start();
 
 	void setupObjectSpecificRuntime(ES::StateMachineRef);
-	void removeObject(ES::StateMachineRef);
 	void setConfiguration(const ThreadPoolConfigurationStore& conf);
 	void stopUponCompletion();
 	static ES::RuntimePtr<SingleThreadRT> createRuntime () { return ES::RuntimePtr<SingleThreadRT> (new SingleThreadRT ()); }
@@ -133,13 +121,12 @@ public:
 	void start();
 
 	void setupObjectSpecificRuntime(ES::StateMachineRef);
-	void removeObject(ES::StateMachineRef);
 	void setConfiguration(const ThreadPoolConfigurationStore& conf);
 	void stopUponCompletion();
 	static ES::RuntimePtr<ConfiguredThreadedRT> createRuntime () { return ES::RuntimePtr<ConfiguredThreadedRT> (new ConfiguredThreadedRT ()); }
 private:
 	ConfiguredThreadedRT ();
-	ThreadPoolConfigurationStore threadPools;
+	ThreadPoolConfigurationStore threadConfig;
 
 	ES::SharedPtr<ES::AtomicCounter> worker;
 	ES::SharedPtr<ES::AtomicCounter> messages;

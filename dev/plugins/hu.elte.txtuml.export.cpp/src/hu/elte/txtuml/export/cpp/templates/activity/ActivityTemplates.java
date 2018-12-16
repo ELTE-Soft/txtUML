@@ -16,6 +16,7 @@ import hu.elte.txtuml.export.cpp.templates.statemachine.EventTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.LinkTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.ObjectDeclDefTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.LinkTemplates.LinkFunctionType;
+import hu.elte.txtuml.export.cpp.templates.structual.ObjectDeclDefTemplates.AllocateType;
 import hu.elte.txtuml.utils.Pair;
 
 public class ActivityTemplates {
@@ -211,7 +212,7 @@ public class ActivityTemplates {
 		} else {
 			if (ownerName != PointerAndMemoryNames.Self) {
 				return ObjectDeclDefTemplates.setAllocatedObjectToObjectVariable(typeName, Optional.empty(),
-						ownerName, Optional.of(parameters), false);
+						ownerName, Optional.of(parameters), AllocateType.RawPointer);
 			} else {
 				return ownerName + PointerAndMemoryNames.PointerAccess + GenerationNames.initFunctionName(typeName)
 						+ "(" + operationCallParamList(parameters) + ")";
