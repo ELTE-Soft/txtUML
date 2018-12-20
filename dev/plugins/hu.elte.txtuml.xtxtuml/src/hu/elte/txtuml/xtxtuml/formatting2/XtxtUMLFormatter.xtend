@@ -78,13 +78,13 @@ class XtxtUMLFormatter extends XbaseFormatter {
 		}
 	}
 
-	def dispatch void format(TUExecution it, extension IFormattableDocument document) {
+	/*def dispatch void format(TUExecution it, extension IFormattableDocument document) {
 		regionFor.keyword('execution').prepend[noIndentation];
 		regionFor.feature(TU_MODEL_ELEMENT__NAME).surround[oneSpace];
 		regionFor.keyword(';').prepend[noSpace];
 
 		//format(body, document);
-	}
+	}*/
 
 	def dispatch void format(TUSignal it, extension IFormattableDocument document) {
 		formatBlockElement(it, document, regionFor.keyword('signal'), attributes, false);
@@ -94,6 +94,10 @@ class XtxtUMLFormatter extends XbaseFormatter {
 	def dispatch void format(TUClass it, extension IFormattableDocument document) {
 		formatBlockElement(it, document, regionFor.keyword('class'), members, true);
 		regionFor.keyword('extends').surround[oneSpace];
+	}
+	
+	def dispatch void format(TUExecution it, extension IFormattableDocument document){
+		formatBlockElement(it, document, regionFor.keyword('execution'), elements, true);
 	}
 
 	def dispatch void format(TUEnumeration it, extension IFormattableDocument document) {
