@@ -127,23 +127,24 @@ class XtxtUMLUniquenessValidator extends XtxtUMLNameValidator {
 	}
 
 	@Check
-	def checkExecutionAttributeNameIsUnique(TUExecutionAttribute attribute) {
-		val containingClass = attribute.eContainer as TUExecution;
+	def checkExecutionAttributeNameIsUnique(TUExecutionAttribute execAttribute) {
+		val containingClass = execAttribute.eContainer as TUExecution;
 		if (containingClass.elements.exists [
-			it instanceof TUExecutionAttribute && (it as TUExecutionAttribute).name == attribute.name && it != attribute // direct comparison is safe here
+			it instanceof TUExecutionAttribute && (it as TUExecutionAttribute).name == execAttribute.name &&
+				it != execAttribute // direct comparison is safe here
 		]) {
-			error("Duplicate attribute " + attribute.name + " in class " + containingClass.name, attribute,
+			error("Duplicate attribute " + execAttribute.name + " in execution " + containingClass.name, execAttribute,
 				TU_EXECUTION_ATTRIBUTE__NAME, NOT_UNIQUE_NAME);
 		}
 	}
 
 	@Check
-	def checkExecutionMethodIsUnique(TUExecutionMethod method) {
-		val containingClass = method.eContainer as TUExecution;
+	def checkExecutionMethodIsUnique(TUExecutionMethod execMethod) {
+		val containingClass = execMethod.eContainer as TUExecution;
 		if (containingClass.elements.exists [
-			it instanceof TUExecutionMethod && (it as TUExecutionMethod).type == method.type && it != method // direct comparison is safe here
+			it instanceof TUExecutionMethod && (it as TUExecutionMethod).type == execMethod.type && it != execMethod // direct comparison is safe here
 		]) {
-			error("Duplicate execution method " + method.type + " in execution class " + containingClass.name, method,
+			error("Duplicate execution method " + execMethod.type + " in execution " + containingClass.name, execMethod,
 				TU_EXECUTION_METHOD__TYPE, NOT_UNIQUE_NAME);
 		}
 	}
@@ -381,12 +382,16 @@ class XtxtUMLUniquenessValidator extends XtxtUMLNameValidator {
 
 				def protected markerTargetForTransitionMember(TUTransitionMember transitionMember) {
 					switch (transitionMember) {
-						TUTransitionTrigger: TU_TRANSITION_TRIGGER__TRIGGER_KEYWORD
-						TUTransitionVertex: if(transitionMember.
-							from) TU_TRANSITION_VERTEX__FROM else TU_TRANSITION_VERTEX__TO
-						TUTransitionEffect: TU_TRANSITION_EFFECT__EFFECT
-						TUTransitionGuard: TU_TRANSITION_GUARD__GUARD
-						TUTransitionPort: TU_TRANSITION_PORT__PORT_KEYWORD
+						TUTransitionTrigger:
+							TU_TRANSITION_TRIGGER__TRIGGER_KEYWORD
+						TUTransitionVertex:
+							if(transitionMember.from) TU_TRANSITION_VERTEX__FROM else TU_TRANSITION_VERTEX__TO
+						TUTransitionEffect:
+							TU_TRANSITION_EFFECT__EFFECT
+						TUTransitionGuard:
+							TU_TRANSITION_GUARD__GUARD
+						TUTransitionPort:
+							TU_TRANSITION_PORT__PORT_KEYWORD
 					}
 				}
 

@@ -14,18 +14,19 @@ import hu.elte.txtuml.xtxtuml.xtxtUML.TUCreateObjectExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUDeleteObjectExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUExecutionElement
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUExecutionElementType
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUExecutionMethod
 import hu.elte.txtuml.xtxtuml.xtxtUML.TULogExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUSendSignalExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUSignalAccessExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUStartObjectExpression
 import org.eclipse.emf.ecore.EObject
+import org.eclipse.xtext.EcoreUtil2
 import org.eclipse.xtext.common.types.JvmType
 import org.eclipse.xtext.xbase.XBlockExpression
 import org.eclipse.xtext.xbase.XExpression
 import org.eclipse.xtext.xbase.compiler.XbaseCompiler
 import org.eclipse.xtext.xbase.compiler.output.ITreeAppendable
 import org.eclipse.xtext.xbase.jvmmodel.IJvmModelAssociations
-import hu.elte.txtuml.xtxtuml.xtxtUML.TUExecutionMethod
 
 class XtxtUMLCompiler extends XbaseCompiler {
 
@@ -69,7 +70,7 @@ class XtxtUMLCompiler extends XbaseCompiler {
 
 	def dispatch toJavaStatement(TUStartObjectExpression startExpr, ITreeAppendable it) {
 		newLine;
-		isInExecution(startExpr,it)
+		isInExecution(startExpr, it)
 
 		append(".start(");
 		startExpr.object.internalToJavaExpression(it);
@@ -78,7 +79,7 @@ class XtxtUMLCompiler extends XbaseCompiler {
 
 	def dispatch toJavaStatement(TUDeleteObjectExpression deleteExpr, ITreeAppendable it) {
 		newLine;
-		isInExecution(deleteExpr,it)
+		isInExecution(deleteExpr, it)
 
 		append(".delete(");
 		deleteExpr.object.internalToJavaExpression(it);
@@ -87,7 +88,7 @@ class XtxtUMLCompiler extends XbaseCompiler {
 
 	def dispatch toJavaStatement(TULogExpression logExpr, ITreeAppendable it) {
 		newLine;
-		isInExecution(logExpr,it)
+		isInExecution(logExpr, it)
 
 		append('''.log«IF logExpr.error»Error«ENDIF»(''');
 		logExpr.message.internalToJavaExpression(it);
@@ -96,7 +97,7 @@ class XtxtUMLCompiler extends XbaseCompiler {
 
 	def dispatch toJavaStatement(TUBindExpression bindExpr, ITreeAppendable it) {
 		newLine;
-		isInExecution(bindExpr,it)
+		isInExecution(bindExpr, it)
 
 		append('''.«bindExpr.type.toString»(''');
 
@@ -128,8 +129,8 @@ class XtxtUMLCompiler extends XbaseCompiler {
 
 	def dispatch toJavaStatement(TUSendSignalExpression sendExpr, ITreeAppendable it) {
 		newLine;
-		isInExecution(sendExpr,it)
-		
+		isInExecution(sendExpr, it)
+
 		append(".send(");
 
 		sendExpr.signal.internalToJavaExpression(it);
@@ -180,7 +181,7 @@ class XtxtUMLCompiler extends XbaseCompiler {
 			return;
 		}
 
-		isInExecution(createExpr,it)
+		isInExecution(createExpr, it)
 		append('''.create«IF nameSpecified»WithName«ENDIF»(''');
 		appendConstructedTypeName(createExpr, it);
 		append(".class");
@@ -197,13 +198,9 @@ class XtxtUMLCompiler extends XbaseCompiler {
 	}
 
 	def isInExecution(EObject obj, ITreeAppendable it) {
-		var container = obj.eContainer;
-		for(;container != null && !(container instanceof TUExecutionElement); container = container.eContainer){
-			
-		}
-		if (container instanceof TUExecutionMethod && 
-			(container as TUExecutionMethod).type != TUExecutionElementType.INITIALIZATION
-		) {
+		val container = EcoreUtil2.getContainerOfType(obj, TUExecutionElement)
+		if (container instanceof TUExecutionMethod &&
+			(container as TUExecutionMethod).type != TUExecutionElementType.INITIALIZATION) {
 			append(API);
 		} else {
 			append(Action);

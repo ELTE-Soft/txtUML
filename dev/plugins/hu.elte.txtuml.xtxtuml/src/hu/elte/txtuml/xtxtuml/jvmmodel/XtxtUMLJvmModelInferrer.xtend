@@ -38,8 +38,10 @@ import hu.elte.txtuml.xtxtuml.xtxtUML.TUEntryOrExitActivity
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUEnumeration
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUEnumerationLiteral
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUExecution
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUExecutionAttribute
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUExecutionElement
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUExecutionElementType
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUExecutionMethod
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUInterface
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUModelDeclaration
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUOperation
@@ -72,8 +74,6 @@ import org.eclipse.xtext.xbase.XBlockExpression
 import org.eclipse.xtext.xbase.jvmmodel.AbstractModelInferrer
 import org.eclipse.xtext.xbase.jvmmodel.IJvmDeclaredTypeAcceptor
 import org.eclipse.xtext.xbase.jvmmodel.IJvmModelAssociations
-import hu.elte.txtuml.xtxtuml.xtxtUML.TUExecutionMethod
-import hu.elte.txtuml.xtxtuml.xtxtUML.TUExecutionAttribute
 
 /**
  * Infers a JVM model equivalent from an XtxtUML resource. If not stated otherwise,
@@ -124,16 +124,16 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 	}
 
 	def private executionelementToJvmMember(TUExecutionElement element) {
-		if(element instanceof TUExecutionMethod){
+		if (element instanceof TUExecutionMethod) {
 			return element.executionMethodToJvmMember
-		}else{
+		} else {
 			return #[
-				element.toField((element as TUExecutionAttribute).name,(element as TUExecutionAttribute).type)
+				element.toField((element as TUExecutionAttribute).name, (element as TUExecutionAttribute).type)
 			]
 		}
 	}
-	
-	def private executionMethodToJvmMember(TUExecutionMethod method){
+
+	def private executionMethodToJvmMember(TUExecutionMethod method) {
 		if (method.type == TUExecutionElementType.CONFIGURE) {
 			val c = (method.body as XBlockExpression).expressions.filter [
 				(it instanceof XAssignment) && (it as XAssignment).concreteSyntaxFeatureName == "name"
