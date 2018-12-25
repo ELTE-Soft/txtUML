@@ -79,12 +79,28 @@ public abstract class Sequence {
 		InteractionRuntime.current().assertState(instance, state);
 	}
 
-	public static <T extends ModelClass> Proxy<T> createProxy(Class<T> modelClass) {
-		return InteractionRuntime.current().createProxy(modelClass);
-	}
-
+	/**
+	 * Creates a lifeline which wraps a {@code ModelClass} instance that sends
+	 * and/or receives signals during model execution.
+	 * <p>
+	 * Note that only {@code Lifeline} and {@code Proxy} fields appear on
+	 * generated sequence diagrams.
+	 */
 	public static <T extends ModelClass> Lifeline<T> createLifeline(T instance) {
 		return MessageParticipant.create(instance);
+	}
+
+	/**
+	 * Creates a proxy object which can be used as a dummy lifeline. Using
+	 * proxies might be necessary when {@code ModelClass} objects are created
+	 * inside the model, and references cannot be obtained from sequence diagram
+	 * code.
+	 * <p>
+	 * Note that only {@code Lifeline} and {@code Proxy} fields appear on
+	 * generated sequence diagrams.
+	 */
+	public static <T extends ModelClass> Proxy<T> createProxy(Class<T> modelClass) {
+		return InteractionRuntime.current().createProxy(modelClass);
 	}
 
 	/**
