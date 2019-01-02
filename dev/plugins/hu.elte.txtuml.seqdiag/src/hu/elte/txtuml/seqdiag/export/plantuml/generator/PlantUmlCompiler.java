@@ -42,7 +42,11 @@ public class PlantUmlCompiler extends ASTVisitor {
 	private final String seqDiagramName;
 
 	private StringBuilder compiledOutput;
-    public static Map<String, Collection<String>> lifelineNames;
+	
+	/**
+	 * Every private function will have its own context for its own parameter names as lifeline names
+	 */
+    public static Map<String, HashMap<String, Collection<String>>> lifelineNamesInContexts;
 	
 
 	public PlantUmlCompiler(final List<Lifeline> orderedLifelines, String seqDiagramName) {
@@ -50,7 +54,7 @@ public class PlantUmlCompiler extends ASTVisitor {
 		exporterQueue = new Stack<ExporterBase<? extends ASTNode>>();
 		this.orderedLifelines = orderedLifelines;
 		this.seqDiagramName = seqDiagramName;
-        PlantUmlCompiler.lifelineNames = new HashMap<String, Collection<String>>();
+        PlantUmlCompiler.lifelineNamesInContexts = new HashMap<String, HashMap<String, Collection<String>>>();
         
 		compiledOutput = new StringBuilder();
 	}
@@ -233,14 +237,14 @@ public class PlantUmlCompiler extends ASTVisitor {
      * @param arguments - the original objectiveNames
      * @param parameters - the possible new parameterNames
      */
-    public void updateLifeLineNames(List<Expression> arguments, List<SingleVariableDeclaration> parameters) {
+    public void updateLifeLineNames(String methodName, List<Expression> arguments, List<SingleVariableDeclaration> parameters) {
 
         List<Integer> idxs = new ArrayList<>();
         for (int i = 0; i < arguments.size(); ++i) {
             if (arguments.get(i) instanceof Name) {
                 idxs.add(i);
             }
-        }        
+        }
         
         List<String> oldNames = idxs.stream().map(i -> arguments.get(i)).map(elem -> ((Name) elem))
                 .map(elem -> elem.toString()).collect(Collectors.toList());
@@ -248,17 +252,27 @@ public class PlantUmlCompiler extends ASTVisitor {
         List<String> newNames = idxs.stream().map(i -> parameters.get(i)).map(elem -> ((SingleVariableDeclaration) elem))
                 .map(elem -> elem.getName().toString()).collect(Collectors.toList());
         
+        HashMap<String, Collection<String>> methodContext;
+        
+        if(!lifelineNamesInContexts.containsKey(methodName)) {
+        	// we encountered this methodContext the first time
+        	HashMap<String, Collection<String>> innerMapForMethodContext = new HashMap<String, Collection<String>>();
+        	lifelineNamesInContexts.put(methodName, innerMapForMethodContext);
+        }
+        
+        methodContext = lifelineNamesInContexts.get(methodName);
+        
         for (int i = 0; i < oldNames.size(); ++i) {
             String oldName = oldNames.get(i);
             
-            Collection<String> nameList = lifelineNames.get(oldName);
+            Collection<String> nameList = methodContext.get(oldName);
             // we encountered this LifeLine the first time
             if(nameList == null) {
-                lifelineNames.put(oldName, new ArrayList<String>());
+            	methodContext.put(oldName, new ArrayList<String>());
             }
             
             // simply add the alias to the list
-            lifelineNames.get(oldName).add(newNames.get(i));
+            methodContext.get(oldName).add(newNames.get(i));
         }
     }
 }

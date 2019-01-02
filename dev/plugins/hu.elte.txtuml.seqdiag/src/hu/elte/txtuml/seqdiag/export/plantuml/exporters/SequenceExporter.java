@@ -1,6 +1,7 @@
 package hu.elte.txtuml.seqdiag.export.plantuml.exporters;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map.Entry;
 
 import org.eclipse.jdt.core.dom.ASTNode;
@@ -39,10 +40,10 @@ public class SequenceExporter extends MethodInvocationExporter {
 
 		// Sequence.send call
 		Expression sender = (Expression) curElement.arguments().get(0);
-        String senderName = searchForRealLifelineName(sender);
+        String senderName = searchForRealLifelineName("Need the method's name here somehow...", sender);
 
 		Expression target = (Expression) curElement.arguments().get(2);
-		String targetName = searchForRealLifelineName(target);
+		String targetName = searchForRealLifelineName("Need the method's name here somehow...", target);
 
 		Expression signal = (Expression) curElement.arguments().get(1);
 		String signalExpr = signal.resolveTypeBinding().getQualifiedName();
@@ -55,17 +56,25 @@ public class SequenceExporter extends MethodInvocationExporter {
 	public void afterNext(MethodInvocation curElement) {
 	}
 
-    private String searchForRealLifelineName(Expression lifeLineExpression) {
+    private String searchForRealLifelineName(String methodContextName, Expression lifeLineExpression) {
         String currentLifeLineName = lifeLineExpression.toString();
         
-        if(PlantUmlCompiler.lifelineNames.containsKey(currentLifeLineName)) {
+        HashMap<String, Collection<String>> innerMapForMethodContext = PlantUmlCompiler.lifelineNamesInContexts.get(methodContextName);
+        
+        if(innerMapForMethodContext == null) {
+        	return null;
+        	//TODO: meaningful exception
+        	//throw new Exception("There were some problems with the method invocation in the sequence diagram.");
+        }
+        
+        if(innerMapForMethodContext.containsKey(currentLifeLineName)) {
         	// it has aliases but we got the original lileLine name, just use it
             return currentLifeLineName;
         }
         
         // we may got an alias for the original lileLine name, so we need to search for the original name and use that instead        
-        // TODO reverse search, not too effective + it return the first original name it has found (problematic if it had more)
-        for(Entry<String, Collection<String>> aliases : PlantUmlCompiler.lifelineNames.entrySet()) {
+        // TODO reverse search, not too effective
+        for(Entry<String, Collection<String>> aliases : innerMapForMethodContext.entrySet()) {
             if(aliases.getValue().contains(currentLifeLineName)) {
                 return aliases.getKey();
             }
