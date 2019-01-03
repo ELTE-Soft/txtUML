@@ -69,10 +69,11 @@ class XtxtUMLUniquenessValidator extends XtxtUMLNameValidator {
 		val duplicateName = siblingsAndSelf.findFirst [
 			name.toLowerCase == modelElement.name.toLowerCase && it != modelElement
 		]?.name; // direct comparison is safe here
+
 		if (duplicateName != null) {
 			error("Duplicate model element " + modelElement.name +
-				optionalCaseInsensitivityWarning(modelElement.name, duplicateName), modelElement,
-				TU_MODEL_ELEMENT__NAME, NOT_UNIQUE_NAME);
+				optionalCaseInsensitivityWarning(modelElement.name, duplicateName), modelElement, TU_MODEL_ELEMENT__NAME,
+				NOT_UNIQUE_NAME);
 		}
 	}
 
@@ -86,6 +87,30 @@ class XtxtUMLUniquenessValidator extends XtxtUMLNameValidator {
 				TU_ENUMERATION_LITERAL__NAME, NOT_UNIQUE_NAME);
 		}
 	}
+	
+	@Check
+ 	def checkExecutionAttributeNameIsUnique(TUExecutionAttribute execAttribute) {
+ 		val containingClass = execAttribute.eContainer as TUExecution;
+ 		if (containingClass.elements.exists [
+ 			it instanceof TUExecutionAttribute && (it as TUExecutionAttribute).name == execAttribute.name &&
+ 				it != execAttribute // direct comparison is safe here
+ 		]) {
+ 			error("Duplicate attribute " + execAttribute.name + " in execution " + containingClass.name, execAttribute,
+ 				TU_EXECUTION_ATTRIBUTE__NAME, NOT_UNIQUE_NAME);
+ 		}
+ 	}
+ 
+  	@Check
+ 	def checkExecutionMethodIsUnique(TUExecutionMethod execMethod) {
+ 		val containingClass = execMethod.eContainer as TUExecution;
+ 		if (containingClass.elements.exists [
+ 			it instanceof TUExecutionMethod && (it as TUExecutionMethod).type == execMethod.type && it != execMethod // direct comparison is safe here
+ 		]) {
+ 			error("Duplicate execution method " + execMethod.type + " in execution " + containingClass.name, execMethod,
+ 				TU_EXECUTION_METHOD__TYPE, NOT_UNIQUE_NAME);
+ 		}
+ 	}
+
 
 	@Check
 	def checkReceptionIsUnique(TUReception reception) {
@@ -127,38 +152,14 @@ class XtxtUMLUniquenessValidator extends XtxtUMLNameValidator {
 	}
 
 	@Check
-	def checkExecutionAttributeNameIsUnique(TUExecutionAttribute execAttribute) {
-		val containingClass = execAttribute.eContainer as TUExecution;
-		if (containingClass.elements.exists [
-			it instanceof TUExecutionAttribute && (it as TUExecutionAttribute).name == execAttribute.name &&
-				it != execAttribute // direct comparison is safe here
-		]) {
-			error("Duplicate attribute " + execAttribute.name + " in execution " + containingClass.name, execAttribute,
-				TU_EXECUTION_ATTRIBUTE__NAME, NOT_UNIQUE_NAME);
-		}
-	}
-
-	@Check
-	def checkExecutionMethodIsUnique(TUExecutionMethod execMethod) {
-		val containingClass = execMethod.eContainer as TUExecution;
-		if (containingClass.elements.exists [
-			it instanceof TUExecutionMethod && (it as TUExecutionMethod).type == execMethod.type && it != execMethod // direct comparison is safe here
-		]) {
-			error("Duplicate execution method " + execMethod.type + " in execution " + containingClass.name, execMethod,
-				TU_EXECUTION_METHOD__TYPE, NOT_UNIQUE_NAME);
-		}
-	}
-
-	@Check
 	def checkConstructorIsUnique(TUConstructor ctor) {
 		val enclosingClass = (ctor.eContainer as TUClass);
-		if (enclosingClass.members.
-			exists [
-				it instanceof TUConstructor && {
-					val otherCtor = it as TUConstructor;
-					otherCtor.name == ctor.name && otherCtor.parameters.typeNames == ctor.parameters.typeNames
-				} && it != ctor // direct comparison is safe here
-			]) {
+		if (enclosingClass.members.exists [
+			it instanceof TUConstructor && {
+				val otherCtor = it as TUConstructor;
+				otherCtor.name == ctor.name && otherCtor.parameters.typeNames == ctor.parameters.typeNames
+			} && it != ctor // direct comparison is safe here
+		]) {
 			error('''Duplicate constructor «ctor.name»(«ctor.parameters.typeNames.join(", ")») in class «enclosingClass.name»''',
 				ctor, TU_CONSTRUCTOR__NAME, NOT_UNIQUE_CONSTRUCTOR);
 		}
@@ -167,15 +168,14 @@ class XtxtUMLUniquenessValidator extends XtxtUMLNameValidator {
 	@Check
 	def checkOperationIsUnique(TUOperation operation) {
 		val containingClass = (operation.eContainer as TUClass);
-		if (containingClass.members.
-			exists [
-				it instanceof TUOperation &&
-					{
-						val siblingOperationOrSelf = it as TUOperation;
-						siblingOperationOrSelf.name == operation.name &&
-							siblingOperationOrSelf.parameters.typeNames == operation.parameters.typeNames
-					} && it != operation // direct comparison is safe here
-			]) {
+		if (containingClass.members.exists [
+			it instanceof TUOperation &&
+				{
+					val siblingOperationOrSelf = it as TUOperation;
+					siblingOperationOrSelf.name == operation.name &&
+						siblingOperationOrSelf.parameters.typeNames == operation.parameters.typeNames
+				} && it != operation // direct comparison is safe here
+		]) {
 			error('''Duplicate operation «operation.name»(«operation.parameters.typeNames.join(", ")») in class «containingClass.name»''',
 				operation, TU_OPERATION__NAME, NOT_UNIQUE_OPERATION);
 		}
@@ -205,8 +205,8 @@ class XtxtUMLUniquenessValidator extends XtxtUMLNameValidator {
 			error(
 				"State " + state.classQualifiedName +
 					" must have a unique name among states, transitions and ports of the enclosing element" +
-					optionalCaseInsensitivityWarning(state.name, duplicate.nameOfClassLikeMember), state,
-				TU_STATE__NAME, NOT_UNIQUE_NAME);
+					optionalCaseInsensitivityWarning(state.name, duplicate.nameOfClassLikeMember), state, TU_STATE__NAME,
+				NOT_UNIQUE_NAME);
 		}
 	}
 
@@ -230,199 +230,188 @@ class XtxtUMLUniquenessValidator extends XtxtUMLNameValidator {
 		val sourceState = transition.sourceState;
 		if (sourceState?.type == TUStateType.INITIAL) {
 			if (transition.membersOfEnclosingElement.exists [
-				it instanceof TUTransition &&
-					(it as TUTransition).sourceState?.fullyQualifiedName == sourceState?.fullyQualifiedName &&
+				it instanceof TUTransition && (it as TUTransition).sourceState?.fullyQualifiedName == sourceState?.fullyQualifiedName &&
 					it != transition // direct comparison is safe here
 			]) {
-						error("Duplicate initial transition " + transition.classQualifiedName +
-							" – only one per initial state is allowed", transition, TU_TRANSITION__NAME,
-							NOT_UNIQUE_INITIAL_TRANSITION);
-					}
-				}
+				error("Duplicate initial transition " + transition.classQualifiedName +
+					" – only one per initial state is allowed", transition, TU_TRANSITION__NAME,
+					NOT_UNIQUE_INITIAL_TRANSITION);
 			}
+		}
+	}
 
-			@Check
-			def checkTransitionNameIsUnique(TUTransition transition) {
-				val lowerCaseName = transition.name.toLowerCase;
-				val duplicate = transition.membersOfEnclosingElement.findFirst [
-					it instanceof TUTransition && (it as TUTransition).name.toLowerCase == lowerCaseName &&
-						it != transition || // direct comparison is safe here
-					it instanceof TUState && (it as TUState).name.toLowerCase == lowerCaseName ||
-						it instanceof TUPort && (it as TUPort).name.toLowerCase == lowerCaseName
-				];
+	@Check
+	def checkTransitionNameIsUnique(TUTransition transition) {
+		val lowerCaseName = transition.name.toLowerCase;
+		val duplicate = transition.membersOfEnclosingElement.findFirst [
+			it instanceof TUTransition && (it as TUTransition).name.toLowerCase == lowerCaseName &&
+				it != transition || // direct comparison is safe here
+			it instanceof TUState && (it as TUState).name.toLowerCase == lowerCaseName ||
+				it instanceof TUPort && (it as TUPort).name.toLowerCase == lowerCaseName
+		];
 
-				if (duplicate != null) {
-					error(
-						"Transition " + transition.classQualifiedName +
-							" must have a unique name among states, transitions and ports of the enclosing element" +
-							optionalCaseInsensitivityWarning(transition.name, duplicate.nameOfClassLikeMember),
-						transition, TU_TRANSITION__NAME, NOT_UNIQUE_NAME);
-				}
-			}
+		if (duplicate != null) {
+			error(
+				"Transition " + transition.classQualifiedName +
+					" must have a unique name among states, transitions and ports of the enclosing element" +
+					optionalCaseInsensitivityWarning(transition.name, duplicate.nameOfClassLikeMember),
+				transition, TU_TRANSITION__NAME, NOT_UNIQUE_NAME);
+		}
+	}
 
-			@Check
-			def checkTransitionMemberIsUnique(TUTransitionMember transitionMember) {
-				val enclosingTransition = transitionMember.eContainer as TUTransition;
-				if (enclosingTransition.members.exists [
-					eClass == transitionMember.eClass && (if (it instanceof TUTransitionVertex)
-						from == (transitionMember as TUTransitionVertex).from
-					else
-						true) && it != transitionMember // direct comparison is safe here
-				]) {
-					error("Duplicate member in transition " + enclosingTransition.classQualifiedName, transitionMember,
-						transitionMember.markerTargetForTransitionMember, NOT_UNIQUE_TRANSITION_MEMBER);
-				}
-			}
+	@Check
+	def checkTransitionMemberIsUnique(TUTransitionMember transitionMember) {
+		val enclosingTransition = transitionMember.eContainer as TUTransition;
+		if (enclosingTransition.members.exists [
+			eClass == transitionMember.eClass && (if (it instanceof TUTransitionVertex)
+				from == (transitionMember as TUTransitionVertex).from
+			else
+				true) && it != transitionMember // direct comparison is safe here
+		]) {
+			error("Duplicate member in transition " + enclosingTransition.classQualifiedName, transitionMember,
+				transitionMember.markerTargetForTransitionMember, NOT_UNIQUE_TRANSITION_MEMBER);
+		}
+	}
 
-			@Check
-			def checkPortNameIsUnique(TUPort port) {
-				val lowerCaseName = port.name.toLowerCase;
-				val containingClass = port.eContainer as TUClass;
-				val duplicate = containingClass.members.findFirst [
-					it instanceof TUPort && (it as TUPort).name.toLowerCase == lowerCaseName && it != port // direct comparison is safe here
-					|| it instanceof TUState && (it as TUState).name.toLowerCase == lowerCaseName ||
-						it instanceof TUTransition && (it as TUTransition).name.toLowerCase == lowerCaseName
-				];
+	@Check
+	def checkPortNameIsUnique(TUPort port) {
+		val lowerCaseName = port.name.toLowerCase;
+		val containingClass = port.eContainer as TUClass;
+		val duplicate = containingClass.members.findFirst [
+			it instanceof TUPort && (it as TUPort).name.toLowerCase == lowerCaseName && it != port // direct comparison is safe here
+			|| it instanceof TUState && (it as TUState).name.toLowerCase == lowerCaseName ||
+				it instanceof TUTransition && (it as TUTransition).name.toLowerCase == lowerCaseName
+		];
 
-				if (duplicate != null) {
-					error(
-						"Port " + port.name + " in class " + containingClass.name +
-							" must have a unique name among states, transitions and ports of the enclosing element" +
-							optionalCaseInsensitivityWarning(port.name, duplicate.nameOfClassLikeMember), port,
-						TU_CONNECTIVE_END__NAME, NOT_UNIQUE_NAME);
-				}
-			}
+		if (duplicate != null) {
+			error(
+				"Port " + port.name + " in class " + containingClass.name +
+					" must have a unique name among states, transitions and ports of the enclosing element" +
+					optionalCaseInsensitivityWarning(port.name, duplicate.nameOfClassLikeMember), port,
+				TU_CONNECTIVE_END__NAME, NOT_UNIQUE_NAME);
+		}
+	}
 
-			@Check
-			def checkPortMemberIsUnique(TUPortMember portMember) {
-				val enclosingPort = portMember.eContainer as TUPort;
-				if (enclosingPort.members.exists [
-					required == portMember.required && it != portMember // direct comparison is safe here
-				]) {
-					error("Duplicate interface type in port " + enclosingPort.name + " of class " +
-						(enclosingPort.eContainer as TUClass).name, portMember,
-						if(portMember.required) TU_PORT_MEMBER__REQUIRED else TU_PORT_MEMBER__PROVIDED,
-						NOT_UNIQUE_PORT_MEMBER);
-					}
-				}
+	@Check
+	def checkPortMemberIsUnique(TUPortMember portMember) {
+		val enclosingPort = portMember.eContainer as TUPort;
+		if (enclosingPort.members.exists [
+			required == portMember.required && it != portMember // direct comparison is safe here
+		]) {
+			error("Duplicate interface type in port " + enclosingPort.name + " of class " +
+				(enclosingPort.eContainer as TUClass).name, portMember,
+				if(portMember.required) TU_PORT_MEMBER__REQUIRED else TU_PORT_MEMBER__PROVIDED, NOT_UNIQUE_PORT_MEMBER);
+		}
+	}
 
-				@Check
-				def checkAssociationEndNamesAreUnique(TUAssociationEnd associationEnd) {
-					val association = associationEnd.eContainer as TUAssociation;
-					val duplicateName = association.ends.findFirst [
-						name.toLowerCase == associationEnd.name.toLowerCase && it != associationEnd // direct comparison is safe here
-					]?.name;
+	@Check
+	def checkAssociationEndNamesAreUnique(TUAssociationEnd associationEnd) {
+		val association = associationEnd.eContainer as TUAssociation;
+		val duplicateName = association.ends.findFirst [
+			name.toLowerCase == associationEnd.name.toLowerCase && it != associationEnd // direct comparison is safe here
+		]?.name;
 
-					if (duplicateName != null) {
-						error(
-							"Association end " + associationEnd.name + " in association " + association.name +
-								" must have a unique name" +
-								optionalCaseInsensitivityWarning(associationEnd.name, duplicateName), associationEnd,
-							TU_CONNECTIVE_END__NAME, NOT_UNIQUE_NAME);
-					}
-				}
+		if (duplicateName != null) {
+			error("Association end " + associationEnd.name + " in association " + association.name +
+				" must have a unique name" + optionalCaseInsensitivityWarning(associationEnd.name, duplicateName),
+				associationEnd, TU_CONNECTIVE_END__NAME, NOT_UNIQUE_NAME);
+		}
+	}
 
-				@Check
-				def checkConnectorEndNamesAreUnique(TUConnectorEnd connectorEnd) {
-					val connector = connectorEnd.eContainer as TUConnector;
-					val duplicateName = connector.ends.findFirst [
-						name.toLowerCase == connectorEnd.name.toLowerCase && it != connectorEnd // direct comparison is safe here
-					]?.name;
+	@Check
+	def checkConnectorEndNamesAreUnique(TUConnectorEnd connectorEnd) {
+		val connector = connectorEnd.eContainer as TUConnector;
+		val duplicateName = connector.ends.findFirst [
+			name.toLowerCase == connectorEnd.name.toLowerCase && it != connectorEnd // direct comparison is safe here
+		]?.name;
 
-					if (duplicateName != null) {
-						error(
-							"Connector end " + connectorEnd.name + " in connector " + connector.name +
-								" must have a unique name" +
-								optionalCaseInsensitivityWarning(connectorEnd.name, duplicateName), connectorEnd,
-							TU_CONNECTIVE_END__NAME, NOT_UNIQUE_NAME);
-					}
-				}
+		if (duplicateName != null) {
+			error("Connector end " + connectorEnd.name + " in connector " + connector.name +
+				" must have a unique name" + optionalCaseInsensitivityWarning(connectorEnd.name, duplicateName),
+				connectorEnd, TU_CONNECTIVE_END__NAME, NOT_UNIQUE_NAME);
+		}
+	}
 
-				def protected typeNames(EList<JvmFormalParameter> parameters) {
-					parameters.map[parameterType?.type?.fullyQualifiedName]
-				}
+	def protected typeNames(EList<JvmFormalParameter> parameters) {
+		parameters.map[parameterType?.type?.fullyQualifiedName]
+	}
 
-				/**
-				 * Returns the class qualified name of the given class member. That is,
-				 * the returned string will be the fully qualified name of the given
-				 * member, starting from the simple name of its enclosing class.
-				 */
-				def protected classQualifiedName(TUClassMember classMember) {
-					val fqnOfClass = EcoreUtil2.getContainerOfType(classMember, TUClass)?.fullyQualifiedName;
-					if (fqnOfClass != null) {
-						val fqnOfMember = classMember.fullyQualifiedName;
-						return fqnOfClass.lastSegment + fqnOfMember.toString.substring(fqnOfClass.toString.length);
-					}
-				}
 
-				def protected isPseudostate(EObject object) {
-					object instanceof TUState && {
-						val state = object as TUState;
-						state.type == TUStateType.INITIAL || state.type == TUStateType.CHOICE
-					}
-				}
+	/**
+	 * Returns the class qualified name of the given class member. That is,
+	 * the returned string will be the fully qualified name of the given
+	 * member, starting from the simple name of its enclosing class.
+	 */
+	def protected classQualifiedName(TUClassMember classMember) {
+		val fqnOfClass = EcoreUtil2.getContainerOfType(classMember, TUClass)?.fullyQualifiedName;
+		if (fqnOfClass != null) {
+			val fqnOfMember = classMember.fullyQualifiedName;
+			return fqnOfClass.lastSegment + fqnOfMember.toString.substring(fqnOfClass.toString.length);
+		}
+	}
 
-				def protected sourceState(TUTransition it) {
-					sourceOrTargetState(true)
-				}
+	def protected isPseudostate(EObject object) {
+		object instanceof TUState && {
+			val state = object as TUState;
+			state.type == TUStateType.INITIAL || state.type == TUStateType.CHOICE
+		}
+	}
 
-				def protected targetState(TUTransition it) {
-					sourceOrTargetState(false)
-				}
+	def protected sourceState(TUTransition it) {
+		sourceOrTargetState(true)
+	}
 
-				def private sourceOrTargetState(TUTransition it, boolean isSource) {
-					(members.findFirst [
-						it instanceof TUTransitionVertex && (it as TUTransitionVertex).from == isSource
-					] as TUTransitionVertex)?.vertex
-				}
+	def protected targetState(TUTransition it) {
+		sourceOrTargetState(false)
+	}
 
-				def protected markerTargetForStateActivity(TUEntryOrExitActivity stateActivity) {
-					if(stateActivity.entry) TU_ENTRY_OR_EXIT_ACTIVITY__ENTRY else TU_ENTRY_OR_EXIT_ACTIVITY__EXIT
-				}
+	def private sourceOrTargetState(TUTransition it, boolean isSource) {
+		(members.findFirst [
+			it instanceof TUTransitionVertex && (it as TUTransitionVertex).from == isSource
+		] as TUTransitionVertex)?.vertex
+	}
 
-				def protected markerTargetForTransitionMember(TUTransitionMember transitionMember) {
-					switch (transitionMember) {
-						TUTransitionTrigger:
-							TU_TRANSITION_TRIGGER__TRIGGER_KEYWORD
-						TUTransitionVertex:
-							if(transitionMember.from) TU_TRANSITION_VERTEX__FROM else TU_TRANSITION_VERTEX__TO
-						TUTransitionEffect:
-							TU_TRANSITION_EFFECT__EFFECT
-						TUTransitionGuard:
-							TU_TRANSITION_GUARD__GUARD
-						TUTransitionPort:
-							TU_TRANSITION_PORT__PORT_KEYWORD
-					}
-				}
+	def protected markerTargetForStateActivity(TUEntryOrExitActivity stateActivity) {
+		if(stateActivity.entry) TU_ENTRY_OR_EXIT_ACTIVITY__ENTRY else TU_ENTRY_OR_EXIT_ACTIVITY__EXIT
+	}
 
-				def protected membersOfEnclosingElement(TUStateMember stateMember) {
-					switch (container : stateMember.eContainer) {
-						TUClass: container.members
-						TUState: container.members
-					}
-				}
+	def protected markerTargetForTransitionMember(TUTransitionMember transitionMember) {
+		switch (transitionMember) {
+			TUTransitionTrigger: TU_TRANSITION_TRIGGER__TRIGGER_KEYWORD
+			TUTransitionVertex: if(transitionMember.from) TU_TRANSITION_VERTEX__FROM else TU_TRANSITION_VERTEX__TO
+			TUTransitionEffect: TU_TRANSITION_EFFECT__EFFECT
+			TUTransitionGuard: TU_TRANSITION_GUARD__GUARD
+			TUTransitionPort: TU_TRANSITION_PORT__PORT_KEYWORD
+		}
+	}
 
-				/**
-				 * Should be called only when <code>name1.toLowerCase() == name2.toLowerCase()</code> holds.
-				 */
-				def protected optionalCaseInsensitivityWarning(String name1, String name2) {
-					if (name1 != name2) {
-						" – uniqueness validation in this case is case insensitive"
-					} else {
-						""
-					}
-				}
+	def protected membersOfEnclosingElement(TUStateMember stateMember) {
+		switch (container : stateMember.eContainer) {
+			TUClass: container.members
+			TUState: container.members
+		}
+	}
 
-				/**
-				 * <code>it</code> should be either a state, a transition or a port.
-				 */
-				def protected nameOfClassLikeMember(Object it) {
-					switch (it) {
-						TUState: name
-						TUTransition: name
-						TUPort: name
-					}
-				}
+	/**
+	 * Should be called only when <code>name1.toLowerCase() == name2.toLowerCase()</code> holds.
+	 */
+	def protected optionalCaseInsensitivityWarning(String name1, String name2) {
+		if (name1 != name2) {
+			" – uniqueness validation in this case is case insensitive"
+		} else {
+			""
+		}
+	}
 
-			}
-			
+	/**
+	 * <code>it</code> should be either a state, a transition or a port.
+	 */
+	def protected nameOfClassLikeMember(Object it) {
+		switch (it) {
+			TUState: name
+			TUTransition: name
+			TUPort: name
+		}
+	}
+
+}

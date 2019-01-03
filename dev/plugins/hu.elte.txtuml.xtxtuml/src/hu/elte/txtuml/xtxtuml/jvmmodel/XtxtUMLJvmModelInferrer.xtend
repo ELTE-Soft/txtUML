@@ -405,12 +405,9 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 			val modifiers = ctor.modifiers
 			visibility = modifiers.visibility.toJvmVisibility
 			switch (modifiers.externality) {
-				case EXTERNAL:
-					annotations += External.annotationRef
-				case EXTERNAL_BODY:
-					annotations += ExternalBody.annotationRef
-				default: {
-				}
+				case EXTERNAL: annotations += External.annotationRef
+				case EXTERNAL_BODY: annotations += ExternalBody.annotationRef
+				default: {}
 			}
 
 			for (param : ctor.parameters) {
@@ -430,12 +427,9 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 			val modifiers = attr.prefix.modifiers
 			static = modifiers.static
 			visibility = modifiers.visibility.toJvmVisibility
-
 			switch (modifiers.externality) {
-				case EXTERNAL:
-					annotations += External.annotationRef
-				default: {
-				}
+				case EXTERNAL: annotations += External.annotationRef
+				default: {}
 			}
 
 			initializer = attr.initExpression
@@ -463,12 +457,9 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 			visibility = modifiers.visibility.toJvmVisibility
 
 			switch (modifiers.externality) {
-				case EXTERNAL:
-					annotations += External.annotationRef
-				case EXTERNAL_BODY:
-					annotations += ExternalBody.annotationRef
-				default: {
-				}
+				case EXTERNAL: annotations += External.annotationRef
+				case EXTERNAL_BODY: annotations += ExternalBody.annotationRef
+				default: {}
 			}
 
 			for (JvmFormalParameter param : op.parameters) {
@@ -608,7 +599,7 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 			else if (!multiplicity.upperSet) { // <lower> (exact)
 				if (multiplicity.lower == 1)
 					"One"
-			// TODO support custom multiplicities
+				// TODO support custom multiplicities
 			} else { // <lower> .. <upper>
 				if (multiplicity.lower == 0 && multiplicity.upper == 1)
 					"ZeroToOne"
@@ -618,7 +609,7 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 					"Any"
 				else if (multiplicity.lower == 1 && multiplicity.upperInf)
 					"OneToAny"
-			// TODO support custom multiplicities
+				// TODO support custom multiplicities
 			}
 
 		val endClassImpl = "hu.elte.txtuml.api.model.Association$" + optionalHidden + "End"
