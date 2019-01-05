@@ -7,13 +7,21 @@ import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.AbstractTypeDeclaration;
 import org.eclipse.jdt.core.dom.Annotation;
+import org.eclipse.jdt.core.dom.AnonymousClassDeclaration;
+import org.eclipse.jdt.core.dom.ArrayCreation;
+import org.eclipse.jdt.core.dom.ArrayInitializer;
 import org.eclipse.jdt.core.dom.Block;
+import org.eclipse.jdt.core.dom.CastExpression;
+import org.eclipse.jdt.core.dom.ClassInstanceCreation;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.DoStatement;
+import org.eclipse.jdt.core.dom.Expression;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.ForStatement;
 import org.eclipse.jdt.core.dom.IfStatement;
+import org.eclipse.jdt.core.dom.LambdaExpression;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
+import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.eclipse.jdt.core.dom.SingleMemberAnnotation;
 import org.eclipse.jdt.core.dom.Statement;
 import org.eclipse.jdt.core.dom.WhileStatement;
@@ -53,7 +61,6 @@ public class SequenceDiagramVisitor extends ASTVisitor {
 	public boolean visit(MethodDeclaration elem) {
 		if (elem.getName().getFullyQualifiedName().equals("run")) {
 			checkSendInRun(elem);
-			return true;
 		}
 		return false;
 	}
@@ -63,28 +70,13 @@ public class SequenceDiagramVisitor extends ASTVisitor {
 		if (showErrorHere) {
 			placeOfError = node.getBody();
 		}
-		List<Boolean> childChecks = new ArrayList<>();
-		List<Statement> statements = (List<Statement>) node.getBody().statements();
-		List<Statement> loops = Utils.getLoopNodes(statements);
-		loops.forEach(loop -> {
-			if (showErrorHere) {
-				placeOfError = node.getBody();
-			}
-			childChecks.add(checkSendInLoopNode(loop));
-		});
-		List<IfStatement> ifNodes = Utils.getIfNodes(statements);
-		ifNodes.forEach(ifNode -> {
-			if (showErrorHere) {
-				placeOfError = node.getBody();
-			}
-			childChecks.add(checkSendInIfNode(ifNode));
-		});
-		if (childChecks.isEmpty()) {
-			SequenceErrors.SEND_EXPECTED.create(collector.getSourceInfo(), placeOfError);
+		checkSendInBlock(node.getBody(), showErrorHere);
+		if (showErrorHere) {
+			placeOfError = null;
 		}
 	}
 
-	private boolean checkSendInLoopNode(Statement loopNode) {
+	private void checkSendInLoopNode(Statement loopNode) {
 		Statement body;
 		if (loopNode instanceof WhileStatement) {
 			WhileStatement whileLoop = (WhileStatement) loopNode;
@@ -96,77 +88,231 @@ public class SequenceDiagramVisitor extends ASTVisitor {
 			DoStatement doWhileLoop = (DoStatement) loopNode;
 			body = doWhileLoop.getBody();
 		}
-		if (placeOfError == loopNode.getParent() || placeOfError == loopNode) {
+		boolean showErrorHere = placeOfError == loopNode.getParent() || placeOfError == loopNode;
+		if (showErrorHere) {
 			placeOfError = body;
 		}
 		if (body instanceof Block) {
-			return checkSendInBlock((Block) body);
+			checkSendInBlock((Block) body, showErrorHere);
 		} else {
-			return checkSendInStatement(body);
+			checkSendInStatement(body);
 		}
-
 	}
 
-	private boolean checkSendInIfNode(IfStatement node) {
-		boolean isValid = true;
-		boolean showErrorHere = placeOfError == node.getParent() || placeOfError == node;
-		Statement thenStatement = node.getThenStatement();
+	private void checkSendInIfNode(IfStatement ifNode) {
+		boolean showErrorHere = placeOfError == ifNode.getParent() || placeOfError == ifNode;
+		Statement thenStatement = ifNode.getThenStatement();
 		if (showErrorHere) {
 			placeOfError = thenStatement;
 		}
 		if (thenStatement instanceof Block) {
-			isValid = isValid && checkSendInBlock((Block) thenStatement);
+			checkSendInBlock((Block) thenStatement, showErrorHere);
 		} else {
-			isValid = isValid && checkSendInStatement(thenStatement);
+			checkSendInStatement(thenStatement);
 		}
-		Statement elseStatement = node.getElseStatement();
+		Statement elseStatement = ifNode.getElseStatement();
 		if (showErrorHere) {
 			placeOfError = elseStatement;
 		}
-		if (elseStatement instanceof IfStatement) {
-			isValid = isValid && checkSendInIfNode((IfStatement) elseStatement);
-		} else if (elseStatement instanceof Block) {
-			isValid = isValid && checkSendInBlock((Block) elseStatement);
-		} else {
-			isValid = isValid && checkSendInStatement(elseStatement);
+		if (elseStatement == null) {
+			return;
 		}
-		return isValid;
+		if (elseStatement instanceof IfStatement) {
+			checkSendInIfNode((IfStatement) elseStatement);
+		} else if (elseStatement instanceof Block) {
+			checkSendInBlock((Block) elseStatement, showErrorHere);
+		} else {
+			checkSendInStatement(elseStatement);
+		}
 	}
 
-	private boolean checkSendInBlock(Block node) {
-		final boolean showErrorHere = placeOfError == node;
-		List<Statement> statements = (List<Statement>) node.statements();
+	private void checkSendInBlock(Block block, boolean showErrorHere) {
+		List<Statement> statements = (List<Statement>) block.statements();
 		List<Statement> loops = Utils.getLoopNodes(statements);
-		List<Boolean> childChecks = new ArrayList<>();
 		loops.forEach(loop -> {
 			if (showErrorHere) {
-				placeOfError = node;
+				placeOfError = block;
 			}
-			childChecks.add(checkSendInLoopNode(loop));
+			checkSendInLoopNode(loop);
 		});
 		List<IfStatement> ifNodes = Utils.getIfNodes(statements);
 		ifNodes.forEach(ifNode -> {
 			if (showErrorHere) {
-				placeOfError = node;
+				placeOfError = block;
 			}
-			childChecks.add(checkSendInIfNode(ifNode));
+			checkSendInIfNode(ifNode);
 		});
-		if (childChecks.isEmpty()) {
-			SequenceErrors.SEND_EXPECTED.create(collector.getSourceInfo(), placeOfError);
-			return false;
+		List<MethodInvocation> parFragments = Utils.getParFragments(statements);
+		parFragments.forEach(parFragment -> {
+			if (showErrorHere) {
+				placeOfError = block;
+			}
+			checkSendInPar(parFragment);
+		});
+		List<MethodInvocation> methodInvocations = Utils.getMethodInvocations(statements);
+		final List<Boolean> containsSendOrFragment = new ArrayList<>();
+		methodInvocations.forEach(methodInvocation -> {
+			if (showErrorHere) {
+				placeOfError = methodInvocation;
+			}
+			containsSendOrFragment.add(checkSendOrFragmentInMethodInvocation(methodInvocation));
+		});
+		if (showErrorHere) {
+			placeOfError = block;
 		}
-		return !childChecks.contains(false);
+		boolean isLeaf = loops.isEmpty() && ifNodes.isEmpty() && parFragments.isEmpty();
+		if (isLeaf && !containsSendOrFragment.contains(true)) {
+			collector.report(SequenceErrors.SEND_EXPECTED.create(collector.getSourceInfo(), placeOfError));
+		}
 	}
 
-	private boolean checkSendInStatement(Statement node) {
-		if (Utils.isLoopNode(node)) {
-			return checkSendInLoopNode(node);
-		} else if (node instanceof IfStatement) {
-			return checkSendInIfNode((IfStatement) node);
+	private void checkSendInStatement(Statement statement) {
+		if (Utils.isLoopNode(statement)) {
+			checkSendInLoopNode(statement);
+		} else if (statement instanceof IfStatement) {
+			checkSendInIfNode((IfStatement) statement);
+		} else if (Utils.isParInvocation(statement)) {
+			checkSendInPar(Utils.getMethodInvocationFromStatement(statement));
 		} else {
-			SequenceErrors.SEND_EXPECTED.create(collector.getSourceInfo(), placeOfError);
+			collector.report(SequenceErrors.SEND_EXPECTED.create(collector.getSourceInfo(), placeOfError));
+		}
+	}
+
+	private void checkSendInPar(MethodInvocation parNode) {
+		if (placeOfError == parNode.getParent().getParent()) {
+			placeOfError = parNode.getParent();
+		}
+		if (parNode.arguments().size() == 0) {
+			collector.report(SequenceErrors.SEND_EXPECTED.create(collector.getSourceInfo(), placeOfError));
+			return;
+		}
+		parNode.arguments().forEach(argument -> {
+			if (placeOfError == parNode.getParent()) {
+				placeOfError = (ASTNode) argument;
+			}
+			checkSendInParArgument((Expression) argument);
+		});
+	}
+
+	private void checkSendInParArgument(Expression argument) {
+		if (argument instanceof LambdaExpression) {
+			LambdaExpression lambdaExpression = (LambdaExpression) argument;
+			ASTNode body = lambdaExpression.getBody();
+			boolean showErrorHere = placeOfError == argument;
+			if (showErrorHere) {
+				placeOfError = body;
+			}
+			if (body instanceof Block) {
+				Block block = (Block) body;
+				checkSendInBlock(block, showErrorHere);
+			} else if (body instanceof MethodInvocation) {
+				MethodInvocation methodInvocation = (MethodInvocation) body;
+				checkSendInMethodInvocation(methodInvocation);
+			} else {
+				collector.report(SequenceErrors.SEND_EXPECTED.create(collector.getSourceInfo(), placeOfError));
+			}
+		} else {
+			checkSendInExpression(argument);
+		}
+	}
+
+	private void checkSendInExpression(Expression expression) {
+		if (expression instanceof ArrayCreation) {
+			ArrayCreation arrayCreation = (ArrayCreation) expression;
+			if (arrayCreation.getInitializer() == null) {
+				collector.report(SequenceErrors.SEND_EXPECTED.create(collector.getSourceInfo(), placeOfError));
+				return;
+			}
+			ArrayInitializer arrayInitializer = arrayCreation.getInitializer();
+			if (placeOfError == expression) {
+				placeOfError = arrayInitializer;
+			}
+			checkSendInExpression(arrayInitializer);
+		} else if (expression instanceof ArrayInitializer) {
+			ArrayInitializer arrayInitializer = (ArrayInitializer) expression;
+			if (arrayInitializer.expressions().size() == 0) {
+				collector.report(SequenceErrors.SEND_EXPECTED.create(collector.getSourceInfo(), placeOfError));
+				return;
+			}
+			arrayInitializer.expressions().forEach(expr -> {
+				if (placeOfError == arrayInitializer) {
+					placeOfError = (ASTNode) expr;
+				}
+				checkSendInExpression((Expression) expr);
+			});
+		} else if (expression instanceof CastExpression) {
+			CastExpression castExpression = (CastExpression) expression;
+			if (placeOfError == expression) {
+				placeOfError = castExpression.getExpression();
+			}
+			checkSendInExpression(castExpression.getExpression());
+		} else if (expression instanceof ClassInstanceCreation) {
+			ClassInstanceCreation classInstanceCreation = (ClassInstanceCreation) expression;
+			if (!Utils.implementsInteraction(classInstanceCreation.resolveTypeBinding())) {
+				collector.report(SequenceErrors.SEND_EXPECTED.create(collector.getSourceInfo(), placeOfError));
+				return;
+			}
+			AnonymousClassDeclaration anonymClass = classInstanceCreation.getAnonymousClassDeclaration();
+			if (anonymClass != null) {
+				if (placeOfError == expression) {
+					placeOfError = null;
+				}
+				if (anonymClass != null) {
+					anonymClass.accept(this);
+				}
+			} else {
+				AbstractTypeDeclaration typeDeclaration = Utils.getTypeDeclaration(classInstanceCreation.getType());
+				if (typeDeclaration != null) {
+					typeDeclaration.accept(this);
+				}
+			}
+		}
+	}
+
+	private void checkSendInMethodInvocation(MethodInvocation methodInvocation) {
+		if (Utils.isSendInvocation(methodInvocation)) {
+			return;
+		}
+		Block body = Utils.getMethodBodyFromInvocation(methodInvocation);
+		if (body == null) {
+			collector.report(SequenceErrors.SEND_EXPECTED.create(collector.getSourceInfo(), placeOfError));
+			return;
+		}
+		checkSendInBlock(body, false);
+	}
+
+	private boolean checkSendOrFragmentInMethodInvocation(MethodInvocation methodInvocation) {
+		if (Utils.isSendInvocation(methodInvocation)) {
+			return true;
+		}
+		Block body = Utils.getMethodBodyFromInvocation(methodInvocation);
+		if (body == null) {
 			return false;
 		}
+		return checkSendOrFragmentInBlock(body);
+	}
+
+	private boolean checkSendOrFragmentInBlock(Block block) {
+		List<Statement> statements = (List<Statement>) block.statements();
+		List<Statement> loops = Utils.getLoopNodes(statements);
+		loops.forEach(loop -> {
+			checkSendInLoopNode(loop);
+		});
+		List<IfStatement> ifNodes = Utils.getIfNodes(statements);
+		ifNodes.forEach(ifNode -> {
+			checkSendInIfNode(ifNode);
+		});
+		List<MethodInvocation> parFragments = Utils.getParFragments(statements);
+		parFragments.forEach(parFragment -> {
+			checkSendInPar(parFragment);
+		});
+		List<MethodInvocation> methodInvocations = Utils.getMethodInvocations(statements);
+		final List<Boolean> containsSendOrFragment = new ArrayList<>();
+		methodInvocations.forEach(methodInvocation -> {
+			containsSendOrFragment.add(checkSendOrFragmentInMethodInvocation(methodInvocation));
+		});
+		boolean isLeaf = loops.isEmpty() && ifNodes.isEmpty() && parFragments.isEmpty();
+		return !isLeaf || containsSendOrFragment.contains(true);
 	}
 
 	private void checkFieldDeclaration(FieldDeclaration elem) {
