@@ -58,12 +58,42 @@ class XtxtUMLStructureParserTest {
 	@Test
 	def parseExecution() {
 		'''
-			package test.model;
-			execution TestExecution {}
+			package test.exec;
+			class TestClass;	««« in a model
+			execution TestExecutionWithoutInit;
+			execution TestExecutionWithInit{
+				initialization{}
+			}
+			execution TestExecutionWithMembers{
+				int bTest = 5;
+				TestClass tClass;
+				configure{
+					i = 1;
+				}
+				initialization{}
+				before{}
+				during{}
+				after{}
+			}
 		'''
 		.parse.
-		file("test.model", null, #[
-			[execution("TestExecution", #[])]
+		file("test.exec", null, #[
+			[class_("TestClass", null, #[])],
+			[execution("TestExecutionWithoutInit", #[])],
+			[execution("TestExecutionWithInit", #[
+				[method("initialization",#[])]
+			])],
+			[execution("TestExecutionWithMembers", #[
+				[attribute("int","bTest",[number(5)])],
+				[attribute("TestClass","tClass",null)],
+				[method("configure",#[
+					[assignment("i",[number(1)])]
+				])],
+				[method("initialization",#[])],
+				[method("before",#[])],
+				[method("during",#[])],
+				[method("after",#[])]				
+			])]
 		])
 	}
 
