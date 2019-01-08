@@ -107,16 +107,13 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 			members += exec.toField("checkLevel", CheckLevel.typeRef)
 			members += exec.toField("logLevel", LogLevel.typeRef)
 			members += exec.toField("timeMultiplier", double.typeRef)
-			var hasInit = false
 			for (element : exec.elements) {
 				for (e : element.executionelementToJvmMember) {
 					members += e
-					if(element instanceof TUExecutionMethod && (element as TUExecutionMethod).type == TUExecutionElementType.INITIALIZATION) {
-						hasInit = true
-					}
 				}
 			}
-			if (!hasInit) {
+			if (!exec.elements.exists[it instanceof TUExecutionMethod && 
+					(it as TUExecutionMethod).type == TUExecutionElementType.INITIALIZATION]) {
 				members += exec.toMethod("initialization", Void.TYPE.typeRef) [
 					visibility = JvmVisibility.PUBLIC
 					annotations += annotationRef(Override)

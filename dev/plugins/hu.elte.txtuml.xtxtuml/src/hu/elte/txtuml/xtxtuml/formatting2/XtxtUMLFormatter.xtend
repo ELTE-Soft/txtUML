@@ -16,6 +16,8 @@ import hu.elte.txtuml.xtxtuml.xtxtUML.TUDeleteObjectExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUEntryOrExitActivity
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUEnumeration
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUExecution
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUExecutionAttribute
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUExecutionMethod
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUFile
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUInterface
 import hu.elte.txtuml.xtxtuml.xtxtUML.TULogExpression
@@ -90,6 +92,20 @@ class XtxtUMLFormatter extends XbaseFormatter {
 	
 	def dispatch void format(TUExecution it, extension IFormattableDocument document){
 		formatBlockElement(it, document, regionFor.keyword('execution'), elements, true);
+	}
+	
+	def dispatch void format(TUExecutionAttribute it, extension IFormattableDocument document){
+		regionFor.feature(TU_EXECUTION_ATTRIBUTE__NAME).prepend[oneSpace];
+		regionFor.keyword('=').surround[oneSpace];
+		regionFor.keyword(';').prepend[noSpace];
+
+		format(type, document);
+		format(initExpression, document);
+	}
+	
+	def dispatch void format(TUExecutionMethod it, extension IFormattableDocument document){
+		regionFor.feature(TU_EXECUTION_METHOD__TYPE).append[oneSpace];
+		format(body, document);
 	}
 
 	def dispatch void format(TUEnumeration it, extension IFormattableDocument document) {

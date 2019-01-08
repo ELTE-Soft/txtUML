@@ -68,9 +68,11 @@ class XtxtUMLStructureParserTest {
 				int bTest = 5;
 				TestClass tClass;
 				configure{
-					i = 1;
+					name = "ExecName";
 				}
-				initialization{}
+				initialization{
+					tClass = new TestClass();
+				}
 				before{}
 				during{}
 				after{}
@@ -87,9 +89,11 @@ class XtxtUMLStructureParserTest {
 				[attribute("int","bTest",[number(5)])],
 				[attribute("TestClass","tClass",null)],
 				[method("configure",#[
-					[assignment("i",[number(1)])]
+					[assignment("name",[string("ExecName")])]
 				])],
-				[method("initialization",#[])],
+				[method("initialization",#[
+					[assignment("tClass",[new_("TestClass", null, #[], null)])]
+				])],
 				[method("before",#[])],
 				[method("during",#[])],
 				[method("after",#[])]				
