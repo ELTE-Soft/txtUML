@@ -49,17 +49,18 @@ public class Utils {
 					if (annotationVal < 0) {
 						collector.report(SequenceErrors.INVALID_POSITION.create(collector.getSourceInfo(), position));
 					}
+
+					// type of annotated field
+					boolean isLifeline = ElementTypeTeller.hasSuperClass(elem.getType().resolveBinding(),
+							Lifeline.class.getCanonicalName())
+							|| ElementTypeTeller.hasSuperClass(elem.getType().resolveBinding(),
+									Proxy.class.getCanonicalName());
+					if (!isLifeline) {
+						collector.report(SequenceErrors.INVALID_LIFELINE_DECLARATION.create(collector.getSourceInfo(),
+								elem.getType()));
+					}
 				}
 			}
-		}
-
-		// type of field
-		boolean isLifeline = ElementTypeTeller.hasSuperClass(elem.getType().resolveBinding(),
-				Lifeline.class.getCanonicalName())
-				|| ElementTypeTeller.hasSuperClass(elem.getType().resolveBinding(), Proxy.class.getCanonicalName());
-		if (!isLifeline) {
-			collector.report(
-					SequenceErrors.INVALID_LIFELINE_DECLARATION.create(collector.getSourceInfo(), elem.getType()));
 		}
 	}
 
