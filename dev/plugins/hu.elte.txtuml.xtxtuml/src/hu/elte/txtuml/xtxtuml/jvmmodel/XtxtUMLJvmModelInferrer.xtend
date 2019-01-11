@@ -135,8 +135,12 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 		if (element instanceof TUExecutionMethod) {
 			return element.executionMethodToJvmMember
 		} else {
+			val e = element as TUExecutionAttribute;
 			return #[
-				element.toField((element as TUExecutionAttribute).name, (element as TUExecutionAttribute).type)
+				element.toField(e.name, e.type)[
+					initializer = e.initExpression
+					documentation = e.documentation
+				]
 			]
 		}
 	}

@@ -59,7 +59,7 @@ class XtxtUMLStructureParserTest {
 	def parseExecution() {
 		'''
 			package test.exec;
-			class TestClass;	««« in a model
+			class TestClass;	// in a model
 			execution TestExecutionWithoutInit;
 			execution TestExecutionWithInit{
 				initialization{}

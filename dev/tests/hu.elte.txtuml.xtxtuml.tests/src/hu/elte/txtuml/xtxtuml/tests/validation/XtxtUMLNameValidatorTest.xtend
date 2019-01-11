@@ -67,6 +67,22 @@ class XtxtUMLNameValidatorTest {
 		parsedFile.assertError(TU_MODEL_ELEMENT, RESERVED_NAME, rawFile.indexOf("implements"), 10);
 		parsedFile.assertError(TU_MODEL_ELEMENT, RESERVED_NAME, rawFile.indexOf("const"), 5);
 	}
+	
+	@Test
+	def checkExecutionAttributeNameIsNotReserved(){
+		'''
+			execution E{
+				int foo;
+			}
+		'''.parse.assertNoError(RESERVED_NAME);
+		
+		val rawFile = '''
+			execution E{
+				int goto;
+			}
+		''';
+		rawFile.parse.assertError(TU_EXECUTION_ATTRIBUTE, RESERVED_NAME, rawFile.indexOf("goto"), 4);
+	}
 
 	@Test
 	def checkSignalAttributeNameIsNotReserved() {
