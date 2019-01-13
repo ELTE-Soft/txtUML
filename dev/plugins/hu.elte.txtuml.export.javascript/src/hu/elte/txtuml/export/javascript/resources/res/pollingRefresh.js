@@ -2,7 +2,7 @@
 
 var errorLabelElement = $('#debug-port-error');
 var debugContainer = $('#debug-toggle-container');
-var stateMachineDelay = $('#animation-delay-input').val();
+var stateMachineDelay = $('#animation-delay-slider').val();
 
 //try to load from sessionStorage
 var port = sessionStorage['diagnosticsPort'];
@@ -117,8 +117,16 @@ function sendSMTime(){
 }
 
 //add event listeners to the state machine's delay range
-$('#animation-delay-input').on('change', function(){
-	stateMachineDelay = $('#animation-delay-input').val();
+$('#animation-delay-slider').on('change', function(){
+	stateMachineDelay = $('#animation-delay-slider').val();
+	$('#animation-delay-input')[0].value = this.value;
+	sendSMTime();
+});
+
+//add event listeners to the state machine's delay number input
+$('#animation-delay-input').on('input', function(){
+	stateMachineDelay = this.value;
+	$('#animation-delay-slider').val(this.value).change();
 	sendSMTime();
 });
 
@@ -129,7 +137,7 @@ function refreshDelayInput(){
 		dataType: 'json'
 	}).complete(function(response){
 		if(response.status == 200 && isPolling){
-			$('#animation-delay-input').value = data[0].delayTime;
+			$('#animation-delay-slider').val(parseInt(data[0].delayTime)).change();
 			hideError();
 		}
 		else{
