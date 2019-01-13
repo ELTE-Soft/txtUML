@@ -100,8 +100,6 @@ function sendSMTime(){
 		data: {delayTime:stateMachineDelay},
 	    success: function(response) {
         	if(response.status == 200 && isPolling){
-				setActiveElements((JSON.parse(response.responseText))
-					.map(entry => _visualizer.getShapeIdByElementName(entry.location)));
 				hideError();
 			}
 			else{
@@ -117,14 +115,14 @@ function sendSMTime(){
 }
 
 //add event listeners to the state machine's delay range
-$('#animation-delay-slider').on('change', function(){
-	stateMachineDelay = $('#animation-delay-slider').val();
+$('#animation-delay-slider').on('input change', function(){
+	stateMachineDelay = this.value;
 	$('#animation-delay-input')[0].value = this.value;
 	sendSMTime();
 });
 
 //add event listeners to the state machine's delay number input
-$('#animation-delay-input').on('input', function(){
+$('#animation-delay-input').on('input change', function(){
 	stateMachineDelay = this.value;
 	$('#animation-delay-slider').val(this.value).change();
 	sendSMTime();
@@ -137,7 +135,9 @@ function refreshDelayInput(){
 		dataType: 'json'
 	}).complete(function(response){
 		if(response.status == 200 && isPolling){
+			stateMachineDelay = this.value;
 			$('#animation-delay-slider').val(parseInt(data[0].delayTime)).change();
+			$('#animation-delay-input')[0].value = parseInt(data[0].delayTime);
 			hideError();
 		}
 		else{
