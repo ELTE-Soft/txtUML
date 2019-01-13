@@ -37,6 +37,7 @@ public class DiagnosticsServer {
 		server = HttpServer.create(new InetSocketAddress(port), 0);
 		server.createContext("/" + GlobalSettings.TXTUML_DIAGNOSTICS_HTTP_PATH, new DiagnosticsHandler());
 		server.createContext("/" + GlobalSettings.TXTUML_DIAGNOSTICS_DELAY_PATH, new DelayHandler());
+		server.createContext("/" + GlobalSettings.TXTUML_DIAGNOSTICS_DELAY_INPUT_PATH, new DelayInputHandler());
 		server.setExecutor(null); // creates a default executor
 		server.start();
 	}
@@ -64,7 +65,7 @@ public class DiagnosticsServer {
 			// Build the payload
 			String response = registry.entrySet().stream()
 					.map(DiagnosticsServer::registryEntryToJson)
-					.collect(Collectors.joining(",", "[", "]"));
+					.collect(Collectors.joining(",", "[", "]")); 
 
 			// Write response
 			exchange.sendResponseHeaders(200, response.length());
@@ -93,6 +94,27 @@ public class DiagnosticsServer {
 			// Write response
 			exchange.sendResponseHeaders(200, 0);
 			OutputStream os = exchange.getResponseBody();
+			os.close();
+		}
+
+	}
+	
+	private class DelayInputHandler implements HttpHandler {
+
+		@Override
+		public void handle(HttpExchange exchange) throws IOException {
+			// Set required headers
+			Headers headers = exchange.getResponseHeaders();
+			headers.add("Content-type", "application/json");
+			headers.add("Access-Control-Allow-Origin", "*");
+
+			// Build the payload
+			String response = "delayTime,["+ (diagnosticsPlugin.getDelay()/1000) +"]"; 
+
+			// Write response
+			exchange.sendResponseHeaders(200, response.length());
+			OutputStream os = exchange.getResponseBody();
+			os.write(response.getBytes());
 			os.close();
 		}
 

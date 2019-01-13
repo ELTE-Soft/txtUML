@@ -44,6 +44,7 @@ function refreshElements(){
 
 function pollingRefresh(){
 	refreshElements();
+	refreshDelayInput();
 	if(isPolling){
 		setTimeout(pollingRefresh, REFRESH_INTERVAL_IN_MILLISECONDS);
 	}
@@ -120,3 +121,23 @@ $('#animation-delay-input').on('change', function(){
 	stateMachineDelay = $('#animation-delay-input').val();
 	sendSMTime();
 });
+
+function refreshDelayInput(){
+	$.ajax({
+		url: 'http://localhost:' + port + '/delayInput',
+		type: 'GET',
+		dataType: 'json'
+	}).complete(function(response){
+		if(response.status == 200 && isPolling){
+			$('#animation-delay-input').value = data[0].delayTime;
+			hideError();
+		}
+		else{
+			if(isPolling){
+				showError();
+			}else{
+				hideError();
+			}
+		}
+	});
+}
