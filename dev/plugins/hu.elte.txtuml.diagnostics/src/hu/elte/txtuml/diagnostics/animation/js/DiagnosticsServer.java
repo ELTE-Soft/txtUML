@@ -1,5 +1,6 @@
 package hu.elte.txtuml.diagnostics.animation.js;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -79,17 +80,13 @@ public class DiagnosticsServer {
 		@Override
 		public void handle(HttpExchange exchange) throws IOException {
 			//Get request data
-			StringBuilder body = new StringBuilder();
+			String body = "";
 		    try (InputStreamReader reader = new InputStreamReader(exchange.getRequestBody())) {
-		        char[] buffer = new char[256];
-		        int read;
-		        while ((read = reader.read(buffer)) != -1) {
-		            body.append(buffer, 0, read);
-		        }
+				body = new BufferedReader(reader).lines().collect(Collectors.joining("\n"));
 		    }
 		    
             //Get and set animation delay
-		    String[] delayArray = body.toString().split("=");
+		    String[] delayArray = body.split("=");
 		    int delay = Integer.parseInt(delayArray[1]);
 			setAnimationDelay(delay);
 			
