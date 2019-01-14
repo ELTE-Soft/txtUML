@@ -9,12 +9,11 @@ import com.google.common.collect.Multimap;
 import hu.elte.txtuml.export.cpp.CppExporterUtils.TypeDescriptor;
 import hu.elte.txtuml.export.cpp.statemachine.TransitionConditions;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames;
-import hu.elte.txtuml.export.cpp.templates.GenerationTemplates;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.HierarchicalStateMachineNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.ModifierNames;
 import hu.elte.txtuml.export.cpp.templates.GenerationNames.PointerAndMemoryNames;
+import hu.elte.txtuml.export.cpp.templates.GenerationTemplates;
 import hu.elte.txtuml.export.cpp.templates.PrivateFunctionalTemplates;
-import hu.elte.txtuml.export.cpp.templates.RuntimeTemplates;
 import hu.elte.txtuml.export.cpp.templates.activity.ActivityTemplates;
 import hu.elte.txtuml.export.cpp.templates.statemachine.StateMachineTemplates;
 import hu.elte.txtuml.utils.Pair;
@@ -44,14 +43,8 @@ public class ConstructorTemplates {
 		return "~" + className + "();\n";
 	}
 
-	public static String destructorDef(String className, Boolean ownStates) {
-		if (!ownStates) {
-			return className + "::" + "~" + className + "(){}\n";
-		} else {
-			return className + "::" + "~" + className + "()\n{\n" + RuntimeTemplates.GetRuntimeInstance
-					+ PointerAndMemoryNames.PointerAccess + RuntimeTemplates.ObjectRemoverForRuntime + "("
-					+ PointerAndMemoryNames.Self + ");\n}\n\n";
-		}
+	public static String destructorDef(String className) {
+		return className + "::" + "~" + className + "(){}\n";
 
 	}
 

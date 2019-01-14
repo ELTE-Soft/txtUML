@@ -37,7 +37,7 @@ void SingleThreadRT::start()
 
 }
 
-void SingleThreadRT::setConfiguration(const ThreadPoolConfigurationStore& /*threadPools*/) {}
+void SingleThreadRT::setConfiguration(const std::vector<Configuration>& /*conf*/) {}
 
 void SingleThreadRT::stopUponCompletion() {}
 
@@ -53,12 +53,13 @@ void ConfiguredThreadedRT::start()
 {
 	for (unsigned i = 0; i < threadConfig.getConfigurations().size(); i++)
 	{
-		Configuration config = threadConfig.getConfigurations()[i];
-		ES::SharedPtr<StateMachineThreadPool> pool = config.getThreadPool();
+		Configuration config = configurations[i];
+		ThreadPoolPtr pool = config.getThreadPool();
 		pool->setWorkersCounter(worker);
 		pool->setMessageCounter(messages);
 		pool->setStopReqest(&stop_request_cond);
-		pool->startPool(unsigned ((double)threadConfig.getNOfThreads() / config.getRate()));
+
+		pool->startPool(config.getNumberOfExecutors ());
 	}
 }
 
@@ -66,10 +67,9 @@ void ConfiguredThreadedRT::stopUponCompletion()
 {
 	for (unsigned i = 0; i < threadConfig.getConfigurations().size(); i++)
 	{
-		Configuration config = threadConfig.getConfigurations()[i];
+		Configuration config = configurations[i];
 		ThreadPoolPtr pool = config.getThreadPool();
 		pool->stopUponCompletion();
-
 	}
 }
 
@@ -77,12 +77,16 @@ void ConfiguredThreadedRT::setupObjectSpecificRuntime(ES::StateMachineRef sm)
 {
 
 	sm->setMessageCounter(messages);
+	unsigned objectId = sm->getPoolId ();
+	Configuration config = configurations[objectId];
+	ThreadPoolPtr matchedPool = config.getThreadPool ();
+	sm->setPool (matchedPool);
 }
 
 
-void ConfiguredThreadedRT::setConfiguration(const ThreadPoolConfigurationStore& conf)
+void ConfiguredThreadedRT::setConfiguration(const std::vector<Configuration>& conf)
 {
-	threadConfig = conf;
+	configurations = conf;
 }
 
 }

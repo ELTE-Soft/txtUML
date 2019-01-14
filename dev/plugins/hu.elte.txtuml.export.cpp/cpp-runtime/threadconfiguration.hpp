@@ -15,34 +15,17 @@ class Configuration
 {
 public:
 
-	Configuration(ThreadPoolPtr threadPool, double rate) :
-		_threadPool(threadPool), _rate(rate) {}
+	Configuration(ThreadPoolPtr threadPool, unsigned numberOfExecutors) :
+		_threadPool(threadPool), _numberOfExecutors(numberOfExecutors) {}
 	virtual ~Configuration() {}
 
 	ThreadPoolPtr getThreadPool() const { return _threadPool; }
-	double getRate() const { return _rate; }
+	int getNumberOfExecutors() const { return _numberOfExecutors; }
 
 private:
 
 	ThreadPoolPtr _threadPool;
-	double _rate;
-	unsigned _max;
-};
-
-class ThreadPoolConfigurationStore {
-public:
-	ThreadPoolConfigurationStore() {}
-	ThreadPoolConfigurationStore(unsigned nOfAllThread_, std::vector<Configuration> configurations_) :
-		nOfAllThreads(nOfAllThread_),
-		configurations(configurations_) {}
-
-	const std::vector<Configuration>& getConfigurations() const { return configurations; };
-	unsigned getNOfThreads() const { return nOfAllThreads; }
-
-private:
-	unsigned nOfAllThreads;
-	std::vector<Configuration> configurations;
-
+	unsigned _numberOfExecutors;
 };
 
 }

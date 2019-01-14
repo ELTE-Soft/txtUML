@@ -3,24 +3,20 @@ package hu.elte.txtuml.export.cpp.thread;
 public class ThreadPoolConfiguration {
 
 	private int id;
-	private double rate;
+	private int numberOfExecutors;
 
-	public ThreadPoolConfiguration(int id, double rate) {
+	public ThreadPoolConfiguration(int id, int numberOfExecutors) {
 		this.id = id;
-		this.rate = rate;
+		this.numberOfExecutors = numberOfExecutors;
 
-	}
-
-	public void decraseId() {
-		id = id - 1;
 	}
 
 	public int getId() {
 		return id;
 	}
 	
-	public double getRate() {
-		return rate;
+	public int getNumberOfExecutors () {
+		return numberOfExecutors;
 	}
 }
 

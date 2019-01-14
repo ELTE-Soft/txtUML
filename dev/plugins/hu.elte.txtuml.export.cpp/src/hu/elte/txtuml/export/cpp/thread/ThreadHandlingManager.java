@@ -24,7 +24,6 @@ import hu.elte.txtuml.export.cpp.templates.structual.FunctionTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.HeaderTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.ObjectDeclDefTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.ObjectDeclDefTemplates.AllocateType;
-import hu.elte.txtuml.utils.Pair;
 
 public class ThreadHandlingManager {
 
@@ -33,7 +32,6 @@ public class ThreadHandlingManager {
 	private Set<ThreadPoolConfiguration> pools;
 	
 	private static final String ConfigurationStructName = GenerationNames.Namespaces.ExecutionNamesapce + "::" + "Configuration";
-	private static final String ConfigurationStoreName = GenerationNames.Namespaces.ExecutionNamesapce + "::" + "ThreadPoolConfigurationStore";
 	private static final String ConfigurationFile = "deployment";
 	private static final String ThreadPoolClassName = GenerationNames.Namespaces.ExecutionNamesapce + "::" + "StateMachineThreadPool";
 	private static final String NamespaceName = "deployment";
@@ -43,17 +41,18 @@ public class ThreadHandlingManager {
 	private static final String CreatorFunction = "initRuntime";
 
 
-	public ThreadHandlingManager(Pair<RuntimeType, Map<String, ThreadPoolConfiguration>> config) {
+	public ThreadHandlingManager(ThreadDescription config) {
 		threadDescription = new HashMap<>();
-		for (Entry<String, ThreadPoolConfiguration> conf : config.getSecond().entrySet()) {
+		for (Entry<String, ThreadPoolConfiguration> conf : config.groups.entrySet()) {
 			threadDescription.put(conf.getKey(), conf.getValue().getId());
 		}
 		
 
-		Collection<ThreadPoolConfiguration> poolsCollection = config.getSecond().values();
+		Collection<ThreadPoolConfiguration> poolsCollection = config.groups.values();
 		pools = new LinkedHashSet<ThreadPoolConfiguration>();
 		pools.addAll(poolsCollection);
-		runtimeTypeName = getRuntimeTypeName(config.getFirst(), pools.size());
+		runtimeTypeName = getRuntimeTypeName(config.type, pools.size());
+		
 	}
 
 	public Integer getConfiguratedPoolId(String className) {
@@ -112,23 +111,17 @@ public class ThreadHandlingManager {
 		StringBuilder confgis = new StringBuilder("");
 		for (ThreadPoolConfiguration pool : pools) {
 			confgis.append(ObjectDeclDefTemplates.allocateObject(ConfigurationStructName, 
-					Optional.of(Arrays.asList(allocatePoolObject(pool), new Double(pool.getRate()).toString())),
+					Optional.of(Arrays.asList(allocatePoolObject(pool), new Double(pool.getNumberOfExecutors()).toString())),
 					AllocateType.Temporary));
 			confgis.append(",");
 			
 		}
 		
-		Integer numberOfAllThreadParam = 0;
-		String configsArrayParam = "{" + CppExporterUtils.cutOffTheLastCharacter(confgis.toString()) + "}";
-
-		return ObjectDeclDefTemplates.allocateObject(ConfigurationStoreName, 
-				Optional.of(Arrays.asList(numberOfAllThreadParam.toString(), configsArrayParam)), 
-				AllocateType.Temporary);
+		return "{" + CppExporterUtils.cutOffTheLastCharacter(confgis.toString()) + "}";
 	}
 
 	private String allocatePoolObject(ThreadPoolConfiguration pool) {
-		List<String> params = new ArrayList<String>();
-		return ObjectDeclDefTemplates.allocateObject(ThreadPoolClassName, Optional.of(params), AllocateType.SharedPtr);
+		return ObjectDeclDefTemplates.allocateObject(ThreadPoolClassName, Optional.empty(), AllocateType.SharedPtr);
 	}
 	
 	private String getRuntimeTypeName(RuntimeType runtimeType, Integer numberOgConfigs) {

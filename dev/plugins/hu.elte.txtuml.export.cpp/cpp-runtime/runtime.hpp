@@ -50,7 +50,7 @@ public:
 	/*!
 	Sets the deployment configuration for the threaded runtime instance.
 	*/
-	void configure(const ThreadPoolConfigurationStore& conf)
+	void configure(const std::vector<Configuration>& conf)
 	{
 		if (!(static_cast<RuntimeType*>(this)->isConfigurated()))
 		{
@@ -101,7 +101,7 @@ public:
 	void start();
 
 	void setupObjectSpecificRuntime(ES::StateMachineRef);
-	void setConfiguration(const ThreadPoolConfigurationStore& conf);
+	void setConfiguration(const std::vector<Configuration>& conf);
 	void stopUponCompletion();
 	static ES::RuntimePtr<SingleThreadRT> createRuntime () { return ES::RuntimePtr<SingleThreadRT> (new SingleThreadRT ()); }
 private:
@@ -121,12 +121,12 @@ public:
 	void start();
 
 	void setupObjectSpecificRuntime(ES::StateMachineRef);
-	void setConfiguration(const ThreadPoolConfigurationStore& conf);
+	void setConfiguration(const std::vector<Configuration>& conf);
 	void stopUponCompletion();
 	static ES::RuntimePtr<ConfiguredThreadedRT> createRuntime () { return ES::RuntimePtr<ConfiguredThreadedRT> (new ConfiguredThreadedRT ()); }
 private:
 	ConfiguredThreadedRT ();
-	ThreadPoolConfigurationStore threadConfig;
+	std::vector<Configuration> configurations;
 
 	ES::SharedPtr<ES::AtomicCounter> worker;
 	ES::SharedPtr<ES::AtomicCounter> messages;

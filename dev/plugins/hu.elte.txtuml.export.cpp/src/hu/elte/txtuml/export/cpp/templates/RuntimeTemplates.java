@@ -31,7 +31,6 @@ public class RuntimeTemplates {
 	public static final String RuntimeInsanceGetter = "getRuntimeInstance";
 	public static final String GetRuntimeInstance = UsingRuntimeType + "::" + RuntimeInsanceGetter + "()";
 	public static final String ObjectSetterForRuntime = "setupObject";
-	public static final String ObjectRemoverForRuntime = "removeObject";
 
 
 

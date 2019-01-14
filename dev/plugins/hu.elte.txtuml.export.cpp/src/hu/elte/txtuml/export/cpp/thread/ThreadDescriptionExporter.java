@@ -1,13 +1,5 @@
 package hu.elte.txtuml.export.cpp.thread;
 
-import hu.elte.txtuml.api.model.ModelClass;
-import hu.elte.txtuml.utils.Pair;
-import hu.elte.txtuml.api.deployment.Configuration;
-import hu.elte.txtuml.api.deployment.Group;
-import hu.elte.txtuml.api.deployment.GroupContainer;
-import hu.elte.txtuml.api.deployment.Runtime;
-import hu.elte.txtuml.api.deployment.RuntimeType;
-
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,11 +8,22 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import hu.elte.txtuml.api.deployment.Configuration;
+import hu.elte.txtuml.api.deployment.Group;
+import hu.elte.txtuml.api.deployment.GroupContainer;
+import hu.elte.txtuml.api.deployment.Runtime;
+import hu.elte.txtuml.api.deployment.RuntimeType;
+import hu.elte.txtuml.api.model.ModelClass;
+
+
 public class ThreadDescriptionExporter {
 
 	private Map<String, ThreadPoolConfiguration> configMap;
 	private RuntimeType runtime;
+	private int allThread;
+	
 	private boolean descriptionExported = false;
+	private double sumRate;
 	private boolean runtimeTypeIsPresent = false;
 
 	private List<String> warningList;
@@ -42,8 +45,8 @@ public class ThreadDescriptionExporter {
 		errorList = new ArrayList<String>();
 	}
 
-	public Pair<RuntimeType, Map<String, ThreadPoolConfiguration>> getExportedConfiguration() {
-		return new Pair<>(runtime,configMap);
+	public ThreadDescription getExportedConfiguration() {
+		return new ThreadDescription(runtime,configMap);
 	}
 
 	public void exportDescription(Class<? extends Configuration> description) {
@@ -51,7 +54,8 @@ public class ThreadDescriptionExporter {
 		if (descriptionExported)
 			return;
 		
-		
+		sumRate = 0;
+		allThread = java.lang.Runtime.getRuntime().availableProcessors() + 1;
 		for (Annotation annotaion : description.getAnnotations()) {
 			if (annotaion instanceof GroupContainer) {
 
@@ -77,6 +81,12 @@ public class ThreadDescriptionExporter {
 			runtime = RuntimeType.THREADED;
 		}
 		exportDefaultConfiguration();
+		
+		if(sumRate > 1) {
+			warningList.add("The sum of all groups rate is greater than zero.\n "
+					+ "More thread will be created then number of cores.");
+		}
+		
 
 		descriptionExported = true;
 
@@ -114,8 +124,9 @@ public class ThreadDescriptionExporter {
 	private void exportGroup(Group group) {
 
 		checkConfigurationOptions(group);
-
-		ThreadPoolConfiguration config = createNewPoolConfiguration(group.rate());
+		double rate = group.rate();
+		sumRate += rate;
+		ThreadPoolConfiguration config = createNewPoolConfiguration((int) Math.max(1, allThread  / rate));
 
 		checkEmptyGroup(group.contains());
 
@@ -130,8 +141,8 @@ public class ThreadDescriptionExporter {
 		}
 	}
 
-	private ThreadPoolConfiguration createNewPoolConfiguration(double rate) {
-		ThreadPoolConfiguration config = new ThreadPoolConfiguration(numberOfConfigurations, rate);
+	private ThreadPoolConfiguration createNewPoolConfiguration(int numberOfExecutors) {
+		ThreadPoolConfiguration config = new ThreadPoolConfiguration(numberOfConfigurations, numberOfExecutors);
 		numberOfConfigurations++;
 
 		return config;
