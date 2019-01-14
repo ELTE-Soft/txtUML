@@ -51,25 +51,23 @@ ConfiguredThreadedRT::~ConfiguredThreadedRT() {}
 
 void ConfiguredThreadedRT::start()
 {
-	for (unsigned i = 0; i < threadConfig.getConfigurations().size(); i++)
-	{
-		Configuration config = configurations[i];
-		ThreadPoolPtr pool = config.getThreadPool();
-		pool->setWorkersCounter(worker);
-		pool->setMessageCounter(messages);
-		pool->setStopReqest(&stop_request_cond);
 
-		pool->startPool(config.getNumberOfExecutors ());
+	for (Configuration config : configurations) {
+		ThreadPoolPtr pool = config.getThreadPool ();
+		pool->setWorkersCounter (worker);
+		pool->setMessageCounter (messages);
+		pool->setStopReqest (&stop_request_cond);
+
+		pool->startPool (config.getNumberOfExecutors ());
 	}
 }
 
 void ConfiguredThreadedRT::stopUponCompletion()
 {
-	for (unsigned i = 0; i < threadConfig.getConfigurations().size(); i++)
-	{
-		Configuration config = configurations[i];
-		ThreadPoolPtr pool = config.getThreadPool();
-		pool->stopUponCompletion();
+
+	for (Configuration config : configurations) {
+		ThreadPoolPtr pool = config.getThreadPool ();
+		pool->stopUponCompletion ();
 	}
 }
 

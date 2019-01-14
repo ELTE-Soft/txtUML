@@ -52,11 +52,7 @@ public:
 	*/
 	void configure(const std::vector<Configuration>& conf)
 	{
-		if (!(static_cast<RuntimeType*>(this)->isConfigurated()))
-		{
-			static_cast<RuntimeType*>(this)->setConfiguration(conf);
-		}
-
+		static_cast<RuntimeType*>(this)->setConfiguration(conf);
 	}
 
 	/*!

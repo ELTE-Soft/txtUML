@@ -2,7 +2,6 @@ package hu.elte.txtuml.export.cpp.thread;
 
 import java.io.FileNotFoundException;
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -51,7 +50,7 @@ public class ThreadHandlingManager {
 		Collection<ThreadPoolConfiguration> poolsCollection = config.groups.values();
 		pools = new LinkedHashSet<ThreadPoolConfiguration>();
 		pools.addAll(poolsCollection);
-		runtimeTypeName = getRuntimeTypeName(config.type, pools.size());
+		runtimeTypeName = getRuntimeTypeName(config.type);
 		
 	}
 
@@ -66,7 +65,7 @@ public class ThreadHandlingManager {
 		source.append(PrivateFunctionalTemplates.include(GenerationNames.FileNames.TypesFilePath));
 		source.append("\n\n");
 
-		List<String> templateParams = Arrays.asList(runtimeTypeName, new Integer(pools.size()).toString());
+		List<String> templateParams = Arrays.asList(runtimeTypeName);
 		source.append(GenerationTemplates.usingTemplateType(RuntimeTemplates.UsingRuntimePtr,
 				RuntimeTemplates.RuntimePtrType, templateParams));
 		source.append(GenerationTemplates.usingTemplateType(RuntimeTemplates.UsingRuntimeType,
@@ -111,7 +110,7 @@ public class ThreadHandlingManager {
 		StringBuilder confgis = new StringBuilder("");
 		for (ThreadPoolConfiguration pool : pools) {
 			confgis.append(ObjectDeclDefTemplates.allocateObject(ConfigurationStructName, 
-					Optional.of(Arrays.asList(allocatePoolObject(pool), new Double(pool.getNumberOfExecutors()).toString())),
+					Optional.of(Arrays.asList(allocatePoolObject(pool), new Integer(pool.getNumberOfExecutors()).toString())),
 					AllocateType.Temporary));
 			confgis.append(",");
 			
@@ -124,15 +123,14 @@ public class ThreadHandlingManager {
 		return ObjectDeclDefTemplates.allocateObject(ThreadPoolClassName, Optional.empty(), AllocateType.SharedPtr);
 	}
 	
-	private String getRuntimeTypeName(RuntimeType runtimeType, Integer numberOgConfigs) {
+	private String getRuntimeTypeName(RuntimeType runtimeType) {
 		String runtimeTypeName = "MISSING RUNTIME TYPE";
-		String numberOgConfigTemplateParam = "<" + numberOgConfigs + ">";
 		switch (runtimeType) {
 		case SINGLE:
-			runtimeTypeName = SingleRuntimeName + numberOgConfigTemplateParam;
+			runtimeTypeName = SingleRuntimeName;
 			break;
 		case THREADED:
-			runtimeTypeName = ConfiguratedThreadedRuntimeName + numberOgConfigTemplateParam;
+			runtimeTypeName = ConfiguratedThreadedRuntimeName;
 			break;
 		default:
 			assert(false);
