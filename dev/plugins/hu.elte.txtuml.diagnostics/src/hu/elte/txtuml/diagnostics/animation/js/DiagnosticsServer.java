@@ -107,9 +107,9 @@ public class DiagnosticsServer {
 			Headers headers = exchange.getResponseHeaders();
 			headers.add("Content-type", "application/json");
 			headers.add("Access-Control-Allow-Origin", "*");
-
+			
 			// Build the payload
-			String response = "delayTime,["+ (diagnosticsPlugin.getDelay()/1000) +"]"; 
+			String response = "["+ "{\"delayTime\":\"" + (diagnosticsPlugin.getDelay()/1000) + "\"}" + "]";
 
 			// Write response
 			exchange.sendResponseHeaders(200, response.length());
