@@ -206,7 +206,21 @@ class XtxtUMLExpressionValidatorTest {
 
 		val trivialInvalidRaw = '''
 			execution Ex {
-				trigger;
+				initialization {
+					trigger;
+				}
+				during {
+					trigger;
+				}
+				after {
+					trigger;
+				}
+				before {
+					trigger;
+				}
+				configure {
+					trigger;
+				}
 			}
 			class Foo {
 				void op() {
@@ -220,6 +234,14 @@ class XtxtUMLExpressionValidatorTest {
 			trivialInvalidRaw.indexOfNth("trigger", 0), 7);
 		trivialInvalidParsed.assertError(TU_SIGNAL_ACCESS_EXPRESSION, INVALID_SIGNAL_ACCESS,
 			trivialInvalidRaw.indexOfNth("trigger", 1), 7);
+		trivialInvalidParsed.assertError(TU_SIGNAL_ACCESS_EXPRESSION, INVALID_SIGNAL_ACCESS,
+			trivialInvalidRaw.indexOfNth("trigger", 2), 7);
+		trivialInvalidParsed.assertError(TU_SIGNAL_ACCESS_EXPRESSION, INVALID_SIGNAL_ACCESS,
+			trivialInvalidRaw.indexOfNth("trigger", 3), 7);
+		trivialInvalidParsed.assertError(TU_SIGNAL_ACCESS_EXPRESSION, INVALID_SIGNAL_ACCESS,
+			trivialInvalidRaw.indexOfNth("trigger", 4), 7);
+		trivialInvalidParsed.assertError(TU_SIGNAL_ACCESS_EXPRESSION, INVALID_SIGNAL_ACCESS,
+			trivialInvalidRaw.indexOfNth("trigger", 5), 7);
 
 		val nonTrivialInvalidRaw = '''
 			class Foo {
