@@ -5,7 +5,9 @@ import static hu.elte.txtuml.api.model.seqdiag.Sequence.fromActor;
 import static hu.elte.txtuml.api.model.seqdiag.Sequence.send;
 
 import hu.elte.txtuml.api.model.Action;
+import hu.elte.txtuml.api.model.seqdiag.Lifeline;
 import hu.elte.txtuml.api.model.seqdiag.Position;
+import hu.elte.txtuml.api.model.seqdiag.Sequence;
 import hu.elte.txtuml.api.model.seqdiag.SequenceDiagram;
 import monitoring.x.model.Aggregator;
 import monitoring.x.model.Alert;
@@ -23,26 +25,30 @@ import monitoring.x.model.WriteError;
 public class XMonitoringSequenceDiagram extends SequenceDiagram {
 
 	@Position(1)
-	Alert alert;
+	Lifeline<Alert> alert;
 
 	@Position(2)
-	ResourceMonitor monitor;
+	Lifeline<ResourceMonitor> monitor;
 
 	@Position(3)
-	Aggregator aggregator;
+	Lifeline<Aggregator> aggregator;
 
 	@Override
 	public void initialize() {
-		monitor = Action.create(ResourceMonitor.class);
-		aggregator = Action.create(Aggregator.class);
-		alert = Action.create(Alert.class, 3);
-		
-		Action.link(ToAggregator.rmonitor.class, monitor, ToAggregator.aggregator.class, aggregator);
-		Action.link(ToAlert.rmonitor.class, monitor, ToAlert.alert.class, alert);
-		
-		Action.start(monitor);
-		Action.start(aggregator);
-		Action.start(alert);
+		ResourceMonitor m = Action.create(ResourceMonitor.class);
+		Aggregator aggr = Action.create(Aggregator.class);
+		Alert a = Action.create(Alert.class, 3);
+
+		Action.link(ToAggregator.rmonitor.class, m, ToAggregator.aggregator.class, aggr);
+		Action.link(ToAlert.rmonitor.class, m, ToAlert.alert.class, a);
+
+		monitor = Sequence.createLifeline(m);
+		aggregator = Sequence.createLifeline(aggr);
+		alert = Sequence.createLifeline(a);
+
+		Action.start(m);
+		Action.start(aggr);
+		Action.start(a);
 	}
 
 	@Override
