@@ -8,12 +8,15 @@ import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.AbstractTypeDeclaration;
 import org.eclipse.jdt.core.dom.Annotation;
 import org.eclipse.jdt.core.dom.AnonymousClassDeclaration;
+import org.eclipse.jdt.core.dom.ArrayAccess;
 import org.eclipse.jdt.core.dom.ArrayCreation;
 import org.eclipse.jdt.core.dom.ArrayInitializer;
+import org.eclipse.jdt.core.dom.Assignment;
 import org.eclipse.jdt.core.dom.Block;
 import org.eclipse.jdt.core.dom.CastExpression;
 import org.eclipse.jdt.core.dom.ClassInstanceCreation;
 import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.ConditionalExpression;
 import org.eclipse.jdt.core.dom.DoStatement;
 import org.eclipse.jdt.core.dom.Expression;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
@@ -22,8 +25,13 @@ import org.eclipse.jdt.core.dom.IfStatement;
 import org.eclipse.jdt.core.dom.LambdaExpression;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.MethodInvocation;
+import org.eclipse.jdt.core.dom.Name;
+import org.eclipse.jdt.core.dom.ParenthesizedExpression;
 import org.eclipse.jdt.core.dom.SingleMemberAnnotation;
 import org.eclipse.jdt.core.dom.Statement;
+import org.eclipse.jdt.core.dom.SuperMethodInvocation;
+import org.eclipse.jdt.core.dom.ThisExpression;
+import org.eclipse.jdt.core.dom.Type;
 import org.eclipse.jdt.core.dom.WhileStatement;
 
 import hu.elte.txtuml.api.model.ModelClass;
@@ -195,29 +203,19 @@ public class SequenceDiagramVisitor extends ASTVisitor {
 	}
 
 	private void checkSendInParArgument(Expression argument) {
-		if (argument instanceof LambdaExpression) {
-			LambdaExpression lambdaExpression = (LambdaExpression) argument;
-			ASTNode body = lambdaExpression.getBody();
-			boolean showErrorHere = placeOfError == argument;
-			if (showErrorHere) {
-				placeOfError = body;
-			}
-			if (body instanceof Block) {
-				Block block = (Block) body;
-				checkSendInBlock(block, showErrorHere);
-			} else if (body instanceof MethodInvocation) {
-				MethodInvocation methodInvocation = (MethodInvocation) body;
-				checkSendInMethodInvocation(methodInvocation);
-			} else {
-				collector.report(SequenceErrors.SEND_EXPECTED.create(collector.getSourceInfo(), placeOfError));
-			}
-		} else {
-			checkSendInExpression(argument);
-		}
+		checkSendInExpression(argument);
 	}
 
 	private void checkSendInExpression(Expression expression) {
-		if (expression instanceof ArrayCreation) {
+		if (expression instanceof ArrayAccess) {
+			ArrayAccess arrayAccess = (ArrayAccess) expression;
+			AbstractTypeDeclaration declaration = Utils.getTypeDeclaration(arrayAccess.resolveTypeBinding());
+			if (declaration != null) {
+				declaration.accept(this);
+			} else {
+				collector.report(SequenceErrors.SEND_EXPECTED.create(collector.getSourceInfo(), placeOfError));
+			}
+		} else if (expression instanceof ArrayCreation) {
 			ArrayCreation arrayCreation = (ArrayCreation) expression;
 			if (arrayCreation.getInitializer() == null) {
 				collector.report(SequenceErrors.SEND_EXPECTED.create(collector.getSourceInfo(), placeOfError));
@@ -240,6 +238,12 @@ public class SequenceDiagramVisitor extends ASTVisitor {
 				}
 				checkSendInExpression((Expression) expr);
 			});
+		} else if (expression instanceof Assignment) {
+			Assignment assignment = (Assignment) expression;
+			if (placeOfError == expression) {
+				placeOfError = assignment.getRightHandSide();
+			}
+			checkSendInExpression(assignment.getRightHandSide());
 		} else if (expression instanceof CastExpression) {
 			CastExpression castExpression = (CastExpression) expression;
 			if (placeOfError == expression) {
@@ -261,11 +265,77 @@ public class SequenceDiagramVisitor extends ASTVisitor {
 					anonymClass.accept(this);
 				}
 			} else {
-				AbstractTypeDeclaration typeDeclaration = Utils.getTypeDeclaration(classInstanceCreation.getType());
+				AbstractTypeDeclaration typeDeclaration = Utils
+						.getTypeDeclaration(classInstanceCreation.getType().resolveBinding());
 				if (typeDeclaration != null) {
 					typeDeclaration.accept(this);
+				} else {
+					collector.report(SequenceErrors.SEND_EXPECTED.create(collector.getSourceInfo(), placeOfError));
 				}
 			}
+		} else if (expression instanceof ConditionalExpression) {
+			ConditionalExpression conditionalExpr = (ConditionalExpression) expression;
+			boolean showErrorHere = false;
+			if (placeOfError == expression) {
+				showErrorHere = true;
+				placeOfError = conditionalExpr.getThenExpression();
+			}
+			checkSendInExpression(conditionalExpr.getThenExpression());
+			if (showErrorHere) {
+				placeOfError = conditionalExpr.getElseExpression();
+			}
+			checkSendInExpression(conditionalExpr.getThenExpression());
+		} else if (expression instanceof LambdaExpression) {
+			LambdaExpression lambdaExpression = (LambdaExpression) expression;
+			ASTNode body = lambdaExpression.getBody();
+			boolean showErrorHere = placeOfError == expression;
+			if (showErrorHere) {
+				placeOfError = body;
+			}
+			if (body instanceof Block) {
+				Block block = (Block) body;
+				checkSendInBlock(block, showErrorHere);
+			} else if (body instanceof MethodInvocation) {
+				MethodInvocation methodInvocation = (MethodInvocation) body;
+				checkSendInMethodInvocation(methodInvocation);
+			} else {
+				collector.report(SequenceErrors.SEND_EXPECTED.create(collector.getSourceInfo(), placeOfError));
+			}
+		} else if (expression instanceof MethodInvocation) {
+			MethodInvocation invocation = (MethodInvocation) expression;
+			Type returnType = Utils.getReturnTypeFromInvocation(invocation);
+			AbstractTypeDeclaration declaration = Utils.getTypeDeclaration(returnType.resolveBinding());
+			if (declaration != null) {
+				declaration.accept(this);
+			} else {
+				collector.report(SequenceErrors.SEND_EXPECTED.create(collector.getSourceInfo(), placeOfError));
+			}
+		} else if (expression instanceof Name) {
+			Name name = (Name) expression;
+			AbstractTypeDeclaration declaration = Utils.getTypeDeclaration(name.resolveTypeBinding());
+			if (declaration != null) {
+				declaration.accept(this);
+			} else {
+				collector.report(SequenceErrors.SEND_EXPECTED.create(collector.getSourceInfo(), placeOfError));
+			}
+		} else if (expression instanceof ParenthesizedExpression) {
+			ParenthesizedExpression parenThesizedExpr = (ParenthesizedExpression) expression;
+			if (placeOfError == expression) {
+				placeOfError = parenThesizedExpr.getExpression();
+			}
+			checkSendInExpression(parenThesizedExpr.getExpression());
+		} else if (expression instanceof SuperMethodInvocation) {
+			SuperMethodInvocation superMethodInv = (SuperMethodInvocation) expression;
+			AbstractTypeDeclaration declaration = Utils.getTypeDeclaration(superMethodInv.resolveTypeBinding());
+			if (declaration != null) {
+				declaration.accept(this);
+			} else {
+				collector.report(SequenceErrors.SEND_EXPECTED.create(collector.getSourceInfo(), placeOfError));
+			}
+		} else if (expression instanceof ThisExpression) {
+			collector.report(SequenceErrors.CYCLE_DETECTED.create(collector.getSourceInfo(), placeOfError));
+		} else {
+			collector.report(SequenceErrors.SEND_EXPECTED.create(collector.getSourceInfo(), placeOfError));
 		}
 	}
 
