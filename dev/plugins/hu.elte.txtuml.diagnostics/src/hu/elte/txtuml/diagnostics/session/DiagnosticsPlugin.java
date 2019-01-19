@@ -59,8 +59,8 @@ public class DiagnosticsPlugin implements IDisposable, Runnable {
 		//Logger.logInfo("txtUML DiagnosticsPlugin started"));
 	}
 	
-	public void setDelay(int speed){
-		this.delay = new AtomicInteger(speed);
+	public void setDelay(int delay){
+		this.delay.set(delay);
 	}
 	
 	public int getDelay(){
