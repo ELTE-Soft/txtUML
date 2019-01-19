@@ -15,6 +15,7 @@ import org.eclipse.jdt.core.dom.DoStatement;
 import org.eclipse.jdt.core.dom.Expression;
 import org.eclipse.jdt.core.dom.ExpressionStatement;
 import org.eclipse.jdt.core.dom.ForStatement;
+import org.eclipse.jdt.core.dom.IBinding;
 import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.IfStatement;
@@ -25,8 +26,6 @@ import org.eclipse.jdt.core.dom.Type;
 import org.eclipse.jdt.core.dom.WhileStatement;
 
 import hu.elte.txtuml.api.model.seqdiag.Sequence;
-import hu.elte.txtuml.api.model.seqdiag.SequenceDiagram;
-import hu.elte.txtuml.utils.jdt.ElementTypeTeller;
 
 /**
  * Utils for sequence diagram validation.
@@ -36,10 +35,8 @@ public class Utils {
 	@SuppressWarnings("unchecked")
 	public static List<AbstractTypeDeclaration> getSequenceDiagrams(CompilationUnit node) {
 		List<AbstractTypeDeclaration> types = node.types();
-		List<AbstractTypeDeclaration> sequenceDiagrams = types.stream()
-				.map(td -> ((AbstractTypeDeclaration) td)).filter(td -> ElementTypeTeller
-						.hasSuperClass(td.resolveBinding(), SequenceDiagram.class.getCanonicalName()))
-				.collect(toList());
+		List<AbstractTypeDeclaration> sequenceDiagrams = types.stream().map(td -> ((AbstractTypeDeclaration) td))
+				.filter(td -> implementsInteraction(td.resolveBinding())).collect(toList());
 		return sequenceDiagrams;
 	}
 
@@ -144,19 +141,21 @@ public class Utils {
 	}
 
 	public static Block getMethodBodyFromInvocation(MethodInvocation methodInvocation) {
+		IMethodBinding binding = methodInvocation.resolveMethodBinding();
+		CompilationUnit cu = getCompilationUnit(binding);
+		MethodDeclaration decl = (MethodDeclaration) cu.findDeclaringNode(binding.getKey());
+		Block body = decl.getBody();
+		return body;
+	}
+
+	public static Type getReturnTypeFromInvocation(MethodInvocation methodInvocation) {
+		IMethodBinding binding = methodInvocation.resolveMethodBinding();
 		try {
-			IMethodBinding binding = methodInvocation.resolveMethodBinding();
-			ICompilationUnit unit = (ICompilationUnit) binding.getJavaElement()
-					.getAncestor(IJavaElement.COMPILATION_UNIT);
-			ASTParser parser = ASTParser.newParser(AST.JLS8);
-			parser.setKind(ASTParser.K_COMPILATION_UNIT);
-			parser.setSource(unit);
-			parser.setResolveBindings(true);
-			CompilationUnit cu = (CompilationUnit) parser.createAST(null);
+			CompilationUnit cu = getCompilationUnit(binding);
 			MethodDeclaration decl = (MethodDeclaration) cu.findDeclaringNode(binding.getKey());
-			Block body = decl.getBody();
-			return body;
-		} catch (Exception ex) {
+			Type returnType = decl.getReturnType2();
+			return returnType;
+		} catch (NullPointerException ex) {
 			return null;
 		}
 	}
@@ -177,8 +176,17 @@ public class Utils {
 		return implementsInteraction(typeBinding.getSuperclass());
 	}
 
-	public static AbstractTypeDeclaration getTypeDeclaration(Type type) {
-		ITypeBinding binding = type.resolveBinding();
+	public static AbstractTypeDeclaration getTypeDeclaration(ITypeBinding binding) {
+		try {
+			CompilationUnit cu = getCompilationUnit(binding);
+			AbstractTypeDeclaration declaration = (AbstractTypeDeclaration) cu.findDeclaringNode(binding.getKey());
+			return declaration;
+		} catch (NullPointerException ex) {
+			return null;
+		}
+	}
+
+	private static CompilationUnit getCompilationUnit(IBinding binding) {
 		try {
 			ICompilationUnit unit = (ICompilationUnit) binding.getJavaElement()
 					.getAncestor(IJavaElement.COMPILATION_UNIT);
@@ -187,9 +195,8 @@ public class Utils {
 			parser.setSource(unit);
 			parser.setResolveBindings(true);
 			CompilationUnit cu = (CompilationUnit) parser.createAST(null);
-			AbstractTypeDeclaration declaration = (AbstractTypeDeclaration) cu.findDeclaringNode(binding.getKey());
-			return declaration;
-		} catch (NullPointerException ex) {
+			return cu;
+		} catch (Exception ex) {
 			return null;
 		}
 	}
