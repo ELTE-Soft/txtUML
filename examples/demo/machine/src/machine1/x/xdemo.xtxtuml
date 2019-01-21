@@ -1,0 +1,37 @@
+package machine1.x;
+
+import machine1.x.model.DoYourWork;
+import machine1.x.model.Machine;
+import machine1.x.model.Usage;
+import machine1.x.model.User;
+
+execution XDemo {
+
+	Machine m;
+
+	configure {
+		logLevel = LogLevel.TRACE;
+	}
+
+	initialization {
+		m = create Machine();
+		User u1 = create User();
+		User u2 = create User();
+
+		link m, u1 via Usage;
+		link m, u2 via Usage;
+
+		log "Machine and users are starting.";
+		start m;
+		start u1;
+		start u2;
+
+		send new DoYourWork() to u1;
+	}
+
+	after {
+		m.printSwitchOnLog();
+	}
+
+}
+

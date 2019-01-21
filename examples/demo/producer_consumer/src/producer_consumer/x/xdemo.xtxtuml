@@ -1,0 +1,36 @@
+package producer_consumer.x;
+
+import producer_consumer.x.model.Consumer;
+import producer_consumer.x.model.Consumption;
+import producer_consumer.x.model.Producer;
+import producer_consumer.x.model.Production;
+import producer_consumer.x.model.Storage;
+
+execution XDemo {
+
+	configure {
+		logLevel = LogLevel.TRACE;
+	}
+
+	initialization {
+		Storage storage = create Storage(2);
+		Producer p1 = create Producer(3);
+		Producer p2 = create Producer(3);
+		Consumer c1 = create Consumer(2);
+		Consumer c2 = create Consumer(2);
+		Consumer c3 = create Consumer(2);
+		link p1, storage via Production;
+		link p2, storage via Production;
+		link c1, storage via Consumption;
+		link c2, storage via Consumption;
+		link c3, storage via Consumption;
+		start storage;
+		start p1;
+		start p2;
+		start c1;
+		start c2;
+		start c3;
+	}
+
+}
+
