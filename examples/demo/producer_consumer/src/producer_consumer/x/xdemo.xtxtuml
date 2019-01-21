@@ -13,12 +13,12 @@ execution XDemo {
 	}
 
 	initialization {
-		Storage storage = create Storage(2);
-		Producer p1 = create Producer(3);
-		Producer p2 = create Producer(3);
-		Consumer c1 = create Consumer(2);
-		Consumer c2 = create Consumer(2);
-		Consumer c3 = create Consumer(2);
+		Storage storage = create Storage(Integer.valueOf(2));
+		Producer p1 = create Producer(Integer.valueOf(3));
+		Producer p2 = create Producer(Integer.valueOf(3));
+		Consumer c1 = create Consumer(Integer.valueOf(2));
+		Consumer c2 = create Consumer(Integer.valueOf(2));
+		Consumer c3 = create Consumer(Integer.valueOf(2));
 		link p1, storage via Production;
 		link p2, storage via Production;
 		link c1, storage via Consumption;
