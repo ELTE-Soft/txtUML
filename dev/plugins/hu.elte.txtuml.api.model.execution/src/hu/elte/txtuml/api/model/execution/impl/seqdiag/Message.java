@@ -35,30 +35,46 @@ public class Message<T extends ModelClass, U extends ModelClass> extends Abstrac
 	}
 
 	public <T2 extends ModelClass, U2 extends ModelClass> boolean matches(Message<T2, U2> expected) {
-		if (other == this) {
+		// this: actual, other: expected
+		if (expected == this) {
 			return true;
 		}
-		if (other == null) {
+		if (expected == null) {
 			return false;
 		}
 
-		if (fromActor.isPresent() && other.fromActor.isPresent()) {
-			if (!fromActor.get().equals(other.fromActor.get())) {
-				return false;
-			}
-			if (sender != other.sender) { // both is null if from actor
-				return false;
-			}
-		}
-		if (target != other.target) {
+		if (fromActor.isPresent() && !fromActor.equals(expected.fromActor)) {
 			return false;
 		}
 
+		if (sender != null && expected.sender != null && expected.sender.hasParticipant()
+				&& sender.getParticipant().get() != expected.sender.getParticipant().get()) {
+			return false;
+		}
+
+		if (target != null && expected.target != null && expected.target.hasParticipant()
+				&& target.getParticipant().get() != expected.target.getParticipant().get()) {
+			return false;
+		}
+
+		boolean areSignalsEqual;
 		try {
-			return BasedOnFields.equal(getWrapped(), other.getWrapped());
+			areSignalsEqual = BasedOnFields.equal(getWrapped(), expected.getWrapped());
 		} catch (IllegalAccessException e) {
 			return false;
 		}
+
+		if (areSignalsEqual) {
+			if (sender != null && expected.sender != null && !expected.sender.hasParticipant()) {
+				expected.sender.bindTo(sender.getParticipant().get());
+			}
+
+			if (!expected.target.hasParticipant()) {
+				expected.target.bindTo(target.getParticipant().get());
+			}
+		}
+
+		return areSignalsEqual;
 	}
 
 	@Override
