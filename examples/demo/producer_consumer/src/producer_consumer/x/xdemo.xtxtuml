@@ -1,5 +1,6 @@
 package producer_consumer.x;
 
+import hu.elte.txtuml.api.model.^execution.LogLevel;
 import producer_consumer.x.model.Consumer;
 import producer_consumer.x.model.Consumption;
 import producer_consumer.x.model.Producer;

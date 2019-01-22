@@ -1,5 +1,6 @@
 package machine2.x;
 
+import hu.elte.txtuml.api.model.^execution.LogLevel;
 import machine2.x.model.DoYourWork;
 import machine2.x.model.Machine;
 import machine2.x.model.Usage;

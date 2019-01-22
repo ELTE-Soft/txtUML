@@ -1,5 +1,6 @@
 package train.x;
 
+import hu.elte.txtuml.api.model.^execution.LogLevel;
 import train.x.model.Backward;
 import train.x.model.Engine;
 import train.x.model.Forward;

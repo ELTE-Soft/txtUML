@@ -158,7 +158,8 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 					annotations += annotationRef(Override)
 					body = '''
 						«FOR e : (method.body as XBlockExpression).expressions»
-							«IF e instanceof XAssignment && (e as XAssignment).concreteSyntaxFeatureName != "name" »
+							«IF e instanceof XAssignment && (e as XAssignment).concreteSyntaxFeatureName != "name" 
+									|| !(e instanceof XAssignment)»
 								«NodeModelUtils.getTokenText(NodeModelUtils.findActualNodeFor(e))»;
 							«ENDIF»
 						«ENDFOR»

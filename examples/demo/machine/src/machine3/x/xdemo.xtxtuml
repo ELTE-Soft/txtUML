@@ -1,5 +1,6 @@
 package machine3.x;
 
+import hu.elte.txtuml.api.model.^execution.LogLevel;
 import hu.elte.txtuml.api.stdlib.timers.Timer;
 import machine3.x.model.DoYourWork;
 import machine3.x.model.Machine;
