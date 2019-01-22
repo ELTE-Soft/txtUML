@@ -35,6 +35,7 @@ import hu.elte.txtuml.utils.Logger;
  * inner invariants described at {@link #currentMessage}.
  */
 @SequenceDiagramRelated
+@SuppressWarnings("rawtypes")
 class InteractionThread extends AbstractModelExecutor.OwnedThread<DefaultSeqDiagExecutor>
 		implements InteractionRuntime, SeqDiagThread {
 
@@ -287,19 +288,20 @@ class InteractionThread extends AbstractModelExecutor.OwnedThread<DefaultSeqDiag
 	@Override
 	public <T extends ModelClass, U extends ModelClass> void message(Lifeline<T> sender, Signal signal,
 			Lifeline<U> target) {
-		Message message = Message.fromObject(sender, signal, target);
+		Message<T, U> message = Message.fromObject(sender, signal, target);
 		setExpected(message);
 	}
 
 	@Override
 	public <T extends ModelClass, U extends ModelClass> void messageFromActor(Signal signal, Lifeline<U> target) {
-		API.send(signal, target);
+		// only binded participants!
+		API.send(signal, ((MessageParticipant<U>) target).getParticipant().get());
 
-		Message message = Message.fromActor(signal, target);
+		Message<T, U> message = Message.fromActor(signal, target);
 		setExpected(message);
 	}
 
-	private <T extends ModelClass, U extends ModelClass> void setExpected(Message message) {
+	private <T extends ModelClass, U extends ModelClass> void setExpected(Message<T, U> message) {
 		getExecutor().removeTerminationBlocker(terminationBlocker);
 		// It is important that the termination blocker here is released after
 		// sending the signal in case of a message from actor. Otherwise the
@@ -328,7 +330,7 @@ class InteractionThread extends AbstractModelExecutor.OwnedThread<DefaultSeqDiag
 	 * <p>
 	 * Called from the model executor thread.
 	 */
-	public boolean testActual(Message actual) {
+	public <T extends ModelClass, U extends ModelClass> boolean testActual(Message<T, U> actual) {
 		Optional<Message> expected = takeUninterruptibly(currentMessage);
 
 		if (expected.isPresent()) {
@@ -338,7 +340,9 @@ class InteractionThread extends AbstractModelExecutor.OwnedThread<DefaultSeqDiag
 		}
 	}
 
-	private boolean testActualWhenMessageIsPresent(Optional<Message> expected, Message actual) {
+	@SuppressWarnings("unchecked")
+	private <T extends ModelClass, U extends ModelClass> boolean testActualWhenMessageIsPresent(
+			Optional<Message> expected, Message<T, U> actual) {
 		boolean answer = actual.matches(expected.get());
 		if (answer) {
 			/*
@@ -372,7 +376,8 @@ class InteractionThread extends AbstractModelExecutor.OwnedThread<DefaultSeqDiag
 		return answer;
 	}
 
-	private boolean testActualWhenMessageIsNotPresent(Message actual) {
+	private <T extends ModelClass, U extends ModelClass> boolean testActualWhenMessageIsNotPresent(
+			Message<T, U> actual) {
 		List<InteractionThread> copy = null;
 		// Copying children to release lock early.
 		synchronized (children) {
