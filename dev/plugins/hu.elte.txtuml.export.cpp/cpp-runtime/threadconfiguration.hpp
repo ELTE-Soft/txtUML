@@ -20,7 +20,7 @@ public:
 	virtual ~Configuration() {}
 
 	ThreadPoolPtr getThreadPool() const { return _threadPool; }
-	int getNumberOfExecutors() const { return _numberOfExecutors; }
+	unsigned getNumberOfExecutors() const { return _numberOfExecutors; }
 
 private:
 

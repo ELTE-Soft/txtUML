@@ -14,8 +14,8 @@
 
 #include "StateMachineOwner.hpp"
 #include "threadpool.hpp"
+#include "threadconfiguration.hpp"
 #include "ievent.hpp"
-#include "threadpoolmanager.hpp"
 #include "ESRoot/Types.hpp"
 #include "ESRoot/AtomicCounter.hpp"
 

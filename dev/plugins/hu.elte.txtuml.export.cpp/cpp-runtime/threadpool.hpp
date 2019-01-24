@@ -19,17 +19,6 @@ namespace Execution {
 namespace Execution
 {
 
-
-class PoolQueueType : public ES::ThreadSafeQueue<ES::Queue<ES::StateMachineRef>> {
-public:
-	PoolQueueType(StateMachineThreadPool * ownerPool_);
-protected:
-	virtual bool exitFromWaitingCondition();
-
-private:
-	StateMachineThreadPool * ownerPool;
-};
-
 class StateMachineThreadPool {
 
 public:
@@ -55,7 +44,7 @@ private:
 	SharedConditionVar _sharedConditionVar;
 
 	// the task queue
-	PoolQueueType _stateMachines; //must be blocking queue
+	ES::ThreadSafeQueue<ES::Queue<ES::StateMachineRef>> _stateMachines; //must be blocking queue
 
 	void incrementWorkers();
 	void reduceWorkers();

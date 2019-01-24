@@ -126,7 +126,7 @@ public class ThreadDescriptionExporter {
 		checkConfigurationOptions(group);
 		double rate = group.rate();
 		sumRate += rate;
-		ThreadPoolConfiguration config = createNewPoolConfiguration((int) Math.max(1, allThread  / rate));
+		ThreadPoolConfiguration config = createNewPoolConfiguration((int) Math.max(1, allThread  * rate));
 
 		checkEmptyGroup(group.contains());
 

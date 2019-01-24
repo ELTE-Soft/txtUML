@@ -75,8 +75,8 @@ void ConfiguredThreadedRT::setupObjectSpecificRuntime(ES::StateMachineRef sm)
 {
 
 	sm->setMessageCounter(messages);
-	unsigned objectId = sm->getPoolId ();
-	Configuration config = configurations[objectId];
+	int objectId = sm->getPoolId ();
+	Configuration config = configurations[(std::vector<Configuration>::size_type) objectId];
 	ThreadPoolPtr matchedPool = config.getThreadPool ();
 	sm->setPool (matchedPool);
 }

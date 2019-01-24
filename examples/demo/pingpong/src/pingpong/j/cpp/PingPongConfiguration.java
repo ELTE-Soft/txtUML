@@ -8,7 +8,7 @@ import pingpong.j.model.Game;
 import pingpong.j.model.Player;
 import pingpong.j.model.Racket;
 
-@Group(contains = { Player.class, Game.class, Racket.class })
+@Group(contains = { Player.class, Game.class, Racket.class }, rate = 1.0)
 @Runtime(RuntimeType.SINGLE)
 public class PingPongConfiguration extends Configuration {
 

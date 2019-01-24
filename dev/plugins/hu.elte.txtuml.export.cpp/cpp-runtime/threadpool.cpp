@@ -8,7 +8,7 @@ namespace Execution
 {
 StateMachineThreadPool::StateMachineThreadPool() :
 	_sharedConditionVar(new std::condition_variable()),
-	_stateMachines(this),
+	_stateMachines(_sharedConditionVar),
 	_stop(true) {}
 
 void StateMachineThreadPool::stopPool()
@@ -110,19 +110,6 @@ StateMachineThreadPool::~StateMachineThreadPool()
 		worker.join();
 	}
 	workers.clear();
-}
-
-PoolQueueType::PoolQueueType(StateMachineThreadPool * ownerPool_) : 
-	ES::ThreadSafeQueue<ES::Queue<ES::StateMachineRef>>(ownerPool_->_sharedConditionVar),
-	ownerPool (ownerPool_)
-{
-
-}
-
-
-bool PoolQueueType::exitFromWaitingCondition()
-{
-	return true; //TODO porpuse?
 }
 
 }

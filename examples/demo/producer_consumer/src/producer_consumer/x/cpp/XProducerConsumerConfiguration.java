@@ -8,7 +8,7 @@ import producer_consumer.x.model.Consumer;
 import producer_consumer.x.model.Producer;
 import producer_consumer.x.model.Storage;
 
-@Group(contains = { Consumer.class })
+@Group(contains = { Consumer.class }, rate = 0.3)
 @Group(contains = { Producer.class }, rate = 0.5)
 @Group(contains = { Storage.class }, rate = 0.2)
 @Runtime(RuntimeType.THREADED)

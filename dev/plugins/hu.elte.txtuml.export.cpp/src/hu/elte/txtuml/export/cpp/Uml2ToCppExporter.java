@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.core.runtime.FileLocator;
@@ -26,7 +25,6 @@ import org.eclipse.uml2.uml.Interface;
 import org.eclipse.uml2.uml.UMLPackage;
 import org.osgi.framework.Bundle;
 
-import hu.elte.txtuml.api.deployment.RuntimeType;
 import hu.elte.txtuml.export.cpp.structural.AssociationEndDescriptorsExproter;
 import hu.elte.txtuml.export.cpp.structural.AssociationInstancesExporter;
 import hu.elte.txtuml.export.cpp.structural.ClassExporter;
@@ -46,8 +44,6 @@ import hu.elte.txtuml.export.cpp.templates.structual.FunctionTemplates;
 import hu.elte.txtuml.export.cpp.templates.structual.HeaderTemplates;
 import hu.elte.txtuml.export.cpp.thread.ThreadDescription;
 import hu.elte.txtuml.export.cpp.thread.ThreadHandlingManager;
-import hu.elte.txtuml.export.cpp.thread.ThreadPoolConfiguration;
-import hu.elte.txtuml.utils.Pair;
 
 public class Uml2ToCppExporter {
 	public static final String GENERATED_CPP_FOLDER_NAME = "cpp-gen";
@@ -250,7 +246,6 @@ public class Uml2ToCppExporter {
 		librarySourceClasses.add("StateMachineOwner");
 		librarySourceClasses.add("NotStateMachineOwner");
 		librarySourceClasses.add("threadpool");
-		librarySourceClasses.add("threadcontainer");
 		librarySourceClasses.add("timer");
 		librarySourceClasses.add("itimer");
 		librarySourceClasses.add(FileNames.FileNameAction);

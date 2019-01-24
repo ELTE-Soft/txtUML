@@ -8,7 +8,7 @@ import pingpong.x.model.Game;
 import pingpong.x.model.Player;
 import pingpong.x.model.Racket;
 
-@Group(contains = { Player.class, Game.class, Racket.class })
+@Group(contains = { Player.class, Game.class, Racket.class }, rate = 1.0)
 @Runtime(RuntimeType.SINGLE)
 public class XPingPongConfiguration extends Configuration {
 
