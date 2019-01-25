@@ -107,6 +107,7 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 			members += exec.toField("checkLevel", CheckLevel.typeRef)
 			members += exec.toField("logLevel", LogLevel.typeRef)
 			members += exec.toField("timeMultiplier", double.typeRef)
+			members += exec.toField("name", String.typeRef)
 			for (element : exec.elements) {
 				for (e : element.executionelementToJvmMember) {
 					members += e
@@ -147,22 +148,22 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 
 	def private executionMethodToJvmMember(TUExecutionMethod method) {
 		if (method.type == TUExecutionElementType.CONFIGURE) {
-			val c = (method.body as XBlockExpression).expressions.filter [
+			val nameList = (method.body as XBlockExpression).expressions.filter [
 				(it instanceof XAssignment) && (it as XAssignment).concreteSyntaxFeatureName == "name"
 			]
 			var elementList = newLinkedList(
+				method.toMethod("configureExecution",Void.TYPE.typeRef)[
+					documentation = method.documentation
+					visibility = JvmVisibility.PRIVATE
+					body = method.body
+				],
 				method.toMethod(method.type.toString, Void.TYPE.typeRef) [
 					documentation = method.documentation
 					parameters += method.toParameter("s", Settings.typeRef)
 					visibility = JvmVisibility.PUBLIC
 					annotations += annotationRef(Override)
 					body = '''
-						«FOR e : (method.body as XBlockExpression).expressions»
-							«IF e instanceof XAssignment && (e as XAssignment).concreteSyntaxFeatureName != "name" 
-									|| !(e instanceof XAssignment)»
-								«NodeModelUtils.getTokenText(NodeModelUtils.findActualNodeFor(e))»;
-							«ENDIF»
-						«ENDFOR»
+						configureExecution();
 						if (logLevel != null)
 						  s.logLevel = logLevel;
 						if (checkLevel != null)
@@ -172,15 +173,16 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 					'''
 				]
 			)
-			if (!c.empty) {
+			if (!nameList.empty) {
 				elementList.add(
 				method.toMethod("name", String.typeRef) [
 					visibility = JvmVisibility.PUBLIC
 					annotations += annotationRef(Override)
 					body = '''
-						«FOR e : c»
-							return «NodeModelUtils.getTokenText(NodeModelUtils.findActualNodeFor((e as XAssignment).actualArguments.head))»;
+						«FOR e : nameList»
+							«NodeModelUtils.getTokenText(NodeModelUtils.findActualNodeFor(e))»;
 						«ENDFOR»
+						return name;
 					'''
 				])
 			}
