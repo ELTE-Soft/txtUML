@@ -15,17 +15,21 @@ public abstract class ModelValidationError extends AbstractValidationError {
 
 	public ModelValidationError(SourceInfo sourceInfo, ASTNode node) {
 		super(sourceInfo, node);
-		if (node instanceof MethodDeclaration || node instanceof AbstractTypeDeclaration) {
-			SimpleName name;
-			if (node instanceof MethodDeclaration) {
-				name = ((MethodDeclaration) node).getName();
-			} else {
-				name = ((AbstractTypeDeclaration) node).getName();
-			}
-			this.sourceStart = name.getStartPosition();
-			this.sourceEnd = name.getStartPosition() + name.getLength();
-		}
+	}
 
+	@Override
+	protected ASTNode getMarkedASTNode(ASTNode source) {
+		if (source instanceof MethodDeclaration || source instanceof AbstractTypeDeclaration) {
+			SimpleName name;
+			if (source instanceof MethodDeclaration) {
+				name = ((MethodDeclaration) source).getName();
+			} else {
+				name = ((AbstractTypeDeclaration) source).getName();
+			}
+			return name;
+		} else {
+			return source;
+		}
 	}
 
 	@Override

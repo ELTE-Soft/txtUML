@@ -17,10 +17,15 @@ public abstract class AbstractValidationProblem extends CategorizedProblem imple
 	private int lineNumber;
 
 	public AbstractValidationProblem(SourceInfo sourceInfo, ASTNode node) {
+		ASTNode markedNode = getMarkedASTNode(node);
 		this.sourceInfo = sourceInfo;
-		this.sourceStart = node.getStartPosition();
-		this.sourceEnd = node.getStartPosition() + node.getLength();
+		this.sourceStart = markedNode.getStartPosition();
+		this.sourceEnd = markedNode.getStartPosition() + markedNode.getLength();
 		this.lineNumber = sourceInfo.getSourceLineNumber(getSourceEnd());
+	}
+	
+	protected ASTNode getMarkedASTNode(ASTNode source){
+		return source;
 	}
 
 	@Override
