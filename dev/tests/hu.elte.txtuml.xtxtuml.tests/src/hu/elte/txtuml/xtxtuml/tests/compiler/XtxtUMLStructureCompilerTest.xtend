@@ -55,6 +55,8 @@ class XtxtUMLStructureCompilerTest {
 			  
 			  private double timeMultiplier;
 			  
+			  private String name;
+			  
 			  @Override
 			  public void initialization() {
 			    
@@ -85,6 +87,8 @@ class XtxtUMLStructureCompilerTest {
 			  private LogLevel logLevel;
 			  
 			  private double timeMultiplier;
+			  
+			  private String name;
 			  
 			  @Override
 			  public void initialization() {
@@ -125,10 +129,17 @@ class XtxtUMLStructureCompilerTest {
 			  
 			  private double timeMultiplier;
 			  
+			  private String name;
+			  
 			  private int bTest = 5;
+			  
+			  private void configureExecution() {
+			    this.name = "ExecName";
+			  }
 			  
 			  @Override
 			  public void configure(final Execution.Settings s) {
+			    configureExecution();
 			    if (logLevel != null)
 			      s.logLevel = logLevel;
 			    if (checkLevel != null)
@@ -139,7 +150,8 @@ class XtxtUMLStructureCompilerTest {
 			  
 			  @Override
 			  public String name() {
-			    return "ExecName";
+			    name = "ExecName";
+			    return name;
 			  }
 			  
 			  @Override
@@ -167,30 +179,32 @@ class XtxtUMLStructureCompilerTest {
 		
 		'''
 			package test.exec;
-			class TestClass;
-			signal Sig1;
-			execution TestExecutionWithMembers{
-				TestClass tClass;
-				configure{
+			import hu.elte.txtuml.api.model.^execution.CheckLevel;
+			import hu.elte.txtuml.api.model.^execution.LogLevel;
+			class TestClass;			
+			signal Sig1;			
+			execution TestExecutionWithMembers {			
+				TestClass tClass;			
+				configure {
 					name = "ExecName";
 					logLevel = LogLevel.TRACE;
 					timeMultiplier = 1.0;
 					checkLevel = CheckLevel.OPTIONAL;
-				}
-				initialization{
+				}			
+				initialization {
 					tClass = new TestClass();
 					start tClass;
 					log "InitLog";
-				}
-				before{
-					send Sig1 to tClass;
-				}
-				during{
+				}			
+				before {
+					send new Sig1() to tClass;
+				}			
+				during {
 					log "DuringLog";
-				}
-				after{
+				}			
+				after {
 					log "AfterLog";
-				}
+				}			
 			}
 		'''.assertCompilesTo('''
 			MULTIPLE FILES WERE GENERATED
@@ -235,13 +249,20 @@ class XtxtUMLStructureCompilerTest {
 			  
 			  private double timeMultiplier;
 			  
+			  private String name;
+			  
 			  private TestClass tClass;
+			  
+			  private void configureExecution() {
+			    this.name = "ExecName";
+			    this.logLevel = LogLevel.TRACE;
+			    this.timeMultiplier = 1.0;
+			    this.checkLevel = CheckLevel.OPTIONAL;
+			  }
 			  
 			  @Override
 			  public void configure(final Execution.Settings s) {
-			    logLevel = LogLevel.TRACE;
-			    timeMultiplier = 1.0;
-			    checkLevel = CheckLevel.OPTIONAL;
+			    configureExecution();
 			    if (logLevel != null)
 			      s.logLevel = logLevel;
 			    if (checkLevel != null)
@@ -252,7 +273,8 @@ class XtxtUMLStructureCompilerTest {
 			  
 			  @Override
 			  public String name() {
-			    return "ExecName";
+			    name = "ExecName";
+			    return name;
 			  }
 			  
 			  @Override
@@ -264,7 +286,7 @@ class XtxtUMLStructureCompilerTest {
 			  
 			  @Override
 			  public void before() {
-			    API.send(Sig1.class, this.tClass);
+			    API.send(new Sig1(), this.tClass);
 			  }
 			  
 			  @Override
