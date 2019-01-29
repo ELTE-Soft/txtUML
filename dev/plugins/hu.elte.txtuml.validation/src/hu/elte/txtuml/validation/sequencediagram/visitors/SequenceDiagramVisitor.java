@@ -165,6 +165,13 @@ public class SequenceDiagramVisitor extends ASTVisitor {
 			}
 			containsSendOrFragment.add(checkSendOrFragmentInMethodInvocation(methodInvocation));
 		});
+		List<SuperMethodInvocation> superMethodInvocations = Utils.getSuperMethodInvocations(statements);
+		superMethodInvocations.forEach(invocation -> {
+			if (showErrorHere) {
+				placeOfError = invocation;
+			}
+			containsSendOrFragment.add(checkSendOrFragmentInSuperMethodInvocation(invocation));
+		});
 		if (showErrorHere) {
 			placeOfError = block;
 		}
@@ -181,13 +188,19 @@ public class SequenceDiagramVisitor extends ASTVisitor {
 			checkSendInIfNode((IfStatement) statement);
 		} else if (Utils.isParInvocation(statement)) {
 			checkSendInPar(Utils.getMethodInvocationFromStatement(statement));
+		} else if (Utils.isMethodInvocation(statement)) {
+			checkSendInMethodInvocation(Utils.getMethodInvocationFromStatement(statement));
+		} else if (Utils.isSuperMethodInvocation(statement)) {
+			checkSendInSuperMethodInvocation(Utils.getSuperMethodInvocationFromStatement(statement));
 		} else {
 			collector.report(SequenceErrors.SEND_EXPECTED.create(collector.getSourceInfo(), placeOfError));
 		}
 	}
 
 	private void checkSendInPar(MethodInvocation parNode) {
-		if (placeOfError == parNode.getParent().getParent()) {
+		final boolean showErrorHere = placeOfError == parNode.getParent().getParent()
+				|| placeOfError == parNode.getParent();
+		if (showErrorHere) {
 			placeOfError = parNode.getParent();
 		}
 		if (parNode.arguments().size() == 0) {
@@ -195,7 +208,7 @@ public class SequenceDiagramVisitor extends ASTVisitor {
 			return;
 		}
 		parNode.arguments().forEach(argument -> {
-			if (placeOfError == parNode.getParent()) {
+			if (showErrorHere) {
 				placeOfError = (ASTNode) argument;
 			}
 			checkSendInParArgument((Expression) argument);
@@ -350,6 +363,16 @@ public class SequenceDiagramVisitor extends ASTVisitor {
 		}
 		checkSendInBlock(body, false);
 	}
+	
+
+	private void checkSendInSuperMethodInvocation(SuperMethodInvocation methodInvocation) {
+		Block body = Utils.getMethodBodyFromInvocation(methodInvocation);
+		if (body == null) {
+			collector.report(SequenceErrors.SEND_EXPECTED.create(collector.getSourceInfo(), placeOfError));
+			return;
+		}
+		checkSendInBlock(body, false);
+	}
 
 	private boolean checkSendOrFragmentInMethodInvocation(MethodInvocation methodInvocation) {
 		if (Utils.isSendInvocation(methodInvocation)) {
@@ -357,6 +380,16 @@ public class SequenceDiagramVisitor extends ASTVisitor {
 		}
 		Block body = Utils.getMethodBodyFromInvocation(methodInvocation);
 		if (body == null) {
+			collector.report(SequenceErrors.SEND_EXPECTED.create(collector.getSourceInfo(), placeOfError));
+			return false;
+		}
+		return checkSendOrFragmentInBlock(body);
+	}
+
+	private boolean checkSendOrFragmentInSuperMethodInvocation(SuperMethodInvocation methodInvocation) {
+		Block body = Utils.getMethodBodyFromInvocation(methodInvocation);
+		if (body == null) {
+			collector.report(SequenceErrors.SEND_EXPECTED.create(collector.getSourceInfo(), placeOfError));
 			return false;
 		}
 		return checkSendOrFragmentInBlock(body);

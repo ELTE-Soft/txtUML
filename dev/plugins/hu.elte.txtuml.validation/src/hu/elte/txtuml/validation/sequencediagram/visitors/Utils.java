@@ -22,6 +22,7 @@ import org.eclipse.jdt.core.dom.IfStatement;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.eclipse.jdt.core.dom.Statement;
+import org.eclipse.jdt.core.dom.SuperMethodInvocation;
 import org.eclipse.jdt.core.dom.Type;
 import org.eclipse.jdt.core.dom.WhileStatement;
 
@@ -94,16 +95,14 @@ public class Utils {
 	public static List<MethodInvocation> getParFragments(List<Statement> statements) {
 		List<MethodInvocation> parFragments = statements.stream().map(Utils::getMethodInvocationFromStatement)
 				.filter(inv -> inv != null && inv.resolveMethodBinding().getName().equals("par")
-						&& inv.resolveMethodBinding().getDeclaringClass().getQualifiedName()
-								.equals(Sequence.class.getCanonicalName()))
+						&& isSequenceMethod(inv.resolveMethodBinding()))
 				.collect(toList());
 		return parFragments;
 	}
 
 	public static boolean isSendInvocation(MethodInvocation expression) {
 		IMethodBinding mb = expression.resolveMethodBinding();
-		return mb != null && (mb.getName().equals("send") || mb.getName().equals("fromActor"))
-				&& mb.getDeclaringClass().getQualifiedName().equals(Sequence.class.getCanonicalName());
+		return mb != null && (mb.getName().equals("send") || mb.getName().equals("fromActor")) && isSequenceMethod(mb);
 	}
 
 	public static boolean isLoopNode(Statement node) {
@@ -115,6 +114,17 @@ public class Utils {
 			Expression expression = ((ExpressionStatement) statement).getExpression();
 			if (expression instanceof MethodInvocation) {
 				MethodInvocation methodInvocation = (MethodInvocation) expression;
+				return methodInvocation;
+			}
+		}
+		return null;
+	}
+
+	public static SuperMethodInvocation getSuperMethodInvocationFromStatement(Statement statement) {
+		if (statement instanceof ExpressionStatement) {
+			Expression expression = ((ExpressionStatement) statement).getExpression();
+			if (expression instanceof SuperMethodInvocation) {
+				SuperMethodInvocation methodInvocation = (SuperMethodInvocation) expression;
 				return methodInvocation;
 			}
 		}
@@ -136,16 +146,36 @@ public class Utils {
 
 	public static List<MethodInvocation> getMethodInvocations(List<Statement> statements) {
 		List<MethodInvocation> methodInvocations = statements.stream().map(Utils::getMethodInvocationFromStatement)
-				.filter(inv -> inv != null && !inv.resolveMethodBinding().getName().equals("par")).collect(toList());
+				.filter(inv -> inv != null && (isSendInvocation(inv) || !isSequenceMethod(inv.resolveMethodBinding())))
+				.collect(toList());
 		return methodInvocations;
+	}
+
+	public static List<SuperMethodInvocation> getSuperMethodInvocations(List<Statement> statements) {
+		List<SuperMethodInvocation> superMethodInvocations = statements.stream()
+				.map(Utils::getSuperMethodInvocationFromStatement).filter(inv -> inv != null).collect(toList());
+		return superMethodInvocations;
 	}
 
 	public static Block getMethodBodyFromInvocation(MethodInvocation methodInvocation) {
 		IMethodBinding binding = methodInvocation.resolveMethodBinding();
-		CompilationUnit cu = getCompilationUnit(binding);
-		MethodDeclaration decl = (MethodDeclaration) cu.findDeclaringNode(binding.getKey());
-		Block body = decl.getBody();
-		return body;
+		return getMethodBody(binding);
+	}
+	
+	public static Block getMethodBodyFromInvocation(SuperMethodInvocation methodInvocation) {
+		IMethodBinding binding = methodInvocation.resolveMethodBinding();
+		return getMethodBody(binding);
+	}
+	
+	private static Block getMethodBody(IMethodBinding binding) {
+		try {
+			CompilationUnit cu = getCompilationUnit(binding);
+			MethodDeclaration decl = (MethodDeclaration) cu.findDeclaringNode(binding.getKey());
+			Block body = decl.getBody();
+			return body;
+		} catch (NullPointerException ex) {
+			return null;
+		}
 	}
 
 	public static Type getReturnTypeFromInvocation(MethodInvocation methodInvocation) {
@@ -186,6 +216,22 @@ public class Utils {
 		}
 	}
 
+	public static boolean isMethodInvocation(Statement statement) {
+		if (statement instanceof ExpressionStatement) {
+			Expression expression = ((ExpressionStatement) statement).getExpression();
+			return expression instanceof MethodInvocation;
+		}
+		return false;
+	}
+	
+	public static boolean isSuperMethodInvocation(Statement statement) {
+		if (statement instanceof ExpressionStatement) {
+			Expression expression = ((ExpressionStatement) statement).getExpression();
+			return expression instanceof SuperMethodInvocation;
+		}
+		return false;
+	}
+
 	private static CompilationUnit getCompilationUnit(IBinding binding) {
 		try {
 			ICompilationUnit unit = (ICompilationUnit) binding.getJavaElement()
@@ -199,5 +245,9 @@ public class Utils {
 		} catch (Exception ex) {
 			return null;
 		}
+	}
+
+	private static boolean isSequenceMethod(IMethodBinding binding) {
+		return binding.getDeclaringClass().getQualifiedName().equals(Sequence.class.getCanonicalName());
 	}
 }
