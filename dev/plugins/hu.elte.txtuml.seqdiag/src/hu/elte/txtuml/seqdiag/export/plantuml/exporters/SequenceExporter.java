@@ -6,6 +6,7 @@ import java.util.Map.Entry;
 
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.Expression;
+import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.MethodInvocation;
 
 import hu.elte.txtuml.seqdiag.export.plantuml.generator.PlantUmlCompiler;
@@ -37,13 +38,13 @@ public class SequenceExporter extends MethodInvocationExporter {
 		if (curElement.arguments().size() == 2) {
 			return true;
 		}
-
+		
 		// Sequence.send call
 		Expression sender = (Expression) curElement.arguments().get(0);
-        String senderName = searchForRealLifelineName("Need the method's name here somehow...", sender);
+        String senderName = searchForRealLifelineName(compiler.lastMethodNames.lastElement(), sender);
 
 		Expression target = (Expression) curElement.arguments().get(2);
-		String targetName = searchForRealLifelineName("Need the method's name here somehow...", target);
+		String targetName = searchForRealLifelineName(compiler.lastMethodNames.lastElement(), target);
 
 		Expression signal = (Expression) curElement.arguments().get(1);
 		String signalExpr = signal.resolveTypeBinding().getQualifiedName();
@@ -60,12 +61,6 @@ public class SequenceExporter extends MethodInvocationExporter {
         String currentLifeLineName = lifeLineExpression.toString();
         
         HashMap<String, Collection<String>> innerMapForMethodContext = PlantUmlCompiler.lifelineNamesInContexts.get(methodContextName);
-        
-        if(innerMapForMethodContext == null) {
-        	return null;
-        	//TODO: meaningful exception
-        	//throw new Exception("There were some problems with the method invocation in the sequence diagram.");
-        }
         
         if(innerMapForMethodContext.containsKey(currentLifeLineName)) {
         	// it has aliases but we got the original lileLine name, just use it

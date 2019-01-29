@@ -51,7 +51,7 @@ public class UserMethodInvocationExporter extends MethodInvocationExporter {
         
         decl.getBody().accept(compiler);
         
-        //TODO: compiler.lifelineNamesInContexts.remove(curElement.getName().getFullyQualifiedName()); //here or someplace else???
+        compiler.revertLifelineNames();
         
         return true;
     }

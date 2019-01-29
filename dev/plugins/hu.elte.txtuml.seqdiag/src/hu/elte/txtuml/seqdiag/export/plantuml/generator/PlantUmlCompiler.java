@@ -41,13 +41,14 @@ public class PlantUmlCompiler extends ASTVisitor {
 	private List<Lifeline> orderedLifelines;
 	private final String seqDiagramName;
 
+	private Stack<String> Scopes;
 	private StringBuilder compiledOutput;
 	
 	/**
 	 * Every private function will have its own context for its own parameter names as lifeline names
 	 */
     public static Map<String, HashMap<String, Collection<String>>> lifelineNamesInContexts;
-	
+    public static Stack<String> lastMethodNames;
 
 	public PlantUmlCompiler(final List<Lifeline> orderedLifelines, String seqDiagramName) {
 		errors = new ArrayList<ASTNode>();
@@ -57,6 +58,8 @@ public class PlantUmlCompiler extends ASTVisitor {
         PlantUmlCompiler.lifelineNamesInContexts = new HashMap<String, HashMap<String, Collection<String>>>();
         
 		compiledOutput = new StringBuilder();
+		lastMethodNames = new Stack<String>();
+		lastMethodNames.add("run");
 	}
 
 	/**
@@ -238,7 +241,7 @@ public class PlantUmlCompiler extends ASTVisitor {
      * @param parameters - the possible new parameterNames
      */
     public void updateLifeLineNames(String methodName, List<Expression> arguments, List<SingleVariableDeclaration> parameters) {
-
+    	lastMethodNames.add(methodName);
         List<Integer> idxs = new ArrayList<>();
         for (int i = 0; i < arguments.size(); ++i) {
             if (arguments.get(i) instanceof Name) {
@@ -274,5 +277,9 @@ public class PlantUmlCompiler extends ASTVisitor {
             // simply add the alias to the list
             methodContext.get(oldName).add(newNames.get(i));
         }
+    }
+    
+    public void revertLifelineNames() {
+    	lifelineNamesInContexts.remove(lastMethodNames.pop());
     }
 }
