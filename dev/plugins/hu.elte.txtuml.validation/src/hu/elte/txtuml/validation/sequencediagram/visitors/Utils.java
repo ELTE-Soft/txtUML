@@ -25,9 +25,8 @@ public class Utils {
 
 	public static void acceptSequenceDiagrams(CompilationUnit node, ASTVisitor visitor) {
 		List<AbstractTypeDeclaration> types = node.types();
-		types.stream()
-				.map(td -> ((AbstractTypeDeclaration) td)).filter(td -> ElementTypeTeller
-						.hasSuperClass(td.resolveBinding(), SequenceDiagram.class.getCanonicalName()))
+		types.stream().map(td -> ((AbstractTypeDeclaration) td)).filter(
+				td -> ElementTypeTeller.hasSuperClass(td.resolveBinding(), SequenceDiagram.class.getCanonicalName()))
 				.forEach(td -> td.accept(visitor));
 	}
 
@@ -46,7 +45,8 @@ public class Utils {
 					}
 					int annotationVal = (int) position.getValue().resolveConstantExpressionValue();
 					if (annotationVal < 0) {
-						collector.report(SequenceErrors.INVALID_POSITION.create(collector.getSourceInfo(), position));
+						collector.report(
+								SequenceErrors.INVALID_POSITION.create(collector.getSourceInfo(), position.getValue()));
 					}
 
 					// type of annotated field
