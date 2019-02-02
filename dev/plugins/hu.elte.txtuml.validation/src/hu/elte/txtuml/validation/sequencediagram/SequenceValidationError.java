@@ -16,12 +16,12 @@ public abstract class SequenceValidationError extends AbstractValidationError {
 	}
 
 	@Override
-	protected ASTNode getMarkedASTNode(ASTNode source) {
+	protected ASTNode getNodeToMark(ASTNode source) {
 		if (source instanceof MethodInvocation) {
 			return ((MethodInvocation) source).getName();
-		} else {
-			return source;
 		}
+
+		return super.getNodeToMark(source);
 	}
 
 	@Override
