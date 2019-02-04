@@ -100,14 +100,6 @@ function sendSMTime(){
 		data: {delayTime:stateMachineDelay},
 	    success: function(response) {
         	if(response.status == 200 && isPolling){
-				hideError();
-			}
-			else{
-				if(isPolling){
-					showError();
-				}else{
-					hideError();
-				}
 			}
     	}
 	});
@@ -140,14 +132,6 @@ function refreshDelayInput(){
 			stateMachineDelay = parseInt(data[0].delayTime);
 			$('#animation-delay-slider')[0].value = parseInt(data[0].delayTime);
 			$('#animation-delay-input')[0].value = parseInt(data[0].delayTime);
-			hideError();
-		}
-		else{
-			if(isPolling){
-				showError();
-			}else{
-				hideError();
-			}
 		}
 	});
 }
