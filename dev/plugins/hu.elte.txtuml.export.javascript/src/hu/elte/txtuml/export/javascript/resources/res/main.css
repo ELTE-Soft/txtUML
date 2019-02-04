@@ -247,6 +247,11 @@ body {
 	height: 2em;
 }
 
+#animation-delay-input {
+	width: 100%;
+	height: 2em;
+}
+
 #debug-port-error {
 	display: none;
 	font-weight: bolder;
