@@ -17,5 +17,4 @@ public class GlobalSettings {
 	 */
 	public static final String TXTUML_DIAGNOSTICS_HTTP_PATH = "registry";
 	public static final String TXTUML_DIAGNOSTICS_DELAY_PATH = "delay";
-	public static final String TXTUML_DIAGNOSTICS_DELAY_INPUT_PATH = "delayInput";
 }

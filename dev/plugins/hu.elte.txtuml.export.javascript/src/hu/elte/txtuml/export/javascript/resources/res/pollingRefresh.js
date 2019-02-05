@@ -123,7 +123,7 @@ $('#animation-delay-input').on('input change', function(){
 
 function refreshDelayInput(){
 	$.ajax({
-		url: 'http://localhost:' + port + '/delayInput',
+		url: 'http://localhost:' + port + '/delay',
 		type: 'GET',
 		dataType: 'json'
 	}).complete(function(response){
