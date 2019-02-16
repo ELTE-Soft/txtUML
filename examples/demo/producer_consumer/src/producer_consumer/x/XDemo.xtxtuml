@@ -8,23 +8,24 @@ import producer_consumer.x.model.Production;
 import producer_consumer.x.model.Storage;
 
 execution XDemo {
-
 	configure {
 		logLevel = LogLevel.TRACE;
 	}
 
 	initialization {
-		Storage storage = create Storage(Integer.valueOf(2));
-		Producer p1 = create Producer(Integer.valueOf(3));
-		Producer p2 = create Producer(Integer.valueOf(3));
-		Consumer c1 = create Consumer(Integer.valueOf(2));
-		Consumer c2 = create Consumer(Integer.valueOf(2));
-		Consumer c3 = create Consumer(Integer.valueOf(2));
+		Storage storage = new Storage(Integer.valueOf(2));
+		Producer p1 = new Producer(Integer.valueOf(3));
+		Producer p2 = new Producer(Integer.valueOf(3));
+		Consumer c1 = new Consumer(Integer.valueOf(2));
+		Consumer c2 = new Consumer(Integer.valueOf(2));
+		Consumer c3 = new Consumer(Integer.valueOf(2));
+
 		link p1, storage via Production;
 		link p2, storage via Production;
 		link c1, storage via Consumption;
 		link c2, storage via Consumption;
 		link c3, storage via Consumption;
+
 		start storage;
 		start p1;
 		start p2;
@@ -32,6 +33,4 @@ execution XDemo {
 		start c2;
 		start c3;
 	}
-
 }
-

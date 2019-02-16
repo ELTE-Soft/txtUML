@@ -10,20 +10,19 @@ import monitoring.x.model.ToAggregator;
 import monitoring.x.model.ToAlert;
 import monitoring.x.model.Write;
 
-execution XDemo {
-
+execution Demo {
 	ResourceMonitor monitor;
-
 	Aggregator aggregator;
-
 	Alert alert;
 
 	initialization {
-		monitor = create ResourceMonitor();
-		aggregator = create Aggregator();
-		alert = create Alert(3);
+		monitor = new ResourceMonitor();
+		aggregator = new Aggregator();
+		alert = new Alert(3);
+
 		link monitor, aggregator via ToAggregator;
 		link monitor, alert via ToAlert;
+
 		start monitor;
 		start aggregator;
 		start alert;
@@ -50,10 +49,5 @@ execution XDemo {
 			}
 			c = System.in.read() as char;
 		}
-
 	}
-
 }
-
-
-

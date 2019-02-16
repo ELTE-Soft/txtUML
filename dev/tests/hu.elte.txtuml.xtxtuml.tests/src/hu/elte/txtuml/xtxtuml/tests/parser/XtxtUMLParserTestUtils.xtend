@@ -22,8 +22,8 @@ import hu.elte.txtuml.xtxtuml.xtxtUML.TUEnumeration
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUEnumerationLiteral
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUExecution
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUExecutionAttribute
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUExecutionBlock
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUExecutionElement
-import hu.elte.txtuml.xtxtuml.xtxtUML.TUExecutionMethod
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUExternality
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUFile
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUInterface
@@ -119,8 +119,8 @@ class XtxtUMLParserTestUtils {
 		assertEquals(name, execution.name);
 		execution.elements.performChecks(elementChecks)
 	}
-	
-	def attribute(TUExecutionElement element, String typeName, String name, Procedure1<XExpression> initializerCheck){
+
+	def attribute(TUExecutionElement element, String typeName, String name, Procedure1<XExpression> initializerCheck) {
 		assertTrue(element instanceof TUExecutionAttribute);
 		val attribute = element as TUExecutionAttribute;
 		assertEquals(typeName, attribute.type.simpleName);
@@ -131,12 +131,12 @@ class XtxtUMLParserTestUtils {
 			initializerCheck.apply(attribute.initExpression);
 		}
 	}
-	
-	def method(TUExecutionElement element, String typeName, List<Procedure1<XExpression>> expressionChecks){
-		assertTrue(element instanceof TUExecutionMethod);
-		val operation = element as TUExecutionMethod;
-		assertEquals(typeName, operation.type.toString);
-		(operation.body as XBlockExpression).expressions.performChecks(expressionChecks);
+
+	def block(TUExecutionElement element, String typeName, List<Procedure1<XExpression>> expressionChecks) {
+		assertTrue(element instanceof TUExecutionBlock);
+		val execBlock = element as TUExecutionBlock;
+		assertEquals(typeName, execBlock.type.toString);
+		(execBlock.body as XBlockExpression).expressions.performChecks(expressionChecks);
 	}
 
 	def signal(TUModelElement element, String name, String superName,
@@ -643,7 +643,7 @@ class XtxtUMLParserTestUtils {
 	def assignment(XExpression expression, String featureName, Procedure1<XExpression> valueCheck) {
 		assertTrue(expression instanceof XAssignment);
 		val assign = expression as XAssignment;
-		assertEquals(featureName, assign.concreteSyntaxFeatureName);
+		assertEquals(featureName, assign.feature.simpleName);
 		valueCheck.apply(assign.value);
 	}
 
@@ -739,7 +739,6 @@ class XtxtUMLParserTestUtils {
 	def private <T> performChecks(List<T> elements, List<Procedure1<T>> checks) {
 		assertEquals(checks == null, elements == null);
 		if (checks != null) {
-			
 			assertEquals(checks.size, elements.size);
 			val checkIt = checks.iterator;
 			val elementIt = elements.iterator;

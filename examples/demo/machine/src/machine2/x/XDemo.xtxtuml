@@ -1,23 +1,20 @@
-package machine1.x;
+package machine2.x;
 
 import hu.elte.txtuml.api.model.^execution.LogLevel;
-import machine1.x.model.DoYourWork;
-import machine1.x.model.Machine;
-import machine1.x.model.Usage;
-import machine1.x.model.User;
+import machine2.x.model.DoYourWork;
+import machine2.x.model.Machine;
+import machine2.x.model.Usage;
+import machine2.x.model.User;
 
 execution XDemo {
-
-	Machine m;
-
 	configure {
 		logLevel = LogLevel.TRACE;
 	}
 
 	initialization {
-		m = create Machine();
-		User u1 = create User();
-		User u2 = create User();
+		Machine m = new Machine(3);
+		User u1 = new User();
+		User u2 = new User();
 
 		link m, u1 via Usage;
 		link m, u2 via Usage;
@@ -29,10 +26,4 @@ execution XDemo {
 
 		send new DoYourWork() to u1;
 	}
-
-	after {
-		m.printSwitchOnLog();
-	}
-
 }
-

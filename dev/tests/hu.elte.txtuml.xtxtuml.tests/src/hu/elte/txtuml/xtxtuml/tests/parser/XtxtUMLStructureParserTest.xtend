@@ -59,44 +59,44 @@ class XtxtUMLStructureParserTest {
 	def parseExecution() {
 		'''
 			package test.exec;
-			class TestClass;	// in a model
-			execution TestExecutionWithoutInit;
-			execution TestExecutionWithInit{
-				initialization{}
+			class TestClass; // in a model
+			execution EmptyExecution;
+			execution ExecutionWithInit {
+				initialization {}
 			}
-			execution TestExecutionWithMembers{
+			execution ExecutionWithMembers {
 				int bTest = 5;
 				TestClass tClass;
-				configure{
+				configure {
 					name = "ExecName";
 				}
-				initialization{
+				initialization {
 					tClass = new TestClass();
 				}
-				before{}
-				during{}
-				after{}
+				before {}
+				during {}
+				after {}
 			}
 		'''
 		.parse.
 		file("test.exec", null, #[
 			[class_("TestClass", null, #[])],
-			[execution("TestExecutionWithoutInit", #[])],
-			[execution("TestExecutionWithInit", #[
-				[method("initialization",#[])]
+			[execution("EmptyExecution", #[])],
+			[execution("ExecutionWithInit", #[
+				[block("initialization", #[])]
 			])],
-			[execution("TestExecutionWithMembers", #[
-				[attribute("int","bTest",[number(5)])],
-				[attribute("TestClass","tClass",null)],
-				[method("configure",#[
-					[assignment("name",[string("ExecName")])]
+			[execution("ExecutionWithMembers", #[
+				[attribute("int","bTest", [number(5)])],
+				[attribute("TestClass", "tClass", null)],
+				[block("configure",#[
+					[assignment("name", [string("ExecName")])]
 				])],
-				[method("initialization",#[
-					[assignment("tClass",[new_("TestClass", null, #[], null)])]
+				[block("initialization", #[
+					[assignment("tClass", [new_("TestClass", null, #[], null)])]
 				])],
-				[method("before",#[])],
-				[method("during",#[])],
-				[method("after",#[])]				
+				[block("before", #[])],
+				[block("during", #[])],
+				[block("after", #[])]
 			])]
 		])
 	}

@@ -4,11 +4,8 @@ import clock.x.model.Clock;
 import java.time.LocalDateTime;
 
 execution XDemo {
-
 	initialization {
 		LocalDateTime now = LocalDateTime.now();
-		create Clock(now.getHour(), now.getMinute(), now.getSecond());
+		new Clock(now.getHour(), now.getMinute(), now.getSecond());
 	}
-
 }
-

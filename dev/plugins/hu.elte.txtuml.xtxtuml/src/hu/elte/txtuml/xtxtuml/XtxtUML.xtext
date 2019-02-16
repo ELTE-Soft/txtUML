@@ -91,20 +91,23 @@ TUConnectorEnd :
 // Execution related
 
 TUExecutionElement :
-	TUExecutionMethod | TUExecutionAttribute
+	TUExecutionAttribute | TUExecutionBlock
 ;
 
 TUExecutionAttribute :
 	type=JvmTypeReference name=ValidID ('=' initExpression=XExpression)? ';'?
 ;
 
-TUExecutionMethod :
-	type=TUExecutionElementType body=XBlockExpression ';'?
+TUExecutionBlock :
+	type=TUExecutionBlockType body=XBlockExpression ';'?
 ;
 
-enum TUExecutionElementType 
-	: CONFIGURE = 'configure' | INITIALIZATION = 'initialization' | BEFORE = 'before'
-	| DURING = 'during' | AFTER = 'after'
+enum TUExecutionBlockType
+	: CONFIGURE = 'configure'
+	| INITIALIZATION = 'initialization'
+	| BEFORE = 'before'
+	| DURING = 'during'
+	| AFTER = 'after'
 ;
 
 // Signal- and Class-related

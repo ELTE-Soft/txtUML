@@ -12,24 +12,23 @@ import train.x.model.Lamp;
 import train.x.model.SwitchLight;
 
 execution XDemo {
-
 	configure {
 		logLevel = LogLevel.TRACE;
 	}
 
 	Gearbox g;
-
 	Engine e;
-
 	Lamp l;
 
 	initialization {
-		g = create Gearbox();
-		e = create Engine();
-		l = create Lamp();
+		g = new Gearbox();
+		e = new Engine();
+		l = new Lamp();
+
 		link g, e via GE;
 		link g, l via GL;
 		link l, e via LE;
+
 		start g;
 		start e;
 		start l;
@@ -55,6 +54,4 @@ execution XDemo {
 			send new Backward() to g;
 		}
 	}
-
 }
-

@@ -8,7 +8,6 @@ import machine3.x.model.Usage;
 import machine3.x.model.User;
 
 execution XDemo {
-
 	configure {
 		logLevel = LogLevel.TRACE;
 	}
@@ -40,6 +39,4 @@ execution XDemo {
 
 		Timer.schedule(new DoYourWork(), oneOfTheUsers, 5000);
 	}
-
 }
-

@@ -90,7 +90,7 @@ class XtxtUMLUniquenessValidatorTest {
 	}
 	
 	@Test
-	def checkExecutionAttributeNameIsUnique(){
+	def checkExecutionAttributeNameIsUnique() {
 		'''
 			execution Foo {
 				int bar;
@@ -110,25 +110,25 @@ class XtxtUMLUniquenessValidatorTest {
 		parsedFile.assertError(TU_EXECUTION_ATTRIBUTE, NOT_UNIQUE_NAME, rawFile.indexOfNth("bar", 1), 3);
 		parsedFile.assertError(TU_EXECUTION_ATTRIBUTE, NOT_UNIQUE_NAME, rawFile.indexOfNth("bar", 2), 3);
 	}
-	
+
 	@Test
-	def checkExecutionMethodNameIsUnique(){
+	def checkExecutionBlockNameIsUnique() {
 		'''
 			execution Foo {
-				initialization{}
+				initialization {}
 			}
 		'''.parse.assertNoError(NOT_UNIQUE_NAME);
-		
+
 		val rawFile = '''
 			execution Foo {
-				initialization{}
-				initialization{}
+				initialization {}
+				initialization {}
 			}
 		''';
 
 		val parsedFile = rawFile.parse;
-		parsedFile.assertError(TU_EXECUTION_METHOD, NOT_UNIQUE_NAME, rawFile.indexOfNth("initialization", 0), 14);
-		parsedFile.assertError(TU_EXECUTION_METHOD, NOT_UNIQUE_NAME, rawFile.indexOfNth("initialization", 1), 14);
+		parsedFile.assertError(TU_EXECUTION_BLOCK, NOT_UNIQUE_NAME, rawFile.indexOfNth("initialization", 0), 14);
+		parsedFile.assertError(TU_EXECUTION_BLOCK, NOT_UNIQUE_NAME, rawFile.indexOfNth("initialization", 1), 14);
 	}
 
 	@Test

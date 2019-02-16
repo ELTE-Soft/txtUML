@@ -39,9 +39,8 @@ import hu.elte.txtuml.xtxtuml.xtxtUML.TUEnumeration
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUEnumerationLiteral
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUExecution
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUExecutionAttribute
-import hu.elte.txtuml.xtxtuml.xtxtUML.TUExecutionElement
-import hu.elte.txtuml.xtxtuml.xtxtUML.TUExecutionElementType
-import hu.elte.txtuml.xtxtuml.xtxtUML.TUExecutionMethod
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUExecutionBlock
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUExecutionBlockType
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUInterface
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUModelDeclaration
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUOperation
@@ -104,96 +103,39 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 			documentation = exec.documentation
 			visibility = JvmVisibility.PUBLIC
 			superTypes += Execution.typeRef
+
+			// add config attributes
 			members += exec.toField("checkLevel", CheckLevel.typeRef)
 			members += exec.toField("logLevel", LogLevel.typeRef)
 			members += exec.toField("timeMultiplier", double.typeRef)
 			members += exec.toField("name", String.typeRef)
+
+			// add declared elements
 			for (element : exec.elements) {
-				for (e : element.executionelementToJvmMember) {
-					members += e
-				}
+				members += element.toJvmMembers
 			}
-			if (!exec.elements.exists[it instanceof TUExecutionMethod && 
-					(it as TUExecutionMethod).type == TUExecutionElementType.INITIALIZATION]) {
+
+			// add empty init block if not declared
+			if (!exec.elements.filter(TUExecutionBlock)
+				.exists[type == TUExecutionBlockType.INITIALIZATION]
+			) {
 				members += exec.toMethod("initialization", Void.TYPE.typeRef) [
 					visibility = JvmVisibility.PUBLIC
 					annotations += annotationRef(Override)
 					body = ''''''
 				]
 			}
+
+			// add main method
 			members += exec.toMethod("main", Void.TYPE.typeRef) [
 				documentation = exec.documentation
+				visibility = JvmVisibility.PUBLIC
 				parameters += exec.toParameter("args", String.typeRef.addArrayTypeDimension)
 				varArgs = true
-
 				static = true
 				body = '''new «exec.name»().run();'''
 			]
 		]
-	}
-
-	def private executionelementToJvmMember(TUExecutionElement element) {
-		if (element instanceof TUExecutionMethod) {
-			return element.executionMethodToJvmMember
-		} else {
-			val e = element as TUExecutionAttribute;
-			return #[
-				element.toField(e.name, e.type)[
-					initializer = e.initExpression
-					documentation = e.documentation
-				]
-			]
-		}
-	}
-
-	def private executionMethodToJvmMember(TUExecutionMethod method) {
-		if (method.type == TUExecutionElementType.CONFIGURE) {
-			val nameList = (method.body as XBlockExpression).expressions.filter [
-				(it instanceof XAssignment) && (it as XAssignment).concreteSyntaxFeatureName == "name"
-			]
-			var elementList = newLinkedList(
-				method.toMethod("configureExecution",Void.TYPE.typeRef)[
-					documentation = method.documentation
-					visibility = JvmVisibility.PRIVATE
-					body = method.body
-				],
-				method.toMethod(method.type.toString, Void.TYPE.typeRef) [
-					documentation = method.documentation
-					parameters += method.toParameter("s", Settings.typeRef)
-					visibility = JvmVisibility.PUBLIC
-					annotations += annotationRef(Override)
-					body = '''
-						configureExecution();
-						if (logLevel != null)
-						  s.logLevel = logLevel;
-						if (checkLevel != null)
-						  s.checkLevel = checkLevel;
-						if (timeMultiplier != 0.0)
-						  s.timeMultiplier = timeMultiplier;
-					'''
-				]
-			)
-			if (!nameList.empty) {
-				elementList.add(
-				method.toMethod("name", String.typeRef) [
-					visibility = JvmVisibility.PUBLIC
-					annotations += annotationRef(Override)
-					body = '''
-						«FOR e : nameList»
-							«NodeModelUtils.getTokenText(NodeModelUtils.findActualNodeFor(e))»;
-						«ENDFOR»
-						return name;
-					'''
-				])
-			}
-			return elementList
-		}
-		return #[method.toMethod(method.type.toString, Void.TYPE.typeRef) [
-			documentation = method.documentation
-			visibility = JvmVisibility.PUBLIC
-			annotations += annotationRef(Override)
-			body = method.body
-		]]
 	}
 
 	def dispatch void infer(TUAssociation assoc, IJvmDeclaredTypeAcceptor acceptor, boolean isPreIndexingPhase) {
@@ -435,6 +377,73 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 		]
 	}
 
+	def dispatch private toJvmMembers(TUExecutionAttribute execAttr) {
+		#[execAttr.toField(execAttr.name, execAttr.type) [
+			documentation = execAttr.documentation
+			visibility = JvmVisibility.PRIVATE
+			initializer = execAttr.initExpression
+		]]
+	}
+
+	def dispatch private toJvmMembers(TUExecutionBlock execBlock) {
+		if (execBlock.type != TUExecutionBlockType.CONFIGURE) {
+			return #[execBlock.toMethod(execBlock.type.toString, Void.TYPE.typeRef) [
+				documentation = execBlock.documentation
+				visibility = JvmVisibility.PUBLIC
+				annotations += annotationRef(Override)
+				body = execBlock.body
+			]]
+		}
+
+		// config blocks need special treatment, see below
+
+		val configJvmMembers = newLinkedList
+
+		// handle name assignments
+
+		val nameAssignment = (execBlock.body as XBlockExpression).expressions
+			.filter(XAssignment).findFirst[concreteSyntaxFeatureName == "name"];
+
+		if (nameAssignment != null) {
+			configJvmMembers.add(execBlock.toMethod("name", String.typeRef) [
+				visibility = JvmVisibility.PUBLIC
+				annotations += annotationRef(Override)
+				body = '''
+					«NodeModelUtils.getTokenText(NodeModelUtils.findActualNodeFor(nameAssignment))»;
+					return name;
+				'''
+			])
+		}
+
+		// handle remaining assignments
+
+		// separate method needed because the declared body
+		// is validated only if it's directly inferred
+		configJvmMembers.add(execBlock.toMethod("doConfigure", Void.TYPE.typeRef) [
+			visibility = JvmVisibility.PRIVATE
+			body = execBlock.body
+		])
+
+		configJvmMembers.add(execBlock.toMethod("configure", Void.TYPE.typeRef) [
+			documentation = execBlock.documentation
+			parameters += execBlock.toParameter("s", Settings.typeRef)
+			visibility = JvmVisibility.PUBLIC
+			annotations += annotationRef(Override)
+
+			body = '''
+				doConfigure();
+				if (logLevel != null)
+				  s.logLevel = logLevel;
+				if (checkLevel != null)
+				  s.checkLevel = checkLevel;
+				if (timeMultiplier != 0.0)
+				  s.timeMultiplier = timeMultiplier;
+			'''
+		])
+
+		return configJvmMembers
+	}
+
 	def dispatch private toJvmMember(TUAttribute attr) {
 		attr.toField(attr.name, attr.prefix.type) [
 			documentation = attr.documentation
@@ -442,6 +451,7 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 			val modifiers = attr.prefix.modifiers
 			static = modifiers.static
 			visibility = modifiers.visibility.toJvmVisibility
+
 			switch (modifiers.externality) {
 				case EXTERNAL: annotations += External.annotationRef
 				default: {}
