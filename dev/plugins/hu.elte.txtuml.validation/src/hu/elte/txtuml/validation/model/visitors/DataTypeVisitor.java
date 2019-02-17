@@ -29,10 +29,10 @@ public class DataTypeVisitor extends VisitorBase {
 	@Override
 	public boolean visit(FieldDeclaration node) {
 		if (!ElementTypeTeller.isFinal(node)) {
-			collector.report(MUTABLE_DATA_TYPE_FIELD.create(collector.getSourceInfo(), node));
+			collector.report(MUTABLE_DATA_TYPE_FIELD.create(collector.getSourceInfo(), node.getType()));
 		}
 		if (!Utils.isAllowedAttributeType(node.getType().resolveBinding(), false)) {
-			collector.report(INVALID_DATA_TYPE_FIELD.create(collector.getSourceInfo(), node));
+			collector.report(INVALID_DATA_TYPE_FIELD.create(collector.getSourceInfo(), node.getType()));
 		}
 		return false;
 	}
@@ -40,7 +40,8 @@ public class DataTypeVisitor extends VisitorBase {
 	@Override
 	public boolean visit(MethodDeclaration node) {
 		if (!node.isConstructor()) {
-			if (node.getReturnType2() != null && !Utils.isAllowedParameterType(node.getReturnType2().resolveBinding(), true)) {
+			if (node.getReturnType2() != null
+					&& !Utils.isAllowedParameterType(node.getReturnType2().resolveBinding(), true)) {
 				collector.report(INVALID_PARAMETER_TYPE.create(collector.getSourceInfo(), node.getReturnType2()));
 			}
 		}

@@ -12,15 +12,21 @@ import org.eclipse.jdt.core.dom.ASTNode;
 public abstract class AbstractValidationProblem extends CategorizedProblem implements IValidationProblem {
 
 	private final SourceInfo sourceInfo;
-	private int sourceStart;
-	private int sourceEnd;
+	protected int sourceStart;
+	protected int sourceEnd;
 	private int lineNumber;
 
 	public AbstractValidationProblem(SourceInfo sourceInfo, ASTNode node) {
 		this.sourceInfo = sourceInfo;
-		this.sourceStart = node.getStartPosition();
-		this.sourceEnd = node.getStartPosition() + node.getLength() - 1;
+
+		ASTNode nodeToMark = getNodeToMark(node);
+		this.sourceStart = nodeToMark.getStartPosition();
+		this.sourceEnd = nodeToMark.getStartPosition() + nodeToMark.getLength();
 		this.lineNumber = sourceInfo.getSourceLineNumber(getSourceEnd());
+	}
+
+	protected ASTNode getNodeToMark(ASTNode source) {
+		return source;
 	}
 
 	@Override
