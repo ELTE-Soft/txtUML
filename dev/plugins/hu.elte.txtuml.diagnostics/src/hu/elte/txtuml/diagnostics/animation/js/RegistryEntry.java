@@ -5,17 +5,17 @@ public class RegistryEntry {
 	private String modelClassInstanceName;
 	private String locationName;
 
-	RegistryEntry(String modelClassName, String modelClassInstanceName, String locationName){
+	RegistryEntry(String modelClassName, String modelClassInstanceName, String locationName) {
 		this.modelClassName = modelClassName;
 		this.modelClassInstanceName = modelClassInstanceName;
 		this.locationName = locationName;
 	}
 
-	public String getModelClassName(){
+	public String getModelClassName() {
 		return modelClassName;
 	}
 
-	public String getModelClassInstanceName(){
+	public String getModelClassInstanceName() {
 		return modelClassInstanceName;
 	}
 

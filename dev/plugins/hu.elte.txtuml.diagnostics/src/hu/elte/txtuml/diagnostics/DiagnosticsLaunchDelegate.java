@@ -32,7 +32,7 @@ public class DiagnosticsLaunchDelegate extends JavaLaunchDelegate {
 				GlobalSettings.TXTUML_DIAGNOSTICS_HTTP_PORT_KEY);
 		int httpPort = httpPortToModifiedConfiguration.getFirst();
 		ILaunchConfiguration modifiedConfiguration = httpPortToModifiedConfiguration.getSecond();
-		
+
 		Pair<Integer, ILaunchConfiguration> socketPortToModifiedConfiguration = getAndSetPort(modifiedConfiguration,
 				GlobalSettings.TXTUML_DIAGNOSTICS_SOCKET_PORT_KEY);
 		int socketPort = socketPortToModifiedConfiguration.getFirst();

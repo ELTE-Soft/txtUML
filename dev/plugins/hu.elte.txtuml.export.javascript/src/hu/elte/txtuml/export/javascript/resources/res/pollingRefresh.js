@@ -2,11 +2,11 @@
 
 var errorLabelElement = $('#debug-port-error');
 var debugContainer = $('#debug-toggle-container');
-var stateMachineDelay = $('#animation-delay-slider').val();
+var confirmedAnimationDelay = 1.0;
 
 //try to load from sessionStorage
-var port = sessionStorage['diagnosticsPort'];
-$('#debug-port-input').val(port);
+var currentPort = sessionStorage['diagnosticsPort'];
+$('#debug-port-input').val(currentPort);
 
 var isPolling = false;
 if(sessionStorage['isPolling'] == "true") {
@@ -20,31 +20,29 @@ if(sessionStorage['isPolling'] == "true") {
  * If successful, updates the diagram with `setActiveElements` from `animation.js`
  * If not, clears active elements, and alerts the user.
  */
-function refreshElements(){
+function refreshElements(queryPort){
 	$.ajax({
-		url: 'http://localhost:' + port + '/' + DIAGNOSTICS_PATH,
+		url: 'http://localhost:' + queryPort + '/' + DIAGNOSTICS_PATH,
 		type: 'GET',
 		dataType: 'json'
 	}).complete(function(response){
-		if(response.status == 200 && isPolling){
+		if(!isPolling || currentPort != queryPort) return;
+
+		if(response.status == 200){
 			setActiveElements((JSON.parse(response.responseText))
 				.map(entry => _visualizer.getShapeIdByElementName(entry.location)));
 			hideError();
 		}
 		else{
 			clearCurrentActiveElements();
-			if(isPolling){
-				showError();
-			}else{
-				hideError();
-			}
+			showError();
 		}
 	});
 }
 
 function pollingRefresh(){
-	refreshElements();
-	refreshDelayInput();
+	refreshElements(currentPort);
+	refreshAnimationDelay(currentPort);
 	if(isPolling){
 		setTimeout(pollingRefresh, REFRESH_INTERVAL_IN_MILLISECONDS);
 	}
@@ -79,11 +77,14 @@ var typingTimer;
 var DONE_TYPING_TIMEOUT_IN_MILLISECONDS = 500;
 
 function doneTyping(){
-	port = $('#debug-port-input').val();
-	sessionStorage['diagnosticsPort'] = port;
+	hideError();
+	clearCurrentActiveElements();
+
+	currentPort = $('#debug-port-input').val();
+	sessionStorage['diagnosticsPort'] = currentPort;
 }
 
-//add event listeners to the debug input
+//add event listener to the debug input
 $('#debug-port-input').on('keyup change input', function(){
 	clearTimeout(typingTimer);
 	if($('#debug-port-input').val()){
@@ -92,46 +93,37 @@ $('#debug-port-input').on('keyup change input', function(){
 });
 
 //send animation delay to the server
-function sendSMTime(){
+function sendAnimationDelay(animationDelayToSend){
 	$.ajax({
-		url: 'http://localhost:' + port + '/delay',
+		url: 'http://localhost:' + currentPort + '/delay',
 		type: 'POST',
 		dataType: 'json',
-		data: {delayTime:stateMachineDelay},
-	    success: function(response) {
-        	if(response.status == 200 && isPolling){
-			}
-    	}
+		data: { animationDelay: animationDelayToSend * 1000 },
+		success: function(response) {}
 	});
 }
 
-//add event listeners to the state machine's delay range
-$('#animation-delay-slider').on('input change', function(){
-	stateMachineDelay = this.value;
-	$('#animation-delay-input')[0].value = parseInt(this.value);
-	$('#animation-delay-slider')[0].value = parseInt(this.value);
-	sendSMTime();
+$('#animation-delay-slider').val(confirmedAnimationDelay);
+$('#animation-delay-label').text(confirmedAnimationDelay + " sec");
+
+//add event listener to the animation delay slider
+$('#animation-delay-slider').on('change', function(){
+	if(isPolling) sendAnimationDelay(this.value);
+	this.value = confirmedAnimationDelay;
 });
 
-//add event listeners to the state machine's delay number input
-$('#animation-delay-input').on('input change', function(){
-	stateMachineDelay = this.value;
-	$('#animation-delay-slider')[0].value = parseInt(this.value);
-	$('#animation-delay-input')[0].value = parseInt(this.value); 
-	sendSMTime();
-});
-
-function refreshDelayInput(){
+function refreshAnimationDelay(queryPort){
 	$.ajax({
-		url: 'http://localhost:' + port + '/delay',
+		url: 'http://localhost:' + queryPort + '/delay',
 		type: 'GET',
 		dataType: 'json'
 	}).complete(function(response){
-		if(response.status == 200 && isPolling){
-			var data = JSON.parse(response.responseText);
-			stateMachineDelay = parseInt(data[0].delayTime);
-			$('#animation-delay-slider')[0].value = parseInt(data[0].delayTime);
-			$('#animation-delay-input')[0].value = parseInt(data[0].delayTime);
+		if(!isPolling || currentPort != queryPort) return;
+
+		if(response.status == 200){
+			confirmedAnimationDelay = JSON.parse(response.responseText).animationDelay / 1000;
+			$('#animation-delay-slider').val(confirmedAnimationDelay);
+			$('#animation-delay-label').text(confirmedAnimationDelay + " sec");
 		}
 	});
 }

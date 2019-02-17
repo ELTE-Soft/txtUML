@@ -77,7 +77,7 @@ public class DiagnosticsService extends NotifierOfTermination implements TraceLi
 			notifyAllOfTermination();
 			return;
 		}
-		
+
 		diagnosticsSocketPort = socketPort;
 		addTerminationListener(() -> sendMessage(new Message(MessageType.CHECKOUT, serviceInstanceID)));
 
@@ -105,7 +105,6 @@ public class DiagnosticsService extends NotifierOfTermination implements TraceLi
 
 		return port;
 	}
-	
 
 	public void shutdown() {
 		notifyAllOfTermination();
@@ -113,36 +112,36 @@ public class DiagnosticsService extends NotifierOfTermination implements TraceLi
 
 	@Override
 	public void processingSignal(ModelClass object, Signal signal, Optional<ModelClass> sender) {
-		sendNewModelEvent(MessageType.PROCESSING_SIGNAL, object.getClass().getCanonicalName(), getIdentifierOf(object), getNameOf(object),
-				signal.getClass().getCanonicalName());
+		sendNewModelEvent(MessageType.PROCESSING_SIGNAL, object.getClass().getCanonicalName(),
+			getIdentifierOf(object), getNameOf(object), signal.getClass().getCanonicalName());
 	}
 
 	@Override
 	public void usingTransition(ModelClass object, Transition transition) {
 		String transitionName = transition.getClass().getCanonicalName();
-		sendNewModelEvent(MessageType.USING_TRANSITION, object.getClass().getCanonicalName(), getIdentifierOf(object),
-				getNameOf(object), transitionName);
+		sendNewModelEvent(MessageType.USING_TRANSITION, object.getClass().getCanonicalName(),
+			getIdentifierOf(object), getNameOf(object), transitionName);
 	}
 
 	@Override
 	public void enteringVertex(ModelClass object, Vertex vertex) {
 		String vertexName = vertex.getClass().getCanonicalName();
-		sendNewModelEvent(MessageType.ENTERING_VERTEX, object.getClass().getCanonicalName(), getIdentifierOf(object),
-				getNameOf(object), vertexName);
+		sendNewModelEvent(MessageType.ENTERING_VERTEX, object.getClass().getCanonicalName(),
+			getIdentifierOf(object), getNameOf(object), vertexName);
 
 	}
 
 	@Override
 	public void leavingVertex(ModelClass object, Vertex vertex) {
 		String vertexName = vertex.getClass().getCanonicalName();
-		sendNewModelEvent(MessageType.LEAVING_VERTEX, object.getClass().getCanonicalName(), getIdentifierOf(object),
-				getNameOf(object), vertexName);
+		sendNewModelEvent(MessageType.LEAVING_VERTEX, object.getClass().getCanonicalName(),
+			getIdentifierOf(object), getNameOf(object), vertexName);
 	}
 
-	private void sendNewModelEvent(MessageType type, String modelClassName, String modelClassInstanceID, String modelClassInstanceName,
-			String eventTargetClassName) {
-		sendMessage(
-				new ModelEvent(type, serviceInstanceID, modelClassName, modelClassInstanceID, modelClassInstanceName, eventTargetClassName));
+	private void sendNewModelEvent(MessageType type, String modelClassName, String modelClassInstanceID,
+			String modelClassInstanceName, String eventTargetClassName) {
+		sendMessage(new ModelEvent(type, serviceInstanceID, modelClassName, modelClassInstanceID,
+			modelClassInstanceName, eventTargetClassName));
 	}
 
 	private void sendMessage(Message message) {

@@ -25,8 +25,8 @@ public class DiagnosticsPlugin implements IDisposable, Runnable {
 
 	private static final int SERVER_SOCKET_BACKLOG = 50;
 	private static final int FAULT_TOLERANCE = 99;
-	private AtomicInteger delay = new AtomicInteger(1000);
-	
+	private AtomicInteger animationDelay = new AtomicInteger(1000);
+
 	private Thread thread;
 	private volatile boolean shutdownHasCome = false;
 	private ServerSocket serverSocket;
@@ -34,7 +34,7 @@ public class DiagnosticsPlugin implements IDisposable, Runnable {
 	private InstanceRegister instanceRegister;
 	private Animator animator;
 	private DiagnosticsServer server;
-	
+
 	public DiagnosticsPlugin(int diagnosticsPort, int httpPort, String projectName, String workingDirectory) throws IOException {
 		try {
 			serverSocket = new ServerSocket(diagnosticsPort, SERVER_SOCKET_BACKLOG, InetAddress.getLoopbackAddress());
@@ -46,27 +46,27 @@ public class DiagnosticsPlugin implements IDisposable, Runnable {
 		instanceRegister = new InstanceRegister();
 		animator = new Animator(instanceRegister, modelMapper);
 		server = new DiagnosticsServer(this);
-		
+
 		try {
 			server.start(httpPort);
 		} catch (IOException e) {
 			Logger.sys.error("Couldn't start HTTP server on port " + httpPort + " in service instance 0x", e);
 			return;
 		}
-		
+
 		thread = new Thread(this, "txtUMLDiagnosticsPlugin");
 		thread.start();
 		//Logger.logInfo("txtUML DiagnosticsPlugin started"));
 	}
-	
-	public void setDelay(int delay){
-		this.delay.set(delay);
+
+	public void setAnimationDelay(int animationDelay) {
+		this.animationDelay.set(animationDelay);
 	}
-	
-	public int getDelay(){
-		return this.delay.intValue();
+
+	public int getAnimationDelay() {
+		return animationDelay.intValue();
 	}
-	
+
 	@Override
 	public void dispose() {
 		shutdownHasCome = true;
@@ -90,7 +90,7 @@ public class DiagnosticsPlugin implements IDisposable, Runnable {
 		instanceRegister = null;
 		modelMapper.dispose();
 		modelMapper = null;
-		
+
 		server.stop();
 		server = null;
 	}
@@ -132,8 +132,9 @@ public class DiagnosticsPlugin implements IDisposable, Runnable {
 						if (event instanceof ModelEvent) {
 							animator.animateEvent((ModelEvent)event);
 							server.animateEvent((ModelEvent)event);
+
 							try {
-								Thread.sleep(this.delay.longValue());
+								Thread.sleep(getAnimationDelay());
 							} catch (InterruptedException ex) {}
 						}
 												
