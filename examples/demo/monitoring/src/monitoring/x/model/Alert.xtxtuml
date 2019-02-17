@@ -7,7 +7,7 @@ class Alert {
 	int max;
 	int level;
 	
-	Alert(int max) {
+	public Alert(int max) {
 		this.max = max;
 		this.level = 0;
 	}

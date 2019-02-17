@@ -13,6 +13,9 @@ import hu.elte.txtuml.xtxtuml.xtxtUML.TUConstructor
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUEntryOrExitActivity
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUEnumeration
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUEnumerationLiteral
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUExecution
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUExecutionAttribute
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUExecutionBlock
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUFile
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUInterface
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUModelElement
@@ -84,7 +87,30 @@ class XtxtUMLUniquenessValidator extends XtxtUMLNameValidator {
 				TU_ENUMERATION_LITERAL__NAME, NOT_UNIQUE_NAME);
 		}
 	}
+	
+	@Check
+	def checkExecutionAttributeNameIsUnique(TUExecutionAttribute execAttr) {
+		val containingClass = execAttr.eContainer as TUExecution;
+		if (containingClass.elements.exists [
+			it instanceof TUExecutionAttribute && (it as TUExecutionAttribute).name == execAttr.name
+				&& it != execAttr // direct comparison is safe here
+		]) {
+			error("Duplicate attribute " + execAttr.name + " in execution " + containingClass.name, execAttr,
+				TU_EXECUTION_ATTRIBUTE__NAME, NOT_UNIQUE_NAME);
+		}
+	}
 
+	@Check
+	def checkExecutionBlockIsUnique(TUExecutionBlock execBlock) {
+		val containingClass = execBlock.eContainer as TUExecution;
+		if (containingClass.elements.exists [
+			it instanceof TUExecutionBlock && (it as TUExecutionBlock).type == execBlock.type
+				&& it != execBlock // direct comparison is safe here
+		]) {
+			error("Duplicate execution block " + execBlock.type + " in execution " + containingClass.name, execBlock,
+				TU_EXECUTION_BLOCK__TYPE, NOT_UNIQUE_NAME);
+		}
+	}
 
 	@Check
 	def checkReceptionIsUnique(TUReception reception) {
@@ -309,7 +335,6 @@ class XtxtUMLUniquenessValidator extends XtxtUMLNameValidator {
 	def protected typeNames(EList<JvmFormalParameter> parameters) {
 		parameters.map[parameterType?.type?.fullyQualifiedName]
 	}
-
 
 	/**
 	 * Returns the class qualified name of the given class member. That is,

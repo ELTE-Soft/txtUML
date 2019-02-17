@@ -1,0 +1,29 @@
+package machine2.x;
+
+import hu.elte.txtuml.api.model.^execution.LogLevel;
+import machine2.x.model.DoYourWork;
+import machine2.x.model.Machine;
+import machine2.x.model.Usage;
+import machine2.x.model.User;
+
+execution XDemo {
+	configure {
+		logLevel = LogLevel.TRACE;
+	}
+
+	initialization {
+		Machine m = new Machine(3);
+		User u1 = new User();
+		User u2 = new User();
+
+		link m, u1 via Usage;
+		link m, u2 via Usage;
+
+		log "Machine and users are starting.";
+		start m;
+		start u1;
+		start u2;
+
+		send new DoYourWork() to u1;
+	}
+}

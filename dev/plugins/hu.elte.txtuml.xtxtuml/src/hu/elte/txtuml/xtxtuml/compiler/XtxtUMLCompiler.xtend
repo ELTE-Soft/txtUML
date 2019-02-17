@@ -1,6 +1,7 @@
 package hu.elte.txtuml.xtxtuml.compiler;
 
 import com.google.inject.Inject
+import hu.elte.txtuml.api.model.API
 import hu.elte.txtuml.api.model.Action
 import hu.elte.txtuml.api.model.ModelClass.Port
 import hu.elte.txtuml.xtxtuml.common.XtxtUMLConnectiveHelper
@@ -11,10 +12,14 @@ import hu.elte.txtuml.xtxtuml.xtxtUML.TUConnectiveEnd
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUConnectorEnd
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUCreateObjectExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUDeleteObjectExpression
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUExecutionBlock
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUExecutionBlockType
 import hu.elte.txtuml.xtxtuml.xtxtUML.TULogExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUSendSignalExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUSignalAccessExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUStartObjectExpression
+import org.eclipse.emf.ecore.EObject
+import org.eclipse.xtext.EcoreUtil2
 import org.eclipse.xtext.common.types.JvmType
 import org.eclipse.xtext.xbase.XBlockExpression
 import org.eclipse.xtext.xbase.XExpression
@@ -65,6 +70,7 @@ class XtxtUMLCompiler extends XbaseCompiler {
 	def dispatch toJavaStatement(TUStartObjectExpression startExpr, ITreeAppendable it) {
 		newLine;
 		append(Action);
+
 		append(".start(");
 		startExpr.object.internalToJavaExpression(it);
 		append(");");
@@ -73,6 +79,7 @@ class XtxtUMLCompiler extends XbaseCompiler {
 	def dispatch toJavaStatement(TUDeleteObjectExpression deleteExpr, ITreeAppendable it) {
 		newLine;
 		append(Action);
+
 		append(".delete(");
 		deleteExpr.object.internalToJavaExpression(it);
 		append(");");
@@ -80,7 +87,8 @@ class XtxtUMLCompiler extends XbaseCompiler {
 
 	def dispatch toJavaStatement(TULogExpression logExpr, ITreeAppendable it) {
 		newLine;
-		append(Action);
+		appendActionOrApi(logExpr, it);
+
 		append('''.log«IF logExpr.error»Error«ENDIF»(''');
 		logExpr.message.internalToJavaExpression(it);
 		append(");");
@@ -119,7 +127,7 @@ class XtxtUMLCompiler extends XbaseCompiler {
 
 	def dispatch toJavaStatement(TUSendSignalExpression sendExpr, ITreeAppendable it) {
 		newLine;
-		append(Action);
+		appendActionOrApi(sendExpr, it);
 		append(".send(");
 
 		sendExpr.signal.internalToJavaExpression(it);
@@ -184,6 +192,15 @@ class XtxtUMLCompiler extends XbaseCompiler {
 		]
 
 		append(")");
+	}
+
+	def private appendActionOrApi(EObject obj, ITreeAppendable it) {
+		val container = EcoreUtil2.getContainerOfType(obj, TUExecutionBlock);
+		if (container != null && container.type != TUExecutionBlockType.INITIALIZATION) {
+			append(API);
+		} else {
+			append(Action);
+		}
 	}
 
 }

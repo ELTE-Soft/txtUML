@@ -5,6 +5,7 @@ import hu.elte.txtuml.xtxtuml.xtxtUML.TUAttribute
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUConnectorEnd
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUConstructor
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUEnumerationLiteral
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUExecutionAttribute
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUFile
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUModelElement
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUOperation
@@ -99,6 +100,11 @@ class XtxtUMLNameValidator extends AbstractXtxtUMLValidator {
 	@Check
 	def checkVariableNameIsNotReserved(XVariableDeclaration variable) {
 		checkReservedError(variable, variable.name, XbasePackage.Literals.XVARIABLE_DECLARATION__NAME, "variable");
+	}
+
+	@Check
+	def checkExecutionAttributeNameIsNotReserved(TUExecutionAttribute attr) {
+		checkReservedError(attr, attr.name, TU_EXECUTION_ATTRIBUTE__NAME, "attribute");
 	}
 
 	def protected checkReservedError(EObject element, String name, EStructuralFeature nameFeature, String type) {
