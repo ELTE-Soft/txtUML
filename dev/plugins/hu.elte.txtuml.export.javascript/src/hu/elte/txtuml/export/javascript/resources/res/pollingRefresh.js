@@ -107,9 +107,12 @@ $('#animation-delay-slider').val(confirmedAnimationDelay);
 $('#animation-delay-label').text(confirmedAnimationDelay + " sec");
 
 //add event listener to the animation delay slider
-$('#animation-delay-slider').on('change', function(){
-	if(isPolling) sendAnimationDelay(this.value);
-	this.value = confirmedAnimationDelay;
+$('#animation-delay-slider').on('input change', function(){
+	if(this.value != confirmedAnimationDelay){
+		var valueToSend = this.value;
+		this.value = confirmedAnimationDelay;
+		if(isPolling) sendAnimationDelay(valueToSend);
+	}
 });
 
 function refreshAnimationDelay(queryPort){
