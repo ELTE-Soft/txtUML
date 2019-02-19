@@ -12,6 +12,7 @@ import hu.elte.txtuml.api.model.execution.seqdiag.error.ModelStateAssertError;
 import hu.elte.txtuml.api.model.impl.ExecutorThread;
 import hu.elte.txtuml.api.model.impl.SequenceDiagramRelated;
 import hu.elte.txtuml.api.model.seqdiag.ExecMode;
+import hu.elte.txtuml.api.model.seqdiag.Lifeline;
 
 /**
  * Class for the single model executor thread in a sequence diagram executor.
@@ -96,7 +97,7 @@ class SeqDiagModelExecutorThread extends FIFOExecutorThread implements ExecutorT
 	 * state. If the assertion fails, a {@link ModelStateAssertError} will be
 	 * added.
 	 */
-	public void assertState(ModelClass instance, Class<?> state) {
+	public <T extends ModelClass> void assertState(Lifeline<T> instance, Class<?> state) {
 		Class<?> currentState = getModelRuntime().getRuntimeOf(instance).getCurrentState();
 		if (!currentState.equals(state)) {
 			root.getExecutor()

@@ -20,6 +20,9 @@ import hu.elte.txtuml.api.model.impl.InteractionRuntime;
 import hu.elte.txtuml.api.model.impl.SeqDiagThread;
 import hu.elte.txtuml.api.model.impl.SequenceDiagramRelated;
 import hu.elte.txtuml.api.model.seqdiag.Interaction;
+import hu.elte.txtuml.api.model.seqdiag.Lifeline;
+import hu.elte.txtuml.api.model.seqdiag.MessageParticipant;
+import hu.elte.txtuml.api.model.seqdiag.Proxy;
 import hu.elte.txtuml.utils.Logger;
 
 /**
@@ -280,20 +283,21 @@ class InteractionThread extends AbstractModelExecutor.OwnedThread<DefaultSeqDiag
 	}
 
 	@Override
-	public void message(ModelClass sender, Signal signal, ModelClass target) {
+	public <T extends ModelClass, U extends ModelClass> void message(Lifeline<T> sender, Signal signal,
+			Lifeline<U> target) {
 		Message message = Message.fromObject(sender, signal, target);
 		setExpected(message);
 	}
 
 	@Override
-	public void messageFromActor(Signal signal, ModelClass target) {
+	public <T extends ModelClass, U extends ModelClass> void messageFromActor(Signal signal, Lifeline<U> target) {
 		API.send(signal, target);
 
 		Message message = Message.fromActor(signal, target);
 		setExpected(message);
 	}
 
-	private void setExpected(Message message) {
+	private <T extends ModelClass, U extends ModelClass> void setExpected(Message message) {
 		getExecutor().removeTerminationBlocker(terminationBlocker);
 		// It is important that the termination blocker here is released after
 		// sending the signal in case of a message from actor. Otherwise the
@@ -491,8 +495,13 @@ class InteractionThread extends AbstractModelExecutor.OwnedThread<DefaultSeqDiag
 	}
 
 	@Override
-	public void assertState(ModelClass instance, Class<?> state) {
+	public <T extends ModelClass> void assertState(Lifeline<T> instance, Class<?> state) {
 		runtime.getModelThread().assertState(instance, state);
+	}
+
+	@Override
+	public <T extends ModelClass> Proxy<T> createProxy(Class<T> modelClass) {
+		return MessageParticipant.createUnbinded(modelClass);
 	}
 
 }
