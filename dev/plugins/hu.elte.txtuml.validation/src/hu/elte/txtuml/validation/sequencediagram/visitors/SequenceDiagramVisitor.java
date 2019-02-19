@@ -168,7 +168,7 @@ public class SequenceDiagramVisitor extends ASTVisitor {
 		List<MethodInvocation> parFragments = Utils.getParFragments(statements);
 		parFragments.forEach(parFragment -> {
 			if (showErrorHere) {
-				placeOfError = parFragment;
+				placeOfError = parFragment.getParent();
 			}
 			checkSendInPar(parFragment);
 		});
