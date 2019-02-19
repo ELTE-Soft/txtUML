@@ -73,6 +73,10 @@ public class SequenceDiagramVisitor extends ASTVisitor {
 		return false;
 	}
 
+	/*
+	 * Checks if there is a send in the run method, or all of the fragments in
+	 * it.
+	 */
 	private void checkSendInRun(MethodDeclaration node) {
 		final boolean showErrorHere = placeOfError == null;
 		if (showErrorHere) {
@@ -84,6 +88,10 @@ public class SequenceDiagramVisitor extends ASTVisitor {
 		}
 	}
 
+	/*
+	 * Checks if there is a send in the loop fragment, or all of the fragments
+	 * in it.
+	 */
 	private void checkSendInLoopNode(Statement loopNode) {
 		Statement body;
 		if (loopNode instanceof WhileStatement) {
@@ -96,7 +104,7 @@ public class SequenceDiagramVisitor extends ASTVisitor {
 			DoStatement doWhileLoop = (DoStatement) loopNode;
 			body = doWhileLoop.getBody();
 		}
-		boolean showErrorHere = placeOfError == loopNode.getParent() || placeOfError == loopNode;
+		boolean showErrorHere = placeOfError == loopNode;
 		if (showErrorHere) {
 			placeOfError = body;
 		}
@@ -107,8 +115,12 @@ public class SequenceDiagramVisitor extends ASTVisitor {
 		}
 	}
 
+	/*
+	 * Checks if there is a send in all of the branches of an alt/opt fragment,
+	 * or in all of their fragments.
+	 */
 	private void checkSendInIfNode(IfStatement ifNode) {
-		boolean showErrorHere = placeOfError == ifNode.getParent() || placeOfError == ifNode;
+		boolean showErrorHere = placeOfError == ifNode;
 		Statement thenStatement = ifNode.getThenStatement();
 		if (showErrorHere) {
 			placeOfError = thenStatement;
@@ -134,26 +146,29 @@ public class SequenceDiagramVisitor extends ASTVisitor {
 		}
 	}
 
+	/*
+	 * Checks if there is a send in the block, or all of the fragments in it.
+	 */
 	private void checkSendInBlock(Block block, boolean showErrorHere) {
 		List<Statement> statements = (List<Statement>) block.statements();
 		List<Statement> loops = Utils.getLoopNodes(statements);
 		loops.forEach(loop -> {
 			if (showErrorHere) {
-				placeOfError = block;
+				placeOfError = loop;
 			}
 			checkSendInLoopNode(loop);
 		});
 		List<IfStatement> ifNodes = Utils.getIfNodes(statements);
 		ifNodes.forEach(ifNode -> {
 			if (showErrorHere) {
-				placeOfError = block;
+				placeOfError = ifNode;
 			}
 			checkSendInIfNode(ifNode);
 		});
 		List<MethodInvocation> parFragments = Utils.getParFragments(statements);
 		parFragments.forEach(parFragment -> {
 			if (showErrorHere) {
-				placeOfError = block;
+				placeOfError = parFragment;
 			}
 			checkSendInPar(parFragment);
 		});
@@ -181,6 +196,9 @@ public class SequenceDiagramVisitor extends ASTVisitor {
 		}
 	}
 
+	/*
+	 * Checks if there is a send in a single statement.
+	 */
 	private void checkSendInStatement(Statement statement) {
 		if (Utils.isLoopNode(statement)) {
 			checkSendInLoopNode(statement);
@@ -197,9 +215,11 @@ public class SequenceDiagramVisitor extends ASTVisitor {
 		}
 	}
 
+	/*
+	 * Checks if there is a send in all of the arguments of the par fragment.
+	 */
 	private void checkSendInPar(MethodInvocation parNode) {
-		final boolean showErrorHere = placeOfError == parNode.getParent().getParent()
-				|| placeOfError == parNode.getParent();
+		final boolean showErrorHere = placeOfError == parNode.getParent();
 		if (showErrorHere) {
 			placeOfError = parNode.getParent();
 		}
@@ -211,14 +231,13 @@ public class SequenceDiagramVisitor extends ASTVisitor {
 			if (showErrorHere) {
 				placeOfError = (ASTNode) argument;
 			}
-			checkSendInParArgument((Expression) argument);
+			checkSendInExpression((Expression) argument);
 		});
 	}
 
-	private void checkSendInParArgument(Expression argument) {
-		checkSendInExpression(argument);
-	}
-
+	/*
+	 * Checks if there is a send in an expression.
+	 */
 	private void checkSendInExpression(Expression expression) {
 		if (expression instanceof ArrayAccess) {
 			ArrayAccess arrayAccess = (ArrayAccess) expression;
@@ -352,6 +371,10 @@ public class SequenceDiagramVisitor extends ASTVisitor {
 		}
 	}
 
+	/*
+	 * Checks if there is a send in the invoked method's body, or in all of it's
+	 * fragments.
+	 */
 	private void checkSendInMethodInvocation(MethodInvocation methodInvocation) {
 		if (Utils.isSendInvocation(methodInvocation)) {
 			return;
@@ -363,8 +386,11 @@ public class SequenceDiagramVisitor extends ASTVisitor {
 		}
 		checkSendInBlock(body, false);
 	}
-	
 
+	/*
+	 * Checks if there is a send in the invoked SuperMethod's body, or in all of
+	 * it's fragments.
+	 */
 	private void checkSendInSuperMethodInvocation(SuperMethodInvocation methodInvocation) {
 		Block body = Utils.getMethodBodyFromInvocation(methodInvocation);
 		if (body == null) {
@@ -374,6 +400,10 @@ public class SequenceDiagramVisitor extends ASTVisitor {
 		checkSendInBlock(body, false);
 	}
 
+	/**
+	 * Returns true if there is a send or a fragment in the method body, which
+	 * was invoked
+	 */
 	private boolean checkSendOrFragmentInMethodInvocation(MethodInvocation methodInvocation) {
 		if (Utils.isSendInvocation(methodInvocation)) {
 			return true;
@@ -386,6 +416,10 @@ public class SequenceDiagramVisitor extends ASTVisitor {
 		return checkSendOrFragmentInBlock(body);
 	}
 
+	/**
+	 * Returns true if there is a send or a fragment in the SuperMethod body,
+	 * which was invoked
+	 */
 	private boolean checkSendOrFragmentInSuperMethodInvocation(SuperMethodInvocation methodInvocation) {
 		Block body = Utils.getMethodBodyFromInvocation(methodInvocation);
 		if (body == null) {
@@ -395,6 +429,9 @@ public class SequenceDiagramVisitor extends ASTVisitor {
 		return checkSendOrFragmentInBlock(body);
 	}
 
+	/*
+	 * Returns true if the Block has a send or a fragment in it.
+	 */
 	private boolean checkSendOrFragmentInBlock(Block block) {
 		List<Statement> statements = (List<Statement>) block.statements();
 		List<Statement> loops = Utils.getLoopNodes(statements);
@@ -418,6 +455,10 @@ public class SequenceDiagramVisitor extends ASTVisitor {
 		return !isLeaf || containsSendOrFragment.contains(true);
 	}
 
+	/*
+	 * Checks if all of the fields are model elements, and checks their
+	 * positions.
+	 */
 	private void checkFieldDeclaration(FieldDeclaration elem) {
 		List<?> modifiers = elem.modifiers();
 		for (Object modifier : modifiers) {
