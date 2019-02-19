@@ -105,7 +105,15 @@ class SeqDiagModelExecutorThread extends FIFOExecutorThread implements ExecutorT
 	 * added.
 	 */
 	public <T extends ModelClass> void assertState(Lifeline<T> instance, Class<?> state) {
-		Class<?> currentState = getModelRuntime().getRuntimeOf(instance).getCurrentState();
+		MessageParticipant<T> p = (MessageParticipant<T>) instance;
+		if (!p.hasParticipant()) {
+			root.getExecutor().addError(new SequenceDiagramProblem(
+					"Cannot assert the state of an unbound proxy object.", ErrorLevel.ERROR));
+			return;
+		}
+
+		ModelClass mc = p.getParticipant().get();
+		Class<?> currentState = getModelRuntime().getRuntimeOf(mc).getCurrentState();
 		if (!currentState.equals(state)) {
 			root.getExecutor()
 					.addError(new ModelStateAssertError(state.getCanonicalName(), currentState.getCanonicalName()));
