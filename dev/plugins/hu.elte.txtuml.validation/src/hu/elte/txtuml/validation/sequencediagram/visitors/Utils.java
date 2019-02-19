@@ -124,6 +124,7 @@ public class Utils {
 			IMethodBinding methodBinding = parInvocation.resolveMethodBinding();
 			if (methodBinding == null) {
 				return false;
+
 			}
 			return methodBinding.getName().equals("par")
 					&& methodBinding.getDeclaringClass().getQualifiedName().equals(Sequence.class.getCanonicalName());
@@ -250,7 +251,7 @@ public class Utils {
 	}
 
 	/*
-	 * Returns teh CompilationUnit of an IBinding.
+	 * Returns the CompilationUnit of an IBinding.
 	 */
 	private static CompilationUnit getCompilationUnit(IBinding binding) {
 		try {

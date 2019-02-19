@@ -4,6 +4,7 @@ import com.google.inject.Inject
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAttribute
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUConstructor
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUEnumerationLiteral
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUExecutionAttribute
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUMultiplicity
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUOperation
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUSignalAttribute
@@ -33,6 +34,8 @@ class XtxtUMLHighlightingCalculator extends XbaseHighlightingCalculator {
 				highlightFeature(acceptor, object, TU_ATTRIBUTE__NAME, FIELD)
 			TUSignalAttribute:
 				highlightFeature(acceptor, object, TU_SIGNAL_ATTRIBUTE__NAME, FIELD)
+			TUExecutionAttribute:
+				highlightFeature(acceptor, object, TU_EXECUTION_ATTRIBUTE__NAME, FIELD)
 			TUConstructor:
 				object.parameters.forEach [
 					highlightFeature(acceptor, it, JVM_FORMAL_PARAMETER__NAME, FORMAL_PARAMETER)

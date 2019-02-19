@@ -474,7 +474,8 @@ public class SequenceDiagramVisitor extends ASTVisitor {
 					}
 					int annotationVal = (int) position.getValue().resolveConstantExpressionValue();
 					if (annotationVal < 0) {
-						collector.report(SequenceErrors.INVALID_POSITION.create(collector.getSourceInfo(), position));
+						collector.report(
+								SequenceErrors.INVALID_POSITION.create(collector.getSourceInfo(), position.getValue()));
 					}
 
 					// type of annotated field

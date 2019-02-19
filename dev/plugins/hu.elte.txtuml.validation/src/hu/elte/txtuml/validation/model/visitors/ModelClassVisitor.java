@@ -38,7 +38,7 @@ public class ModelClassVisitor extends VisitorBase {
 		} else if (ElementTypeTeller.isPort(elem)) {
 			// TODO: check port
 		} else {
-			collector.report(INVALID_MODEL_CLASS_ELEMENT.create(collector.getSourceInfo(), elem.getName()));
+			collector.report(INVALID_MODEL_CLASS_ELEMENT.create(collector.getSourceInfo(), elem));
 		}
 		return false;
 	}
@@ -64,7 +64,8 @@ public class ModelClassVisitor extends VisitorBase {
 		}
 
 		if (!elem.isConstructor()) {
-			if (elem.getReturnType2() != null && !Utils.isAllowedParameterType(elem.getReturnType2().resolveBinding(), true)) {
+			if (elem.getReturnType2() != null
+					&& !Utils.isAllowedParameterType(elem.getReturnType2().resolveBinding(), true)) {
 				collector.report(INVALID_PARAMETER_TYPE.create(collector.getSourceInfo(), elem.getReturnType2()));
 			}
 		}

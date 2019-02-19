@@ -43,7 +43,8 @@ public class VisitorBase extends ASTVisitor {
 			} else if (spd.isChildProperty()) {
 				Object child = node.getStructuralProperty(spd);
 				if (child != null && childForbidden(child, allowedChildrenTypes)) {
-					collector.report(INVALID_CHILDREN_ELEMENT.create(collector.getSourceInfo(), (ASTNode) child, nodeStr));
+					collector.report(
+							INVALID_CHILDREN_ELEMENT.create(collector.getSourceInfo(), (ASTNode) child, nodeStr));
 				}
 			}
 
