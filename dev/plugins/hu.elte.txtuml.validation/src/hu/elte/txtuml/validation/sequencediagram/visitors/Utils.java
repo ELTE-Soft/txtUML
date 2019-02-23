@@ -102,7 +102,8 @@ public class Utils {
 	 */
 	public static List<MethodInvocation> getParFragments(List<Statement> statements) {
 		List<MethodInvocation> parFragments = statements.stream().map(Utils::getMethodInvocationFromStatement)
-				.filter(inv -> inv != null && inv.resolveMethodBinding().getName().equals("par")
+				.filter(inv -> inv != null && inv.resolveMethodBinding() != null
+						&& inv.resolveMethodBinding().getName().equals("par")
 						&& isSequenceMethod(inv.resolveMethodBinding()))
 				.collect(toList());
 		return parFragments;
@@ -308,6 +309,10 @@ public class Utils {
 	 * Sequence class.
 	 */
 	private static boolean isSequenceMethod(IMethodBinding binding) {
-		return binding.getDeclaringClass().getQualifiedName().equals(Sequence.class.getCanonicalName());
+		try {
+			return binding.getDeclaringClass().getQualifiedName().equals(Sequence.class.getCanonicalName());
+		} catch (NullPointerException ex) {
+			return false;
+		}
 	}
 }

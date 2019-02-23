@@ -410,7 +410,6 @@ public class SequenceDiagramVisitor extends ASTVisitor {
 		}
 		Block body = Utils.getMethodBodyFromInvocation(methodInvocation);
 		if (body == null) {
-			collector.report(SequenceErrors.SEND_EXPECTED.create(collector.getSourceInfo(), placeOfError));
 			return false;
 		}
 		return checkSendOrFragmentInBlock(body);
@@ -423,7 +422,6 @@ public class SequenceDiagramVisitor extends ASTVisitor {
 	private boolean checkSendOrFragmentInSuperMethodInvocation(SuperMethodInvocation methodInvocation) {
 		Block body = Utils.getMethodBodyFromInvocation(methodInvocation);
 		if (body == null) {
-			collector.report(SequenceErrors.SEND_EXPECTED.create(collector.getSourceInfo(), placeOfError));
 			return false;
 		}
 		return checkSendOrFragmentInBlock(body);
