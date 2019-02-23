@@ -9,20 +9,11 @@ public class MessageParticipant<T extends ModelClass> implements Lifeline<T>, Pr
 	private Optional<T> participant;
 	private Class<T> cls;
 
-	private MessageParticipant(T instance) {
-		participant = Optional.ofNullable(instance);
-	}
-
-	private MessageParticipant(Class<T> modelClass) {
-		cls = modelClass;
-		participant = Optional.empty();
-	}
-
 	public static <T extends ModelClass> MessageParticipant<T> create(T instance) {
 		return new MessageParticipant<>(instance);
 	}
 
-	public static <T extends ModelClass> MessageParticipant<T> createUnbinded(Class<T> modelClass) {
+	public static <T extends ModelClass> MessageParticipant<T> createUnbound(Class<T> modelClass) {
 		return new MessageParticipant<>(modelClass);
 	}
 
@@ -39,6 +30,15 @@ public class MessageParticipant<T extends ModelClass> implements Lifeline<T>, Pr
 
 	public boolean hasParticipant() {
 		return participant.isPresent();
+	}
+
+	private MessageParticipant(T instance) {
+		participant = Optional.ofNullable(instance);
+	}
+
+	private MessageParticipant(Class<T> modelClass) {
+		cls = modelClass;
+		participant = Optional.empty();
 	}
 
 }

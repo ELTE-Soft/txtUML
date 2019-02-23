@@ -22,12 +22,12 @@ class InvalidMessageSentListener implements WarningListener {
 
 	@Override
 	public void lostSignalAtObject(Signal signal, ModelClass obj) {
-		executor.addError(new LostMessageError(Message.fromUnknown(signal, MessageParticipant.create(obj))));
+		executor.addError(new LostMessageError<>(Message.fromUnknown(signal, MessageParticipant.create(obj))));
 	}
 
 	@Override
 	public void signalArrivedToDeletedObject(ModelClass obj, Signal signal) {
-		executor.addError(new MessageToDeletedError(Message.fromUnknown(signal, MessageParticipant.create(obj))));
+		executor.addError(new MessageToDeletedError<>(Message.fromUnknown(signal, MessageParticipant.create(obj))));
 	}
 
 	@Override

@@ -83,7 +83,7 @@ public class Message<T extends ModelClass, U extends ModelClass> extends Abstrac
 		String from = fromActor.map(is -> is ? "actor" : ("" + sender.getParticipant().orElse(null))).orElse("unknown");
 		builder.append("\n from: ").append(from);
 		builder.append("\n to: ")
-				.append(target.getParticipant().isPresent() ? target.getParticipant().get() : "unbinded");
+				.append(target.getParticipant().isPresent() ? target.getParticipant().get() : "unbound");
 		builder.append("\n signal: ").append(getWrapped());
 		return builder.toString();
 	}

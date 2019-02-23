@@ -95,7 +95,7 @@ class SeqDiagModelExecutorThread extends FIFOExecutorThread implements ExecutorT
 		 * automatically accepted. Otherwise, we show an error.
 		 */
 		if (!result && mode == ExecMode.STRICT) {
-			root.getExecutor().addError(new InvalidMessageError(actual, ErrorLevel.ERROR));
+			root.getExecutor().addError(new InvalidMessageError<>(actual, ErrorLevel.ERROR));
 		}
 	}
 
