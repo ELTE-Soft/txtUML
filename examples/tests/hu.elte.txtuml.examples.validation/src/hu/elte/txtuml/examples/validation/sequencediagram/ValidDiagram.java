@@ -86,7 +86,7 @@ class Container extends SequenceDiagram {
 
 	@Override
 	public void run() {
-		Sequence.send(null, null, null);
+		diagr1.run();
 	}
 
 }
