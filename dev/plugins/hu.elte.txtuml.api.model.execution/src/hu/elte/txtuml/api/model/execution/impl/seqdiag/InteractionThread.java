@@ -315,7 +315,7 @@ class InteractionThread extends AbstractModelExecutor.OwnedThread<DefaultSeqDiag
 		Result r = takeUninterruptibly(result);
 
 		if (r == Result.WAKEN_BY_KILL) {
-			getExecutor().addError(new PatternNotMetError(message));
+			getExecutor().addError(new PatternNotMetError<>(message));
 			throw new Kill();
 		}
 		// Here: r == Result.MESSAGE_CONSUMED
@@ -508,7 +508,7 @@ class InteractionThread extends AbstractModelExecutor.OwnedThread<DefaultSeqDiag
 
 	@Override
 	public <T extends ModelClass> Proxy<T> createProxy(Class<T> modelClass) {
-		return MessageParticipant.createUnbinded(modelClass);
+		return MessageParticipant.createUnbound(modelClass);
 	}
 
 }
