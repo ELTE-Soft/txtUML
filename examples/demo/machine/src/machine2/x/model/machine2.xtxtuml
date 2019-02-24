@@ -5,7 +5,7 @@ package machine2.x.model;
 class Machine {
 	int tasksToDo;
 
-	Machine(int tasksToDo) {
+	public Machine(int tasksToDo) {
 		this.tasksToDo = tasksToDo;
 	}
 

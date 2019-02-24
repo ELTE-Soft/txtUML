@@ -45,11 +45,6 @@ public enum SequenceErrors implements IValidationErrorType {
 				return SequenceErrors.this;
 			}
 
-			@Override
-			public int getSourceEnd() {
-				return super.getSourceEnd() + 1;
-			}
-
 		};
 	}
 

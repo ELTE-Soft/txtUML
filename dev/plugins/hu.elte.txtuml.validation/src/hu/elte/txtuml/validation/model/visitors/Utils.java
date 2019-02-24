@@ -20,13 +20,10 @@ import hu.elte.txtuml.utils.jdt.ElementTypeTeller;
 import hu.elte.txtuml.validation.common.ProblemCollector;
 
 public class Utils {
-	
-	private static Set<String> AllowdBasicTypes = new HashSet<String>(Arrays.asList(
-			int.class.getCanonicalName(),
-			boolean.class.getCanonicalName(),
-			double.class.getCanonicalName(),
-			String.class.getCanonicalName()));
-	
+
+	private static Set<String> AllowdBasicTypes = new HashSet<String>(Arrays.asList(int.class.getCanonicalName(),
+			boolean.class.getCanonicalName(), double.class.getCanonicalName(), String.class.getCanonicalName()));
+
 	public static void checkTypeParameter(ProblemCollector collector, TypeDeclaration elem) {
 		if (elem.typeParameters().size() > 0) {
 			collector.report(INVALID_TYPE_PARAMETER.create(collector.getSourceInfo(),
@@ -61,9 +58,9 @@ public class Utils {
 		if (isBasicType(type, isVoidAllowed)) {
 			return true;
 		}
-		return !ElementTypeTeller.isExternal(type)
-				&& (ElementTypeTeller.isDataType(type) || ElementTypeTeller.isModelEnum(type) || 
-						(ElementTypeTeller.isCollection(type) && isAllowedAttributeType(type.getTypeArguments()[0], isVoidAllowed)));
+		return !ElementTypeTeller.isExternal(type) && (ElementTypeTeller.isDataType(type)
+				|| ElementTypeTeller.isModelEnum(type) || (ElementTypeTeller.isCollection(type)
+						&& isAllowedAttributeType(type.getTypeArguments()[0], isVoidAllowed)));
 	}
 
 	public static boolean isAllowedParameterType(ITypeBinding type, boolean isVoidAllowed) {
@@ -71,15 +68,14 @@ public class Utils {
 			return true;
 		}
 
-		if (!ElementTypeTeller.isExternal(type)
-				&& (ElementTypeTeller.isModelClass(type) || ElementTypeTeller.isSignal(type) || 
-						(ElementTypeTeller.isCollection(type) && isAllowedParameterType(type.getTypeArguments()[0], isVoidAllowed)))) {
+		if (!ElementTypeTeller.isExternal(type) && (ElementTypeTeller.isModelClass(type)
+				|| ElementTypeTeller.isSignal(type) || (ElementTypeTeller.isCollection(type)
+						&& isAllowedParameterType(type.getTypeArguments()[0], isVoidAllowed)))) {
 			return true;
 		}
 
 		return false;
 	}
-
 
 	public static boolean isVoid(Type type) {
 		if (type instanceof PrimitiveType) {
@@ -98,9 +94,10 @@ public class Utils {
 	}
 
 	public static boolean isBasicType(ITypeBinding type, boolean isVoidAllowed) {
-		
+
 		String qualifedName = type.getQualifiedName();
-		return AllowdBasicTypes.contains(qualifedName) || (qualifedName.equals(void.class.getCanonicalName()) && isVoidAllowed);
+		return AllowdBasicTypes.contains(qualifedName)
+				|| (qualifedName.equals(void.class.getCanonicalName()) && isVoidAllowed);
 	}
 
 }

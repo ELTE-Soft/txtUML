@@ -33,6 +33,14 @@ class XtxtUMLExpressionCompilerTest {
 					required I;
 				}
 			}
+			execution E {
+				initialization {
+					send new S() to new A();
+				}
+				before {
+					send new S() to new A();
+				}
+			}
 		'''.assertCompilesTo('''
 			MULTIPLE FILES WERE GENERATED
 
@@ -59,7 +67,44 @@ class XtxtUMLExpressionCompilerTest {
 			  }
 			}
 
-			File 2 : /myProject/./src-gen/test/model/I.java
+			File 2 : /myProject/./src-gen/test/model/E.java
+
+			package test.model;
+
+			import hu.elte.txtuml.api.model.API;
+			import hu.elte.txtuml.api.model.Action;
+			import hu.elte.txtuml.api.model.execution.CheckLevel;
+			import hu.elte.txtuml.api.model.execution.Execution;
+			import hu.elte.txtuml.api.model.execution.LogLevel;
+			import test.model.A;
+			import test.model.S;
+
+			@SuppressWarnings("all")
+			public class E implements Execution {
+			  private CheckLevel checkLevel;
+			  
+			  private LogLevel logLevel;
+			  
+			  private double timeMultiplier;
+			  
+			  private String name;
+			  
+			  @Override
+			  public void initialization() {
+			    Action.send(new S(), new A());
+			  }
+			  
+			  @Override
+			  public void before() {
+			    API.send(new S(), new A());
+			  }
+			  
+			  public static void main(final String... args) {
+			    new E().run();
+			  }
+			}
+
+			File 3 : /myProject/./src-gen/test/model/I.java
 
 			package test.model;
 
@@ -71,7 +116,7 @@ class XtxtUMLExpressionCompilerTest {
 			  void reception(final S signal);
 			}
 
-			File 3 : /myProject/./src-gen/test/model/S.java
+			File 4 : /myProject/./src-gen/test/model/S.java
 
 			package test.model;
 
@@ -156,7 +201,19 @@ class XtxtUMLExpressionCompilerTest {
 					log message;
 				}
 			}
+			execution E {
+				initialization {
+					log "init";
+				}
+				before {
+					log "before";
+				}
+			}
 		'''.assertCompilesTo('''
+			MULTIPLE FILES WERE GENERATED
+
+			File 1 : /myProject/./src-gen/test/model/A.java
+
 			package test.model;
 
 			import hu.elte.txtuml.api.model.Action;
@@ -171,6 +228,42 @@ class XtxtUMLExpressionCompilerTest {
 			    Action.log(message);
 			  }
 			}
+
+			File 2 : /myProject/./src-gen/test/model/E.java
+
+			package test.model;
+
+			import hu.elte.txtuml.api.model.API;
+			import hu.elte.txtuml.api.model.Action;
+			import hu.elte.txtuml.api.model.execution.CheckLevel;
+			import hu.elte.txtuml.api.model.execution.Execution;
+			import hu.elte.txtuml.api.model.execution.LogLevel;
+
+			@SuppressWarnings("all")
+			public class E implements Execution {
+			  private CheckLevel checkLevel;
+			  
+			  private LogLevel logLevel;
+			  
+			  private double timeMultiplier;
+			  
+			  private String name;
+			  
+			  @Override
+			  public void initialization() {
+			    Action.log("init");
+			  }
+			  
+			  @Override
+			  public void before() {
+			    API.log("before");
+			  }
+			  
+			  public static void main(final String... args) {
+			    new E().run();
+			  }
+			}
+
 		''')
 	}
 

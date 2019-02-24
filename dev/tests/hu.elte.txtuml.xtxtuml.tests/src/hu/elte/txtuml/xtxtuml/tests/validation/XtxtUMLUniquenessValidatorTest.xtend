@@ -88,6 +88,48 @@ class XtxtUMLUniquenessValidatorTest {
 		differentTypesParsed.assertError(TU_MODEL_ELEMENT, NOT_UNIQUE_NAME, differentTypesRaw.indexOf("Bar"), 3);
 		differentTypesParsed.assertError(TU_MODEL_ELEMENT, NOT_UNIQUE_NAME, differentTypesRaw.indexOf("bar"), 3);
 	}
+	
+	@Test
+	def checkExecutionAttributeNameIsUnique() {
+		'''
+			execution Foo {
+				int bar;
+			}
+		'''.parse.assertNoError(NOT_UNIQUE_NAME);
+
+		val rawFile = '''
+			execution Foo {
+				int bar;
+				int bar;
+				double bar;
+			}
+		''';
+
+		val parsedFile = rawFile.parse;
+		parsedFile.assertError(TU_EXECUTION_ATTRIBUTE, NOT_UNIQUE_NAME, rawFile.indexOfNth("bar", 0), 3);
+		parsedFile.assertError(TU_EXECUTION_ATTRIBUTE, NOT_UNIQUE_NAME, rawFile.indexOfNth("bar", 1), 3);
+		parsedFile.assertError(TU_EXECUTION_ATTRIBUTE, NOT_UNIQUE_NAME, rawFile.indexOfNth("bar", 2), 3);
+	}
+
+	@Test
+	def checkExecutionBlockNameIsUnique() {
+		'''
+			execution Foo {
+				initialization {}
+			}
+		'''.parse.assertNoError(NOT_UNIQUE_NAME);
+
+		val rawFile = '''
+			execution Foo {
+				initialization {}
+				initialization {}
+			}
+		''';
+
+		val parsedFile = rawFile.parse;
+		parsedFile.assertError(TU_EXECUTION_BLOCK, NOT_UNIQUE_NAME, rawFile.indexOfNth("initialization", 0), 14);
+		parsedFile.assertError(TU_EXECUTION_BLOCK, NOT_UNIQUE_NAME, rawFile.indexOfNth("initialization", 1), 14);
+	}
 
 	@Test
 	def checkEnumLiteralIsUnique() {
