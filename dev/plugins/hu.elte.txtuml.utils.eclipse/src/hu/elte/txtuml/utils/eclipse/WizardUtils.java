@@ -245,6 +245,13 @@ public class WizardUtils {
 
 			for (IField field : diagramType.getFields()) {
 				String typeSignature = field.getTypeSignature();
+				
+				// generic type parameters
+				int typeParamStartIdx = typeSignature.indexOf("<Q");
+				if (typeParamStartIdx != -1) {
+					typeSignature = typeSignature.substring(typeParamStartIdx + 1, typeSignature.indexOf(';') + 1);
+				}
+				
 				String[][] resolvedTypes = resolveType(diagramType,
 						typeSignature.substring(1, typeSignature.length() - 1));
 				List<String[]> resolvedTypeList = new ArrayList<>(Arrays.asList(resolvedTypes));
