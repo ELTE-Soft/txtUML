@@ -11,7 +11,8 @@ import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.eclipse.jdt.core.dom.SingleMemberAnnotation;
 
 import hu.elte.txtuml.api.model.Action;
-import hu.elte.txtuml.api.model.ModelClass;
+import hu.elte.txtuml.api.model.seqdiag.Lifeline;
+import hu.elte.txtuml.api.model.seqdiag.Proxy;
 import hu.elte.txtuml.api.model.seqdiag.SequenceDiagram;
 import hu.elte.txtuml.utils.jdt.ElementTypeTeller;
 import hu.elte.txtuml.validation.common.ProblemCollector;
@@ -48,16 +49,17 @@ public class Utils {
 					if (annotationVal < 0) {
 						collector.report(SequenceErrors.INVALID_POSITION.create(collector.getSourceInfo(), position));
 					}
-
-					// type of annotated field
-					boolean isModelClass = ElementTypeTeller.hasSuperClass(elem.getType().resolveBinding(),
-							ModelClass.class.getCanonicalName());
-					if (!isModelClass) {
-						collector.report(SequenceErrors.INVALID_LIFELINE_DECLARATION.create(collector.getSourceInfo(),
-								elem.getType()));
-					}
 				}
 			}
+		}
+
+		// type of field
+		boolean isLifeline = ElementTypeTeller.hasSuperClass(elem.getType().resolveBinding(),
+				Lifeline.class.getCanonicalName())
+				|| ElementTypeTeller.hasSuperClass(elem.getType().resolveBinding(), Proxy.class.getCanonicalName());
+		if (!isLifeline) {
+			collector.report(
+					SequenceErrors.INVALID_LIFELINE_DECLARATION.create(collector.getSourceInfo(), elem.getType()));
 		}
 	}
 
