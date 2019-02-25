@@ -12,7 +12,8 @@ import java.net.Socket;
 import hu.elte.txtuml.api.model.execution.diagnostics.protocol.Message;
 import hu.elte.txtuml.api.model.execution.diagnostics.protocol.MessageType;
 import hu.elte.txtuml.api.model.execution.diagnostics.protocol.ModelEvent;
-import hu.elte.txtuml.diagnostics.animation.Animator;
+import hu.elte.txtuml.diagnostics.animation.js.DiagnosticsServer;
+import hu.elte.txtuml.diagnostics.animation.papyrus.Animator;
 import hu.elte.txtuml.utils.Logger;
 
 /**
@@ -23,15 +24,17 @@ public class DiagnosticsPlugin implements IDisposable, Runnable {
 
 	private static final int SERVER_SOCKET_BACKLOG = 50;
 	private static final int FAULT_TOLERANCE = 99;
-	
+	private volatile int animationDelay = 1000;
+
 	private Thread thread;
 	private volatile boolean shutdownHasCome = false;
 	private ServerSocket serverSocket;
 	private ModelMapper modelMapper;
 	private InstanceRegister instanceRegister;
 	private Animator animator;
-	
-	public DiagnosticsPlugin(int diagnosticsPort, String projectName, String workingDirectory) throws IOException {
+	private DiagnosticsServer server;
+
+	public DiagnosticsPlugin(int diagnosticsPort, int httpPort, String projectName, String workingDirectory) throws IOException {
 		try {
 			serverSocket = new ServerSocket(diagnosticsPort, SERVER_SOCKET_BACKLOG, InetAddress.getLoopbackAddress());
 		} catch (IOException | IllegalArgumentException | SecurityException ex) {
@@ -41,11 +44,33 @@ public class DiagnosticsPlugin implements IDisposable, Runnable {
 		modelMapper = new ModelMapper(projectName);
 		instanceRegister = new InstanceRegister();
 		animator = new Animator(instanceRegister, modelMapper);
+		server = new DiagnosticsServer(this);
+
+		try {
+			server.start(httpPort);
+		} catch (IOException e) {
+			Logger.sys.error("Couldn't start HTTP server on port " + httpPort + " in service instance 0x", e);
+			return;
+		}
+
 		thread = new Thread(this, "txtUMLDiagnosticsPlugin");
 		thread.start();
 		//Logger.logInfo("txtUML DiagnosticsPlugin started"));
 	}
-	
+
+	public void setAnimationDelay(int animationDelay) {
+		if (animationDelay < 0) {
+			Logger.sys.warn("Ignored a request about setting the animation delay to a negative value");
+			return;
+		}
+
+		this.animationDelay = animationDelay;
+	}
+
+	public int getAnimationDelay() {
+		return animationDelay;
+	}
+
 	@Override
 	public void dispose() {
 		shutdownHasCome = true;
@@ -69,6 +94,9 @@ public class DiagnosticsPlugin implements IDisposable, Runnable {
 		instanceRegister = null;
 		modelMapper.dispose();
 		modelMapper = null;
+
+		server.stop();
+		server = null;
 	}
 
 	@Override
@@ -107,6 +135,11 @@ public class DiagnosticsPlugin implements IDisposable, Runnable {
 						instanceRegister.processMessage(event);
 						if (event instanceof ModelEvent) {
 							animator.animateEvent((ModelEvent)event);
+							server.animateEvent((ModelEvent)event);
+
+							try {
+								Thread.sleep(getAnimationDelay());
+							} catch (InterruptedException ex) {}
 						}
 												
 						if (event.messageType.isAckNeeded()) {

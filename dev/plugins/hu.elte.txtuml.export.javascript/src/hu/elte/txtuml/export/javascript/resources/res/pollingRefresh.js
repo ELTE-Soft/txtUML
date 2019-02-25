@@ -2,10 +2,11 @@
 
 var errorLabelElement = $('#debug-port-error');
 var debugContainer = $('#debug-toggle-container');
+var confirmedAnimationDelay = 1.0;
 
 //try to load from sessionStorage
-var port = sessionStorage['diagnosticsPort'];
-$('#debug-port-input').val(port);
+var currentPort = sessionStorage['diagnosticsPort'];
+$('#debug-port-input').val(currentPort);
 
 var isPolling = false;
 if(sessionStorage['isPolling'] == "true") {
@@ -19,30 +20,29 @@ if(sessionStorage['isPolling'] == "true") {
  * If successful, updates the diagram with `setActiveElements` from `animation.js`
  * If not, clears active elements, and alerts the user.
  */
-function refreshElements(){
+function refreshElements(queryPort){
 	$.ajax({
-		url: 'http://localhost:' + port + '/' + DIAGNOSTICS_PATH,
+		url: 'http://localhost:' + queryPort + '/' + DIAGNOSTICS_PATH,
 		type: 'GET',
 		dataType: 'json'
 	}).complete(function(response){
-		if(response.status == 200 && isPolling){
+		if(!isPolling || currentPort != queryPort) return;
+
+		if(response.status == 200){
 			setActiveElements((JSON.parse(response.responseText))
 				.map(entry => _visualizer.getShapeIdByElementName(entry.location)));
 			hideError();
 		}
 		else{
 			clearCurrentActiveElements();
-			if(isPolling){
-				showError();
-			}else{
-				hideError();
-			}
+			showError();
 		}
 	});
 }
 
 function pollingRefresh(){
-	refreshElements();
+	refreshElements(currentPort);
+	refreshAnimationDelay(currentPort);
 	if(isPolling){
 		setTimeout(pollingRefresh, REFRESH_INTERVAL_IN_MILLISECONDS);
 	}
@@ -77,14 +77,56 @@ var typingTimer;
 var DONE_TYPING_TIMEOUT_IN_MILLISECONDS = 500;
 
 function doneTyping(){
-	port = $('#debug-port-input').val();
-	sessionStorage['diagnosticsPort'] = port;
+	hideError();
+	clearCurrentActiveElements();
+
+	currentPort = $('#debug-port-input').val();
+	sessionStorage['diagnosticsPort'] = currentPort;
 }
 
-//add event listeners to the debug input
+//add event listener to the debug input
 $('#debug-port-input').on('keyup change input', function(){
 	clearTimeout(typingTimer);
 	if($('#debug-port-input').val()){
 		typingTimer = setTimeout(doneTyping, DONE_TYPING_TIMEOUT_IN_MILLISECONDS);
 	}
 });
+
+//send animation delay to the server
+function sendAnimationDelay(animationDelayToSend){
+	$.ajax({
+		url: 'http://localhost:' + currentPort + '/delay',
+		type: 'POST',
+		dataType: 'json',
+		data: { animationDelay: animationDelayToSend * 1000 },
+		success: function(response) {}
+	});
+}
+
+$('#animation-delay-slider').val(confirmedAnimationDelay);
+$('#animation-delay-label').text(confirmedAnimationDelay + " sec");
+
+//add event listener to the animation delay slider
+$('#animation-delay-slider').on('input change', function(){
+	if(this.value != confirmedAnimationDelay){
+		var valueToSend = this.value;
+		this.value = confirmedAnimationDelay;
+		if(isPolling) sendAnimationDelay(valueToSend);
+	}
+});
+
+function refreshAnimationDelay(queryPort){
+	$.ajax({
+		url: 'http://localhost:' + queryPort + '/delay',
+		type: 'GET',
+		dataType: 'json'
+	}).complete(function(response){
+		if(!isPolling || currentPort != queryPort) return;
+
+		if(response.status == 200){
+			confirmedAnimationDelay = JSON.parse(response.responseText).animationDelay / 1000;
+			$('#animation-delay-slider').val(confirmedAnimationDelay);
+			$('#animation-delay-label').text(confirmedAnimationDelay + " sec");
+		}
+	});
+}

@@ -79,6 +79,11 @@
 					<label class="debug-label" for="debugPort">Diagnostics port</label>
 					<input type="number" name="debugPort" id="debug-port-input">
 				</div>
+				<div style="flex: 0 0">
+					<label class="debug-label" for="animationDelay">Animation delay</label>
+					<input type="range" name="animationDelay" min="0.5" max="5" step="0.5" value="1" id="animation-delay-slider">
+					<label class="debug-label" for="animationDelay" id="animation-delay-label">1 sec</label>
+				</div>
 			</div>
 			<label id="debug-port-error" class="debug-label">Could not connect to server. Please make sure an execution is
 				in progress through a txtUML configuration and that the specified port is correct.</label>

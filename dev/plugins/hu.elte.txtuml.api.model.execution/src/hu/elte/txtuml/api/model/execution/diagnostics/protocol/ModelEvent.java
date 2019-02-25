@@ -8,9 +8,9 @@ public class ModelEvent extends InstanceEvent {
 
 	public final String eventTargetClassName;
 
-	public ModelEvent(MessageType type, int serviceInstanceID, String modelClassName, String modelClassInstanceID,
-			String eventTargetClassName) {
-		super(type, serviceInstanceID, modelClassName, modelClassInstanceID);
+	public ModelEvent(MessageType type, int serviceInstanceID, String modelClassName, String modelClassInstanceID, 
+			String modelClassInstanceName, String eventTargetClassName) {
+		super(type, serviceInstanceID, modelClassName, modelClassInstanceID, modelClassInstanceName);
 		assert type == MessageType.PROCESSING_SIGNAL || type == MessageType.USING_TRANSITION
 				|| type == MessageType.ENTERING_VERTEX || type == MessageType.LEAVING_VERTEX;
 		this.eventTargetClassName = eventTargetClassName;
