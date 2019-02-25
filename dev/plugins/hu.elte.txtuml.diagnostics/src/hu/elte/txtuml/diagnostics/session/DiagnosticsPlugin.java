@@ -8,7 +8,6 @@ import java.io.StringWriter;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import hu.elte.txtuml.api.model.execution.diagnostics.protocol.Message;
 import hu.elte.txtuml.api.model.execution.diagnostics.protocol.MessageType;
@@ -25,7 +24,7 @@ public class DiagnosticsPlugin implements IDisposable, Runnable {
 
 	private static final int SERVER_SOCKET_BACKLOG = 50;
 	private static final int FAULT_TOLERANCE = 99;
-	private AtomicInteger animationDelay = new AtomicInteger(1000);
+	private volatile int animationDelay = 1000;
 
 	private Thread thread;
 	private volatile boolean shutdownHasCome = false;
@@ -60,11 +59,16 @@ public class DiagnosticsPlugin implements IDisposable, Runnable {
 	}
 
 	public void setAnimationDelay(int animationDelay) {
-		this.animationDelay.set(animationDelay);
+		if (animationDelay < 0) {
+			Logger.sys.warn("Ignored a request about setting the animation delay to a negative value");
+			return;
+		}
+
+		this.animationDelay = animationDelay;
 	}
 
 	public int getAnimationDelay() {
-		return animationDelay.intValue();
+		return animationDelay;
 	}
 
 	@Override
