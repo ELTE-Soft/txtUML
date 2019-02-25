@@ -1,0 +1,53 @@
+package monitoring.x;
+
+import monitoring.x.model.Aggregator;
+import monitoring.x.model.Alert;
+import monitoring.x.model.Close;
+import monitoring.x.model.PrintReport;
+import monitoring.x.model.Read;
+import monitoring.x.model.ResourceMonitor;
+import monitoring.x.model.ToAggregator;
+import monitoring.x.model.ToAlert;
+import monitoring.x.model.Write;
+
+execution Demo {
+	ResourceMonitor monitor;
+	Aggregator aggregator;
+	Alert alert;
+
+	initialization {
+		monitor = new ResourceMonitor();
+		aggregator = new Aggregator();
+		alert = new Alert(3);
+
+		link monitor, aggregator via ToAggregator;
+		link monitor, alert via ToAlert;
+
+		start monitor;
+		start aggregator;
+		start alert;
+	}
+
+	during {
+		System.out.println("Testing monitoring example.");
+		System.out.println("\tq - quit");
+		System.out.println("\tr - read");
+		System.out.println("\tw - write");
+		System.out.println("\tc - close");
+		System.out.println("\tx - print report");
+
+		char c = System.in.read() as char;
+		while (c != Character.valueOf('q')) {
+			if (c == Character.valueOf('r')) {
+				send new Read() to monitor;
+			} else if (c == Character.valueOf('w')) {
+				send new Write() to monitor;
+			} else if (c == Character.valueOf('c')) {
+				send new Close() to monitor;
+			} else if (c == Character.valueOf('x')) {
+				send new PrintReport() to aggregator;
+			}
+			c = System.in.read() as char;
+		}
+	}
+}

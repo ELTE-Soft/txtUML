@@ -5,7 +5,7 @@ signal Acknowledgement;
 
 class Producer {
 	int toProduce;
-	Producer(int num) {
+	public Producer(int num) {
 		toProduce = num;
 	}
 	
@@ -55,7 +55,7 @@ class Producer {
 
 class Consumer {
 	int toConsume;
-	Consumer(int toConsume) {
+	public Consumer(int toConsume) {
 		this.toConsume = toConsume;
 	}
 	
@@ -108,7 +108,7 @@ signal RequestNotification;
 class Storage {
 	int capacity;
 	
-	Storage(int capacity) {
+	public Storage(int capacity) {
 		this.capacity = capacity;
 	}
 	

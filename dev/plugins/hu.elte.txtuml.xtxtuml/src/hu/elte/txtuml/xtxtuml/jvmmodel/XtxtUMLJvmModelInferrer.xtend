@@ -4,6 +4,8 @@ import com.google.inject.Inject
 import hu.elte.txtuml.api.model.Association
 import hu.elte.txtuml.api.model.BehaviorPort
 import hu.elte.txtuml.api.model.Composition
+import hu.elte.txtuml.api.model.Composition.ContainerEnd
+import hu.elte.txtuml.api.model.Composition.HiddenContainerEnd
 import hu.elte.txtuml.api.model.Connector
 import hu.elte.txtuml.api.model.ConnectorBase.One
 import hu.elte.txtuml.api.model.Delegation
@@ -18,6 +20,10 @@ import hu.elte.txtuml.api.model.Signal
 import hu.elte.txtuml.api.model.StateMachine
 import hu.elte.txtuml.api.model.To
 import hu.elte.txtuml.api.model.Trigger
+import hu.elte.txtuml.api.model.execution.CheckLevel
+import hu.elte.txtuml.api.model.execution.Execution
+import hu.elte.txtuml.api.model.execution.Execution.Settings
+import hu.elte.txtuml.api.model.execution.LogLevel
 import hu.elte.txtuml.xtxtuml.common.XtxtUMLUtils
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAssociation
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAssociationEnd
@@ -32,6 +38,9 @@ import hu.elte.txtuml.xtxtuml.xtxtUML.TUEntryOrExitActivity
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUEnumeration
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUEnumerationLiteral
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUExecution
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUExecutionAttribute
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUExecutionBlock
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUExecutionBlockType
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUInterface
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUModelDeclaration
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUOperation
@@ -58,11 +67,12 @@ import org.eclipse.xtext.common.types.JvmMember
 import org.eclipse.xtext.common.types.JvmVisibility
 import org.eclipse.xtext.common.types.TypesFactory
 import org.eclipse.xtext.naming.IQualifiedNameProvider
+import org.eclipse.xtext.nodemodel.util.NodeModelUtils
+import org.eclipse.xtext.xbase.XAssignment
+import org.eclipse.xtext.xbase.XBlockExpression
 import org.eclipse.xtext.xbase.jvmmodel.AbstractModelInferrer
 import org.eclipse.xtext.xbase.jvmmodel.IJvmDeclaredTypeAcceptor
 import org.eclipse.xtext.xbase.jvmmodel.IJvmModelAssociations
-import hu.elte.txtuml.api.model.Composition.HiddenContainerEnd
-import hu.elte.txtuml.api.model.Composition.ContainerEnd
 
 /**
  * Infers a JVM model equivalent from an XtxtUML resource. If not stated otherwise,
@@ -92,14 +102,38 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 		acceptor.accept(exec.toClass(exec.fullyQualifiedName)) [
 			documentation = exec.documentation
 			visibility = JvmVisibility.PUBLIC
+			superTypes += Execution.typeRef
 
+			// add config attributes
+			members += exec.toField("checkLevel", CheckLevel.typeRef)
+			members += exec.toField("logLevel", LogLevel.typeRef)
+			members += exec.toField("timeMultiplier", double.typeRef)
+			members += exec.toField("name", String.typeRef)
+
+			// add declared elements
+			for (element : exec.elements) {
+				members += element.toJvmMembers
+			}
+
+			// add empty init block if not declared
+			if (!exec.elements.filter(TUExecutionBlock)
+				.exists[type == TUExecutionBlockType.INITIALIZATION]
+			) {
+				members += exec.toMethod("initialization", Void.TYPE.typeRef) [
+					visibility = JvmVisibility.PUBLIC
+					annotations += annotationRef(Override)
+					body = ''''''
+				]
+			}
+
+			// add main method
 			members += exec.toMethod("main", Void.TYPE.typeRef) [
 				documentation = exec.documentation
+				visibility = JvmVisibility.PUBLIC
 				parameters += exec.toParameter("args", String.typeRef.addArrayTypeDimension)
 				varArgs = true
-
 				static = true
-				body = exec.body
+				body = '''new «exec.name»().run();'''
 			]
 		]
 	}
@@ -162,7 +196,7 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 				]
 
 				superAttributes.forEach(addAsParam)
-				signal.attributes.forEach(addAsParam) 
+				signal.attributes.forEach(addAsParam)
 
 				val lastSuperAttribute = if (superAttributes.empty) {
 						null
@@ -343,10 +377,77 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 		]
 	}
 
+	def dispatch private toJvmMembers(TUExecutionAttribute execAttr) {
+		#[execAttr.toField(execAttr.name, execAttr.type) [
+			documentation = execAttr.documentation
+			visibility = JvmVisibility.PRIVATE
+			initializer = execAttr.initExpression
+		]]
+	}
+
+	def dispatch private toJvmMembers(TUExecutionBlock execBlock) {
+		if (execBlock.type != TUExecutionBlockType.CONFIGURE) {
+			return #[execBlock.toMethod(execBlock.type.toString, Void.TYPE.typeRef) [
+				documentation = execBlock.documentation
+				visibility = JvmVisibility.PUBLIC
+				annotations += annotationRef(Override)
+				body = execBlock.body
+			]]
+		}
+
+		// config blocks need special treatment, see below
+
+		val configJvmMembers = newLinkedList
+
+		// handle name assignments
+
+		val nameAssignment = (execBlock.body as XBlockExpression).expressions
+			.filter(XAssignment).findFirst[concreteSyntaxFeatureName == "name"];
+
+		if (nameAssignment != null) {
+			configJvmMembers.add(execBlock.toMethod("name", String.typeRef) [
+				visibility = JvmVisibility.PUBLIC
+				annotations += annotationRef(Override)
+				body = '''
+					«NodeModelUtils.getTokenText(NodeModelUtils.findActualNodeFor(nameAssignment))»;
+					return name;
+				'''
+			])
+		}
+
+		// handle remaining assignments
+
+		// separate method needed because the declared body
+		// is validated only if it's directly inferred
+		configJvmMembers.add(execBlock.toMethod("doConfigure", Void.TYPE.typeRef) [
+			visibility = JvmVisibility.PRIVATE
+			body = execBlock.body
+		])
+
+		configJvmMembers.add(execBlock.toMethod("configure", Void.TYPE.typeRef) [
+			documentation = execBlock.documentation
+			parameters += execBlock.toParameter("s", Settings.typeRef)
+			visibility = JvmVisibility.PUBLIC
+			annotations += annotationRef(Override)
+
+			body = '''
+				doConfigure();
+				if (logLevel != null)
+				  s.logLevel = logLevel;
+				if (checkLevel != null)
+				  s.checkLevel = checkLevel;
+				if (timeMultiplier != 0.0)
+				  s.timeMultiplier = timeMultiplier;
+			'''
+		])
+
+		return configJvmMembers
+	}
+
 	def dispatch private toJvmMember(TUAttribute attr) {
 		attr.toField(attr.name, attr.prefix.type) [
 			documentation = attr.documentation
-			
+
 			val modifiers = attr.prefix.modifiers
 			static = modifiers.static
 			visibility = modifiers.visibility.toJvmVisibility

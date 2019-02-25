@@ -21,6 +21,9 @@ import hu.elte.txtuml.xtxtuml.xtxtUML.TUEntryOrExitActivity
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUEnumeration
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUEnumerationLiteral
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUExecution
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUExecutionAttribute
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUExecutionBlock
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUExecutionElement
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUExternality
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUFile
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUInterface
@@ -110,12 +113,30 @@ class XtxtUMLParserTestUtils {
 		assertEquals(isWildcard, importDeclaration.wildcard);
 	}
 
-	def execution(TUModelElement element, String name, List<Procedure1<XExpression>> expressionChecks) {
+	def execution(TUModelElement element, String name, List<Procedure1<TUExecutionElement>> elementChecks) {
 		assertTrue(element instanceof TUExecution);
 		val execution = element as TUExecution;
-
 		assertEquals(name, execution.name);
-		(execution.body as XBlockExpression).expressions.performChecks(expressionChecks);
+		execution.elements.performChecks(elementChecks)
+	}
+
+	def attribute(TUExecutionElement element, String typeName, String name, Procedure1<XExpression> initializerCheck) {
+		assertTrue(element instanceof TUExecutionAttribute);
+		val attribute = element as TUExecutionAttribute;
+		assertEquals(typeName, attribute.type.simpleName);
+		assertEquals(name, attribute.name);
+
+		assertEquals(initializerCheck == null, attribute.initExpression == null);
+		if (initializerCheck != null) {
+			initializerCheck.apply(attribute.initExpression);
+		}
+	}
+
+	def block(TUExecutionElement element, String typeName, List<Procedure1<XExpression>> expressionChecks) {
+		assertTrue(element instanceof TUExecutionBlock);
+		val execBlock = element as TUExecutionBlock;
+		assertEquals(typeName, execBlock.type.toString);
+		(execBlock.body as XBlockExpression).expressions.performChecks(expressionChecks);
 	}
 
 	def signal(TUModelElement element, String name, String superName,
@@ -622,7 +643,6 @@ class XtxtUMLParserTestUtils {
 	def assignment(XExpression expression, String featureName, Procedure1<XExpression> valueCheck) {
 		assertTrue(expression instanceof XAssignment);
 		val assign = expression as XAssignment;
-
 		assertEquals(featureName, assign.feature.simpleName);
 		valueCheck.apply(assign.value);
 	}

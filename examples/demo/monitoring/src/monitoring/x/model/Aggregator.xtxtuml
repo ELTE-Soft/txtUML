@@ -8,7 +8,7 @@ class Aggregator {
 	int writeErrorNum;
 	int readErrorNum;
 	
-	Aggregator() {
+	public Aggregator() {
 		writeErrorNum = 0;
 		readErrorNum = 0;
 	}
