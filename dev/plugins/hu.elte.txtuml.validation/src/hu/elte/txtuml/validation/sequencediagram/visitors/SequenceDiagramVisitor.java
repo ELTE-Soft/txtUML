@@ -372,7 +372,7 @@ public class SequenceDiagramVisitor extends ASTVisitor {
 	}
 
 	/*
-	 * Checks if there is a send in the invoked method's body, or in all of it's
+	 * Checks if there is a send in the invoked method's body, or in all of its
 	 * fragments.
 	 */
 	private void checkSendInMethodInvocation(MethodInvocation methodInvocation) {
@@ -389,7 +389,7 @@ public class SequenceDiagramVisitor extends ASTVisitor {
 
 	/*
 	 * Checks if there is a send in the invoked SuperMethod's body, or in all of
-	 * it's fragments.
+	 * its fragments.
 	 */
 	private void checkSendInSuperMethodInvocation(SuperMethodInvocation methodInvocation) {
 		Block body = Utils.getMethodBodyFromInvocation(methodInvocation);

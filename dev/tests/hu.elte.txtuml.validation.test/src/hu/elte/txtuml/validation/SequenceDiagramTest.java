@@ -1,6 +1,5 @@
 package hu.elte.txtuml.validation;
 
-import static hu.elte.txtuml.validation.sequencediagram.SequenceErrors.INVALID_ACTION_CALL;
 import static hu.elte.txtuml.validation.sequencediagram.SequenceErrors.INVALID_LIFELINE_DECLARATION;
 import static hu.elte.txtuml.validation.sequencediagram.SequenceErrors.INVALID_POSITION;
 import static hu.elte.txtuml.validation.sequencediagram.SequenceErrors.SEND_EXPECTED;
