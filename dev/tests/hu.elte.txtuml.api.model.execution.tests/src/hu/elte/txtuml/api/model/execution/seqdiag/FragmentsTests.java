@@ -6,7 +6,8 @@ import org.junit.Test;
 import hu.elte.txtuml.api.model.execution.SequenceDiagramExecutor;
 import hu.elte.txtuml.api.model.execution.seqdiag.sequences.SequenceFragmentIF;
 import hu.elte.txtuml.api.model.execution.seqdiag.sequences.SequenceFragmentLoop;
-import hu.elte.txtuml.api.model.execution.seqdiag.sequences.SequencePar;
+import hu.elte.txtuml.api.model.execution.seqdiag.sequences.SequenceParErr;
+import hu.elte.txtuml.api.model.execution.seqdiag.sequences.SequenceParValid;
 import hu.elte.txtuml.api.model.impl.SequenceDiagramRelated;
 
 @SequenceDiagramRelated
@@ -53,13 +54,21 @@ public class FragmentsTests {
 
 	@Test
 	public void testParFragment() {
-		SequencePar diag = new SequencePar();
+		SequenceParValid diagValid = new SequenceParValid();
 
 		SequenceDiagramExecutor executor = SequenceDiagramExecutor.create();
 
-		executor.setDiagram(diag).run();
+		executor.setDiagram(diagValid).run();
 
 		Assert.assertEquals(0, executor.getErrors().size());
+		
+		SequenceParErr diagErr = new SequenceParErr();
+		
+		executor = SequenceDiagramExecutor.create();
+		
+		executor.setDiagram(diagErr).run();
+		
+		Assert.assertEquals(3, executor.getErrors().size());
 	}
 
 }

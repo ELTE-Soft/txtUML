@@ -250,9 +250,11 @@ class InteractionThread extends AbstractModelExecutor.OwnedThread<DefaultSeqDiag
 			}
 			copy = new ArrayList<>(children);
 			copy.forEach(InteractionThread::start);
+			getExecutor().removeTerminationBlocker(terminationBlocker);
 			while (true) {
 				try {
 					children.wait();
+					getExecutor().addTerminationBlocker(terminationBlocker);
 					return;
 				} catch (InterruptedException e) {
 				}
