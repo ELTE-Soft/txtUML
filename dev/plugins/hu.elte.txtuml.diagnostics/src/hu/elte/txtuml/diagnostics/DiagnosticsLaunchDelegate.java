@@ -28,17 +28,19 @@ public class DiagnosticsLaunchDelegate extends JavaLaunchDelegate {
 	@Override
 	public void launch(ILaunchConfiguration configuration, String mode, ILaunch launch, IProgressMonitor monitor)
 			throws CoreException {
-		ILaunchConfiguration modifiedConfiguration = getAndSetPort(configuration,
-				GlobalSettings.TXTUML_DIAGNOSTICS_HTTP_PORT_KEY).getSecond();
+		Pair<Integer, ILaunchConfiguration> httpPortToModifiedConfiguration = getAndSetPort(configuration,
+				GlobalSettings.TXTUML_DIAGNOSTICS_HTTP_PORT_KEY);
+		int httpPort = httpPortToModifiedConfiguration.getFirst();
+		ILaunchConfiguration modifiedConfiguration = httpPortToModifiedConfiguration.getSecond();
+
 		Pair<Integer, ILaunchConfiguration> socketPortToModifiedConfiguration = getAndSetPort(modifiedConfiguration,
 				GlobalSettings.TXTUML_DIAGNOSTICS_SOCKET_PORT_KEY);
-
 		int socketPort = socketPortToModifiedConfiguration.getFirst();
 		modifiedConfiguration = socketPortToModifiedConfiguration.getSecond();
 
 		IDisposable diagnosticsPlugin;
 		try {
-			diagnosticsPlugin = new DiagnosticsPlugin(socketPort,
+			diagnosticsPlugin = new DiagnosticsPlugin(socketPort, httpPort,
 					modifiedConfiguration.getAttribute(IJavaLaunchConfigurationConstants.ATTR_PROJECT_NAME, ""),
 					modifiedConfiguration.getAttribute(IJavaLaunchConfigurationConstants.ATTR_WORKING_DIRECTORY, "."));
 		} catch (IOException ex) {

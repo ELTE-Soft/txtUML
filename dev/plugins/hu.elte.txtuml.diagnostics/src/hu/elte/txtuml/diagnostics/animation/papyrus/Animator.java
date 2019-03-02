@@ -1,4 +1,4 @@
-package hu.elte.txtuml.diagnostics.animation;
+package hu.elte.txtuml.diagnostics.animation.papyrus;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -69,10 +69,6 @@ public class Animator {
 			addAnimationMarker(eobject);
 			classNameToAnimatedElement.put(event.modelClassName, eobject);
 		}
-
-		try {
-			Thread.sleep(AnimationConfig.ANIMATION_TIMER);
-		} catch (InterruptedException ex) {}
 	}
 		
 	private void removeMarkerFromClass(String modelClassName) {
