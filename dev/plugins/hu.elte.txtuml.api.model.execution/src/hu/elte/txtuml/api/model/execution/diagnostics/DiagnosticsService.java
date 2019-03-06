@@ -1,6 +1,7 @@
 package hu.elte.txtuml.api.model.execution.diagnostics;
 
 import static hu.elte.txtuml.api.model.external.ModelClasses.getIdentifierOf;
+import static hu.elte.txtuml.api.model.external.ModelClasses.getNameOf;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -40,8 +41,6 @@ public class DiagnosticsService extends NotifierOfTermination implements TraceLi
 	private final int diagnosticsSocketPort;
 	private volatile int faultTolerance = 17;
 
-	private DiagnosticsServer server = new DiagnosticsServer();
-
 	/**
 	 * Initiates singleton by signaling the presence of a new DiagnosticsService
 	 * towards the DiagnosticsPlugin. It also does configuration if needed.
@@ -79,17 +78,6 @@ public class DiagnosticsService extends NotifierOfTermination implements TraceLi
 			return;
 		}
 
-		try {
-			server.start(httpPort);
-		} catch (IOException e) {
-			Logger.sys.error("Couldn't start HTTP server on port " + httpPort + " in service instance 0x"
-					+ Integer.toHexString(serviceInstanceID), e);
-
-			diagnosticsSocketPort = NO_PORT_SET;
-			notifyAllOfTermination();
-			return;
-		}
-
 		diagnosticsSocketPort = socketPort;
 		addTerminationListener(() -> sendMessage(new Message(MessageType.CHECKOUT, serviceInstanceID)));
 
@@ -119,45 +107,41 @@ public class DiagnosticsService extends NotifierOfTermination implements TraceLi
 	}
 
 	public void shutdown() {
-		server.stop();
 		notifyAllOfTermination();
 	}
 
 	@Override
 	public void processingSignal(ModelClass object, Signal signal, Optional<ModelClass> sender) {
-		sendNewModelEvent(MessageType.PROCESSING_SIGNAL, object.getClass().getCanonicalName(), getIdentifierOf(object),
-				signal.getClass().getCanonicalName());
+		sendNewModelEvent(MessageType.PROCESSING_SIGNAL, object.getClass().getCanonicalName(),
+			getIdentifierOf(object), getNameOf(object), signal.getClass().getCanonicalName());
 	}
 
 	@Override
 	public void usingTransition(ModelClass object, Transition transition) {
 		String transitionName = transition.getClass().getCanonicalName();
-		server.register(object, transitionName);
-		sendNewModelEvent(MessageType.USING_TRANSITION, object.getClass().getCanonicalName(), getIdentifierOf(object),
-				transitionName);
+		sendNewModelEvent(MessageType.USING_TRANSITION, object.getClass().getCanonicalName(),
+			getIdentifierOf(object), getNameOf(object), transitionName);
 	}
 
 	@Override
 	public void enteringVertex(ModelClass object, Vertex vertex) {
 		String vertexName = vertex.getClass().getCanonicalName();
-		server.register(object, vertexName);
-		sendNewModelEvent(MessageType.ENTERING_VERTEX, object.getClass().getCanonicalName(), getIdentifierOf(object),
-				vertexName);
+		sendNewModelEvent(MessageType.ENTERING_VERTEX, object.getClass().getCanonicalName(),
+			getIdentifierOf(object), getNameOf(object), vertexName);
 
 	}
 
 	@Override
 	public void leavingVertex(ModelClass object, Vertex vertex) {
 		String vertexName = vertex.getClass().getCanonicalName();
-		server.register(object, vertexName);
-		sendNewModelEvent(MessageType.LEAVING_VERTEX, object.getClass().getCanonicalName(), getIdentifierOf(object),
-				vertexName);
+		sendNewModelEvent(MessageType.LEAVING_VERTEX, object.getClass().getCanonicalName(),
+			getIdentifierOf(object), getNameOf(object), vertexName);
 	}
 
 	private void sendNewModelEvent(MessageType type, String modelClassName, String modelClassInstanceID,
-			String eventTargetClassName) {
-		sendMessage(
-				new ModelEvent(type, serviceInstanceID, modelClassName, modelClassInstanceID, eventTargetClassName));
+			String modelClassInstanceName, String eventTargetClassName) {
+		sendMessage(new ModelEvent(type, serviceInstanceID, modelClassName, modelClassInstanceID,
+			modelClassInstanceName, eventTargetClassName));
 	}
 
 	private void sendMessage(Message message) {

@@ -23,7 +23,7 @@ class XtxtUMLStructureCompilerTest {
 			package test.model;
 
 			import hu.elte.txtuml.api.model.Model;
-		''');
+		''')
 
 		'''
 			model-package test.model as "TestModel";
@@ -32,7 +32,244 @@ class XtxtUMLStructureCompilerTest {
 			package test.model;
 
 			import hu.elte.txtuml.api.model.Model;
-		''');
+		''')
+	}
+
+	@Test
+	def compileExecution() {
+		'''
+			package test.exec;
+			execution EmptyExecution;
+		'''.assertCompilesTo('''
+			package test.exec;
+
+			import hu.elte.txtuml.api.model.execution.CheckLevel;
+			import hu.elte.txtuml.api.model.execution.Execution;
+			import hu.elte.txtuml.api.model.execution.LogLevel;
+
+			@SuppressWarnings("all")
+			public class EmptyExecution implements Execution {
+			  private CheckLevel checkLevel;
+			  
+			  private LogLevel logLevel;
+			  
+			  private double timeMultiplier;
+			  
+			  private String name;
+			  
+			  @Override
+			  public void initialization() {
+			    
+			  }
+			  
+			  public static void main(final String... args) {
+			    new EmptyExecution().run();
+			  }
+			}
+		''')
+
+		'''
+			package test.exec;
+			execution ExecutionWithMembers {
+				int bTest = 5;
+				configure {
+					name = "ExecName";
+				}
+				initialization {}
+				before {}
+				during {}
+				after {}
+			}
+		'''.assertCompilesTo('''			
+			package test.exec;
+
+			import hu.elte.txtuml.api.model.execution.CheckLevel;
+			import hu.elte.txtuml.api.model.execution.Execution;
+			import hu.elte.txtuml.api.model.execution.LogLevel;
+
+			@SuppressWarnings("all")
+			public class ExecutionWithMembers implements Execution {
+			  private CheckLevel checkLevel;
+			  
+			  private LogLevel logLevel;
+			  
+			  private double timeMultiplier;
+			  
+			  private String name;
+			  
+			  private int bTest = 5;
+			  
+			  @Override
+			  public String name() {
+			    name = "ExecName";
+			    return name;
+			  }
+			  
+			  private void doConfigure() {
+			    this.name = "ExecName";
+			  }
+			  
+			  @Override
+			  public void configure(final Execution.Settings s) {
+			    doConfigure();
+			    if (logLevel != null)
+			      s.logLevel = logLevel;
+			    if (checkLevel != null)
+			      s.checkLevel = checkLevel;
+			    if (timeMultiplier != 0.0)
+			      s.timeMultiplier = timeMultiplier;
+			  }
+			  
+			  @Override
+			  public void initialization() {
+			  }
+			  
+			  @Override
+			  public void before() {
+			  }
+			  
+			  @Override
+			  public void during() {
+			  }
+			  
+			  @Override
+			  public void after() {
+			  }
+			  
+			  public static void main(final String... args) {
+			    new ExecutionWithMembers().run();
+			  }
+			}
+		''')
+
+		'''
+			package test.exec;
+			import hu.elte.txtuml.api.model.^execution.CheckLevel;
+			import hu.elte.txtuml.api.model.^execution.LogLevel;
+			class TestClass;
+			signal Sig1;
+			execution ExecutionWithMembers {
+				TestClass tClass;
+				configure {
+					name = "ExecName";
+					logLevel = LogLevel.TRACE;
+					timeMultiplier = 1.0;
+					checkLevel = CheckLevel.OPTIONAL;
+				}
+				initialization {
+					tClass = new TestClass();
+					start tClass;
+					log "InitLog";
+				}
+				before {
+					send new Sig1() to tClass;
+				}
+				during {
+					log "DuringLog";
+				}
+				after {
+					log "AfterLog";
+				}
+			}
+		'''.assertCompilesTo('''
+			MULTIPLE FILES WERE GENERATED
+
+			File 1 : /myProject/./src-gen/test/exec/ExecutionWithMembers.java
+
+			package test.exec;
+
+			import hu.elte.txtuml.api.model.API;
+			import hu.elte.txtuml.api.model.Action;
+			import hu.elte.txtuml.api.model.execution.CheckLevel;
+			import hu.elte.txtuml.api.model.execution.Execution;
+			import hu.elte.txtuml.api.model.execution.LogLevel;
+			import test.exec.Sig1;
+			import test.exec.TestClass;
+
+			@SuppressWarnings("all")
+			public class ExecutionWithMembers implements Execution {
+			  private CheckLevel checkLevel;
+			  
+			  private LogLevel logLevel;
+			  
+			  private double timeMultiplier;
+			  
+			  private String name;
+			  
+			  private TestClass tClass;
+			  
+			  @Override
+			  public String name() {
+			    name = "ExecName";
+			    return name;
+			  }
+			  
+			  private void doConfigure() {
+			    this.name = "ExecName";
+			    this.logLevel = LogLevel.TRACE;
+			    this.timeMultiplier = 1.0;
+			    this.checkLevel = CheckLevel.OPTIONAL;
+			  }
+			  
+			  @Override
+			  public void configure(final Execution.Settings s) {
+			    doConfigure();
+			    if (logLevel != null)
+			      s.logLevel = logLevel;
+			    if (checkLevel != null)
+			      s.checkLevel = checkLevel;
+			    if (timeMultiplier != 0.0)
+			      s.timeMultiplier = timeMultiplier;
+			  }
+			  
+			  @Override
+			  public void initialization() {
+			    this.tClass = new TestClass();
+			    Action.start(this.tClass);
+			    Action.log("InitLog");
+			  }
+			  
+			  @Override
+			  public void before() {
+			    API.send(new Sig1(), this.tClass);
+			  }
+			  
+			  @Override
+			  public void during() {
+			    API.log("DuringLog");
+			  }
+			  
+			  @Override
+			  public void after() {
+			    API.log("AfterLog");
+			  }
+			  
+			  public static void main(final String... args) {
+			    new ExecutionWithMembers().run();
+			  }
+			}
+
+			File 2 : /myProject/./src-gen/test/exec/Sig1.java
+
+			package test.exec;
+
+			import hu.elte.txtuml.api.model.Signal;
+
+			@SuppressWarnings("all")
+			public class Sig1 extends Signal {
+			}
+
+			File 3 : /myProject/./src-gen/test/exec/TestClass.java
+
+			package test.exec;
+
+			import hu.elte.txtuml.api.model.ModelClass;
+
+			@SuppressWarnings("all")
+			public class TestClass extends ModelClass {
+			}
+
+		''')
 	}
 
 	@Test
@@ -251,7 +488,6 @@ class XtxtUMLStructureCompilerTest {
 
 		''');
 	}
-
 
 	@Test
 	def compileEnum() {

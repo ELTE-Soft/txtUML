@@ -8,14 +8,16 @@ public class InstanceEvent extends Message {
 
 	public final String modelClassName;
 	public final String modelClassInstanceID;
+	public final String modelClassInstanceName;
 
-	public InstanceEvent(MessageType type, int serviceInstanceID, String modelClassName, String modelClassInstanceID) {
+	public InstanceEvent(MessageType type, int serviceInstanceID, String modelClassName, String modelClassInstanceID, String modelClassInstanceName) {
 		super(type, serviceInstanceID);
 		assert type == MessageType.INSTANCE_CREATION || type == MessageType.INSTANCE_DESTRUCTION
 				|| type == MessageType.PROCESSING_SIGNAL || type == MessageType.USING_TRANSITION
 				|| type == MessageType.ENTERING_VERTEX || type == MessageType.LEAVING_VERTEX;
 		this.modelClassName = modelClassName;
 		this.modelClassInstanceID = modelClassInstanceID;
+		this.modelClassInstanceName = modelClassInstanceName;
 	}
 
 }

@@ -266,6 +266,36 @@
 							</configuration>
 						</execution>
 					</executions>
+					<dependencies>
+						<!-- make EMF v2.12 dependencies explicit, see
+							 https://github.com/eclipse/xtext/issues/1231#issuecomment-421418880 -->
+						<dependency>
+							<groupId>org.eclipse.emf</groupId>
+							<artifactId>org.eclipse.emf.common</artifactId>
+							<version>2.12.0</version>
+						</dependency>
+						<dependency>
+							<groupId>org.eclipse.emf</groupId>
+							<artifactId>org.eclipse.emf.ecore</artifactId>
+							<version>2.12.0</version>
+						</dependency>
+						<dependency>
+							<groupId>org.eclipse.emf</groupId>
+							<artifactId>org.eclipse.emf.ecore.xmi</artifactId>
+							<version>2.12.0</version>
+						</dependency>
+						<dependency>
+							<groupId>org.eclipse.emf</groupId>
+							<artifactId>org.eclipse.emf.codegen</artifactId>
+							<version>2.11.0</version>
+						</dependency>
+						<dependency>
+							<groupId>org.eclipse.emf</groupId>
+							<artifactId>org.eclipse.emf.codegen.ecore</artifactId>
+							<version>2.12.0</version>
+						</dependency>
+						<!-- end of explicit EMF v2.12 dependencies -->
+					</dependencies>
 				</plugin>
 
 				<!--This plugin's configuration is used to store Eclipse m2e settings only. 

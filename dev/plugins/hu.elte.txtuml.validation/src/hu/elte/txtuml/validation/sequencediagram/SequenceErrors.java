@@ -16,7 +16,7 @@ public enum SequenceErrors implements IValidationErrorType {
 
 	// general problems
 
-	INVALID_SUPERCLASS, SEND_EXPECTED, INVALID_POSITION, INVALID_LIFELINE_DECLARATION, INVALID_ACTION_CALL;
+	INVALID_SUPERCLASS, SEND_EXPECTED, INVALID_POSITION, INVALID_LIFELINE_DECLARATION, INVALID_ACTION_CALL, CYCLE_DETECTED;
 
 	private static final String SUFFIX = "_message";
 
@@ -43,11 +43,6 @@ public enum SequenceErrors implements IValidationErrorType {
 			@Override
 			public IValidationErrorType getType() {
 				return SequenceErrors.this;
-			}
-
-			@Override
-			public int getSourceEnd() {
-				return super.getSourceEnd() + 1;
 			}
 
 		};
