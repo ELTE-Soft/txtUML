@@ -65,11 +65,13 @@ public class Message<T extends ModelClass, U extends ModelClass> extends Abstrac
 		}
 
 		if (areSignalsEqual) {
-			if (sender != null && expected.sender != null && !expected.sender.hasParticipant()) {
+			if (sender != null && expected.sender != null && !expected.sender.hasParticipant()
+					&& sender.getParticipantType().equals(expected.sender.getParticipantType())) {
 				expected.sender.bindTo(sender.getParticipant().get());
 			}
 
-			if (!expected.target.hasParticipant()) {
+			if (!expected.target.hasParticipant()
+					&& target.getParticipantType().equals(expected.target.getParticipantType())) {
 				expected.target.bindTo(target.getParticipant().get());
 			}
 		}

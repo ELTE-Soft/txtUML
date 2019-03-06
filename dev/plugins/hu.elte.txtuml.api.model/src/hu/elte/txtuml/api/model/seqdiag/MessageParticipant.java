@@ -28,11 +28,17 @@ public class MessageParticipant<T extends ModelClass> implements Lifeline<T>, Pr
 		return participant;
 	}
 
+	public Class<T> getParticipantType() {
+		return cls;
+	}
+
 	public boolean hasParticipant() {
 		return participant.isPresent();
 	}
 
+	@SuppressWarnings("unchecked")
 	private MessageParticipant(T instance) {
+		cls = (Class<T>) instance.getClass();
 		participant = Optional.ofNullable(instance);
 	}
 
