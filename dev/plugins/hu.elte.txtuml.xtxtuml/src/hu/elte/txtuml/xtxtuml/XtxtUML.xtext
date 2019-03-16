@@ -126,6 +126,7 @@ TUClassMember
 	| TUState
 	| TUTransition
 	| TUPort
+	| TUCollection
 ;
 
 /*
@@ -219,6 +220,17 @@ TUPort :
 TUPortMember :
 	(required?='required' | provided='provided') interface=[TUInterface|QualifiedName] ';'
 		// feature 'provided' is for error markers
+;
+
+TUCollection :
+	modifiers=TUCollectionModifiers 'collection' 'of' multiplicity=TUMultiplicity 
+	(object=[TUClass|QualifiedName])? ('as' name=ValidID)? ';'
+;
+
+// Collection-related
+
+TUCollectionModifiers :
+	{TUCollectionModifiers} (ordered?='ordered'? & unique?='unique'?)
 ;
 
 // Association-related
