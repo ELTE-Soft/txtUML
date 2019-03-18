@@ -30,6 +30,11 @@ TUModelElement
 	| TUAssociation
 	| TUInterface
 	| TUConnector
+	
+;
+
+TUCollectionDeclarationPrefix :
+   TUMultiplicity ordered?='ordered'? unique?='unique'? type=JvmTypeReference
 ;
 
 TUExecution :
@@ -140,8 +145,9 @@ TUConstructor :
 		body=XBlockExpression ';'?
 ;
 
-TUAttributeOrOperationDeclarationPrefix :
-	modifiers=TUModifiers type=JvmTypeReference
+TUAttributeOrOperationDeclarationPrefix 
+	: modifiers=TUModifiers type=JvmTypeReference 
+    | TUCollectionDeclarationPrefix
 ;
 
 TUState :
