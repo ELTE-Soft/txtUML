@@ -224,7 +224,7 @@ TUPortMember :
 
 TUCollection :
 	modifiers=TUCollectionModifiers 'collection' 'of' multiplicity=TUMultiplicity 
-	(object=[TUClass|QualifiedName])? ('as' name=ValidID)? ';'
+	(/*class=[TUClass|QualifiedName] |*/ type=JvmTypeReference)? ('as' name=ValidID)? ';'
 ;
 
 // Collection-related
@@ -232,6 +232,10 @@ TUCollection :
 TUCollectionModifiers :
 	{TUCollectionModifiers} (ordered?='ordered'? & unique?='unique'?)
 ;
+
+//TUCollectionType :
+	//type=(TUClass | JvmTypeReference)
+//;
 
 // Association-related
 
