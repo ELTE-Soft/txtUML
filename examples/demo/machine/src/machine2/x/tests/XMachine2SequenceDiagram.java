@@ -6,6 +6,7 @@ import static hu.elte.txtuml.api.model.seqdiag.Sequence.fromActor;
 import hu.elte.txtuml.api.model.Action;
 import hu.elte.txtuml.api.model.seqdiag.ExecMode;
 import hu.elte.txtuml.api.model.seqdiag.ExecutionMode;
+import hu.elte.txtuml.api.model.seqdiag.Lifeline;
 import hu.elte.txtuml.api.model.seqdiag.Position;
 import hu.elte.txtuml.api.model.seqdiag.Sequence;
 import hu.elte.txtuml.api.model.seqdiag.SequenceDiagram;
@@ -21,22 +22,26 @@ import machine2.x.model.User;
 public class XMachine2SequenceDiagram extends SequenceDiagram {
 
 	@Position(2)
-	Machine m;
+	Lifeline<Machine> machine;
 
 	@Position(1)
-	User u1;
+	Lifeline<User> user1;
 
 	@Position(3)
-	User u2;
+	Lifeline<User> user2;
 
 	@Override
 	public void initialize() {
-		m = Action.create(Machine.class, 3);
-		u1 = Action.create(User.class);
-		u2 = Action.create(User.class);
+		Machine m = Action.create(Machine.class, 3);
+		User u1 = Action.create(User.class);
+		User u2 = Action.create(User.class);
 
 		Action.link(Usage.usedMachine.class, m, Usage.userOfMachine.class, u1);
 		Action.link(Usage.usedMachine.class, m, Usage.userOfMachine.class, u2);
+
+		machine = Sequence.createLifeline(m);
+		user1 = Sequence.createLifeline(u1);
+		user2 = Sequence.createLifeline(u2);
 
 		Action.log("Machine and users are starting.");
 		Action.start(m);
@@ -47,15 +52,15 @@ public class XMachine2SequenceDiagram extends SequenceDiagram {
 	@Override
 	@ExecutionMode(ExecMode.LENIENT)
 	public void run() {
-		fromActor(new DoYourWork(), u1);
-		assertState(m, Off.class);
+		fromActor(new DoYourWork(), user1);
+		assertState(machine, Off.class);
 
-		Sequence.send(u1, new ButtonPress(), m);
-		assertState(m, On.Active.class);
+		Sequence.send(user1, new ButtonPress(), machine);
+		assertState(machine, On.Active.class);
 
 		for (int i = 0; i < 3; ++i) {
-			Sequence.send(u1, new DoTasks(1), m);
-			assertState(m, On.Active.class);
+			Sequence.send(user1, new DoTasks(1), machine);
+			assertState(machine, On.Active.class);
 		}
 	}
 

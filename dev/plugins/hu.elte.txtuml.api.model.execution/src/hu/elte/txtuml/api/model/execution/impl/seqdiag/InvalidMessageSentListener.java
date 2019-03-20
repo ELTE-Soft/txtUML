@@ -7,6 +7,7 @@ import hu.elte.txtuml.api.model.execution.WarningListener;
 import hu.elte.txtuml.api.model.execution.seqdiag.error.LostMessageError;
 import hu.elte.txtuml.api.model.execution.seqdiag.error.MessageToDeletedError;
 import hu.elte.txtuml.api.model.impl.SequenceDiagramRelated;
+import hu.elte.txtuml.api.model.seqdiag.MessageParticipant;
 
 /**
  * Reports errors when messages are lost or arrive to deleted model objects.
@@ -21,12 +22,12 @@ class InvalidMessageSentListener implements WarningListener {
 
 	@Override
 	public void lostSignalAtObject(Signal signal, ModelClass obj) {
-		executor.addError(new LostMessageError(Message.fromUnknown(signal, obj)));
+		executor.addError(new LostMessageError<>(Message.fromUnknown(signal, MessageParticipant.create(obj))));
 	}
 
 	@Override
 	public void signalArrivedToDeletedObject(ModelClass obj, Signal signal) {
-		executor.addError(new MessageToDeletedError(Message.fromUnknown(signal, obj)));
+		executor.addError(new MessageToDeletedError<>(Message.fromUnknown(signal, MessageParticipant.create(obj))));
 	}
 
 	@Override
