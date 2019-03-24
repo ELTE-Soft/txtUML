@@ -3,6 +3,7 @@ package hu.elte.txtuml.xtxtuml.jvmmodel;
 import com.google.inject.Inject
 import hu.elte.txtuml.api.model.Association
 import hu.elte.txtuml.api.model.BehaviorPort
+import hu.elte.txtuml.api.model.Collection
 import hu.elte.txtuml.api.model.Composition
 import hu.elte.txtuml.api.model.Composition.ContainerEnd
 import hu.elte.txtuml.api.model.Composition.HiddenContainerEnd
@@ -16,10 +17,13 @@ import hu.elte.txtuml.api.model.Interface
 import hu.elte.txtuml.api.model.ModelClass
 import hu.elte.txtuml.api.model.ModelClass.Port
 import hu.elte.txtuml.api.model.ModelEnum
+import hu.elte.txtuml.api.model.OrderedCollection
+import hu.elte.txtuml.api.model.OrderedUniqueCollection
 import hu.elte.txtuml.api.model.Signal
 import hu.elte.txtuml.api.model.StateMachine
 import hu.elte.txtuml.api.model.To
 import hu.elte.txtuml.api.model.Trigger
+import hu.elte.txtuml.api.model.UniqueCollection
 import hu.elte.txtuml.api.model.execution.CheckLevel
 import hu.elte.txtuml.api.model.execution.Execution
 import hu.elte.txtuml.api.model.execution.Execution.Settings
@@ -30,6 +34,7 @@ import hu.elte.txtuml.xtxtuml.xtxtUML.TUAssociationEnd
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAttribute
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAttributeOrOperationDeclarationPrefix
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUClass
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUCollection
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUComposition
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUConnector
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUConnectorEnd
@@ -280,6 +285,36 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 			for (reception : iFace.receptions) {
 				members += reception.toJvmMember
 			}
+		]
+	}
+	
+	def dispatch void infer(TUCollection collection, IJvmDeclaredTypeAcceptor acceptor, boolean isPreIndexingPhase) {
+		acceptor.accept(collection.toClass(collection.fullyQualifiedName)) [
+			documentation = collection.documentation
+			if (collection.modifiers.ordered)
+			{
+				if (collection.modifiers.unique)
+				{
+					superTypes += OrderedUniqueCollection.typeRef
+				}
+				else
+				{
+					superTypes += OrderedCollection.typeRef
+				}
+			}
+			else
+			{
+				if (collection.modifiers.unique)
+				{
+					superTypes += UniqueCollection.typeRef
+				}
+				else
+				{
+					superTypes += Collection.typeRef
+				}
+			}
+			
+			// members
 		]
 	}
 
