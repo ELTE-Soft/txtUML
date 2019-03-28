@@ -22,7 +22,7 @@ Require-Bundle: hu.elte.txtuml.xtxtuml;visibility:=reexport,
  org.eclipse.jdt.core,
  hu.elte.txtuml.utils,
  hu.elte.txtuml.validation,
- hu.elte.txtuml.diagnostics;bundle-version="0.7.0"
+ hu.elte.txtuml.diagnostics
 Import-Package: org.apache.log4j
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Export-Package: hu.elte.txtuml.xtxtuml.ui.quickfix,
