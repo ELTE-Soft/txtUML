@@ -687,7 +687,53 @@
             id="org.eclipse.jdt.launching.localJavaApplication">
          </configurationType>
      </shortcut>
+     
+     <shortcut
+            class="hu.elte.txtuml.xtxtuml.ui.launching.XtxtUMLExecutionLaunchAsTxtUMLAppShortcut"
+            description="Launches the most relevant XtxtUML execution defined in the selected file as txtUML Application"
+            icon="icons/execution.gif"
+            id="hu.elte.txtuml.xtxtuml.ui.launching.XtxtUMLExecutionLaunchAsTxtUMLAppShortcut"
+            label="XtxtUML Execution as txtUML App"
+            modes="run, debug">
+         <contextualLaunch>
+            <enablement>
+               <with variable="selection">
+                  <count value="1"/>
+                  <iterate>
+                     <and>
+                        <adapt type="org.eclipse.core.resources.IResource">
+                           <and>
+                              <or>
+                                 <test property="org.eclipse.core.resources.name" value="*.xtxtuml"/>
+                                 <test property="org.eclipse.core.resources.name" value="*.txtuml"/>
+                              </or>
+                              <test property="org.eclipse.core.resources.projectNature" value="hu.elte.txtuml.project.txtumlprojectNature"/>
+                           </and>
+                        </adapt>
+                        <not><adapt type="org.eclipse.jdt.core.IJavaElement"/></not>
+                        <adapt type="hu.elte.txtuml.xtxtuml.ui.launching.XtxtUMLJavaElementDelegateMainLaunch">
+                           <test property="org.eclipse.jdt.launching.hasMain"/>
+                        </adapt>
+                     </and>
+                  </iterate>
+               </with>
+            </enablement>
+         </contextualLaunch>
+         <configurationType
+            id="hu.elte.txtuml.xtxtuml.launchConfigurationTypeDefault">
+         </configurationType>
+     </shortcut>
   </extension>
+  
+  <extension
+         point="org.eclipse.debug.core.launchConfigurationTypes">
+      <launchConfigurationType
+            delegate="hu.elte.txtuml.diagnostics.DiagnosticsLaunchDelegate"
+            id="hu.elte.txtuml.xtxtuml.launchConfigurationTypeDefault"
+            modes="run, debug"
+            name="txtUML Application">
+      </launchConfigurationType>
+   </extension>
 
   <extension
         point="org.eclipse.xtext.ui.shared.overridingGuiceModule">
