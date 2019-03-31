@@ -92,6 +92,10 @@ TUCollection :
 	type=JvmTypeReference? 'as' name=ValidID ';'
 ;
 
+TUCollectionDeclarationPrefix :
+   multiplicity=TUMultiplicity ordered?='ordered'? unique?='unique'? type=JvmTypeReference
+;
+
 // Inner element level
 
 // Execution related
@@ -146,8 +150,9 @@ TUConstructor :
 		body=XBlockExpression ';'?
 ;
 
-TUAttributeOrOperationDeclarationPrefix :
-	modifiers=TUModifiers type=JvmTypeReference
+TUAttributeOrOperationDeclarationPrefix
+	: modifiers=TUModifiers type=JvmTypeReference
+	| TUCollectionDeclarationPrefix
 ;
 
 TUState :

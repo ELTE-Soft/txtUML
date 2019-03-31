@@ -78,6 +78,7 @@ import org.eclipse.xtext.xbase.XBlockExpression
 import org.eclipse.xtext.xbase.jvmmodel.AbstractModelInferrer
 import org.eclipse.xtext.xbase.jvmmodel.IJvmDeclaredTypeAcceptor
 import org.eclipse.xtext.xbase.jvmmodel.IJvmModelAssociations
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUCollectionDeclarationPrefix
 
 /**
  * Infers a JVM model equivalent from an XtxtUML resource. If not stated otherwise,
@@ -480,20 +481,23 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 	}
 
 	def dispatch private toJvmMember(TUAttribute attr) {
-		attr.toField(attr.name, attr.prefix.type) [
-			documentation = attr.documentation
-
-			val modifiers = attr.prefix.modifiers
-			static = modifiers.static
-			visibility = modifiers.visibility.toJvmVisibility
-
-			switch (modifiers.externality) {
-				case EXTERNAL: annotations += External.annotationRef
-				default: {}
-			}
-
-			initializer = attr.initExpression
-		]
+		if(!(attr.prefix instanceof TUCollectionDeclarationPrefix)) {
+			attr.toField(attr.name, attr.prefix.type) [
+				documentation = attr.documentation
+	
+				val modifiers = attr.prefix.modifiers
+				static = modifiers.static
+				visibility = modifiers.visibility.toJvmVisibility
+	
+				switch (modifiers.externality) {
+					case EXTERNAL: annotations += External.annotationRef
+					default: {}
+				}
+	
+				initializer = attr.initExpression
+			]
+			
+		}
 	}
 
 	def dispatch private toJvmMember(TUEnumerationLiteral literal) {
