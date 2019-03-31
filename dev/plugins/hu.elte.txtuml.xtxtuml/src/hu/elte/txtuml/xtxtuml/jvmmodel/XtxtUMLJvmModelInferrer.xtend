@@ -8,6 +8,7 @@ import hu.elte.txtuml.api.model.Composition.ContainerEnd
 import hu.elte.txtuml.api.model.Composition.HiddenContainerEnd
 import hu.elte.txtuml.api.model.Connector
 import hu.elte.txtuml.api.model.ConnectorBase.One
+import hu.elte.txtuml.api.model.DataType
 import hu.elte.txtuml.api.model.Delegation
 import hu.elte.txtuml.api.model.External
 import hu.elte.txtuml.api.model.ExternalBody
@@ -34,6 +35,7 @@ import hu.elte.txtuml.xtxtuml.xtxtUML.TUComposition
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUConnector
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUConnectorEnd
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUConstructor
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUDataType
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUEntryOrExitActivity
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUEnumeration
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUEnumerationLiteral
@@ -213,6 +215,17 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 					«ENDFOR»
 				'''
 			]
+		]
+	}
+	
+	def dispatch void infer(TUDataType tUDataType, IJvmDeclaredTypeAcceptor acceptor, boolean isPreIndexingPhase) {
+		acceptor.accept(tUDataType.toClass(tUDataType.fullyQualifiedName)) [
+			documentation = tUDataType.documentation
+			if (tUDataType.superClass != null) {
+				superTypes += tUDataType.superClass.inferredTypeRef
+			} else {
+				superTypes +=DataType.typeRef
+			}
 		]
 	}
 
