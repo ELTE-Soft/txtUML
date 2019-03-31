@@ -51,11 +51,13 @@ class XtxtUMLClassValidator extends XtxtUMLFileValidator {
 
 	@Check
 	def checkConstructorName(TUConstructor ctor) {
-		val name = ctor.name;
-		val enclosingClassName = (ctor.eContainer as TUClass).name;
-		if (name != enclosingClassName) {
-			error('''Constructor «name»(«ctor.parameters.typeNames.join(", ")») in class «enclosingClassName» must be named as its enclosing class''',
-				ctor, TU_CONSTRUCTOR__NAME, INVALID_CONSTRUCTOR_NAME);
+		if(ctor.eContainer instanceof TUClass) {
+			val name = ctor.name;
+			val enclosingClassName = (ctor.eContainer as TUClass).name;
+			if (name != enclosingClassName) {
+				error('''Constructor «name»(«ctor.parameters.typeNames.join(", ")») in class «enclosingClassName» must be named as its enclosing class''',
+					ctor, TU_CONSTRUCTOR__NAME, INVALID_CONSTRUCTOR_NAME);
+			}		
 		}
 	}
 

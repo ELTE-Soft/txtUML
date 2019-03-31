@@ -224,8 +224,12 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 			if (tUDataType.superClass != null) {
 				superTypes += tUDataType.superClass.inferredTypeRef
 			} else {
-				superTypes +=DataType.typeRef
+				superTypes +=DataType.typeRef;
 			}
+			
+			for (member : tUDataType.members) {
+    			members += member.toJvmMember
+			}			
 		]
 	}
 
