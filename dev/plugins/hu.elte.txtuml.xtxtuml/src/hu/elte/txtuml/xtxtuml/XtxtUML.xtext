@@ -30,7 +30,7 @@ TUModelElement
 	| TUAssociation
 	| TUInterface
 	| TUConnector
-	| TUCollection
+	| TUCollectionType
 ;
 
 TUExecution :
@@ -87,7 +87,7 @@ TUConnectorEnd :
 	role=[TUAssociationEnd|QualifiedName] '->' port=[TUPort|QualifiedName] name=ValidID ';'
 ;
 
-TUCollection :
+TUCollectionType :
 	modifiers=TUCollectionModifiers 'collection' 'of' multiplicity=TUMultiplicity 
 	type=JvmTypeReference? 'as' name=ValidID ';'
 ;
