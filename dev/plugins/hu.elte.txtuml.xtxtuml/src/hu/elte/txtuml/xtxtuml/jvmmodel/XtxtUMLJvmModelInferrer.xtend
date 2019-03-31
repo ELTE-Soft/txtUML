@@ -14,6 +14,8 @@ import hu.elte.txtuml.api.model.External
 import hu.elte.txtuml.api.model.ExternalBody
 import hu.elte.txtuml.api.model.From
 import hu.elte.txtuml.api.model.Interface
+import hu.elte.txtuml.api.model.Max
+import hu.elte.txtuml.api.model.Min
 import hu.elte.txtuml.api.model.ModelClass
 import hu.elte.txtuml.api.model.ModelClass.Port
 import hu.elte.txtuml.api.model.ModelEnum
@@ -34,7 +36,7 @@ import hu.elte.txtuml.xtxtuml.xtxtUML.TUAssociationEnd
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAttribute
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAttributeOrOperationDeclarationPrefix
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUClass
-import hu.elte.txtuml.xtxtuml.xtxtUML.TUCollection
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUCollectionType
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUComposition
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUConnector
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUConnectorEnd
@@ -288,33 +290,42 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 		]
 	}
 	
-	def dispatch void infer(TUCollection collection, IJvmDeclaredTypeAcceptor acceptor, boolean isPreIndexingPhase) {
+	def dispatch void infer(TUCollectionType collection, IJvmDeclaredTypeAcceptor acceptor, boolean isPreIndexingPhase) {
 		acceptor.accept(collection.toClass(collection.fullyQualifiedName)) [
 			documentation = collection.documentation
-			if (collection.modifiers.ordered)
-			{
-				if (collection.modifiers.unique)
-				{
-					superTypes += OrderedUniqueCollection.typeRef
+			
+			// TODO : more elegant solution?
+			
+			if (collection.type != null) {
+				if (collection.modifiers.ordered) {
+					if (collection.modifiers.unique) {
+						superTypes += typeRef(OrderedUniqueCollection, collection.type, (collection.inferredType as JvmGenericType).typeRef)
+					} else {
+						superTypes += typeRef(OrderedCollection, collection.type, (collection.inferredType as JvmGenericType).typeRef)
+					}
+				} else {
+					if (collection.modifiers.unique) {
+						superTypes += typeRef(UniqueCollection, collection.type, (collection.inferredType as JvmGenericType).typeRef)
+					} else {
+						superTypes += typeRef(Collection, collection.type, (collection.inferredType as JvmGenericType).typeRef)
+					}
 				}
-				else
-				{
-					superTypes += OrderedCollection.typeRef
-				}
-			}
-			else
-			{
-				if (collection.modifiers.unique)
-				{
-					superTypes += UniqueCollection.typeRef
-				}
-				else
-				{
-					superTypes += Collection.typeRef
-				}
+			} else {
+				// TODO
 			}
 			
-			// members
+			if (!collection.multiplicity.any) {
+				annotations += annotationRef(Min) => [explicitValues += TypesFactory::eINSTANCE.createJvmIntAnnotationValue => [
+					values += collection.multiplicity.lower] ]
+				if (collection.multiplicity.upperSet && !collection.multiplicity.upperInf) {
+					annotations += annotationRef(Max) => [explicitValues += TypesFactory::eINSTANCE.createJvmIntAnnotationValue => [
+						values += collection.multiplicity.upper] ]
+				}
+				else {
+					annotations += annotationRef(Max) => [explicitValues += TypesFactory::eINSTANCE.createJvmIntAnnotationValue => [
+						values += collection.multiplicity.lower] ]
+				}
+			}
 		]
 	}
 
