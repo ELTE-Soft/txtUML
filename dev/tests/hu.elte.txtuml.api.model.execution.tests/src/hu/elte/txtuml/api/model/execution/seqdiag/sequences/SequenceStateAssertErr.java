@@ -15,13 +15,13 @@ public class SequenceStateAssertErr extends SequenceBase {
 		Sequence.assertState(c, C.StateB.class);
 		Sequence.fromActor(new TestSig(), a);
 		Sequence.assertState(a, A.StateA.class);
-		Sequence.send(a, new TestSig(), b);
+		Sequence.assertSend(a, new TestSig(), b);
 		Sequence.assertState(b, B.StateB.class);
-		Sequence.send(b, new TestSig(), c);
+		Sequence.assertSend(b, new TestSig(), c);
 		Sequence.assertState(c, C.StateA.class);
-		Sequence.send(c, new TestSig(), b);
+		Sequence.assertSend(c, new TestSig(), b);
 		Sequence.assertState(b, B.StateA.class);
-		Sequence.send(b, new TestSig(), a);
+		Sequence.assertSend(b, new TestSig(), a);
 		Sequence.assertState(a, A.StateA.class);
 	}
 

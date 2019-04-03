@@ -8,7 +8,7 @@ import hu.elte.txtuml.seqdiag.export.plantuml.generator.PlantUmlCompiler;
 
 /**
  * Exporter implementation, which is responsible for exporting the message
- * sending from the SequenceDiagrams ({@code Sequence.send()} and
+ * sending from the SequenceDiagrams ({@code Sequence.assertSend()} and
  * {@code Sequence.fromActor()})
  */
 public class SequenceExporter extends MethodInvocationExporter {
@@ -21,7 +21,7 @@ public class SequenceExporter extends MethodInvocationExporter {
 	public boolean validElement(ASTNode curElement) {
 		if (super.validElement(curElement)) {
 			String fullName = ExporterUtils.getFullyQualifiedName((MethodInvocation) curElement);
-			return fullName.equals("hu.elte.txtuml.api.model.seqdiag.Sequence.send")
+			return fullName.equals("hu.elte.txtuml.api.model.seqdiag.Sequence.assertSend")
 					|| fullName.equals("hu.elte.txtuml.api.model.seqdiag.Sequence.fromActor");
 		}
 		return false;
@@ -34,7 +34,7 @@ public class SequenceExporter extends MethodInvocationExporter {
 			return true;
 		}
 
-		// Sequence.send call
+		// Sequence.assertSend call
 		Expression sender = (Expression) curElement.arguments().get(0);
 		String senderName = sender.toString();
 

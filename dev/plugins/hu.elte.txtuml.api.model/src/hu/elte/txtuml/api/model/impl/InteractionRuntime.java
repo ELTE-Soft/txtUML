@@ -23,7 +23,7 @@ public interface InteractionRuntime extends Wrapper<Interaction>, ImplRelated {
 	}
 
 	/**
-	 * Called by {@link Sequence#send(ModelClass, Signal, ModelClass)}. Read
+	 * Called by {@link Sequence#assertSend(ModelClass, Signal, ModelClass)}. Read
 	 * semantics there.
 	 */
 	void message(ModelClass sender, Signal signal, ModelClass target);

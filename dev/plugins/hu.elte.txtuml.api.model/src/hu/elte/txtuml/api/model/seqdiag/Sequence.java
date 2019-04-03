@@ -51,7 +51,7 @@ public abstract class Sequence {
 	 * erroneous sequence diagram descriptions, this action may comprise the
 	 * processing of multiple signals out of which the given is the last.
 	 */
-	public static void send(ModelClass sender, Signal signal, ModelClass target) {
+	public static void assertSend(ModelClass sender, Signal signal, ModelClass target) {
 		InteractionRuntime.current().message(sender, signal, target);
 	}
 

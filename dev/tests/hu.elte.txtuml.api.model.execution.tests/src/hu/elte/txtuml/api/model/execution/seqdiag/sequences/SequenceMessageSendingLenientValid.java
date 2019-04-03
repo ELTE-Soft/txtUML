@@ -13,8 +13,8 @@ public class SequenceMessageSendingLenientValid extends SequenceBase {
 	@ExecutionMode(ExecMode.LENIENT)
 	public void run() {
 		Sequence.fromActor(new TestSig(), a);
-		Sequence.send(b, new TestSig(), c);
-		Sequence.send(b, new TestSig(), a);
+		Sequence.assertSend(b, new TestSig(), c);
+		Sequence.assertSend(b, new TestSig(), a);
 	}
 
 }
