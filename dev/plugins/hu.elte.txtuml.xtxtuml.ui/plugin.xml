@@ -720,7 +720,7 @@
             </enablement>
          </contextualLaunch>
          <configurationType
-            id="hu.elte.txtuml.xtxtuml.launchConfigurationTypeDefault">
+            id="hu.elte.txtuml.diagnostics.launchConfigurationTypeDefault">
          </configurationType>
      </shortcut>
   </extension>
@@ -729,9 +729,10 @@
          point="org.eclipse.debug.core.launchConfigurationTypes">
       <launchConfigurationType
             delegate="hu.elte.txtuml.diagnostics.DiagnosticsLaunchDelegate"
-            id="hu.elte.txtuml.xtxtuml.launchConfigurationTypeDefault"
+            id="hu.elte.txtuml.diagnostics.launchConfigurationTypeDefault"
             modes="run, debug"
-            name="txtUML Application">
+            name="txtUML Application"
+            public="false">
       </launchConfigurationType>
    </extension>
 
