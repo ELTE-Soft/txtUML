@@ -2,7 +2,7 @@ package monitoring.x.tests;
 
 import static hu.elte.txtuml.api.model.seqdiag.Sequence.assertState;
 import static hu.elte.txtuml.api.model.seqdiag.Sequence.fromActor;
-import static hu.elte.txtuml.api.model.seqdiag.Sequence.send;
+import static hu.elte.txtuml.api.model.seqdiag.Sequence.assertSend;
 
 import hu.elte.txtuml.api.model.Action;
 import hu.elte.txtuml.api.model.seqdiag.Position;
@@ -49,35 +49,35 @@ public class XMonitoringSequenceDiagram extends SequenceDiagram {
 	public void run() {
 		fromActor(new Read(), monitor);
 		assertState(monitor, ResourceMonitor.OpenForRead.class);
-		send(monitor, new OK(), alert);
+		assertSend(monitor, new OK(), alert);
 
 		for (int i = 0; i < 4; ++i) {
 			fromActor(new Write(), monitor);
-			send(monitor, new WriteError(), aggregator);
-			send(monitor, new Error(), alert);
+			assertSend(monitor, new WriteError(), aggregator);
+			assertSend(monitor, new Error(), alert);
 		}
 		assertState(alert, Alert.Critical.class);
 
 		fromActor(new Close(), monitor);
 		assertState(monitor, ResourceMonitor.Closed.class);
-		send(monitor, new OK(), alert);
+		assertSend(monitor, new OK(), alert);
 
 		fromActor(new Write(), monitor);
 		assertState(monitor, ResourceMonitor.OpenForWrite.class);
-		send(monitor, new OK(), alert);
+		assertSend(monitor, new OK(), alert);
 
 		fromActor(new Write(), monitor);
-		send(monitor, new OK(), alert);
+		assertSend(monitor, new OK(), alert);
 
 		for (int i = 0; i < 4; ++i) {
 			fromActor(new Read(), monitor);
-			send(monitor, new ReadError(), aggregator);
-			send(monitor, new Error(), alert);
+			assertSend(monitor, new ReadError(), aggregator);
+			assertSend(monitor, new Error(), alert);
 		}
 		assertState(alert, Alert.Critical.class);
 
 		fromActor(new Write(), monitor);
-		send(monitor, new OK(), alert);
+		assertSend(monitor, new OK(), alert);
 	}
 
 }

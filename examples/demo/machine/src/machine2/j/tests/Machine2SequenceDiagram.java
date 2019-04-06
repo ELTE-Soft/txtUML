@@ -50,11 +50,11 @@ public class Machine2SequenceDiagram extends SequenceDiagram {
 		fromActor(new DoYourWork(), u1);
 		assertState(m, Off.class);
 
-		Sequence.send(u1, new ButtonPress(), m);
+		Sequence.assertSend(u1, new ButtonPress(), m);
 		assertState(m, On.Active.class);
 
 		for (int i = 0; i < 3; ++i) {
-			Sequence.send(u1, new DoTasks(1), m);
+			Sequence.assertSend(u1, new DoTasks(1), m);
 			assertState(m, On.Active.class);
 		}
 	}

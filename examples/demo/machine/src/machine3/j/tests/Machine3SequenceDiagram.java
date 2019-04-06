@@ -2,7 +2,7 @@ package machine3.j.tests;
 
 import static hu.elte.txtuml.api.model.seqdiag.Sequence.assertState;
 import static hu.elte.txtuml.api.model.seqdiag.Sequence.fromActor;
-import static hu.elte.txtuml.api.model.seqdiag.Sequence.send;
+import static hu.elte.txtuml.api.model.seqdiag.Sequence.assertSend;
 
 import hu.elte.txtuml.api.model.Action;
 import hu.elte.txtuml.api.model.seqdiag.ExecMode;
@@ -58,8 +58,8 @@ public class Machine3SequenceDiagram extends SequenceDiagram {
 		assertState(u1, NotWorking.class);
 		assertState(m, Off.class);
 
-		send(u1, new ButtonPress(), m);
-		send(u1, new DoTasks(4), m);
+		assertSend(u1, new ButtonPress(), m);
+		assertSend(u1, new DoTasks(4), m);
 		assertState(m, On.Active.class);
 	}
 

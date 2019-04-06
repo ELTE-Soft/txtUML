@@ -1,7 +1,7 @@
 package producer_consumer.j.tests;
 
 import static hu.elte.txtuml.api.model.seqdiag.Sequence.assertState;
-import static hu.elte.txtuml.api.model.seqdiag.Sequence.send;
+import static hu.elte.txtuml.api.model.seqdiag.Sequence.assertSend;
 
 import hu.elte.txtuml.api.model.Action;
 import hu.elte.txtuml.api.model.seqdiag.Position;
@@ -60,24 +60,24 @@ public abstract class ProducerConsumerSequenceDiagramBase extends SequenceDiagra
 	
 	protected void produce(Producer p) {
 		for (int i = 0; i < 2; ++i) {
-			send(p, new OfferNotification(), storage);
-			send(p, new DoWork(), p);
+			assertSend(p, new OfferNotification(), storage);
+			assertSend(p, new DoWork(), p);
 			assertState(p, Producer.Active.class);
 			assertState(storage, Storage.Working.class);
 		}
-		send(p, new OfferNotification(), storage);
-		send(p, new DoWork(), p);
+		assertSend(p, new OfferNotification(), storage);
+		assertSend(p, new DoWork(), p);
 		assertState(p, Producer.Passive.class);
 	}
 
 	protected void consume(Consumer c) {
-		send(c, new RequestNotification(), storage);
-		send(c, new DoWork(), c);
+		assertSend(c, new RequestNotification(), storage);
+		assertSend(c, new DoWork(), c);
 		assertState(c, Consumer.Active.class);
 		assertState(storage, Storage.Working.class);
 
-		send(c, new RequestNotification(), storage);
-		send(c, new DoWork(), c);
+		assertSend(c, new RequestNotification(), storage);
+		assertSend(c, new DoWork(), c);
 		assertState(c, Consumer.Passive.class);
 	}
 
