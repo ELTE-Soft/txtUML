@@ -312,15 +312,32 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 					}
 				}
 			} else {
-				// TODO
+				val tp = TypesFactory::eINSTANCE.createJvmTypeParameter()
+    			tp.name = "T"
+    			typeParameters += tp
+    			if (collection.modifiers.ordered) {
+					if (collection.modifiers.unique) {
+						superTypes += typeRef(OrderedUniqueCollection, tp.typeRef, typeRef(collection.inferredType as JvmGenericType, tp.typeRef))
+					} else {
+						superTypes += typeRef(OrderedCollection, tp.typeRef, typeRef(collection.inferredType as JvmGenericType, tp.typeRef))
+					}
+				} else {
+					if (collection.modifiers.unique) {
+						superTypes += typeRef(UniqueCollection, tp.typeRef, typeRef(collection.inferredType as JvmGenericType, tp.typeRef))
+					} else {
+						superTypes += typeRef(Collection, tp.typeRef, typeRef(collection.inferredType as JvmGenericType, tp.typeRef))
+					}
+				}
 			}
 			
 			if (!collection.multiplicity.any) {
 				annotations += annotationRef(Min) => [explicitValues += TypesFactory::eINSTANCE.createJvmIntAnnotationValue => [
 					values += collection.multiplicity.lower] ]
-				if (collection.multiplicity.upperSet && !collection.multiplicity.upperInf) {
-					annotations += annotationRef(Max) => [explicitValues += TypesFactory::eINSTANCE.createJvmIntAnnotationValue => [
-						values += collection.multiplicity.upper] ]
+				if (collection.multiplicity.upperSet) {
+					if (!collection.multiplicity.upperInf) {
+						annotations += annotationRef(Max) => [explicitValues += TypesFactory::eINSTANCE.createJvmIntAnnotationValue => [
+							values += collection.multiplicity.upper] ]
+					}
 				}
 				else {
 					annotations += annotationRef(Max) => [explicitValues += TypesFactory::eINSTANCE.createJvmIntAnnotationValue => [
