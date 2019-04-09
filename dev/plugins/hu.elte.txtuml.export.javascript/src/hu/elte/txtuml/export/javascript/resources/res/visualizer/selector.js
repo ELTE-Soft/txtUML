@@ -4,7 +4,7 @@ visualizer.Selector = function (input) {
 	var params = window.location.hash.substring(1).split('_');
 
 	//check if anchor is valid (diagramType exists and index is in bounds)
-	var paramsValid = params.length === 2 &&
+	var paramsValid = params.length >= 2 &&
 		_.has(visualizer.Utils.MAPS.DIAGRAMTYPE_TO_COLLECTION_PROPERTY, params[0]) && //valid type
 		!isNaN(params[1]) && //index is not NaN
 		parseInt(Number(params[1])) == params[1] && //index is integer
@@ -13,6 +13,7 @@ visualizer.Selector = function (input) {
 	//index is in bounds
 
 	this._diagramMap = {}; //stores the names of diagrams of the input grouped by diagram types
+	this._instances = {};
 	this._selected = null;
 
 	//if params are valid set the selected diagram and type
@@ -20,7 +21,7 @@ visualizer.Selector = function (input) {
 		var collectionName = visualizer.Utils.MAPS.DIAGRAMTYPE_TO_COLLECTION_PROPERTY[params[0]];
 		this._selected = input[collectionName][Number(params[1])];
 		this._selected.type = params[0];
-
+		this._selected.inst = params[2];
 	}
 
 	//iterate diagram types
@@ -52,6 +53,30 @@ visualizer.Selector.prototype.getSelectedDiagram = function () {
 	return this._selected;
 }
 
+//sets diagram instances
+visualizer.Selector.prototype.setInstances = function (inst) {
+	this._instances = inst;
+	var timestamp = new Date().getTime(); //this ensures that the URL changes and the page is reloaded
+	var self = this;
+	_.each(this._diagramMap, function (diagrams, type) {
+		if (type != "state") return;
+		_.each(diagrams, function (diagramName, key) {
+			try {
+				var klass = self._selected.classes[key].id;
+				$('#diagInst' + key).html(self._instances.filter(function (diis) {
+					return diis["class"] == klass;
+				}).map(function (diis) {
+					return '<li><a href="?refresh=' + timestamp + '#' + type + '_' + key + '_' + diis.name + '">' + diis.id + '</a></li>';
+				}).join(""));
+
+			} catch (e) {
+				$('#diagInst' + key).html("");
+			}
+		});
+	});
+
+}
+
 //puts links (pointing to diagrams present in the input) into the given tbody (one row, one column per diagram type present)
 visualizer.Selector.prototype.putLinks = function (tbody) {
 	var innerHTML = '<tr>';
@@ -60,7 +85,7 @@ visualizer.Selector.prototype.putLinks = function (tbody) {
 		innerHTML += '<td><ul>';
 		_.each(diagrams, function (diagramName, key) {
 			//anchor is in a format of <diagram type>_<diagram_index>
-			innerHTML += '<li><a href="?refresh=' + timestamp + '#' + type + '_' + key + '">' + diagramName + '</a></li>';
+			innerHTML += '<li><a href="?refresh=' + timestamp + '#' + type + '_' + key + '">' + diagramName + '</a>' + (type == "state" ? '<ul id=diagInst' + key + '></ul>' : '') + '</li>'
 		});
 		innerHTML += '</ul></td>'
 	});

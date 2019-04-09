@@ -29,8 +29,10 @@ function refreshElements(queryPort){
 		if(!isPolling || currentPort != queryPort) return;
 
 		if(response.status == 200){
-			setActiveElements((JSON.parse(response.responseText))
-				.map(entry => _visualizer.getShapeIdByElementName(entry.location)));
+			var json = JSON.parse(response.responseText);
+			setActiveElements((json)
+				.map(entry => (!selector._selected || selector._selected.inst == entry["name"]) ? _visualizer.getShapeIdByElementName(entry.location) : 187554));
+			selector.setInstances(json);
 			hideError();
 		}
 		else{
