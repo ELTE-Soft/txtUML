@@ -295,38 +295,28 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 		acceptor.accept(collection.toClass(collection.fullyQualifiedName)) [
 			documentation = collection.documentation
 			
-			// TODO : more elegant solution?
+			val modlist = #[collection.modifiers.ordered, collection.modifiers.unique]
 			
 			if (collection.type != null) {
-				if (collection.modifiers.ordered) {
-					if (collection.modifiers.unique) {
-						superTypes += typeRef(OrderedUniqueCollection, collection.type, (collection.inferredType as JvmGenericType).typeRef)
-					} else {
-						superTypes += typeRef(OrderedCollection, collection.type, (collection.inferredType as JvmGenericType).typeRef)
-					}
-				} else {
-					if (collection.modifiers.unique) {
-						superTypes += typeRef(UniqueCollection, collection.type, (collection.inferredType as JvmGenericType).typeRef)
-					} else {
-						superTypes += typeRef(Collection, collection.type, (collection.inferredType as JvmGenericType).typeRef)
-					}
+				val Arg2 = (collection.inferredType as JvmGenericType).typeRef
+				
+				superTypes += switch (modlist) {
+					case #[true, true]: typeRef(OrderedUniqueCollection, collection.type, Arg2)
+					case #[true, false]: typeRef(OrderedCollection, collection.type, Arg2)
+					case #[false, true]: typeRef(UniqueCollection, collection.type, Arg2)
+					case #[false, false]: typeRef(Collection, collection.type, Arg2)
 				}
 			} else {
 				val tp = TypesFactory::eINSTANCE.createJvmTypeParameter()
     			tp.name = "T"
     			typeParameters += tp
-    			if (collection.modifiers.ordered) {
-					if (collection.modifiers.unique) {
-						superTypes += typeRef(OrderedUniqueCollection, tp.typeRef, typeRef(collection.inferredType as JvmGenericType, tp.typeRef))
-					} else {
-						superTypes += typeRef(OrderedCollection, tp.typeRef, typeRef(collection.inferredType as JvmGenericType, tp.typeRef))
-					}
-				} else {
-					if (collection.modifiers.unique) {
-						superTypes += typeRef(UniqueCollection, tp.typeRef, typeRef(collection.inferredType as JvmGenericType, tp.typeRef))
-					} else {
-						superTypes += typeRef(Collection, tp.typeRef, typeRef(collection.inferredType as JvmGenericType, tp.typeRef))
-					}
+    			val Arg2 = typeRef(collection.inferredType as JvmGenericType, tp.typeRef)
+    			
+    			superTypes += switch (modlist) {
+					case #[true, true]: typeRef(OrderedUniqueCollection, tp.typeRef, Arg2)
+					case #[true, false]: typeRef(OrderedCollection, tp.typeRef, Arg2)
+					case #[false, true]: typeRef(UniqueCollection, tp.typeRef, Arg2)
+					case #[false, false]: typeRef(Collection, tp.typeRef, Arg2)
 				}
 			}
 			
