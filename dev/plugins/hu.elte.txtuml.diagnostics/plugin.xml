@@ -53,6 +53,7 @@
             description="Launches execution defined in the selected file as txtUML Application"
             id="hu.elte.txtuml.diagnostics.launching.ExecutionAsTxtUMLAppLaunchShortcut"
             label="TxtUML App"
+            icon="icons/execution.gif"
             modes="run, debug">
          <contextualLaunch>
             <enablement>
@@ -60,13 +61,14 @@
                   <count value="1"/>
                   <iterate>
                      <and>
+                     	<test property="org.eclipse.jdt.launching.hasMain"/>
                         <adapt type="org.eclipse.core.resources.IResource">
                            <and>
                               <test property="org.eclipse.core.resources.name" value="*.java"/>
                               <test property="org.eclipse.core.resources.projectNature" value="hu.elte.txtuml.project.txtumlprojectNature"/>
                            </and>
                         </adapt>
-                        <adapt type="org.eclipse.jdt.core.IJavaElement"/>
+                        <adapt type="org.eclipse.jdt.core.IJavaElement"/>      
                      </and>
                   </iterate>
                </with>
