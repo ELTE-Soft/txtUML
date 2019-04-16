@@ -65,16 +65,58 @@ public class Message<T extends ModelClass, U extends ModelClass> extends Abstrac
 		}
 
 		if (areSignalsEqual) {
-			if (sender != null && expected.sender != null && !expected.sender.hasParticipant()
-					&& sender.getParticipantType().equals(expected.sender.getParticipantType())) {
-				expected.sender.bindTo(sender.getParticipant().get());
-			}
 
-			if (!expected.target.hasParticipant()
+			/* checks if neither of the objects are bound */
+			if (sender != null && expected.sender != null && !expected.sender.hasParticipant()
+					&& !expected.target.hasParticipant()
+					&& sender.getParticipantType().equals(expected.sender.getParticipantType())
 					&& target.getParticipantType().equals(expected.target.getParticipantType())) {
+				expected.sender.bindTo(sender.getParticipant().get());
 				expected.target.bindTo(target.getParticipant().get());
 			}
+			/*
+			 * checks if only one of the objects is bound, and also checks which
+			 * one then check up on whether the type of the objects match each
+			 * other
+			 */
+			if (sender != null && expected.sender != null
+					&& (expected.sender.hasParticipant() && !expected.target.hasParticipant())
+					|| !expected.sender.hasParticipant() && expected.target.hasParticipant()) {
+
+				if (expected.sender.hasParticipant() && !expected.target.hasParticipant()) {
+					if (!target.getParticipantType().equals(expected.target.getParticipantType())) {
+						areSignalsEqual = false;
+					} else {
+						expected.target.bindTo(target.getParticipant().get());
+					}
+				}
+
+				if (!expected.sender.hasParticipant() && expected.target.hasParticipant()) {
+					if (!sender.getParticipantType().equals(expected.sender.getParticipantType())) {
+						areSignalsEqual = false;
+					} else {
+						expected.sender.bindTo(sender.getParticipant().get());
+					}
+				}
+			}
+
+			/*
+			 * checks whether both objects are bound if (sender != null &&
+			 * expected.sender != null && expected.sender.hasParticipant() &&
+			 * sender.getParticipantType().equals(expected.sender.
+			 * getParticipantType()) && target != null && expected.target !=
+			 * null && expected.target.hasParticipant() &&
+			 * target.getParticipantType().equals(expected.target.
+			 * getParticipantType())) { } put this section in comment because in
+			 * this case nothing have to be done at all it only checks
+			 */
 		}
+		/*
+		 * exception handling is the only thing (suppose so) remained unsolved
+		 * but i think that the logic befits tried to simplify logic but could
+		 * not really do changes except commenting out one of the branches
+		 * comments now available TEST (How to?)
+		 */
 
 		return areSignalsEqual;
 	}
