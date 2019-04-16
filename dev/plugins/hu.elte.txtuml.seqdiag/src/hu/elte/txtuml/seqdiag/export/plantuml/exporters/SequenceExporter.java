@@ -1,5 +1,7 @@
 package hu.elte.txtuml.seqdiag.export.plantuml.exporters;
 
+import java.util.List;
+
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.Expression;
 import org.eclipse.jdt.core.dom.MethodInvocation;
@@ -44,7 +46,10 @@ public class SequenceExporter extends MethodInvocationExporter {
 		Expression signal = (Expression) curElement.arguments().get(1);
 		String signalExpr = signal.resolveTypeBinding().getQualifiedName();
 
-		compiler.println(senderName + "->" + targetName + " : " + signalExpr);
+		List<String> lifelineNames = compiler.getLifelineNames();
+		if (lifelineNames.contains(senderName) || lifelineNames.contains(targetName)) {
+			compiler.println(senderName + "->" + targetName + " : " + signalExpr);
+		}
 		return true;
 	}
 

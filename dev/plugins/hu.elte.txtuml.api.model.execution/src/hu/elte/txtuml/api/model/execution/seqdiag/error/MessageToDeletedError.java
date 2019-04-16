@@ -1,5 +1,6 @@
 package hu.elte.txtuml.api.model.execution.seqdiag.error;
 
+import hu.elte.txtuml.api.model.ModelClass;
 import hu.elte.txtuml.api.model.execution.impl.seqdiag.Message;
 import hu.elte.txtuml.api.model.impl.SequenceDiagramRelated;
 
@@ -8,11 +9,9 @@ import hu.elte.txtuml.api.model.impl.SequenceDiagramRelated;
  * target.
  */
 @SequenceDiagramRelated
-public class MessageToDeletedError extends InvalidMessageError {
+public class MessageToDeletedError<T extends ModelClass, U extends ModelClass> extends InvalidMessageError<T, U> {
 
-	private static final long serialVersionUID = -7852238254689099682L;
-
-	public MessageToDeletedError(Message message) {
+	public MessageToDeletedError(Message<T, U> message) {
 		super(message, "Message sent to deleted target: ", ErrorLevel.ERROR);
 	}
 

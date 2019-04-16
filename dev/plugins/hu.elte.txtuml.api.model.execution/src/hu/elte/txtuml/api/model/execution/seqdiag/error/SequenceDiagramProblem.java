@@ -6,19 +6,22 @@ import hu.elte.txtuml.api.model.impl.SequenceDiagramRelated;
  * General sequence diagram error.
  */
 @SequenceDiagramRelated
-public class SequenceDiagramProblem extends RuntimeException {
-
-	private static final long serialVersionUID = 3750870627402653606L;
+public class SequenceDiagramProblem {
 
 	private final ErrorLevel level;
+	private final String message;
 
 	public SequenceDiagramProblem(String concreteError, ErrorLevel level) {
-		super(concreteError);
+		this.message = concreteError;
 		this.level = level;
 	}
 
 	public ErrorLevel getErrorLevel() {
 		return level;
+	}
+
+	public String getMessage() {
+		return message;
 	}
 
 }

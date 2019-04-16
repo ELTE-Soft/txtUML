@@ -12,7 +12,7 @@ import org.eclipse.jdt.core.dom.SingleMemberAnnotation;
 import org.eclipse.jdt.core.dom.Type;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 
-import hu.elte.txtuml.api.model.ModelClass;
+import hu.elte.txtuml.api.model.seqdiag.Proxy;
 import hu.elte.txtuml.utils.jdt.SharedUtils;
 
 /**
@@ -61,7 +61,11 @@ public class PlantUmlPreCompiler extends ASTVisitor {
 
 	@Override
 	public boolean visit(FieldDeclaration decl) {
-		if (SharedUtils.typeIsAssignableFrom(decl.getType().resolveBinding(), ModelClass.class)) {
+		boolean isLifeline = SharedUtils.typeIsAssignableFrom(decl.getType().resolveBinding(), Proxy.class)
+				|| SharedUtils.typeIsAssignableFrom(decl.getType().resolveBinding(),
+						hu.elte.txtuml.api.model.seqdiag.Lifeline.class);
+
+		if (isLifeline) {
 			List<?> modifiers = decl.modifiers();
 			Optional<Integer> position = modifiers.stream().filter(modifier -> modifier instanceof Annotation)
 					.map(modifier -> (Annotation) modifier)
