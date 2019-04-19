@@ -24,19 +24,21 @@ TUModelDeclaration :
 
 TUModelElement
 	: TUExecution
-	| TUSignal
-	| TUClass
+	| TUClassOrDataTypeOrSignal
 	| TUEnumeration
 	| TUAssociation
 	| TUInterface
 	| TUConnector
-	| TUDataType
 ;
 
 TUExecution :
 	'execution' name=ValidID ('{'
 		elements+=TUExecutionElement* 
 	'}' ';'? | ';')?
+;
+
+TUClassOrDataTypeOrSignal:
+	TUDataType | TUClass | TUSignal
 ;
 
 TUSignal :

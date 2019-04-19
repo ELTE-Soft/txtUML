@@ -75,6 +75,7 @@ import org.eclipse.xtext.xbase.XBlockExpression
 import org.eclipse.xtext.xbase.jvmmodel.AbstractModelInferrer
 import org.eclipse.xtext.xbase.jvmmodel.IJvmDeclaredTypeAcceptor
 import org.eclipse.xtext.xbase.jvmmodel.IJvmModelAssociations
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUClassOrDataTypeOrSignal
 
 /**
  * Infers a JVM model equivalent from an XtxtUML resource. If not stated otherwise,
@@ -139,6 +140,11 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 			]
 		]
 	}
+	
+	def dispatch void infer(TUClassOrDataTypeOrSignal classDataSignal, IJvmDeclaredTypeAcceptor acceptor, boolean isPreIndexingPhase) {
+		acceptor.accept(/*classDataSignal.toJvmMember)[//*/classDataSignal.toClass(classDataSignal.fullyQualifiedName)) [
+		]
+	}
 
 	def dispatch void infer(TUAssociation assoc, IJvmDeclaredTypeAcceptor acceptor, boolean isPreIndexingPhase) {
 		acceptor.accept(assoc.toClass(assoc.fullyQualifiedName)) [
@@ -158,7 +164,7 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 		}
 	}
 
-	def dispatch void infer(TUSignal signal, IJvmDeclaredTypeAcceptor acceptor, boolean isPreIndexingPhase) {
+	/*def dispatch void infer(TUSignal signal, IJvmDeclaredTypeAcceptor acceptor, boolean isPreIndexingPhase) {
 		acceptor.accept(signal.toClass(signal.fullyQualifiedName)) [
 			documentation = signal.documentation
 			if (signal.superSignal != null) {
@@ -221,6 +227,7 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 	def dispatch void infer(TUDataType tUDataType, IJvmDeclaredTypeAcceptor acceptor, boolean isPreIndexingPhase) {
 		acceptor.accept(tUDataType.toClass(tUDataType.fullyQualifiedName)) [
 			documentation = tUDataType.documentation
+			
 			if (tUDataType.superClass != null) {
 				superTypes += tUDataType.superClass.inferredTypeRef
 			} else {
@@ -228,7 +235,11 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 			}
 			
 			for (member : tUDataType.members) {
-    			members += member.toJvmMember
+    			if (member instanceof TUAttribute ) {
+    				members += member.toField(member.name, member.prefix.type) [
+    				final = true
+    				]    			
+    			} else members+= member.toJvmMember;
 			}			
 		]
 	}
@@ -266,7 +277,7 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 				members += literal.toJvmMember
 			]
 		]
-	}
+	}*/
 
 	def dispatch void infer(TUConnector connector, IJvmDeclaredTypeAcceptor acceptor, boolean isPreIndexingPhase) {
 		acceptor.accept(connector.toClass(connector.fullyQualifiedName)) [

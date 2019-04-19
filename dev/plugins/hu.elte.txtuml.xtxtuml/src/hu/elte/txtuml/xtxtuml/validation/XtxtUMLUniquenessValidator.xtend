@@ -142,7 +142,7 @@ class XtxtUMLUniquenessValidator extends XtxtUMLNameValidator {
 
 	@Check
 	def checkAttributeNameIsUnique(TUAttribute attribute) {
-		if(attribute.eContainer instanceof TUClass) {
+		if (attribute.eContainer instanceof TUClass) {
 			val containingClass = attribute.eContainer as TUClass;
 			if (containingClass.members.exists [
 				it instanceof TUAttribute && (it as TUAttribute).name == attribute.name && it != attribute // direct comparison is safe here
@@ -155,7 +155,7 @@ class XtxtUMLUniquenessValidator extends XtxtUMLNameValidator {
 
 	@Check
 	def checkConstructorIsUnique(TUConstructor ctor) {
-		if(ctor.eContainer instanceof TUClass) {
+		if (ctor.eContainer instanceof TUClass) {
 			val enclosingClass = (ctor.eContainer as TUClass);
 			if (enclosingClass.members.exists [
 				it instanceof TUConstructor && {
@@ -171,7 +171,7 @@ class XtxtUMLUniquenessValidator extends XtxtUMLNameValidator {
 
 	@Check
 	def checkOperationIsUnique(TUOperation operation) {
-		if(operation.eContainer instanceof TUClass) {
+		if (operation.eContainer instanceof TUClass) {
 			val containingClass = (operation.eContainer as TUClass);
 			if (containingClass.members.exists [
 				it instanceof TUOperation &&

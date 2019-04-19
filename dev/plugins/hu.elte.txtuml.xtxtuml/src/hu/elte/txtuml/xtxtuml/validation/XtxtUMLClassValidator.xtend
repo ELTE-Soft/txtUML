@@ -51,7 +51,7 @@ class XtxtUMLClassValidator extends XtxtUMLFileValidator {
 
 	@Check
 	def checkConstructorName(TUConstructor ctor) {
-		if(ctor.eContainer instanceof TUClass) {
+		if (ctor.eContainer instanceof TUClass) {
 			val name = ctor.name;
 			val enclosingClassName = (ctor.eContainer as TUClass).name;
 			if (name != enclosingClassName) {
