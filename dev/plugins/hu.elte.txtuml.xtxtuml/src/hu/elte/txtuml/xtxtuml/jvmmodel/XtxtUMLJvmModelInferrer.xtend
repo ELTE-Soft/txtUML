@@ -66,12 +66,14 @@ import hu.elte.txtuml.xtxtuml.xtxtUML.TUTransitionTrigger
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUTransitionVertex
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUVisibility
 import java.util.Deque
+import java.util.List
 import java.util.Map
 import org.eclipse.emf.ecore.EObject
 import org.eclipse.xtext.common.types.JvmDeclaredType
 import org.eclipse.xtext.common.types.JvmFormalParameter
 import org.eclipse.xtext.common.types.JvmGenericType
 import org.eclipse.xtext.common.types.JvmMember
+import org.eclipse.xtext.common.types.JvmTypeReference
 import org.eclipse.xtext.common.types.JvmVisibility
 import org.eclipse.xtext.common.types.TypesFactory
 import org.eclipse.xtext.naming.IQualifiedNameProvider
@@ -295,29 +297,19 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 		acceptor.accept(collection.toClass(collection.fullyQualifiedName)) [
 			documentation = collection.documentation
 			
-			val modlist = #[collection.modifiers.ordered, collection.modifiers.unique]
+			val modList = #[collection.modifiers.ordered, collection.modifiers.unique]
 			
 			if (collection.type != null) {
-				val Arg2 = (collection.inferredType as JvmGenericType).typeRef
+				val subType = (collection.inferredType as JvmGenericType).typeRef
 				
-				superTypes += switch (modlist) {
-					case #[true, true]: typeRef(OrderedUniqueCollection, collection.type, Arg2)
-					case #[true, false]: typeRef(OrderedCollection, collection.type, Arg2)
-					case #[false, true]: typeRef(UniqueCollection, collection.type, Arg2)
-					case #[false, false]: typeRef(Collection, collection.type, Arg2)
-				}
+				superTypes += determineCollectionSuperType(modList, collection.type, subType)
 			} else {
 				val tp = TypesFactory::eINSTANCE.createJvmTypeParameter()
     			tp.name = "T"
     			typeParameters += tp
-    			val Arg2 = typeRef(collection.inferredType as JvmGenericType, tp.typeRef)
+    			val subType = typeRef(collection.inferredType as JvmGenericType, tp.typeRef)
     			
-    			superTypes += switch (modlist) {
-					case #[true, true]: typeRef(OrderedUniqueCollection, tp.typeRef, Arg2)
-					case #[true, false]: typeRef(OrderedCollection, tp.typeRef, Arg2)
-					case #[false, true]: typeRef(UniqueCollection, tp.typeRef, Arg2)
-					case #[false, false]: typeRef(Collection, tp.typeRef, Arg2)
-				}
+    			superTypes += determineCollectionSuperType(modList, tp.typeRef, subType)
 			}
 			
 			if (!collection.multiplicity.any) {
@@ -731,6 +723,15 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 
 	def private inferredType(EObject sourceElement) {
 		registeredTypes.get(sourceElement) ?: sourceElement.getPrimaryJvmElement
+	}
+	
+	def private determineCollectionSuperType(List<Boolean> modifiers, JvmTypeReference arg1, JvmTypeReference arg2) {
+		switch (modifiers) {
+			case #[true, true]: return typeRef(OrderedUniqueCollection, arg1, arg2)
+			case #[true, false]: return typeRef(OrderedCollection, arg1, arg2)
+			case #[false, true]: return typeRef(UniqueCollection, arg1, arg2)
+			case #[false, false]: return typeRef(Collection, arg1, arg2)
+		}
 	}
 
 }
