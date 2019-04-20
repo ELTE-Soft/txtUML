@@ -7,6 +7,7 @@ import org.eclipse.jdt.debug.ui.launchConfigurations.JavaApplicationLaunchShortc
 public class ExecutionAsTxtUMLAppLaunchShortcut extends JavaApplicationLaunchShortcut {
 	@Override
 	protected ILaunchConfigurationType getConfigurationType() {
-		return DebugPlugin.getDefault().getLaunchManager().getLaunchConfigurationTypes()[23];
+		return DebugPlugin.getDefault().getLaunchManager()
+				.getLaunchConfigurationType(ILaunchConstants.ID_TXTUML_APPLICATION);
 	}
 }
