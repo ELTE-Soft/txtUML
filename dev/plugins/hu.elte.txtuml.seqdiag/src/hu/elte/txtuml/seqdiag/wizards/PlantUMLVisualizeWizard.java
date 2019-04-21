@@ -11,6 +11,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jface.operation.IRunnableWithProgress;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.progress.IProgressService;
 
@@ -83,9 +84,16 @@ public class PlantUMLVisualizeWizard extends TxtUMLVisualizeWizard {
 							throw new InterruptedException();
 						}
 					}
-
+					
 				}, ResourcesPlugin.getWorkspace().getRoot());
-			} catch (InterruptedException | InvocationTargetException e) {
+			} catch (InterruptedException e) {
+				Logger.sys.error(e.getMessage());
+				return false;
+			}
+			catch (InvocationTargetException e){
+				Display.getDefault().syncExec(() -> {
+					Dialogs.errorMsgb("Error", "An error occured while creating sequence diagram.", e);
+				});
 				Logger.sys.error(e.getMessage());
 				return false;
 			}

@@ -84,69 +84,74 @@ public class PlantUmlExporter {
 	 */
 	public void generatePlantUmlOutput(final IProgressMonitor monitor)
 			throws CoreException, SequenceDiagramExportException {
-		for (IType sequenceDiagram : seqDiagrams) {
-			String simpleName = sequenceDiagram.getElementName();
-
-			ICompilationUnit element = sequenceDiagram.getCompilationUnit();
-
-			ASTParser parser = ASTParser.newParser(AST.JLS8);
-			parser.setResolveBindings(true);
-			parser.setBindingsRecovery(true);
-			parser.setSource(element);
-
-			CompilationUnit cu = (CompilationUnit) parser.createAST(null);
-
-			TypeDeclaration seqeunceDiagramDeclaration = getSequenceDiagramTypeDeclaration(
-					sequenceDiagram.getFullyQualifiedName(), cu);
-
-			if (!ElementTypeTeller.hasSuperClass(seqeunceDiagramDeclaration.resolveBinding(),
-					SequenceDiagram.class.getCanonicalName()))
-				throw new SequenceDiagramExportException(
-						sequenceDiagram.getElementName() + " is not a sequence diagram.");
-
-			URI targetURI = CommonPlugin
-					.resolve(URI.createFileURI(projectName + "/" + genFolderName + "/" + simpleName + ".txt"));
-
-			IFile targetFile = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(targetURI.toFileString()));
-
-			if (PlatformUI.isWorkbenchRunning()) {
-				IWorkbench workbench = PlatformUI.getWorkbench();
-				IWorkbenchPage page = workbench.getActiveWorkbenchWindow().getActivePage();
-
-				cleanupWorkbench(targetFile, page);
-				if (targetFile.exists()) {
-					targetFile.delete(true, null);
+		try {
+			for (IType sequenceDiagram : seqDiagrams) {
+				String simpleName = sequenceDiagram.getElementName();
+				
+				ICompilationUnit element = sequenceDiagram.getCompilationUnit();
+	
+				ASTParser parser = ASTParser.newParser(AST.JLS8);
+				parser.setResolveBindings(true);
+				parser.setBindingsRecovery(true);
+				parser.setSource(element);
+				
+				CompilationUnit cu = (CompilationUnit) parser.createAST(null);
+	
+				TypeDeclaration seqeunceDiagramDeclaration = getSequenceDiagramTypeDeclaration(
+						sequenceDiagram.getFullyQualifiedName(), cu);
+	
+				if (!ElementTypeTeller.hasSuperClass(seqeunceDiagramDeclaration.resolveBinding(),
+						SequenceDiagram.class.getCanonicalName()))
+					throw new SequenceDiagramExportException(
+							sequenceDiagram.getElementName() + " is not a sequence diagram.");
+	
+				URI targetURI = CommonPlugin
+						.resolve(URI.createFileURI(projectName + "/" + genFolderName + "/" + simpleName + ".txt"));
+	
+				IFile targetFile = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(targetURI.toFileString()));
+	
+				if (PlatformUI.isWorkbenchRunning()) {
+					IWorkbench workbench = PlatformUI.getWorkbench();
+					IWorkbenchPage page = workbench.getActiveWorkbenchWindow().getActivePage();
+	
+					cleanupWorkbench(targetFile, page);
+					if (targetFile.exists()) {
+						targetFile.delete(true, null);
+					}
+				}
+	
+				URI targetDirURI = CommonPlugin.resolve(URI.createFileURI(projectName + "/" + genFolderName));
+	
+				IFolder targetDir = ResourcesPlugin.getWorkspace().getRoot()
+						.getFolder(new Path(targetDirURI.toFileString()));
+	
+				if (!targetDir.exists()) {
+					targetDir.create(false, true, new NullProgressMonitor());
+				}
+	
+				if (monitor != null) {
+					monitor.worked(100 / (seqDiagrams.size() * 2));
+				}
+				
+				generator.generate(cu, targetFile, simpleName);
+				project.refreshLocal(IProject.DEPTH_INFINITE, null);
+	
+				if (PlatformUI.isWorkbenchRunning()) {
+					IWorkbench workbench = PlatformUI.getWorkbench();
+					IWorkbenchPage page = workbench.getActiveWorkbenchWindow().getActivePage();
+					IEditorDescriptor editor = workbench.getEditorRegistry().getDefaultEditor(targetFile.getName());
+					IEditorPart editorPart = page.openEditor(new FileEditorInput(targetFile), editor.getId());
+					page.activate(editorPart);
+					page.showView("net.sourceforge.plantuml.eclipse.views.PlantUmlView");
+				}
+	
+				if (monitor != null) {
+					monitor.worked(100 / (seqDiagrams.size() * 2));
 				}
 			}
-
-			URI targetDirURI = CommonPlugin.resolve(URI.createFileURI(projectName + "/" + genFolderName));
-
-			IFolder targetDir = ResourcesPlugin.getWorkspace().getRoot()
-					.getFolder(new Path(targetDirURI.toFileString()));
-
-			if (!targetDir.exists()) {
-				targetDir.create(false, true, new NullProgressMonitor());
-			}
-
-			if (monitor != null) {
-				monitor.worked(100 / (seqDiagrams.size() * 2));
-			}
-
-			generator.generate(cu, targetFile, simpleName);
-			project.refreshLocal(IProject.DEPTH_INFINITE, null);
-
-			if (PlatformUI.isWorkbenchRunning()) {
-				IWorkbench workbench = PlatformUI.getWorkbench();
-				IWorkbenchPage page = workbench.getActiveWorkbenchWindow().getActivePage();
-				IEditorDescriptor editor = workbench.getEditorRegistry().getDefaultEditor(targetFile.getName());
-				IEditorPart editorPart = page.openEditor(new FileEditorInput(targetFile), editor.getId());
-				page.activate(editorPart);
-				page.showView("net.sourceforge.plantuml.eclipse.views.PlantUmlView");
-			}
-
-			if (monitor != null) {
-				monitor.worked(100 / (seqDiagrams.size() * 2));
-			}
+		}
+		catch (Exception e){
+			throw new SequenceDiagramExportException("");
 		}
 	}
 
