@@ -24,11 +24,13 @@ TUModelDeclaration :
 
 TUModelElement
 	: TUExecution
-	| TUClassOrDataTypeOrSignal
+	| TUSignal
+	| TUClass
 	| TUEnumeration
 	| TUAssociation
 	| TUInterface
 	| TUConnector
+	| TUDataType
 ;
 
 TUExecution :

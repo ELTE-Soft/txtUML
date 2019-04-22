@@ -139,12 +139,7 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 				body = '''new «exec.name»().run();'''
 			]
 		]
-	}
-	
-	def dispatch void infer(TUClassOrDataTypeOrSignal classDataSignal, IJvmDeclaredTypeAcceptor acceptor, boolean isPreIndexingPhase) {
-		acceptor.accept(/*classDataSignal.toJvmMember)[//*/classDataSignal.toClass(classDataSignal.fullyQualifiedName)) [
-		]
-	}
+	}	
 
 	def dispatch void infer(TUAssociation assoc, IJvmDeclaredTypeAcceptor acceptor, boolean isPreIndexingPhase) {
 		acceptor.accept(assoc.toClass(assoc.fullyQualifiedName)) [
@@ -164,7 +159,7 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 		}
 	}
 
-	/*def dispatch void infer(TUSignal signal, IJvmDeclaredTypeAcceptor acceptor, boolean isPreIndexingPhase) {
+	def dispatch void infer(TUSignal signal, IJvmDeclaredTypeAcceptor acceptor, boolean isPreIndexingPhase) {
 		acceptor.accept(signal.toClass(signal.fullyQualifiedName)) [
 			documentation = signal.documentation
 			if (signal.superSignal != null) {
@@ -277,7 +272,7 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 				members += literal.toJvmMember
 			]
 		]
-	}*/
+	}
 
 	def dispatch void infer(TUConnector connector, IJvmDeclaredTypeAcceptor acceptor, boolean isPreIndexingPhase) {
 		acceptor.accept(connector.toClass(connector.fullyQualifiedName)) [
