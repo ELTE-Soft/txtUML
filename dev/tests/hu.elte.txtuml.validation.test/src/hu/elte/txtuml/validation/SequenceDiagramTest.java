@@ -1,8 +1,8 @@
 package hu.elte.txtuml.validation;
 
-import static hu.elte.txtuml.validation.sequencediagram.SequenceErrors.INVALID_ACTION_CALL;
 import static hu.elte.txtuml.validation.sequencediagram.SequenceErrors.INVALID_LIFELINE_DECLARATION;
 import static hu.elte.txtuml.validation.sequencediagram.SequenceErrors.INVALID_POSITION;
+import static hu.elte.txtuml.validation.sequencediagram.SequenceErrors.SEND_EXPECTED;
 import static org.mockito.Mockito.verify;
 
 import java.io.IOException;
@@ -28,12 +28,12 @@ public class SequenceDiagramTest extends ValidationTestBase {
 
 	@Test
 	public void testEmptyRunMethod() throws Exception {
-		assertValid("EmptyRun.java");
+		assertErrors("EmptyRun.java", SEND_EXPECTED);
 	}
 
 	@Test
 	public void testMissingSend() throws Exception {
-		assertValid("MissingSend.java");
+		assertErrors("MissingSend.java", SEND_EXPECTED);
 	}
 
 	@Test
@@ -44,11 +44,6 @@ public class SequenceDiagramTest extends ValidationTestBase {
 	@Test
 	public void testInvalidPosition() throws Exception {
 		assertErrors("InvalidPosition.java", INVALID_POSITION);
-	}
-
-	@Test
-	public void testInvalidActionCall() throws Exception {
-		assertErrors("InvalidActionCall.java", INVALID_ACTION_CALL);
 	}
 
 	@Test
