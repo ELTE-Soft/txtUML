@@ -2,6 +2,7 @@ package hu.elte.txtuml.xtxtuml.common
 
 import com.google.inject.Inject
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUClass
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUDataType
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUSignal
 import org.eclipse.emf.ecore.EObject
 import org.eclipse.xtext.naming.IQualifiedNameProvider
@@ -100,6 +101,51 @@ public class XtxtUMLUtils {
 		}
 
 		return false;
+	}
+	
+	/**
+	 * Travels the signal hierarchy of <code>signal</code> upwards (inclusive), until a signal
+	 * which satisfies <code>predicate</code> is found, or the hierarchy ends, or a cycle in
+	 * the hierarchy is found.
+	 *
+	 * @return
+	 * <ul>
+	 * 	<li><code>true</code> if an appropriate signal has been found,</li>
+	 * 	<li><code>false</code> if no appropriate signal has been found,</li>
+	 * 	<li><code>null</code> if a cycle has been found during the traversal.</li>
+	 * </ul>
+	 */
+	def travelDataTypeHierarchy(TUDataType datatype, (TUDataType)=>Boolean predicate) {
+		// TODO technically a duplicate of travelClassHierarchy, should be eliminated ASAP
+		val visitedDataTypeNames = newHashSet;
+		var currentDataType = datatype;
+
+		while (currentDataType != null) {
+			if (visitedDataTypeNames.contains(currentDataType.fullyQualifiedName)) {
+				return null;
+			}
+
+			if (predicate.apply(currentDataType)) {
+				return true;
+			}
+
+			visitedDataTypeNames.add(currentDataType.fullyQualifiedName);
+			currentDataType = currentDataType.superDataType;
+		}
+
+		return false;
+	}	
+	
+	def dispatch travelHierarchy(TUSignal it, (TUSignal)=>Boolean predicate) {
+		it.travelSignalHierarchy(predicate);
+	}
+	
+	def dispatch travelHierarchy(TUClass it, (TUClass)=>Boolean predicate) {
+		it.travelClassHierarchy(predicate);
+	}
+	
+	def dispatch travelHierarchy(TUDataType it, (TUDataType)=>Boolean predicate) {
+		it.travelDataTypeHierarchy(predicate);
 	}
 
 }

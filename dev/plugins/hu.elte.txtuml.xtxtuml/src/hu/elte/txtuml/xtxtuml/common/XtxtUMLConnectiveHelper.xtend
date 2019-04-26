@@ -8,9 +8,6 @@ import hu.elte.txtuml.xtxtuml.xtxtUML.TUConnectiveEnd
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUConnector
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUConnectorEnd
 import org.eclipse.xtext.naming.IQualifiedNameProvider
-import hu.elte.txtuml.xtxtuml.xtxtUML.TUClass
-import hu.elte.txtuml.xtxtuml.xtxtUML.TUDataType
-import hu.elte.txtuml.xtxtuml.xtxtUML.TUSignal
 
 /**
  * Helper class providing a common interface for connectives (currently
@@ -54,44 +51,5 @@ class XtxtUMLConnectiveHelper {
 
 	def dispatch endEntity(TUConnectorEnd it) {
 		port
-	}		
-	
-	//isDataType
-	def dispatch isDataType(TUDataType it){
-		true
 	}
-	
-	def dispatch isDataType(TUClass it){
-		false
-	}
-	
-	def dispatch isDataType(TUSignal it){
-		false
-	}
-	
-	//isClass
-	def dispatch isClass(TUClass it){
-		true
-	}
-	
-	def dispatch isClass(TUDataType it){
-		false
-	}
-	
-	def dispatch isClass(TUSignal it){
-		false
-	}
-
-	//isSignal
-	def dispatch isSignal(TUSignal it){
-		true
-	}
-	
-	def dispatch isSignal(TUDataType it){
-		false
-	}
-	
-	def dispatch isSignal(TUClass it){
-		false
-	}	
 }

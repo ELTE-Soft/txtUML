@@ -56,7 +56,7 @@ TUClass :
 ;
 
 TUDataType:
-	'datatype' name=ValidID ('extends' superClass=[TUDataType|QualifiedName])? ('{'
+	'datatype' name=ValidID ('extends' superDataType=[TUDataType|QualifiedName])? ('{'
 		members+=TUDataMember*
 	'}' ';'? | ';')
 ;
