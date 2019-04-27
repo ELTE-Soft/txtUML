@@ -28,8 +28,6 @@ import org.eclipse.xtext.validation.Check
 
 import static hu.elte.txtuml.xtxtuml.validation.XtxtUMLIssueCodes.*
 import static hu.elte.txtuml.xtxtuml.xtxtUML.XtxtUMLPackage.Literals.*
-import hu.elte.txtuml.xtxtuml.xtxtUML.TUSignal
-import hu.elte.txtuml.xtxtuml.xtxtUML.TUDataType
 
 class XtxtUMLClassValidator extends XtxtUMLFileValidator {
 
@@ -44,30 +42,6 @@ class XtxtUMLClassValidator extends XtxtUMLFileValidator {
 			error("Cycle in hierarchy of type " + general.name, general, errorFeature(general),
 				errorCode(general));
 		}
-	}
-	
-	def dispatch errorFeature(TUSignal it){
-		TU_SIGNAL__SUPER_SIGNAL
-	}
-	
-	def dispatch errorFeature(TUClass it){
-		TU_CLASS__SUPER_CLASS
-	}
-	
-	def dispatch errorFeature(TUDataType it){
-		TU_DATA_TYPE__SUPER_DATA_TYPE
-	}
-	
-	def dispatch errorCode(TUSignal it){
-		SIGNAL_HIERARCHY_CYCLE
-	}
-	
-	def dispatch errorCode(TUClass it){
-		CLASS_HIERARCHY_CYCLE
-	}
-	
-	def dispatch errorCode(TUDataType it){
-		CLASS_HIERARCHY_CYCLE  //TODO: This should be a new code
 	}
 	
 	@Check

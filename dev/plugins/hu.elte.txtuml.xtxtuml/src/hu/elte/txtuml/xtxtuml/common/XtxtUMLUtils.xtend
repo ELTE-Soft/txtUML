@@ -2,18 +2,17 @@ package hu.elte.txtuml.xtxtuml.common
 
 import com.google.inject.Inject
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUClass
-import hu.elte.txtuml.xtxtuml.xtxtUML.TUDataType
-import hu.elte.txtuml.xtxtuml.xtxtUML.TUSignal
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUClassOrDataTypeOrSignal
 import org.eclipse.emf.ecore.EObject
 import org.eclipse.xtext.naming.IQualifiedNameProvider
 import org.eclipse.xtext.resource.IEObjectDescription
 import org.eclipse.xtext.resource.IResourceDescriptions
-import hu.elte.txtuml.xtxtuml.xtxtUML.TUClassOrDataTypeOrSignal
 
 public class XtxtUMLUtils {
 
 	@Inject IResourceDescriptions index;
 	@Inject extension IQualifiedNameProvider;
+	@Inject extension XtxtUMLClassDataTypeSignalHelper;
 
 	/**
 	 * Returns the IEObjectDescription of the specified <code>objectDescription</code>'s
@@ -52,7 +51,6 @@ public class XtxtUMLUtils {
 	 * </ul>
 	 */
 	def travelTypeHierarchy(TUClassOrDataTypeOrSignal type, (TUClassOrDataTypeOrSignal)=>Boolean predicate) {
-		// TODO technically a duplicate of travelClassHierarchy, should be eliminated ASAP
 		val visitedTypeNames = newHashSet;
 		var currentType = type;
 
@@ -72,17 +70,4 @@ public class XtxtUMLUtils {
 		return false;
 	}
 	
-	def dispatch TUClassOrDataTypeOrSignal superType(TUSignal it){
-		superSignal
-	}
-	
-	def dispatch TUClassOrDataTypeOrSignal superType(TUDataType it){
-		superDataType
-	}
-	
-	def dispatch TUClassOrDataTypeOrSignal superType(TUClass it){
-		superClass
-	}
-	
-
 }
