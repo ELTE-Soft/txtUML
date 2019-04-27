@@ -75,7 +75,6 @@ import org.eclipse.xtext.xbase.XBlockExpression
 import org.eclipse.xtext.xbase.jvmmodel.AbstractModelInferrer
 import org.eclipse.xtext.xbase.jvmmodel.IJvmDeclaredTypeAcceptor
 import org.eclipse.xtext.xbase.jvmmodel.IJvmModelAssociations
-import hu.elte.txtuml.xtxtuml.xtxtUML.TUClassOrDataTypeOrSignal
 
 /**
  * Infers a JVM model equivalent from an XtxtUML resource. If not stated otherwise,
@@ -178,8 +177,8 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 
 			members += signal.toConstructor [
 				val Deque<TUSignal> supers = newLinkedList
-				if (signal.superSignal.travelSignalHierarchy [
-					supers.add(it)
+				if (signal.superSignal.travelTypeHierarchy [
+					supers.add(it as TUSignal)
 					false
 				] == null) {
 					return // cycle in hierarchy
@@ -223,8 +222,8 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 		acceptor.accept(tUDataType.toClass(tUDataType.fullyQualifiedName)) [
 			documentation = tUDataType.documentation
 			
-			if (tUDataType.superClass != null) {
-				superTypes += tUDataType.superClass.inferredTypeRef
+			if (tUDataType.superDataType != null) {
+				superTypes += tUDataType.superDataType.inferredTypeRef
 			} else {
 				superTypes +=DataType.typeRef;
 			}

@@ -130,8 +130,8 @@ class XtxtUMLUniquenessValidator extends XtxtUMLNameValidator {
 	@Check
 	def checkSignalAttributeIsUnique(TUSignalAttribute attribute) {
 		val containingSignal = attribute.eContainer as TUSignal;
-		if (containingSignal.travelSignalHierarchy [
-			attributes.findFirst [
+		if (containingSignal.travelTypeHierarchy [
+			(it as TUSignal).attributes.findFirst [
 				name == attribute.name && it != attribute // direct comparison is safe here
 			] != null
 		]) {

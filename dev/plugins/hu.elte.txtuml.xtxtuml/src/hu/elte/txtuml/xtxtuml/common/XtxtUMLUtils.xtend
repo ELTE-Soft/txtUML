@@ -8,6 +8,7 @@ import org.eclipse.emf.ecore.EObject
 import org.eclipse.xtext.naming.IQualifiedNameProvider
 import org.eclipse.xtext.resource.IEObjectDescription
 import org.eclipse.xtext.resource.IResourceDescriptions
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUClassOrDataTypeOrSignal
 
 public class XtxtUMLUtils {
 
@@ -34,118 +35,54 @@ public class XtxtUMLUtils {
 		}
 
 		val portEnclosingClassName = port.eContainer?.fullyQualifiedName;
-		val classOwnsPort = [TUClass klass | klass.fullyQualifiedName == portEnclosingClassName];
-		return clazz.travelClassHierarchy(classOwnsPort);
+		val classOwnsPort = [TUClassOrDataTypeOrSignal klass | (klass as TUClass).fullyQualifiedName == portEnclosingClassName];
+		return clazz.travelTypeHierarchy(classOwnsPort);
 	}
-
+	
 	/**
-	 * Travels the class hierarchy of <code>clazz</code> upwards (inclusive), until a class
-	 * which satisfies <code>predicate</code> is found, or the hierarchy ends, or a cycle in
-	 * the hierarchy is found.
+	 * Travels the type hierarchy of <code>signal</code>, <code>class</code> or <code>datatype</code> 
+	 * upwards (inclusive), until a signal, class or data type which satisfies <code>predicate</code>
+	 * is found, or the hierarchy ends, or a cycle in the hierarchy is found.
 	 *
 	 * @return
 	 * <ul>
-	 * 	<li><code>true</code> if an appropriate class has been found,</li>
-	 * 	<li><code>false</code> if no appropriate class has been found,</li>
+	 * 	<li><code>true</code> if an appropriate signal, class or data type has been found,</li>
+	 * 	<li><code>false</code> if no appropriate signal, class or data type has been found,</li>
 	 * 	<li><code>null</code> if a cycle has been found during the traversal.</li>
 	 * </ul>
 	 */
-	def travelClassHierarchy(TUClass clazz, (TUClass)=>Boolean predicate) {
-		val visitedClassNames = newHashSet;
-		var currentClass = clazz;
-
-		while (currentClass != null) {
-			if (visitedClassNames.contains(currentClass.fullyQualifiedName)) {
-				return null;
-			}
-
-			if (predicate.apply(currentClass)) {
-				return true;
-			}
-
-			visitedClassNames.add(currentClass.fullyQualifiedName);
-			currentClass = currentClass.superClass;
-		}
-
-		return false;
-	}
-
-	/**
-	 * Travels the signal hierarchy of <code>signal</code> upwards (inclusive), until a signal
-	 * which satisfies <code>predicate</code> is found, or the hierarchy ends, or a cycle in
-	 * the hierarchy is found.
-	 *
-	 * @return
-	 * <ul>
-	 * 	<li><code>true</code> if an appropriate signal has been found,</li>
-	 * 	<li><code>false</code> if no appropriate signal has been found,</li>
-	 * 	<li><code>null</code> if a cycle has been found during the traversal.</li>
-	 * </ul>
-	 */
-	def travelSignalHierarchy(TUSignal signal, (TUSignal)=>Boolean predicate) {
+	def travelTypeHierarchy(TUClassOrDataTypeOrSignal type, (TUClassOrDataTypeOrSignal)=>Boolean predicate) {
 		// TODO technically a duplicate of travelClassHierarchy, should be eliminated ASAP
-		val visitedSignalNames = newHashSet;
-		var currentSignal = signal;
+		val visitedTypeNames = newHashSet;
+		var currentType = type;
 
-		while (currentSignal != null) {
-			if (visitedSignalNames.contains(currentSignal.fullyQualifiedName)) {
+		while (currentType != null) {
+			if (visitedTypeNames.contains(currentType.fullyQualifiedName)) {
 				return null;
 			}
 
-			if (predicate.apply(currentSignal)) {
+			if (predicate.apply(currentType)) {
 				return true;
 			}
 
-			visitedSignalNames.add(currentSignal.fullyQualifiedName);
-			currentSignal = currentSignal.superSignal;
+			visitedTypeNames.add(currentType.fullyQualifiedName);
+			currentType = currentType.superType;
 		}
 
 		return false;
 	}
 	
-	/**
-	 * Travels the signal hierarchy of <code>signal</code> upwards (inclusive), until a signal
-	 * which satisfies <code>predicate</code> is found, or the hierarchy ends, or a cycle in
-	 * the hierarchy is found.
-	 *
-	 * @return
-	 * <ul>
-	 * 	<li><code>true</code> if an appropriate signal has been found,</li>
-	 * 	<li><code>false</code> if no appropriate signal has been found,</li>
-	 * 	<li><code>null</code> if a cycle has been found during the traversal.</li>
-	 * </ul>
-	 */
-	def travelDataTypeHierarchy(TUDataType datatype, (TUDataType)=>Boolean predicate) {
-		// TODO technically a duplicate of travelClassHierarchy, should be eliminated ASAP
-		val visitedDataTypeNames = newHashSet;
-		var currentDataType = datatype;
-
-		while (currentDataType != null) {
-			if (visitedDataTypeNames.contains(currentDataType.fullyQualifiedName)) {
-				return null;
-			}
-
-			if (predicate.apply(currentDataType)) {
-				return true;
-			}
-
-			visitedDataTypeNames.add(currentDataType.fullyQualifiedName);
-			currentDataType = currentDataType.superDataType;
-		}
-
-		return false;
-	}	
-	
-	def dispatch travelHierarchy(TUSignal it, (TUSignal)=>Boolean predicate) {
-		it.travelSignalHierarchy(predicate);
+	def dispatch TUClassOrDataTypeOrSignal superType(TUSignal it){
+		superSignal
 	}
 	
-	def dispatch travelHierarchy(TUClass it, (TUClass)=>Boolean predicate) {
-		it.travelClassHierarchy(predicate);
+	def dispatch TUClassOrDataTypeOrSignal superType(TUDataType it){
+		superDataType
 	}
 	
-	def dispatch travelHierarchy(TUDataType it, (TUDataType)=>Boolean predicate) {
-		it.travelDataTypeHierarchy(predicate);
+	def dispatch TUClassOrDataTypeOrSignal superType(TUClass it){
+		superClass
 	}
+	
 
 }
