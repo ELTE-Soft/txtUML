@@ -31,7 +31,9 @@ function refreshElements(queryPort){
 		if(response.status == 200){
 			var json = JSON.parse(response.responseText);
 			setActiveElements((json)
-				.map(entry => (!selector._selected || selector._selected.inst == entry["name"]) ? _visualizer.getShapeIdByElementName(entry.location) : 187554));
+				.filter(diag => !selector._selected || selector._selected.inst == diag.name)
+				.map(diag => _visualizer.getShapeIdByElementName(diag.location)));
+
 			selector.setInstances(json);
 			hideError();
 		}

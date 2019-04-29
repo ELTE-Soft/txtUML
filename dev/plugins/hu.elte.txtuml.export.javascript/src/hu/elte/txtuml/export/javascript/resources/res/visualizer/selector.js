@@ -45,7 +45,6 @@ visualizer.Selector = function (input) {
 	if (this._selected === null) {
 		throw new Error('No diagrams provided');
 	}
-
 }
 
 //returns the selected diagram
@@ -62,14 +61,15 @@ visualizer.Selector.prototype.setInstances = function (inst) {
 		if (type != "state") return;
 		_.each(diagrams, function (diagramName, key) {
 			try {
-				var klass = self._selected.classes[key].id;
-				$('#diagInst' + key).html(self._instances.filter(function (diis) {
-					return diis["class"] == klass;
-				}).map(function (diis) {
-					return '<li><a href="?refresh=' + timestamp + '#' + type + '_' + key + '_' + diis.name + '">' + diis.id + '</a></li>';
-				}).join(""));
-
-			} catch (e) {
+                                if (diagramName === self._selected.name) {
+					var klass = input["classDiagrams"][0].classes[key].id;
+					$('#diagInst' + key).html(self._instances.filter(function (diis) {
+						return diis["class"] == klass;
+					}).map(function (diis) {
+						return '<li><a href="?refresh=' + timestamp + '#' + type + '_' + key + '_' + diis.name + '">' + diis.id + '</a></li>';
+					}).join(""));
+				}
+			} catch (flu) {
 				$('#diagInst' + key).html("");
 			}
 		});
@@ -85,7 +85,7 @@ visualizer.Selector.prototype.putLinks = function (tbody) {
 		innerHTML += '<td><ul>';
 		_.each(diagrams, function (diagramName, key) {
 			//anchor is in a format of <diagram type>_<diagram_index>
-			innerHTML += '<li><a href="?refresh=' + timestamp + '#' + type + '_' + key + '">' + diagramName + '</a>' + (type == "state" ? '<ul id=diagInst' + key + '></ul>' : '') + '</li>'
+			innerHTML += '<li><a title="' + diagramName + '"href="?refresh=' + timestamp + '#' + type + '_' + key + '">' + diagramName.replace(/^.*\.([^.]*)$/, "$1") + '</a>' + (type == "state" ? '<ul id=diagInst' + key + '></ul>' : '') + '</li>'
 		});
 		innerHTML += '</ul></td>'
 	});
