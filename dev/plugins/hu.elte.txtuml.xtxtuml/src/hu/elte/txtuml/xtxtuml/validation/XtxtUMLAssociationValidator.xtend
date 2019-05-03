@@ -3,6 +3,7 @@ package hu.elte.txtuml.xtxtuml.validation;
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAssociation
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAssociationEnd
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUComposition
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUMultiplicity
 import org.eclipse.xtext.validation.Check
 
 import static hu.elte.txtuml.xtxtuml.validation.XtxtUMLIssueCodes.*
@@ -46,19 +47,6 @@ class XtxtUMLAssociationValidator extends XtxtUMLClassValidator {
 	}
 
 	@Check
-	def checkMultiplicity(TUAssociationEnd assocEnd) {
-		val multipl = assocEnd.multiplicity;
-		if (multipl != null && !multipl.any) { // explicit, not *
-			val exactlyZero = multipl.lower == 0 && (!multipl.upperSet || !multipl.isUpperInf && multipl.upper == 0);
-			val lowerIsGreaterThanUpper = multipl.upperSet && !multipl.upperInf && multipl.lower > multipl.upper;
-			if (exactlyZero || lowerIsGreaterThanUpper) {
-				warning("The effective multiplicity of association end " + assocEnd.name + " is zero", assocEnd,
-					TU_ASSOCIATION_END__MULTIPLICITY, WRONG_ASSOCIATION_END_MULTIPLICITY);
-			}
-		}
-	}
-
-	@Check
 	def checkMultiplicityIsNotCustom(TUAssociationEnd assocEnd) { // TODO support custom multiplicities
 		val it = assocEnd.multiplicity;
 		if (
@@ -70,6 +58,18 @@ class XtxtUMLAssociationValidator extends XtxtUMLClassValidator {
 			error("The multiplicity of association end " + assocEnd.name + " is invalid – "
 				+ "custom multiplicities are not supported in XtxtUML yet, please use one of the following: 1, *, 0..1, 1..1, 0..*, 1..*",
 				assocEnd, TU_ASSOCIATION_END__MULTIPLICITY, UNSUPPORTED_MULTIPLICITY);
+		}
+	}
+	
+	@Check
+	def checkEmptyMultiplicity(TUMultiplicity multipl) {
+		if (multipl != null && !multipl.any) { // explicit, not *
+			val exactlyZero = multipl.lower == 0 && (!multipl.upperSet || !multipl.isUpperInf && multipl.upper == 0);
+			val lowerIsGreaterThanUpper = multipl.upperSet && !multipl.upperInf && multipl.lower > multipl.upper;
+			if (exactlyZero || lowerIsGreaterThanUpper) {
+				warning("The effective multiplicity is zero", multipl,
+					null, WRONG_MULTIPLICITY);
+			}
 		}
 	}
 
