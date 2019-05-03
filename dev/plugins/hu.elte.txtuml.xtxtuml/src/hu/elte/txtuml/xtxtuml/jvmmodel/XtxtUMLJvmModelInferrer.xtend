@@ -726,6 +726,7 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 	}
 	
 	def private determineCollectionSuperType(List<Boolean> modifiers, JvmTypeReference arg1, JvmTypeReference arg2) {
+		// do not simplify
 		switch (modifiers) {
 			case #[true, true]: return typeRef(OrderedUniqueCollection, arg1, arg2)
 			case #[true, false]: return typeRef(OrderedCollection, arg1, arg2)
