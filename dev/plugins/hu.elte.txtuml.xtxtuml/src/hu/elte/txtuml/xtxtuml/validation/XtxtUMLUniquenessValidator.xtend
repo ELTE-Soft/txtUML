@@ -1,6 +1,7 @@
 package hu.elte.txtuml.xtxtuml.validation;
 
 import com.google.inject.Inject
+import hu.elte.txtuml.xtxtuml.common.XtxtUMLClassDataTypeSignalHelper
 import hu.elte.txtuml.xtxtuml.common.XtxtUMLUtils
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAssociation
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAssociationEnd
@@ -49,6 +50,7 @@ class XtxtUMLUniquenessValidator extends XtxtUMLNameValidator {
 
 	@Inject extension IQualifiedNameProvider;
 	@Inject extension XtxtUMLUtils;
+	@Inject extension XtxtUMLClassDataTypeSignalHelper;
 
 	@Check
 	def checkModelElementNameIsUniqueExternal(TUModelElement modelElement) {
@@ -142,48 +144,42 @@ class XtxtUMLUniquenessValidator extends XtxtUMLNameValidator {
 
 	@Check
 	def checkAttributeNameIsUnique(TUAttribute attribute) {
-		if (attribute.eContainer instanceof TUClass) {
-			val containingClass = attribute.eContainer as TUClass;
-			if (containingClass.members.exists [
-				it instanceof TUAttribute && (it as TUAttribute).name == attribute.name && it != attribute // direct comparison is safe here
-			]) {
-				error("Duplicate attribute " + attribute.name + " in class " + containingClass.name, attribute,
-					TU_ATTRIBUTE__NAME, NOT_UNIQUE_NAME);
-			}			
+		val containing = attribute.eContainer;
+		if (containing.members.exists [
+			it instanceof TUAttribute && (it as TUAttribute).name == attribute.name && it != attribute // direct comparison is safe here
+		]) {
+			error("Duplicate attribute " + attribute.name + " in "+ containing.typeString + " " + containing.name, attribute,
+				TU_ATTRIBUTE__NAME, NOT_UNIQUE_NAME);
 		}
 	}
-
+	
 	@Check
 	def checkConstructorIsUnique(TUConstructor ctor) {
-		if (ctor.eContainer instanceof TUClass) {
-			val enclosingClass = (ctor.eContainer as TUClass);
-			if (enclosingClass.members.exists [
+		val enclosing = ctor.eContainer;
+		if (enclosing.members.exists [
 				it instanceof TUConstructor && {
 					val otherCtor = it as TUConstructor;
 					otherCtor.name == ctor.name && otherCtor.parameters.typeNames == ctor.parameters.typeNames
 				} && it != ctor // direct comparison is safe here
 			]) {
-				error('''Duplicate constructor «ctor.name»(«ctor.parameters.typeNames.join(", ")») in class «enclosingClass.name»''',
+				error('''Duplicate constructor «ctor.name»(«ctor.parameters.typeNames.join(", ")») in «enclosing.typeString» «enclosing.name»''',
 					ctor, TU_CONSTRUCTOR__NAME, NOT_UNIQUE_CONSTRUCTOR);
-			}			
-		}
+			}
 	}
 
 	@Check
 	def checkOperationIsUnique(TUOperation operation) {
-		if (operation.eContainer instanceof TUClass) {
-			val containingClass = (operation.eContainer as TUClass);
-			if (containingClass.members.exists [
-				it instanceof TUOperation &&
-					{
-						val siblingOperationOrSelf = it as TUOperation;
-						siblingOperationOrSelf.name == operation.name &&
-							siblingOperationOrSelf.parameters.typeNames == operation.parameters.typeNames
-					} && it != operation // direct comparison is safe here
-			]) {
-				error('''Duplicate operation «operation.name»(«operation.parameters.typeNames.join(", ")») in class «containingClass.name»''',
-					operation, TU_OPERATION__NAME, NOT_UNIQUE_OPERATION);
-			}			
+		val containing = operation.eContainer;
+		if (containing.members.exists [
+			it instanceof TUOperation &&
+				{
+					val siblingOperationOrSelf = it as TUOperation;
+					siblingOperationOrSelf.name == operation.name &&
+						siblingOperationOrSelf.parameters.typeNames == operation.parameters.typeNames
+				} && it != operation // direct comparison is safe here
+		]) {
+			error('''Duplicate operation «operation.name»(«operation.parameters.typeNames.join(", ")») in «containing.typeString» «containing.name»''',
+				operation, TU_OPERATION__NAME, NOT_UNIQUE_OPERATION);
 		}
 	}
 

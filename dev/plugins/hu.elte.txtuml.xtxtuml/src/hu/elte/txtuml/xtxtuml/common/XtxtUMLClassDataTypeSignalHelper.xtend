@@ -33,6 +33,30 @@ class XtxtUMLClassDataTypeSignalHelper {
 		superClass
 	}
 	
+	def dispatch members(TUClass it) {
+		members;
+	}
+	
+	def dispatch members(TUDataType it) {
+		members;
+	}
+	
+	def dispatch members(TUSignal it) {
+		null;
+	}
+	
+	def dispatch typeString(TUClass it) {
+		"class";
+	}
+	
+	def dispatch typeString(TUDataType it) {
+		"datatype";
+	}
+	
+	def dispatch typeString(TUSignal it) {
+		"signal";
+	}
+	
 	def dispatch errorFeature(TUSignal it){
 		TU_SIGNAL__SUPER_SIGNAL
 	}

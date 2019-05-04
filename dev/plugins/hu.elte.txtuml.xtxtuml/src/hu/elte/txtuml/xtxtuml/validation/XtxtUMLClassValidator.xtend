@@ -34,7 +34,7 @@ class XtxtUMLClassValidator extends XtxtUMLFileValidator {
 	@Inject extension IQualifiedNameProvider;
 	@Inject extension XtxtUMLExternalityHelper;
 	@Inject extension XtxtUMLUtils;
-	@Inject extension XtxtUMLClassDataTypeSignalHelper
+	@Inject extension XtxtUMLClassDataTypeSignalHelper;
 
 	@Check
 	def checkNoCycleInClassDataTypeSignalHierarchy(TUClassOrDataTypeOrSignal general) {
@@ -46,13 +46,11 @@ class XtxtUMLClassValidator extends XtxtUMLFileValidator {
 	
 	@Check
 	def checkConstructorName(TUConstructor ctor) {
-		if (ctor.eContainer instanceof TUClass) {
-			val name = ctor.name;
-			val enclosingClassName = (ctor.eContainer as TUClass).name;
-			if (name != enclosingClassName) {
-				error('''Constructor «name»(«ctor.parameters.typeNames.join(", ")») in class «enclosingClassName» must be named as its enclosing class''',
-					ctor, TU_CONSTRUCTOR__NAME, INVALID_CONSTRUCTOR_NAME);
-			}		
+		val name = ctor.name;
+		val enclosing = ctor.eContainer;
+		if (name != enclosing.name) {
+			error('''Constructor «name»(«ctor.parameters.typeNames.join(", ")») in «enclosing.typeString» «enclosing.name» must be named as its enclosing class''',
+				ctor, TU_CONSTRUCTOR__NAME, INVALID_CONSTRUCTOR_NAME);
 		}
 	}
 
