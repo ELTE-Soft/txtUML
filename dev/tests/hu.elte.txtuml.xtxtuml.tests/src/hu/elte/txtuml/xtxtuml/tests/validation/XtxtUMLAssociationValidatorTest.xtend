@@ -133,9 +133,9 @@ class XtxtUMLAssociationValidatorTest {
 		''';
 
 		val parsedFile = rawFile.parse;
-		parsedFile.assertWarning(TU_ASSOCIATION_END, WRONG_ASSOCIATION_END_MULTIPLICITY, rawFile.indexOf("0"), 1);
-		parsedFile.assertWarning(TU_ASSOCIATION_END, WRONG_ASSOCIATION_END_MULTIPLICITY, rawFile.indexOf("0..0"), 4);
-		parsedFile.assertWarning(TU_ASSOCIATION_END, WRONG_ASSOCIATION_END_MULTIPLICITY, rawFile.indexOf("1..0"), 4);
+		parsedFile.assertWarning(TU_MULTIPLICITY, WRONG_MULTIPLICITY, rawFile.indexOf("0"), 1);
+		parsedFile.assertWarning(TU_MULTIPLICITY, WRONG_MULTIPLICITY, rawFile.indexOf("0..0"), 4);
+		parsedFile.assertWarning(TU_MULTIPLICITY, WRONG_MULTIPLICITY, rawFile.indexOf("1..0"), 4);
 	}
 
 }
