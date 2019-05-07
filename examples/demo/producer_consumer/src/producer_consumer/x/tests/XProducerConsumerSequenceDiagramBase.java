@@ -4,7 +4,9 @@ import static hu.elte.txtuml.api.model.seqdiag.Sequence.assertState;
 import static hu.elte.txtuml.api.model.seqdiag.Sequence.assertSend;
 
 import hu.elte.txtuml.api.model.Action;
+import hu.elte.txtuml.api.model.seqdiag.Lifeline;
 import hu.elte.txtuml.api.model.seqdiag.Position;
+import hu.elte.txtuml.api.model.seqdiag.Sequence;
 import hu.elte.txtuml.api.model.seqdiag.SequenceDiagram;
 import producer_consumer.x.model.Consumer;
 import producer_consumer.x.model.Consumption;
@@ -18,47 +20,54 @@ import producer_consumer.x.model.Storage;
 public abstract class XProducerConsumerSequenceDiagramBase extends SequenceDiagram {
 
 	@Position(2)
-	Storage storage;
+	Lifeline<Storage> storage;
 
 	@Position(1)
-	Producer p1;
+	Lifeline<Producer> p1;
 
 	@Position(1)
-	Producer p2;
+	Lifeline<Producer> p2;
 
 	@Position(3)
-	Consumer c1;
+	Lifeline<Consumer> c1;
 
 	@Position(3)
-	Consumer c2;
+	Lifeline<Consumer> c2;
 
 	@Position(3)
-	Consumer c3;
+	Lifeline<Consumer> c3;
 
 	@Override
 	public void initialize() {
-		storage = Action.create(Storage.class, Integer.valueOf(2));
-		p1 = Action.create(Producer.class, Integer.valueOf(3));
-		p2 = Action.create(Producer.class, Integer.valueOf(3));
-		c1 = Action.create(Consumer.class, Integer.valueOf(2));
-		c2 = Action.create(Consumer.class, Integer.valueOf(2));
-		c3 = Action.create(Consumer.class, Integer.valueOf(2));
+		Storage s = Action.create(Storage.class, Integer.valueOf(2));
+		Producer prod1 = Action.create(Producer.class, Integer.valueOf(3));
+		Producer prod2 = Action.create(Producer.class, Integer.valueOf(3));
+		Consumer cons1 = Action.create(Consumer.class, Integer.valueOf(2));
+		Consumer cons2 = Action.create(Consumer.class, Integer.valueOf(2));
+		Consumer cons3 = Action.create(Consumer.class, Integer.valueOf(2));
 
-		Action.link(Production.producer.class, p1, Production.storage.class, storage);
-		Action.link(Production.producer.class, p2, Production.storage.class, storage);
-		Action.link(Consumption.consumer.class, c1, Consumption.storage.class, storage);
-		Action.link(Consumption.consumer.class, c2, Consumption.storage.class, storage);
-		Action.link(Consumption.consumer.class, c3, Consumption.storage.class, storage);
+		Action.link(Production.producer.class, prod1, Production.storage.class, s);
+		Action.link(Production.producer.class, prod2, Production.storage.class, s);
+		Action.link(Consumption.consumer.class, cons1, Consumption.storage.class, s);
+		Action.link(Consumption.consumer.class, cons2, Consumption.storage.class, s);
+		Action.link(Consumption.consumer.class, cons3, Consumption.storage.class, s);
 
-		Action.start(storage);
-		Action.start(p1);
-		Action.start(p2);
-		Action.start(c1);
-		Action.start(c2);
-		Action.start(c3);
+		storage = Sequence.createLifeline(s);
+		p1 = Sequence.createLifeline(prod1);
+		p2 = Sequence.createLifeline(prod2);
+		c1 = Sequence.createLifeline(cons1);
+		c2 = Sequence.createLifeline(cons2);
+		c3 = Sequence.createLifeline(cons3);
+
+		Action.start(s);
+		Action.start(prod1);
+		Action.start(prod2);
+		Action.start(cons1);
+		Action.start(cons2);
+		Action.start(cons3);
 	}
 
-	protected void produce(Producer p) {
+	protected void produce(Lifeline<Producer> p) {
 		for (int i = 0; i < 2; ++i) {
 			assertSend(p, new OfferNotification(), storage);
 			assertSend(p, new DoWork(), p);
@@ -70,7 +79,7 @@ public abstract class XProducerConsumerSequenceDiagramBase extends SequenceDiagr
 		assertState(p, Producer.Passive.class);
 	}
 
-	protected void consume(Consumer c) {
+	protected void consume(Lifeline<Consumer> c) {
 		assertSend(c, new RequestNotification(), storage);
 		assertSend(c, new DoWork(), c);
 		assertState(c, Consumer.Active.class);

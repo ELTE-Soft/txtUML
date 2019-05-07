@@ -9,8 +9,6 @@ import hu.elte.txtuml.api.model.impl.SequenceDiagramRelated;
 @SequenceDiagramRelated
 public class ModelStateAssertError extends SequenceDiagramProblem {
 
-	private static final long serialVersionUID = 3825690484910172173L;
-
 	public ModelStateAssertError(String expected, String actual) {
 		super(createErrorMessage(expected, actual), ErrorLevel.ERROR);
 	}

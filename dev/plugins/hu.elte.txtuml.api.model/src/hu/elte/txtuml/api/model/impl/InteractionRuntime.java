@@ -5,6 +5,8 @@ import hu.elte.txtuml.api.model.ModelClass;
 import hu.elte.txtuml.api.model.Signal;
 import hu.elte.txtuml.api.model.error.NotSeqDiagExecutorThreadError;
 import hu.elte.txtuml.api.model.seqdiag.Interaction;
+import hu.elte.txtuml.api.model.seqdiag.Lifeline;
+import hu.elte.txtuml.api.model.seqdiag.Proxy;
 import hu.elte.txtuml.api.model.seqdiag.Sequence;
 
 /**
@@ -23,16 +25,17 @@ public interface InteractionRuntime extends Wrapper<Interaction>, ImplRelated {
 	}
 
 	/**
-	 * Called by {@link Sequence#assertSend(ModelClass, Signal, ModelClass)}. Read
+	 * Called by {@link Sequence#assertSend(Lifeline, Signal, Lifeline)}. Read
 	 * semantics there.
 	 */
-	void message(ModelClass sender, Signal signal, ModelClass target);
+	public <T extends ModelClass, U extends ModelClass> void message(Lifeline<T> sender, Signal signal,
+			Lifeline<U> target);
 
 	/**
-	 * Called by {@link Sequence#fromActor(Signal, ModelClass)}. Read semantics
+	 * Called by {@link Sequence#fromActor(Signal, Lifeline)}. Read semantics
 	 * there.
 	 */
-	void messageFromActor(Signal signal, ModelClass target);
+	<T extends ModelClass, U extends ModelClass> void messageFromActor(Signal signal, Lifeline<U> target);
 
 	/**
 	 * Called by {@link Sequence#par(Interaction...)}. Read semantics there.
@@ -40,8 +43,10 @@ public interface InteractionRuntime extends Wrapper<Interaction>, ImplRelated {
 	void par(Interaction[] operands);
 
 	/**
-	 * Called by {@link Sequence#assertState(ModelClass, Class)}. Read semantics
+	 * Called by {@link Sequence#assertState(Lifeline, Class)}. Read semantics
 	 * there.
 	 */
-	void assertState(ModelClass instance, Class<?> state);
+	<T extends ModelClass> void assertState(Lifeline<T> instance, Class<?> state);
+
+	<T extends ModelClass> Proxy<T> createProxy(Class<T> modelClass);
 }

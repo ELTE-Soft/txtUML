@@ -9,9 +9,13 @@ import hu.elte.txtuml.api.model.execution.impl.base.SignalWrapper;
 import hu.elte.txtuml.api.model.execution.seqdiag.error.ErrorLevel;
 import hu.elte.txtuml.api.model.execution.seqdiag.error.InvalidMessageError;
 import hu.elte.txtuml.api.model.execution.seqdiag.error.ModelStateAssertError;
+import hu.elte.txtuml.api.model.execution.seqdiag.error.SequenceDiagramProblem;
 import hu.elte.txtuml.api.model.impl.ExecutorThread;
 import hu.elte.txtuml.api.model.impl.SequenceDiagramRelated;
 import hu.elte.txtuml.api.model.seqdiag.ExecMode;
+import hu.elte.txtuml.api.model.seqdiag.Lifeline;
+import hu.elte.txtuml.api.model.seqdiag.MessageParticipant;
+import hu.elte.txtuml.utils.Logger;
 
 /**
  * Class for the single model executor thread in a sequence diagram executor.
@@ -46,17 +50,20 @@ class SeqDiagModelExecutorThread extends FIFOExecutorThread implements ExecutorT
 
 	@Override
 	public void receiveLater(SignalWrapper signal, AbstractModelClassRuntime target) {
+		Logger.sys.debug("sender: " + signal.getSenderOrNull() + " | target: " + target.getWrapped() + " | "
+				+ signal.getWrapped());
 		addEntry(() -> {
 			target.receive(signal);
-			compareToPattern(signal, target.getWrapped(), false);
+			compareToPattern(signal, MessageParticipant.create(target.getWrapped()), false);
 		});
 	}
 
 	@Override
 	public void receiveLaterViaAPI(SignalWrapper signal, AbstractModelClassRuntime target) {
+		Logger.sys.debug("sender: API | target: " + target.getWrapped() + " | " + signal.getWrapped());
 		addEntry(() -> {
 			target.receive(signal);
-			compareToPattern(signal, target.getWrapped(), true);
+			compareToPattern(signal, MessageParticipant.create(target.getWrapped()), true);
 		});
 	}
 
@@ -64,18 +71,19 @@ class SeqDiagModelExecutorThread extends FIFOExecutorThread implements ExecutorT
 	 * Called <b>after</b> the given signal to the given target has arrived and
 	 * it has been processed.
 	 */
-	private void compareToPattern(SignalWrapper wrapper, ModelClass target, boolean viaAPI) {
+	private <T extends ModelClass> void compareToPattern(SignalWrapper wrapper, MessageParticipant<T> target,
+			boolean viaAPI) {
 		if (wrapper.isEmpty()) {
 			return;
 		}
 
 		Signal signal = wrapper.getWrapped();
 
-		Message actual;
+		Message<ModelClass, T> actual;
 		if (viaAPI) {
 			actual = Message.fromActor(signal, target);
 		} else if (wrapper.isSenderKnown()) {
-			actual = Message.fromObject(wrapper.getSenderOrNull(), signal, target);
+			actual = Message.fromObject(MessageParticipant.create(wrapper.getSenderOrNull()), signal, target);
 		} else {
 			actual = Message.fromUnknown(signal, target);
 		}
@@ -87,7 +95,7 @@ class SeqDiagModelExecutorThread extends FIFOExecutorThread implements ExecutorT
 		 * automatically accepted. Otherwise, we show an error.
 		 */
 		if (!result && mode == ExecMode.STRICT) {
-			root.getExecutor().addError(new InvalidMessageError(actual, ErrorLevel.ERROR));
+			root.getExecutor().addError(new InvalidMessageError<>(actual, ErrorLevel.ERROR));
 		}
 	}
 
@@ -96,8 +104,16 @@ class SeqDiagModelExecutorThread extends FIFOExecutorThread implements ExecutorT
 	 * state. If the assertion fails, a {@link ModelStateAssertError} will be
 	 * added.
 	 */
-	public void assertState(ModelClass instance, Class<?> state) {
-		Class<?> currentState = getModelRuntime().getRuntimeOf(instance).getCurrentState();
+	public <T extends ModelClass> void assertState(Lifeline<T> instance, Class<?> state) {
+		MessageParticipant<T> p = (MessageParticipant<T>) instance;
+		if (!p.hasParticipant()) {
+			root.getExecutor().addError(new SequenceDiagramProblem(
+					"Cannot assert the state of an unbound proxy object.", ErrorLevel.ERROR));
+			return;
+		}
+
+		ModelClass mc = p.getParticipant().get();
+		Class<?> currentState = getModelRuntime().getRuntimeOf(mc).getCurrentState();
 		if (!currentState.equals(state)) {
 			root.getExecutor()
 					.addError(new ModelStateAssertError(state.getCanonicalName(), currentState.getCanonicalName()));

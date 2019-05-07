@@ -7,7 +7,9 @@ import static hu.elte.txtuml.api.model.seqdiag.Sequence.assertSend;
 import hu.elte.txtuml.api.model.Action;
 import hu.elte.txtuml.api.model.seqdiag.ExecMode;
 import hu.elte.txtuml.api.model.seqdiag.ExecutionMode;
+import hu.elte.txtuml.api.model.seqdiag.Lifeline;
 import hu.elte.txtuml.api.model.seqdiag.Position;
+import hu.elte.txtuml.api.model.seqdiag.Sequence;
 import hu.elte.txtuml.api.model.seqdiag.SequenceDiagram;
 import machine3.j.model.Machine;
 import machine3.j.model.Machine.Off;
@@ -22,18 +24,18 @@ import machine3.j.model.signals.DoYourWork;
 public class Machine3SequenceDiagram extends SequenceDiagram {
 
 	@Position(2)
-	Machine m;
+	Lifeline<Machine> machine;
 
 	@Position(1)
-	User u1;
+	Lifeline<User> user1;
 
-	User u2;
+	Lifeline<User> user2;
 
 	@Override
 	public void initialize() {
-		m = Action.create(Machine.class, 3);
-		u1 = Action.create(User.class);
-		u2 = Action.create(User.class);
+		Machine m = Action.create(Machine.class, 3);
+		User u1 = Action.create(User.class);
+		User u2 = Action.create(User.class);
 
 		u1.name = "user1";
 		u2.name = "user2";
@@ -42,6 +44,10 @@ public class Machine3SequenceDiagram extends SequenceDiagram {
 
 		Action.link(Usage.usedMachine.class, m, Usage.userOfMachine.class, u1);
 		Action.link(Usage.usedMachine.class, m, Usage.userOfMachine.class, u2);
+
+		machine = Sequence.createLifeline(m);
+		user1 = Sequence.createLifeline(u1);
+		user2 = Sequence.createLifeline(u2);
 
 		Action.log("Machine and users are starting.");
 		Action.start(m);
@@ -54,13 +60,13 @@ public class Machine3SequenceDiagram extends SequenceDiagram {
 	@Override
 	@ExecutionMode(ExecMode.LENIENT)
 	public void run() {
-		fromActor(new DoYourWork(), u1);
-		assertState(u1, NotWorking.class);
-		assertState(m, Off.class);
+		fromActor(new DoYourWork(), user1);
+		assertState(user1, NotWorking.class);
+		assertState(machine, Off.class);
 
-		assertSend(u1, new ButtonPress(), m);
-		assertSend(u1, new DoTasks(4), m);
-		assertState(m, On.Active.class);
+		assertSend(user1, new ButtonPress(), machine);
+		assertSend(user1, new DoTasks(4), machine);
+		assertState(machine, On.Active.class);
 	}
 
 }

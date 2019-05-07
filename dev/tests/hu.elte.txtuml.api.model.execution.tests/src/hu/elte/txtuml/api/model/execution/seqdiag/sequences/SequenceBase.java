@@ -7,33 +7,39 @@ import hu.elte.txtuml.api.model.execution.testmodel.seqdiag.B;
 import hu.elte.txtuml.api.model.execution.testmodel.seqdiag.BToC;
 import hu.elte.txtuml.api.model.execution.testmodel.seqdiag.C;
 import hu.elte.txtuml.api.model.impl.SequenceDiagramRelated;
+import hu.elte.txtuml.api.model.seqdiag.Lifeline;
 import hu.elte.txtuml.api.model.seqdiag.Position;
+import hu.elte.txtuml.api.model.seqdiag.Sequence;
 import hu.elte.txtuml.api.model.seqdiag.SequenceDiagram;
 
 @SequenceDiagramRelated
 public abstract class SequenceBase extends SequenceDiagram {
 
 	@Position(1)
-	public A a;
+	public Lifeline<A> a;
 	@Position(3)
-	public B b;
+	public Lifeline<B> b;
 	@Position(2)
-	public C c;
+	public Lifeline<C> c;
 
 	@Override
 	public void initialize() {
-		a = Action.create(A.class);
-		b = Action.create(B.class);
+		A obj1 = Action.create(A.class);
+		B obj2 = Action.create(B.class);
 
-		Action.link(AToB.ASide.class, a, AToB.BSide.class, b);
+		Action.link(AToB.ASide.class, obj1, AToB.BSide.class, obj2);
 
-		c = Action.create(C.class);
+		C obj3 = Action.create(C.class);
 
-		Action.link(BToC.BSide.class, b, BToC.CSide.class, c);
+		Action.link(BToC.BSide.class, obj2, BToC.CSide.class, obj3);
 
-		Action.start(a);
-		Action.start(b);
-		Action.start(c);
+		Action.start(obj1);
+		Action.start(obj2);
+		Action.start(obj3);
+
+		a = Sequence.createLifeline(obj1);
+		b = Sequence.createLifeline(obj2);
+		c = Sequence.createLifeline(obj3);
 	}
 
 }

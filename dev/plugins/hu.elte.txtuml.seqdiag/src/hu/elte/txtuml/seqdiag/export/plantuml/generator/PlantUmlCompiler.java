@@ -1,5 +1,7 @@
 package hu.elte.txtuml.seqdiag.export.plantuml.generator;
 
+import static java.util.stream.Collectors.toList;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -142,6 +144,13 @@ public class PlantUmlCompiler extends ASTVisitor {
 	 */
 	public void postProcessedStatement() {
 		exporterQueue.pop();
+	}
+
+	/**
+	 * Returns all compiled lifeline names.
+	 */
+	public List<String> getLifelineNames() {
+		return orderedLifelines.stream().map(lifeline -> lifeline.getName()).collect(toList());
 	}
 
 	/**

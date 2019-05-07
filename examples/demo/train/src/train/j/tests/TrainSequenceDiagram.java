@@ -7,7 +7,9 @@ import static hu.elte.txtuml.api.model.seqdiag.Sequence.assertSend;
 import hu.elte.txtuml.api.model.Action;
 import hu.elte.txtuml.api.model.seqdiag.ExecMode;
 import hu.elte.txtuml.api.model.seqdiag.ExecutionMode;
+import hu.elte.txtuml.api.model.seqdiag.Lifeline;
 import hu.elte.txtuml.api.model.seqdiag.Position;
+import hu.elte.txtuml.api.model.seqdiag.Sequence;
 import hu.elte.txtuml.api.model.seqdiag.SequenceDiagram;
 import train.j.model.Engine;
 import train.j.model.Gearbox;
@@ -25,27 +27,31 @@ import train.j.model.signals.SwitchLight;
 public class TrainSequenceDiagram extends SequenceDiagram {
 
 	@Position(1)
-	Lamp lamp;
+	Lifeline<Lamp> lamp;
 
 	@Position(2)
-	Gearbox gearbox;
+	Lifeline<Gearbox> gearbox;
 
 	@Position(3)
-	Engine engine;
+	Lifeline<Engine> engine;
 
 	@Override
 	public void initialize() {
-		gearbox = Action.create(Gearbox.class);
-		engine = Action.create(Engine.class);
-		lamp = Action.create(Lamp.class);
+		Gearbox g = Action.create(Gearbox.class);
+		Engine e = Action.create(Engine.class);
+		Lamp l = Action.create(Lamp.class);
 
-		Action.link(GE.g.class, gearbox, GE.e.class, engine);
-		Action.link(GL.g.class, gearbox, GL.l.class, lamp);
-		Action.link(LE.l.class, lamp, LE.e.class, engine);
+		Action.link(GE.g.class, g, GE.e.class, e);
+		Action.link(GL.g.class, g, GL.l.class, l);
+		Action.link(LE.l.class, l, LE.e.class, e);
 
-		Action.start(gearbox);
-		Action.start(engine);
-		Action.start(lamp);
+		gearbox = Sequence.createLifeline(g);
+		engine = Sequence.createLifeline(e);
+		lamp = Sequence.createLifeline(l);
+
+		Action.start(g);
+		Action.start(e);
+		Action.start(l);
 	}
 
 	@Override

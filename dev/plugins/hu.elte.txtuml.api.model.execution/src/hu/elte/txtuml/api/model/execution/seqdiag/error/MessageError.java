@@ -6,18 +6,17 @@ import hu.elte.txtuml.api.model.ModelClass;
 import hu.elte.txtuml.api.model.Signal;
 import hu.elte.txtuml.api.model.execution.impl.seqdiag.Message;
 import hu.elte.txtuml.api.model.impl.SequenceDiagramRelated;
+import hu.elte.txtuml.api.model.seqdiag.MessageParticipant;
 
 /**
  * General message sending related error.
  */
 @SequenceDiagramRelated
-public class MessageError extends SequenceDiagramProblem {
+public class MessageError<T extends ModelClass, U extends ModelClass> extends SequenceDiagramProblem {
 
-	private static final long serialVersionUID = -2564365105119207820L;
+	private final Message<T, U> message;
 
-	private final Message message;
-
-	public MessageError(Message message, String concreteError, ErrorLevel level) {
+	public MessageError(Message<T, U> message, String concreteError, ErrorLevel level) {
 		super(createErrorMessage(message, concreteError), level);
 		this.message = message;
 	}
@@ -26,7 +25,7 @@ public class MessageError extends SequenceDiagramProblem {
 		return message.isFromActor();
 	}
 
-	public ModelClass getSender() {
+	public MessageParticipant<T> getSender() {
 		return message.getSenderOrNull();
 	}
 
@@ -34,11 +33,12 @@ public class MessageError extends SequenceDiagramProblem {
 		return message.getWrapped();
 	}
 
-	public ModelClass getTarget() {
+	public MessageParticipant<U> getTarget() {
 		return message.getTarget();
 	}
 
-	private static String createErrorMessage(Message message, String concreteError) {
+	private static <T extends ModelClass, U extends ModelClass> String createErrorMessage(Message<T, U> message,
+			String concreteError) {
 		StringBuilder builder = new StringBuilder("The model diverged from the specified behavior.\n");
 		builder.append(concreteError);
 		builder.append(message);
