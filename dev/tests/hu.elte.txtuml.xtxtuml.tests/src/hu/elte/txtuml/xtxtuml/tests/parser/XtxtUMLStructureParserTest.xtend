@@ -497,5 +497,29 @@ class XtxtUMLStructureParserTest {
 			])]
 		])
 	}
+	
+	@Test
+	def parseCollection() {
+		'''
+			package test.model;
+			class A;
+			
+			ordered collection of 1..10 A as CA;
+			collection of * int as CB;
+			unique collection of 1..* A as CC;
+			
+			collection of 1..10 as GCA;
+			ordered unique collection of 6 as GCB;
+		'''
+		.parse.
+		file("test.model", null, #[
+			[class_("A", null, #[])],
+			[collection("CA", "A", true, false, [interval(1, 10)])],
+			[collection("CB", "int", false, false, [any])],
+			[collection("CC", "A", false, true, [fromToInf(1)])],
+			[collection("GCA", null, false, false, [interval(1, 10)])],
+			[collection("GCB", null, true, true, [exact(6)])]
+		])
+	}
 
 }

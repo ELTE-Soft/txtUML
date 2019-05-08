@@ -11,6 +11,8 @@ import hu.elte.txtuml.xtxtuml.xtxtUML.TUClass
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUClassMember
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUClassOrStateMember
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUClassPropertyAccessExpression
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUCollectionModifiers
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUCollectionType
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUComposition
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUConnector
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUConnectorEnd
@@ -328,6 +330,12 @@ class XtxtUMLParserTestUtils {
 	def any(TUMultiplicity multiplicity) {
 		assertTrue(multiplicity.any);
 	}
+	
+	def fromToInf(TUMultiplicity multiplicity, int value) {
+		assertFalse(multiplicity.any);
+		assertTrue(multiplicity.upperSet);
+		assertTrue(multiplicity.upperInf);
+	}
 
 	def exact(TUMultiplicity multiplicity, int value) {
 		assertFalse(multiplicity.any);
@@ -416,6 +424,26 @@ class XtxtUMLParserTestUtils {
 		assertEquals(roleName, end.role.name);
 		assertEquals(portName, end.port.name);
 		assertEquals(name, end.name);
+	}
+	
+	// Collection
+	
+	def collection(TUModelElement element, String name, String typeName, boolean ordered,
+			boolean unique, Procedure1<TUMultiplicity> multiplicityCheck) {
+		assertTrue(element instanceof TUCollectionType);
+		val collection = element as TUCollectionType;
+		assertEquals(name, collection.name);
+		if (typeName != null) {
+			assertEquals(typeName, collection.type.simpleName);
+		}
+		
+		assertEquals(ordered, collection.modifiers.ordered);
+		assertEquals(unique, collection.modifiers.unique);
+		
+		assertEquals(multiplicityCheck == null, collection.multiplicity == null);
+		if (multiplicityCheck != null) {
+			multiplicityCheck.apply(collection.multiplicity);
+		}
 	}
 
 	// Expressions
