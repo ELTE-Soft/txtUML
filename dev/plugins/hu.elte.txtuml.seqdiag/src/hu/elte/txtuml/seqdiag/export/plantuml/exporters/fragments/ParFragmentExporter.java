@@ -5,6 +5,10 @@ import java.util.List;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.LambdaExpression;
 import org.eclipse.jdt.core.dom.MethodInvocation;
+import org.eclipse.jdt.core.dom.Expression;
+import org.eclipse.jdt.core.dom.ClassInstanceCreation;
+import org.eclipse.jdt.core.dom.BodyDeclaration;
+import org.eclipse.jdt.core.dom.MethodDeclaration;
 
 import hu.elte.txtuml.seqdiag.export.plantuml.exporters.ExporterUtils;
 import hu.elte.txtuml.seqdiag.export.plantuml.generator.PlantUmlCompiler;
@@ -31,16 +35,30 @@ public class ParFragmentExporter extends CombinedFragmentExporter<MethodInvocati
 	@SuppressWarnings("unchecked")
 	@Override
 	public boolean preNext(MethodInvocation curElement) {
-		List<LambdaExpression> params = (List<LambdaExpression>) curElement.arguments();
+		List<Expression> params = (List<Expression>) curElement.arguments();
 		compiler.println("par");
 		boolean isFirst = true;
-		for (LambdaExpression interaction : params) {
+		for (Expression interaction : params) {
 			if (isFirst) {
 				isFirst = false;
 			} else {
 				compiler.println("else");
 			}
-			interaction.getBody().accept(compiler);
+			switch (interaction.getNodeType()){
+			case ASTNode.LAMBDA_EXPRESSION:
+				((LambdaExpression)(interaction)).getBody().accept(compiler);
+				break;
+			case ASTNode.CLASS_INSTANCE_CREATION:
+				List<BodyDeclaration> bodyDecls = ((ClassInstanceCreation)(interaction)).getAnonymousClassDeclaration().bodyDeclarations();
+				for (BodyDeclaration bodyDecl : bodyDecls){
+					if (bodyDecl instanceof MethodDeclaration){
+						if (((MethodDeclaration)(bodyDecl)).getName().toString().equals("run")){
+							((MethodDeclaration)(bodyDecl)).getBody().accept(compiler);
+						}
+					}
+				}
+				break;
+			}	
 		}
 		return false;
 	}
