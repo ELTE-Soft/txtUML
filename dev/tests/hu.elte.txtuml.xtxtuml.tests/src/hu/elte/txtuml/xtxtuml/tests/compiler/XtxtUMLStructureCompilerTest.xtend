@@ -609,6 +609,87 @@ class XtxtUMLStructureCompilerTest {
 			}
 		''')
 	}
+	
+	@Test
+	def compileDataTypeAttributeAndOperation() {
+		'''
+			package test.model;
+			datatype A {
+				int a1;
+				protected int a2;
+				public static external int a3 = 0;
+				private external String a4;
+				public void o1() {}
+				private int o2() {
+					return 0;
+				}
+				package A o3(int p) {
+					return null;
+				}
+				public static void o4() {}
+				public external void o5() {}
+				public external-body void o6() {}
+				public static external void o7() {}
+				public A(int p1, A p2) {}
+				external A() {}
+				external-body A(int p) {}
+			}
+		'''.assertCompilesTo('''
+			package test.model;
+			
+			import hu.elte.txtuml.api.model.DataType;
+			import hu.elte.txtuml.api.model.External;
+			import hu.elte.txtuml.api.model.ExternalBody;
+
+			@SuppressWarnings("all")
+			public class A extends DataType {
+			  final int a1;
+			  
+			  protected final int a2;
+			  
+			  public final int a3;
+			  
+			  private final String a4;
+			  
+			  public void o1() {
+			  }
+			  
+			  private int o2() {
+			    return 0;
+			  }
+			  
+			  A o3(final int p) {
+			    return null;
+			  }
+			  
+			  public static void o4() {
+			  }
+			  
+			  @External
+			  public void o5() {
+			  }
+			  
+			  @ExternalBody
+			  public void o6() {
+			  }
+			  
+			  @External
+			  public static void o7() {
+			  }
+			  
+			  public A(final int p1, final A p2) {
+			  }
+			  
+			  @External
+			  A() {
+			  }
+			  
+			  @ExternalBody
+			  A(final int p) {
+			  }
+			}
+		''')
+	}
 
 	@Test
 	def compileStatemachine() {

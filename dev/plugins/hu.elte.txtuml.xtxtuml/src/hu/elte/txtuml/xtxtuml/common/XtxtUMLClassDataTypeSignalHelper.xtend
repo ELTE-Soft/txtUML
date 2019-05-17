@@ -78,7 +78,7 @@ class XtxtUMLClassDataTypeSignalHelper {
 	}
 	
 	def dispatch errorCode(TUDataType it){
-		CLASS_HIERARCHY_CYCLE  //TODO: This should be a new code
+		DATATYPE_HIERARCHY_CYCLE
 	}
 }
 

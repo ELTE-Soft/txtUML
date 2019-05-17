@@ -80,6 +80,8 @@ import org.eclipse.xtext.xbase.lib.Procedures.Procedure1
 import org.eclipse.xtext.xtype.XImportDeclaration
 
 import static org.junit.Assert.*
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUDataType
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUDataMember
 
 class XtxtUMLParserTestUtils {
 
@@ -199,6 +201,56 @@ class XtxtUMLParserTestUtils {
 	}
 
 	def constructor(TUClassMember member, TUVisibility visibility, TUExternality externality, String name,
+			List<Procedure1<JvmFormalParameter>> parameterChecks, List<Procedure1<XExpression>> expressionChecks) {
+		assertTrue(member instanceof TUConstructor);
+		val ctor = member as TUConstructor;
+
+		ctor.modifiers.check(visibility, false, externality);
+		assertEquals(name, ctor.name);
+
+		ctor.parameters.performChecks(parameterChecks);
+		(ctor.body as XBlockExpression).expressions.performChecks(expressionChecks);
+	}
+	
+	def datatype(TUModelElement element, String name, String superName, List<Procedure1<TUDataMember>> memberChecks) {
+		assertTrue(element instanceof TUDataType);
+		val dataT = element as TUDataType;
+
+		assertEquals(name, dataT.name);
+		assertEquals(superName, dataT.superDataType?.name);
+		dataT.members.performChecks(memberChecks);
+	}
+
+	def attribute(TUDataMember member, TUVisibility visibility, boolean isStatic, TUExternality externality,
+			String typeName, String name, Procedure1<XExpression> initializerCheck) {
+		assertTrue(member instanceof TUAttribute);
+		val attribute = member as TUAttribute;
+
+		attribute.prefix.modifiers.check(visibility, isStatic, externality);
+		assertEquals(typeName, attribute.prefix.type.simpleName);
+		assertEquals(name, attribute.name);
+
+		assertEquals(initializerCheck == null, attribute.initExpression == null);
+		if (initializerCheck != null) {
+			initializerCheck.apply(attribute.initExpression);
+		}
+	}
+
+	def operation(TUDataMember member, TUVisibility visibility, boolean isStatic, TUExternality externality,
+			String typeName, String name, List<Procedure1<JvmFormalParameter>> parameterChecks,
+			List<Procedure1<XExpression>> expressionChecks) {
+		assertTrue(member instanceof TUOperation);
+		val operation = member as TUOperation;
+
+		operation.prefix.modifiers.check(visibility, isStatic, externality);
+		assertEquals(typeName, operation.prefix.type.simpleName);
+		assertEquals(name, operation.name);
+
+		operation.parameters.performChecks(parameterChecks);
+		(operation.body as XBlockExpression).expressions.performChecks(expressionChecks);
+	}
+
+	def constructor(TUDataMember member, TUVisibility visibility, TUExternality externality, String name,
 			List<Procedure1<JvmFormalParameter>> parameterChecks, List<Procedure1<XExpression>> expressionChecks) {
 		assertTrue(member instanceof TUConstructor);
 		val ctor = member as TUConstructor;

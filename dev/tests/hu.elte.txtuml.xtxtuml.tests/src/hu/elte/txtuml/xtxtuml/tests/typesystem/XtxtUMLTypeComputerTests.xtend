@@ -18,6 +18,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 import static org.junit.Assert.*
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUDataType
 
 @RunWith(XtextRunner)
 @InjectWith(XtxtUMLInjectorProvider)
@@ -135,6 +136,37 @@ class XtxtUMLTypeComputerTests {
 		]
 	}
 
+	@Test
+	def computeDataTypeCreateObjectExpressionTypes() {
+		val file = '''
+			package test.model;
+				datatype A {
+					void f() {
+						new A();
+						new B();
+						create A();
+						create B();
+						new A() as "a";
+						new B() as "b";
+						create A() as "a";
+						create B() as "b";
+					}
+				}
+				datatype B extends A;
+		'''.parse;
+
+		val datatype = file.elements.head as TUDataType;
+		val op = datatype.members.head as TUOperation;
+		val block = op.body as XBlockExpression;
+
+		(0..3).forEach[
+			val createA = block.expressions.get(it * 2) as TUCreateObjectExpression;
+			assertEquals("test.model.A", createA.resolvedTypeId);
+
+			val createB = block.expressions.get(it * 2 + 1) as TUCreateObjectExpression;
+			assertEquals("test.model.B", createB.resolvedTypeId);
+		]
+	}
 	@Test
 	def computeSignalAccessExpressionTypesWithoutInheritance() {
 		val file1 = '''

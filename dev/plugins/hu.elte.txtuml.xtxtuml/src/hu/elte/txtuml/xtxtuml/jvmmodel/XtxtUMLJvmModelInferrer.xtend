@@ -232,7 +232,9 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
     			if (member instanceof TUAttribute ) {
     				members += member.toField(member.name, member.prefix.type) [
     				final = true
-    				]    			
+    				setVisibility(member.prefix.modifiers.visibility.toJvmVisibility)
+    				]
+    			
     			} else members+= member.toJvmMember;
 			}			
 		]
