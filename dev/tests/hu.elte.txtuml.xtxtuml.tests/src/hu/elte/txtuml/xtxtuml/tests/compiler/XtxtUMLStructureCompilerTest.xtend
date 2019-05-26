@@ -488,6 +488,50 @@ class XtxtUMLStructureCompilerTest {
 
 		''');
 	}
+	@Test
+	def compileDataType() {
+		'''
+			package test.model;
+			datatype A;
+		'''.assertCompilesTo('''
+			package test.model;
+
+			import hu.elte.txtuml.api.model.DataType;
+
+			@SuppressWarnings("all")
+			public class A extends DataType {
+			}
+		''');
+
+		'''
+			package test.model;
+			datatype A;
+			datatype B extends A;
+		'''.assertCompilesTo('''
+			MULTIPLE FILES WERE GENERATED
+
+			File 1 : /myProject/./src-gen/test/model/A.java
+
+			package test.model;
+
+			import hu.elte.txtuml.api.model.DataType;
+
+			@SuppressWarnings("all")
+			public class A extends DataType {
+			}
+
+			File 2 : /myProject/./src-gen/test/model/B.java
+
+			package test.model;
+
+			import test.model.A;
+
+			@SuppressWarnings("all")
+			public class B extends A {
+			}
+
+		''');
+	}
 
 	@Test
 	def compileEnum() {

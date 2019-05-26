@@ -51,6 +51,7 @@ import org.eclipse.xtext.xbase.XVariableDeclaration
 import org.eclipse.xtext.xbase.formatting2.XbaseFormatter
 
 import static hu.elte.txtuml.xtxtuml.xtxtUML.XtxtUMLPackage.Literals.*
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUDataType
 
 /**
  * Defines formatting rules for XtxtUML elements.
@@ -87,6 +88,11 @@ class XtxtUMLFormatter extends XbaseFormatter {
 
 	def dispatch void format(TUClass it, extension IFormattableDocument document) {
 		formatBlockElement(it, document, regionFor.keyword('class'), members, true);
+		regionFor.keyword('extends').surround[oneSpace];
+	}
+
+	def dispatch void format(TUDataType it, extension IFormattableDocument document) {
+		formatBlockElement(it, document, regionFor.keyword('datatype'), members, true);
 		regionFor.keyword('extends').surround[oneSpace];
 	}
 
