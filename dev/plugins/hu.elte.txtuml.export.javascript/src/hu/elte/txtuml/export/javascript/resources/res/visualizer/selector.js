@@ -61,10 +61,10 @@ visualizer.Selector.prototype.setInstances = function (inst) {
 		if (type != "state") return;
 		_.each(diagrams, function (diagramName, key) {
 			try {
-                                if (diagramName === self._selected.name) {
-					var klass = input["classDiagrams"][0].classes[key].id;
+				if (diagramName === self._selected.name) {
+					var diagramRealName = input["classDiagrams"][0].classes[key].name;
 					$('#diagInst' + key).html(self._instances.filter(function (diis) {
-						return diis["class"] == klass;
+						return diis.name.split('@')[0] == diagramRealName;
 					}).map(function (diis) {
 						return '<li><a href="?refresh=' + timestamp + '#' + type + '_' + key + '_' + diis.name + '">' + diis.id + '</a></li>';
 					}).join(""));
