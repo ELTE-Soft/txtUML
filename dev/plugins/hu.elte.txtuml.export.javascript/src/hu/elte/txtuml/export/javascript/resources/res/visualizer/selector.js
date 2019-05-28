@@ -62,9 +62,9 @@ visualizer.Selector.prototype.setInstances = function (inst) {
 		_.each(diagrams, function (diagramName, key) {
 			try {
 				if (diagramName === self._selected.name) {
-					var diagramRealName = input["classDiagrams"][0].classes[key].name;
+					var machineName = input.stateMachines[key].machineName;
 					$('#diagInst' + key).html(self._instances.filter(function (diis) {
-						return diis.name.split('@')[0] == diagramRealName;
+						return diis.name.split('@')[0] == machineName;
 					}).map(function (diis) {
 						return '<li><a href="?refresh=' + timestamp + '#' + type + '_' + key + '_' + diis.name + '">' + diis.id + '</a></li>';
 					}).join(""));

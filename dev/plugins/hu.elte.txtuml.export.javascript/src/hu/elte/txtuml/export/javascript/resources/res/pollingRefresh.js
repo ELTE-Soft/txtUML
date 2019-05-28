@@ -30,9 +30,12 @@ function refreshElements(queryPort){
 
 		if(response.status == 200){
 			var json = JSON.parse(response.responseText);
-			setActiveElements((json)
+			var activeElements = json
 				.filter(diag => !selector._selected || selector._selected.inst == diag.name)
-				.map(diag => _visualizer.getShapeIdByElementName(diag.location)));
+				.map(diag => _visualizer.getShapeIdByElementName(diag.location));
+			//skip update if current diagram does not change
+			if (activeElements.length > 0)
+				setActiveElements(activeElements);
 
 			selector.setInstances(json);
 			hideError();
