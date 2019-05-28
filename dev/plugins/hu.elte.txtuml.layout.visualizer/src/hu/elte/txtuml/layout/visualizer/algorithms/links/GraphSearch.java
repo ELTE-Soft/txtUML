@@ -313,6 +313,79 @@ class GraphSearch {
 
 		return result;
 	}
+	
+	public boolean isReflexivePath(ArrayList<Node> path)
+	{
+		return path.size() == 4 
+				&& 
+				((path.get(0).getTo().getX() == path.get(3).getFrom().getX() 
+				&& Math.abs(path.get(0).getTo().getY() - path.get(3).getFrom().getY()) == 2) 
+				|| 
+				(path.get(0).getTo().getY() == path.get(3).getFrom().getY() 
+				&& Math.abs(path.get(0).getTo().getX() - path.get(3).getFrom().getX()) == 2));					
+	}
+	
+	public ArrayList<Node> extendReflexivePath(ArrayList<Node> result)
+	{
+		if(result.get(0).getTo().getX() < result.get(0).getFrom().getX())
+		{
+			Point p = new Point(result.get(0).getFrom().getX()+1, result.get(0).getFrom().getY());
+			Node node = new Node(p,result.get(0).getFrom());
+			result.add(1, node);
+			
+			Point p1 = new Point(result.get(2).getFrom().getX()+1, result.get(2).getFrom().getY());
+			result.set(2, new Node(p1, p));
+			
+			Point p2 = new Point(result.get(3).getFrom().getX()+1, result.get(3).getFrom().getY());
+			result.set(3,  new Node(p2, p1));
+			
+			result.add(4, new Node(result.get(4).getTo(), p2));
+		}
+		else if(result.get(0).getFrom().getX() < result.get(0).getTo().getX())
+		{
+			Point p = new Point(result.get(0).getFrom().getX()-1, result.get(0).getFrom().getY());
+			Node node = new Node(p,result.get(0).getFrom());
+			result.add(1, node);
+			
+			Point p1 = new Point(result.get(2).getFrom().getX()-1, result.get(2).getFrom().getY());
+			result.set(2, new Node(p1, p));
+			
+			Point p2 = new Point(result.get(3).getFrom().getX()-1, result.get(3).getFrom().getY());
+			result.set(3,  new Node(p2, p1));
+			
+			result.add(4, new Node(result.get(4).getTo(), p2));
+		}
+		else if(result.get(0).getFrom().getY() > result.get(0).getTo().getY())
+		{
+			Point p = new Point(result.get(0).getFrom().getX(), result.get(0).getFrom().getY()+1);
+			Node node = new Node(p,result.get(0).getFrom());
+			result.add(1, node);
+			
+			Point p1 = new Point(result.get(2).getFrom().getX(), result.get(2).getFrom().getY()+1);
+			result.set(2, new Node(p1, p));
+			
+			Point p2 = new Point(result.get(3).getFrom().getX(), result.get(3).getFrom().getY()+1);
+			result.set(3,  new Node(p2, p1));
+			
+			result.add(4, new Node(result.get(4).getTo(), p2));
+		}
+		else if(result.get(0).getFrom().getY() < result.get(0).getTo().getY())
+		{
+			Point p = new Point(result.get(0).getFrom().getX(), result.get(0).getFrom().getY()-1);
+			Node node = new Node(p,result.get(0).getFrom());
+			result.add(1, node);
+			
+			Point p1 = new Point(result.get(2).getFrom().getX(), result.get(2).getFrom().getY()-1);
+			result.set(2, new Node(p1, p));
+			
+			Point p2 = new Point(result.get(3).getFrom().getX(), result.get(3).getFrom().getY()-1);
+			result.set(3,  new Node(p2, p1));
+			
+			result.add(4, new Node(result.get(4).getTo(), p2));
+		}
+		
+		return result;
+	}
 
 	/**
 	 * Returns the route from start to end.
@@ -328,6 +401,11 @@ class GraphSearch {
 			result.add(n);
 			n = PI.get(n);
 		} while (n != null);
+		
+		if(isReflexivePath(result))
+		{
+			result = extendReflexivePath(result);
+		}
 
 		// Reverse order
 		ArrayList<Node> result2 = new ArrayList<Node>();
