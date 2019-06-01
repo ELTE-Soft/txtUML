@@ -56,7 +56,7 @@ class XtxtUMLClassValidator extends XtxtUMLFileValidator {
 
 	@Check
 	def checkInitializerIsUsedOnlyOnExternalAttribute(TUAttribute attr) {
-		if (attr.initExpression != null && !attr.isExternal) {
+		if (attr.eContainer instanceof TUClass && attr.initExpression != null && !attr.isExternal) {
 			error("Attribute " + attr.classQualifiedName + " cannot have an initializer expression" +
 				" – initializer expressions can be defined only for external attributes", attr,
 				TU_ATTRIBUTE__INIT_EXPRESSION, INITIALIZER_ON_NON_EXTERNAL_ATTRIBUTE);

@@ -660,7 +660,7 @@ class XtxtUMLStructureCompilerTest {
 			package test.model;
 			datatype A {
 				int a1;
-				protected int a2;
+				protected int a2 = 2;
 				public static external int a3 = 0;
 				private external String a4;
 				public void o1() {}
@@ -689,10 +689,12 @@ class XtxtUMLStructureCompilerTest {
 			public class A extends DataType {
 			  final int a1;
 			  
-			  protected final int a2;
+			  protected final int a2 = 2;
 			  
-			  public final int a3;
+			  @External
+			  public final static int a3 = 0;
 			  
+			  @External
 			  private final String a4;
 			  
 			  public void o1() {

@@ -229,13 +229,10 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 			}
 			
 			for (member : tUDataType.members) {
-    			if (member instanceof TUAttribute ) {
-    				members += member.toField(member.name, member.prefix.type) [
-    				final = true
-    				setVisibility(member.prefix.modifiers.visibility.toJvmVisibility)
-    				]
+    			if (!(member instanceof TUAttributeOrOperationDeclarationPrefix)) {
+    			   members += member.toJvmMember
+    			}
     			
-    			} else members+= member.toJvmMember;
 			}			
 		]
 	}
@@ -482,6 +479,10 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 			}
 
 			initializer = attr.initExpression
+			
+			if(attr.eContainer instanceof TUDataType) {
+				final = true
+			}
 		]
 	}
 

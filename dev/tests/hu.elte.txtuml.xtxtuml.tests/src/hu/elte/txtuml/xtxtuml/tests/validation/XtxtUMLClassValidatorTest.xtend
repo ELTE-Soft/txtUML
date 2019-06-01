@@ -76,6 +76,34 @@ class XtxtUMLClassValidatorTest {
 		parsedFile.assertError(TU_CLASS, CLASS_HIERARCHY_CYCLE, rawFile.indexOfNth("D", 2), 1);
 		parsedFile.assertError(TU_CLASS, CLASS_HIERARCHY_CYCLE, rawFile.indexOfNth("E", 1), 1);
 	}
+	
+	@Test
+	def checkNoCycleInDataTypeHiearchy() {
+		'''
+			datatype A;
+			datatype B extends A;
+			datatype C extends B;
+			datatype D extends B;
+			datatype E extends C;
+		'''.parse.assertNoError(SIGNAL_HIERARCHY_CYCLE);
+
+		val rawFile = '''
+			datatype A extends A;
+			datatype B extends C;
+			datatype C extends D;
+			datatype D extends B;
+			datatype E extends D;
+			datatype F extends E;
+		''';
+
+		val parsedFile = rawFile.parse;
+		parsedFile.assertError(TU_DATA_TYPE, DATATYPE_HIERARCHY_CYCLE, rawFile.indexOfNth("A", 1), 1);
+		parsedFile.assertError(TU_DATA_TYPE, DATATYPE_HIERARCHY_CYCLE, rawFile.indexOfNth("C", 0), 1);
+		parsedFile.assertError(TU_DATA_TYPE, DATATYPE_HIERARCHY_CYCLE, rawFile.indexOfNth("D", 0), 1);
+		parsedFile.assertError(TU_DATA_TYPE, DATATYPE_HIERARCHY_CYCLE, rawFile.indexOfNth("B", 1), 1);
+		parsedFile.assertError(TU_DATA_TYPE, DATATYPE_HIERARCHY_CYCLE, rawFile.indexOfNth("D", 2), 1);
+		parsedFile.assertError(TU_DATA_TYPE, DATATYPE_HIERARCHY_CYCLE, rawFile.indexOfNth("E", 1), 1);
+	}
 
 	@Test
 	def checkConstructorName() {
