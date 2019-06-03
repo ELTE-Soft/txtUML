@@ -50,11 +50,11 @@
          point="org.eclipse.debug.ui.launchShortcuts">     
      <shortcut
             class="hu.elte.txtuml.diagnostics.launching.ExecutionAsTxtUMLAppLaunchShortcut"
-            description="Launches execution defined in the selected file as txtUML Application"
+            description="Launches the execution defined in the selected file as a txtUML Application"
             id="hu.elte.txtuml.diagnostics.launching.ExecutionAsTxtUMLAppLaunchShortcut"
-            label="TxtUML App"
+            label="txtUML Application"
             icon="icons/execution.gif"
-            modes="run, debug">
+            modes="run,debug">
          <contextualLaunch>
             <enablement>
                <with variable="selection">

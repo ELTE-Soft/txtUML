@@ -654,11 +654,11 @@
          point="org.eclipse.debug.ui.launchShortcuts">
       <shortcut
             class="hu.elte.txtuml.xtxtuml.ui.launching.XtxtUMLExecutionLaunchShortcut"
-            description="Launches the most relevant XtxtUML execution defined in the selected file"
-            icon="icons/execution.gif"
+            description="Launches the XtxtUML execution defined in the selected file as a Java Application"
+            icon="icons/java_app.gif"
             id="hu.elte.txtuml.xtxtuml.ui.launching.XtxtUMLExecutionLaunchShortcut"
-            label="XtxtUML Execution"
-            modes="run, debug">
+            label="Java Application"
+            modes="run,debug">
          <contextualLaunch>
             <enablement>
                <with variable="selection">
@@ -690,11 +690,11 @@
      
      <shortcut
             class="hu.elte.txtuml.xtxtuml.ui.launching.XtxtUMLExecutionLaunchAsTxtUMLAppShortcut"
-            description="Launches the most relevant XtxtUML execution defined in the selected file as txtUML Application"
+            description="Launches the XtxtUML execution defined in the selected file as a txtUML Application"
             icon="icons/execution.gif"
             id="hu.elte.txtuml.xtxtuml.ui.launching.XtxtUMLExecutionLaunchAsTxtUMLAppShortcut"
-            label="TxtUML Application"
-            modes="run, debug">
+            label="txtUML Application"
+            modes="run,debug">
          <contextualLaunch>
             <enablement>
                <with variable="selection">
@@ -730,7 +730,7 @@
       <launchConfigurationType
             delegate="hu.elte.txtuml.diagnostics.DiagnosticsLaunchDelegate"
             id="hu.elte.txtuml.diagnostics.launchConfigurationTypeDefault2"
-            modes="run, debug"
+            modes="run,debug"
             name="txtUML Application"
             public="false">
       </launchConfigurationType>
