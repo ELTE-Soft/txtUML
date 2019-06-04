@@ -4,6 +4,7 @@ import hu.elte.txtuml.api.model.API;
 import hu.elte.txtuml.api.model.Action;
 import hu.elte.txtuml.api.model.execution.Execution;
 import vending_machine.model.CashRegister;
+import vending_machine.model.Coll;
 import vending_machine.model.Drink;
 import vending_machine.model.DrinkChosen;
 import vending_machine.model.GiveBackCash;
@@ -34,17 +35,17 @@ public class Model implements Execution {
 		aqua = Action.create(Drink.class, 180, 1, AQUA_NAME);
 		phantom = Action.create(Drink.class, 260, 2, PHANTOM_NAME);
 		stripe = Action.create(Drink.class, 230, 4, STRIPE_NAME);
+		
+		Coll<Drink> Drinks = Action.collectIn(Coll.class, cola, aqua, phantom, stripe);
 
-		Action.link(Serve.drinks.class, cola, Serve.theMachine.class, machine);
-		Action.link(Serve.drinks.class, aqua, Serve.theMachine.class, machine);
-		Action.link(Serve.drinks.class, phantom, Serve.theMachine.class, machine);
-		Action.link(Serve.drinks.class, stripe, Serve.theMachine.class, machine);
+		for (Drink drink : Drinks) {
+			Action.link(Serve.drinks.class, drink, Serve.theMachine.class, machine);
+		}
 		Action.link(WorkTogether.theCashRegister.class, register, WorkTogether.theMachine.class, machine);
 
-		Action.start(cola);
-		Action.start(aqua);
-		Action.start(phantom);
-		Action.start(stripe);
+		for (Drink drink : Drinks) {
+			Action.start(drink);
+		}
 		Action.start(register);
 		Action.start(machine);
 	}

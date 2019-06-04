@@ -2,6 +2,8 @@ package vending_machine.model;
 
 import hu.elte.txtuml.api.stdlib.timers.Timer;
 
+unique collection of 0..* as Coll;
+
 class Drink {
 
 	private int price;
