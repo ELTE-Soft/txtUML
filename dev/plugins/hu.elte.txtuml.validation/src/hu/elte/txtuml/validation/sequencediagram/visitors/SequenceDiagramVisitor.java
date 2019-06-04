@@ -34,7 +34,8 @@ import org.eclipse.jdt.core.dom.ThisExpression;
 import org.eclipse.jdt.core.dom.Type;
 import org.eclipse.jdt.core.dom.WhileStatement;
 
-import hu.elte.txtuml.api.model.ModelClass;
+import hu.elte.txtuml.api.model.seqdiag.Lifeline;
+import hu.elte.txtuml.api.model.seqdiag.Proxy;
 import hu.elte.txtuml.utils.jdt.ElementTypeTeller;
 import hu.elte.txtuml.validation.common.ProblemCollector;
 import hu.elte.txtuml.validation.sequencediagram.SequenceErrors;
@@ -472,13 +473,16 @@ public class SequenceDiagramVisitor extends ASTVisitor {
 					}
 					int annotationVal = (int) position.getValue().resolveConstantExpressionValue();
 					if (annotationVal < 0) {
-						collector.report(SequenceErrors.INVALID_POSITION.create(collector.getSourceInfo(), position));
+						collector.report(
+								SequenceErrors.INVALID_POSITION.create(collector.getSourceInfo(), position.getValue()));
 					}
 
 					// type of annotated field
-					boolean isModelClass = ElementTypeTeller.hasSuperClass(elem.getType().resolveBinding(),
-							ModelClass.class.getCanonicalName());
-					if (!isModelClass) {
+					boolean isLifeline = ElementTypeTeller.hasSuperClass(elem.getType().resolveBinding(),
+							Lifeline.class.getCanonicalName())
+							|| ElementTypeTeller.hasSuperClass(elem.getType().resolveBinding(),
+									Proxy.class.getCanonicalName());
+					if (!isLifeline) {
 						collector.report(SequenceErrors.INVALID_LIFELINE_DECLARATION.create(collector.getSourceInfo(),
 								elem.getType()));
 					}
