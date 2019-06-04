@@ -1,6 +1,7 @@
 package producer_consumer.x;
 
 import hu.elte.txtuml.api.model.^execution.LogLevel;
+import producer_consumer.x.model.C1;
 import producer_consumer.x.model.Consumer;
 import producer_consumer.x.model.Consumption;
 import producer_consumer.x.model.Producer;
@@ -19,18 +20,20 @@ execution XDemo {
 		Consumer c1 = new Consumer(Integer.valueOf(2));
 		Consumer c2 = new Consumer(Integer.valueOf(2));
 		Consumer c3 = new Consumer(Integer.valueOf(2));
+		
+		C1<Consumer> coll = collectIn(C1, c1, c2, c3);
 
 		link p1, storage via Production;
 		link p2, storage via Production;
-		link c1, storage via Consumption;
-		link c2, storage via Consumption;
-		link c3, storage via Consumption;
+		for (Consumer c : coll) {
+			link c, storage via Consumption;
+		}
 
 		start storage;
 		start p1;
 		start p2;
-		start c1;
-		start c2;
-		start c3;
+		for (Consumer c : coll) {
+			start c;
+		}
 	}
 }

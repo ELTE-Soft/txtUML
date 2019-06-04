@@ -3,6 +3,8 @@ package producer_consumer.x.model;
 signal DoWork;
 signal Acknowledgement;
 
+collection of 0..* as C1;
+
 class Producer {
 	int toProduce;
 	public Producer(int num) {
