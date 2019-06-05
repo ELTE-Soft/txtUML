@@ -315,6 +315,98 @@ class XtxtUMLUniquenessValidatorTest {
 		parsedFile.assertError(TU_OPERATION, NOT_UNIQUE_OPERATION, rawFile.indexOfNth("bar", 2), 3);
 		parsedFile.assertError(TU_OPERATION, NOT_UNIQUE_OPERATION, rawFile.indexOfNth("bar", 3), 3);
 	}
+	
+	@Test
+	def checkDataTypeAttributeNameIsUnique() {
+		'''
+			datatype Foo {
+				int bar;
+			}
+		'''.parse.assertNoError(NOT_UNIQUE_NAME);
+
+		val rawFile = '''
+			datatype Foo {
+				int bar;
+				int bar;
+				double bar;
+			}
+		''';
+
+		val parsedFile = rawFile.parse;
+		parsedFile.assertError(TU_ATTRIBUTE, NOT_UNIQUE_NAME, rawFile.indexOfNth("bar", 0), 3);
+		parsedFile.assertError(TU_ATTRIBUTE, NOT_UNIQUE_NAME, rawFile.indexOfNth("bar", 1), 3);
+		parsedFile.assertError(TU_ATTRIBUTE, NOT_UNIQUE_NAME, rawFile.indexOfNth("bar", 2), 3);
+	}
+	
+	@Test
+	def checkDataTypeConstructorIsUnique() {
+		'''
+			datatype Foo {
+				public Foo() {}
+			}
+		'''.parse.assertNoError(NOT_UNIQUE_CONSTRUCTOR);
+
+		'''
+			datatype Foo {
+				public Foo() {}
+				public Foo(int bar) {}
+			}
+		'''.parse.assertNoError(NOT_UNIQUE_CONSTRUCTOR);
+
+		val rawFile = '''
+			datatype Foo {
+				public Foo() {}
+				Foo() {}
+				public Foo(int bar) {}
+				Foo(int bar) {}
+			}
+		''';
+
+		val parsedFile = rawFile.parse;
+		parsedFile.assertError(TU_CONSTRUCTOR, NOT_UNIQUE_CONSTRUCTOR, rawFile.indexOfNth("Foo", 1), 3);
+		parsedFile.assertError(TU_CONSTRUCTOR, NOT_UNIQUE_CONSTRUCTOR, rawFile.indexOfNth("Foo", 2), 3);
+		parsedFile.assertError(TU_CONSTRUCTOR, NOT_UNIQUE_CONSTRUCTOR, rawFile.indexOfNth("Foo", 3), 3);
+		parsedFile.assertError(TU_CONSTRUCTOR, NOT_UNIQUE_CONSTRUCTOR, rawFile.indexOfNth("Foo", 4), 3);
+	}
+
+	@Test
+	def checkDataTypeOperationIsUnique() {
+		'''
+			datatype Foo {
+				void bar() {}
+			}
+		'''.parse.assertNoError(NOT_UNIQUE_OPERATION);
+
+		'''
+			datatype Foo {
+				void bar() {}
+				void baz() {}
+			}
+		'''.parse.assertNoError(NOT_UNIQUE_OPERATION);
+
+		'''
+			datatype Foo {
+				void bar() {}
+				void bar(int baz) {}
+				void bar(double baz) {}
+			}
+		'''.parse.assertNoError(NOT_UNIQUE_OPERATION);
+
+		val rawFile = '''
+			datatype Foo {
+				void bar() {}
+				int bar() { return 0; }
+				void bar(int baz) {}
+				void bar(int foo) {}
+			}
+		''';
+
+		val parsedFile = rawFile.parse;
+		parsedFile.assertError(TU_OPERATION, NOT_UNIQUE_OPERATION, rawFile.indexOfNth("bar", 0), 3);
+		parsedFile.assertError(TU_OPERATION, NOT_UNIQUE_OPERATION, rawFile.indexOfNth("bar", 1), 3);
+		parsedFile.assertError(TU_OPERATION, NOT_UNIQUE_OPERATION, rawFile.indexOfNth("bar", 2), 3);
+		parsedFile.assertError(TU_OPERATION, NOT_UNIQUE_OPERATION, rawFile.indexOfNth("bar", 3), 3);
+	}
 
 	@Test
 	def checkInitialStateIsUnique() {
