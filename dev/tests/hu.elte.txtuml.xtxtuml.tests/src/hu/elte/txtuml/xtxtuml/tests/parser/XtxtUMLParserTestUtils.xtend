@@ -11,7 +11,6 @@ import hu.elte.txtuml.xtxtuml.xtxtUML.TUClass
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUClassMember
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUClassOrStateMember
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUClassPropertyAccessExpression
-import hu.elte.txtuml.xtxtuml.xtxtUML.TUCollectionModifiers
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUCollectionType
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUComposition
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUConnector

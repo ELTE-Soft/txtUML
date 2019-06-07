@@ -93,7 +93,7 @@ TUCollectionType :
 ;
 
 TUCollectionDeclarationPrefix :
-   multiplicity=TUMultiplicity ordered?='ordered'? unique?='unique'? type=JvmTypeReference
+    multiplicity=TUMultiplicity ordered?='ordered'? unique?='unique'? type=JvmTypeReference
 ;
 
 // Inner element level

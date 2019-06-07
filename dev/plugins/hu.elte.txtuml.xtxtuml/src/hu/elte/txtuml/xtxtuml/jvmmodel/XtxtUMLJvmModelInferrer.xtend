@@ -304,12 +304,12 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 				
 				superTypes += determineCollectionSuperType(modList, collection.type, subType)
 			} else {
-				val tp = TypesFactory::eINSTANCE.createJvmTypeParameter()
-    			tp.name = "T"
-    			typeParameters += tp
-    			val subType = typeRef(collection.inferredType as JvmGenericType, tp.typeRef)
+				val typeParameter = TypesFactory::eINSTANCE.createJvmTypeParameter()
+    			typeParameter.name = "T"
+    			typeParameters += typeParameter
+    			val subType = typeRef(collection.inferredType as JvmGenericType, typeParameter.typeRef)
     			
-    			superTypes += determineCollectionSuperType(modList, tp.typeRef, subType)
+    			superTypes += determineCollectionSuperType(modList, typeParameter.typeRef, subType)
 			}
 			
 			if (!collection.multiplicity.any) {
