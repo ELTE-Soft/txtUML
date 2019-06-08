@@ -1,0 +1,98 @@
+package car.x.model;
+
+class Gearbox {
+
+	initial Init;
+
+	// neutral
+	state N;
+
+	// move backwards
+	state R;
+
+	// slowly move forwards
+	state First;
+
+	// fast move forwards
+	state Second;
+
+	// At the beginning the Gearbox is in its neutral state
+	transition Initialize {
+		from Init;
+		to N;
+	}
+
+	// Shift to First
+	transition NtoF {
+		from N;
+		to First;
+		trigger ChangeGear;
+		effect {
+			Car c = Gearbox.this->(GearboxCar.c).one();		// get the Car associated with this Gearbox
+			send new ChangeSpeed(new SpeedType(1)) to c;
+		}
+		guard(trigger.geary.gear == 1);
+	}
+
+	// Shift to Second
+	transition FtoS {
+		from First;
+		to Second;
+		trigger ChangeGear;
+		effect {
+			Car c = Gearbox.this->(GearboxCar.c).one();
+			send new ChangeSpeed(new SpeedType(1)) to c;
+		}
+		guard(trigger.geary.gear == 2);
+	}
+
+	// Shift back to First
+	transition StoF {
+		from Second;
+		to First;
+		trigger ChangeGear;
+		effect {
+			Car c = Gearbox.this->(GearboxCar.c).one();
+			send new ChangeSpeed(new SpeedType(-1)) to c;
+		}
+		guard(trigger.geary.gear == 1);
+	}
+
+	// Shift back to Neutral
+	transition FtoN {
+		from First;
+		to N;
+		trigger ChangeGear;
+		effect {
+			Car c = Gearbox.this->(GearboxCar.c).one();
+			send new ChangeSpeed(new SpeedType(0)) to c;
+		}
+		guard(trigger.geary.gear == 0);
+	}
+
+	// Shift to Backwards
+	transition NtoR {
+		from N;
+		to R;
+		trigger ChangeGear;
+		effect {
+			Car c = Gearbox.this->(GearboxCar.c).one();
+			send new ChangeSpeed(new SpeedType(-1)) to c;
+		}
+		guard(trigger.geary.gear == -1);
+	}
+
+	// Shift to Neutral from Backwards
+	transition RtoN {
+		from R;
+		to N;
+		trigger ChangeGear;
+		effect {
+			Car c = Gearbox.this->(GearboxCar.c).one();
+			send new ChangeSpeed(new SpeedType(0)) to c;
+		}
+		guard(trigger.geary.gear == 0);
+	}
+
+}
+
