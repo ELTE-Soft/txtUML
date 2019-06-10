@@ -160,10 +160,10 @@ visualizer.visualizers.SMVisualizer.prototype._postvisualize = function () {
 	// scale SM region to fit embeded elements
 	this._container.fitEmbeds({
 		'padding': {
-			top: 40,
-			right: 10,
-			bottom: 10,
-			left: 10
+			top: 50,
+			right: 50,
+			bottom: 50,
+			left: 50
 		}
 	});
 }
