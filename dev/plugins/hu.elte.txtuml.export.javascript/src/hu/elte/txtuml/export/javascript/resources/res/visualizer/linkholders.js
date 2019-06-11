@@ -135,8 +135,12 @@ visualizer.linkholders.TransitionLink = function (link) {
 	if (_.has(link, 'trigger') && link.trigger.length > 0) {
 		linkData.trigger = link.trigger;
 	}
-
-	this._link = new visualizer.shapes.Transition(linkData);
+	if(linkData.source.id == linkData.target.id){
+		this._link = new visualizer.shapes.TransitionReflexive(linkData);
+	}
+	else {
+		this._link = new visualizer.shapes.Transition(linkData);
+	}
 }
 //prototype chaining
 visualizer.linkholders.TransitionLink.prototype = Object.create(visualizer.linkholders.Link.prototype);

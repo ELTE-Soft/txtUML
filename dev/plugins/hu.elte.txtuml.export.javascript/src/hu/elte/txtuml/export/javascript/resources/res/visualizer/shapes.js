@@ -145,6 +145,36 @@ visualizer.shapes.Transition = joint.shapes.uml.Transition.extend({
 		}
 	});
 
+visualizer.shapes.TransitionReflexive = joint.shapes.uml.Transition.extend({
+		'defaults': joint.util.deepSupplement({
+
+			'type': 'visualizer.shapes.Transition',
+			'trigger': null
+
+		}, joint.shapes.uml.Transition.prototype.defaults),
+
+		'initialize': function (options) {
+			// if trigger is set then create a label for it
+			if (this.attributes.trigger) {
+				this.label(0, {
+					'position': {
+						'distance': 0.5,
+						'offset': 21
+					},
+					'attrs': {
+						'text': {
+							'font-family': visualizer.Fonts.links.getFamily(),
+							'font-size': visualizer.Fonts.links.getSize(),
+							'text': this.attributes.trigger
+						}
+					}
+				});
+			}
+
+			joint.shapes.uml.Transition.prototype.initialize.apply(this, options);
+		}
+});
+
 // A JointJS model for states extended with size estimation based on name attributes and operations.
 // Also supports later resizing
 visualizer.shapes.State = joint.shapes.uml.State.extend({
