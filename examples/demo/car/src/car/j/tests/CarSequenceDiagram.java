@@ -1,4 +1,4 @@
-package car.j.diagrams;
+package car.j.tests;
 
 import static hu.elte.txtuml.api.model.seqdiag.Sequence.assertState;
 import static hu.elte.txtuml.api.model.seqdiag.Sequence.fromActor;
