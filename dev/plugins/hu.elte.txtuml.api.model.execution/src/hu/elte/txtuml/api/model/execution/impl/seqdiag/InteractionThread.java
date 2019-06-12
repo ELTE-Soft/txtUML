@@ -15,6 +15,7 @@ import hu.elte.txtuml.api.model.API;
 import hu.elte.txtuml.api.model.ModelClass;
 import hu.elte.txtuml.api.model.Signal;
 import hu.elte.txtuml.api.model.execution.impl.base.AbstractModelExecutor;
+import hu.elte.txtuml.api.model.execution.seqdiag.error.NotBoundError;
 import hu.elte.txtuml.api.model.execution.seqdiag.error.PatternNotMetError;
 import hu.elte.txtuml.api.model.impl.InteractionRuntime;
 import hu.elte.txtuml.api.model.impl.SeqDiagThread;
@@ -294,11 +295,17 @@ class InteractionThread extends AbstractModelExecutor.OwnedThread<DefaultSeqDiag
 
 	@Override
 	public <T extends ModelClass, U extends ModelClass> void messageFromActor(Signal signal, Lifeline<U> target) {
-		// only binded participants!
-		API.send(signal, ((MessageParticipant<U>) target).getParticipant().get());
+		MessageParticipant<U> participant = (MessageParticipant<U>) target;
 
-		Message<T, U> message = Message.fromActor(signal, target);
-		setExpected(message);
+		if (!participant.getParticipant().isPresent()) {
+			getExecutor().addError(new NotBoundError());
+			throw new Kill();
+		} else {
+			API.send(signal, ((MessageParticipant<U>) target).getParticipant().get());
+			Message<T, U> message = Message.fromActor(signal, target);
+			setExpected(message);
+		}
+
 	}
 
 	private <T extends ModelClass, U extends ModelClass> void setExpected(Message<T, U> message) {

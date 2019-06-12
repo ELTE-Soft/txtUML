@@ -51,12 +51,12 @@ public abstract class Sequence {
 	 * erroneous sequence diagram descriptions, this action may comprise the
 	 * processing of multiple signals out of which the given is the last.
 	 */
-	public static <T extends ModelClass, U extends ModelClass> void send(Lifeline<T> sender, Signal signal,
+	public static <T extends ModelClass, U extends ModelClass> void assertSend(Lifeline<T> sender, Signal signal,
 			Lifeline<U> target) {
 		InteractionRuntime.current().message(sender, signal, target);
 	}
 
-	/**
+	/**í
 	 * The given operands are executed in an arbitrary order, their execution
 	 * may even overlap. However, it is still insured that during the execution
 	 * of the sequence diagram, only one of the operands is running at any given

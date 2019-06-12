@@ -13,5 +13,5 @@ public class PatternNotMetError<T extends ModelClass, U extends ModelClass> exte
 	public PatternNotMetError(Message<T, U> message) {
 		super(message, "Message has not been sent: ", ErrorLevel.ERROR);
 	}
-
+	
 }

@@ -13,25 +13,25 @@ public class SequenceParErr extends SequenceBase {
 	@Override
 	public void run() {
 		Sequence.par(() -> {
-			Sequence.send(a, new TestSig(), b);
+			Sequence.assertSend(a, new TestSig(), b);
 		}, () -> {
 
 		}, () -> {
-			Sequence.send(c, new TestSig(), b);
-			Sequence.send(c, new TestSig(), b);
+			Sequence.assertSend(c, new TestSig(), b);
+			Sequence.assertSend(c, new TestSig(), b);
 		}, () -> {
-			Sequence.send(b, new TestSig(), c);
+			Sequence.assertSend(b, new TestSig(), c);
 			Sequence.assertState(b, B.StateB.class);
 			Sequence.assertState(c, C.StateB.class);
-			Sequence.send(b, new TestSig(), a);
-			Sequence.send(c, new TestSig(), b);
+			Sequence.assertSend(b, new TestSig(), a);
+			Sequence.assertSend(c, new TestSig(), b);
 			Sequence.assertState(a, A.StateA.class);
 			Sequence.assertState(b, B.StateA.class);
 		}, () -> {
 			Sequence.fromActor(new TestSig(), a);
 			Sequence.assertState(a, A.StateB.class);
 		});
-		Sequence.send(c, new TestSig(), b);
+		Sequence.assertSend(c, new TestSig(), b);
 	}
 
 }

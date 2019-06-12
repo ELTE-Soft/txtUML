@@ -7,7 +7,8 @@ import org.junit.runners.Suite.SuiteClasses;
 import hu.elte.txtuml.api.model.impl.SequenceDiagramRelated;
 
 @RunWith(Suite.class)
-@SuiteClasses({ StrictSeqTests.class, LenientTests.class, StateAssertTests.class, FragmentsTests.class })
+@SuiteClasses({ StrictSeqTests.class, LenientTests.class, StateAssertTests.class, FragmentsTests.class,
+		OnBoundProxyTest.class })
 @SequenceDiagramRelated
 public class SequenceDiagramTests {
 
