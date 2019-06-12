@@ -34,14 +34,14 @@ class Car {
 			from Slow;
 			to Fast;
 			trigger ChangeSpeed;//Faster;
-			guard(trigger.speedy.speed == 1);
+			guard(trigger.speedType.speed == 1);
 		}
 		// When the Car gets a Slower signal, it will Slow down
 		transition SlowerSpeed {
 			from Fast;
 			to Slow;
 			trigger ChangeSpeed;//Slower;
-			guard(trigger.speedy.speed == -1);
+			guard(trigger.speedType.speed == -1);
 		}
 	}
 
@@ -50,7 +50,7 @@ class Car {
 		from Stopped;
 		to Forwards;
 		trigger ChangeSpeed;//Faster;
-		guard(trigger.speedy.speed == 1);
+		guard(trigger.speedType.speed == 1);
 	}
 
 	// The Car will Stop (Stopped state) if it receives a Stop signal
@@ -58,7 +58,7 @@ class Car {
 		from Forwards;
 		to Stopped;
 		trigger ChangeSpeed;//Stop;
-		guard(trigger.speedy.speed == 0);
+		guard(trigger.speedType.speed == 0);
 	}
 
 	// The Car will Stop (Stopped state) if it receives a Stop signal
@@ -66,7 +66,7 @@ class Car {
 		from Backwards;
 		to Stopped;
 		trigger ChangeSpeed;//Stop;
-		guard(trigger.speedy.speed == 0);
+		guard(trigger.speedType.speed == 0);
 	}
 
 	// The Car will go Backwards if it receives a Slower signal
@@ -74,7 +74,7 @@ class Car {
 		from Stopped;
 		to Backwards;
 		trigger ChangeSpeed;//Slower;
-		guard(trigger.speedy.speed == -1);
+		guard(trigger.speedType.speed == -1);
 	}
 
 }

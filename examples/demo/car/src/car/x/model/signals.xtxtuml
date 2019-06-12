@@ -10,7 +10,7 @@ datatype GearType {
 }
 
 signal ChangeGear {  // shift the gear
-	public GearType geary;	
+	public GearType gearType;	
 };
 
 datatype SpeedType {
@@ -24,6 +24,6 @@ datatype SpeedType {
 }
 
 signal ChangeSpeed {
-	public SpeedType speedy;
+	public SpeedType speedType;
 }
 

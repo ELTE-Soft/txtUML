@@ -30,17 +30,14 @@ execution Tester {
 	during {
 
 		for (int i = 0; i < 3; i++) {
-			log "";
 			// Shift up
 			send new ChangeGear(new GearType(i)) to g;
 		}	
 
 		for (int i = 2; i >= -1; i--) {
-			log "";
 			// Shift down
 			send new ChangeGear(new GearType(i)) to g;
 		}
-		log "";
 		send new ChangeGear(new GearType(0)) to g;
 
 	}

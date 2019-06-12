@@ -31,7 +31,7 @@ class Gearbox {
 			Car c = Gearbox.this->(GearboxCar.c).one();		// get the Car associated with this Gearbox
 			send new ChangeSpeed(new SpeedType(1)) to c;
 		}
-		guard(trigger.geary.gear == 1);
+		guard(trigger.gearType.gear == 1);
 	}
 
 	// Shift to Second
@@ -43,7 +43,7 @@ class Gearbox {
 			Car c = Gearbox.this->(GearboxCar.c).one();
 			send new ChangeSpeed(new SpeedType(1)) to c;
 		}
-		guard(trigger.geary.gear == 2);
+		guard(trigger.gearType.gear == 2);
 	}
 
 	// Shift back to First
@@ -55,7 +55,7 @@ class Gearbox {
 			Car c = Gearbox.this->(GearboxCar.c).one();
 			send new ChangeSpeed(new SpeedType(-1)) to c;
 		}
-		guard(trigger.geary.gear == 1);
+		guard(trigger.gearType.gear == 1);
 	}
 
 	// Shift back to Neutral
@@ -67,7 +67,7 @@ class Gearbox {
 			Car c = Gearbox.this->(GearboxCar.c).one();
 			send new ChangeSpeed(new SpeedType(0)) to c;
 		}
-		guard(trigger.geary.gear == 0);
+		guard(trigger.gearType.gear == 0);
 	}
 
 	// Shift to Backwards
@@ -79,7 +79,7 @@ class Gearbox {
 			Car c = Gearbox.this->(GearboxCar.c).one();
 			send new ChangeSpeed(new SpeedType(-1)) to c;
 		}
-		guard(trigger.geary.gear == -1);
+		guard(trigger.gearType.gear == -1);
 	}
 
 	// Shift to Neutral from Backwards
@@ -91,7 +91,7 @@ class Gearbox {
 			Car c = Gearbox.this->(GearboxCar.c).one();
 			send new ChangeSpeed(new SpeedType(0)) to c;
 		}
-		guard(trigger.geary.gear == 0);
+		guard(trigger.gearType.gear == 0);
 	}
 
 }
