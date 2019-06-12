@@ -2,13 +2,23 @@ package hu.elte.txtuml.seqdiag.export.plantuml.exporters.fragments;
 
 import java.util.List;
 
+import org.eclipse.jdt.core.ICompilationUnit;
+import org.eclipse.jdt.core.IJavaElement;
+import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTNode;
+import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.LambdaExpression;
 import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.eclipse.jdt.core.dom.Expression;
+import org.eclipse.jdt.core.dom.IBinding;
+import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.ClassInstanceCreation;
+import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.BodyDeclaration;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
+import org.eclipse.jdt.core.dom.SimpleName;
+import org.eclipse.jdt.core.dom.QualifiedName;
+import org.eclipse.jdt.core.dom.AbstractTypeDeclaration;
 
 import hu.elte.txtuml.seqdiag.export.plantuml.exporters.ExporterUtils;
 import hu.elte.txtuml.seqdiag.export.plantuml.generator.PlantUmlCompiler;
@@ -58,9 +68,62 @@ public class ParFragmentExporter extends CombinedFragmentExporter<MethodInvocati
 					}
 				}
 				break;
-			}	
+			case ASTNode.SIMPLE_NAME:
+				SimpleName simpleName = ((SimpleName)(interaction));
+				AbstractTypeDeclaration declarationSimpleName = getTypeDeclaration(simpleName.resolveTypeBinding());
+				if (declarationSimpleName!=null) {
+					List<BodyDeclaration> bodyDeclarationsInSimpleName = declarationSimpleName.bodyDeclarations();
+					for (BodyDeclaration bodyDecl : bodyDeclarationsInSimpleName){
+						if (bodyDecl instanceof MethodDeclaration){
+							if (((MethodDeclaration)(bodyDecl)).getName().toString().equals("run")){
+								((MethodDeclaration)(bodyDecl)).getBody().accept(compiler);
+							}
+						}
+					}
+				}
+				break;
+			case ASTNode.QUALIFIED_NAME:
+				QualifiedName qualifiedName = ((QualifiedName)(interaction));
+				AbstractTypeDeclaration declarationQualifiedName = getTypeDeclaration(qualifiedName.resolveTypeBinding());
+				if (declarationQualifiedName!=null){
+					List<BodyDeclaration> bodyDeclarationsInQualifiedName = declarationQualifiedName.bodyDeclarations();
+					for (BodyDeclaration bodyDecl : bodyDeclarationsInQualifiedName){
+						if (bodyDecl instanceof MethodDeclaration){
+							if (((MethodDeclaration)(bodyDecl)).getName().toString().equals("run")){
+								((MethodDeclaration)(bodyDecl)).getBody().accept(compiler);
+							}
+						}
+					}
+				}
+				break;
+			}
 		}
 		return false;
 	}
-
+	
+	private static AbstractTypeDeclaration getTypeDeclaration(ITypeBinding binding) {
+		try {
+			CompilationUnit cu = getCompilationUnit(binding);
+			AbstractTypeDeclaration declaration = (AbstractTypeDeclaration) cu.findDeclaringNode(binding.getKey());
+			return declaration;
+		} catch (NullPointerException ex) {
+			return null;
+		}
+	}
+	
+	private static CompilationUnit getCompilationUnit(IBinding binding) {
+		try {
+			ICompilationUnit unit = (ICompilationUnit) binding.getJavaElement()
+					.getAncestor(IJavaElement.COMPILATION_UNIT);
+			ASTParser parser = ASTParser.newParser(AST.JLS8);
+			parser.setKind(ASTParser.K_COMPILATION_UNIT);
+			parser.setSource(unit);
+			parser.setResolveBindings(true);
+			CompilationUnit cu = (CompilationUnit) parser.createAST(null);
+			return cu;
+		} catch (Exception ex) {
+			return null;
+		}
+	}
+	
 }
