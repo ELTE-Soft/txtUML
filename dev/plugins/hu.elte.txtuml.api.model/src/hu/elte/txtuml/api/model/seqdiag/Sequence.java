@@ -31,7 +31,7 @@ public abstract class Sequence {
 	 * erroneous sequence diagram descriptions, this action may comprise the
 	 * processing of multiple signals out of which the given is the last.
 	 */
-	public static void fromActor(Signal signal, ModelClass target) {
+	public static <T extends ModelClass> void fromActor(Signal signal, Lifeline<T> target) {
 		InteractionRuntime.current().messageFromActor(signal, target);
 	}
 
@@ -51,7 +51,8 @@ public abstract class Sequence {
 	 * erroneous sequence diagram descriptions, this action may comprise the
 	 * processing of multiple signals out of which the given is the last.
 	 */
-	public static void send(ModelClass sender, Signal signal, ModelClass target) {
+	public static <T extends ModelClass, U extends ModelClass> void send(Lifeline<T> sender, Signal signal,
+			Lifeline<U> target) {
 		InteractionRuntime.current().message(sender, signal, target);
 	}
 
@@ -74,8 +75,32 @@ public abstract class Sequence {
 	 * Note that the state of the model <b>does not</b> change as a result of
 	 * calling this method.
 	 */
-	public static void assertState(ModelClass instance, Class<?> state) {
+	public static <T extends ModelClass> void assertState(Lifeline<T> instance, Class<?> state) {
 		InteractionRuntime.current().assertState(instance, state);
+	}
+
+	/**
+	 * Creates a lifeline which wraps a {@code ModelClass} instance that sends
+	 * and/or receives signals during model execution.
+	 * <p>
+	 * Note that only {@code Lifeline} and {@code Proxy} fields appear on
+	 * generated sequence diagrams.
+	 */
+	public static <T extends ModelClass> Lifeline<T> createLifeline(T instance) {
+		return MessageParticipant.create(instance);
+	}
+
+	/**
+	 * Creates a proxy object which can be used as a dummy lifeline. Using
+	 * proxies might be necessary when {@code ModelClass} objects are created
+	 * inside the model, and references cannot be obtained from sequence diagram
+	 * code.
+	 * <p>
+	 * Note that only {@code Lifeline} and {@code Proxy} fields appear on
+	 * generated sequence diagrams.
+	 */
+	public static <T extends ModelClass> Proxy<T> createProxy(Class<T> modelClass) {
+		return InteractionRuntime.current().createProxy(modelClass);
 	}
 
 	/**

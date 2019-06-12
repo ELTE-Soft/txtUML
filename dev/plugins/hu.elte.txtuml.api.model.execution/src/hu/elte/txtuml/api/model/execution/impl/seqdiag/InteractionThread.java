@@ -20,6 +20,9 @@ import hu.elte.txtuml.api.model.impl.InteractionRuntime;
 import hu.elte.txtuml.api.model.impl.SeqDiagThread;
 import hu.elte.txtuml.api.model.impl.SequenceDiagramRelated;
 import hu.elte.txtuml.api.model.seqdiag.Interaction;
+import hu.elte.txtuml.api.model.seqdiag.Lifeline;
+import hu.elte.txtuml.api.model.seqdiag.MessageParticipant;
+import hu.elte.txtuml.api.model.seqdiag.Proxy;
 import hu.elte.txtuml.utils.Logger;
 
 /**
@@ -32,6 +35,7 @@ import hu.elte.txtuml.utils.Logger;
  * inner invariants described at {@link #currentMessage}.
  */
 @SequenceDiagramRelated
+@SuppressWarnings("rawtypes")
 class InteractionThread extends AbstractModelExecutor.OwnedThread<DefaultSeqDiagExecutor>
 		implements InteractionRuntime, SeqDiagThread {
 
@@ -282,20 +286,22 @@ class InteractionThread extends AbstractModelExecutor.OwnedThread<DefaultSeqDiag
 	}
 
 	@Override
-	public void message(ModelClass sender, Signal signal, ModelClass target) {
-		Message message = Message.fromObject(sender, signal, target);
+	public <T extends ModelClass, U extends ModelClass> void message(Lifeline<T> sender, Signal signal,
+			Lifeline<U> target) {
+		Message<T, U> message = Message.fromObject(sender, signal, target);
 		setExpected(message);
 	}
 
 	@Override
-	public void messageFromActor(Signal signal, ModelClass target) {
-		API.send(signal, target);
+	public <T extends ModelClass, U extends ModelClass> void messageFromActor(Signal signal, Lifeline<U> target) {
+		// only binded participants!
+		API.send(signal, ((MessageParticipant<U>) target).getParticipant().get());
 
-		Message message = Message.fromActor(signal, target);
+		Message<T, U> message = Message.fromActor(signal, target);
 		setExpected(message);
 	}
 
-	private void setExpected(Message message) {
+	private <T extends ModelClass, U extends ModelClass> void setExpected(Message<T, U> message) {
 		getExecutor().removeTerminationBlocker(terminationBlocker);
 		// It is important that the termination blocker here is released after
 		// sending the signal in case of a message from actor. Otherwise the
@@ -309,7 +315,7 @@ class InteractionThread extends AbstractModelExecutor.OwnedThread<DefaultSeqDiag
 		Result r = takeUninterruptibly(result);
 
 		if (r == Result.WAKEN_BY_KILL) {
-			getExecutor().addError(new PatternNotMetError(message));
+			getExecutor().addError(new PatternNotMetError<>(message));
 			throw new Kill();
 		}
 		// Here: r == Result.MESSAGE_CONSUMED
@@ -324,7 +330,7 @@ class InteractionThread extends AbstractModelExecutor.OwnedThread<DefaultSeqDiag
 	 * <p>
 	 * Called from the model executor thread.
 	 */
-	public boolean testActual(Message actual) {
+	public <T extends ModelClass, U extends ModelClass> boolean testActual(Message<T, U> actual) {
 		Optional<Message> expected = takeUninterruptibly(currentMessage);
 
 		if (expected.isPresent()) {
@@ -334,7 +340,9 @@ class InteractionThread extends AbstractModelExecutor.OwnedThread<DefaultSeqDiag
 		}
 	}
 
-	private boolean testActualWhenMessageIsPresent(Optional<Message> expected, Message actual) {
+	@SuppressWarnings("unchecked")
+	private <T extends ModelClass, U extends ModelClass> boolean testActualWhenMessageIsPresent(
+			Optional<Message> expected, Message<T, U> actual) {
 		boolean answer = actual.matches(expected.get());
 		if (answer) {
 			/*
@@ -368,7 +376,8 @@ class InteractionThread extends AbstractModelExecutor.OwnedThread<DefaultSeqDiag
 		return answer;
 	}
 
-	private boolean testActualWhenMessageIsNotPresent(Message actual) {
+	private <T extends ModelClass, U extends ModelClass> boolean testActualWhenMessageIsNotPresent(
+			Message<T, U> actual) {
 		List<InteractionThread> copy = null;
 		// Copying children to release lock early.
 		synchronized (children) {
@@ -493,8 +502,13 @@ class InteractionThread extends AbstractModelExecutor.OwnedThread<DefaultSeqDiag
 	}
 
 	@Override
-	public void assertState(ModelClass instance, Class<?> state) {
+	public <T extends ModelClass> void assertState(Lifeline<T> instance, Class<?> state) {
 		runtime.getModelThread().assertState(instance, state);
+	}
+
+	@Override
+	public <T extends ModelClass> Proxy<T> createProxy(Class<T> modelClass) {
+		return MessageParticipant.createUnbound(modelClass);
 	}
 
 }

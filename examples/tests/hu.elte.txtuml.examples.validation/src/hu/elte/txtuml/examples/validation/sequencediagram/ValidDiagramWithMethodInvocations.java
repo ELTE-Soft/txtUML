@@ -12,15 +12,17 @@ import hu.elte.txtuml.examples.validation.sequencediagram.testmodel.TestSig;
 public class ValidDiagramWithMethodInvocations extends SequenceDiagram {
 
 	@Position(10)
-	private A lifeline1;
+	private Lifeline<A> lifeline1;
 
-	public B lifeline2;
+	public Lifeline<B> lifeline2;
 
 	@Override
 	public void initialize() {
-		lifeline1 = new A();
-		lifeline2 = new B();
-		Action.link(AToB.ASide.class, lifeline1, AToB.BSide.class, lifeline2);
+		A a = new A();
+		B b = new B();
+		Action.link(AToB.ASide.class, a, AToB.BSide.class, b);
+		lifeline1 = Sequence.createLifeline(a);
+		lifeline2 = Sequence.createLifeline(b);
 	}
 
 	@Override

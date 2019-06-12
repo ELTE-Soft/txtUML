@@ -3,6 +3,7 @@ package machine1.j.tests;
 import hu.elte.txtuml.api.model.Action;
 import hu.elte.txtuml.api.model.seqdiag.ExecMode;
 import hu.elte.txtuml.api.model.seqdiag.ExecutionMode;
+import hu.elte.txtuml.api.model.seqdiag.Lifeline;
 import hu.elte.txtuml.api.model.seqdiag.Sequence;
 import hu.elte.txtuml.api.model.seqdiag.SequenceDiagram;
 import machine1.j.model.Machine;
@@ -13,15 +14,19 @@ import machine1.j.model.signals.DoYourWork;
 
 public class Machine1SequenceDiagram extends SequenceDiagram {
 
-	Machine m;
-	User u1;
-	User u2;
+	Lifeline<Machine> machine;
+	Lifeline<User> user1;
+	Lifeline<User> user2;
 
 	@Override
 	public void initialize() {
-		m = Action.create(Machine.class);
-		u1 = Action.create(User.class);
-		u2 = Action.create(User.class);
+		Machine m = Action.create(Machine.class);
+		User u1 = Action.create(User.class);
+		User u2 = Action.create(User.class);
+
+		machine = Sequence.createLifeline(m);
+		user1 = Sequence.createLifeline(u1);
+		user2 = Sequence.createLifeline(u2);
 
 		Action.link(Usage.usedMachine.class, m, Usage.userOfMachine.class, u1);
 		Action.link(Usage.usedMachine.class, m, Usage.userOfMachine.class, u2);
@@ -35,10 +40,11 @@ public class Machine1SequenceDiagram extends SequenceDiagram {
 	@Override
 	@ExecutionMode(ExecMode.STRICT)
 	public void run() {
-		Sequence.fromActor(new DoYourWork(), u1);
-		for (int i = 0; i < 3; ++i) {
-			Sequence.send(u1, new ButtonPress(), m);
-		}
+		Sequence.fromActor(new DoYourWork(), user1);
+
+		Sequence.send(user1, new ButtonPress(), machine);
+		Sequence.send(user1, new ButtonPress(), machine);
+		Sequence.send(user1, new ButtonPress(), machine);
 	}
 
 }
