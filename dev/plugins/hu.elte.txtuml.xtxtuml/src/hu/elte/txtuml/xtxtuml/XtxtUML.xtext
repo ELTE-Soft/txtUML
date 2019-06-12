@@ -92,9 +92,6 @@ TUCollectionType :
 	type=JvmTypeReference? 'as' name=ValidID ';'
 ;
 
-TUCollectionDeclarationPrefix :
-    multiplicity=TUMultiplicity ordered?='ordered'? unique?='unique'? type=JvmTypeReference
-;
 
 // Inner element level
 
@@ -152,7 +149,6 @@ TUConstructor :
 
 TUAttributeOrOperationDeclarationPrefix
 	: modifiers=TUModifiers type=JvmTypeReference
-	| TUCollectionDeclarationPrefix
 ;
 
 TUState :
@@ -236,7 +232,7 @@ TUPortMember :
 
 TUAssociationEnd :
 	visibility=TUVisibility? notNavigable?='hidden'?
-		multiplicity=TUMultiplicity? container?='container'?
+		modifiers=TUCollectionModifiers multiplicity=TUMultiplicity? container?='container'?
 		endClass=[TUClass|QualifiedName] name=ValidID ';'
 ;
 

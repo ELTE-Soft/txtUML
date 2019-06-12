@@ -62,6 +62,19 @@ class XtxtUMLAssociationValidator extends XtxtUMLClassValidator {
 	}
 	
 	@Check
+	def checkOrderingUniqnessAtMaxOneMultiplicity(TUAssociationEnd assocEnd) {
+		val it = assocEnd.multiplicity;
+		if ( (assocEnd.modifiers.ordered || assocEnd.modifiers.unique) 
+			&& (lower == 1 && !upperSet ||upper == 1)
+		) {
+			error("The multiplicity of association end " + assocEnd.name + " is invalid – "
+				+ "in case of ordered or unique collection upper multiplicity must be at least 2",
+				assocEnd, TU_ASSOCIATION_END__MULTIPLICITY, ORDERED_UNIQUE_ONE_MULTIPLICITY);
+		}
+	}
+	
+	
+	@Check
 	def checkEmptyMultiplicity(TUMultiplicity multipl) {
 		if (multipl != null && !multipl.any) { // explicit, not *
 			val exactlyZero = multipl.lower == 0 && (!multipl.upperSet || !multipl.isUpperInf && multipl.upper == 0);

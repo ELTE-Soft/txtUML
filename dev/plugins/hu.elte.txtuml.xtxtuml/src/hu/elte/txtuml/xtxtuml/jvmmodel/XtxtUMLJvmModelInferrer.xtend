@@ -36,7 +36,6 @@ import hu.elte.txtuml.xtxtuml.xtxtUML.TUAssociationEnd
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAttribute
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAttributeOrOperationDeclarationPrefix
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUClass
-import hu.elte.txtuml.xtxtuml.xtxtUML.TUCollectionDeclarationPrefix
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUCollectionType
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUComposition
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUConnector
@@ -338,7 +337,7 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 			documentation = assocEnd.documentation
 			visibility = JvmVisibility.PUBLIC
 
-			superTypes += assocEnd.calculateApiSuperType
+			superTypes += assocEnd.calculateApiSuperType(acceptor, isPreIndexingPhase)
 		]
 	}
 
@@ -491,23 +490,20 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 	}
 
 	def dispatch private toJvmMember(TUAttribute attr) {
-		if(!(attr.prefix instanceof TUCollectionDeclarationPrefix)) {
-			attr.toField(attr.name, attr.prefix.type) [
-				documentation = attr.documentation
-	
-				val modifiers = attr.prefix.modifiers
-				static = modifiers.static
-				visibility = modifiers.visibility.toJvmVisibility
-	
-				switch (modifiers.externality) {
-					case EXTERNAL: annotations += External.annotationRef
-					default: {}
-				}
-	
-				initializer = attr.initExpression
-			]
-			
-		}
+		attr.toField(attr.name, attr.prefix.type) [
+			documentation = attr.documentation
+
+			val modifiers = attr.prefix.modifiers
+			static = modifiers.static
+			visibility = modifiers.visibility.toJvmVisibility
+
+			switch (modifiers.externality) {
+				case EXTERNAL: annotations += External.annotationRef
+				default: {}
+			}
+
+			initializer = attr.initExpression
+		]
 	}
 
 	def dispatch private toJvmMember(TUEnumerationLiteral literal) {
@@ -654,7 +650,7 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 		]
 	}
 
-	def private calculateApiSuperType(TUAssociationEnd it) {
+	def private calculateApiSuperType(TUAssociationEnd it, IJvmDeclaredTypeAcceptor acceptor, boolean isPreIndexingPhase) {
 		val endClassTypeParam = endClass.inferredTypeRef
 		if (isContainer) {
 			// Do not try to simplify the code here, as it breaks standalone builds.
@@ -664,16 +660,18 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 				return ContainerEnd.typeRef(endClassTypeParam)
 			}
 		}
-
 		val optionalHidden = if(notNavigable) "Hidden" else ""
 		val apiBoundTypeName = if (multiplicity == null) // omitted
 				"One"
 			else if (multiplicity.any) // *
 				"Any"
 			else if (!multiplicity.upperSet) { // <lower> (exact)
-				if (multiplicity.lower == 1)
+				if (multiplicity.lower == 1)	
 					"One"
 				// TODO support custom multiplicities
+				else
+					//String.valueOf(multiplicity.lower)
+					""
 			} else { // <lower> .. <upper>
 				if (multiplicity.lower == 0 && multiplicity.upper == 1)
 					"ZeroToOne"
@@ -684,10 +682,15 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 				else if (multiplicity.lower == 1 && multiplicity.upperInf)
 					"OneToAny"
 				// TODO support custom multiplicities
+				else
+					//String.valueOf(multiplicity.lower) + "To" + String.valueOf(multiplicity.upper)
+					""
 			}
-
+		val optionalOrdered = if(modifiers.ordered) "Ordered" else ""
+		val optionalUnique = if(modifiers.unique) "Unique" else ""
+		val validModifiers = if (apiBoundTypeName.equals("Any") || apiBoundTypeName.equals("OneToAny")) {optionalOrdered + optionalUnique} else ""
 		val endClassImpl = "hu.elte.txtuml.api.model.Association$" + optionalHidden + "End"
-		val endCollectionImpl = "hu.elte.txtuml.api.model." + apiBoundTypeName
+		val endCollectionImpl = "hu.elte.txtuml.api.model." + validModifiers + apiBoundTypeName
 		return endClassImpl.typeRef(endCollectionImpl.typeRef(endClassTypeParam))
 	}
 
