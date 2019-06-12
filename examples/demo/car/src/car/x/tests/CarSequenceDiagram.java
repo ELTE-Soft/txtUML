@@ -1,20 +1,21 @@
-package car.j.tests;
+package car.x.tests;
 
 import static hu.elte.txtuml.api.model.seqdiag.Sequence.assertState;
 import static hu.elte.txtuml.api.model.seqdiag.Sequence.fromActor;
 import static hu.elte.txtuml.api.model.seqdiag.Sequence.send;
 
-import car.j.model.Car;
-import car.j.model.Gearbox;
-import car.j.model.associations.GearboxCar;
-import car.j.model.datatypes.GearType;
-import car.j.model.datatypes.SpeedType;
-import car.j.model.signals.ChangeGear;
-import car.j.model.signals.ChangeSpeed;
+import hu.elte.txtuml.api.model.seqdiag.Lifeline;
+
+import car.x.model.Car;
+import car.x.model.ChangeGear;
+import car.x.model.ChangeSpeed;
+import car.x.model.GearType;
+import car.x.model.Gearbox;
+import car.x.model.GearboxCar;
+import car.x.model.SpeedType;
 import hu.elte.txtuml.api.model.Action;
 import hu.elte.txtuml.api.model.seqdiag.ExecMode;
 import hu.elte.txtuml.api.model.seqdiag.ExecutionMode;
-import hu.elte.txtuml.api.model.seqdiag.Lifeline;
 import hu.elte.txtuml.api.model.seqdiag.Position;
 import hu.elte.txtuml.api.model.seqdiag.Sequence;
 import hu.elte.txtuml.api.model.seqdiag.SequenceDiagram;

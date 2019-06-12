@@ -1,10 +1,10 @@
-package car.j.exec;
+package car.j;
 
-import car.x.model.Car;
-import car.x.model.ChangeGear;
-import car.x.model.GearType;
-import car.x.model.Gearbox;
-import car.x.model.GearboxCar;
+import car.j.model.Car;
+import car.j.model.Gearbox;
+import car.j.model.associations.GearboxCar;
+import car.j.model.datatypes.GearType;
+import car.j.model.signals.ChangeGear;
 import hu.elte.txtuml.api.model.API;
 import hu.elte.txtuml.api.model.Action;
 import hu.elte.txtuml.api.model.execution.Execution;

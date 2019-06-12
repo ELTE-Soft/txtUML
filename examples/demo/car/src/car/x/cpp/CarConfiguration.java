@@ -1,7 +1,7 @@
-package car.j.cpp;
+package car.x.cpp;
 
-import car.j.model.Car;
-import car.j.model.Gearbox;
+import car.x.model.Car;
+import car.x.model.Gearbox;
 import hu.elte.txtuml.api.deployment.Configuration;
 import hu.elte.txtuml.api.deployment.Group;
 import hu.elte.txtuml.api.deployment.Runtime;

@@ -1,16 +1,17 @@
 package car.x.model;
 
 datatype GearType {
-	
+
 	int gear;
-	
+
 	public GearType(int x) {
 		gear = x;
 	}
+
 }
 
-signal ChangeGear {  // shift the gear
-	public GearType gearType;	
+signal ChangeGear { // shift the gear
+	public GearType gearType;
 };
 
 datatype SpeedType {

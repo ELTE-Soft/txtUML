@@ -1,11 +1,11 @@
-package car.j.diagrams;
+package car.x.diagrams;
 
-import car.j.model.Gearbox;
-import car.j.model.Gearbox.First;
-import car.j.model.Gearbox.Init;
-import car.j.model.Gearbox.N;
-import car.j.model.Gearbox.R;
-import car.j.model.Gearbox.Second;
+import car.x.model.Gearbox;
+import car.x.model.Gearbox.First;
+import car.x.model.Gearbox.Init;
+import car.x.model.Gearbox.N;
+import car.x.model.Gearbox.R;
+import car.x.model.Gearbox.Second;
 import hu.elte.txtuml.api.layout.Below;
 import hu.elte.txtuml.api.layout.Row;
 import hu.elte.txtuml.api.layout.StateMachineDiagram;

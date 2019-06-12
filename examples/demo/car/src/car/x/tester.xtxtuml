@@ -1,4 +1,4 @@
-package car.x.exec;
+package car.x;
 
 import car.x.model.Car;
 import car.x.model.ChangeGear;
@@ -32,7 +32,7 @@ execution Tester {
 		for (int i = 0; i < 3; i++) {
 			// Shift up
 			send new ChangeGear(new GearType(i)) to g;
-		}	
+		}
 
 		for (int i = 2; i >= -1; i--) {
 			// Shift down

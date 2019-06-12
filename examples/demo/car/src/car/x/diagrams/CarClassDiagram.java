@@ -1,7 +1,7 @@
-package car.j.diagrams;
+package car.x.diagrams;
 
-import car.j.model.Car;
-import car.j.model.Gearbox;
+import car.x.model.Car;
+import car.x.model.Gearbox;
 import hu.elte.txtuml.api.layout.ClassDiagram;
 import hu.elte.txtuml.api.layout.Column;
 
