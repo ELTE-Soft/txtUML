@@ -45,5 +45,39 @@
          </stylesheet>
       </themeContribution>
    </extension>
+   
+   <extension
+         point="org.eclipse.debug.ui.launchShortcuts">     
+     <shortcut
+            class="hu.elte.txtuml.diagnostics.launching.ExecutionAsTxtUMLAppLaunchShortcut"
+            description="Launches the execution defined in the selected file as a txtUML Application"
+            id="hu.elte.txtuml.diagnostics.launching.ExecutionAsTxtUMLAppLaunchShortcut"
+            label="txtUML Application"
+            icon="icons/execution.gif"
+            modes="run,debug">
+         <contextualLaunch>
+            <enablement>
+               <with variable="selection">
+                  <count value="1"/>
+                  <iterate>
+                     <and>
+                     	<test property="org.eclipse.jdt.launching.hasMain"/>
+                        <adapt type="org.eclipse.core.resources.IResource">
+                           <and>
+                              <test property="org.eclipse.core.resources.name" value="*.java"/>
+                              <test property="org.eclipse.core.resources.projectNature" value="hu.elte.txtuml.project.txtumlprojectNature"/>
+                           </and>
+                        </adapt>
+                        <adapt type="org.eclipse.jdt.core.IJavaElement"/>      
+                     </and>
+                  </iterate>
+               </with>
+            </enablement>
+         </contextualLaunch>
+         <configurationType
+            id="hu.elte.txtuml.diagnostics.launchConfigurationTypeDefault">
+         </configurationType>
+     </shortcut>
+  </extension>
 
 </plugin>
