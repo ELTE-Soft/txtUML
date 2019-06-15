@@ -33,6 +33,7 @@ import hu.elte.txtuml.api.model.execution.LogLevel
 import hu.elte.txtuml.xtxtuml.common.XtxtUMLUtils
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAssociation
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAssociationEnd
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUAssociationEndCollection
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAttribute
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAttributeOrOperationDeclarationPrefix
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUClass
@@ -50,6 +51,7 @@ import hu.elte.txtuml.xtxtuml.xtxtUML.TUExecutionBlock
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUExecutionBlockType
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUInterface
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUModelDeclaration
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUMultiplicity
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUOperation
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUPort
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUPortMember
@@ -82,8 +84,6 @@ import org.eclipse.xtext.xbase.XBlockExpression
 import org.eclipse.xtext.xbase.jvmmodel.AbstractModelInferrer
 import org.eclipse.xtext.xbase.jvmmodel.IJvmDeclaredTypeAcceptor
 import org.eclipse.xtext.xbase.jvmmodel.IJvmModelAssociations
-import hu.elte.txtuml.xtxtuml.xtxtUML.TUAssociationEndCollection
-import hu.elte.txtuml.xtxtuml.xtxtUML.TUMultiplicity
 
 /**
  * Infers a JVM model equivalent from an XtxtUML resource. If not stated otherwise,
@@ -167,7 +167,7 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 		]
 
 		for (end : assoc.ends) {
-			if(determineCustomMultiplicity(end.collection.multiplicity) && !end.container){
+			if (determineCustomMultiplicity(end.collection.multiplicity) && !end.container) {
 				inferAssocoationEndCollection(end.collection, acceptor, isPreIndexingPhase, assoc.fullyQualifiedName.skipLast(1).toString)
 			}
 			register(end, acceptor, isPreIndexingPhase)		
@@ -351,7 +351,7 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 	}
 	
 	def void inferAssocoationEndCollection(TUAssociationEndCollection collection, IJvmDeclaredTypeAcceptor acceptor, boolean isPreIndexingPhase, String pkg) {
-		var name = (collection.eContainer as TUAssociationEnd).name + "CustomCollection" + collectionNum
+		val name = (collection.eContainer as TUAssociationEnd).name + "CustomCollection" + collectionNum
 		collectionNum = collectionNum + 1;
 		registeredCollections.put(collection.eContainer as TUAssociationEnd, collection)
 		// TODO: technically a duplicate of the infer function for TUCollectionType
@@ -360,9 +360,11 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 			packageName = pkg
 			
 			val modList = #[collection.modifiers.ordered, collection.modifiers.unique]
-			val subType = (collection.inferredType as JvmGenericType).typeRef
-				
-			superTypes += determineCollectionSuperType(modList, collection.endClass.inferredTypeRef, subType)
+			val typeParameter = TypesFactory::eINSTANCE.createJvmTypeParameter()
+    		typeParameter.name = "T"
+    		typeParameters += typeParameter
+			val subType = typeRef(collection.inferredType as JvmGenericType, typeParameter.typeRef)
+			superTypes += determineCollectionSuperType(modList, typeParameter.typeRef, subType)
 			
 			if (collection.multiplicity != null && !collection.multiplicity.any) {
 				annotations += annotationRef(Min) => [explicitValues += TypesFactory::eINSTANCE.createJvmIntAnnotationValue => [
@@ -700,7 +702,7 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 				return ContainerEnd.typeRef(endClassTypeParam)
 			}
 		}
-		var boolean customCollection = determineCustomMultiplicity(collection.multiplicity)
+		val boolean customCollection = determineCustomMultiplicity(collection.multiplicity)
 		val optionalHidden = if(notNavigable) "Hidden" else ""
 		val apiBoundTypeName = if (collection.multiplicity == null) // omitted
 				"One"
@@ -734,14 +736,14 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 		if(!customCollection) {
 			return endClassImpl.typeRef(endCollectionImpl.typeRef(endClassTypeParam))
 		} else {
-			return endClassImpl.typeRef(registeredCollections.get(it).inferredTypeRef)
+			return endClassImpl.typeRef(registeredCollections.get(it).inferredTypeRef(endClassTypeParam))
 		}
 	}
 
-	def private inferredTypeRef(EObject sourceElement) {
+	def private inferredTypeRef(EObject sourceElement, JvmTypeReference ... typeArgs) {
 		val type = sourceElement.inferredType
 		if (type instanceof JvmDeclaredType) {
-			return type.typeRef
+			return type.typeRef(typeArgs)
 		}
 	}
 

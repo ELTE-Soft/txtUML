@@ -257,6 +257,7 @@ class XtxtUMLFormatter extends XbaseFormatter {
 		regionFor.feature(TU_CONNECTIVE_END__NAME).prepend[oneSpace].append[noSpace];
 
 		format(collection.multiplicity, document);
+		format(collection.modifiers, document);
 	}
 
 	def dispatch void format(TUMultiplicity it, extension IFormattableDocument document) {
