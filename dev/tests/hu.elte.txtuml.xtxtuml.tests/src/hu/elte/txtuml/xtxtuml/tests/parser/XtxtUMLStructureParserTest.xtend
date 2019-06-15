@@ -346,17 +346,34 @@ class XtxtUMLStructureParserTest {
 				hidden 1..* TestClass intervalEnd;
 				5 TestClass exactEnd;
 			}
+			association TestAssociation3 {
+				1..6 TestClass intervalEnd;
+				ordered 2..5 TestClass exactEnd;
+			}
+			association TestAssociation4 {
+				unique 1..6 TestClass intervalEnd;
+				ordered unique * TestClass exactEnd;
+			}
+			
 		'''
 		.parse.
 		file("test.model", null, #[
 			[class_("TestClass", null, #[])],
 			[association("TestAssociation1", #[
-				[associationEnd(PACKAGE, false, null, false, "TestClass", "plainEnd")],
-				[associationEnd(PACKAGE, true, [any], false, "TestClass", "hiddenEnd")]
+				[associationEnd(PACKAGE, false, null, false, "TestClass", "plainEnd", false, false)],
+				[associationEnd(PACKAGE, true, [any], false, "TestClass", "hiddenEnd", false, false)]
 			])],
 			[association("TestAssociation2", #[
-				[associationEnd(PACKAGE, true, [interval(1, null)], false, "TestClass", "intervalEnd")],
-				[associationEnd(PACKAGE, false, [exact(5)], false, "TestClass", "exactEnd")]
+				[associationEnd(PACKAGE, true, [interval(1, null)], false, "TestClass", "intervalEnd", false, false)],
+				[associationEnd(PACKAGE, false, [exact(5)], false, "TestClass", "exactEnd", false, false)]
+			])],
+			[association("TestAssociation3", #[
+				[associationEnd(PACKAGE, false, [interval(1, 6)], false, "TestClass", "intervalEnd", false, false)],
+				[associationEnd(PACKAGE, false, [interval(2, 5)], false, "TestClass", "exactEnd", true, false)]
+			])],
+			[association("TestAssociation4", #[
+				[associationEnd(PACKAGE, false, [interval(1, 6)], false, "TestClass", "intervalEnd", false, true)],
+				[associationEnd(PACKAGE, false, [any], false, "TestClass", "exactEnd", true, true)]
 			])]
 		])
 	}
@@ -370,13 +387,21 @@ class XtxtUMLStructureParserTest {
 				hidden container TestClass containerEnd;
 				TestClass otherEnd;
 			}
+			composition TestComposition2 {
+				hidden container TestClass containerEnd;
+				ordered unique 1..6 TestClass otherEnd;
+			}
 		'''
 		.parse.
 		file("test.model", null, #[
 			[class_("TestClass", null,  #[])],
 			[composition("TestComposition", #[
-				[associationEnd(PACKAGE, true, null, true, "TestClass", "containerEnd")],
-				[associationEnd(PACKAGE, false, null, false, "TestClass", "otherEnd")]
+				[associationEnd(PACKAGE, true, null, true, "TestClass", "containerEnd", false, false)],
+				[associationEnd(PACKAGE, false, null, false, "TestClass", "otherEnd", false, false)]
+			])],
+			[composition("TestComposition2", #[
+				[associationEnd(PACKAGE, true, null, true, "TestClass", "containerEnd", false, false)],
+				[associationEnd(PACKAGE, false, [interval(1, 6)], false, "TestClass", "otherEnd", true, true)]
 			])]
 		])
 	}
@@ -480,12 +505,12 @@ class XtxtUMLStructureParserTest {
 				])]
 			])],
 			[composition("CA", #[
-				[associationEnd(PACKAGE, false, null, true, "C", "c")],
-				[associationEnd(PACKAGE, false, null, false, "A", "a")]
+				[associationEnd(PACKAGE, false, null, true, "C", "c", false, false)],
+				[associationEnd(PACKAGE, false, null, false, "A", "a", false, false)]
 			])],
 			[composition("CB", #[
-				[associationEnd(PACKAGE, false, null, true, "C", "c")],
-				[associationEnd(PACKAGE, false, null, false, "B", "b")]
+				[associationEnd(PACKAGE, false, null, true, "C", "c", false, false)],
+				[associationEnd(PACKAGE, false, null, false, "B", "b", false, false)]
 			])],
 			[connector("A_AB", #[
 				[connectorEnd("a", "AP1", "aap")],

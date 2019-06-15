@@ -802,28 +802,36 @@ class XtxtUMLStructureCompilerTest {
 				hidden 1..* A a1;
 				0..1 A a2;
 			}
+			association AA3 {
+				ordered unique 1..* A a1;
+				unique 2..6 A a2;
+			}
+			association AA4 {
+				ordered 6..* A a1;
+				2..6 A a2;
+			}
 		'''.assertCompilesTo('''
 			MULTIPLE FILES WERE GENERATED
-
+			
 			File 1 : /myProject/./src-gen/test/model/A.java
-
+			
 			package test.model;
-
+			
 			import hu.elte.txtuml.api.model.ModelClass;
-
+			
 			@SuppressWarnings("all")
 			public class A extends ModelClass {
 			}
-
+			
 			File 2 : /myProject/./src-gen/test/model/AA1.java
-
+			
 			package test.model;
-
+			
 			import hu.elte.txtuml.api.model.Any;
 			import hu.elte.txtuml.api.model.Association;
 			import hu.elte.txtuml.api.model.One;
 			import test.model.A;
-
+			
 			@SuppressWarnings("all")
 			public class AA1 extends Association {
 			  public class a1 extends Association.End<One<A>> {
@@ -832,16 +840,16 @@ class XtxtUMLStructureCompilerTest {
 			  public class a2 extends Association.HiddenEnd<Any<A>> {
 			  }
 			}
-
+			
 			File 3 : /myProject/./src-gen/test/model/AA2.java
-
+			
 			package test.model;
-
+			
 			import hu.elte.txtuml.api.model.Association;
 			import hu.elte.txtuml.api.model.OneToAny;
 			import hu.elte.txtuml.api.model.ZeroToOne;
 			import test.model.A;
-
+			
 			@SuppressWarnings("all")
 			public class AA2 extends Association {
 			  public class a1 extends Association.HiddenEnd<OneToAny<A>> {
@@ -849,6 +857,82 @@ class XtxtUMLStructureCompilerTest {
 			  
 			  public class a2 extends Association.End<ZeroToOne<A>> {
 			  }
+			}
+			
+			File 4 : /myProject/./src-gen/test/model/AA3.java
+			
+			package test.model;
+			
+			import hu.elte.txtuml.api.model.Association;
+			import hu.elte.txtuml.api.model.OrderedUniqueOneToAny;
+			import test.model.A;
+			import test.model.a2CustomCollection0;
+			
+			@SuppressWarnings("all")
+			public class AA3 extends Association {
+			  public class a1 extends Association.End<OrderedUniqueOneToAny<A>> {
+			  }
+			  
+			  public class a2 extends Association.End<a2CustomCollection0<A>> {
+			  }
+			}
+			
+			File 5 : /myProject/./src-gen/test/model/AA4.java
+			
+			package test.model;
+			
+			import hu.elte.txtuml.api.model.Association;
+			import test.model.A;
+			import test.model.a1CustomCollection1;
+			import test.model.a2CustomCollection2;
+			
+			@SuppressWarnings("all")
+			public class AA4 extends Association {
+			  public class a1 extends Association.End<a1CustomCollection1<A>> {
+			  }
+			  
+			  public class a2 extends Association.End<a2CustomCollection2<A>> {
+			  }
+			}
+			
+			File 6 : /myProject/./src-gen/test/model/a1CustomCollection1.java
+			
+			package test.model;
+			
+			import hu.elte.txtuml.api.model.Min;
+			import hu.elte.txtuml.api.model.OrderedCollection;
+			
+			@Min(6)
+			@SuppressWarnings("all")
+			public class a1CustomCollection1<T> extends OrderedCollection<T, a1CustomCollection1<T>> {
+			}
+			
+			File 7 : /myProject/./src-gen/test/model/a2CustomCollection0.java
+			
+			package test.model;
+			
+			import hu.elte.txtuml.api.model.Max;
+			import hu.elte.txtuml.api.model.Min;
+			import hu.elte.txtuml.api.model.UniqueCollection;
+			
+			@Min(2)
+			@Max(6)
+			@SuppressWarnings("all")
+			public class a2CustomCollection0<T> extends UniqueCollection<T, a2CustomCollection0<T>> {
+			}
+			
+			File 8 : /myProject/./src-gen/test/model/a2CustomCollection2.java
+			
+			package test.model;
+			
+			import hu.elte.txtuml.api.model.Collection;
+			import hu.elte.txtuml.api.model.Max;
+			import hu.elte.txtuml.api.model.Min;
+			
+			@Min(2)
+			@Max(6)
+			@SuppressWarnings("all")
+			public class a2CustomCollection2<T> extends Collection<T, a2CustomCollection2<T>> {
 			}
 
 		''')
@@ -863,28 +947,32 @@ class XtxtUMLStructureCompilerTest {
 				hidden container A a1;
 				A a2;
 			}
+			composition AA2 {
+				hidden container A a1;
+				ordered unique 3..7 A a2;
+			}
 		'''.assertCompilesTo('''
 			MULTIPLE FILES WERE GENERATED
-
+			
 			File 1 : /myProject/./src-gen/test/model/A.java
-
+			
 			package test.model;
-
+			
 			import hu.elte.txtuml.api.model.ModelClass;
-
+			
 			@SuppressWarnings("all")
 			public class A extends ModelClass {
 			}
-
+			
 			File 2 : /myProject/./src-gen/test/model/AA.java
-
+			
 			package test.model;
-
+			
 			import hu.elte.txtuml.api.model.Association;
 			import hu.elte.txtuml.api.model.Composition;
 			import hu.elte.txtuml.api.model.One;
 			import test.model.A;
-
+			
 			@SuppressWarnings("all")
 			public class AA extends Composition {
 			  public class a1 extends Composition.HiddenContainerEnd<A> {
@@ -892,6 +980,38 @@ class XtxtUMLStructureCompilerTest {
 			  
 			  public class a2 extends Association.End<One<A>> {
 			  }
+			}
+			
+			File 3 : /myProject/./src-gen/test/model/AA2.java
+			
+			package test.model;
+			
+			import hu.elte.txtuml.api.model.Association;
+			import hu.elte.txtuml.api.model.Composition;
+			import test.model.A;
+			import test.model.a2CustomCollection0;
+			
+			@SuppressWarnings("all")
+			public class AA2 extends Composition {
+			  public class a1 extends Composition.HiddenContainerEnd<A> {
+			  }
+			  
+			  public class a2 extends Association.End<a2CustomCollection0<A>> {
+			  }
+			}
+			
+			File 4 : /myProject/./src-gen/test/model/a2CustomCollection0.java
+			
+			package test.model;
+			
+			import hu.elte.txtuml.api.model.Max;
+			import hu.elte.txtuml.api.model.Min;
+			import hu.elte.txtuml.api.model.OrderedUniqueCollection;
+			
+			@Min(3)
+			@Max(7)
+			@SuppressWarnings("all")
+			public class a2CustomCollection0<T> extends OrderedUniqueCollection<T, a2CustomCollection0<T>> {
 			}
 
 		''')

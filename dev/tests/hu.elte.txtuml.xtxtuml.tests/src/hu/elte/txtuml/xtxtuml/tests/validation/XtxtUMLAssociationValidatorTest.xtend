@@ -93,18 +93,20 @@ class XtxtUMLAssociationValidatorTest {
 				container Foo foo;
 			}
 		'''.parse.assertNoWarnings(TU_ASSOCIATION_END, WRONG_ASSOCIATION_END_MULTIPLICITY);
-
+ 
 		val rawFile = '''
+			package bar;
 			class Foo;
 			composition Co {
-				0..1 container Foo e1;
-				* container Foo e2;
+				container 0..1 Foo e1;
+				container * Foo e2;
 			}
 		''';
 
 		val parsedFile = rawFile.parse;
-		parsedFile.assertWarning(TU_ASSOCIATION_END, WRONG_ASSOCIATION_END_MULTIPLICITY, rawFile.indexOf("0..1"), 4);
-		parsedFile.assertWarning(TU_ASSOCIATION_END, WRONG_ASSOCIATION_END_MULTIPLICITY, rawFile.indexOf("*"), 1);
+		parsedFile.assertError(TU_COMPOSITION, CONTAINER_END_COUNT_MISMATCH, rawFile.indexOf("Co"), 2);
+		parsedFile.assertWarning(TU_ASSOCIATION_END_COLLECTION, WRONG_ASSOCIATION_END_MULTIPLICITY, rawFile.indexOf("0..1"), 4);
+		parsedFile.assertWarning(TU_ASSOCIATION_END_COLLECTION, WRONG_ASSOCIATION_END_MULTIPLICITY, rawFile.indexOf("*"), 1);
 	}
 
 	@Test
@@ -136,6 +138,39 @@ class XtxtUMLAssociationValidatorTest {
 		parsedFile.assertWarning(TU_MULTIPLICITY, WRONG_MULTIPLICITY, rawFile.indexOf("0"), 1);
 		parsedFile.assertWarning(TU_MULTIPLICITY, WRONG_MULTIPLICITY, rawFile.indexOf("0..0"), 4);
 		parsedFile.assertWarning(TU_MULTIPLICITY, WRONG_MULTIPLICITY, rawFile.indexOf("1..0"), 4);
+	}
+	
+	@Test
+	def checkOrderedAndUnique() {
+		val rawFile = '''
+			package bar;
+			class Foo;
+			association As {
+				ordered unique 1 Foo e1;
+				unique Foo e2;
+				ordered 1..1 Foo e3;
+				ordered 0..1 Foo e4;
+			}
+		''';
+		val parsedFile = rawFile.parse;
+		parsedFile.assertError(TU_ASSOCIATION, ASSOCIATION_END_COUNT_MISMATCH, rawFile.indexOf("As"), 2);
+		parsedFile.assertError(TU_ASSOCIATION_END_COLLECTION, ORDERED_UNIQUE_ONE_MULTIPLICITY, rawFile.indexOf("1"), 1);
+		parsedFile.assertError(TU_ASSOCIATION_END_COLLECTION, ORDERED_UNIQUE_ONE_MULTIPLICITY, rawFile.indexOf("unique Foo"), 10);
+		parsedFile.assertError(TU_ASSOCIATION_END_COLLECTION, ORDERED_UNIQUE_ONE_MULTIPLICITY, rawFile.indexOf("1..1"), 4);
+		parsedFile.assertError(TU_ASSOCIATION_END_COLLECTION, ORDERED_UNIQUE_ONE_MULTIPLICITY, rawFile.indexOf("0..1"), 4);
+		
+		val rawFile2 = '''
+			package bar;
+			class Foo;
+			association As {
+				ordered unique 2..6 Foo e1;
+				unique 1..* Foo e2;
+			}
+		''';
+		
+		val parsedFile2 = rawFile2.parse;
+		parsedFile2.assertNoError(ORDERED_UNIQUE_ONE_MULTIPLICITY);
+
 	}
 
 }

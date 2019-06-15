@@ -312,7 +312,8 @@ class XtxtUMLParserTestUtils {
 	}
 
 	def associationEnd(TUAssociationEnd end, TUVisibility visibility, boolean isHidden,
-			Procedure1<TUMultiplicity> multiplicityCheck, boolean isContainer, String className, String name) {
+			Procedure1<TUMultiplicity> multiplicityCheck, boolean isContainer, String className, String name,
+			boolean isOrdered, boolean isUnique) {
 		assertEquals(visibility, end.visibility);
 		assertEquals(isHidden, end.notNavigable);
 
@@ -320,7 +321,9 @@ class XtxtUMLParserTestUtils {
 		if (multiplicityCheck != null) {
 			multiplicityCheck.apply(end.collection.multiplicity);
 		}
-
+		
+		assertEquals(isOrdered, end.collection.modifiers.ordered);
+		assertEquals(isUnique, end.collection.modifiers.unique);
 		assertEquals(isContainer, end.container);
 		assertEquals(className, end.collection.endClass.name);
 		assertEquals(name, end.name);

@@ -397,16 +397,16 @@ class XtxtUMLExpressionParserTest {
 			])],
 			[class_("C", null, #[])],
 			[association("AB", #[
-				[associationEnd(PACKAGE, false, null, false, "A", "a")],
-				[associationEnd(PACKAGE, false, null, false, "B", "b")]
+				[associationEnd(PACKAGE, false, null, false, "A", "a", false, false)],
+				[associationEnd(PACKAGE, false, null, false, "B", "b", false, false)]
 			])],
 			[composition("CA", #[
-				[associationEnd(PACKAGE, false, null, true, "C", "c")],
-				[associationEnd(PACKAGE, false, null, false, "A", "a")]
+				[associationEnd(PACKAGE, false, null, true, "C", "c", false, false)],
+				[associationEnd(PACKAGE, false, null, false, "A", "a", false, false)]
 			])],
 			[composition("CB", #[
-				[associationEnd(PACKAGE, false, null, true, "C", "c")],
-				[associationEnd(PACKAGE, false, null, false, "B", "b")]
+				[associationEnd(PACKAGE, false, null, true, "C", "c", false, false)],
+				[associationEnd(PACKAGE, false, null, false, "B", "b", false, false)]
 			])],
 			[connector("CAB", #[
 				[connectorEnd("a", "P", "e")],
@@ -463,8 +463,8 @@ class XtxtUMLExpressionParserTest {
 			[signal("S", null, #[])],
 			[class_("B", null, #[])],
 			[association("AB", #[
-				[associationEnd(PACKAGE, false, null, false, "A", "a")],
-				[associationEnd(PACKAGE, false, null, false, "B", "b")]
+				[associationEnd(PACKAGE, false, null, false, "A", "a", false, false)],
+				[associationEnd(PACKAGE, false, null, false, "B", "b", false, false)]
 			])]
 		])
 	}
@@ -644,8 +644,8 @@ class XtxtUMLExpressionParserTest {
 				[operation(PACKAGE, false, NON_EXTERNAL, "void", "bar", #[], #[])]
 			])],
 			[association("AB", #[
-				[associationEnd(PACKAGE, false, null, false, "A", "a")],
-				[associationEnd(PACKAGE, false, null, false, "B", "b")]
+				[associationEnd(PACKAGE, false, null, false, "A", "a", false, false)],
+				[associationEnd(PACKAGE, false, null, false, "B", "b", false, false)]
 			])]
 		])
 	}
