@@ -134,7 +134,7 @@ class XtxtUMLReferenceProposalCreator extends XbaseReferenceProposalCreator {
 
 	def private selectOwnedPorts(IScope scope, EObject model) {
 		if (model instanceof TUConnectorEnd) {
-			val roleClassName = model.role?.endClass?.fullyQualifiedName;
+			val roleClassName = model.role?.collection.endClass?.fullyQualifiedName;
 			return scope.allElements.filter [
 				EContainerDescription.qualifiedName == roleClassName
 			];
@@ -188,7 +188,7 @@ class XtxtUMLReferenceProposalCreator extends XbaseReferenceProposalCreator {
 						descr.EContainerDescription.qualifiedName == containerClassName
 					TUAssociationEnd:
 						!proposedObj.notNavigable && descr.endsOfEnclosingAssociation.exists [
-							endClass?.fullyQualifiedName == containerClassName &&
+							collection.endClass?.fullyQualifiedName == containerClassName &&
 								fullyQualifiedName != descr.qualifiedName
 						]
 					default:

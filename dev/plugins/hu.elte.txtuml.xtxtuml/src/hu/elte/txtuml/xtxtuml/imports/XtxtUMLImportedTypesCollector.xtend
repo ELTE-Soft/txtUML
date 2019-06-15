@@ -57,8 +57,8 @@ class XtxtUMLImportedTypesCollector extends ImportedTypesCollector {
 					references.add(next.vertex?.getPrimaryJvmElement as JvmType ->
 						next.getFullTextRegion(XtxtUMLPackage::eINSTANCE.TUTransitionVertex_Vertex, 0))
 				TUAssociationEnd:
-					references.add(next.endClass?.getPrimaryJvmElement as JvmType ->
-						next.getFullTextRegion(XtxtUMLPackage::eINSTANCE.TUAssociationEnd_EndClass, 0))
+					references.add(next.collection.endClass?.getPrimaryJvmElement as JvmType ->
+						next.getFullTextRegion(XtxtUMLPackage::eINSTANCE.TUAssociationEndCollection_EndClass, 0))
 				TUClassPropertyAccessExpression:
 					references.add(adjustedNestedClassReference(next.right?.getPrimaryJvmElement as JvmType,
 						next.getFullTextRegion(XtxtUMLPackage::eINSTANCE.TUClassPropertyAccessExpression_Right, 0)))

@@ -38,38 +38,38 @@ class XtxtUMLAssociationValidator extends XtxtUMLClassValidator {
 
 	@Check
 	def checkContainerEndMultiplicity(TUAssociationEnd assocEnd) {
-		val multipl = assocEnd.multiplicity;
+		val multipl = assocEnd.collection.multiplicity;
 		if (assocEnd.container && multipl != null) { // container end with explicit multiplicity
 			warning("The multiplicity of container end " + assocEnd.name +
 				" is implicitly 0..1 – the specified multiplicity will be ignored", assocEnd,
-				TU_ASSOCIATION_END__MULTIPLICITY, WRONG_ASSOCIATION_END_MULTIPLICITY);
+				TU_ASSOCIATION_END_COLLECTION__MULTIPLICITY, WRONG_ASSOCIATION_END_MULTIPLICITY);
 		}
 	}
 
 	@Check
 	def checkMultiplicityIsNotCustom(TUAssociationEnd assocEnd) { // TODO support custom multiplicities
-		val it = assocEnd.multiplicity;
+		val it = assocEnd.collection.multiplicity;
 		if (
 			!( it == null // omitted
 			|| any // *
 			|| lower == 1 && !upperSet // 1
 			|| (lower == 0 || lower == 1) && (upperInf || upper == 1) // 0|1..1|*
 		)) {
-			error("The multiplicity of association end " + assocEnd.name + " is invalid – "
-				+ "custom multiplicities are not supported in XtxtUML yet, please use one of the following: 1, *, 0..1, 1..1, 0..*, 1..*",
-				assocEnd, TU_ASSOCIATION_END__MULTIPLICITY, UNSUPPORTED_MULTIPLICITY);
+			//error("The multiplicity of association end " + assocEnd.name + " is invalid – "
+			//	+ "custom multiplicities are not supported in XtxtUML yet, please use one of the following: 1, *, 0..1, 1..1, 0..*, 1..*",
+			//	assocEnd.collection, TU_ASSOCIATION_END_COLLECTION__MULTIPLICITY, UNSUPPORTED_MULTIPLICITY);
 		}
 	}
 	
 	@Check
 	def checkOrderingUniqnessAtMaxOneMultiplicity(TUAssociationEnd assocEnd) {
-		val it = assocEnd.multiplicity;
-		if ( (assocEnd.modifiers.ordered || assocEnd.modifiers.unique) 
+		val it = assocEnd.collection.multiplicity;
+		if ( (assocEnd.collection.modifiers.ordered || assocEnd.collection.modifiers.unique) 
 			&& (lower == 1 && !upperSet ||upper == 1)
 		) {
 			error("The multiplicity of association end " + assocEnd.name + " is invalid – "
 				+ "in case of ordered or unique collection upper multiplicity must be at least 2",
-				assocEnd, TU_ASSOCIATION_END__MULTIPLICITY, ORDERED_UNIQUE_ONE_MULTIPLICITY);
+				assocEnd.collection, TU_ASSOCIATION_END_COLLECTION__MULTIPLICITY, ORDERED_UNIQUE_ONE_MULTIPLICITY);
 		}
 	}
 	

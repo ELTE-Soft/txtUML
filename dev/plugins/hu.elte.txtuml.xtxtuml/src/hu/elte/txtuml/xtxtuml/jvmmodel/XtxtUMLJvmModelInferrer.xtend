@@ -82,6 +82,8 @@ import org.eclipse.xtext.xbase.XBlockExpression
 import org.eclipse.xtext.xbase.jvmmodel.AbstractModelInferrer
 import org.eclipse.xtext.xbase.jvmmodel.IJvmDeclaredTypeAcceptor
 import org.eclipse.xtext.xbase.jvmmodel.IJvmModelAssociations
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUAssociationEndCollection
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUMultiplicity
 
 /**
  * Infers a JVM model equivalent from an XtxtUML resource. If not stated otherwise,
@@ -90,6 +92,10 @@ import org.eclipse.xtext.xbase.jvmmodel.IJvmModelAssociations
 class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 
 	Map<EObject, JvmDeclaredType> registeredTypes = newHashMap;
+	
+	Map<EObject, TUAssociationEndCollection> registeredCollections = newHashMap;
+	
+	int collectionNum = 0;
 
 	@Inject extension IJvmModelAssociations;
 	@Inject extension IQualifiedNameProvider;
@@ -161,7 +167,10 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 		]
 
 		for (end : assoc.ends) {
-			register(end, acceptor, isPreIndexingPhase)
+			if(determineCustomMultiplicity(end.collection.multiplicity)){
+				inferAssocoationEndCollection(end.collection, acceptor, isPreIndexingPhase, assoc.fullyQualifiedName.skipLast(1).toString)
+			}
+			register(end, acceptor, isPreIndexingPhase)		
 		}
 	}
 
@@ -340,6 +349,37 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 			superTypes += assocEnd.calculateApiSuperType(acceptor, isPreIndexingPhase)
 		]
 	}
+	
+	def void inferAssocoationEndCollection(TUAssociationEndCollection collection, IJvmDeclaredTypeAcceptor acceptor, boolean isPreIndexingPhase, String pkg) {
+		var name = (collection.eContainer as TUAssociationEnd).name + "CustomCollection" + collectionNum
+		collectionNum = collectionNum + 1;
+		registeredCollections.put(collection.eContainer as TUAssociationEnd, collection)
+		// TODO: technically a duplicate of the infer function for TUCollectionType
+		acceptor.accept(collection.toClass(name)) [
+			documentation = collection.documentation
+			packageName = pkg
+			
+			val modList = #[collection.modifiers.ordered, collection.modifiers.unique]
+			val subType = (collection.inferredType as JvmGenericType).typeRef
+				
+			superTypes += determineCollectionSuperType(modList, collection.endClass.inferredTypeRef, subType)
+			
+			if (collection.multiplicity != null && !collection.multiplicity.any) {
+				annotations += annotationRef(Min) => [explicitValues += TypesFactory::eINSTANCE.createJvmIntAnnotationValue => [
+					values += collection.multiplicity.lower] ]
+				if (collection.multiplicity.upperSet) {
+					if (!collection.multiplicity.upperInf) {
+						annotations += annotationRef(Max) => [explicitValues += TypesFactory::eINSTANCE.createJvmIntAnnotationValue => [
+							values += collection.multiplicity.upper] ]
+					}
+				}
+				else {
+					annotations += annotationRef(Max) => [explicitValues += TypesFactory::eINSTANCE.createJvmIntAnnotationValue => [
+						values += collection.multiplicity.lower] ]
+				}
+			}
+		]
+	} 
 
 	/**
 	 * @see register(IJvmDeclaredTypeAcceptor,EObject,JvmGenericType,(JvmGenericType)=>void)
@@ -651,7 +691,7 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 	}
 
 	def private calculateApiSuperType(TUAssociationEnd it, IJvmDeclaredTypeAcceptor acceptor, boolean isPreIndexingPhase) {
-		val endClassTypeParam = endClass.inferredTypeRef
+		val endClassTypeParam = collection.endClass.inferredTypeRef
 		if (isContainer) {
 			// Do not try to simplify the code here, as it breaks standalone builds.
 			if (notNavigable) {
@@ -660,38 +700,42 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 				return ContainerEnd.typeRef(endClassTypeParam)
 			}
 		}
+		var boolean customCollection = determineCustomMultiplicity(collection.multiplicity)
 		val optionalHidden = if(notNavigable) "Hidden" else ""
-		val apiBoundTypeName = if (multiplicity == null) // omitted
+		val apiBoundTypeName = if (collection.multiplicity == null) // omitted
 				"One"
-			else if (multiplicity.any) // *
+			else if (collection.multiplicity.any) // *
 				"Any"
-			else if (!multiplicity.upperSet) { // <lower> (exact)
-				if (multiplicity.lower == 1)	
+			else if (!collection.multiplicity.upperSet) { // <lower> (exact)
+				if (collection.multiplicity.lower == 1)
 					"One"
-				// TODO support custom multiplicities
 				else
-					//String.valueOf(multiplicity.lower)
 					""
 			} else { // <lower> .. <upper>
-				if (multiplicity.lower == 0 && multiplicity.upper == 1)
+				if (collection.multiplicity.lower == 0 && collection.multiplicity.upper == 1)
 					"ZeroToOne"
-				else if (multiplicity.lower == 1 && multiplicity.upper == 1)
+				else if (collection.multiplicity.lower == 1 && collection.multiplicity.upper == 1)
 					"One"
-				else if (multiplicity.lower == 0 && multiplicity.upperInf)
+				else if (collection.multiplicity.lower == 0 && collection.multiplicity.upperInf)
 					"Any"
-				else if (multiplicity.lower == 1 && multiplicity.upperInf)
+				else if (collection.multiplicity.lower == 1 && collection.multiplicity.upperInf)
 					"OneToAny"
-				// TODO support custom multiplicities
 				else
-					//String.valueOf(multiplicity.lower) + "To" + String.valueOf(multiplicity.upper)
 					""
 			}
-		val optionalOrdered = if(modifiers.ordered) "Ordered" else ""
-		val optionalUnique = if(modifiers.unique) "Unique" else ""
+		val optionalOrdered = if(collection.modifiers.ordered) "Ordered" else ""
+		val optionalUnique = if(collection.modifiers.unique) "Unique" else ""
 		val validModifiers = if (apiBoundTypeName.equals("Any") || apiBoundTypeName.equals("OneToAny")) {optionalOrdered + optionalUnique} else ""
+		
 		val endClassImpl = "hu.elte.txtuml.api.model.Association$" + optionalHidden + "End"
-		val endCollectionImpl = "hu.elte.txtuml.api.model." + validModifiers + apiBoundTypeName
-		return endClassImpl.typeRef(endCollectionImpl.typeRef(endClassTypeParam))
+		
+		val prefix = if(!customCollection) "hu.elte.txtuml.api.model." else ""
+		val endCollectionImpl = prefix + validModifiers + apiBoundTypeName
+		if(!customCollection) {
+			return endClassImpl.typeRef(endCollectionImpl.typeRef(endClassTypeParam))
+		} else {
+			return endClassImpl.typeRef(registeredCollections.get(it).inferredTypeRef)
+		}
 	}
 
 	def private inferredTypeRef(EObject sourceElement) {
@@ -736,6 +780,13 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 			case #[false, true]: return typeRef(UniqueCollection, arg1, arg2)
 			case #[false, false]: return typeRef(Collection, arg1, arg2)
 		}
+	}
+	
+	def private boolean determineCustomMultiplicity(TUMultiplicity it) {
+		return !( it == null // omitted
+			|| any // *
+			|| lower == 1 && !upperSet // 1
+			|| (lower == 0 || lower == 1) && (upperInf || upper == 1))
 	}
 
 }

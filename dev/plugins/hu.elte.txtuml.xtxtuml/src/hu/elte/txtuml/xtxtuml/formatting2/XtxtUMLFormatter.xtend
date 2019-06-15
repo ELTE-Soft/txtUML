@@ -251,12 +251,12 @@ class XtxtUMLFormatter extends XbaseFormatter {
 		regionFor.feature(TU_ASSOCIATION_END__VISIBILITY).append[oneSpace];
 		regionFor.keyword('hidden').append[oneSpace];
 
-		multiplicity.append[oneSpace];
+		collection.multiplicity.append[oneSpace];
 
 		regionFor.keyword('container').append[oneSpace];
 		regionFor.feature(TU_CONNECTIVE_END__NAME).prepend[oneSpace].append[noSpace];
 
-		format(multiplicity, document);
+		format(collection.multiplicity, document);
 	}
 
 	def dispatch void format(TUMultiplicity it, extension IFormattableDocument document) {

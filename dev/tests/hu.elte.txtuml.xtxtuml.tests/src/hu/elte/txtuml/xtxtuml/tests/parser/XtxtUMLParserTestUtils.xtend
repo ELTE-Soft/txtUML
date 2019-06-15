@@ -316,13 +316,13 @@ class XtxtUMLParserTestUtils {
 		assertEquals(visibility, end.visibility);
 		assertEquals(isHidden, end.notNavigable);
 
-		assertEquals(multiplicityCheck == null, end.multiplicity == null);
+		assertEquals(multiplicityCheck == null, end.collection.multiplicity == null);
 		if (multiplicityCheck != null) {
-			multiplicityCheck.apply(end.multiplicity);
+			multiplicityCheck.apply(end.collection.multiplicity);
 		}
 
 		assertEquals(isContainer, end.container);
-		assertEquals(className, end.endClass.name);
+		assertEquals(className, end.collection.endClass.name);
 		assertEquals(name, end.name);
 	}
 

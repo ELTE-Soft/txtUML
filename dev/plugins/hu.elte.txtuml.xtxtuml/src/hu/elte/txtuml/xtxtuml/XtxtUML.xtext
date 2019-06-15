@@ -231,9 +231,12 @@ TUPortMember :
 // Association-related
 
 TUAssociationEnd :
-	visibility=TUVisibility? notNavigable?='hidden'?
-		modifiers=TUCollectionModifiers multiplicity=TUMultiplicity? container?='container'?
-		endClass=[TUClass|QualifiedName] name=ValidID ';'
+	visibility=TUVisibility? notNavigable?='hidden'? container?='container'?
+		collection=TUAssociationEndCollection name=ValidID ';'
+;
+
+TUAssociationEndCollection:
+	modifiers=TUCollectionModifiers multiplicity=TUMultiplicity? endClass=[TUClass|QualifiedName]
 ;
 
 TUMultiplicity :
