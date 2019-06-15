@@ -167,7 +167,7 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 		]
 
 		for (end : assoc.ends) {
-			if(determineCustomMultiplicity(end.collection.multiplicity)){
+			if(determineCustomMultiplicity(end.collection.multiplicity) && !end.container){
 				inferAssocoationEndCollection(end.collection, acceptor, isPreIndexingPhase, assoc.fullyQualifiedName.skipLast(1).toString)
 			}
 			register(end, acceptor, isPreIndexingPhase)		

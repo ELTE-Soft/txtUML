@@ -41,7 +41,7 @@ class XtxtUMLAssociationValidator extends XtxtUMLClassValidator {
 		val multipl = assocEnd.collection.multiplicity;
 		if (assocEnd.container && multipl != null) { // container end with explicit multiplicity
 			warning("The multiplicity of container end " + assocEnd.name +
-				" is implicitly 0..1 – the specified multiplicity will be ignored", assocEnd,
+				" is implicitly 0..1 – the specified multiplicity will be ignored", assocEnd.collection,
 				TU_ASSOCIATION_END_COLLECTION__MULTIPLICITY, WRONG_ASSOCIATION_END_MULTIPLICITY);
 		}
 	}
