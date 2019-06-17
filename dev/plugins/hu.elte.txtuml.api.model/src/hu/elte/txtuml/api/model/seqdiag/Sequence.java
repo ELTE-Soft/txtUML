@@ -56,7 +56,7 @@ public abstract class Sequence {
 		InteractionRuntime.current().message(sender, signal, target);
 	}
 
-	/**í
+	/**
 	 * The given operands are executed in an arbitrary order, their execution
 	 * may even overlap. However, it is still insured that during the execution
 	 * of the sequence diagram, only one of the operands is running at any given
