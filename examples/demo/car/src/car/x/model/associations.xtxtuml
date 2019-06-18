@@ -1,6 +1,5 @@
 package car.x.model;
 
-// One car has one gearbox, and every gearbox belongs to a car
 association GearboxCar {
 	1 Gearbox g;
 	1 Car c;

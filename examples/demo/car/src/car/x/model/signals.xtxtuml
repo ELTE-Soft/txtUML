@@ -10,7 +10,7 @@ datatype GearType {
 
 }
 
-signal ChangeGear { // shift the gear
+signal ChangeGear {
 	public GearType gearType;
 };
 

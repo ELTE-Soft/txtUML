@@ -1,5 +1,5 @@
 /**
- * JtxtUML train example model.
+ * JtxtUML car example model.
  */
 @Model("Car")
 package car.j.model;

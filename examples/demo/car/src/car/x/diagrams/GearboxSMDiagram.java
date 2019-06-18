@@ -12,9 +12,6 @@ import hu.elte.txtuml.api.layout.StateMachineDiagram;
 
 public class GearboxSMDiagram extends StateMachineDiagram<Gearbox> {
 
-	// These objects will be shown in 3 rows
-	// The First state will be placed below the Init
-	// The Init will be placed below the R
 	@Row({ R.class })
 	@Row({ Init.class, N.class })
 	@Row({ First.class, Second.class })

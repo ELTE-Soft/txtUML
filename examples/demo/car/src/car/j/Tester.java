@@ -12,17 +12,14 @@ import hu.elte.txtuml.api.model.execution.LogLevel;
 
 public class Tester implements Execution {
 
-	// Configure the logging
 	@Override
 	public void configure(Settings s) {
 		s.logLevel = LogLevel.TRACE;
 	}
 
-	// For the execution, one Car and one Gearbox is needed
 	Gearbox g;
 	Car c;
 
-	// Create car and gearbox, link them via the GearboxCar associacion
 	@Override
 	public void initialization() {
 		g = Action.create(Gearbox.class);
@@ -32,18 +29,15 @@ public class Tester implements Execution {
 		Action.start(c);
 	}
 
-	// During the execution
 	@Override
 	public void during() {
 		for (int i = 0; i < 3; ++i) {
 			API.log("");
-			// Shift up
 			API.send(new ChangeGear(new GearType(i)), g);
 		}
 
 		for (int i = 2; i >= -1; --i) {
 			API.log("");
-			// Shift down
 			API.send(new ChangeGear(new GearType(i)), g);
 		}
 
@@ -52,7 +46,6 @@ public class Tester implements Execution {
 	}
 
 	public static void main(String[] args) {
-		// Start the execution
 		new Tester().run();
 	}
 }

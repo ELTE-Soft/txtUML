@@ -22,28 +22,22 @@ import hu.elte.txtuml.api.model.seqdiag.SequenceDiagram;
 
 public class CarSequenceDiagram extends SequenceDiagram {
 
-	// A Car will be in the first position
 	@Position(1)
 	Lifeline<Car> car;
 
-	// A Gearbox will be in the second position
 	@Position(2)
 	Lifeline<Gearbox> gearbox;
 
-	// Initialize the car and the gearbox
 	@Override
 	public void initialize() {
-		// Create the objects
 		Gearbox gearboxInstance = Action.create(Gearbox.class);
 		Car carInstance = Action.create(Car.class);
 
-		// Link the car and the gearbox via the GearboxCar association
 		Action.link(GearboxCar.g.class, gearboxInstance, GearboxCar.c.class, carInstance);
 
 		gearbox = Sequence.createLifeline(gearboxInstance);
 		car = Sequence.createLifeline(carInstance);
 
-		// Start the car and the gearbox
 		Action.start(carInstance);
 		Action.start(gearboxInstance);
 	}
@@ -51,9 +45,6 @@ public class CarSequenceDiagram extends SequenceDiagram {
 	@Override
 	@ExecutionMode(ExecMode.STRICT)
 	public void run() {
-		// We simulate shifting (up) (here, we speed up)
-		// Then we check if the gearbox is in the correct state
-		// and if the car is in the correct state
 		fromActor(new ChangeGear(new GearType(1)), gearbox);
 		assertState(gearbox, Gearbox.First.class);
 		send(gearbox, new ChangeSpeed(new SpeedType(1)), car);
@@ -63,7 +54,7 @@ public class CarSequenceDiagram extends SequenceDiagram {
 		send(gearbox, new ChangeSpeed(new SpeedType(1)), car);
 		assertState(car, Car.Forwards.Fast.class);
 
-		// We simulate slowing down
+		// Slowing down
 		fromActor(new ChangeGear(new GearType(1)), gearbox);
 		assertState(gearbox, Gearbox.First.class);
 		send(gearbox, new ChangeSpeed(new SpeedType(-1)), car);

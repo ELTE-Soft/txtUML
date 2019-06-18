@@ -157,10 +157,10 @@ class XtxtUMLUniquenessValidator extends XtxtUMLNameValidator {
 	def checkConstructorIsUnique(TUConstructor ctor) {
 		val enclosing = ctor.eContainer;
 		if (enclosing.members.exists [
-				it instanceof TUConstructor && {
-					val otherCtor = it as TUConstructor;
-					otherCtor.name == ctor.name && otherCtor.parameters.typeNames == ctor.parameters.typeNames
-				} && it != ctor // direct comparison is safe here
+			it instanceof TUConstructor && {
+				val otherCtor = it as TUConstructor;
+				otherCtor.name == ctor.name && otherCtor.parameters.typeNames == ctor.parameters.typeNames
+			} && it != ctor // direct comparison is safe here
 			]) {
 				error('''Duplicate constructor «ctor.name»(«ctor.parameters.typeNames.join(", ")») in «enclosing.typeString» «enclosing.name»''',
 					ctor, TU_CONSTRUCTOR__NAME, NOT_UNIQUE_CONSTRUCTOR);

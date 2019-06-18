@@ -13,7 +13,6 @@ execution Tester {
 		logLevel = LogLevel.TRACE;
 	}
 
-	// For the execution, one Car and one Gearbox is needed
 	Gearbox g;
 
 	Car c;
@@ -30,12 +29,10 @@ execution Tester {
 	during {
 
 		for (int i = 0; i < 3; i++) {
-			// Shift up
 			send new ChangeGear(new GearType(i)) to g;
 		}
 
 		for (int i = 2; i >= -1; i--) {
-			// Shift down
 			send new ChangeGear(new GearType(i)) to g;
 		}
 		send new ChangeGear(new GearType(0)) to g;

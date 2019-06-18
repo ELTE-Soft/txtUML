@@ -12,68 +12,61 @@ class Car {
 
 	state Stopped;
 
-	// At the beginning the Car is not moving
 	transition Initialize {
 		from Init;
 		to Stopped;
 	}
 
-	// Forwards state
 	composite Forwards {
 		initial FInit;
 		state Slow;
 		state Fast;
 		
-		// When the Car starts, it will go slow first
 		transition FInitialize {
 			from FInit;
 			to Slow;
 		}
-		// When the Car gets a Faster signal, it will go Fast
+		
 		transition FasterSpeed {
 			from Slow;
 			to Fast;
-			trigger ChangeSpeed;//Faster;
+			trigger ChangeSpeed;
 			guard(trigger.speedType.speed == 1);
 		}
-		// When the Car gets a Slower signal, it will Slow down
+		
 		transition SlowerSpeed {
 			from Fast;
 			to Slow;
-			trigger ChangeSpeed;//Slower;
+			trigger ChangeSpeed;
 			guard(trigger.speedType.speed == -1);
 		}
 	}
 
-	// After getting a Faster signal the Car starts, and it will go Forwards
 	transition StartForwards {
 		from Stopped;
 		to Forwards;
-		trigger ChangeSpeed;//Faster;
+		trigger ChangeSpeed;
 		guard(trigger.speedType.speed == 1);
 	}
-
-	// The Car will Stop (Stopped state) if it receives a Stop signal
+ 
 	transition StoppingForward {
 		from Forwards;
 		to Stopped;
-		trigger ChangeSpeed;//Stop;
+		trigger ChangeSpeed;
 		guard(trigger.speedType.speed == 0);
 	}
 
-	// The Car will Stop (Stopped state) if it receives a Stop signal
 	transition StoppingBackward {
 		from Backwards;
 		to Stopped;
-		trigger ChangeSpeed;//Stop;
+		trigger ChangeSpeed;
 		guard(trigger.speedType.speed == 0);
 	}
 
-	// The Car will go Backwards if it receives a Slower signal
 	transition StartBackwards {
 		from Stopped;
 		to Backwards;
-		trigger ChangeSpeed;//Slower;
+		trigger ChangeSpeed;
 		guard(trigger.speedType.speed == -1);
 	}
 
