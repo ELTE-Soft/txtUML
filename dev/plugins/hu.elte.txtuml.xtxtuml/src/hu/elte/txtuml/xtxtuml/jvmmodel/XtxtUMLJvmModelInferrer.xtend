@@ -138,7 +138,7 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 				body = '''new «exec.name»().run();'''
 			]
 		]
-	}	
+	}
 
 	def dispatch void infer(TUAssociation assoc, IJvmDeclaredTypeAcceptor acceptor, boolean isPreIndexingPhase) {
 		acceptor.accept(assoc.toClass(assoc.fullyQualifiedName)) [
@@ -225,15 +225,15 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 			if (tUDataType.superDataType != null) {
 				superTypes += tUDataType.superDataType.inferredTypeRef
 			} else {
-				superTypes +=DataType.typeRef;
+				superTypes += DataType.typeRef;
 			}
 			
 			for (member : tUDataType.members) {
     			if (!(member instanceof TUAttributeOrOperationDeclarationPrefix)) {
-    			   members += member.toJvmMember
+    				members += member.toJvmMember
     			}
     			
-			}			
+			}		
 		]
 	}
 

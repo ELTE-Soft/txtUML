@@ -32,16 +32,12 @@ public class Tester implements Execution {
 	@Override
 	public void during() {
 		for (int i = 0; i < 3; ++i) {
-			API.log("");
 			API.send(new ChangeGear(new GearType(i)), g);
 		}
 
 		for (int i = 2; i >= -1; --i) {
-			API.log("");
 			API.send(new ChangeGear(new GearType(i)), g);
 		}
-
-		API.log("");
 		API.send(new ChangeGear(new GearType(0)), g);
 	}
 
