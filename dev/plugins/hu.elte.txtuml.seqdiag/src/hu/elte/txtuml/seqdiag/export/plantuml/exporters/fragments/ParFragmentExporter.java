@@ -59,41 +59,20 @@ public class ParFragmentExporter extends CombinedFragmentExporter<MethodInvocati
 				((LambdaExpression)(interaction)).getBody().accept(compiler);
 				break;
 			case ASTNode.CLASS_INSTANCE_CREATION:
-				List<BodyDeclaration> bodyDecls = ((ClassInstanceCreation)(interaction)).getAnonymousClassDeclaration().bodyDeclarations();
-				for (BodyDeclaration bodyDecl : bodyDecls){
-					if (bodyDecl instanceof MethodDeclaration){
-						if (((MethodDeclaration)(bodyDecl)).getName().toString().equals("run")){
-							((MethodDeclaration)(bodyDecl)).getBody().accept(compiler);
-						}
-					}
-				}
+				ExportRun(((ClassInstanceCreation)(interaction)).getAnonymousClassDeclaration().bodyDeclarations());				
 				break;
 			case ASTNode.SIMPLE_NAME:
 				SimpleName simpleName = ((SimpleName)(interaction));
 				AbstractTypeDeclaration declarationSimpleName = getTypeDeclaration(simpleName.resolveTypeBinding());
 				if (declarationSimpleName!=null) {
-					List<BodyDeclaration> bodyDeclarationsInSimpleName = declarationSimpleName.bodyDeclarations();
-					for (BodyDeclaration bodyDecl : bodyDeclarationsInSimpleName){
-						if (bodyDecl instanceof MethodDeclaration){
-							if (((MethodDeclaration)(bodyDecl)).getName().toString().equals("run")){
-								((MethodDeclaration)(bodyDecl)).getBody().accept(compiler);
-							}
-						}
-					}
+					ExportRun(declarationSimpleName.bodyDeclarations());
 				}
 				break;
 			case ASTNode.QUALIFIED_NAME:
 				QualifiedName qualifiedName = ((QualifiedName)(interaction));
 				AbstractTypeDeclaration declarationQualifiedName = getTypeDeclaration(qualifiedName.resolveTypeBinding());
 				if (declarationQualifiedName!=null){
-					List<BodyDeclaration> bodyDeclarationsInQualifiedName = declarationQualifiedName.bodyDeclarations();
-					for (BodyDeclaration bodyDecl : bodyDeclarationsInQualifiedName){
-						if (bodyDecl instanceof MethodDeclaration){
-							if (((MethodDeclaration)(bodyDecl)).getName().toString().equals("run")){
-								((MethodDeclaration)(bodyDecl)).getBody().accept(compiler);
-							}
-						}
-					}
+					ExportRun(declarationQualifiedName.bodyDeclarations());
 				}
 				break;
 			}
@@ -126,4 +105,13 @@ public class ParFragmentExporter extends CombinedFragmentExporter<MethodInvocati
 		}
 	}
 	
+	public void ExportRun(List<BodyDeclaration> bodyDeclarations){
+		for (BodyDeclaration bodyDecl : bodyDeclarations){
+			if (bodyDecl instanceof MethodDeclaration){
+				if (((MethodDeclaration)(bodyDecl)).getName().toString().equals("run")){
+					((MethodDeclaration)(bodyDecl)).getBody().accept(compiler);
+				}
+			}
+		}
+	}
 }
