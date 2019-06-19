@@ -36,14 +36,14 @@ public class Model implements Execution {
 		phantom = Action.create(Drink.class, 260, 2, PHANTOM_NAME);
 		stripe = Action.create(Drink.class, 230, 4, STRIPE_NAME);
 
-		DrinkCollection<Drink> Drinks = Action.collectIn(DrinkCollection.class, cola, aqua, phantom, stripe);
+		DrinkCollection<Drink> drinks = Action.collectIn(DrinkCollection.class, cola, aqua, phantom, stripe);
 
-		for (Drink drink : Drinks) {
+		for (Drink drink : drinks) {
 			Action.link(Serve.drinks.class, drink, Serve.theMachine.class, machine);
 		}
 		Action.link(WorkTogether.theCashRegister.class, register, WorkTogether.theMachine.class, machine);
 
-		for (Drink drink : Drinks) {
+		for (Drink drink : drinks) {
 			Action.start(drink);
 		}
 		Action.start(register);
