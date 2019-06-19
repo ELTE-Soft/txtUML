@@ -328,8 +328,7 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 						annotations += annotationRef(Max) => [explicitValues += TypesFactory::eINSTANCE.createJvmIntAnnotationValue => [
 							values += collection.multiplicity.upper] ]
 					}
-				}
-				else {
+				} else {
 					annotations += annotationRef(Max) => [explicitValues += TypesFactory::eINSTANCE.createJvmIntAnnotationValue => [
 						values += collection.multiplicity.lower] ]
 				}
@@ -346,7 +345,7 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 			documentation = assocEnd.documentation
 			visibility = JvmVisibility.PUBLIC
 
-			superTypes += assocEnd.calculateApiSuperType(acceptor, isPreIndexingPhase)
+			superTypes += assocEnd.calculateApiSuperType
 		]
 	}
 	
@@ -692,7 +691,7 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 		]
 	}
 
-	def private calculateApiSuperType(TUAssociationEnd it, IJvmDeclaredTypeAcceptor acceptor, boolean isPreIndexingPhase) {
+	def private calculateApiSuperType(TUAssociationEnd it) {
 		val endClassTypeParam = collection.endClass.inferredTypeRef
 		if (isContainer) {
 			// Do not try to simplify the code here, as it breaks standalone builds.

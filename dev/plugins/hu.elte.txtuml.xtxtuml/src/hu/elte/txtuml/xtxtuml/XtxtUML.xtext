@@ -147,8 +147,8 @@ TUConstructor :
 		body=XBlockExpression ';'?
 ;
 
-TUAttributeOrOperationDeclarationPrefix
-	: modifiers=TUModifiers type=JvmTypeReference
+TUAttributeOrOperationDeclarationPrefix	:
+	modifiers=TUModifiers type=JvmTypeReference
 ;
 
 TUState :
@@ -232,7 +232,7 @@ TUPortMember :
 
 TUAssociationEnd :
 	visibility=TUVisibility? notNavigable?='hidden'? container?='container'?
-		collection=TUAssociationEndCollection name=ValidID ';'
+	collection=TUAssociationEndCollection name=ValidID ';'
 ;
 
 TUAssociationEndCollection:
