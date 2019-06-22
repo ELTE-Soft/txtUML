@@ -320,19 +320,7 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
     			superTypes += determineCollectionSuperType(modList, typeParameter.typeRef, subType)
 			}
 			
-			if (!collection.multiplicity.any) {
-				annotations += annotationRef(Min) => [explicitValues += TypesFactory::eINSTANCE.createJvmIntAnnotationValue => [
-					values += collection.multiplicity.lower] ]
-				if (collection.multiplicity.upperSet) {
-					if (!collection.multiplicity.upperInf) {
-						annotations += annotationRef(Max) => [explicitValues += TypesFactory::eINSTANCE.createJvmIntAnnotationValue => [
-							values += collection.multiplicity.upper] ]
-					}
-				} else {
-					annotations += annotationRef(Max) => [explicitValues += TypesFactory::eINSTANCE.createJvmIntAnnotationValue => [
-						values += collection.multiplicity.lower] ]
-				}
-			}
+			annotations += determineCollectionAnnotations(collection.multiplicity)
 		]
 	}
 
@@ -365,19 +353,8 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 			val subType = typeRef(collection.inferredType as JvmGenericType, typeParameter.typeRef)
 			superTypes += determineCollectionSuperType(modList, typeParameter.typeRef, subType)
 			
-			if (collection.multiplicity != null && !collection.multiplicity.any) {
-				annotations += annotationRef(Min) => [explicitValues += TypesFactory::eINSTANCE.createJvmIntAnnotationValue => [
-					values += collection.multiplicity.lower] ]
-				if (collection.multiplicity.upperSet) {
-					if (!collection.multiplicity.upperInf) {
-						annotations += annotationRef(Max) => [explicitValues += TypesFactory::eINSTANCE.createJvmIntAnnotationValue => [
-							values += collection.multiplicity.upper] ]
-					}
-				}
-				else {
-					annotations += annotationRef(Max) => [explicitValues += TypesFactory::eINSTANCE.createJvmIntAnnotationValue => [
-						values += collection.multiplicity.lower] ]
-				}
+			if (collection.multiplicity != null) {
+				annotations += determineCollectionAnnotations(collection.multiplicity)
 			}
 		]
 	} 
@@ -781,6 +758,26 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 			case #[false, true]: return typeRef(UniqueCollection, arg1, arg2)
 			case #[false, false]: return typeRef(Collection, arg1, arg2)
 		}
+	}
+	
+	def private determineCollectionAnnotations(TUMultiplicity multiplicity) {
+		if (!multiplicity.any) {
+			val minAnnotation = (annotationRef(Min) => [explicitValues += TypesFactory::eINSTANCE.createJvmIntAnnotationValue => [
+				values += multiplicity.lower] ])
+			if (multiplicity.upperSet) {
+				if (!multiplicity.upperInf) {
+					val maxAnnotation = (annotationRef(Max) => [explicitValues += TypesFactory::eINSTANCE.createJvmIntAnnotationValue => [
+						values += multiplicity.upper] ])
+					return #[minAnnotation, maxAnnotation]
+				}
+				return #[minAnnotation]
+			} else {
+				val maxAnnotation = (annotationRef(Max) => [explicitValues += TypesFactory::eINSTANCE.createJvmIntAnnotationValue => [
+					values += multiplicity.lower] ])
+				return #[minAnnotation, maxAnnotation]
+			}
+		}
+		return #[]
 	}
 	
 	def private boolean determineCustomMultiplicity(TUMultiplicity it) {
