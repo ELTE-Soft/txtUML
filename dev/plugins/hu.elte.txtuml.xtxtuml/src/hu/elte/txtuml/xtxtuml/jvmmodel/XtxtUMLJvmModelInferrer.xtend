@@ -341,7 +341,6 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 		val name = (collection.eContainer as TUAssociationEnd).name + "CustomCollection" + collectionNum
 		collectionNum = collectionNum + 1;
 		registeredCollections.put(collection.eContainer as TUAssociationEnd, collection)
-		// TODO: technically a duplicate of the infer function for TUCollectionType
 		acceptor.accept(collection.toClass(name)) [
 			documentation = collection.documentation
 			packageName = pkg
