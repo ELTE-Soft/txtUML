@@ -2,7 +2,7 @@ package train.j.tests;
 
 import static hu.elte.txtuml.api.model.seqdiag.Sequence.assertState;
 import static hu.elte.txtuml.api.model.seqdiag.Sequence.fromActor;
-import static hu.elte.txtuml.api.model.seqdiag.Sequence.send;
+import static hu.elte.txtuml.api.model.seqdiag.Sequence.assertSend;
 
 import hu.elte.txtuml.api.model.Action;
 import hu.elte.txtuml.api.model.seqdiag.ExecMode;
@@ -65,7 +65,7 @@ public class TrainSequenceDiagram extends SequenceDiagram {
 
 		fromActor(new Forward(), gearbox);
 		assertState(gearbox, Gearbox.Forwards.F1.class);
-		send(gearbox, new EngineOn(), engine);
+		assertSend(gearbox, new EngineOn(), engine);
 		assertState(engine, Engine.Working.class);
 
 		fromActor(new Forward(), gearbox);
@@ -75,14 +75,14 @@ public class TrainSequenceDiagram extends SequenceDiagram {
 
 		fromActor(new Backward(), gearbox);
 		assertState(gearbox, Gearbox.Neutral.class);
-		send(gearbox, new EngineOff(), engine);
+		assertSend(gearbox, new EngineOff(), engine);
 		assertState(engine, Engine.Stopped.class);
-		send(gearbox, new LightOff(), lamp);
+		assertSend(gearbox, new LightOff(), lamp);
 		assertState(lamp, Lamp.Dark.class);
 
 		fromActor(new Backward(), gearbox);
 		assertState(gearbox, Gearbox.Backwards.B1.class);
-		send(gearbox, new EngineOn(), engine);
+		assertSend(gearbox, new EngineOn(), engine);
 		assertState(engine, Engine.Working.class);
 
 		fromActor(new Backward(), gearbox);

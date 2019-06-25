@@ -1,5 +1,7 @@
 package pingpong.j.tests;
 
+import static hu.elte.txtuml.api.model.seqdiag.Sequence.assertState;
+
 import hu.elte.txtuml.api.model.Action;
 import hu.elte.txtuml.api.model.seqdiag.ExecMode;
 import hu.elte.txtuml.api.model.seqdiag.ExecutionMode;
@@ -39,13 +41,13 @@ public class PingPongSequenceDiagram extends SequenceDiagram {
 		r2 = Sequence.createProxy(Racket.class);
 
 		Sequence.fromActor(new Ball(4), g);
-		Sequence.send(g, new Ball(4), p1);
+		Sequence.assertSend(g, new Ball(4), p1);
 
-		Sequence.send(r1, new Ball(4), r2);
-		Sequence.send(r2, new Ball(3), r1);
-		Sequence.send(r1, new Ball(2), r2);
-		Sequence.send(r2, new Ball(1), r1);
-		Sequence.send(r1, new Ball(0), r2);
+		Sequence.assertSend(r1, new Ball(4), r2);
+		Sequence.assertSend(r2, new Ball(3), r1);
+		Sequence.assertSend(r1, new Ball(2), r2);
+		Sequence.assertSend(r2, new Ball(1), r1);
+		Sequence.assertSend(r1, new Ball(0), r2);
 	}
 
 }

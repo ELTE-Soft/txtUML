@@ -74,11 +74,11 @@ public class Utils {
 	}
 
 	/*
-	 * Returns true if the given MethodInvocation is a send invocation.
+	 * Returns true if the given MethodInvocation is a assertSend invocation.
 	 */
 	public static boolean isSendInvocation(MethodInvocation expression) {
 		IMethodBinding mb = expression.resolveMethodBinding();
-		return mb != null && (mb.getName().equals("send") || mb.getName().equals("fromActor")) && isSequenceMethod(mb);
+		return mb != null && (mb.getName().equals("assertSend") || mb.getName().equals("fromActor")) && isSequenceMethod(mb);
 	}
 
 	/*

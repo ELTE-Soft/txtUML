@@ -32,7 +32,7 @@ public class MissingSend extends SequenceDiagram {
 		if (true) {
 			if (true) {
 			} else {
-				Sequence.send(lifeline1, new TestSig(), lifeline2);
+				Sequence.assertSend(lifeline1, new TestSig(), lifeline2);
 			}
 		}
 	}
