@@ -18,7 +18,7 @@ public class InvalidLifelineDeclaration extends SequenceDiagram {
 
 	@Override
 	public void run() {
-		Sequence.send(null, null, null);
+		Sequence.assertSend(null, null, null);
 	}
 
 }

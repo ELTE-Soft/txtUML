@@ -20,12 +20,12 @@ public class ValidDiagram extends BaseSequence {
 		if (someValue < 5) {
 			Sequence.fromActor(new TestSig(), lifeline2);
 		} else if (true && someValue == 10) {
-			Sequence.send(lifeline1, new TestSig(), lifeline2);
+			Sequence.assertSend(lifeline1, new TestSig(), lifeline2);
 			++someValue;
 		} else {
 			if (true) {
 				if (false) {
-					Sequence.send(lifeline1, new TestSig(), lifeline2);
+					Sequence.assertSend(lifeline1, new TestSig(), lifeline2);
 				}
 			}
 		}
