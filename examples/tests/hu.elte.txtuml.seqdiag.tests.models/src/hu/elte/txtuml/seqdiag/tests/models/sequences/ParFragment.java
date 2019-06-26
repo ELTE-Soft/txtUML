@@ -11,7 +11,7 @@ public class ParFragment extends BaseSequence {
 
 		}, () -> {
 			Sequence.fromActor(new TestSig(), lifeline1);
-			Sequence.send(lifeline1, new TestSig(), lifeline2);
+			Sequence.assertSend(lifeline1, new TestSig(), lifeline2);
 		});
 	}
 
