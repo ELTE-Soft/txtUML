@@ -30,6 +30,7 @@ TUModelElement
 	| TUAssociation
 	| TUInterface
 	| TUConnector
+	| TUCollectionType
 ;
 
 TUExecution :
@@ -86,6 +87,12 @@ TUConnectorEnd :
 	role=[TUAssociationEnd|QualifiedName] '->' port=[TUPort|QualifiedName] name=ValidID ';'
 ;
 
+TUCollectionType :
+	modifiers=TUCollectionModifiers 'collection' 'of' multiplicity=TUMultiplicity 
+	type=JvmTypeReference? 'as' name=ValidID ';'
+;
+
+
 // Inner element level
 
 // Execution related
@@ -140,7 +147,7 @@ TUConstructor :
 		body=XBlockExpression ';'?
 ;
 
-TUAttributeOrOperationDeclarationPrefix :
+TUAttributeOrOperationDeclarationPrefix	:
 	modifiers=TUModifiers type=JvmTypeReference
 ;
 
@@ -224,13 +231,22 @@ TUPortMember :
 // Association-related
 
 TUAssociationEnd :
-	visibility=TUVisibility? notNavigable?='hidden'?
-		multiplicity=TUMultiplicity? container?='container'?
-		endClass=[TUClass|QualifiedName] name=ValidID ';'
+	visibility=TUVisibility? notNavigable?='hidden'? container?='container'?
+	collection=TUAssociationEndCollection name=ValidID ';'
+;
+
+TUAssociationEndCollection:
+	modifiers=TUCollectionModifiers multiplicity=TUMultiplicity? endClass=[TUClass|QualifiedName]
 ;
 
 TUMultiplicity :
 	lower=INT (upperSet?='..' (upper=INT | upperInf?='*'))? | any?='*'
+;
+
+// Collection-related
+
+TUCollectionModifiers :
+	{TUCollectionModifiers} (ordered?='ordered'? & unique?='unique'?)
 ;
 
 // Commons

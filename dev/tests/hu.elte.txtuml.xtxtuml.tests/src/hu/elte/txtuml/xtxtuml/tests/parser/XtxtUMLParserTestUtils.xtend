@@ -11,6 +11,7 @@ import hu.elte.txtuml.xtxtuml.xtxtUML.TUClass
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUClassMember
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUClassOrStateMember
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUClassPropertyAccessExpression
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUCollectionType
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUComposition
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUConnector
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUConnectorEnd
@@ -311,22 +312,31 @@ class XtxtUMLParserTestUtils {
 	}
 
 	def associationEnd(TUAssociationEnd end, TUVisibility visibility, boolean isHidden,
-			Procedure1<TUMultiplicity> multiplicityCheck, boolean isContainer, String className, String name) {
+			Procedure1<TUMultiplicity> multiplicityCheck, boolean isContainer, String className, String name,
+			boolean isOrdered, boolean isUnique) {
 		assertEquals(visibility, end.visibility);
 		assertEquals(isHidden, end.notNavigable);
 
-		assertEquals(multiplicityCheck == null, end.multiplicity == null);
+		assertEquals(multiplicityCheck == null, end.collection.multiplicity == null);
 		if (multiplicityCheck != null) {
-			multiplicityCheck.apply(end.multiplicity);
+			multiplicityCheck.apply(end.collection.multiplicity);
 		}
-
+		
+		assertEquals(isOrdered, end.collection.modifiers.ordered);
+		assertEquals(isUnique, end.collection.modifiers.unique);
 		assertEquals(isContainer, end.container);
-		assertEquals(className, end.endClass.name);
+		assertEquals(className, end.collection.endClass.name);
 		assertEquals(name, end.name);
 	}
 
 	def any(TUMultiplicity multiplicity) {
 		assertTrue(multiplicity.any);
+	}
+	
+	def fromToInf(TUMultiplicity multiplicity, int value) {
+		assertFalse(multiplicity.any);
+		assertTrue(multiplicity.upperSet);
+		assertTrue(multiplicity.upperInf);
 	}
 
 	def exact(TUMultiplicity multiplicity, int value) {
@@ -416,6 +426,26 @@ class XtxtUMLParserTestUtils {
 		assertEquals(roleName, end.role.name);
 		assertEquals(portName, end.port.name);
 		assertEquals(name, end.name);
+	}
+	
+	// Collection
+	
+	def collection(TUModelElement element, String name, String typeName, boolean ordered,
+			boolean unique, Procedure1<TUMultiplicity> multiplicityCheck) {
+		assertTrue(element instanceof TUCollectionType);
+		val collection = element as TUCollectionType;
+		assertEquals(name, collection.name);
+		if (typeName != null) {
+			assertEquals(typeName, collection.type.simpleName);
+		}
+		
+		assertEquals(ordered, collection.modifiers.ordered);
+		assertEquals(unique, collection.modifiers.unique);
+		
+		assertEquals(multiplicityCheck == null, collection.multiplicity == null);
+		if (multiplicityCheck != null) {
+			multiplicityCheck.apply(collection.multiplicity);
+		}
 	}
 
 	// Expressions

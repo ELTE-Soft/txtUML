@@ -4,6 +4,7 @@ import hu.elte.txtuml.api.model.Action;
 import hu.elte.txtuml.api.model.execution.Execution;
 import hu.elte.txtuml.api.model.execution.LogLevel;
 import producer_consumer.j.model.Consumer;
+import producer_consumer.j.model.ConsumerCollection;
 import producer_consumer.j.model.Consumption;
 import producer_consumer.j.model.Producer;
 import producer_consumer.j.model.Production;
@@ -24,17 +25,21 @@ public class Demo implements Execution {
 		Consumer c1 = Action.create(Consumer.class, Integer.valueOf(2));
 		Consumer c2 = Action.create(Consumer.class, Integer.valueOf(2));
 		Consumer c3 = Action.create(Consumer.class, Integer.valueOf(2));
+		
+		ConsumerCollection<Consumer> coll = Action.collectIn(ConsumerCollection.class, c1, c2, c3);
+		
 		Action.link(Production.producer.class, p1, Production.storage.class, storage);
 		Action.link(Production.producer.class, p2, Production.storage.class, storage);
-		Action.link(Consumption.consumer.class, c1, Consumption.storage.class, storage);
-		Action.link(Consumption.consumer.class, c2, Consumption.storage.class, storage);
-		Action.link(Consumption.consumer.class, c3, Consumption.storage.class, storage);
+		for (Consumer c : coll) {
+			Action.link(Consumption.consumer.class, c, Consumption.storage.class, storage);
+		}
+		
 		Action.start(storage);
 		Action.start(p1);
 		Action.start(p2);
-		Action.start(c1);
-		Action.start(c2);
-		Action.start(c3);
+		for (Consumer c : coll) {
+			Action.start(c);
+		}
 	}
 
 	public static void main(String[] args) {

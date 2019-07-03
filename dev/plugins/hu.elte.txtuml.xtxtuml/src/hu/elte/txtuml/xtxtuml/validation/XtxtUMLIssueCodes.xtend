@@ -77,8 +77,12 @@ class XtxtUMLIssueCodes {
 	public static val ASSOCIATION_END_COUNT_MISMATCH = ISSUE_CODE_PREFIX + "association_end_count_mismatch";
 	public static val CONTAINER_END_IN_ASSOCIATION = ISSUE_CODE_PREFIX + "container_end_in_association";
 	public static val CONTAINER_END_COUNT_MISMATCH = ISSUE_CODE_PREFIX + "container_end_count_mismatch";
-	public static val UNSUPPORTED_MULTIPLICITY = ISSUE_CODE_PREFIX + "unsupported_multiplicity";
 	public static val WRONG_ASSOCIATION_END_MULTIPLICITY = ISSUE_CODE_PREFIX + "wrong_association_end_multiplicity";
+	public static val ORDERED_UNIQUE_ONE_MULTIPLICITY = ISSUE_CODE_PREFIX + "unsupported_multiplicity";
+	
+	// Multiplicity-related issues
+	
+	public static val WRONG_MULTIPLICITY = ISSUE_CODE_PREFIX + "wrong_multiplicity";
 
 	// Connector-related issues
 

@@ -7,6 +7,8 @@ import hu.elte.txtuml.xtxtuml.xtxtUML.TUAttributeOrOperationDeclarationPrefix
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUBindExpression
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUClass
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUClassPropertyAccessExpression
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUCollectionModifiers
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUCollectionType
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUComposition
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUConnector
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUConnectorEnd
@@ -121,6 +123,21 @@ class XtxtUMLFormatter extends XbaseFormatter {
 		formatBlockElement(it, document,
 			regionFor.keyword(if(it instanceof TUComposition) 'composition' else 'association'), ends, false);
 	}
+	
+	def dispatch void format(TUCollectionType it, extension IFormattableDocument document) {
+		format(modifiers, document);
+		regionFor.keyword('collection').append[oneSpace];
+		regionFor.keyword('of').append[oneSpace];
+		format(multiplicity, document);
+		type.prepend[oneSpace];
+		regionFor.keyword('as').surround[oneSpace];
+		regionFor.keyword(';').prepend[noSpace];
+	}
+	
+	def dispatch void format(TUCollectionModifiers it, extension IFormattableDocument document) {
+		regionFor.feature(TU_COLLECTION_MODIFIERS__ORDERED).append[oneSpace];
+		regionFor.feature(TU_COLLECTION_MODIFIERS__UNIQUE).append[oneSpace];
+	}
 
 	def dispatch void format(TUInterface it, extension IFormattableDocument document) {
 		formatBlockElement(it, document, regionFor.keyword('interface'), receptions, false);
@@ -234,12 +251,13 @@ class XtxtUMLFormatter extends XbaseFormatter {
 		regionFor.feature(TU_ASSOCIATION_END__VISIBILITY).append[oneSpace];
 		regionFor.keyword('hidden').append[oneSpace];
 
-		multiplicity.append[oneSpace];
+		collection.multiplicity.append[oneSpace];
 
 		regionFor.keyword('container').append[oneSpace];
 		regionFor.feature(TU_CONNECTIVE_END__NAME).prepend[oneSpace].append[noSpace];
 
-		format(multiplicity, document);
+		format(collection.multiplicity, document);
+		format(collection.modifiers, document);
 	}
 
 	def dispatch void format(TUMultiplicity it, extension IFormattableDocument document) {
