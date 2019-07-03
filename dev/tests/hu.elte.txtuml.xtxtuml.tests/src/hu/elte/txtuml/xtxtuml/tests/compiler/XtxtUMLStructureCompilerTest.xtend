@@ -929,6 +929,14 @@ class XtxtUMLStructureCompilerTest {
 				hidden 1..* A a1;
 				0..1 A a2;
 			}
+			association AA3 {
+				ordered unique 1..* A a1;
+				unique 2..6 A a2;
+			}
+			association AA4 {
+				ordered 6..* A a1;
+				2..6 A a2;
+			}
 		'''.assertCompilesTo('''
 			MULTIPLE FILES WERE GENERATED
 
@@ -978,6 +986,82 @@ class XtxtUMLStructureCompilerTest {
 			  }
 			}
 
+			File 4 : /myProject/./src-gen/test/model/AA3.java
+
+			package test.model;
+
+			import hu.elte.txtuml.api.model.Association;
+			import hu.elte.txtuml.api.model.OrderedUniqueOneToAny;
+			import test.model.A;
+			import test.model.a2CustomCollection0;
+
+			@SuppressWarnings("all")
+			public class AA3 extends Association {
+			  public class a1 extends Association.End<OrderedUniqueOneToAny<A>> {
+			  }
+			  
+			  public class a2 extends Association.End<a2CustomCollection0<A>> {
+			  }
+			}
+
+			File 5 : /myProject/./src-gen/test/model/AA4.java
+
+			package test.model;
+
+			import hu.elte.txtuml.api.model.Association;
+			import test.model.A;
+			import test.model.a1CustomCollection1;
+			import test.model.a2CustomCollection2;
+
+			@SuppressWarnings("all")
+			public class AA4 extends Association {
+			  public class a1 extends Association.End<a1CustomCollection1<A>> {
+			  }
+			  
+			  public class a2 extends Association.End<a2CustomCollection2<A>> {
+			  }
+			}
+
+			File 6 : /myProject/./src-gen/test/model/a1CustomCollection1.java
+
+			package test.model;
+
+			import hu.elte.txtuml.api.model.Min;
+			import hu.elte.txtuml.api.model.OrderedCollection;
+
+			@Min(6)
+			@SuppressWarnings("all")
+			public class a1CustomCollection1<T> extends OrderedCollection<T, a1CustomCollection1<T>> {
+			}
+
+			File 7 : /myProject/./src-gen/test/model/a2CustomCollection0.java
+
+			package test.model;
+
+			import hu.elte.txtuml.api.model.Max;
+			import hu.elte.txtuml.api.model.Min;
+			import hu.elte.txtuml.api.model.UniqueCollection;
+
+			@Min(2)
+			@Max(6)
+			@SuppressWarnings("all")
+			public class a2CustomCollection0<T> extends UniqueCollection<T, a2CustomCollection0<T>> {
+			}
+
+			File 8 : /myProject/./src-gen/test/model/a2CustomCollection2.java
+
+			package test.model;
+
+			import hu.elte.txtuml.api.model.Collection;
+			import hu.elte.txtuml.api.model.Max;
+			import hu.elte.txtuml.api.model.Min;
+
+			@Min(2)
+			@Max(6)
+			@SuppressWarnings("all")
+			public class a2CustomCollection2<T> extends Collection<T, a2CustomCollection2<T>> {
+			}
+
 		''')
 	}
 
@@ -989,6 +1073,10 @@ class XtxtUMLStructureCompilerTest {
 			composition AA {
 				hidden container A a1;
 				A a2;
+			}
+			composition AA2 {
+				hidden container A a1;
+				ordered unique 3..7 A a2;
 			}
 		'''.assertCompilesTo('''
 			MULTIPLE FILES WERE GENERATED
@@ -1019,6 +1107,38 @@ class XtxtUMLStructureCompilerTest {
 			  
 			  public class a2 extends Association.End<One<A>> {
 			  }
+			}
+
+			File 3 : /myProject/./src-gen/test/model/AA2.java
+
+			package test.model;
+
+			import hu.elte.txtuml.api.model.Association;
+			import hu.elte.txtuml.api.model.Composition;
+			import test.model.A;
+			import test.model.a2CustomCollection0;
+
+			@SuppressWarnings("all")
+			public class AA2 extends Composition {
+			  public class a1 extends Composition.HiddenContainerEnd<A> {
+			  }
+			  
+			  public class a2 extends Association.End<a2CustomCollection0<A>> {
+			  }
+			}
+
+			File 4 : /myProject/./src-gen/test/model/a2CustomCollection0.java
+
+			package test.model;
+
+			import hu.elte.txtuml.api.model.Max;
+			import hu.elte.txtuml.api.model.Min;
+			import hu.elte.txtuml.api.model.OrderedUniqueCollection;
+
+			@Min(3)
+			@Max(7)
+			@SuppressWarnings("all")
+			public class a2CustomCollection0<T> extends OrderedUniqueCollection<T, a2CustomCollection0<T>> {
 			}
 
 		''')
@@ -1281,5 +1401,153 @@ class XtxtUMLStructureCompilerTest {
 
 		''')
 	}
+	
+	@Test
+	def compileCollection() {
+		'''
+			package test.model;
+			class A
+			{
+				void fun() {
+			    	GCB<Integer> g;
+				}
+			}
 
+			ordered collection of 1..10 A as CA;
+			collection of 1..10 int as CB;
+			unique collection of 1..* A as CC;
+			unique ordered collection of 5 A as CD;
+			ordered unique collection of * A as CE;
+
+			collection of 1..10 as GCA;
+			ordered collection of 6 as GCB;
+			ordered unique collection of 1..* as GCC;
+		'''.assertCompilesTo('''
+			MULTIPLE FILES WERE GENERATED
+
+			File 1 : /myProject/./src-gen/test/model/A.java
+
+			package test.model;
+
+			import hu.elte.txtuml.api.model.ModelClass;
+			import test.model.GCB;
+
+			@SuppressWarnings("all")
+			public class A extends ModelClass {
+			  void fun() {
+			    GCB<Integer> g = null;
+			  }
+			}
+
+			File 2 : /myProject/./src-gen/test/model/CA.java
+
+			package test.model;
+
+			import hu.elte.txtuml.api.model.Max;
+			import hu.elte.txtuml.api.model.Min;
+			import hu.elte.txtuml.api.model.OrderedCollection;
+			import test.model.A;
+
+			@Min(1)
+			@Max(10)
+			@SuppressWarnings("all")
+			public class CA extends OrderedCollection<A, CA> {
+			}
+
+			File 3 : /myProject/./src-gen/test/model/CB.java
+
+			package test.model;
+
+			import hu.elte.txtuml.api.model.Collection;
+			import hu.elte.txtuml.api.model.Max;
+			import hu.elte.txtuml.api.model.Min;
+
+			@Min(1)
+			@Max(10)
+			@SuppressWarnings("all")
+			public class CB extends Collection<Integer, CB> {
+			}
+
+			File 4 : /myProject/./src-gen/test/model/CC.java
+
+			package test.model;
+
+			import hu.elte.txtuml.api.model.Min;
+			import hu.elte.txtuml.api.model.UniqueCollection;
+			import test.model.A;
+
+			@Min(1)
+			@SuppressWarnings("all")
+			public class CC extends UniqueCollection<A, CC> {
+			}
+
+			File 5 : /myProject/./src-gen/test/model/CD.java
+
+			package test.model;
+
+			import hu.elte.txtuml.api.model.Max;
+			import hu.elte.txtuml.api.model.Min;
+			import hu.elte.txtuml.api.model.OrderedUniqueCollection;
+			import test.model.A;
+
+			@Min(5)
+			@Max(5)
+			@SuppressWarnings("all")
+			public class CD extends OrderedUniqueCollection<A, CD> {
+			}
+
+			File 6 : /myProject/./src-gen/test/model/CE.java
+
+			package test.model;
+
+			import hu.elte.txtuml.api.model.OrderedUniqueCollection;
+			import test.model.A;
+
+			@SuppressWarnings("all")
+			public class CE extends OrderedUniqueCollection<A, CE> {
+			}
+
+			File 7 : /myProject/./src-gen/test/model/GCA.java
+
+			package test.model;
+
+			import hu.elte.txtuml.api.model.Collection;
+			import hu.elte.txtuml.api.model.Max;
+			import hu.elte.txtuml.api.model.Min;
+
+			@Min(1)
+			@Max(10)
+			@SuppressWarnings("all")
+			public class GCA<T> extends Collection<T, GCA<T>> {
+			}
+
+			File 8 : /myProject/./src-gen/test/model/GCB.java
+
+			package test.model;
+
+			import hu.elte.txtuml.api.model.Max;
+			import hu.elte.txtuml.api.model.Min;
+			import hu.elte.txtuml.api.model.OrderedCollection;
+
+			@Min(6)
+			@Max(6)
+			@SuppressWarnings("all")
+			public class GCB<T> extends OrderedCollection<T, GCB<T>> {
+			}
+
+			File 9 : /myProject/./src-gen/test/model/GCC.java
+
+			package test.model;
+
+			import hu.elte.txtuml.api.model.Min;
+			import hu.elte.txtuml.api.model.OrderedUniqueCollection;
+
+			@Min(1)
+			@SuppressWarnings("all")
+			public class GCC<T> extends OrderedUniqueCollection<T, GCC<T>> {
+			}
+
+		''')
+	}
+	
 }

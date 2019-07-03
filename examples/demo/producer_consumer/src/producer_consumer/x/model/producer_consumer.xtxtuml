@@ -3,6 +3,8 @@ package producer_consumer.x.model;
 signal DoWork;
 signal Acknowledgement;
 
+collection of 0..* as ConsumerCollection;
+
 class Producer {
 	int toProduce;
 	public Producer(int num) {
@@ -174,7 +176,7 @@ class Storage {
 class Item;
 
 association Production {
-	* Producer producer;
+	unique 0..2 Producer producer;
 	1 Storage storage;
 }
 
@@ -185,7 +187,7 @@ association Offer {
 
 association Consumption {
 	1 Storage storage;
-	* Consumer consumer;
+	unique ordered 0..3 Consumer consumer;
 }
 
 association Request {

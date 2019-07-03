@@ -172,7 +172,7 @@ class XtxtUMLExpressionValidator extends XtxtUMLTypeValidator {
 		switch (prop : propAccessExpr.right) {
 			TUAssociationEnd: {
 				val enclosingAssociation = prop.eContainer as TUAssociation;
-				val otherEndClassName = enclosingAssociation.ends.findFirst[name != prop.name]?.endClass
+				val otherEndClassName = enclosingAssociation.ends.findFirst[name != prop.name]?.collection.endClass
 					?.fullyQualifiedName;
 				
 				if (sourceClass.travelTypeHierarchy[(it as TUClass).fullyQualifiedName == otherEndClassName] == false) {

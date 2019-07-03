@@ -1,0 +1,4 @@
+package vending_machine.model;
+
+unique collection of 0..* as DrinkCollection;
+

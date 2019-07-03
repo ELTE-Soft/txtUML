@@ -121,7 +121,7 @@ class XtxtUMLLabelProvider extends XbaseLabelProvider {
 	}
 
 	def text(TUAssociationEnd it) {
-		createStyledOutlineText(name, multiplicityAsString + " " + endClass.name + propertiesAsString)
+		createStyledOutlineText(name, multiplicityAsString + " " + collection.endClass.name + propertiesAsString)
 	}
 
 	def image(TUConnector it) {
@@ -268,13 +268,13 @@ class XtxtUMLLabelProvider extends XbaseLabelProvider {
 	def private multiplicityAsString(TUAssociationEnd it) {
 		if (container) {
 			"0..1"
-		} else if (multiplicity == null) {
+		} else if (collection.multiplicity == null) {
 			"1"
-		} else if (multiplicity.any) {
+		} else if (collection.multiplicity.any) {
 			"*"
 		} else {
-			multiplicity.lower + if (multiplicity.isUpperSet) {
-				".." + if(multiplicity.isUpperInf) "*" else multiplicity.upper
+			collection.multiplicity.lower + if (collection.multiplicity.isUpperSet) {
+				".." + if(collection.multiplicity.isUpperInf) "*" else collection.multiplicity.upper
 			} else {
 				""
 			}

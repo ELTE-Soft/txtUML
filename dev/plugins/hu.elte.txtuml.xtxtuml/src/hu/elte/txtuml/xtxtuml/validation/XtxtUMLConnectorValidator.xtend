@@ -63,8 +63,8 @@ class XtxtUMLConnectorValidator extends XtxtUMLAssociationValidator {
 			}
 		} else { // assembly connector
 			if (compositionOfRoleA == null || compositionOfRoleB == null // roles must be from compositions
-			|| compositionOfRoleA.ends.findFirst[container]?.endClass?.fullyQualifiedName !=
-				compositionOfRoleB.ends.findFirst[container]?.endClass?.fullyQualifiedName // container must be the same
+			|| compositionOfRoleA.ends.findFirst[container]?.collection.endClass?.fullyQualifiedName !=
+				compositionOfRoleB.ends.findFirst[container]?.collection.endClass?.fullyQualifiedName // container must be the same
 			) {
 				error("Assembly connector " + connector.name +
 					" must connect ports of parts belonging to the same component", connector, TU_MODEL_ELEMENT__NAME,
@@ -96,7 +96,7 @@ class XtxtUMLConnectorValidator extends XtxtUMLAssociationValidator {
 
 	@Check
 	def checkOwnerOfConnectorEndPort(TUConnectorEnd connEnd) {
-		val classInRole = connEnd.role?.endClass;
+		val classInRole = connEnd.role?.collection.endClass;
 		if (!classInRole.ownsPort(connEnd.port)) {
 			error(connEnd.port.name + " cannot be resolved as a port of class " + classInRole.name, connEnd,
 				TU_CONNECTOR_END__PORT, NOT_OWNED_PORT);

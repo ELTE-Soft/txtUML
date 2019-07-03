@@ -46,7 +46,7 @@ class XtxtUMLConnectiveHelper {
 	}
 
 	def dispatch endEntity(TUAssociationEnd it) {
-		endClass
+		collection.endClass
 	}
 
 	def dispatch endEntity(TUConnectorEnd it) {

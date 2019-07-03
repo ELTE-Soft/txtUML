@@ -2,7 +2,7 @@ package vending_machine.model;
 
 composition Serve {
 	container VendingMachine theMachine;
-	0..* Drink drinks; // should be 0..4, not supported
+	unique 0..4 Drink drinks;
 }
 
 composition WorkTogether {
