@@ -25,7 +25,7 @@ public interface InteractionRuntime extends Wrapper<Interaction>, ImplRelated {
 	}
 
 	/**
-	 * Called by {@link Sequence#send(Lifeline, Signal, Lifeline)}. Read
+	 * Called by {@link Sequence#assertSend(Lifeline, Signal, Lifeline)}. Read
 	 * semantics there.
 	 */
 	public <T extends ModelClass, U extends ModelClass> void message(Lifeline<T> sender, Signal signal,

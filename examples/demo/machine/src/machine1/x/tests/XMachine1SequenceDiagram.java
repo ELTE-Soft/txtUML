@@ -42,7 +42,7 @@ public class XMachine1SequenceDiagram extends SequenceDiagram {
 	public void run() {
 		Sequence.fromActor(new DoYourWork(), user1);
 		for (int i = 0; i < 3; ++i) {
-			Sequence.send(user1, new ButtonPress(), machine);
+			Sequence.assertSend(user1, new ButtonPress(), machine);
 		}
 	}
 

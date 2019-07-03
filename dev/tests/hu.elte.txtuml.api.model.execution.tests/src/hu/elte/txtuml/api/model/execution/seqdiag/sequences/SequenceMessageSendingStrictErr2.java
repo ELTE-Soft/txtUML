@@ -13,10 +13,10 @@ public class SequenceMessageSendingStrictErr2 extends SequenceBase {
 	@ExecutionMode(ExecMode.STRICT)
 	public void run() {
 		Sequence.fromActor(new TestSig(), a);
-		Sequence.send(a, new TestSig(), b);
-		Sequence.send(b, new TestSig(), c);
-		Sequence.send(b, new TestSig(), a);
-		Sequence.send(c, new TestSig(), b);
+		Sequence.assertSend(a, new TestSig(), b);
+		Sequence.assertSend(b, new TestSig(), c);
+		Sequence.assertSend(b, new TestSig(), a);
+		Sequence.assertSend(c, new TestSig(), b);
 	}
 
 }
