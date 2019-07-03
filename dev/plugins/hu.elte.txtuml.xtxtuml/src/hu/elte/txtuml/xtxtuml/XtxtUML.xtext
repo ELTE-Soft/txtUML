@@ -30,6 +30,7 @@ TUModelElement
 	| TUAssociation
 	| TUInterface
 	| TUConnector
+	| TUDataType
 	| TUCollectionType
 ;
 
@@ -37,6 +38,10 @@ TUExecution :
 	'execution' name=ValidID ('{'
 		elements+=TUExecutionElement* 
 	'}' ';'? | ';')?
+;
+
+TUClassOrDataTypeOrSignal:
+	TUDataType | TUClass | TUSignal
 ;
 
 TUSignal :
@@ -49,6 +54,21 @@ TUClass :
 	'class' name=ValidID ('extends' superClass=[TUClass|QualifiedName])? ('{'
 		members+=TUClassMember*
 	'}' ';'? | ';')
+;
+
+TUDataType:
+	'datatype' name=ValidID ('extends' superDataType=[TUDataType|QualifiedName])? ('{'
+		members+=TUDataMember*
+	'}' ';'? | ';')
+;
+
+TUDataMember
+	: TUConstructor
+	| TUAttributeOrOperationDeclarationPrefix (
+		{TUAttribute.prefix=current} name=ValidID ('=' initExpression=XExpression)? ';' |
+		{TUOperation.prefix=current} name=ValidID '(' (parameters+=FullJvmFormalParameter (',' parameters+=FullJvmFormalParameter)*)? ')'
+			body=XBlockExpression ';'?
+	  )
 ;
 
 TUEnumeration :

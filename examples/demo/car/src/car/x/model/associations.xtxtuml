@@ -1,0 +1,7 @@
+package car.x.model;
+
+association GearboxCar {
+	1 Gearbox g;
+	1 Car c;
+}
+

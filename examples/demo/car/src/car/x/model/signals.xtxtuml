@@ -1,0 +1,30 @@
+package car.x.model;
+
+datatype GearType {
+
+	int gear;
+
+	public GearType(int x) {
+		gear = x;
+	}
+
+}
+
+signal ChangeGear {
+	public GearType gearType;
+};
+
+datatype SpeedType {
+
+	int speed;
+
+	public SpeedType(int x) {
+		speed = x;
+	}
+
+}
+
+signal ChangeSpeed {
+	public SpeedType speedType;
+}
+

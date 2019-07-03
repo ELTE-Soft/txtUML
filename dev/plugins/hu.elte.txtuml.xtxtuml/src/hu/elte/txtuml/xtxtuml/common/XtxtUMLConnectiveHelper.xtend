@@ -52,5 +52,4 @@ class XtxtUMLConnectiveHelper {
 	def dispatch endEntity(TUConnectorEnd it) {
 		port
 	}
-
 }

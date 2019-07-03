@@ -114,8 +114,8 @@ class XtxtUMLExpressionValidator extends XtxtUMLTypeValidator {
 		val requiredReceptionsOfPort = portSourceElement.members.findFirst[required]?.interface?.receptions;
 
 		val List<QualifiedName> supers = newArrayList
-		if (sentSignalSourceElement.travelSignalHierarchy [
-			supers.add(fullyQualifiedName)
+		if (sentSignalSourceElement.travelTypeHierarchy [
+			supers.add((it as TUSignal).fullyQualifiedName)
 			false
 		] == null) {
 			return; // circle in hierarchy
@@ -175,7 +175,7 @@ class XtxtUMLExpressionValidator extends XtxtUMLTypeValidator {
 				val otherEndClassName = enclosingAssociation.ends.findFirst[name != prop.name]?.collection.endClass
 					?.fullyQualifiedName;
 				
-				if (sourceClass.travelClassHierarchy[fullyQualifiedName == otherEndClassName] == false) {
+				if (sourceClass.travelTypeHierarchy[(it as TUClass).fullyQualifiedName == otherEndClassName] == false) {
 					error(
 						"Association end " + enclosingAssociation.name + "." + prop.name +
 							" is not accessible from class " + sourceClass?.name, propAccessExpr,

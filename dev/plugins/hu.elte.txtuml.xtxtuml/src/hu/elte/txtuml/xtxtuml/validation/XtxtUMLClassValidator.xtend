@@ -1,14 +1,15 @@
 package hu.elte.txtuml.xtxtuml.validation;
 
 import com.google.inject.Inject
+import hu.elte.txtuml.xtxtuml.common.XtxtUMLClassDataTypeSignalHelper
 import hu.elte.txtuml.xtxtuml.common.XtxtUMLExternalityHelper
 import hu.elte.txtuml.xtxtuml.common.XtxtUMLUtils
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUAttribute
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUClass
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUClassMember
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUClassOrDataTypeOrSignal
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUConstructor
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUEntryOrExitActivity
-import hu.elte.txtuml.xtxtuml.xtxtUML.TUSignal
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUState
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUStateMember
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUStateType
@@ -33,35 +34,29 @@ class XtxtUMLClassValidator extends XtxtUMLFileValidator {
 	@Inject extension IQualifiedNameProvider;
 	@Inject extension XtxtUMLExternalityHelper;
 	@Inject extension XtxtUMLUtils;
+	@Inject extension XtxtUMLClassDataTypeSignalHelper;
 
 	@Check
-	def checkNoCycleInSignalHierarchy(TUSignal signal) {
-		if (signal.travelSignalHierarchy[false] == null) {
-			error("Cycle in hierarchy of signal " + signal.name, signal, TU_SIGNAL__SUPER_SIGNAL,
-				SIGNAL_HIERARCHY_CYCLE);
+	def checkNoCycleInClassDataTypeSignalHierarchy(TUClassOrDataTypeOrSignal general) {
+		if (general.travelTypeHierarchy[false] == null) {
+			error("Cycle in hierarchy of type " + general.name, general, errorFeature(general),
+				errorCode(general));
 		}
 	}
-
-	@Check
-	def checkNoCycleInClassHiearchy(TUClass clazz) {
-		if (clazz.travelClassHierarchy[false] == null) {
-			error("Cycle in hierarchy of class " + clazz.name, clazz, TU_CLASS__SUPER_CLASS, CLASS_HIERARCHY_CYCLE);
-		}
-	}
-
+	
 	@Check
 	def checkConstructorName(TUConstructor ctor) {
 		val name = ctor.name;
-		val enclosingClassName = (ctor.eContainer as TUClass).name;
-		if (name != enclosingClassName) {
-			error('''Constructor «name»(«ctor.parameters.typeNames.join(", ")») in class «enclosingClassName» must be named as its enclosing class''',
+		val enclosing = ctor.eContainer;
+		if (name != enclosing.name) {
+			error('''Constructor «name»(«ctor.parameters.typeNames.join(", ")») in «enclosing.typeString» «enclosing.name» must be named as its enclosing class''',
 				ctor, TU_CONSTRUCTOR__NAME, INVALID_CONSTRUCTOR_NAME);
 		}
 	}
 
 	@Check
 	def checkInitializerIsUsedOnlyOnExternalAttribute(TUAttribute attr) {
-		if (attr.initExpression != null && !attr.isExternal) {
+		if (attr.eContainer instanceof TUClass && attr.initExpression != null && !attr.isExternal) {
 			error("Attribute " + attr.classQualifiedName + " cannot have an initializer expression" +
 				" – initializer expressions can be defined only for external attributes", attr,
 				TU_ATTRIBUTE__INIT_EXPRESSION, INITIALIZER_ON_NON_EXTERNAL_ATTRIBUTE);

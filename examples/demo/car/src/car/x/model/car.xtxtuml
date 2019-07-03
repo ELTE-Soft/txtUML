@@ -1,0 +1,74 @@
+package car.x.model;
+
+import car.x.model.Car.Forwards.FInit;
+import car.x.model.Car.Forwards.Fast;
+import car.x.model.Car.Forwards.Slow;
+
+class Car {
+
+	initial Init;
+
+	state Backwards;
+
+	state Stopped;
+
+	transition Initialize {
+		from Init;
+		to Stopped;
+	}
+
+	composite Forwards {
+		initial FInit;
+		state Slow;
+		state Fast;
+		
+		transition FInitialize {
+			from FInit;
+			to Slow;
+		}
+		
+		transition FasterSpeed {
+			from Slow;
+			to Fast;
+			trigger ChangeSpeed;
+			guard(trigger.speedType.speed == 1);
+		}
+		
+		transition SlowerSpeed {
+			from Fast;
+			to Slow;
+			trigger ChangeSpeed;
+			guard(trigger.speedType.speed == -1);
+		}
+	}
+
+	transition StartForwards {
+		from Stopped;
+		to Forwards;
+		trigger ChangeSpeed;
+		guard(trigger.speedType.speed == 1);
+	}
+ 
+	transition StoppingForward {
+		from Forwards;
+		to Stopped;
+		trigger ChangeSpeed;
+		guard(trigger.speedType.speed == 0);
+	}
+
+	transition StoppingBackward {
+		from Backwards;
+		to Stopped;
+		trigger ChangeSpeed;
+		guard(trigger.speedType.speed == 0);
+	}
+
+	transition StartBackwards {
+		from Stopped;
+		to Backwards;
+		trigger ChangeSpeed;
+		guard(trigger.speedType.speed == -1);
+	}
+
+}
+

@@ -243,7 +243,7 @@ class XtxtUMLTypeValidator extends XtxtUMLUniquenessValidator {
 	}
 
 	def private dispatch internalIsCompatibleWith(TUClass actualClass, QualifiedName expectedName) {
-		actualClass.travelClassHierarchy[fullyQualifiedName == expectedName];
+		actualClass.travelTypeHierarchy[(it as TUClass).fullyQualifiedName == expectedName];
 	}
 
 	def private dispatch internalIsCompatibleWith(TUPort actualPort, QualifiedName expectedName) {

@@ -1,0 +1,87 @@
+package car.x.model;
+
+class Gearbox {
+
+	initial Init;
+
+	state N;
+
+	state R;
+
+	state First;
+
+	state Second;
+
+	transition Initialize {
+		from Init;
+		to N;
+	}
+
+	transition NtoF {
+		from N;
+		to First;
+		trigger ChangeGear;
+		effect {
+			Car c = Gearbox.this->(GearboxCar.c).one();
+			send new ChangeSpeed(new SpeedType(1)) to c;
+		}
+		guard(trigger.gearType.gear == 1);
+	}
+
+	transition FtoS {
+		from First;
+		to Second;
+		trigger ChangeGear;
+		effect {
+			Car c = Gearbox.this->(GearboxCar.c).one();
+			send new ChangeSpeed(new SpeedType(1)) to c;
+		}
+		guard(trigger.gearType.gear == 2);
+	}
+
+	transition StoF {
+		from Second;
+		to First;
+		trigger ChangeGear;
+		effect {
+			Car c = Gearbox.this->(GearboxCar.c).one();
+			send new ChangeSpeed(new SpeedType(-1)) to c;
+		}
+		guard(trigger.gearType.gear == 1);
+	}
+
+	transition FtoN {
+		from First;
+		to N;
+		trigger ChangeGear;
+		effect {
+			Car c = Gearbox.this->(GearboxCar.c).one();
+			send new ChangeSpeed(new SpeedType(0)) to c;
+		}
+		guard(trigger.gearType.gear == 0);
+	}
+
+	transition NtoR {
+		from N;
+		to R;
+		trigger ChangeGear;
+		effect {
+			Car c = Gearbox.this->(GearboxCar.c).one();
+			send new ChangeSpeed(new SpeedType(-1)) to c;
+		}
+		guard(trigger.gearType.gear == -1);
+	}
+
+	transition RtoN {
+		from R;
+		to N;
+		trigger ChangeGear;
+		effect {
+			Car c = Gearbox.this->(GearboxCar.c).one();
+			send new ChangeSpeed(new SpeedType(0)) to c;
+		}
+		guard(trigger.gearType.gear == 0);
+	}
+
+}
+

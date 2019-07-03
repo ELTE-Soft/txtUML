@@ -9,6 +9,7 @@ import hu.elte.txtuml.api.model.Composition.ContainerEnd
 import hu.elte.txtuml.api.model.Composition.HiddenContainerEnd
 import hu.elte.txtuml.api.model.Connector
 import hu.elte.txtuml.api.model.ConnectorBase.One
+import hu.elte.txtuml.api.model.DataType
 import hu.elte.txtuml.api.model.Delegation
 import hu.elte.txtuml.api.model.External
 import hu.elte.txtuml.api.model.ExternalBody
@@ -42,6 +43,7 @@ import hu.elte.txtuml.xtxtuml.xtxtUML.TUComposition
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUConnector
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUConnectorEnd
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUConstructor
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUDataType
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUEntryOrExitActivity
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUEnumeration
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUEnumerationLiteral
@@ -193,8 +195,8 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 
 			members += signal.toConstructor [
 				val Deque<TUSignal> supers = newLinkedList
-				if (signal.superSignal.travelSignalHierarchy [
-					supers.add(it)
+				if (signal.superSignal.travelTypeHierarchy [
+					supers.add(it as TUSignal)
 					false
 				] == null) {
 					return // cycle in hierarchy
@@ -231,6 +233,25 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 					«ENDFOR»
 				'''
 			]
+		]
+	}
+	
+	def dispatch void infer(TUDataType tUDataType, IJvmDeclaredTypeAcceptor acceptor, boolean isPreIndexingPhase) {
+		acceptor.accept(tUDataType.toClass(tUDataType.fullyQualifiedName)) [
+			documentation = tUDataType.documentation
+			
+			if (tUDataType.superDataType != null) {
+				superTypes += tUDataType.superDataType.inferredTypeRef
+			} else {
+				superTypes += DataType.typeRef;
+			}
+			
+			for (member : tUDataType.members) {
+    			if (!(member instanceof TUAttributeOrOperationDeclarationPrefix)) {
+    				members += member.toJvmMember
+    			}
+    			
+			}		
 		]
 	}
 
@@ -520,6 +541,10 @@ class XtxtUMLJvmModelInferrer extends AbstractModelInferrer {
 			}
 
 			initializer = attr.initExpression
+			
+			if(attr.eContainer instanceof TUDataType) {
+				final = true
+			}
 		]
 	}
 

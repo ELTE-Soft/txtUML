@@ -2,7 +2,7 @@ package hu.elte.txtuml.xtxtuml.common
 
 import com.google.inject.Inject
 import hu.elte.txtuml.xtxtuml.xtxtUML.TUClass
-import hu.elte.txtuml.xtxtuml.xtxtUML.TUSignal
+import hu.elte.txtuml.xtxtuml.xtxtUML.TUClassOrDataTypeOrSignal
 import org.eclipse.emf.ecore.EObject
 import org.eclipse.xtext.naming.IQualifiedNameProvider
 import org.eclipse.xtext.resource.IEObjectDescription
@@ -12,6 +12,7 @@ public class XtxtUMLUtils {
 
 	@Inject IResourceDescriptions index;
 	@Inject extension IQualifiedNameProvider;
+	@Inject extension XtxtUMLClassDataTypeSignalHelper;
 
 	/**
 	 * Returns the IEObjectDescription of the specified <code>objectDescription</code>'s
@@ -33,73 +34,40 @@ public class XtxtUMLUtils {
 		}
 
 		val portEnclosingClassName = port.eContainer?.fullyQualifiedName;
-		val classOwnsPort = [TUClass klass | klass.fullyQualifiedName == portEnclosingClassName];
-		return clazz.travelClassHierarchy(classOwnsPort);
+		val classOwnsPort = [TUClassOrDataTypeOrSignal klass | (klass as TUClass).fullyQualifiedName == portEnclosingClassName];
+		return clazz.travelTypeHierarchy(classOwnsPort);
 	}
-
+	
 	/**
-	 * Travels the class hierarchy of <code>clazz</code> upwards (inclusive), until a class
-	 * which satisfies <code>predicate</code> is found, or the hierarchy ends, or a cycle in
-	 * the hierarchy is found.
+	 * Travels the type hierarchy of <code>signal</code>, <code>class</code> or <code>datatype</code> 
+	 * upwards (inclusive), until a signal, class or data type which satisfies <code>predicate</code>
+	 * is found, or the hierarchy ends, or a cycle in the hierarchy is found.
 	 *
 	 * @return
 	 * <ul>
-	 * 	<li><code>true</code> if an appropriate class has been found,</li>
-	 * 	<li><code>false</code> if no appropriate class has been found,</li>
+	 * 	<li><code>true</code> if an appropriate signal, class or data type has been found,</li>
+	 * 	<li><code>false</code> if no appropriate signal, class or data type has been found,</li>
 	 * 	<li><code>null</code> if a cycle has been found during the traversal.</li>
 	 * </ul>
 	 */
-	def travelClassHierarchy(TUClass clazz, (TUClass)=>Boolean predicate) {
-		val visitedClassNames = newHashSet;
-		var currentClass = clazz;
+	def travelTypeHierarchy(TUClassOrDataTypeOrSignal type, (TUClassOrDataTypeOrSignal)=>Boolean predicate) {
+		val visitedTypeNames = newHashSet;
+		var currentType = type;
 
-		while (currentClass != null) {
-			if (visitedClassNames.contains(currentClass.fullyQualifiedName)) {
+		while (currentType != null) {
+			if (visitedTypeNames.contains(currentType.fullyQualifiedName)) {
 				return null;
 			}
 
-			if (predicate.apply(currentClass)) {
+			if (predicate.apply(currentType)) {
 				return true;
 			}
 
-			visitedClassNames.add(currentClass.fullyQualifiedName);
-			currentClass = currentClass.superClass;
+			visitedTypeNames.add(currentType.fullyQualifiedName);
+			currentType = currentType.superType;
 		}
 
 		return false;
 	}
-
-	/**
-	 * Travels the signal hierarchy of <code>signal</code> upwards (inclusive), until a signal
-	 * which satisfies <code>predicate</code> is found, or the hierarchy ends, or a cycle in
-	 * the hierarchy is found.
-	 *
-	 * @return
-	 * <ul>
-	 * 	<li><code>true</code> if an appropriate signal has been found,</li>
-	 * 	<li><code>false</code> if no appropriate signal has been found,</li>
-	 * 	<li><code>null</code> if a cycle has been found during the traversal.</li>
-	 * </ul>
-	 */
-	def travelSignalHierarchy(TUSignal signal, (TUSignal)=>Boolean predicate) {
-		// TODO technically a duplicate of travelClassHierarchy, should be eliminated ASAP
-		val visitedSignalNames = newHashSet;
-		var currentSignal = signal;
-
-		while (currentSignal != null) {
-			if (visitedSignalNames.contains(currentSignal.fullyQualifiedName)) {
-				return null;
-			}
-
-			if (predicate.apply(currentSignal)) {
-				return true;
-			}
-
-			visitedSignalNames.add(currentSignal.fullyQualifiedName);
-			currentSignal = currentSignal.superSignal;
-		}
-
-		return false;
-	}
-
+	
 }
