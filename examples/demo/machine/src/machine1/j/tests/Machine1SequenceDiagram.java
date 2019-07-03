@@ -42,9 +42,9 @@ public class Machine1SequenceDiagram extends SequenceDiagram {
 	public void run() {
 		Sequence.fromActor(new DoYourWork(), user1);
 
-		Sequence.send(user1, new ButtonPress(), machine);
-		Sequence.send(user1, new ButtonPress(), machine);
-		Sequence.send(user1, new ButtonPress(), machine);
+		Sequence.assertSend(user1, new ButtonPress(), machine);
+		Sequence.assertSend(user1, new ButtonPress(), machine);
+		Sequence.assertSend(user1, new ButtonPress(), machine);
 	}
 
 }
